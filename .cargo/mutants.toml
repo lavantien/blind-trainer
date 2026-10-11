@@ -1,0 +1,3 @@
+gitignore = false
+timeout = 600
+exclude = ["crates/bt-app/**", "tools/**", "fuzz/**"]
