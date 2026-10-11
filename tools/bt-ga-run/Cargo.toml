@@ -3,4 +3,8 @@ name = "bt-ga-run"
 edition.workspace = true
 
 [dependencies]
+bt-data = { path = "../../crates/bt-data" }
 bt-ga = { path = "../../crates/bt-ga" }
+bt-scheme = { path = "../../crates/bt-scheme" }
+serde.workspace = true
+serde_json.workspace = true

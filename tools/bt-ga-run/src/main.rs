@@ -1,18 +1,11 @@
-pub fn crate_id() -> &'static str {
-    "bt-ga-run"
-}
-
 fn main() {
-    eprintln!("not implemented: {}", crate_id());
-    std::process::exit(1);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::crate_id;
-
-    #[test]
-    fn crate_id_matches_package() {
-        assert_eq!(crate_id(), "bt-ga-run");
+    if std::env::var_os("RAYON_NUM_THREADS").is_none() {
+        unsafe { std::env::set_var("RAYON_NUM_THREADS", "8") };
+    }
+    if let Err(offenders) = bt_ga_run::run_all() {
+        for offender in offenders {
+            eprintln!("ga: {offender}");
+        }
+        std::process::exit(1);
     }
 }
