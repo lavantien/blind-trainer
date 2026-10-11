@@ -2,7 +2,80 @@
 
 use proptest::prelude::*;
 use proptest::sample::select;
+use std::collections::HashMap;
 use std::path::PathBuf;
+
+pub struct NameIndex {
+    pub name_of_sticker: [String; 48],
+    pub piece_of_sticker: [u8; 48],
+    pub sticker_of_name: HashMap<String, u8>,
+}
+
+impl NameIndex {
+    pub fn corner_stickers(&self) -> [[u8; 3]; 8] {
+        let mut groups: Vec<Vec<u8>> = vec![Vec::new(); 8];
+        for sticker in 0..24u8 {
+            groups[self.piece_of_sticker[sticker as usize] as usize].push(sticker);
+        }
+        let mut out = [[0u8; 3]; 8];
+        for (piece, group) in groups.into_iter().enumerate() {
+            out[piece] = [group[0], group[1], group[2]];
+        }
+        out
+    }
+
+    pub fn edge_stickers(&self) -> [[u8; 2]; 12] {
+        let mut groups: Vec<Vec<u8>> = vec![Vec::new(); 12];
+        for sticker in 24..48u8 {
+            groups[self.piece_of_sticker[sticker as usize] as usize].push(sticker);
+        }
+        let mut out = [[0u8; 2]; 12];
+        for (piece, group) in groups.into_iter().enumerate() {
+            out[piece] = [group[0], group[1]];
+        }
+        out
+    }
+}
+
+pub fn position_names() -> NameIndex {
+    let lines = sheet_lines("position_map.tsv");
+    let header: Vec<&str> = lines[0].split('\t').collect();
+    assert_eq!(
+        header,
+        vec![
+            "orbit", "sticker", "letter", "name", "face", "row", "col", "piece"
+        ]
+    );
+    let mut index = NameIndex {
+        name_of_sticker: std::array::from_fn(|_| String::new()),
+        piece_of_sticker: [255u8; 48],
+        sticker_of_name: HashMap::new(),
+    };
+    for line in lines.iter().skip(1) {
+        if line.is_empty() {
+            continue;
+        }
+        let cols: Vec<&str> = line.split('\t').collect();
+        assert_eq!(cols.len(), 8, "{:?}", line);
+        let sticker: usize = cols[1].parse().unwrap();
+        let piece: u8 = cols[7].parse().unwrap();
+        if cols[0] == "corner" {
+            assert!(sticker < 24 && piece < 8, "{:?}", line);
+        } else {
+            assert_eq!(cols[0], "edge", "{:?}", line);
+            assert!((24..48).contains(&sticker) && piece < 12, "{:?}", line);
+        }
+        index.name_of_sticker[sticker] = cols[3].to_string();
+        index.piece_of_sticker[sticker] = piece;
+        let prev = index
+            .sticker_of_name
+            .insert(cols[3].to_string(), sticker as u8);
+        assert!(prev.is_none(), "duplicate name {}", cols[3]);
+    }
+    assert_eq!(index.sticker_of_name.len(), 48);
+    assert!(index.piece_of_sticker.iter().all(|&p| p != 255));
+    index
+}
 
 pub const SHEETS: [(&str, usize); 12] = [
     ("cherry/edge.tsv", 551),
