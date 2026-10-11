@@ -70,6 +70,7 @@ fn track_fonts(mut ready: ResMut<SmokeFonts>, server: Res<AssetServer>, fonts: R
 
 fn take_shot(commands: &mut Commands, tour: &SmokeTour, state: AppState) -> PathBuf {
     let path = tour.shot_path(state);
+    std::fs::remove_file(&path).ok();
     commands
         .spawn(Screenshot::primary_window())
         .observe(save_to_disk(path.clone()));
