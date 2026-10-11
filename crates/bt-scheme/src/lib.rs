@@ -1,6 +1,8 @@
+pub mod classifier;
 pub mod pairs;
 pub mod scheme;
 
+pub use classifier::{Classification, Defects, Report, Trace, classify, classify_alg, trace};
 pub use pairs::{CaseId, enumerate_cases};
 pub use scheme::{
     CORNER_BUFFER_STICKER, CORNER_FLOATING, EDGE_BUFFER_STICKER, EDGE_FLOATING, Orbit,
