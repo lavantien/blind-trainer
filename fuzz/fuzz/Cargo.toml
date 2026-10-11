@@ -1,0 +1,46 @@
+[package]
+name = "bt-fuzz"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1.0"
+bt-core = { path = "../crates/bt-core" }
+bt-scheme = { path = "../crates/bt-scheme" }
+
+[lib]
+name = "bt_fuzz"
+path = "src/lib.rs"
+
+[[bin]]
+name = "notation"
+path = "fuzz_targets/notation.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "classify"
+path = "fuzz_targets/classify.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "memo"
+path = "fuzz_targets/memo.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "standalone"
+path = "src/bin/standalone.rs"
+test = false
+doc = false
+bench = false

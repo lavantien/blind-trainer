@@ -1,3 +1,3 @@
 gitignore = false
-timeout = 600
-exclude = ["crates/bt-app/**", "tools/**", "fuzz/**"]
+minimum_test_timeout = 300
+exclude_globs = ["crates/bt-app/**", "tools/**", "fuzz/**"]
