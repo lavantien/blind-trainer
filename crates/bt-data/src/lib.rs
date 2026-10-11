@@ -2,6 +2,7 @@ pub mod corpus;
 pub mod paths;
 pub mod srs;
 pub mod tsv;
+pub mod verify;
 
 pub fn crate_id() -> &'static str {
     "bt-data"
