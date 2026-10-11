@@ -1,3 +1,8 @@
+pub mod dist;
+pub mod features;
+pub mod hash;
+pub mod inventory;
+
 pub fn crate_id() -> &'static str {
     "bt-ga"
 }
