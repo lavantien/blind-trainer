@@ -1,3 +1,4 @@
+pub mod algs;
 pub mod drill;
 pub mod images;
 pub mod memo;
@@ -133,6 +134,8 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(drill::DrillSeed(time_seed()))
             .insert_resource(drill::DrillDraft::default())
             .insert_resource(drill::DrillSession::default())
+            .insert_resource(algs::AlgsQuery::default())
+            .insert_resource(algs::AlgsBrowser::default())
             .configure_sets(Update, ViewsLogic.run_if(resource_exists::<Stores>))
             .add_systems(
                 Update,
@@ -152,6 +155,8 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(solve::exec_tick, in_state(SolvePhase::Exec)),
                     IntoScheduleConfigs::run_if(solve::exec_keys, in_state(SolvePhase::Exec)),
                     IntoScheduleConfigs::run_if(solve::review_keys, in_state(SolvePhase::Review)),
+                    IntoScheduleConfigs::run_if(algs::refresh_list, in_state(AppState::Algs)),
+                    IntoScheduleConfigs::run_if(algs::list_keys, in_state(AppState::Algs)),
                 )
                     .in_set(ViewsLogic),
             )
@@ -172,6 +177,7 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(SolvePhase::Ready), solve::enter_ready)
             .add_systems(OnEnter(SolvePhase::Memo), solve::enter_memo)
             .add_systems(OnEnter(SolvePhase::Exec), solve::enter_exec)
-            .add_systems(OnEnter(SolvePhase::Review), solve::enter_review);
+            .add_systems(OnEnter(SolvePhase::Review), solve::enter_review)
+            .add_systems(OnEnter(AppState::Algs), algs::enter);
     }
 }

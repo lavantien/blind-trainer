@@ -38,6 +38,12 @@ impl Plugin for PresentationPlugin {
                         views::drill::focus_input_on_memo,
                     )
                         .chain(),
+                    (
+                        views::algs::read_query,
+                        views::algs::sync_query,
+                        views::algs::bind_detail,
+                    )
+                        .chain(),
                     views::memo::bind_text,
                     views::solve::bind_text,
                 )
@@ -65,6 +71,12 @@ impl Plugin for PresentationPlugin {
                 OnEnter(AppState::Solve),
                 |mut commands: Commands, fonts: Res<FontBook>, config: Res<AppConfig>| {
                     views::solve::spawn(&mut commands, &fonts, &config);
+                },
+            )
+            .add_systems(
+                OnEnter(AppState::Algs),
+                |mut commands: Commands, fonts: Res<FontBook>, config: Res<AppConfig>| {
+                    views::algs::spawn(&mut commands, &fonts, &config);
                 },
             )
             .add_systems(OnEnter(AppState::Fatal), enter_fatal);
