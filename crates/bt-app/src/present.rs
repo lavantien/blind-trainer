@@ -46,6 +46,8 @@ impl Plugin for PresentationPlugin {
                         .chain(),
                     views::memo::bind_text,
                     views::solve::bind_text,
+                    views::stats::bind_text,
+                    views::settings::bind_text,
                 )
                     .after(views::ViewsLogic),
             )
@@ -77,6 +79,20 @@ impl Plugin for PresentationPlugin {
                 OnEnter(AppState::Algs),
                 |mut commands: Commands, fonts: Res<FontBook>, config: Res<AppConfig>| {
                     views::algs::spawn(&mut commands, &fonts, &config);
+                },
+            )
+            .add_systems(
+                OnEnter(AppState::Stats),
+                |mut commands: Commands, fonts: Res<FontBook>| {
+                    views::stats::spawn(&mut commands, &fonts);
+                },
+            )
+            .add_systems(
+                OnEnter(AppState::Settings),
+                |mut commands: Commands,
+                 fonts: Res<FontBook>,
+                 stores: Res<crate::persist::Stores>| {
+                    views::settings::spawn(&mut commands, &fonts, &stores);
                 },
             )
             .add_systems(OnEnter(AppState::Fatal), enter_fatal);

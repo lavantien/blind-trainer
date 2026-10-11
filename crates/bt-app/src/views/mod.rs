@@ -3,7 +3,9 @@ pub mod drill;
 pub mod images;
 pub mod memo;
 pub mod menu;
+pub mod settings;
 pub mod solve;
+pub mod stats;
 
 use crate::logic::RuntimePaths;
 use crate::persist::Stores;
@@ -131,11 +133,13 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(solve::SolveScrambleOverride::default())
             .insert_resource(memo::MemoSession::default())
             .insert_resource(solve::SolveSession::default())
+            .insert_resource(stats::StatsSnapshot::default())
             .insert_resource(drill::DrillSeed(time_seed()))
             .insert_resource(drill::DrillDraft::default())
             .insert_resource(drill::DrillSession::default())
             .insert_resource(algs::AlgsQuery::default())
             .insert_resource(algs::AlgsBrowser::default())
+            .insert_resource(settings::SettingsDraft::default())
             .configure_sets(Update, ViewsLogic.run_if(resource_exists::<Stores>))
             .add_systems(
                 Update,
@@ -157,6 +161,17 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(solve::review_keys, in_state(SolvePhase::Review)),
                     IntoScheduleConfigs::run_if(algs::refresh_list, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::list_keys, in_state(AppState::Algs)),
+                    (
+                        IntoScheduleConfigs::run_if(
+                            settings::mode_keys,
+                            in_state(AppState::Settings),
+                        ),
+                        IntoScheduleConfigs::run_if(
+                            settings::apply_draft,
+                            in_state(AppState::Settings),
+                        ),
+                    )
+                        .chain(),
                 )
                     .in_set(ViewsLogic),
             )
@@ -178,6 +193,8 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(SolvePhase::Memo), solve::enter_memo)
             .add_systems(OnEnter(SolvePhase::Exec), solve::enter_exec)
             .add_systems(OnEnter(SolvePhase::Review), solve::enter_review)
-            .add_systems(OnEnter(AppState::Algs), algs::enter);
+            .add_systems(OnEnter(AppState::Algs), algs::enter)
+            .add_systems(OnEnter(AppState::Stats), stats::enter)
+            .add_systems(OnEnter(AppState::Settings), settings::enter);
     }
 }
