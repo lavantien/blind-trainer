@@ -2,6 +2,7 @@ pub mod classifier;
 pub mod memo;
 pub mod pairs;
 pub mod scheme;
+pub mod scramble;
 
 pub use classifier::{Classification, Defects, Report, Trace, classify, classify_alg, trace};
 pub use memo::{
@@ -13,6 +14,9 @@ pub use scheme::{
     CORNER_BUFFER_STICKER, CORNER_FLOATING, EDGE_BUFFER_STICKER, EDGE_FLOATING, Orbit,
     corner_floating_heads, edge_floating_heads, head_sticker, letter_of, name_of, same_piece,
     sticker_of,
+};
+pub use scramble::{
+    Rng, flip_count, occ_is_legal, piece_perm, random_occ, random_state, twist_sum,
 };
 
 pub fn crate_id() -> &'static str {
