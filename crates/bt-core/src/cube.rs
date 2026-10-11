@@ -43,6 +43,17 @@ impl Cube {
         }
     }
 
+    pub fn from_occ(occ: [u8; 54]) -> Cube {
+        debug_assert!({
+            let mut seen = [false; 54];
+            for &s in &occ {
+                seen[s as usize] = true;
+            }
+            seen.iter().all(|&s| s)
+        });
+        Cube { occ }
+    }
+
     pub fn apply(&mut self, mv: Move) {
         let table = mv.table();
         let mut next = self.occ;
@@ -159,5 +170,21 @@ mod tests {
         assert_eq!(corner_id(Face::D, 0), 20);
         assert_eq!(edge_id(Face::D, 0), 44);
         assert_eq!(center_id(Face::D), 53);
+    }
+
+    #[test]
+    fn from_occ_rebuilds_equivalent_state() {
+        let mut cube = Cube::solved();
+        cube.apply_alg(&Alg::parse("R U F2 M x' 2L S2").unwrap());
+        let mut occ = [0u8; 54];
+        for sticker in 0..54u8 {
+            occ[cube.position_of(sticker) as usize] = sticker;
+        }
+        let rebuilt = Cube::from_occ(occ);
+        for pos in 0..54u8 {
+            assert_eq!(rebuilt.sticker_at(pos), cube.sticker_at(pos));
+        }
+        assert_eq!(rebuilt, cube);
+        assert!(Cube::from_occ(std::array::from_fn(|i| i as u8)).is_solved());
     }
 }
