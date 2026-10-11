@@ -1,3 +1,6 @@
+pub mod corpus;
+pub mod tsv;
+
 pub fn crate_id() -> &'static str {
     "bt-data"
 }

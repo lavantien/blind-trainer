@@ -77,7 +77,9 @@ dependencies = [
 name = "bt-data"
 version = "0.0.0"
 dependencies = [
+ "bt-core",
  "bt-scheme",
+ "proptest",
  "serde",
  "serde_json",
 ]
