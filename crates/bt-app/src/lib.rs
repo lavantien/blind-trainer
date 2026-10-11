@@ -5,3 +5,4 @@ pub mod present;
 pub mod smoke;
 pub mod states;
 pub mod theme;
+pub mod views;
