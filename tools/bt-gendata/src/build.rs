@@ -51,10 +51,10 @@ fn verdict_of(row: &Row) -> (bool, Vec<String>, Vec<String>) {
 
 pub fn build(corpus: &Corpus) -> Built {
     let mut cases: Vec<crate::model::CaseEntry> = Vec::with_capacity(crate::TOTAL_CASES);
-    let mut index: HashMap<(u8, u8), usize> = HashMap::new();
+    let mut index: HashMap<(Orbit, u8, u8), usize> = HashMap::new();
     for orbit in [Orbit::Edge, Orbit::Corner] {
         for case in enumerate_cases(orbit) {
-            index.insert((case.t1, case.t2), cases.len());
+            index.insert((orbit, case.t1, case.t2), cases.len());
             let (t1_letter, t2_letter) = (letter_of(case.t1), letter_of(case.t2));
             cases.push(crate::model::CaseEntry {
                 orbit: orbit_name(orbit).to_string(),
@@ -151,7 +151,7 @@ pub fn build(corpus: &Corpus) -> Built {
                     continue;
                 }
                 let case = row_cases[0];
-                let Some(&slot) = index.get(&(case.t1, case.t2)) else {
+                let Some(&slot) = index.get(&(orbit, case.t1, case.t2)) else {
                     offenders.push(format!(
                         "{}/{}/{} walks outside the pair space: {}-{}",
                         row.solver,
