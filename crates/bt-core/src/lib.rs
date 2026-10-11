@@ -1,13 +1,7 @@
-pub fn crate_id() -> &'static str {
-    "bt-core"
-}
+mod alg;
+mod cube;
+mod moves;
 
-#[cfg(test)]
-mod tests {
-    use super::crate_id;
-
-    #[test]
-    fn crate_id_matches_package() {
-        assert_eq!(crate_id(), "bt-core");
-    }
-}
+pub use alg::{Alg, ParseError};
+pub use cube::{Cube, Face, center_id, corner_id, edge_id};
+pub use moves::{Axis, Move, Slice};
