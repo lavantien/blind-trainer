@@ -1,12 +1,21 @@
 [package]
 name = "bt-app"
 edition.workspace = true
-
-[[bin]]
-name = "blind-trainer"
-path = "src/main.rs"
+autobins = false
 
 [dependencies]
+bevy = { version = "0.20.0", default-features = false, features = [
+    "ui_bevy_render",
+    "bevy_winit",
+    "bevy_feathers",
+    "bevy_ui_widgets",
+    "bevy_scene",
+    "custom_cursor",
+    "bevy_clipboard",
+    "multi_threaded",
+] }
+bt-core = { path = "../bt-core" }
 bt-data = { path = "../bt-data" }
+bt-scheme = { path = "../bt-scheme" }
 serde.workspace = true
 serde_json.workspace = true
