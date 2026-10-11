@@ -3,6 +3,10 @@ name = "bt-app"
 edition.workspace = true
 autobins = false
 
+[[bin]]
+name = "blind-trainer"
+path = "src/main.rs"
+
 [dependencies]
 bevy = { version = "0.20.0", default-features = false, features = [
     "ui_bevy_render",
