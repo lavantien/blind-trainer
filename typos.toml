@@ -27,6 +27,7 @@ BA = "BA"
 FO = "FO"
 ND = "ND"
 PN = "PN"
+UE = "UE"
 
 [default.extend-words]
 UBL = "UBL"
@@ -65,3 +66,4 @@ BA = "BA"
 FO = "FO"
 ND = "ND"
 PN = "PN"
+UE = "UE"
