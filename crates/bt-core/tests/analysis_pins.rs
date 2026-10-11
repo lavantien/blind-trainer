@@ -1,6 +1,10 @@
 mod common;
 
-use bt_core::{Alg, Cube, Piece, head_sticker, piece_of, sticker_cycles};
+use bt_core::{
+    Alg, Cube, Piece, corner_stickers, corner_twist, edge_flip, head_sticker, piece_of,
+    sticker_cycles, summarize,
+};
+use proptest::prelude::*;
 
 fn apply(text: &str) -> Cube {
     let mut cube = Cube::solved();
@@ -197,5 +201,144 @@ fn sticker_cycles_rotation_pin_and_coverage() {
             assert!(cycles.contains(&vec![24, 25, 26, 27]));
             assert!(cycles.contains(&vec![30, 42, 38, 34]));
         }
+    }
+}
+
+#[test]
+fn solved_state_has_no_flips_or_twists() {
+    let cube = Cube::solved();
+    for edge in 0..12u8 {
+        assert!(!edge_flip(&cube, edge), "edge {}", edge);
+    }
+    for corner in 0..8u8 {
+        assert_eq!(corner_twist(&cube, corner), 0, "corner {}", corner);
+    }
+}
+
+fn flipped_set(cube: &Cube) -> Vec<u8> {
+    (0..12u8).filter(|&e| edge_flip(cube, e)).collect()
+}
+
+fn twist_map(cube: &Cube) -> [i8; 8] {
+    std::array::from_fn(|c| corner_twist(cube, c as u8))
+}
+
+#[test]
+fn fb_quarter_turns_flip_their_four_edges() {
+    assert_eq!(flipped_set(&apply("F")), vec![2, 6, 7, 10]);
+    assert_eq!(flipped_set(&apply("F'")), vec![2, 6, 7, 10]);
+    assert_eq!(flipped_set(&apply("B")), vec![0, 4, 5, 8]);
+    assert_eq!(flipped_set(&apply("B'")), vec![0, 4, 5, 8]);
+    assert!(flipped_set(&apply("F2")).is_empty());
+    assert!(flipped_set(&apply("B2")).is_empty());
+}
+
+#[test]
+fn udlr_mes_and_wide_lrud_flip_none() {
+    for text in [
+        "U", "U'", "U2", "D", "D'", "D2", "L", "L'", "L2", "R", "R'", "R2", "M", "M'", "M2", "E",
+        "E'", "E2", "S2", "r", "r'", "r2", "l", "l'", "l2", "u", "u'", "u2", "d", "d'", "d2",
+    ] {
+        assert!(flipped_set(&apply(text)).is_empty(), "{}", text);
+    }
+}
+
+#[test]
+fn s_flips_the_eight_fb_axis_edge_slots_center_relative() {
+    assert_eq!(flipped_set(&apply("S")), vec![0, 2, 4, 5, 6, 7, 8, 10]);
+    assert_eq!(flipped_set(&apply("S'")), vec![0, 2, 4, 5, 6, 7, 8, 10]);
+}
+
+#[test]
+fn wide_fb_flip_the_back_four_center_relative() {
+    assert_eq!(flipped_set(&apply("f")), vec![0, 4, 5, 8]);
+    assert_eq!(flipped_set(&apply("f'")), vec![0, 4, 5, 8]);
+    assert_eq!(flipped_set(&apply("b")), vec![2, 6, 7, 10]);
+    assert_eq!(flipped_set(&apply("b'")), vec![2, 6, 7, 10]);
+}
+
+#[test]
+fn rotations_flip_none_center_relative() {
+    for text in ["x", "x'", "x2", "y", "y'", "y2", "z", "z'", "z2"] {
+        assert!(flipped_set(&apply(text)).is_empty(), "{}", text);
+    }
+}
+
+#[test]
+fn ud_turns_twist_no_corners() {
+    for text in ["U", "U'", "U2", "D", "D'", "D2"] {
+        assert_eq!(twist_map(&apply(text)), [0i8; 8], "{}", text);
+    }
+}
+
+#[test]
+fn lrfb_quarter_turns_twist_their_four_corners_with_sum_zero() {
+    for (text, face) in [
+        ("R", 3usize),
+        ("R'", 3),
+        ("L", 1),
+        ("L'", 1),
+        ("F", 2),
+        ("F'", 2),
+        ("B", 4),
+        ("B'", 4),
+    ] {
+        let cube = apply(text);
+        let twists = twist_map(&cube);
+        let mut sum = 0i32;
+        for (slot, &tw) in twists.iter().enumerate() {
+            let on_face = corner_stickers(slot as u8)
+                .iter()
+                .any(|&s| (s / 4) as usize == face);
+            if on_face {
+                assert_ne!(tw, 0, "{} slot {}", text, slot);
+                assert!(tw == 1 || tw == -1, "{} slot {}", text, slot);
+            } else {
+                assert_eq!(tw, 0, "{} slot {}", text, slot);
+            }
+            sum += tw as i32;
+        }
+        assert_eq!(sum.rem_euclid(3), 0, "{}", text);
+    }
+}
+
+#[test]
+fn rotations_preserve_all_twists() {
+    for text in ["x", "x'", "x2", "y", "y'", "y2", "z", "z'", "z2"] {
+        assert_eq!(twist_map(&apply(text)), [0i8; 8], "{}", text);
+    }
+}
+
+#[test]
+fn sexy_move_returns_twists_to_zero_at_order_six() {
+    let alg = Alg::parse("R U R' U'").unwrap();
+    for k in 1..=6u32 {
+        let mut cube = Cube::solved();
+        for _ in 0..k {
+            cube.apply_alg(&alg);
+        }
+        if k == 6 {
+            assert_eq!(twist_map(&cube), [0i8; 8]);
+            assert!(flipped_set(&cube).is_empty());
+            assert!(cube.is_solved());
+        } else {
+            assert!(!cube.is_solved(), "k {}", k);
+        }
+    }
+}
+
+proptest! {
+    #[test]
+    fn random_algs_keep_flip_parity_even_and_twist_sum_zero(
+        ref text in common::alg_text(),
+    ) {
+        let alg = Alg::parse(text).unwrap();
+        let mut cube = Cube::solved();
+        cube.apply_alg(&alg);
+        let summary = summarize(&cube);
+        let flips = summary.edges.iter().filter(|edge| edge.flipped).count();
+        assert_eq!(flips % 2, 0, "{}", alg.format());
+        let twist_sum: i32 = summary.corners.iter().map(|c| c.twist as i32).sum();
+        assert_eq!(twist_sum.rem_euclid(3), 0, "{}", alg.format());
     }
 }

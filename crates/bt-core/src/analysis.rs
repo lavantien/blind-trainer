@@ -108,6 +108,135 @@ pub fn sticker_cycles(cube: &Cube) -> Vec<Vec<u8>> {
     cycles
 }
 
+const NORMAL: [[i8; 3]; 6] = [
+    [0, 1, 0],
+    [-1, 0, 0],
+    [0, 0, 1],
+    [1, 0, 0],
+    [0, 0, -1],
+    [0, -1, 0],
+];
+
+fn axis_priority(face: usize) -> u8 {
+    match face {
+        0 | 5 => 2,
+        2 | 4 => 1,
+        _ => 0,
+    }
+}
+
+fn center_home_face(cube: &Cube, face: usize) -> usize {
+    (cube.sticker_at((48 + face) as u8) - 48) as usize
+}
+
+fn cross(a: [i8; 3], b: [i8; 3]) -> [i8; 3] {
+    [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    ]
+}
+
+fn dot(a: [i8; 3], b: [i8; 3]) -> i32 {
+    a.iter()
+        .zip(b.iter())
+        .map(|(x, y)| *x as i32 * *y as i32)
+        .sum()
+}
+
+pub fn edge_flip(cube: &Cube, edge: u8) -> bool {
+    let [s1, s2] = edge_stickers(edge);
+    let f1 = ((s1 - 24) / 4) as usize;
+    let f2 = ((s2 - 24) / 4) as usize;
+    let slot_high =
+        axis_priority(center_home_face(cube, f1)) > axis_priority(center_home_face(cube, f2));
+    let t1 = cube.sticker_at(s1);
+    let t2 = cube.sticker_at(s2);
+    let piece_high =
+        axis_priority(((t1 - 24) / 4) as usize) > axis_priority(((t2 - 24) / 4) as usize);
+    piece_high != slot_high
+}
+
+pub fn corner_twist(cube: &Cube, corner: u8) -> i8 {
+    let slot = corner_stickers(corner);
+    let mut ud_face = None;
+    let mut diagonal = [0i8; 3];
+    for &s in &slot {
+        let face = (s / 4) as usize;
+        for i in 0..3 {
+            diagonal[i] += NORMAL[face][i];
+        }
+        if matches!(center_home_face(cube, face), 0 | 5) {
+            assert!(ud_face.is_none(), "two ud centers on corner {}", corner);
+            ud_face = Some(face);
+        }
+    }
+    let ud_face = ud_face.expect("no ud center on a corner slot");
+    let mut ud_sticker = None;
+    for &s in &slot {
+        let occupant = cube.sticker_at(s);
+        if matches!((occupant / 4) as usize, 0 | 5) {
+            ud_sticker = Some(occupant);
+        }
+    }
+    let land =
+        (cube.position_of(ud_sticker.expect("no ud sticker on a corner piece")) / 4) as usize;
+    if land == ud_face {
+        return 0;
+    }
+    if dot(diagonal, cross(NORMAL[ud_face], NORMAL[land])) > 0 {
+        1
+    } else {
+        -1
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct CornerState {
+    pub piece: u8,
+    pub twist: i8,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct EdgeState {
+    pub piece: u8,
+    pub flipped: bool,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct StateSummary {
+    pub corners: [CornerState; 8],
+    pub edges: [EdgeState; 12],
+    pub cycles: Vec<Vec<u8>>,
+}
+
+pub fn summarize(cube: &Cube) -> StateSummary {
+    let mut corners = [CornerState { piece: 0, twist: 0 }; 8];
+    for slot in 0..8u8 {
+        let occupant = cube.sticker_at(CORNER_STICKERS[slot as usize][0]);
+        corners[slot as usize] = CornerState {
+            piece: PIECE_OF_STICKER[occupant as usize],
+            twist: corner_twist(cube, slot),
+        };
+    }
+    let mut edges = [EdgeState {
+        piece: 0,
+        flipped: false,
+    }; 12];
+    for slot in 0..12u8 {
+        let occupant = cube.sticker_at(EDGE_STICKERS[slot as usize][0]);
+        edges[slot as usize] = EdgeState {
+            piece: PIECE_OF_STICKER[occupant as usize],
+            flipped: edge_flip(cube, slot),
+        };
+    }
+    StateSummary {
+        corners,
+        edges,
+        cycles: sticker_cycles(cube),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
