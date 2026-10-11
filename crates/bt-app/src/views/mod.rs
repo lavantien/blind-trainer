@@ -2,10 +2,11 @@ pub mod drill;
 pub mod images;
 pub mod memo;
 pub mod menu;
+pub mod solve;
 
 use crate::logic::RuntimePaths;
 use crate::persist::Stores;
-use crate::states::{AppState, DrillPhase, MemoPhase};
+use crate::states::{AppState, DrillPhase, MemoPhase, SolvePhase};
 use bevy::prelude::*;
 use bt_scheme::CaseId;
 use serde::Deserialize;
@@ -98,6 +99,13 @@ pub fn now_unix_secs() -> i64 {
         .unwrap_or(0)
 }
 
+pub fn now_unix_ms() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_millis() as i64)
+        .unwrap_or(0)
+}
+
 pub fn time_seed() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -118,7 +126,10 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(PendingDrill::default())
             .insert_resource(load_syllable_book(&paths))
             .insert_resource(memo::MemoSeed(time_seed()))
+            .insert_resource(solve::SolveSeed(time_seed()))
+            .insert_resource(solve::SolveScrambleOverride::default())
             .insert_resource(memo::MemoSession::default())
+            .insert_resource(solve::SolveSession::default())
             .insert_resource(drill::DrillSeed(time_seed()))
             .insert_resource(drill::DrillDraft::default())
             .insert_resource(drill::DrillSession::default())
@@ -135,6 +146,12 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(memo::stream, in_state(MemoPhase::Stream)),
                     IntoScheduleConfigs::run_if(memo::recall_keys, in_state(MemoPhase::Recall)),
                     IntoScheduleConfigs::run_if(memo::review_keys, in_state(MemoPhase::Review)),
+                    IntoScheduleConfigs::run_if(solve::ready_keys, in_state(SolvePhase::Ready)),
+                    IntoScheduleConfigs::run_if(solve::memo_tick, in_state(SolvePhase::Memo)),
+                    IntoScheduleConfigs::run_if(solve::memo_keys, in_state(SolvePhase::Memo)),
+                    IntoScheduleConfigs::run_if(solve::exec_tick, in_state(SolvePhase::Exec)),
+                    IntoScheduleConfigs::run_if(solve::exec_keys, in_state(SolvePhase::Exec)),
+                    IntoScheduleConfigs::run_if(solve::review_keys, in_state(SolvePhase::Review)),
                 )
                     .in_set(ViewsLogic),
             )
@@ -150,6 +167,11 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(MemoPhase::Intro), memo::enter_intro)
             .add_systems(OnEnter(MemoPhase::Stream), memo::enter_stream)
             .add_systems(OnEnter(MemoPhase::Recall), memo::enter_recall)
-            .add_systems(OnEnter(MemoPhase::Review), memo::enter_review);
+            .add_systems(OnEnter(MemoPhase::Review), memo::enter_review)
+            .add_systems(OnEnter(AppState::Solve), solve::enter)
+            .add_systems(OnEnter(SolvePhase::Ready), solve::enter_ready)
+            .add_systems(OnEnter(SolvePhase::Memo), solve::enter_memo)
+            .add_systems(OnEnter(SolvePhase::Exec), solve::enter_exec)
+            .add_systems(OnEnter(SolvePhase::Review), solve::enter_review);
     }
 }
