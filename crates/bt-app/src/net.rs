@@ -421,6 +421,14 @@ mod tests {
     }
 
     #[test]
+    fn geometry_fits_window_with_view_reserve() {
+        let reserve = crate::theme::ROOT_REM * crate::theme::NET_VIEW_RESERVE_REM;
+        let geo = NetGeometry::for_window(1280.0, 800.0 - reserve);
+        assert!(geo.quad * 9.0 + geo.gap * 8.0 + reserve <= 800.0);
+        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= 1280.0);
+    }
+
+    #[test]
     fn geometry_clamps_tiny_windows() {
         let geo = NetGeometry::for_window(100.0, 60.0);
         assert_eq!(geo.quad, 16.0);

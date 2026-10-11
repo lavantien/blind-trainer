@@ -19,24 +19,35 @@ const DEFAULT_MEMO_CADENCE_MS: u32 = 800;
 const DEFAULT_MEMO_MODE: &str = "syllables";
 const DEFAULT_DRILL_REPS: u32 = 5;
 const DEFAULT_REF_GROUND: &str = "ref_ground";
+const DEFAULT_ASSETS_ROOT: &str = "assets";
 
 #[derive(Clone, Debug, Resource)]
 pub struct RuntimePaths {
     pub config_path: PathBuf,
     pub vendor_root: PathBuf,
     pub user_root: PathBuf,
+    pub assets_root: PathBuf,
 }
 
 impl RuntimePaths {
     pub fn from_env() -> RuntimePaths {
         let config_path = paths::config_path();
-        let vendor_root = paths::vendor_root()
-            .unwrap_or_else(|_| paths::workspace_root().join(DEFAULT_REF_GROUND));
+        let config = load_config_value(&config_path).unwrap_or(serde_json::Value::Null);
+        let vendor_root =
+            paths::vendor_root_from(std::env::var("BT_REF_GROUND").ok().as_deref(), &config)
+                .unwrap_or_else(|_| paths::workspace_root().join(DEFAULT_REF_GROUND));
+        let assets_root = config
+            .pointer("/paths/fonts")
+            .and_then(|value| value.as_str())
+            .and_then(|fonts| Path::new(fonts).parent())
+            .map(|assets| paths::workspace_root().join(assets))
+            .unwrap_or_else(|| paths::workspace_root().join(DEFAULT_ASSETS_ROOT));
         let user_root = paths::user_root();
         RuntimePaths {
             config_path,
             vendor_root,
             user_root,
+            assets_root,
         }
     }
 }
@@ -341,8 +352,10 @@ impl AppLogicPlugin {
 impl Plugin for AppLogicPlugin {
     fn build(&self, app: &mut App) {
         let paths = self.paths.clone().unwrap_or_else(RuntimePaths::from_env);
-        app.add_plugins(StatesPlugin)
-            .insert_resource(paths)
+        if !app.is_plugin_added::<StatesPlugin>() {
+            app.add_plugins(StatesPlugin);
+        }
+        app.insert_resource(paths)
             .init_state::<AppState>()
             .add_sub_state::<DrillPhase>()
             .add_sub_state::<SolvePhase>()
@@ -387,6 +400,7 @@ mod tests {
             config_path: base.join("config").join("config.json"),
             vendor_root: base.join("vendor"),
             user_root: base.join("user"),
+            assets_root: base.join("assets"),
         }
     }
 

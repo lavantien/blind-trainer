@@ -16,7 +16,9 @@ pub struct SmokePlugin {
 
 #[derive(Debug)]
 enum SmokePhase {
-    WaitForBoot,
+    WaitForBoot {
+        waited: f32,
+    },
     Dwell {
         state: AppState,
         waited: f32,
@@ -49,7 +51,7 @@ impl Plugin for SmokePlugin {
             .unwrap_or_else(|err| panic!("smoke output dir {}: {err}", self.dir.display()));
         app.insert_resource(SmokeTour {
             dir: self.dir.clone(),
-            phase: SmokePhase::WaitForBoot,
+            phase: SmokePhase::WaitForBoot { waited: 0.0 },
             entered: Vec::new(),
             shots: Vec::new(),
         })
@@ -137,17 +139,23 @@ fn run_smoke(
 ) {
     let dt = time.delta_secs();
     match std::mem::replace(&mut tour.phase, SmokePhase::Done) {
-        SmokePhase::WaitForBoot => {
+        SmokePhase::WaitForBoot { waited } => {
+            if waited >= STUCK_LIMIT_SECS {
+                exit_with(&mut commands, false);
+                tour.phase = SmokePhase::Done;
+                return;
+            }
             if *state.get() == AppState::Menu && fonts.0 {
                 tour.entered.push(AppState::Menu);
-                let path = take_shot(&mut commands, &tour, AppState::Menu);
-                tour.shots.push((AppState::Menu, path.clone()));
-                tour.phase = SmokePhase::WaitForShot {
+                tour.phase = SmokePhase::Dwell {
                     state: AppState::Menu,
-                    path,
+                    waited: 0.0,
+                    stuck: 0.0,
                 };
             } else {
-                tour.phase = SmokePhase::WaitForBoot;
+                tour.phase = SmokePhase::WaitForBoot {
+                    waited: waited + dt,
+                };
             }
         }
         SmokePhase::Dwell {
@@ -221,7 +229,7 @@ mod tests {
     fn shot_paths_are_unique_per_state() {
         let tour = SmokeTour {
             dir: PathBuf::from("shots"),
-            phase: SmokePhase::WaitForBoot,
+            phase: SmokePhase::WaitForBoot { waited: 0.0 },
             entered: Vec::new(),
             shots: Vec::new(),
         };

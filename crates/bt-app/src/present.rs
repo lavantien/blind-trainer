@@ -125,6 +125,7 @@ impl Plugin for PresentationPlugin {
                     commands
                         .spawn_scene(bsn! {
                             @FeathersTextInputContainer
+                            Node { width: px(400.0), flex_grow: 0.0 }
                             Children [
                                 @FeathersTextInput
                             ]
@@ -148,7 +149,11 @@ fn spawn_camera(mut commands: Commands) {
 }
 
 pub fn net_geometry(config: &AppConfig) -> NetGeometry {
-    NetGeometry::for_window(config.window.width as f32, config.window.height as f32)
+    let reserve = theme::ROOT_REM * theme::NET_VIEW_RESERVE_REM;
+    NetGeometry::for_window(
+        config.window.width as f32,
+        (config.window.height as f32 - reserve).max(theme::ROOT_REM),
+    )
 }
 
 fn spawn_view(

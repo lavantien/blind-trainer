@@ -8,6 +8,7 @@ pub const FONT_SMALL: f32 = 0.85;
 pub const SPACING_REM: f32 = 0.5;
 pub const PANEL_PADDING_REM: f32 = 1.0;
 pub const PULSE_HZ: f32 = 2.0;
+pub const NET_VIEW_RESERVE_REM: f32 = 7.0;
 pub const PULSE_LERP_PER_S: f32 = 8.0;
 
 pub fn background() -> Color {
