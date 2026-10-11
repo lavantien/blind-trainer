@@ -1,4 +1,6 @@
 pub mod corpus;
+pub mod paths;
+pub mod srs;
 pub mod tsv;
 
 pub fn crate_id() -> &'static str {

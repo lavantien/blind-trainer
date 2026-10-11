@@ -140,6 +140,30 @@ impl fmt::Display for LoadError {
 
 impl std::error::Error for LoadError {}
 
+#[derive(Debug)]
+pub enum OverlayError {
+    UnknownSheet {
+        key: String,
+    },
+    BadAlg {
+        position: String,
+        source: bt_core::ParseError,
+    },
+}
+
+impl fmt::Display for OverlayError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OverlayError::UnknownSheet { key } => write!(f, "unknown sheet in overlay key: {key}"),
+            OverlayError::BadAlg { position, source } => {
+                write!(f, "bad alg for position {position}: {source}")
+            }
+        }
+    }
+}
+
+impl std::error::Error for OverlayError {}
+
 pub struct Corpus {
     rows: Vec<Row>,
     by_key: HashMap<(Solver, SheetClass, usize), usize>,
@@ -248,5 +272,35 @@ impl Corpus {
             .map(|row| row.position.as_str())
             .collect::<std::collections::HashSet<&str>>()
             .len()
+    }
+
+    pub fn with_overlay(&self, overlay: &crate::paths::UserAlgs) -> Result<Corpus, OverlayError> {
+        let mut rows = self.rows.clone();
+        let mut user_rowids: HashMap<SheetClass, usize> = HashMap::new();
+        for (key, entry) in &overlay.entries {
+            let (sheet_name, position) = key
+                .split_once('/')
+                .ok_or_else(|| OverlayError::UnknownSheet { key: key.clone() })?;
+            let sheet = SheetClass::parse(sheet_name)
+                .ok_or_else(|| OverlayError::UnknownSheet { key: key.clone() })?;
+            let alg = Alg::parse(&entry.alg).map_err(|source| OverlayError::BadAlg {
+                position: position.to_string(),
+                source,
+            })?;
+            let next = user_rowids.entry(sheet).or_insert(0);
+            *next += 1;
+            rows.push(Row {
+                solver: Solver::User,
+                sheet,
+                rowid: *next,
+                position: position.to_string(),
+                alg_text: entry.alg.clone(),
+                alg,
+                commutator: String::new(),
+                recon_link: String::new(),
+                youtube_link: String::new(),
+            });
+        }
+        Ok(Corpus::from_rows(rows))
     }
 }
