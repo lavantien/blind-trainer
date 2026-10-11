@@ -30,13 +30,16 @@ impl Plugin for PresentationPlugin {
             .add_systems(Update, net::update_net_colors)
             .add_systems(
                 Update,
-                ((
-                    views::drill::read_input,
-                    views::drill::sync_input,
-                    views::drill::bind_text,
-                    views::drill::focus_input_on_memo,
+                (
+                    (
+                        views::drill::read_input,
+                        views::drill::sync_input,
+                        views::drill::bind_text,
+                        views::drill::focus_input_on_memo,
+                    )
+                        .chain(),
+                    views::memo::bind_text,
                 )
-                    .chain(),)
                     .after(views::ViewsLogic),
             )
             .add_systems(
@@ -49,6 +52,12 @@ impl Plugin for PresentationPlugin {
                 OnEnter(AppState::Drill),
                 |mut commands: Commands, fonts: Res<FontBook>, config: Res<AppConfig>| {
                     views::drill::spawn(&mut commands, &fonts, &config);
+                },
+            )
+            .add_systems(
+                OnEnter(AppState::Memo),
+                |mut commands: Commands, fonts: Res<FontBook>| {
+                    views::memo::spawn(&mut commands, &fonts);
                 },
             )
             .add_systems(OnEnter(AppState::Fatal), enter_fatal);

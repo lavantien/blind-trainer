@@ -1,11 +1,16 @@
 pub mod drill;
+pub mod images;
+pub mod memo;
 pub mod menu;
 
 use crate::logic::RuntimePaths;
 use crate::persist::Stores;
-use crate::states::{AppState, DrillPhase};
+use crate::states::{AppState, DrillPhase, MemoPhase};
 use bevy::prelude::*;
 use bt_scheme::CaseId;
+use serde::Deserialize;
+use std::collections::BTreeMap;
+use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(SystemSet, Clone, Copy, PartialEq, Eq, Hash, Debug)]
@@ -16,6 +21,71 @@ pub struct PendingDrill(pub Option<CaseId>);
 
 #[derive(Clone, Copy, Debug, Resource)]
 pub struct NowDay(pub i64);
+
+#[derive(Clone, Debug, Default, Resource)]
+pub struct SyllableBook {
+    pub entries: BTreeMap<(String, String), String>,
+    pub loaded: bool,
+}
+
+impl SyllableBook {
+    pub fn syllable_for(&self, orbit: &str, letters: [char; 2]) -> Option<&str> {
+        let pair: String = letters.iter().collect();
+        self.entries
+            .get(&(orbit.to_string(), pair))
+            .map(String::as_str)
+    }
+}
+
+#[derive(Deserialize)]
+struct SyllableCase {
+    orbit: String,
+    letters: String,
+    syllable: String,
+}
+
+#[derive(Deserialize)]
+struct SyllablesFile {
+    cases: Vec<SyllableCase>,
+}
+
+pub fn syllables_path(paths: &RuntimePaths) -> PathBuf {
+    let configured = crate::logic::load_config_value(&paths.config_path)
+        .ok()
+        .and_then(|value| {
+            value
+                .pointer("/paths/data_ga")
+                .and_then(|section| section.as_str())
+                .map(PathBuf::from)
+        })
+        .unwrap_or_else(|| PathBuf::from("data").join("ga"));
+    if configured.is_absolute() {
+        configured.join("syllables.json")
+    } else {
+        bt_data::paths::workspace_root()
+            .join(configured)
+            .join("syllables.json")
+    }
+}
+
+pub fn load_syllable_book(paths: &RuntimePaths) -> SyllableBook {
+    let Ok(bytes) = std::fs::read(syllables_path(paths)) else {
+        return SyllableBook::default();
+    };
+    let Ok(file) = serde_json::from_slice::<SyllablesFile>(&bytes) else {
+        return SyllableBook::default();
+    };
+    let mut entries = BTreeMap::new();
+    for case in file.cases {
+        if !case.syllable.is_empty() {
+            entries.insert((case.orbit, case.letters), case.syllable);
+        }
+    }
+    SyllableBook {
+        entries,
+        loaded: true,
+    }
+}
 
 pub fn now_day() -> i64 {
     now_unix_secs() / 86_400
@@ -46,6 +116,9 @@ impl Plugin for ViewsLogicPlugin {
             .expect("RuntimePaths installed by AppLogicPlugin");
         app.insert_resource(NowDay(now_day()))
             .insert_resource(PendingDrill::default())
+            .insert_resource(load_syllable_book(&paths))
+            .insert_resource(memo::MemoSeed(time_seed()))
+            .insert_resource(memo::MemoSession::default())
             .insert_resource(drill::DrillSeed(time_seed()))
             .insert_resource(drill::DrillDraft::default())
             .insert_resource(drill::DrillSession::default())
@@ -58,6 +131,10 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(drill::input_keys, in_state(DrillPhase::Memo)),
                     IntoScheduleConfigs::run_if(drill::verdict_keys, in_state(DrillPhase::Exec)),
                     IntoScheduleConfigs::run_if(drill::review_keys, in_state(DrillPhase::Review)),
+                    IntoScheduleConfigs::run_if(memo::intro_keys, in_state(MemoPhase::Intro)),
+                    IntoScheduleConfigs::run_if(memo::stream, in_state(MemoPhase::Stream)),
+                    IntoScheduleConfigs::run_if(memo::recall_keys, in_state(MemoPhase::Recall)),
+                    IntoScheduleConfigs::run_if(memo::review_keys, in_state(MemoPhase::Review)),
                 )
                     .in_set(ViewsLogic),
             )
@@ -68,6 +145,11 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(DrillPhase::Ready), drill::enter_ready)
             .add_systems(OnEnter(DrillPhase::Memo), drill::enter_memo)
             .add_systems(OnEnter(DrillPhase::Exec), drill::enter_exec)
-            .add_systems(OnEnter(DrillPhase::Review), drill::enter_review);
+            .add_systems(OnEnter(DrillPhase::Review), drill::enter_review)
+            .add_systems(OnEnter(AppState::Memo), memo::enter)
+            .add_systems(OnEnter(MemoPhase::Intro), memo::enter_intro)
+            .add_systems(OnEnter(MemoPhase::Stream), memo::enter_stream)
+            .add_systems(OnEnter(MemoPhase::Recall), memo::enter_recall)
+            .add_systems(OnEnter(MemoPhase::Review), memo::enter_review);
     }
 }
