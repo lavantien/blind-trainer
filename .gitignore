@@ -1,6 +1,7 @@
 /target
 /ref_ground/
-/ref_doc/
+/ref_doc/*
+!/ref_doc/README.md
 /data/vendor/
 /data/ga/
 /artifacts/*
