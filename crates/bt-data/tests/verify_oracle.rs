@@ -43,16 +43,14 @@ fn drop_move(text: &str) -> Option<String> {
 
 fn invert_move(text: &str) -> Option<String> {
     let tokens: Vec<&str> = text.split_whitespace().collect();
-    let index = tokens
-        .iter()
-        .position(|token| !token.ends_with('2') && token.len() >= 1)?;
-    let mut mutated = tokens.clone();
-    let token = mutated[index].clone();
+    let index = tokens.iter().position(|token| !token.ends_with('2'))?;
+    let token = tokens[index];
     let inverted = if let Some(stripped) = token.strip_suffix('\'') {
         stripped.to_string()
     } else {
         format!("{token}'")
     };
+    let mut mutated = tokens.clone();
     mutated[index] = &inverted;
     Some(mutated.join(" "))
 }
@@ -85,8 +83,7 @@ fn swap_face_move(text: &str) -> Option<String> {
     let index = tokens
         .iter()
         .position(|token| token.chars().any(|c| c.is_ascii_alphabetic()))?;
-    let mut mutated = tokens.clone();
-    let token = mutated[index].clone();
+    let token = tokens[index];
     let swapped: String = token
         .chars()
         .map(|c| {
@@ -97,6 +94,7 @@ fn swap_face_move(text: &str) -> Option<String> {
             }
         })
         .collect();
+    let mut mutated = tokens.clone();
     mutated[index] = &swapped;
     Some(mutated.join(" "))
 }
