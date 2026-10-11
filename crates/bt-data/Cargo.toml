@@ -1,0 +1,8 @@
+[package]
+name = "bt-data"
+edition.workspace = true
+
+[dependencies]
+bt-scheme = { path = "../bt-scheme" }
+serde.workspace = true
+serde_json.workspace = true

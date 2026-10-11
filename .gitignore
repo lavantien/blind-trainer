@@ -1,0 +1,7 @@
+/target
+/ref_ground/
+/ref_doc/
+/data/vendor/
+/data/ga/
+/artifacts/*
+!/artifacts/.gitkeep

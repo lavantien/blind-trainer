@@ -1,0 +1,3 @@
+[package]
+name = "bt-visual-diff"
+edition.workspace = true

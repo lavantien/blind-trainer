@@ -1,0 +1,3 @@
+[package]
+name = "bt-core"
+edition.workspace = true

@@ -1,0 +1,6 @@
+[package]
+name = "bt-memofreq"
+edition.workspace = true
+
+[dependencies]
+bt-scheme = { path = "../../crates/bt-scheme" }

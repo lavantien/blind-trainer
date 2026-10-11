@@ -1,0 +1,6 @@
+[package]
+name = "bt-ga-run"
+edition.workspace = true
+
+[dependencies]
+bt-ga = { path = "../../crates/bt-ga" }

@@ -1,0 +1,7 @@
+[package]
+name = "bt-verify"
+edition.workspace = true
+
+[dependencies]
+bt-data = { path = "../../crates/bt-data" }
+bt-scheme = { path = "../../crates/bt-scheme" }

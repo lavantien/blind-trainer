@@ -1,0 +1,12 @@
+[package]
+name = "bt-app"
+edition.workspace = true
+
+[[bin]]
+name = "blind-trainer"
+path = "src/main.rs"
+
+[dependencies]
+bt-data = { path = "../bt-data" }
+serde.workspace = true
+serde_json.workspace = true

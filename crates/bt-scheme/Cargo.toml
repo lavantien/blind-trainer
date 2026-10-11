@@ -1,0 +1,6 @@
+[package]
+name = "bt-scheme"
+edition.workspace = true
+
+[dependencies]
+bt-core = { path = "../bt-core" }

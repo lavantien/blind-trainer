@@ -1,0 +1,6 @@
+[package]
+name = "bt-gendata"
+edition.workspace = true
+
+[dependencies]
+bt-data = { path = "../../crates/bt-data" }
