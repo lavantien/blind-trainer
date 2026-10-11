@@ -169,7 +169,7 @@ fn sticker_cycles_rotation_pin_and_coverage() {
     for text in ["x", "y", "z", "R U R' U'", "M2", "S'"] {
         let cube = apply(text);
         let cycles = sticker_cycles(&cube);
-        let mut seen = vec![false; 48];
+        let mut seen = [false; 48];
         for cycle in &cycles {
             assert!(cycle.len() > 1, "{}: fixed point {:?}", text, cycle);
             let min = *cycle.iter().min().unwrap();
