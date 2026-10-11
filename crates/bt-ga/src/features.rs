@@ -1,4 +1,4 @@
-use crate::inventory::{Coda, Nucleus, Tone};
+use crate::inventory::{Coda, Nucleus, Onset, Tone};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Place {
@@ -373,6 +373,33 @@ const RIMES: &[(&str, Nucleus, Coda)] = &[
     ("ươc", Nucleus::Wa, Coda::K),
     ("uôc", Nucleus::Ua, Coda::K),
 ];
+
+pub fn onset_features(onset: Onset) -> Option<OnsetFeatures> {
+    let (place, manner) = match onset {
+        Onset::B => (Place::Labial, Manner::Implosive),
+        Onset::Dd => (Place::Dental, Manner::Implosive),
+        Onset::T => (Place::Dental, Manner::Stop),
+        Onset::Th => (Place::Dental, Manner::Aspirated),
+        Onset::Ch => (Place::Palatal, Manner::Affricate),
+        Onset::Tr => (Place::Retroflex, Manner::Affricate),
+        Onset::K => (Place::Velar, Manner::Stop),
+        Onset::M => (Place::Labial, Manner::Nasal),
+        Onset::N => (Place::Dental, Manner::Nasal),
+        Onset::Nh => (Place::Palatal, Manner::Nasal),
+        Onset::Ng => (Place::Velar, Manner::Nasal),
+        Onset::Ph => (Place::Labial, Manner::Fricative),
+        Onset::X => (Place::Dental, Manner::Fricative),
+        Onset::S => (Place::Retroflex, Manner::Fricative),
+        Onset::Kh => (Place::Velar, Manner::Fricative),
+        Onset::H => (Place::Glottal, Manner::Fricative),
+        Onset::V => (Place::Labial, Manner::Fricative),
+        Onset::Z => (Place::Dental, Manner::Fricative),
+        Onset::G => (Place::Velar, Manner::Fricative),
+        Onset::L => (Place::Dental, Manner::Approximant),
+        Onset::Zero => return None,
+    };
+    Some(OnsetFeatures { place, manner })
+}
 
 pub fn parse(text: &str) -> Option<Features> {
     let mut tone = Tone::Ngang;

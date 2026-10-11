@@ -1,5 +1,6 @@
 pub mod dist;
 pub mod features;
+pub mod ga;
 pub mod hash;
 pub mod inventory;
 
