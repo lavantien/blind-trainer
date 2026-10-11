@@ -10,8 +10,8 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.4"
 serde_json = "1.0"
-bt-core = { path = "../crates/bt-core" }
-bt-scheme = { path = "../crates/bt-scheme" }
+bt-core = { path = "../../crates/bt-core" }
+bt-scheme = { path = "../../crates/bt-scheme" }
 
 [lib]
 name = "bt_fuzz"
