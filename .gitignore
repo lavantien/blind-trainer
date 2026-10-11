@@ -1,4 +1,5 @@
 /target
+/target-*/
 /ref_ground/
 /ref_doc/*
 !/ref_doc/README.md
