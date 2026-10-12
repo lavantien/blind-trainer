@@ -61,7 +61,7 @@ Bevy 0.20 with bevy_feathers. The bevy facade needs the custom_cursor feature en
 
 ## host tooling
 
-cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, memo under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). cargo-mutants 27.1.0, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths. Both tools compile nothing from bt-app.
+cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, memo under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). Two PATH requirements when a standalone stable Rust install exists on the machine: the rustup proxy dir (~/.cargo/bin) must precede the standalone bin dir or every toolchain pin (fuzz/rust-toolchain.toml, RUSTUP_TOOLCHAIN) is bypassed and the build rejects -Z flags, and the MSVC ASan runtime dir (VC\Tools\MSVC\<ver>\bin\Hostx64\x64 holding clang_rt.asan_dynamic-x86_64.dll) must be on PATH or the built fuzz binaries die with STATUS_DLL_NOT_FOUND. cargo-mutants 27.1.0, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths, run with scratch-local targets (no CARGO_TARGET_DIR) which need roughly 10 GB of free disk. Both tools compile nothing from bt-app.
 
 ## make targets
 
