@@ -140,15 +140,18 @@ fn parse_unit(text: &str, depth: u32) -> Option<Unit> {
     if text.is_empty() {
         return None;
     }
-    let (setup, core_text) = match colon_depth_zero(text) {
-        Some(index) => {
-            let setup = Alg::parse(text[..index].trim()).ok()?;
-            if setup.is_empty() {
-                return None;
-            }
-            (Some(setup), &text[index + 1..])
+    let parts = split_depth_zero(text, ':')?;
+    if parts.len() > 2 {
+        return None;
+    }
+    let (setup, core_text) = if parts.len() == 2 {
+        let setup = Alg::parse(parts[0].trim()).ok()?;
+        if setup.is_empty() {
+            return None;
         }
-        None => (None, text),
+        (Some(setup), parts[1])
+    } else {
+        (None, text)
     };
     let core = parse_core(core_text.trim(), depth)?;
     Some(Unit { setup, core })
@@ -167,9 +170,6 @@ fn parse_core(text: &str, depth: u32) -> Option<Core> {
         2 => {
             let a = parse_slot(parts[0].trim(), depth)?;
             let b = parse_slot(parts[1].trim(), depth)?;
-            if a.is_empty() || b.is_empty() {
-                return None;
-            }
             Some(Core::Comm(a, b))
         }
         1 => {
@@ -229,19 +229,6 @@ fn split_depth_zero(text: &str, sep: char) -> Option<Vec<&str>> {
     }
     parts.push(&text[start..]);
     Some(parts)
-}
-
-fn colon_depth_zero(text: &str) -> Option<usize> {
-    let mut depth = 0usize;
-    for (index, ch) in text.char_indices() {
-        match ch {
-            '[' => depth += 1,
-            ']' if depth > 0 => depth -= 1,
-            ':' if depth == 0 => return Some(index),
-            _ => {}
-        }
-    }
-    None
 }
 
 #[cfg(test)]
@@ -417,6 +404,7 @@ mod tests {
             "[[R,U]",
             "U::[R,U]",
             "[Q9,R]",
+            "[R,U2",
             "[R,U]+",
             "+[R,U]",
             "[R,U]+junk",
@@ -478,5 +466,7 @@ mod tests {
     fn deep_nesting_is_rejected() {
         assert!(decompose("U:[[[R,U],S],D]").is_none());
         assert!(decompose("[[[R,U],S],D]").is_none());
+        assert!(decompose("U:[[[R,U]]]").is_none());
+        assert!(decompose("[[[[R,U]]]]").is_none());
     }
 }
