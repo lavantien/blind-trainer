@@ -12,7 +12,7 @@ pub struct Expanded {
 }
 
 impl Expanded {
-    pub fn expansion(&self) -> Alg {
+    fn expansion(&self) -> Alg {
         let mut moves = Vec::new();
         if let Some(setup) = &self.setup {
             moves.extend_from_slice(setup.moves());

@@ -154,7 +154,10 @@ pub fn notation_once(data: &[u8]) {
     };
     let formatted = alg.format();
     let reparsed = Alg::parse(&formatted).expect("formatted alg must reparse");
-    assert_eq!(reparsed, alg, "round trip changed alg: {text:?} -> {formatted}");
+    assert_eq!(
+        reparsed, alg,
+        "round trip changed alg: {text:?} -> {formatted}"
+    );
     assert_eq!(reparsed.qtm(), alg.qtm());
     assert_eq!(reparsed.htm(), alg.htm());
     let mut cube = Cube::solved();
@@ -203,6 +206,26 @@ pub fn memo_once(data: &[u8]) {
     assert_eq!(work, identity_occ(), "memo round trip failed");
 }
 
+fn unit_expansion(unit: &bt_data::commutator::Expanded) -> Alg {
+    let mut moves = Vec::new();
+    if let Some(setup) = &unit.setup {
+        moves.extend_from_slice(setup.moves());
+    }
+    let (first, second) = if unit.b_first {
+        (&unit.b, &unit.a)
+    } else {
+        (&unit.a, &unit.b)
+    };
+    moves.extend_from_slice(first.moves());
+    moves.extend_from_slice(second.moves());
+    moves.extend_from_slice(first.inverse().moves());
+    moves.extend_from_slice(second.inverse().moves());
+    if let Some(setup) = &unit.setup {
+        moves.extend_from_slice(setup.inverse().moves());
+    }
+    Alg::new(moves)
+}
+
 pub fn commutator_once(data: &[u8]) {
     let text = String::from_utf8_lossy(data);
     let units = decompose(&text);
@@ -212,7 +235,7 @@ pub fn commutator_once(data: &[u8]) {
     };
     let mut derived = Vec::new();
     for unit in &units {
-        let expansion = unit.expansion();
+        let expansion = unit_expansion(unit);
         let mut cube = Cube::solved();
         cube.apply_alg(&expansion);
         let mut restored = cube;
@@ -225,7 +248,7 @@ pub fn commutator_once(data: &[u8]) {
         .expect("derived expansion must verify against itself");
     let mut candidate = Cube::solved();
     for unit in &verified {
-        candidate.apply_alg(&unit.expansion());
+        candidate.apply_alg(&unit_expansion(unit));
     }
     let mut reference = Cube::solved();
     reference.apply_alg(&derived_alg);
@@ -234,7 +257,7 @@ pub fn commutator_once(data: &[u8]) {
         if let Some(verified) = decompose_verified(&text, &alg) {
             let mut candidate = Cube::solved();
             for unit in &verified {
-                candidate.apply_alg(&unit.expansion());
+                candidate.apply_alg(&unit_expansion(unit));
             }
             let mut reference = Cube::solved();
             reference.apply_alg(&alg);
