@@ -4,6 +4,7 @@
   "memofreq": {"samples": 200000, "seed": 20261012},
   "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}},
   "verify": {"max_qtm": 24},
+  "visual": {"tolerance": 48},
   "fuzz": {"runs": 5000, "secs": 30},
   "paths": {"ref_ground": "ref_ground", "ref_doc": "ref_doc", "data_vendor": "data/vendor", "data_ga": "data/ga", "artifacts": "artifacts", "baselines": "tests/visual/baselines", "fonts": "assets/fonts"}
 }
