@@ -1,6 +1,6 @@
-REF_GROUND ?= ref_ground
-CONFIG ?= config/config.json
-ARTIFACTS ?= artifacts
+REF_GROUND := ref_ground
+CONFIG := config/config.json
+ARTIFACTS := artifacts
 BIN := target/release/blind-trainer.exe
 FUZZ_TARGETS := notation classify memo
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga
