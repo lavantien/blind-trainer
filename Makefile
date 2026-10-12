@@ -9,7 +9,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual run chain
+.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual screenshots run chain
 
 setup:
 	rustup component add rustfmt clippy
@@ -60,6 +60,12 @@ e2e:
 
 visual:
 	cargo run --release -p bt-visual-diff -- $(ARTIFACTS)/e2e tests/visual/baselines
+
+screenshots: build
+	rm -rf $(ARTIFACTS)/usage-user
+	mkdir -p docs/screenshots
+	APPDATA=$(ARTIFACTS)/usage-user $(BIN) --usage docs/screenshots
+	BT_CONFIG=$(ARTIFACTS)/usage-absent-config.json $(BIN) --fatal-shot docs/screenshots
 
 run:
 	cargo run --release -p bt-app

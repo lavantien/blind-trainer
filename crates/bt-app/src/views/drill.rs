@@ -220,10 +220,13 @@ pub fn enter(
 pub fn enter_ready(
     mut messages: ResMut<Messages<KeyboardInput>>,
     mut draft: ResMut<DrillDraft>,
+    boxes: Query<&Children, With<DrillInputBox>>,
+    mut inputs: Query<&mut bevy::text::EditableText, Without<DrillInputBox>>,
     mut session: ResMut<DrillSession>,
     mut net: ResMut<NetState>,
 ) {
     messages.clear();
+    set_box_text(&boxes, &mut inputs, "");
     draft.0.clear();
     session.verdict = None;
     session.target_swap_clock = 0.0;
@@ -509,21 +512,39 @@ pub fn read_input(
     }
 }
 
-pub fn sync_input(
-    draft: Res<DrillDraft>,
-    boxes: Query<&Children, With<DrillInputBox>>,
-    mut inputs: Query<&mut bevy::text::EditableText, Without<DrillInputBox>>,
+fn set_box_text(
+    boxes: &Query<&Children, With<DrillInputBox>>,
+    inputs: &mut Query<&mut bevy::text::EditableText, Without<DrillInputBox>>,
+    text: &str,
 ) {
-    if !draft.is_changed() {
-        return;
-    }
-    for children in &boxes {
+    for children in boxes {
         for child in children.iter() {
             if let Ok(mut editable) = inputs.get_mut(child)
-                && editable.value().to_string() != draft.0
+                && editable.value().to_string() != text
             {
-                editable.editor_mut().set_text(&draft.0);
+                editable.editor_mut().set_text(text);
             }
+        }
+    }
+}
+
+pub fn set_draft_and_box(world: &mut World, text: &str) {
+    world.resource_mut::<DrillDraft>().0 = text.to_string();
+    let mut boxes: Vec<Entity> = Vec::new();
+    {
+        let mut state = world.query_filtered::<&Children, With<DrillInputBox>>();
+        for children in state.iter(&world) {
+            for child in children.iter() {
+                boxes.push(child);
+            }
+        }
+    }
+    let mut state = world.query_filtered::<&mut bevy::text::EditableText, ()>();
+    for child in boxes {
+        if let Ok(mut editable) = state.get_mut(world, child)
+            && editable.value().to_string() != text
+        {
+            editable.editor_mut().set_text(text);
         }
     }
 }

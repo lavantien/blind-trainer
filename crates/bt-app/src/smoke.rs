@@ -70,23 +70,25 @@ impl Plugin for SmokePlugin {
 }
 
 #[derive(Clone, Copy, Debug, Default, Resource)]
-struct SmokeFonts(bool);
+pub(crate) struct SmokeFonts(pub(crate) bool);
 
-fn track_fonts(mut ready: ResMut<SmokeFonts>, server: Res<AssetServer>, fonts: Res<FontBook>) {
+pub(crate) fn track_fonts(
+    mut ready: ResMut<SmokeFonts>,
+    server: Res<AssetServer>,
+    fonts: Res<FontBook>,
+) {
     ready.0 = server.is_loaded_with_dependencies(&fonts.regular)
         && server.is_loaded_with_dependencies(&fonts.bold);
 }
 
-fn take_shot(commands: &mut Commands, tour: &SmokeTour, state: AppState) -> PathBuf {
-    let path = tour.shot_path(state);
+pub(crate) fn shoot(commands: &mut Commands, path: PathBuf) {
     std::fs::remove_file(&path).ok();
     commands
         .spawn(Screenshot::primary_window())
-        .observe(save_to_disk(path.clone()));
-    path
+        .observe(save_to_disk(path));
 }
 
-fn exit_with(commands: &mut Commands, ok: bool) {
+pub(crate) fn exit_with(commands: &mut Commands, ok: bool) {
     if ok {
         commands.write_message(AppExit::Success);
     } else {
@@ -176,7 +178,8 @@ fn run_smoke(
             if *state.get() == target {
                 let waited = waited + dt;
                 if waited >= DWELL_SECS {
-                    let path = take_shot(&mut commands, &tour, target);
+                    let path = tour.shot_path(target);
+                    shoot(&mut commands, path.clone());
                     tour.shots.push((target, path.clone()));
                     tour.phase = SmokePhase::WaitForShot {
                         state: target,

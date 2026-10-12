@@ -269,21 +269,23 @@ pub fn read_query(
     }
 }
 
-pub fn sync_query(
-    query: Res<AlgsQuery>,
-    boxes: Query<&Children, With<AlgsQueryBox>>,
-    mut inputs: Query<&mut bevy::text::EditableText, Without<AlgsQueryBox>>,
-) {
-    if !query.is_changed() {
-        return;
-    }
-    for children in &boxes {
-        for child in children.iter() {
-            if let Ok(mut editable) = inputs.get_mut(child)
-                && editable.value().to_string() != query.0
-            {
-                editable.editor_mut().set_text(&query.0);
+pub fn set_query_and_box(world: &mut World, text: &str) {
+    world.resource_mut::<AlgsQuery>().0 = text.to_string();
+    let mut boxes: Vec<Entity> = Vec::new();
+    {
+        let mut state = world.query_filtered::<&Children, With<AlgsQueryBox>>();
+        for children in state.iter(&world) {
+            for child in children.iter() {
+                boxes.push(child);
             }
+        }
+    }
+    let mut state = world.query_filtered::<&mut bevy::text::EditableText, ()>();
+    for child in boxes {
+        if let Ok(mut editable) = state.get_mut(world, child)
+            && editable.value().to_string() != text
+        {
+            editable.editor_mut().set_text(text);
         }
     }
 }
