@@ -47,13 +47,103 @@ siGN dialect: faces U D L R F B with ' and 2, lowercase wides, inner slices 2U 2
 
 3-style with floating-buffer sticker-following execution. Edge buffer UF, corner buffer UFR. Floating order: edges UF UB UR UL FR FL DF DB DR DL BR BL, corners UFR UFL UBR UBL DFR DFL DBR DBL. A case written A-B-C cycles sticker A to B, B to C, C to A (CYCLE_A direction, verified on all 988 vendor 3-style rows). The first position token of a vendor alg names the floating buffer the alg starts from, which is how later memo pairs execute at non-UF/UFR buffers: memo generation records each pair's floating buffer head, and the ideal cycle oracle takes that buffer as an argument. Defects: which pieces an alg flips or twists is read from the simcheck notes produced by the independent pysim simulator, never inferred from position tokens, the two derivations disagree on 213 of 1077 rows.
 
-## user flows
+## usage
 
-- drill: pick a pair or let SRS choose, see the alg, execute it, the emulator verifies the resulting sticker cycle and rejects wrong algs, the review grades into SM-2.
-- memo: a scramble is generated, syllables stream at the configured cadence, the user pronounces them, image mode flashes English letter-pair words instead.
-- solve: full timed cycle, memo phase, execution phase, review shows the splits, the record persists in the user dir.
-- algs: browse the vendor corpus per position with verification status and links, edits write only to the user overlay file.
-- stats and settings: solve history and every tunable from the config hub, settings persist across restarts.
+### first run
+
+make gen-data builds data/vendor from ref_ground/, make run starts blind-trainer.exe. All user data persists as JSON in the user dir: %APPDATA%/blind-trainer on Windows, $XDG_DATA_HOME/blind-trainer otherwise, split into settings, srs, solves, and the user alg overlay. make screenshots regenerates every image below.
+
+### menu
+
+Digits 1 to 6 open the views, esc returns to the menu from anywhere.
+
+![menu](docs/screenshots/menu.png)
+
+### drill
+
+3-style pair drilling with mechanical verification and SM-2 scheduling. space reveals the input and highlights buffer and both targets on the net. Type the alg, enter verifies it on the emulated cube: a wrong alg comes back with named problems, it never passes. 1 to 4 rate the rep (again, hard, good, easy) into SM-2, space pulls the next case with due and uncovered pairs first.
+
+![drill ready](docs/screenshots/drill-ready.png)
+
+The input phase with the alg typed in:
+
+![drill memo](docs/screenshots/drill-memo.png)
+
+A verified alg:
+
+![drill exec correct](docs/screenshots/drill-exec-correct.png)
+
+A wrong alg rejected with named problems:
+
+![drill exec wrong](docs/screenshots/drill-exec-wrong.png)
+
+After rating, space loads the next case:
+
+![drill review](docs/screenshots/drill-review.png)
+
+### memo training
+
+Streaming memo on seeded scrambles. Intro shows the pair count, space starts the stream, syllables appear at the configured cadence, image mode flashes English letter-pair words instead. When the stream ends the app asks you to recall, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
+
+![memo intro](docs/screenshots/memo-intro.png)
+
+Mid stream:
+
+![memo stream](docs/screenshots/memo-stream.png)
+
+Recall prompt after the last syllable:
+
+![memo recall](docs/screenshots/memo-recall.png)
+
+Full memo with residue lines:
+
+![memo review](docs/screenshots/memo-review.png)
+
+### solve
+
+The timed full cycle. Ready shows the scramble seed and pair count, space starts the memo clock, syllables stream while the memo timer runs. space again switches to execution, space stops everything. The app replays your memo against the vendor corpus on the emulated cube, reports solved or failed with the broken pairs, and logs the record with memo, exec, and total splits. space starts the next scramble.
+
+![solve ready](docs/screenshots/solve-ready.png)
+
+Memo phase with timer and stream counter:
+
+![solve memo](docs/screenshots/solve-memo.png)
+
+Execution phase:
+
+![solve exec](docs/screenshots/solve-exec.png)
+
+Result with splits:
+
+![solve review](docs/screenshots/solve-review.png)
+
+### algs
+
+Browser over the full 818 pair space. Type letters to filter, up down or n p move the selection, d or enter drills the selected case. Each row lists solver, alg, qtm and htm lengths, a verification badge, the commutator, and links. Browser edits write only to the user overlay file.
+
+![algs](docs/screenshots/algs.png)
+
+Filtered to B with the selection moved:
+
+![algs search](docs/screenshots/algs-search.png)
+
+### stats
+
+Aggregates over the solve log and srs store: solve count, memo and exec mean and median, due counts per orbit, and the trailing streak of successful reviews.
+
+![stats](docs/screenshots/stats.png)
+
+### settings
+
+Memo cadence, memo mode (syllables or images), and drill reps. The number inputs and the select apply immediately, 1 and 2 switch the memo mode from the keyboard, everything persists across restarts.
+
+![settings](docs/screenshots/settings.png)
+
+### fatal
+
+If the config or vendor data cannot be read the app opens here with the reason instead of the menu. Fix the reported path and restart.
+
+![fatal](docs/screenshots/fatal.png)
 
 ## runtime notes
 
@@ -80,6 +170,7 @@ cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, m
 - mutation: cargo mutants over bt-core, bt-scheme, bt-data, bt-ga.
 - e2e: headless flow suite (cargo test --release -p bt-app --test e2e) plus windowed blind-trainer.exe --smoke writing screenshots to artifacts/e2e.
 - visual: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
+- screenshots: drive the windowed app through every usage state into docs/screenshots, fatal state included.
 - run: cargo run --release -p bt-app.
 - chain: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs, each as a separate make invocation so a failure names its step.
 
