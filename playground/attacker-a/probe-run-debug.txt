@@ -1,0 +1,27 @@
+PASS generator tables vs oracle 72
+INFO oracle says 18 of 72 tokens keep centers fixed
+PASS vendor alg states vs oracle 1077
+PASS vendor qtm vs simcheck 1077
+INFO vendor htm differs from simcheck token-count column on 9 of 1077 algs (rotations excluded from htm)
+PASS random full-dialect states vs oracle 2000
+PASS random format round trip 2000
+PASS random inverse restores solved 2000
+PASS inverse_state position_of from_occ on rotated states 2000
+PASS long alg states vs oracle 200
+PASS scheme letters names ids vs position_map 48
+PASS scheme inverse map 48
+PASS same_piece partition vs oracle pieces 2304
+PASS head sticker rule vs oracle derivation 48
+PASS floating arrays and heads 20
+PASS Edge pair space exact 440
+PASS Corner pair space exact 378
+PASS canonical acceptance table 17
+PASS rejection table 52
+PASS empty and whitespace handling 6
+PASS whitespace separators 6
+PASS parse fuzz no panic + round trip 200000
+INFO fuzz accepted 14523 of 200000 strings
+PASS constructed move list round trip and inverse 20000
+PASS crate composition pins vs oracle single-move tables 16
+INFO invalid quarters via public constructors: 4 of 4 panic
+DONE checks=57503 failures=0

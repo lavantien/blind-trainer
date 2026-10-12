@@ -1,0 +1,11 @@
+[package]
+name = "probe-attacker-a"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+bt-core = { path = "../../../crates/bt-core" }
+bt-scheme = { path = "../../../crates/bt-scheme" }
