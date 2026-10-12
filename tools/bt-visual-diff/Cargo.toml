@@ -1,3 +1,7 @@
 [package]
 name = "bt-visual-diff"
 edition.workspace = true
+
+[dependencies]
+image = "0.25.10"
+serde_json.workspace = true
