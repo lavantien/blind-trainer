@@ -7,3 +7,5 @@
 /data/ga/
 /artifacts/*
 !/artifacts/.gitkeep
+
+/mutants.out*/
