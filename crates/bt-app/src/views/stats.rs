@@ -85,21 +85,58 @@ pub fn enter(stores: Res<Stores>, now_day: Res<NowDay>, mut snap: ResMut<StatsSn
     *snap = snapshot(&stores, now_day.0);
 }
 
-pub fn lines(snap: &StatsSnapshot) -> Vec<String> {
+fn seconds(ms: f64) -> String {
+    format!("{:.1}s", ms / 1000.0)
+}
+
+pub struct StatBlock {
+    pub label: &'static str,
+    pub value: String,
+    pub size_rem: f32,
+}
+
+pub fn blocks(snap: &StatsSnapshot) -> Vec<StatBlock> {
     vec![
-        format!("solves {}", snap.solves),
-        format!(
-            "memo mean {:.1}s median {:.1}s",
-            snap.memo_mean_ms / 1000.0,
-            snap.memo_median_ms / 1000.0
-        ),
-        format!(
-            "exec mean {:.1}s median {:.1}s",
-            snap.exec_mean_ms / 1000.0,
-            snap.exec_median_ms / 1000.0
-        ),
-        format!("srs due edge {} corner {}", snap.due_edge, snap.due_corner),
-        format!("verified drill streak {}", snap.streak),
+        StatBlock {
+            label: "solves",
+            value: snap.solves.to_string(),
+            size_rem: crate::theme::FONT_TITLE,
+        },
+        StatBlock {
+            label: "verified drill streak",
+            value: snap.streak.to_string(),
+            size_rem: crate::theme::FONT_TITLE,
+        },
+        StatBlock {
+            label: "memo mean",
+            value: seconds(snap.memo_mean_ms),
+            size_rem: crate::theme::FONT_TITLE,
+        },
+        StatBlock {
+            label: "memo median",
+            value: seconds(snap.memo_median_ms),
+            size_rem: crate::theme::FONT_HEADING,
+        },
+        StatBlock {
+            label: "exec mean",
+            value: seconds(snap.exec_mean_ms),
+            size_rem: crate::theme::FONT_TITLE,
+        },
+        StatBlock {
+            label: "exec median",
+            value: seconds(snap.exec_median_ms),
+            size_rem: crate::theme::FONT_HEADING,
+        },
+        StatBlock {
+            label: "due edge",
+            value: snap.due_edge.to_string(),
+            size_rem: crate::theme::FONT_TITLE,
+        },
+        StatBlock {
+            label: "due corner",
+            value: snap.due_corner.to_string(),
+            size_rem: crate::theme::FONT_TITLE,
+        },
     ]
 }
 
@@ -202,32 +239,116 @@ mod tests {
         assert_eq!(median(&mut [5, 1, 3]), 3.0);
         assert_eq!(median(&mut []), 0.0);
     }
+
+    #[test]
+    fn blocks_pair_values_with_labels_in_a_fixed_order() {
+        let snap = StatsSnapshot {
+            solves: 2,
+            memo_mean_ms: 25_000.0,
+            memo_median_ms: 25_000.0,
+            exec_mean_ms: 15_000.0,
+            exec_median_ms: 15_000.0,
+            due_edge: 1,
+            due_corner: 0,
+            streak: 2,
+        };
+        let rendered = blocks(&snap);
+        let labels: Vec<&str> = rendered.iter().map(|block| block.label).collect();
+        assert_eq!(
+            labels,
+            vec![
+                "solves",
+                "verified drill streak",
+                "memo mean",
+                "memo median",
+                "exec mean",
+                "exec median",
+                "due edge",
+                "due corner",
+            ]
+        );
+        let values: Vec<&str> = rendered.iter().map(|block| block.value.as_str()).collect();
+        assert_eq!(
+            values,
+            vec!["2", "2", "25.0s", "25.0s", "15.0s", "15.0s", "1", "0"]
+        );
+        assert_eq!(rendered[0].size_rem, crate::theme::FONT_TITLE);
+        assert_eq!(rendered[3].size_rem, crate::theme::FONT_HEADING);
+    }
 }
 
 #[derive(Component, Default)]
-pub struct StatsText;
+pub struct StatsValue(pub usize);
+
+#[derive(Component, Default)]
+pub struct StatsLabel;
 
 pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook) -> Entity {
-    let entity = crate::present::spawn_text_view(
-        commands,
-        fonts,
-        AppState::Stats,
-        "stats",
-        &["esc menu"],
-        None,
-    );
-    commands.entity(entity).with_children(|parent| {
-        crate::present::spawn_dynamic(parent, fonts, "", StatsText);
+    let content =
+        crate::present::spawn_view_frame(commands, fonts, AppState::Stats, "stats", "esc menu");
+    commands.entity(content).insert(Node {
+        width: Val::Percent(100.0),
+        flex_grow: 1.0,
+        flex_direction: FlexDirection::Column,
+        justify_content: JustifyContent::Center,
+        align_items: AlignItems::Center,
+        row_gap: crate::theme::rem(crate::theme::SPACING_REM * 2.0),
+        ..default()
     });
-    entity
+    commands.entity(content).with_children(|parent| {
+        let layout: Vec<(usize, &'static str, f32)> = blocks(&StatsSnapshot::default())
+            .iter()
+            .enumerate()
+            .map(|(index, block)| (index, block.label, block.size_rem))
+            .collect();
+        for row in layout.chunks(2) {
+            parent
+                .spawn(Node {
+                    flex_direction: FlexDirection::Row,
+                    column_gap: crate::theme::rem(crate::theme::SPACING_REM * 6.0),
+                    ..default()
+                })
+                .with_children(|row_parent| {
+                    for (index, label, size_rem) in row {
+                        row_parent
+                            .spawn(Node {
+                                flex_direction: FlexDirection::Column,
+                                row_gap: crate::theme::rem(crate::theme::SPACING_REM * 0.5),
+                                ..default()
+                            })
+                            .with_children(|block| {
+                                crate::present::spawn_line(
+                                    block,
+                                    fonts,
+                                    "",
+                                    *size_rem,
+                                    crate::theme::text_primary(),
+                                    StatsValue(*index),
+                                );
+                                crate::present::spawn_line(
+                                    block,
+                                    fonts,
+                                    label,
+                                    crate::theme::FONT_MICRO,
+                                    crate::theme::text_muted(),
+                                    StatsLabel,
+                                );
+                            });
+                    }
+                });
+        }
+    });
+    content
 }
 
-pub fn bind_text(snap: Res<StatsSnapshot>, mut texts: Query<&mut Text, With<StatsText>>) {
+pub fn bind_text(snap: Res<StatsSnapshot>, mut values: Query<(&mut Text, &StatsValue)>) {
     if !snap.is_changed() {
         return;
     }
-    let body = lines(&snap).join("\n");
-    for mut text in &mut texts {
-        *text = Text::new(body.clone());
+    let rendered = blocks(&snap);
+    for (mut text, value) in &mut values {
+        if let Some(block) = rendered.get(value.0) {
+            *text = Text::new(block.value.clone());
+        }
     }
 }

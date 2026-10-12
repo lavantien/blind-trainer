@@ -69,10 +69,16 @@ fn stats_aggregate_seeded_solve_and_srs_fixtures() {
     assert_eq!(snap.due_edge, 1);
     assert_eq!(snap.due_corner, 0);
     assert_eq!(snap.streak, 2);
-    let lines = bt_app::views::stats::lines(&snap);
-    assert!(lines.contains(&"solves 2".to_string()));
-    assert!(lines.contains(&"srs due edge 1 corner 0".to_string()));
-    assert!(lines.contains(&"verified drill streak 2".to_string()));
+    let blocks = bt_app::views::stats::blocks(&snap);
+    let values: Vec<&str> = blocks.iter().map(|block| block.value.as_str()).collect();
+    assert_eq!(
+        values,
+        vec!["2", "2", "25.0s", "25.0s", "15.0s", "15.0s", "1", "0"]
+    );
+    let labels: Vec<&str> = blocks.iter().map(|block| block.label).collect();
+    assert!(labels.contains(&"verified drill streak"));
+    assert!(labels.contains(&"due edge"));
+    assert!(labels.contains(&"due corner"));
 }
 
 #[test]
