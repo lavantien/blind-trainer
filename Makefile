@@ -63,6 +63,7 @@ visual:
 
 screenshots: build
 	rm -rf $(ARTIFACTS)/usage-user
+	rm -f docs/screenshots/*.png
 	mkdir -p docs/screenshots
 	APPDATA=$(ARTIFACTS)/usage-user $(BIN) --usage docs/screenshots
 	BT_CONFIG=$(ARTIFACTS)/usage-absent-config.json $(BIN) --fatal-shot docs/screenshots

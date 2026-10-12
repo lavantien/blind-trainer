@@ -104,11 +104,18 @@ impl Default for AppConfig {
     }
 }
 
+pub fn display_path(path: &Path) -> String {
+    match path.strip_prefix(paths::workspace_root()) {
+        Ok(relative) => relative.display().to_string(),
+        Err(_) => path.display().to_string(),
+    }
+}
+
 pub fn load_config_value(path: &Path) -> Result<serde_json::Value, String> {
+    let shown = display_path(path);
     let text = std::fs::read_to_string(path)
-        .map_err(|err| format!("cannot read config {}: {err}", path.display()))?;
-    serde_json::from_str(&text)
-        .map_err(|err| format!("cannot parse config {}: {err}", path.display()))
+        .map_err(|err| format!("cannot read config {shown}: {err}"))?;
+    serde_json::from_str(&text).map_err(|err| format!("cannot parse config {shown}: {err}"))
 }
 
 pub fn app_config_from(value: &serde_json::Value) -> Result<AppConfig, String> {
@@ -266,6 +273,8 @@ fn bootstrap_load(world: &mut World) {
 
 fn keyboard_intents(
     state: Res<State<AppState>>,
+    mut focus: Option<ResMut<bevy::input_focus::InputFocus>>,
+    editables: Query<&bevy::text::EditableText>,
     mut inputs: MessageReader<KeyboardInput>,
     mut intents: MessageWriter<NavIntent>,
 ) {
@@ -279,6 +288,14 @@ fn keyboard_intents(
             continue;
         }
         if input.key_code == KeyCode::Escape {
+            let typing = focus
+                .as_deref()
+                .and_then(|focus| focus.get())
+                .is_some_and(|entity| editables.get(entity).is_ok());
+            if typing && let Some(focus) = focus.as_deref_mut() {
+                focus.clear();
+                continue;
+            }
             intents.write(NavIntent::ToMenu);
             continue;
         }

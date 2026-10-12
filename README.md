@@ -51,17 +51,17 @@ siGN dialect: faces U D L R F B with ' and 2, lowercase wides, inner slices 2U 2
 
 ### first run
 
-make gen-data builds data/vendor from ref_ground/, make run starts blind-trainer.exe. All user data persists as JSON in the user dir: %APPDATA%/blind-trainer on Windows, $XDG_DATA_HOME/blind-trainer otherwise, split into settings, srs, solves, and the user alg overlay. make screenshots regenerates every image below.
+make gen-data builds data/vendor from ref_ground/, make run starts blind-trainer.exe. All user data persists as JSON in the user dir: %APPDATA%/blind-trainer on Windows, ~/.local/share/blind-trainer otherwise ($XDG_DATA_HOME/blind-trainer when the variable is set), split into settings, srs, solves, and the user alg overlay. make screenshots regenerates every image below, timers and streamed counts reflect the capture run so images differ slightly between runs.
 
 ### menu
 
-Digits 1 to 6 open the views, esc returns to the menu from anywhere.
+Digits 1 to 6 open the views, esc returns to the menu from every view and first drops any focused text input.
 
 ![menu](docs/screenshots/menu.png)
 
 ### drill
 
-3-style pair drilling with mechanical verification and SM-2 scheduling. space reveals the input and highlights buffer and both targets on the net. Type the alg, enter verifies it on the emulated cube: a wrong alg comes back with named problems, it never passes. 1 to 4 rate the rep (again, hard, good, easy) into SM-2, space pulls the next case with due and uncovered pairs first.
+3-style pair drilling with mechanical verification and SM-2 scheduling. space starts the alg phase and focuses the input, the net highlights the buffer plus one target sticker and swaps to the other target every 0.6 seconds. Type the alg, enter verifies it on the emulated cube: a wrong alg comes back with named problems, it never passes. 1 to 4 rate the rep (again, hard, good, easy) into SM-2, space pulls the next case with due and uncovered pairs first.
 
 ![drill ready](docs/screenshots/drill-ready.png)
 
@@ -83,7 +83,7 @@ After rating, space loads the next case:
 
 ### memo training
 
-Streaming memo on seeded scrambles. Intro shows the pair count, space starts the stream, syllables appear at the configured cadence, image mode flashes English letter-pair words instead. When the stream ends the app asks you to recall, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
+Streaming memo on seeded scrambles. Intro shows the pair count, space starts the stream, syllables appear at the configured cadence, image mode flashes an English word for 620 of the 818 pairs and falls back to the bare letters for the rest. When the stream ends the app asks you to recall, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
 
 ![memo intro](docs/screenshots/memo-intro.png)
 
@@ -119,11 +119,11 @@ Result with splits:
 
 ### algs
 
-Browser over the full 818 pair space. Type letters to filter, up down or n p move the selection, d or enter drills the selected case. Each row lists solver, alg, qtm and htm lengths, a verification badge, the commutator, and links. Browser edits write only to the user overlay file.
+Browser over the full 818 pair space. Slash focuses the filter, typed letters filter the list, up down always move the selection, n p and d work when the filter is not focused, esc drops the filter focus first and exits the view on the second press. Each row lists solver, alg, qtm and htm lengths, a verification badge, the commutator, and links.
 
 ![algs](docs/screenshots/algs.png)
 
-Filtered to B with the selection moved:
+Filtered to b with the selection moved:
 
 ![algs search](docs/screenshots/algs-search.png)
 
@@ -141,7 +141,7 @@ Memo cadence, memo mode (syllables or images), and drill reps. The number inputs
 
 ### fatal
 
-If the config or vendor data cannot be read the app opens here with the reason instead of the menu. Fix the reported path and restart.
+If the config cannot be read, or the vendor directory exists but its sheets are unreadable, the app opens here with the reason instead of the menu. A missing vendor directory only warns at the menu and the app runs on user data alone. The fatal screen ignores keys, fix the reported path and restart.
 
 ![fatal](docs/screenshots/fatal.png)
 

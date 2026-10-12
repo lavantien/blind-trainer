@@ -160,6 +160,7 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(solve::exec_keys, in_state(SolvePhase::Exec)),
                     IntoScheduleConfigs::run_if(solve::review_keys, in_state(SolvePhase::Review)),
                     IntoScheduleConfigs::run_if(algs::refresh_list, in_state(AppState::Algs)),
+                    IntoScheduleConfigs::run_if(algs::focus_query_keys, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::list_keys, in_state(AppState::Algs)),
                     (
                         IntoScheduleConfigs::run_if(

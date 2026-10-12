@@ -69,33 +69,36 @@ enum ShotMode {
     FatalShot(PathBuf),
 }
 
-fn flag_value(args: &[String], flag: &str) -> Option<Option<PathBuf>> {
+const SHOT_FLAGS: [&str; 3] = ["--smoke", "--usage", "--fatal-shot"];
+
+fn flag_value<'a>(args: &'a [String], flag: &str) -> Option<&'a str> {
     let index = args.iter().position(|arg| arg == flag)?;
-    Some(args.get(index + 1).map(PathBuf::from))
+    args.get(index + 1).map(String::as_str)
 }
 
 fn parse_shot_mode(args: &[String]) -> Result<Option<ShotMode>, String> {
-    if let Some(dir) = parse_smoke(args) {
-        return Ok(Some(ShotMode::Smoke(dir)));
+    let present: Vec<&str> = SHOT_FLAGS
+        .into_iter()
+        .filter(|flag| args.iter().any(|arg| arg == flag))
+        .collect();
+    let Some(&flag) = present.first() else {
+        return Ok(None);
+    };
+    if present.len() > 1 {
+        return Err("only one of --smoke, --usage, --fatal-shot may be set".to_string());
     }
-    let usage = flag_value(args, "--usage");
-    let fatal = flag_value(args, "--fatal-shot");
-    if usage.is_some() && fatal.is_some() {
-        return Err("--usage and --fatal-shot are mutually exclusive".to_string());
-    }
-    let missing = |flag: &str| format!("{flag} needs an output directory");
-    Ok(match (usage, fatal) {
-        (Some(Some(dir)), _) => Some(ShotMode::Usage(dir)),
-        (Some(None), _) => return Err(missing("--usage")),
-        (None, Some(Some(dir))) => Some(ShotMode::FatalShot(dir)),
-        (None, Some(None)) => return Err(missing("--fatal-shot")),
-        (None, None) => None,
-    })
-}
-
-fn parse_smoke(args: &[String]) -> Option<PathBuf> {
-    let index = args.iter().position(|arg| arg == "--smoke")?;
-    args.get(index + 1).map(PathBuf::from)
+    let dir = match flag_value(args, flag) {
+        Some(value) if value.starts_with("--") => {
+            return Err(format!("{flag} needs an output directory, got {value}"));
+        }
+        Some(value) => PathBuf::from(value),
+        None => return Err(format!("{flag} needs an output directory")),
+    };
+    Ok(Some(match flag {
+        "--smoke" => ShotMode::Smoke(dir),
+        "--usage" => ShotMode::Usage(dir),
+        _ => ShotMode::FatalShot(dir),
+    }))
 }
 
 #[cfg(test)]
@@ -104,21 +107,6 @@ mod tests {
 
     fn args(items: &[&str]) -> Vec<String> {
         items.iter().map(|item| item.to_string()).collect()
-    }
-
-    #[test]
-    fn parse_smoke_reads_dir_after_flag() {
-        let parsed = super::parse_smoke(&args(&["blind-trainer", "--smoke", "artifacts/e2e"]));
-        assert_eq!(
-            parsed.map(|path| path.to_string_lossy().to_string()),
-            Some("artifacts/e2e".to_string())
-        );
-    }
-
-    #[test]
-    fn parse_smoke_rejects_missing_value_and_absent_flag() {
-        assert!(super::parse_smoke(&args(&["blind-trainer", "--smoke"])).is_none());
-        assert!(super::parse_smoke(&args(&["blind-trainer"])).is_none());
     }
 
     #[test]
@@ -135,9 +123,21 @@ mod tests {
     }
 
     #[test]
-    fn parse_shot_mode_rejects_missing_values_and_double_modes() {
+    fn parse_shot_mode_rejects_missing_values() {
         assert!(parse_shot_mode(&args(&["bt", "--usage"])).is_err());
         assert!(parse_shot_mode(&args(&["bt", "--fatal-shot"])).is_err());
-        assert!(parse_shot_mode(&args(&["bt", "--usage", "a", "--fatal-shot", "b"])).is_err());
+        assert!(parse_shot_mode(&args(&["bt", "--smoke"])).is_err());
+    }
+
+    #[test]
+    fn parse_shot_mode_rejects_flag_combinations_and_flag_like_values() {
+        for combo in [
+            vec!["bt", "--usage", "a", "--fatal-shot", "b"],
+            vec!["bt", "--smoke", "a", "--usage", "b"],
+            vec!["bt", "--smoke", "--usage", "docs/x"],
+            vec!["bt", "--usage", "--fatal-shot"],
+        ] {
+            assert!(parse_shot_mode(&args(&combo)).is_err(), "args {combo:?}");
+        }
     }
 }

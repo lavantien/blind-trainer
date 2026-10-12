@@ -21,12 +21,12 @@ const WRONG_ALG: &str = "R U R' U'";
 #[derive(Clone, Copy, Debug)]
 enum Action {
     Press(KeyCode),
+    PressChar { key: KeyCode, ch: char },
     NavOpen(AppState),
     NavMenu,
     PinDrill,
     CoveredDraft,
     WrongDraft,
-    Query(&'static str),
     PickSolveSeed,
     WaitApp(AppState),
     WaitFonts,
@@ -127,7 +127,12 @@ fn script(cadence_secs: f32) -> Vec<Action> {
         Action::NavOpen(AppState::Algs),
         Action::WaitApp(AppState::Algs),
         Action::Shot("algs"),
-        Action::Query("B"),
+        Action::Press(KeyCode::Slash),
+        Action::Elapse(0.1),
+        Action::PressChar {
+            key: KeyCode::KeyB,
+            ch: 'b',
+        },
         Action::Elapse(0.3),
         Action::Press(KeyCode::ArrowDown),
         Action::Elapse(0.1),
@@ -260,11 +265,24 @@ fn press(commands: &mut Commands, key: KeyCode) {
     });
 }
 
+fn press_char(commands: &mut Commands, key: KeyCode, ch: char) {
+    let text = ch.to_string();
+    commands.write_message(KeyboardInput {
+        key_code: key,
+        logical_key: Key::Character(text.clone().into()),
+        state: ButtonState::Pressed,
+        text: Some(text.into()),
+        repeat: false,
+        window: Entity::PLACEHOLDER,
+    });
+}
+
 fn logical_of(key: KeyCode) -> Key {
     match key {
         KeyCode::Space => Key::Space,
         KeyCode::Enter => Key::Enter,
         KeyCode::ArrowDown => Key::ArrowDown,
+        KeyCode::Slash => Key::Character("/".into()),
         KeyCode::Digit3 => Key::Character("3".into()),
         _ => Key::Character(" ".into()),
     }
@@ -361,10 +379,8 @@ fn run_usage(
                     tour.index += 1;
                     tour.mode = Mode::Act;
                 }
-                Action::Query(text) => {
-                    commands.queue(move |world: &mut World| {
-                        crate::views::algs::set_query_and_box(world, text);
-                    });
+                Action::PressChar { key, ch } => {
+                    press_char(&mut commands, key, ch);
                     tour.index += 1;
                     tour.mode = Mode::Act;
                 }
@@ -559,9 +575,11 @@ mod tests {
     #[test]
     fn script_never_issues_two_presses_back_to_back() {
         let actions = script(0.8);
+        let is_press =
+            |action: &Action| matches!(action, Action::Press(_) | Action::PressChar { .. });
         for pair in actions.windows(2) {
             assert!(
-                !(matches!(pair[0], Action::Press(_)) && matches!(pair[1], Action::Press(_))),
+                !(is_press(&pair[0]) && is_press(&pair[1])),
                 "adjacent presses can be eaten by phase entry message drains: {pair:?}"
             );
         }

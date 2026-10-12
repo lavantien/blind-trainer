@@ -61,9 +61,14 @@ pub fn apply_draft(draft: Res<SettingsDraft>, stores: Res<Stores>, mut commands:
 pub fn mode_keys(
     mut inputs: MessageReader<KeyboardInput>,
     focus: Option<Res<bevy::input_focus::InputFocus>>,
+    editables: Query<&bevy::text::EditableText>,
     mut draft: ResMut<SettingsDraft>,
 ) {
-    if focus.is_some_and(|focus| focus.get().is_some()) {
+    let typing = focus
+        .as_deref()
+        .and_then(|focus| focus.get())
+        .is_some_and(|entity| editables.get(entity).is_ok());
+    if typing {
         return;
     }
     for input in inputs.read() {

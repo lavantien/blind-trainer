@@ -259,12 +259,21 @@ pub fn ready_keys(
 
 pub fn input_keys(
     mut inputs: MessageReader<KeyboardInput>,
-    draft: Res<DrillDraft>,
+    mut draft: ResMut<DrillDraft>,
+    boxes: Query<&Children, With<DrillInputBox>>,
+    editables: Query<&bevy::text::EditableText, Without<DrillInputBox>>,
     mut session: ResMut<DrillSession>,
     mut next: ResMut<NextState<DrillPhase>>,
 ) {
     for input in inputs.read() {
         if input.state == ButtonState::Pressed && input.key_code == KeyCode::Enter {
+            for children in &boxes {
+                for child in children.iter() {
+                    if let Ok(editable) = editables.get(child) {
+                        draft.0 = editable.value().to_string();
+                    }
+                }
+            }
             if let Some(case) = session.case {
                 session.verdict = Some(evaluate(&draft.0, &case));
             }
@@ -520,7 +529,7 @@ fn set_box_text(
     for children in boxes {
         for child in children.iter() {
             if let Ok(mut editable) = inputs.get_mut(child)
-                && editable.value().to_string() != text
+                && editable.value() != text
             {
                 editable.editor_mut().set_text(text);
             }
@@ -533,7 +542,7 @@ pub fn set_draft_and_box(world: &mut World, text: &str) {
     let mut boxes: Vec<Entity> = Vec::new();
     {
         let mut state = world.query_filtered::<&Children, With<DrillInputBox>>();
-        for children in state.iter(&world) {
+        for children in state.iter(world) {
             for child in children.iter() {
                 boxes.push(child);
             }
@@ -542,7 +551,7 @@ pub fn set_draft_and_box(world: &mut World, text: &str) {
     let mut state = world.query_filtered::<&mut bevy::text::EditableText, ()>();
     for child in boxes {
         if let Ok(mut editable) = state.get_mut(world, child)
-            && editable.value().to_string() != text
+            && editable.value() != text
         {
             editable.editor_mut().set_text(text);
         }

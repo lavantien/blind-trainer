@@ -122,16 +122,42 @@ fn highlight(net: &mut NetState, case: CaseId) {
     net.target_sticker = Some(case.t1);
 }
 
+pub fn focus_query_keys(
+    mut inputs: MessageReader<KeyboardInput>,
+    focus: Option<ResMut<bevy::input_focus::InputFocus>>,
+    boxes: Query<&Children, With<AlgsQueryBox>>,
+    editables: Query<&bevy::text::EditableText>,
+) {
+    let Some(mut focus) = focus else {
+        return;
+    };
+    for input in inputs.read() {
+        if input.state != ButtonState::Pressed || input.key_code != KeyCode::Slash {
+            continue;
+        }
+        for children in &boxes {
+            for child in children.iter() {
+                if editables.get(child).is_ok() && focus.get() != Some(child) {
+                    focus.set(child, bevy::input_focus::FocusCause::Navigated);
+                }
+            }
+        }
+        return;
+    }
+}
+
 pub fn list_keys(
     mut commands: Commands,
     mut inputs: MessageReader<KeyboardInput>,
     focus: Option<Res<bevy::input_focus::InputFocus>>,
+    editables: Query<&bevy::text::EditableText>,
     mut browser: ResMut<AlgsBrowser>,
     mut net: ResMut<NetState>,
 ) {
-    if focus.is_some_and(|focus| focus.get().is_some()) {
-        return;
-    }
+    let typing = focus
+        .as_deref()
+        .and_then(|focus| focus.get())
+        .is_some_and(|entity| editables.get(entity).is_ok());
     let mut step = 0i32;
     let mut drill = false;
     for input in inputs.read() {
@@ -139,9 +165,11 @@ pub fn list_keys(
             continue;
         }
         match input.key_code {
-            KeyCode::ArrowDown | KeyCode::KeyN => step += 1,
-            KeyCode::ArrowUp | KeyCode::KeyP => step -= 1,
-            KeyCode::Enter | KeyCode::KeyD => drill = true,
+            KeyCode::ArrowDown => step += 1,
+            KeyCode::ArrowUp => step -= 1,
+            KeyCode::KeyN if !typing => step += 1,
+            KeyCode::KeyP if !typing => step -= 1,
+            KeyCode::Enter | KeyCode::KeyD if !typing => drill = true,
             _ => {}
         }
     }
@@ -233,7 +261,7 @@ pub fn spawn(
         fonts,
         AppState::Algs,
         "algs",
-        &["type letters to search, up down select, d drills this case, esc menu"],
+        &["type letters to search, slash focuses it, up down select, d drills, esc menu"],
         Some(crate::present::net_geometry(config)),
     );
     commands.entity(entity).with_children(|parent| {
@@ -265,27 +293,6 @@ pub fn read_query(
                     query.0 = text;
                 }
             }
-        }
-    }
-}
-
-pub fn set_query_and_box(world: &mut World, text: &str) {
-    world.resource_mut::<AlgsQuery>().0 = text.to_string();
-    let mut boxes: Vec<Entity> = Vec::new();
-    {
-        let mut state = world.query_filtered::<&Children, With<AlgsQueryBox>>();
-        for children in state.iter(&world) {
-            for child in children.iter() {
-                boxes.push(child);
-            }
-        }
-    }
-    let mut state = world.query_filtered::<&mut bevy::text::EditableText, ()>();
-    for child in boxes {
-        if let Ok(mut editable) = state.get_mut(world, child)
-            && editable.value().to_string() != text
-        {
-            editable.editor_mut().set_text(text);
         }
     }
 }
