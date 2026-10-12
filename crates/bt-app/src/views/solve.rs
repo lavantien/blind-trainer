@@ -375,6 +375,53 @@ pub fn review_lines(session: &SolveSession) -> Vec<String> {
     lines
 }
 
+pub fn phase_word(phase: SolvePhase) -> &'static str {
+    match phase {
+        SolvePhase::Ready => "ready",
+        SolvePhase::Memo => "memo",
+        SolvePhase::Exec => "exec",
+        SolvePhase::Review => "review",
+    }
+}
+
+pub fn phase_label(phase: SolvePhase, session: &SolveSession) -> String {
+    format!("{}, seed {}", phase_word(phase), session.seed)
+}
+
+pub fn hint_text(phase: SolvePhase) -> &'static str {
+    match phase {
+        SolvePhase::Ready => "space to start memo",
+        SolvePhase::Memo => "space to finish memo",
+        SolvePhase::Exec => "space to stop",
+        SolvePhase::Review => "space next solve",
+    }
+}
+
+pub fn focal_text(phase: SolvePhase, session: &SolveSession) -> String {
+    match phase {
+        SolvePhase::Memo => format!("{}/{}", session.shown, session.tokens.len()),
+        _ => String::new(),
+    }
+}
+
+pub fn timer_text(phase: SolvePhase, session: &SolveSession) -> String {
+    match phase {
+        SolvePhase::Ready => format!("{} pairs", session.tokens.len()),
+        SolvePhase::Memo => format!("memo {:.1}s", session.memo_secs),
+        SolvePhase::Exec => format!("exec {:.1}s", session.exec_secs),
+        SolvePhase::Review => String::new(),
+    }
+}
+
+pub fn review_parts(session: &SolveSession) -> (String, String, String) {
+    let lines = review_lines(session);
+    let result = lines.first().cloned().unwrap_or_default();
+    let split_end = lines.len().min(4);
+    let splits = lines.get(1..split_end).unwrap_or_default().join("\n");
+    let broken = lines.get(split_end..).unwrap_or_default().join("\n");
+    (result, splits, broken)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -439,40 +486,80 @@ mod tests {
         assert_eq!(tokens.len(), 1);
         assert_eq!(tokens[0].letters, ['A', 'B']);
     }
+
+    #[test]
+    fn zone_texts_track_the_phase() {
+        let mut session = SolveSession::default();
+        rebuild(&mut session, 7, &SyllableBook::default(), None);
+        assert_eq!(phase_label(SolvePhase::Ready, &session), "ready, seed 7");
+        assert_eq!(
+            timer_text(SolvePhase::Ready, &session),
+            format!("{} pairs", session.tokens.len())
+        );
+        assert_eq!(hint_text(SolvePhase::Ready), "space to start memo");
+        session.shown = 1;
+        session.memo_secs = 2.5;
+        assert_eq!(
+            focal_text(SolvePhase::Memo, &session),
+            format!("1/{}", session.tokens.len())
+        );
+        assert_eq!(timer_text(SolvePhase::Memo, &session), "memo 2.5s");
+        assert_eq!(focal_text(SolvePhase::Exec, &session), "");
+        session.exec_secs = 1.2;
+        assert_eq!(timer_text(SolvePhase::Exec, &session), "exec 1.2s");
+    }
+
+    #[test]
+    fn review_parts_split_verdict_splits_and_broken() {
+        let mut session = SolveSession::default();
+        assert_eq!(
+            review_parts(&session),
+            (String::new(), String::new(), String::new())
+        );
+        session.finished = Some(SolveFinished {
+            record: SolveRecord {
+                started_ms: 1,
+                memo_ms: 900,
+                exec_ms: 500,
+                success: true,
+            },
+            outcome: SolveOutcome {
+                success: true,
+                broken: vec!["UF-UB-UR uncovered".to_string()],
+            },
+        });
+        let (result, splits, broken) = review_parts(&session);
+        assert_eq!(result, "solved");
+        assert_eq!(splits, "memo 0.9s\nexec 0.5s\ntotal 1.4s");
+        assert_eq!(broken, "UF-UB-UR uncovered");
+    }
 }
 
 #[derive(Component, Default)]
-pub struct SolveText;
+pub struct SolvePhaseLine;
 
-pub fn view_lines(phase: SolvePhase, session: &SolveSession) -> Vec<String> {
-    let mut lines = vec![format!("seed {}", session.seed)];
-    match phase {
-        SolvePhase::Ready => {
-            lines.push(format!(
-                "scramble from seed, {} pairs",
-                session.tokens.len()
-            ));
-            lines.push("space to start memo".to_string());
-        }
-        SolvePhase::Memo => {
-            lines.push(format!("memo {:.1}s", session.memo_secs));
-            lines.push(format!(
-                "{}/{} streamed",
-                session.shown,
-                session.tokens.len()
-            ));
-            lines.push("space to finish memo".to_string());
-        }
-        SolvePhase::Exec => {
-            lines.push(format!("exec {:.1}s", session.exec_secs));
-            lines.push("space to stop".to_string());
-        }
-        SolvePhase::Review => {
-            lines.extend(review_lines(session));
-            lines.push("space next solve".to_string());
-        }
+#[derive(Component, Default)]
+pub struct SolveFocal;
+
+#[derive(Component, Default)]
+pub struct SolveTimer;
+
+#[derive(Component, Default)]
+pub struct SolveResult;
+
+#[derive(Component, Default)]
+pub struct SolveSplits;
+
+#[derive(Component, Default)]
+pub struct SolveBroken;
+
+#[derive(Component, Default)]
+pub struct SolveHint;
+
+fn set_zone<M: Component>(texts: &mut Query<&mut Text, With<M>>, value: &str) {
+    for mut text in texts {
+        *text = Text::new(value.to_string());
     }
-    lines
 }
 
 pub fn spawn(
@@ -480,30 +567,133 @@ pub fn spawn(
     fonts: &crate::present::FontBook,
     config: &crate::logic::AppConfig,
 ) -> Entity {
-    let entity = crate::present::spawn_text_view(
+    let content = crate::present::spawn_view_frame(
         commands,
         fonts,
         AppState::Solve,
         "solve",
-        &["space through ready, memo, exec, review, esc menu"],
-        Some(crate::present::net_geometry(config)),
+        "space through ready, memo, exec, review, esc menu",
     );
-    commands.entity(entity).with_children(|parent| {
-        crate::present::spawn_dynamic(parent, fonts, "", SolveText);
+    commands.entity(content).insert(Node {
+        width: Val::Percent(100.0),
+        flex_grow: 1.0,
+        flex_direction: FlexDirection::Row,
+        align_items: AlignItems::Center,
+        column_gap: crate::theme::rem(crate::theme::SPACING_REM * 2.0),
+        ..default()
     });
-    entity
+    commands.entity(content).with_children(|parent| {
+        parent
+            .spawn(Node {
+                width: Val::Percent(crate::theme::DRILL_NET_WIDTH_PCT * 100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            })
+            .with_children(|region| {
+                crate::net::spawn_net(region, crate::present::net_geometry(config));
+            });
+        parent
+            .spawn(Node {
+                flex_grow: 1.0,
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::Center,
+                row_gap: crate::theme::rem(crate::theme::SPACING_REM),
+                ..default()
+            })
+            .with_children(|rail| {
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_SMALL,
+                    crate::theme::text_muted(),
+                    SolvePhaseLine,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_FOCAL,
+                    crate::theme::text_primary(),
+                    SolveFocal,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_HEADING,
+                    crate::theme::text_primary(),
+                    SolveTimer,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_TITLE,
+                    crate::theme::ok(),
+                    SolveResult,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_HEADING,
+                    crate::theme::text_primary(),
+                    SolveSplits,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_SMALL,
+                    crate::theme::danger(),
+                    SolveBroken,
+                );
+                crate::present::spawn_line(
+                    rail,
+                    fonts,
+                    "",
+                    crate::theme::FONT_SMALL,
+                    crate::theme::text_muted(),
+                    SolveHint,
+                );
+            });
+    });
+    content
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn bind_text(
     phase: Res<State<SolvePhase>>,
     session: Res<SolveSession>,
-    mut texts: Query<&mut Text, With<SolveText>>,
+    mut phase_texts: Query<&mut Text, With<SolvePhaseLine>>,
+    mut focal_texts: Query<&mut Text, With<SolveFocal>>,
+    mut timer_texts: Query<&mut Text, With<SolveTimer>>,
+    mut results: Query<(&mut Text, &mut TextColor), With<SolveResult>>,
+    mut splits_texts: Query<&mut Text, With<SolveSplits>>,
+    mut broken_texts: Query<&mut Text, With<SolveBroken>>,
+    mut hint_texts: Query<&mut Text, With<SolveHint>>,
 ) {
     if !session.is_changed() && !phase.is_changed() {
         return;
     }
-    let body = view_lines(*phase.get(), &session).join("\n");
-    for mut text in &mut texts {
-        *text = Text::new(body.clone());
+    let current = *phase.get();
+    set_zone(&mut phase_texts, &phase_label(current, &session));
+    set_zone(&mut focal_texts, &focal_text(current, &session));
+    set_zone(&mut timer_texts, &timer_text(current, &session));
+    set_zone(&mut hint_texts, hint_text(current));
+    let (result, splits, broken) = review_parts(&session);
+    set_zone(&mut splits_texts, &splits);
+    set_zone(&mut broken_texts, &broken);
+    for (mut text, mut color) in &mut results {
+        *text = Text::new(result.clone());
+        color.0 = if result == "solved" {
+            crate::theme::ok()
+        } else {
+            crate::theme::danger()
+        };
     }
 }
