@@ -1,3 +1,4 @@
+use crate::occ_is_legal;
 use crate::pairs::CaseId;
 use crate::scheme::{
     CORNER_BUFFER_STICKER, EDGE_BUFFER_STICKER, Orbit, corner_floating_heads, edge_floating_heads,
@@ -491,10 +492,11 @@ fn memo_occ(occ: &[u8; 54]) -> Memo {
 }
 
 pub fn memo(state: &Cube) -> Memo {
-    memo_occ(&state_array(state))
+    memo_from_array(&state_array(state))
 }
 
 pub fn memo_from_array(occ: &[u8; 54]) -> Memo {
+    assert!(occ_is_legal(occ), "memo requires a legal state");
     memo_occ(occ)
 }
 
@@ -502,6 +504,23 @@ pub fn memo_from_array(occ: &[u8; 54]) -> Memo {
 mod tests {
     use super::*;
     use bt_core::{Alg, Axis, Move};
+
+    #[test]
+    #[should_panic(expected = "legal state")]
+    fn memo_rejects_orientation_illegal_cohesive_state() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        occ.swap(24, 25);
+        let _ = memo_from_array(&occ);
+    }
+
+    #[test]
+    #[should_panic(expected = "legal state")]
+    fn memo_rejects_parity_illegal_cohesive_state() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        occ.swap(24, 26);
+        occ.swap(25, 27);
+        let _ = memo_from_array(&occ);
+    }
 
     fn apply(text: &str) -> Cube {
         let mut cube = Cube::solved();

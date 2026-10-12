@@ -44,13 +44,34 @@ impl Cube {
     }
 
     pub fn from_occ(occ: [u8; 54]) -> Cube {
-        debug_assert!({
-            let mut seen = [false; 54];
-            for &s in &occ {
-                seen[s as usize] = true;
-            }
-            seen.iter().all(|&s| s)
-        });
+        let mut seen = [false; 54];
+        for &s in &occ {
+            seen[s as usize] = true;
+        }
+        assert!(
+            seen.iter().all(|&s| s),
+            "occ must be a permutation of 0..54"
+        );
+        for (slot, &s) in occ.iter().enumerate() {
+            let sticker_band = if s < 24 {
+                0
+            } else if s < 48 {
+                1
+            } else {
+                2
+            };
+            let slot_band = if slot < 24 {
+                0
+            } else if slot < 48 {
+                1
+            } else {
+                2
+            };
+            assert!(
+                sticker_band == slot_band,
+                "sticker {s} in slot {slot} crosses orbit bands"
+            );
+        }
         Cube { occ }
     }
 
@@ -170,6 +191,33 @@ mod tests {
         assert_eq!(corner_id(Face::D, 0), 20);
         assert_eq!(edge_id(Face::D, 0), 44);
         assert_eq!(center_id(Face::D), 53);
+    }
+
+    #[test]
+    #[should_panic(expected = "permutation")]
+    fn from_occ_rejects_non_permutation_in_release() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        occ[53] = 0;
+        let _ = Cube::from_occ(occ);
+    }
+
+    #[test]
+    #[should_panic(expected = "orbit")]
+    fn from_occ_rejects_bijective_orbit_mixed_input() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        occ.swap(0, 24);
+        let _ = Cube::from_occ(occ);
+    }
+
+    #[test]
+    fn from_occ_accepts_rotation_states_with_moved_centers() {
+        let mut cube = Cube::solved();
+        cube.apply_alg(&Alg::parse("z").expect("z parses"));
+        let occ: [u8; 54] = std::array::from_fn(|i| cube.sticker_at(i as u8));
+        let rebuilt = Cube::from_occ(occ);
+        for pos in 0..54u8 {
+            assert_eq!(cube.sticker_at(pos), rebuilt.sticker_at(pos));
+        }
     }
 
     #[test]
