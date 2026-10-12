@@ -535,31 +535,18 @@ mod tests {
     }
 }
 
-#[derive(Component, Default)]
-pub struct SolvePhaseLine;
+#[derive(Clone, Copy, Component, Debug, PartialEq, Eq)]
+pub struct SolveZone(pub SolveZoneKind);
 
-#[derive(Component, Default)]
-pub struct SolveFocal;
-
-#[derive(Component, Default)]
-pub struct SolveTimer;
-
-#[derive(Component, Default)]
-pub struct SolveResult;
-
-#[derive(Component, Default)]
-pub struct SolveSplits;
-
-#[derive(Component, Default)]
-pub struct SolveBroken;
-
-#[derive(Component, Default)]
-pub struct SolveHint;
-
-fn set_zone<M: Component>(texts: &mut Query<&mut Text, With<M>>, value: &str) {
-    for mut text in texts {
-        *text = Text::new(value.to_string());
-    }
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SolveZoneKind {
+    Phase,
+    Focal,
+    Timer,
+    Result,
+    Splits,
+    Broken,
+    Hint,
 }
 
 pub fn spawn(
@@ -610,7 +597,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_SMALL,
                     crate::theme::text_muted(),
-                    SolvePhaseLine,
+                    SolveZone(SolveZoneKind::Phase),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -618,7 +605,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_FOCAL,
                     crate::theme::text_primary(),
-                    SolveFocal,
+                    SolveZone(SolveZoneKind::Focal),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -626,7 +613,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_HEADING,
                     crate::theme::text_primary(),
-                    SolveTimer,
+                    SolveZone(SolveZoneKind::Timer),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -634,7 +621,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_TITLE,
                     crate::theme::ok(),
-                    SolveResult,
+                    SolveZone(SolveZoneKind::Result),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -642,7 +629,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_HEADING,
                     crate::theme::text_primary(),
-                    SolveSplits,
+                    SolveZone(SolveZoneKind::Splits),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -650,7 +637,7 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_SMALL,
                     crate::theme::danger(),
-                    SolveBroken,
+                    SolveZone(SolveZoneKind::Broken),
                 );
                 crate::present::spawn_line(
                     rail,
@@ -658,42 +645,39 @@ pub fn spawn(
                     "",
                     crate::theme::FONT_SMALL,
                     crate::theme::text_muted(),
-                    SolveHint,
+                    SolveZone(SolveZoneKind::Hint),
                 );
             });
     });
     content
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn bind_text(
     phase: Res<State<SolvePhase>>,
     session: Res<SolveSession>,
-    mut phase_texts: Query<&mut Text, With<SolvePhaseLine>>,
-    mut focal_texts: Query<&mut Text, With<SolveFocal>>,
-    mut timer_texts: Query<&mut Text, With<SolveTimer>>,
-    mut results: Query<(&mut Text, &mut TextColor), With<SolveResult>>,
-    mut splits_texts: Query<&mut Text, With<SolveSplits>>,
-    mut broken_texts: Query<&mut Text, With<SolveBroken>>,
-    mut hint_texts: Query<&mut Text, With<SolveHint>>,
+    mut zones: Query<(&SolveZone, &mut Text, &mut TextColor)>,
 ) {
     if !session.is_changed() && !phase.is_changed() {
         return;
     }
     let current = *phase.get();
-    set_zone(&mut phase_texts, &phase_label(current, &session));
-    set_zone(&mut focal_texts, &focal_text(current, &session));
-    set_zone(&mut timer_texts, &timer_text(current, &session));
-    set_zone(&mut hint_texts, hint_text(current));
     let (result, splits, broken) = review_parts(&session);
-    set_zone(&mut splits_texts, &splits);
-    set_zone(&mut broken_texts, &broken);
-    for (mut text, mut color) in &mut results {
-        *text = Text::new(result.clone());
-        color.0 = if result == "solved" {
-            crate::theme::ok()
-        } else {
-            crate::theme::danger()
-        };
+    for (zone, mut text, mut color) in &mut zones {
+        match zone.0 {
+            SolveZoneKind::Phase => *text = Text::new(phase_label(current, &session)),
+            SolveZoneKind::Focal => *text = Text::new(focal_text(current, &session)),
+            SolveZoneKind::Timer => *text = Text::new(timer_text(current, &session)),
+            SolveZoneKind::Splits => *text = Text::new(splits.clone()),
+            SolveZoneKind::Broken => *text = Text::new(broken.clone()),
+            SolveZoneKind::Hint => *text = Text::new(hint_text(current).to_string()),
+            SolveZoneKind::Result => {
+                *text = Text::new(result.clone());
+                color.0 = if result == "solved" {
+                    crate::theme::ok()
+                } else {
+                    crate::theme::danger()
+                };
+            }
+        }
     }
 }

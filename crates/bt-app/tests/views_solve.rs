@@ -142,3 +142,17 @@ fn solve_review_space_starts_the_next_scramble() {
     assert!(session.finished.is_none());
     assert!(!session.scramble.is_solved());
 }
+
+#[test]
+fn bind_text_initializes_without_query_conflicts() {
+    let _guard = guard();
+    let mut app = App::new();
+    app.add_plugins(MinimalPlugins)
+        .add_plugins(bevy::state::app::StatesPlugin)
+        .init_state::<SolvePhase>()
+        .insert_resource(SolveSession::default())
+        .add_systems(Update, bt_app::views::solve::bind_text);
+    for _ in 0..2 {
+        app.update();
+    }
+}
