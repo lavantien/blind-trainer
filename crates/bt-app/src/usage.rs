@@ -16,7 +16,6 @@ use std::path::PathBuf;
 const DWELL_SECS: f32 = 0.4;
 const STUCK_LIMIT_SECS: f32 = 30.0;
 const SOLVE_SEED_ATTEMPTS: u64 = 400;
-const WRONG_ALG: &str = "R U R' U'";
 
 #[derive(Clone, Copy, Debug)]
 enum Action {
@@ -25,8 +24,6 @@ enum Action {
     NavOpen(AppState),
     NavMenu,
     PinDrill,
-    CoveredDraft,
-    WrongDraft,
     PickSolveSeed,
     WaitApp(AppState),
     WaitFonts,
@@ -69,28 +66,30 @@ fn script(cadence_secs: f32) -> Vec<Action> {
         Action::Shot("menu"),
         Action::PinDrill,
         Action::NavOpen(AppState::Drill),
-        Action::WaitDrill(DrillPhase::Ready),
-        Action::Shot("drill-ready"),
+        Action::WaitDrill(DrillPhase::Card),
+        Action::Shot("drill-card"),
         Action::Press(KeyCode::Space),
-        Action::WaitDrill(DrillPhase::Memo),
-        Action::CoveredDraft,
-        Action::Elapse(0.3),
-        Action::Shot("drill-memo"),
-        Action::Press(KeyCode::Enter),
-        Action::WaitDrill(DrillPhase::Exec),
-        Action::Shot("drill-exec-correct"),
+        Action::WaitDrill(DrillPhase::Reps),
+        Action::Shot("drill-reps"),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::Press(KeyCode::Space),
+        Action::Elapse(0.1),
+        Action::WaitDrill(DrillPhase::Rate),
+        Action::Shot("drill-rate-a"),
         Action::Press(KeyCode::Digit3),
-        Action::WaitDrill(DrillPhase::Review),
-        Action::Shot("drill-review"),
-        Action::Press(KeyCode::Space),
-        Action::WaitDrill(DrillPhase::Ready),
-        Action::Press(KeyCode::Space),
-        Action::WaitDrill(DrillPhase::Memo),
-        Action::WrongDraft,
-        Action::Elapse(0.3),
-        Action::Press(KeyCode::Enter),
-        Action::WaitDrill(DrillPhase::Exec),
-        Action::Shot("drill-exec-wrong"),
+        Action::Elapse(0.1),
+        Action::Shot("drill-rate-b"),
+        Action::Press(KeyCode::Digit3),
+        Action::WaitDrill(DrillPhase::Card),
         Action::NavMenu,
         Action::WaitApp(AppState::Menu),
         Action::NavOpen(AppState::Memo),
@@ -352,33 +351,6 @@ fn run_usage(
                     tour.index += 1;
                     tour.mode = Mode::Act;
                 }
-                Action::CoveredDraft => {
-                    let text = corpus
-                        .as_ref()
-                        .and_then(|loaded| covered_alg_text(&loaded.0, &pinned_case()));
-                    match text {
-                        Some(text) => {
-                            commands.queue(move |world: &mut World| {
-                                crate::views::drill::set_draft_and_box(world, &text);
-                            });
-                            tour.index += 1;
-                            tour.mode = Mode::Act;
-                        }
-                        None => stuck_out(
-                            &mut commands,
-                            &mut tour,
-                            "vendor corpus has no alg for UF-UB-UR, run make gen-data".to_string(),
-                        ),
-                    }
-                }
-                Action::WrongDraft => {
-                    let text = WRONG_ALG.to_string();
-                    commands.queue(move |world: &mut World| {
-                        crate::views::drill::set_draft_and_box(world, &text);
-                    });
-                    tour.index += 1;
-                    tour.mode = Mode::Act;
-                }
                 Action::PressChar { key, ch } => {
                     press_char(&mut commands, key, ch);
                     tour.index += 1;
@@ -550,11 +522,10 @@ mod tests {
         assert_eq!(names.last(), Some(&"settings"));
         let mut expected = [
             "menu",
-            "drill-ready",
-            "drill-memo",
-            "drill-exec-correct",
-            "drill-review",
-            "drill-exec-wrong",
+            "drill-card",
+            "drill-reps",
+            "drill-rate-a",
+            "drill-rate-b",
             "memo-intro",
             "memo-stream",
             "memo-recall",
@@ -597,11 +568,8 @@ mod tests {
         assert!(
             position(&actions, &|a| matches!(
                 a,
-                Action::WaitDrill(DrillPhase::Exec)
-            )) < position(&actions, &|a| matches!(
-                a,
-                Action::Shot("drill-exec-correct")
-            ))
+                Action::WaitDrill(DrillPhase::Rate)
+            )) < position(&actions, &|a| matches!(a, Action::Shot("drill-rate-a")))
         );
         assert!(
             position(&actions, &|a| matches!(
