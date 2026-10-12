@@ -78,6 +78,7 @@ pub fn mode_keys(
         let mode = match input.key_code {
             KeyCode::Digit1 => Some(MemoMode::Syllables),
             KeyCode::Digit2 => Some(MemoMode::Images),
+            KeyCode::Digit3 => Some(MemoMode::PerOrbit),
             _ => None,
         };
         if let Some(mode) = mode {
@@ -92,7 +93,7 @@ pub fn lines(draft: &SettingsDraft) -> Vec<String> {
         format!("memo cadence {} ms", draft.memo_cadence_ms),
         format!("memo mode {}", draft.memo_mode.label()),
         format!("drill reps {}", draft.drill_reps),
-        "1 syllables  2 images  edits save immediately".to_string(),
+        "1 syllables  2 images  3 per-orbit  edits save immediately".to_string(),
     ]
 }
 
@@ -118,6 +119,27 @@ mod tests {
         assert_eq!(clamp_cadence(100_000), 10_000);
         assert_eq!(clamp_reps(-3), 1);
         assert_eq!(clamp_reps(999), 100);
+    }
+
+    #[test]
+    fn mode_rows_cover_every_mode_in_label_order() {
+        for (row, (label, mode)) in MemoMode::LABELS.iter().enumerate() {
+            assert_eq!(mode.index(), row);
+            assert_eq!(MemoMode::from_index(row), Some(*mode));
+            assert_eq!(mode.label(), *label);
+        }
+        assert_eq!(MemoMode::from_index(MemoMode::LABELS.len()), None);
+        assert_eq!(MemoMode::default(), MemoMode::PerOrbit);
+    }
+
+    #[test]
+    fn hint_line_lists_every_mode() {
+        let draft = SettingsDraft::default();
+        let rendered = lines(&draft);
+        let hint = rendered.last().expect("hint line");
+        for (label, _) in MemoMode::LABELS {
+            assert!(hint.contains(label), "hint missing {label}: {hint}");
+        }
     }
 }
 
@@ -152,21 +174,16 @@ pub fn on_mode_change(
     rows: Query<&bevy::feathers::controls::OptionIndex>,
     mut draft: ResMut<SettingsDraft>,
 ) {
-    if let Ok(index) = rows.get(change.value) {
-        draft.memo_mode = match index.0 {
-            0 => MemoMode::Syllables,
-            _ => MemoMode::Images,
-        };
+    if let Ok(index) = rows.get(change.value)
+        && let Some(mode) = MemoMode::from_index(index.0)
+    {
+        draft.memo_mode = mode;
     }
 }
 
 pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: &Stores) -> Entity {
     let draft = SettingsDraft::from_settings(&stores.settings);
-    let selected = if draft.memo_mode == MemoMode::Syllables {
-        Some(0)
-    } else {
-        Some(1)
-    };
+    let selected = Some(draft.memo_mode.index());
     let entity = crate::present::spawn_text_view(
         commands,
         fonts,
@@ -176,10 +193,7 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: 
         None,
     );
     commands.entity(entity).with_children(|parent| {
-        let body = lines(&draft).join(
-            "
-",
-        );
+        let body = lines(&draft).join("\n");
         crate::present::spawn_dynamic(parent, fonts, &body, SettingsText);
     });
     let cadence = commands
@@ -215,8 +229,8 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: 
     commands
         .spawn_scene(bsn! {
             @FeathersSelect {
-                @options: {list_rows_from_strings(["syllables", "images"], selected)},
-                @max_visible: 2,
+                @options: {list_rows_from_strings(MemoMode::LABELS.map(|(label, _)| label), selected)},
+                @max_visible: 3,
             }
             on(on_mode_change)
         })

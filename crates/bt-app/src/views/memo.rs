@@ -53,7 +53,17 @@ pub fn token_text(token: &StreamToken, mode: MemoMode) -> String {
     let letters: String = token.letters.iter().collect();
     match mode {
         MemoMode::Syllables => token.syllable.clone().unwrap_or_else(|| letters.clone()),
-        MemoMode::Images => token.image.map(str::to_string).unwrap_or(letters),
+        MemoMode::Images => token
+            .image
+            .map(str::to_string)
+            .unwrap_or_else(|| letters.clone()),
+        MemoMode::PerOrbit => match token.orbit {
+            Orbit::Edge => token.syllable.clone().unwrap_or_else(|| letters.clone()),
+            Orbit::Corner => token
+                .image
+                .map(str::to_string)
+                .unwrap_or_else(|| letters.clone()),
+        },
     }
 }
 
@@ -277,8 +287,8 @@ mod tests {
         Stores {
             settings: crate::persist::Settings {
                 memo_cadence_ms: 800,
-                memo_mode: MemoMode::Syllables,
-                drill_reps: 5,
+                memo_mode: MemoMode::PerOrbit,
+                drill_reps: 6,
             },
             srs: crate::persist::SrsStore::default(),
             solves: crate::persist::SolveLog::default(),
@@ -364,6 +374,94 @@ mod tests {
     }
 
     #[test]
+    fn per_orbit_streams_edge_syllables_and_corner_images() {
+        let edge = StreamToken {
+            orbit: Orbit::Edge,
+            letters: ['A', 'B'],
+            syllable: Some("tả".to_string()),
+            image: Some("Anthony Brooks"),
+        };
+        let corner = StreamToken {
+            orbit: Orbit::Corner,
+            letters: ['A', 'B'],
+            syllable: Some("tả".to_string()),
+            image: Some("Anthony Brooks"),
+        };
+        assert_eq!(token_text(&edge, MemoMode::PerOrbit), "tả");
+        assert_eq!(token_text(&corner, MemoMode::PerOrbit), "Anthony Brooks");
+    }
+
+    #[test]
+    fn per_orbit_falls_back_to_letters_when_the_orbit_book_lacks_the_pair() {
+        let edge = StreamToken {
+            orbit: Orbit::Edge,
+            letters: ['C', 'D'],
+            syllable: None,
+            image: None,
+        };
+        let corner = StreamToken {
+            orbit: Orbit::Corner,
+            letters: ['E', 'F'],
+            syllable: Some("bo".to_string()),
+            image: None,
+        };
+        assert_eq!(token_text(&edge, MemoMode::PerOrbit), "CD");
+        assert_eq!(token_text(&corner, MemoMode::PerOrbit), "EF");
+    }
+
+    #[test]
+    fn stream_rows_center_the_current_token_with_trailing_recents() {
+        let mut session = MemoSession {
+            tokens: build_tokens(&sample_memo(), &book_with(None)),
+            ..Default::default()
+        };
+        let stores = empty_stores();
+        let mode = stores.settings.memo_mode;
+        let shown = 3.min(session.tokens.len());
+        session.shown = shown;
+        let rows = view_rows(MemoPhase::Stream, &session, &stores);
+        assert_eq!(rows.focal, token_text(&session.tokens[shown - 1], mode));
+        let recents: Vec<String> = session.tokens[..shown - 1]
+            .iter()
+            .map(|token| token_text(token, mode))
+            .collect();
+        assert_eq!(rows.recent, recents.join(" "));
+        assert!(
+            rows.status.contains(&format!("{shown}/")),
+            "status: {}",
+            rows.status
+        );
+    }
+
+    #[test]
+    fn review_rows_list_every_token_with_residue_status() {
+        let memo = sample_memo();
+        let shown = memo.pairs.0.len() + memo.pairs.1.len();
+        let session = MemoSession {
+            tokens: build_tokens(&memo, &book_with(None)),
+            memo: Some(memo),
+            shown,
+            ..Default::default()
+        };
+        let stores = empty_stores();
+        let mode = stores.settings.memo_mode;
+        let rows = view_rows(MemoPhase::Review, &session, &stores);
+        let all: Vec<String> = session
+            .tokens
+            .iter()
+            .map(|token| token_text(token, mode))
+            .collect();
+        assert_eq!(rows.recent, all.join(" "));
+        assert!(
+            rows.status
+                .contains(&residue_lines(session.memo.as_ref().expect("memo")).join("; ")),
+            "status: {}",
+            rows.status
+        );
+        assert!(rows.status.contains("rate"), "status: {}", rows.status);
+    }
+
+    #[test]
     fn stream_advances_only_at_cadence() {
         let mut session = MemoSession::default();
         let stores = empty_stores();
@@ -376,46 +474,92 @@ mod tests {
     }
 }
 
-#[derive(Component, Default)]
-pub struct MemoText;
+pub const RECENT_TOKENS: usize = 4;
 
-pub fn view_lines(phase: MemoPhase, session: &MemoSession, stores: &Stores) -> Vec<String> {
+#[derive(Clone, Copy, Component, Debug, PartialEq, Eq)]
+pub struct MemoLine(pub MemoLineKind);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MemoLineKind {
+    Focal,
+    Recent,
+    Status,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MemoRows {
+    pub focal: String,
+    pub recent: String,
+    pub status: String,
+}
+
+fn joined_texts(tokens: &[StreamToken], mode: MemoMode) -> String {
+    tokens
+        .iter()
+        .map(|token| token_text(token, mode))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn trailing_before_current(session: &MemoSession, mode: MemoMode) -> String {
+    let end = session.shown.saturating_sub(1);
+    let start = end.saturating_sub(RECENT_TOKENS);
+    joined_texts(&session.tokens[start..end], mode)
+}
+
+fn review_status(session: &MemoSession) -> String {
+    let mut parts = Vec::new();
+    if let Some(memo) = &session.memo {
+        parts.extend(residue_lines(memo));
+    }
+    parts.push("r replay  space next  1..4 rate pairs".to_string());
+    parts.join("; ")
+}
+
+pub fn view_rows(phase: MemoPhase, session: &MemoSession, stores: &Stores) -> MemoRows {
     let mode = stores.settings.memo_mode;
-    let mut lines = vec![format!("seed {}", session.seed)];
+    let cadence = stores.settings.memo_cadence_ms;
     match phase {
-        MemoPhase::Intro => {
-            lines.push(format!("{} pairs to stream", session.tokens.len()));
-            lines.push("space to stream".to_string());
-        }
-        MemoPhase::Stream | MemoPhase::Recall => {
-            let revealed: Vec<String> = session.tokens[..session.shown]
-                .iter()
-                .map(|token| token_text(token, mode))
-                .collect();
-            lines.push(revealed.join(" "));
-            lines.push(format!(
-                "{}/{} streamed",
+        MemoPhase::Intro => MemoRows {
+            focal: "space to stream".to_string(),
+            recent: String::new(),
+            status: format!(
+                "seed {}  {} pairs  mode {}  cadence {} ms",
+                session.seed,
+                session.tokens.len(),
+                mode.label(),
+                cadence
+            ),
+        },
+        MemoPhase::Stream => MemoRows {
+            focal: if session.shown > 0 {
+                token_text(&session.tokens[session.shown - 1], mode)
+            } else {
+                "...".to_string()
+            },
+            recent: trailing_before_current(session, mode),
+            status: format!(
+                "stream {}/{}  cadence {} ms",
+                session.shown,
+                session.tokens.len(),
+                cadence
+            ),
+        },
+        MemoPhase::Recall => MemoRows {
+            focal: "recall".to_string(),
+            recent: String::new(),
+            status: format!(
+                "{}/{} streamed  space to reveal",
                 session.shown,
                 session.tokens.len()
-            ));
-            if phase == MemoPhase::Recall {
-                lines.push("recall now, space to reveal".to_string());
-            }
-        }
-        MemoPhase::Review => {
-            let all: Vec<String> = session
-                .tokens
-                .iter()
-                .map(|token| token_text(token, mode))
-                .collect();
-            lines.push(all.join(" "));
-            if let Some(memo) = &session.memo {
-                lines.extend(residue_lines(memo));
-            }
-            lines.push("r replay, space next, 1..4 rate pairs".to_string());
-        }
+            ),
+        },
+        MemoPhase::Review => MemoRows {
+            focal: "rate 1..4".to_string(),
+            recent: joined_texts(&session.tokens, mode),
+            status: review_status(session),
+        },
     }
-    lines
 }
 
 pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook) -> Entity {
@@ -424,11 +568,36 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook) -> Entit
         fonts,
         AppState::Memo,
         "memo training",
-        &["syllables stream at the configured cadence, esc menu"],
+        &["esc menu"],
         None,
     );
     commands.entity(entity).with_children(|parent| {
-        crate::present::spawn_dynamic(parent, fonts, "", MemoText);
+        parent.spawn((
+            MemoLine(MemoLineKind::Focal),
+            Text::new(""),
+            TextFont {
+                font: FontSource::Handle(fonts.bold.clone()),
+                font_size: FontSize::Rem(crate::theme::FONT_FOCAL),
+                ..default()
+            },
+            TextColor(crate::theme::text_primary()),
+        ));
+        crate::present::spawn_line(
+            parent,
+            fonts,
+            "",
+            crate::theme::FONT_SMALL,
+            crate::theme::text_muted(),
+            MemoLine(MemoLineKind::Recent),
+        );
+        crate::present::spawn_line(
+            parent,
+            fonts,
+            "",
+            crate::theme::FONT_BODY,
+            crate::theme::text_primary(),
+            MemoLine(MemoLineKind::Status),
+        );
     });
     entity
 }
@@ -437,13 +606,18 @@ pub fn bind_text(
     phase: Res<State<MemoPhase>>,
     session: Res<MemoSession>,
     stores: Res<Stores>,
-    mut texts: Query<&mut Text, With<MemoText>>,
+    mut lines: Query<(&MemoLine, &mut Text)>,
 ) {
     if !session.is_changed() && !phase.is_changed() {
         return;
     }
-    let body = view_lines(*phase.get(), &session, &stores).join("\n");
-    for mut text in &mut texts {
-        *text = Text::new(body.clone());
+    let rows = view_rows(*phase.get(), &session, &stores);
+    for (line, mut text) in &mut lines {
+        let value = match line.0 {
+            MemoLineKind::Focal => &rows.focal,
+            MemoLineKind::Recent => &rows.recent,
+            MemoLineKind::Status => &rows.status,
+        };
+        *text = Text::new(value.clone());
     }
 }

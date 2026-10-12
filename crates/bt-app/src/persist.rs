@@ -8,15 +8,18 @@ use std::path::{Path, PathBuf};
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MemoMode {
-    #[default]
     Syllables,
     Images,
+    #[default]
+    #[serde(rename = "per-orbit")]
+    PerOrbit,
 }
 
 impl MemoMode {
-    pub const LABELS: [(&'static str, MemoMode); 2] = [
+    pub const LABELS: [(&'static str, MemoMode); 3] = [
         ("syllables", MemoMode::Syllables),
         ("images", MemoMode::Images),
+        ("per-orbit", MemoMode::PerOrbit),
     ];
 
     pub fn parse(text: &str) -> Option<MemoMode> {
@@ -27,10 +30,22 @@ impl MemoMode {
     }
 
     pub fn label(self) -> &'static str {
-        match self {
-            MemoMode::Syllables => "syllables",
-            MemoMode::Images => "images",
-        }
+        MemoMode::LABELS
+            .iter()
+            .find(|(_, mode)| *mode == self)
+            .map(|(label, _)| *label)
+            .expect("every mode has a label")
+    }
+
+    pub fn index(self) -> usize {
+        MemoMode::LABELS
+            .iter()
+            .position(|(_, mode)| *mode == self)
+            .expect("every mode has an index")
+    }
+
+    pub fn from_index(index: usize) -> Option<MemoMode> {
+        MemoMode::LABELS.get(index).map(|(_, mode)| *mode)
     }
 }
 
@@ -182,6 +197,58 @@ mod tests {
         )
         .expect("reload");
         assert_eq!(reloaded.settings, sample_settings());
+    }
+
+    #[test]
+    fn memo_mode_per_orbit_defaults_and_round_trips() {
+        assert_eq!(MemoMode::default(), MemoMode::PerOrbit);
+        assert_eq!(MemoMode::PerOrbit.label(), "per-orbit");
+        let json = serde_json::to_string(&Settings {
+            memo_cadence_ms: 640,
+            memo_mode: MemoMode::PerOrbit,
+            drill_reps: 6,
+        })
+        .expect("ser");
+        assert!(json.contains("\"per-orbit\""), "json: {json}");
+        let back: Settings = serde_json::from_str(&json).expect("de");
+        assert_eq!(back.memo_mode, MemoMode::PerOrbit);
+        assert_eq!(back.drill_reps, 6);
+    }
+
+    #[test]
+    fn memo_mode_legacy_values_still_parse() {
+        for (text, mode) in [
+            ("syllables", MemoMode::Syllables),
+            ("images", MemoMode::Images),
+            ("per-orbit", MemoMode::PerOrbit),
+        ] {
+            assert_eq!(MemoMode::parse(text), Some(mode), "parse {text}");
+            let from_json: MemoMode = serde_json::from_str(&format!("\"{text}\"")).expect("de");
+            assert_eq!(from_json, mode, "serde {text}");
+        }
+        assert_eq!(MemoMode::parse("perorbit"), None);
+        assert_eq!(MemoMode::parse(""), None);
+    }
+
+    #[test]
+    fn stored_per_orbit_settings_load_verbatim() {
+        let root = temp_root("per-orbit-stored");
+        let path = settings_path(&root);
+        std::fs::create_dir_all(path.parent().expect("parent")).expect("dirs");
+        std::fs::write(
+            &path,
+            serde_json::json!({
+                "memo_cadence_ms": 640,
+                "memo_mode": "per-orbit",
+                "drill_reps": 6
+            })
+            .to_string(),
+        )
+        .expect("write");
+        let stores = Stores::load(&root, sample_settings()).expect("load");
+        assert_eq!(stores.settings.memo_mode, MemoMode::PerOrbit);
+        assert_eq!(stores.settings.memo_cadence_ms, 640);
+        assert_eq!(stores.settings.drill_reps, 6);
     }
 
     #[test]

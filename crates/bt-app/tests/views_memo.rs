@@ -2,8 +2,12 @@
 mod views_common;
 
 use bevy::prelude::*;
+use bt_app::persist::MemoMode;
 use bt_app::states::{AppState, MemoPhase};
-use bt_app::views::memo::{MemoSeed, MemoSession};
+use bt_app::views::memo::{MemoSeed, MemoSession, token_text};
+use bt_scheme::Orbit;
+use bt_scheme::memo::memo as memo_of;
+use bt_scheme::random_state;
 use views_common::*;
 
 fn phase(app: &App) -> MemoPhase {
@@ -136,5 +140,112 @@ fn clone_paths(fixture: &Fixture) -> RuntimePaths {
         vendor_root: fixture.paths.vendor_root.clone(),
         user_root: fixture.paths.user_root.clone(),
         assets_root: fixture.paths.assets_root.clone(),
+    }
+}
+
+fn seed_with_edge_pair(first: char, second: char) -> u64 {
+    for seed in 0..5_000u64 {
+        let memo = memo_of(&random_state(seed));
+        if memo
+            .pairs
+            .0
+            .iter()
+            .any(|case| case.letters() == (first, second))
+        {
+            return seed;
+        }
+    }
+    panic!("no seed produced edge pair {first}{second}");
+}
+
+#[test]
+fn memo_per_orbit_dispatches_edges_to_syllables_and_corners_to_images() {
+    let _guard = guard();
+    let fixture = fixture("per-orbit");
+    std::fs::write(
+        fixture.base.join("data-ga").join("syllables.json"),
+        serde_json::json!({
+            "cases": [
+                {"orbit": "edge", "letters": "AB", "syllable": "tả"}
+            ]
+        })
+        .to_string(),
+    )
+    .expect("syllables fixture");
+    let seed = seed_with_edge_pair('A', 'B');
+    let app = enter_memo(clone_paths(&fixture), seed);
+    let session = app.world().resource::<MemoSession>();
+    let ab = session
+        .tokens
+        .iter()
+        .find(|token| token.orbit == Orbit::Edge && token.letters == ['A', 'B'])
+        .expect("edge AB token");
+    assert_eq!(token_text(ab, MemoMode::PerOrbit), "tả");
+    for token in &session.tokens {
+        let letters: String = token.letters.iter().collect();
+        let expected = match token.orbit {
+            Orbit::Edge => token.syllable.clone().unwrap_or(letters.clone()),
+            Orbit::Corner => token.image.map(str::to_string).unwrap_or(letters.clone()),
+        };
+        assert_eq!(
+            token_text(token, MemoMode::PerOrbit),
+            expected,
+            "per-orbit text for pair {letters}"
+        );
+    }
+}
+
+#[test]
+fn config_per_orbit_mode_and_default_reps_seed_the_settings() {
+    let _guard = guard();
+    let fixture = fixture("per-orbit-config");
+    let data_ga = fixture.base.join("data-ga");
+    std::fs::write(
+        fixture.paths.config_path.clone(),
+        serde_json::json!({
+            "app": {
+                "window": {"width": 640, "height": 480, "title": "views"},
+                "memo": {"cadence_ms": 800, "mode": "per-orbit"},
+                "drill": {"reps": 6}
+            },
+            "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}},
+            "paths": {"data_ga": data_ga.to_string_lossy()}
+        })
+        .to_string(),
+    )
+    .expect("overwrite config");
+    let mut app = headless_app(clone_paths(&fixture));
+    boot_to_menu(&mut app);
+    let stores = app.world().resource::<bt_app::persist::Stores>();
+    assert_eq!(stores.settings.memo_mode, MemoMode::PerOrbit);
+    assert_eq!(stores.settings.drill_reps, 6);
+}
+
+#[test]
+fn stored_settings_load_per_orbit_and_legacy_modes() {
+    let _guard = guard();
+    for (tag, text, mode) in [
+        ("per-orbit", "per-orbit", MemoMode::PerOrbit),
+        ("legacy-syllables", "syllables", MemoMode::Syllables),
+        ("legacy-images", "images", MemoMode::Images),
+    ] {
+        let fixture = fixture(tag);
+        let settings_dir = fixture.paths.user_root.join("settings");
+        std::fs::create_dir_all(&settings_dir).expect("settings dir");
+        std::fs::write(
+            settings_dir.join("settings.json"),
+            serde_json::json!({
+                "memo_cadence_ms": 640,
+                "memo_mode": text,
+                "drill_reps": 6
+            })
+            .to_string(),
+        )
+        .expect("settings file");
+        let mut app = headless_app(clone_paths(&fixture));
+        boot_to_menu(&mut app);
+        let stores = app.world().resource::<bt_app::persist::Stores>();
+        assert_eq!(stores.settings.memo_mode, mode, "stored mode {text}");
+        assert_eq!(stores.settings.drill_reps, 6);
     }
 }
