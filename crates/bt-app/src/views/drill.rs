@@ -193,7 +193,7 @@ fn apply_net(session: &DrillSession, net: &mut NetState) {
     };
     net.cube = Cube::solved();
     net.buffer_sticker = Some(session.buffer_sticker);
-    net.target_sticker = Some(case.t1);
+    net.targets = [Some(case.t1), Some(case.t2)];
 }
 
 pub fn sync_net(session: Res<DrillSession>, mut net: ResMut<NetState>) {
@@ -349,10 +349,11 @@ pub fn swap_target(
     }
     session.target_swap_clock = 0.0;
     if let Some((first, second)) = session.target_pair {
-        net.target_sticker = match net.target_sticker {
-            Some(sticker) if sticker == first => Some(second),
-            _ => Some(first),
+        let next = match net.targets[0] {
+            Some(sticker) if sticker == first => second,
+            _ => first,
         };
+        net.targets = [Some(next), net.targets[1]];
     }
 }
 

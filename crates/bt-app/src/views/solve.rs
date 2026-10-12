@@ -222,7 +222,7 @@ pub fn enter(
     rebuild(&mut session, seed.0, &book, scramble_override.0.take());
     net.cube = session.scramble;
     net.buffer_sticker = None;
-    net.target_sticker = None;
+    net.targets = [None, None];
     next.set(SolvePhase::Ready);
 }
 

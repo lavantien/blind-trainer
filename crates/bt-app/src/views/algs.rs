@@ -119,7 +119,7 @@ pub fn refresh_list(
 fn highlight(net: &mut NetState, case: CaseId) {
     net.cube = Cube::solved();
     net.buffer_sticker = Some(buffer_of(case.orbit));
-    net.target_sticker = Some(case.t1);
+    net.targets = [Some(case.t1), Some(case.t2)];
 }
 
 pub fn focus_query_keys(

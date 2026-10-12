@@ -16,8 +16,8 @@ const DEFAULT_WINDOW_WIDTH: u32 = 1280;
 const DEFAULT_WINDOW_HEIGHT: u32 = 800;
 const DEFAULT_WINDOW_TITLE: &str = "blind trainer";
 const DEFAULT_MEMO_CADENCE_MS: u32 = 800;
-const DEFAULT_MEMO_MODE: &str = "syllables";
-const DEFAULT_DRILL_REPS: u32 = 5;
+const DEFAULT_MEMO_MODE: &str = "per-orbit";
+const DEFAULT_DRILL_REPS: u32 = 6;
 const DEFAULT_SMOKE_SEED: u64 = 20261012;
 const DEFAULT_REF_GROUND: &str = "ref_ground";
 const DEFAULT_ASSETS_ROOT: &str = "assets";
@@ -148,7 +148,7 @@ pub enum HighlightKind {
 pub struct NetState {
     pub cube: Cube,
     pub buffer_sticker: Option<u8>,
-    pub target_sticker: Option<u8>,
+    pub targets: [Option<u8>; 2],
 }
 
 impl Default for NetState {
@@ -156,7 +156,7 @@ impl Default for NetState {
         NetState {
             cube: Cube::solved(),
             buffer_sticker: Some(EDGE_BUFFER_STICKER),
-            target_sticker: None,
+            targets: [None, None],
         }
     }
 }
@@ -165,7 +165,7 @@ impl NetState {
     pub fn highlight_kind(&self, sticker: u8) -> Option<HighlightKind> {
         if self.buffer_sticker == Some(sticker) {
             Some(HighlightKind::Buffer)
-        } else if self.target_sticker == Some(sticker) {
+        } else if self.targets.contains(&Some(sticker)) {
             Some(HighlightKind::Target)
         } else {
             None
@@ -516,7 +516,21 @@ mod tests {
         assert_eq!(default.window.height, 800);
         assert_eq!(default.window.title, "blind trainer");
         assert_eq!(default.memo.cadence_ms, 800);
-        assert_eq!(default.memo.mode, "syllables");
-        assert_eq!(default.drill.reps, 5);
+        assert_eq!(default.memo.mode, "per-orbit");
+        assert_eq!(default.drill.reps, 6);
+    }
+
+    #[test]
+    fn highlight_kind_covers_both_target_slots() {
+        let mut net = NetState::default();
+        assert_eq!(
+            net.highlight_kind(EDGE_BUFFER_STICKER),
+            Some(HighlightKind::Buffer)
+        );
+        assert_eq!(net.highlight_kind(5), None);
+        net.targets = [Some(5), Some(9)];
+        assert_eq!(net.highlight_kind(5), Some(HighlightKind::Target));
+        assert_eq!(net.highlight_kind(9), Some(HighlightKind::Target));
+        assert_eq!(net.highlight_kind(7), None);
     }
 }

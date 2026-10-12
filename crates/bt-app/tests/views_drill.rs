@@ -116,10 +116,10 @@ fn drill_highlights_buffer_and_targets_on_the_net() {
     let net = app.world().resource::<NetState>();
     assert_eq!(net.buffer_sticker, Some(EDGE_BUFFER_STICKER));
     let case = edge_case('A', 'B');
-    assert!(
-        net.target_sticker == Some(case.t1) || net.target_sticker == Some(case.t2),
-        "one of the two targets highlighted, got {:?}",
-        net.target_sticker
+    assert_eq!(
+        net.targets,
+        [Some(case.t1), Some(case.t2)],
+        "both targets highlighted"
     );
     assert!(net.cube.is_solved());
 }
