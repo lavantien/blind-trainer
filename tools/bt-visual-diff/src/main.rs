@@ -354,7 +354,7 @@ fn render_report(
             .unwrap_or_else(|| "-".to_string());
         text.push_str(&format!(
             "| {} | {} | {} | {} | {} |\n",
-            report.name,
+            report.name.replace('|', "/"),
             report.verdict.label().replace('|', "/"),
             max_delta,
             pixels_over,
