@@ -2,14 +2,14 @@ REF_GROUND := ref_ground
 CONFIG := config/config.json
 ARTIFACTS := artifacts
 BIN := target/release/blind-trainer.exe
-FUZZ_TARGETS := notation classify memo
+FUZZ_TARGETS := notation classify memo commutator
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga
 
 export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual screenshots run chain
+.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain
 
 setup:
 	rustup component add rustfmt clippy
@@ -61,6 +61,10 @@ e2e:
 visual:
 	cargo run --release -p bt-visual-diff -- $(ARTIFACTS)/e2e tests/visual/baselines
 
+baselines:
+	mkdir -p tests/visual/baselines
+	cp $(ARTIFACTS)/e2e/*.png tests/visual/baselines/
+
 screenshots: build
 	rm -rf $(ARTIFACTS)/usage-user
 	rm -f docs/screenshots/*.png
@@ -80,5 +84,6 @@ chain:
 	$(MAKE) fuzz
 	$(MAKE) mutation
 	$(MAKE) e2e
+	$(MAKE) baselines
 	$(MAKE) visual
 	$(MAKE) verify-algs
