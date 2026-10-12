@@ -1,5 +1,6 @@
-use crate::logic::{NavIntent, NetState, VendorCorpus};
+use crate::logic::{AppConfig, NavIntent, NetState, VendorCorpus};
 use crate::states::AppState;
+use crate::theme;
 use crate::views::PendingDrill;
 use crate::views::drill::{buffer_of, case_position};
 use bevy::feathers::controls::{FeathersTextInput, FeathersTextInputContainer};
@@ -7,6 +8,7 @@ use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bt_core::Cube;
+use bt_data::commutator::{Expanded, decompose_verified};
 use bt_data::corpus::{Corpus, Row, SheetClass};
 use bt_scheme::{CaseId, Orbit, enumerate_cases};
 
@@ -41,6 +43,13 @@ pub fn letters_of(case: &CaseId) -> String {
     format!("{first}{second}")
 }
 
+pub fn orbit_word(orbit: Orbit) -> &'static str {
+    match orbit {
+        Orbit::Edge => "edge",
+        Orbit::Corner => "corner",
+    }
+}
+
 pub fn filter_cases(all: &[CaseId], query: &str) -> Vec<CaseId> {
     let trimmed = query.trim().to_ascii_uppercase();
     if trimmed.is_empty() {
@@ -62,27 +71,6 @@ pub fn sheet(case: &CaseId) -> SheetClass {
 
 pub fn covered(corpus: &Corpus, case: &CaseId) -> bool {
     !case_rows(corpus, case).is_empty()
-}
-
-pub fn row_lines(row: &Row) -> Vec<String> {
-    let verdict = bt_data::verify::verify(&row.alg, &row.position, row.sheet);
-    let badge = if verdict.ok() {
-        "verified".to_string()
-    } else {
-        format!("{} problem(s)", verdict.problems.len())
-    };
-    vec![
-        format!(
-            "{} {} qtm {} htm {} [{}]",
-            row.solver,
-            row.alg_text,
-            row.qtm(),
-            row.htm(),
-            badge
-        ),
-        format!("commutator {}", row.commutator),
-        format!("recon {} video {}", row.recon_link, row.youtube_link),
-    ]
 }
 
 pub fn enter(
@@ -189,36 +177,74 @@ pub fn list_keys(
     }
 }
 
-pub fn detail_lines(corpus: &Corpus, browser: &AlgsBrowser) -> Vec<String> {
-    let mut lines = vec![format!(
-        "{} of {} cases match",
-        browser.filtered.len(),
-        browser.all.len()
-    )];
-    match browser.filtered.get(browser.selected) {
-        None => lines.push("no case matches the query".to_string()),
-        Some(case) => {
-            lines.push(format!(
-                "selected {} {} {} covered {}",
-                letters_of(case),
-                if case.orbit == Orbit::Edge {
-                    "edge"
-                } else {
-                    "corner"
-                },
-                case_position(case),
-                if covered(corpus, case) { "yes" } else { "no" }
-            ));
-            let rows = case_rows(corpus, case);
-            if rows.is_empty() {
-                lines.push("no vendor algs".to_string());
-            }
-            for row in rows {
-                lines.extend(row_lines(row));
-            }
-        }
+pub fn list_capacity(config: &AppConfig) -> usize {
+    let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);
+    let query_box = theme::ROOT_REM * 3.0;
+    let line = theme::ROOT_REM * theme::FONT_BODY * 1.5;
+    (((config.window.height as f32 - chrome - query_box) / line).floor() as usize).max(1)
+}
+
+pub fn list_window(
+    filtered_len: usize,
+    selected: usize,
+    capacity: usize,
+) -> std::ops::Range<usize> {
+    let capacity = capacity.min(filtered_len).max(1);
+    let start = selected
+        .saturating_sub(capacity / 2)
+        .min(filtered_len.saturating_sub(capacity));
+    start..start + capacity
+}
+
+pub fn list_rows(browser: &AlgsBrowser, capacity: usize) -> Vec<(String, bool)> {
+    if browser.filtered.is_empty() {
+        return vec![("no case matches the query".to_string(), false)];
     }
-    lines
+    list_window(browser.filtered.len(), browser.selected, capacity)
+        .map(|index| {
+            let case = browser.filtered[index];
+            let selected = index == browser.selected;
+            let caret = if selected { ">" } else { " " };
+            (
+                format!("{caret} {} {}", letters_of(&case), orbit_word(case.orbit)),
+                selected,
+            )
+        })
+        .collect()
+}
+
+pub fn meta_line(row: &Row) -> String {
+    let verdict = bt_data::verify::verify(&row.alg, &row.position, row.sheet);
+    let badge = if verdict.ok() {
+        "verified".to_string()
+    } else {
+        format!("{} problem(s)", verdict.problems.len())
+    };
+    format!(
+        "{} qtm {} htm {} [{}]",
+        row.solver,
+        row.qtm(),
+        row.htm(),
+        badge
+    )
+}
+
+pub fn mechanic_spans(units: &[Expanded]) -> Vec<(String, Color)> {
+    let mut spans = Vec::new();
+    for (index, unit) in units.iter().enumerate() {
+        if index > 0 {
+            spans.push((" + ".to_string(), theme::text_muted()));
+        }
+        if let Some(setup) = &unit.setup {
+            spans.push((format!("{}: ", setup.format()), theme::setup()));
+        }
+        spans.push(("[".to_string(), theme::text_muted()));
+        spans.push((unit.a.format(), theme::teal()));
+        spans.push((",".to_string(), theme::text_muted()));
+        spans.push((unit.b.format(), theme::interchange()));
+        spans.push(("]".to_string(), theme::text_muted()));
+    }
+    spans
 }
 
 #[cfg(test)]
@@ -243,10 +269,73 @@ mod tests {
         assert_eq!(filter_cases(&all, "").len(), 818);
         assert!(filter_cases(&all, "z").is_empty());
     }
+
+    #[test]
+    fn list_window_keeps_the_selection_centered_and_clamped() {
+        assert_eq!(list_window(818, 0, 10), 0..10);
+        assert_eq!(list_window(818, 5, 10), 0..10);
+        assert_eq!(list_window(818, 6, 10), 1..11);
+        assert_eq!(list_window(818, 817, 10), 808..818);
+        assert_eq!(list_window(3, 2, 10), 0..3);
+    }
+
+    #[test]
+    fn list_rows_mark_the_selected_row_with_a_caret() {
+        let mut browser = AlgsBrowser::default();
+        browser.filtered = browser.all.clone();
+        browser.selected = 0;
+        let rows = list_rows(&browser, 6);
+        assert_eq!(rows.len(), 6);
+        assert_eq!(rows[0].0, "> AB edge");
+        assert!(rows[0].1);
+        assert!(rows[1].0.starts_with("  ") && rows[1].0.ends_with(" edge"));
+        assert!(!rows[1].1);
+        browser.selected = 817;
+        let tail = list_rows(&browser, 6);
+        assert!(
+            tail.last()
+                .is_some_and(|(label, selected)| { label.starts_with('>') && *selected })
+        );
+    }
+
+    #[test]
+    fn list_rows_report_an_empty_match_set_once() {
+        let browser = AlgsBrowser::default();
+        assert_eq!(
+            list_rows(&browser, 10),
+            vec![("no case matches the query".to_string(), false)]
+        );
+    }
+
+    #[test]
+    fn mechanic_spans_color_setup_insertion_and_interchange() {
+        let alg = bt_core::Alg::parse("R2 U' S R2 S' R2 U R2").expect("fixture alg parses");
+        let units = decompose_verified("R2 U':[S,R2]", &alg).expect("verified decomposition");
+        assert_eq!(units.len(), 1);
+        let spans = mechanic_spans(&units);
+        assert_eq!(spans[0], ("R2 U': ".to_string(), theme::setup()));
+        assert_eq!(spans[1], ("[".to_string(), theme::text_muted()));
+        assert_eq!(spans[2], ("S".to_string(), theme::teal()));
+        assert_eq!(spans[3], (",".to_string(), theme::text_muted()));
+        assert_eq!(spans[4], ("R2".to_string(), theme::interchange()));
+        assert_eq!(spans[5], ("]".to_string(), theme::text_muted()));
+        let mut joined = units.clone();
+        joined.push(units[0].clone());
+        assert_eq!(
+            mechanic_spans(&joined)[6],
+            (" + ".to_string(), theme::text_muted())
+        );
+    }
 }
 
 #[derive(Component, Default)]
+pub struct AlgsDetailLine;
+
+#[derive(Component, Default)]
 pub struct AlgsDetail;
+
+#[derive(Component, Default)]
+pub struct AlgsListRow(pub usize);
 
 #[derive(Component, Default)]
 pub struct AlgsQueryBox;
@@ -254,19 +343,43 @@ pub struct AlgsQueryBox;
 pub fn spawn(
     commands: &mut Commands,
     fonts: &crate::present::FontBook,
-    config: &crate::logic::AppConfig,
+    config: &AppConfig,
 ) -> Entity {
-    let entity = crate::present::spawn_text_view(
+    let content = crate::present::spawn_view_frame(
         commands,
         fonts,
         AppState::Algs,
         "algs",
-        &["type letters to search, slash focuses it, up down select, d drills, esc menu"],
-        Some(crate::present::net_geometry(config)),
+        "type letters to search, slash focuses it, up down select, d drills, esc menu",
     );
-    commands.entity(entity).with_children(|parent| {
-        crate::present::spawn_dynamic(parent, fonts, "", AlgsDetail);
+    commands.entity(content).insert(Node {
+        width: Val::Percent(100.0),
+        flex_grow: 1.0,
+        flex_direction: FlexDirection::Row,
+        column_gap: theme::rem(theme::SPACING_REM * 2.0),
+        ..default()
     });
+    let left = commands
+        .spawn((
+            Node {
+                width: Val::Percent(40.0),
+                flex_direction: FlexDirection::Column,
+                row_gap: theme::rem(theme::SPACING_REM),
+                ..default()
+            },
+            ChildOf(content),
+        ))
+        .id();
+    commands.spawn((
+        AlgsDetail,
+        Node {
+            flex_grow: 1.0,
+            flex_direction: FlexDirection::Column,
+            row_gap: theme::rem(theme::SPACING_REM * 0.5),
+            ..default()
+        },
+        ChildOf(content),
+    ));
     commands
         .spawn_scene(bsn! {
             @FeathersTextInputContainer
@@ -276,8 +389,149 @@ pub fn spawn(
             ]
         })
         .insert(AlgsQueryBox)
-        .insert(ChildOf(entity));
-    entity
+        .insert(ChildOf(left));
+    commands.entity(left).with_children(|column| {
+        for index in 0..list_capacity(config) {
+            crate::present::spawn_line(
+                column,
+                fonts,
+                "",
+                theme::FONT_BODY,
+                theme::text_muted(),
+                AlgsListRow(index),
+            );
+        }
+    });
+    content
+}
+
+fn spawn_detail(
+    detail: &mut ChildSpawnerCommands,
+    fonts: &crate::present::FontBook,
+    corpus: &Corpus,
+    browser: &AlgsBrowser,
+) {
+    crate::present::spawn_line(
+        detail,
+        fonts,
+        &format!(
+            "{} of {} cases match",
+            browser.filtered.len(),
+            browser.all.len()
+        ),
+        theme::FONT_MICRO,
+        theme::text_muted(),
+        AlgsDetailLine,
+    );
+    let Some(case) = browser.filtered.get(browser.selected) else {
+        crate::present::spawn_line(
+            detail,
+            fonts,
+            "no case matches the query",
+            theme::FONT_SMALL,
+            theme::text_muted(),
+            AlgsDetailLine,
+        );
+        return;
+    };
+    let case_covered = covered(corpus, case);
+    let rows = case_rows(corpus, case);
+    crate::present::spawn_line(
+        detail,
+        fonts,
+        &letters_of(case),
+        theme::FONT_TITLE,
+        theme::text_primary(),
+        AlgsDetailLine,
+    );
+    crate::present::spawn_line(
+        detail,
+        fonts,
+        &format!(
+            "{} {} {}",
+            orbit_word(case.orbit),
+            case_position(case),
+            if case_covered {
+                "covered yes"
+            } else {
+                "covered no"
+            }
+        ),
+        theme::FONT_SMALL,
+        if case_covered {
+            theme::ok()
+        } else {
+            theme::danger()
+        },
+        AlgsDetailLine,
+    );
+    if rows.is_empty() {
+        crate::present::spawn_line(
+            detail,
+            fonts,
+            "no vendor algs",
+            theme::FONT_SMALL,
+            theme::text_muted(),
+            AlgsDetailLine,
+        );
+    }
+    for (index, row) in rows.iter().enumerate() {
+        if index == 0 {
+            match decompose_verified(&row.commutator, &row.alg) {
+                Some(units) => {
+                    let spans = mechanic_spans(&units);
+                    let refs: Vec<(&str, f32, Color)> = spans
+                        .iter()
+                        .map(|(text, color)| (text.as_str(), theme::FONT_ALG, *color))
+                        .collect();
+                    crate::present::spawn_spans(detail, fonts, &refs);
+                }
+                None => {
+                    crate::present::spawn_line(
+                        detail,
+                        fonts,
+                        &row.alg_text,
+                        theme::FONT_ALG,
+                        theme::text_primary(),
+                        AlgsDetailLine,
+                    );
+                    crate::present::spawn_line(
+                        detail,
+                        fonts,
+                        &format!("commutator {}", row.commutator),
+                        theme::FONT_SMALL,
+                        theme::text_muted(),
+                        AlgsDetailLine,
+                    );
+                }
+            }
+        } else {
+            crate::present::spawn_line(
+                detail,
+                fonts,
+                &row.alg_text,
+                theme::FONT_BODY,
+                theme::text_muted(),
+                AlgsDetailLine,
+            );
+        }
+        crate::present::spawn_line(
+            detail,
+            fonts,
+            &meta_line(row),
+            theme::FONT_SMALL,
+            theme::text_muted(),
+            AlgsDetailLine,
+        );
+        crate::present::spawn_line(
+            detail,
+            fonts,
+            &format!("recon {} video {}", row.recon_link, row.youtube_link),
+            theme::FONT_MICRO,
+            theme::text_muted(),
+            AlgsDetailLine,
+        );
+    }
 }
 
 pub fn read_query(
@@ -298,15 +552,39 @@ pub fn read_query(
 }
 
 pub fn bind_detail(
+    mut commands: Commands,
     corpus: Res<VendorCorpus>,
     browser: Res<AlgsBrowser>,
-    mut texts: Query<&mut Text, With<AlgsDetail>>,
+    config: Res<AppConfig>,
+    fonts: Res<crate::present::FontBook>,
+    rails: Query<(Entity, Option<&Children>), With<AlgsDetail>>,
+    mut rows: Query<(&mut Text, &mut TextColor, &AlgsListRow)>,
 ) {
     if !browser.is_changed() {
         return;
     }
-    let body = detail_lines(&corpus.0, &browser).join("\n");
-    for mut text in &mut texts {
-        *text = Text::new(body.clone());
+    let rendered = list_rows(&browser, list_capacity(&config));
+    for (mut text, mut color, row) in &mut rows {
+        match rendered.get(row.0) {
+            Some((label, selected)) => {
+                *text = Text::new(label.clone());
+                color.0 = if *selected {
+                    theme::text_primary()
+                } else {
+                    theme::text_muted()
+                };
+            }
+            None => *text = Text::new(String::new()),
+        }
+    }
+    for (rail, children) in &rails {
+        if let Some(children) = children {
+            for child in children.iter() {
+                commands.entity(child).despawn();
+            }
+        }
+        commands.entity(rail).with_children(|parent| {
+            spawn_detail(parent, &fonts, &corpus.0, &browser);
+        });
     }
 }
