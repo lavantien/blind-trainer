@@ -1,0 +1,10 @@
+[package]
+name = "probe-t14"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+bt-core = { path = "../../crates/bt-core" }
+bt-data = { path = "../../crates/bt-data" }
+bt-scheme = { path = "../../crates/bt-scheme" }
