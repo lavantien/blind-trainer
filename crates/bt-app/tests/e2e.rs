@@ -111,6 +111,37 @@ fn settings_mutation_persists_across_reload() {
 }
 
 #[test]
+fn per_orbit_mode_survives_reload() {
+    let _guard = lock().lock().expect("test lock");
+    let paths = temp_paths("perorbit");
+    let mut first = headless_app(temp_paths_clone(&paths));
+    pump(&mut first, 6);
+    assert_eq!(current_state(&first), AppState::Menu);
+    assert_eq!(
+        first.world().resource::<Stores>().settings.memo_mode,
+        MemoMode::Syllables
+    );
+    let mutated = Settings {
+        memo_mode: MemoMode::PerOrbit,
+        ..first.world().resource::<Stores>().settings
+    };
+    first
+        .world_mut()
+        .resource_mut::<Messages<SettingsChanged>>()
+        .write(SettingsChanged(mutated));
+    pump(&mut first, 2);
+    assert!(first.world().resource::<LastSave>().settings_ok);
+    assert_eq!(first.world().resource::<Stores>().settings, mutated);
+    let saved = std::fs::read_to_string(settings_file(&paths.user_root)).expect("settings file");
+    assert!(saved.contains("\"per-orbit\""), "saved: {saved}");
+
+    let mut second = headless_app(paths);
+    pump(&mut second, 6);
+    assert_eq!(current_state(&second), AppState::Menu);
+    assert_eq!(second.world().resource::<Stores>().settings, mutated);
+}
+
+#[test]
 fn save_stores_writes_all_files() {
     let _guard = lock().lock().expect("test lock");
     let paths = temp_paths("savestores");
