@@ -1,0 +1,14 @@
+[workspace]
+
+[package]
+name = "attacker-b"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bt-core = { path = "../../crates/bt-core" }
+bt-scheme = { path = "../../crates/bt-scheme" }
+bt-ga = { path = "../../crates/bt-ga" }
+
+[profile.release]
+opt-level = 2
