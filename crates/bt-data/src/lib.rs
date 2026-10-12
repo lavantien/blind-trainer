@@ -1,3 +1,4 @@
+pub mod commutator;
 pub mod corpus;
 pub mod paths;
 pub mod srs;
