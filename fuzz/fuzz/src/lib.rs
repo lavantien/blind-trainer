@@ -4,6 +4,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
 use bt_core::{Alg, Cube, corner_stickers, edge_stickers};
+use bt_data::commutator::{decompose, decompose_verified};
 use bt_scheme::{
     Classification, Orbit, Rng, apply_memo, classify, memo_from_array, random_state, state_array,
     trace,
@@ -200,4 +201,44 @@ pub fn memo_once(data: &[u8]) {
     let mut work = occ;
     apply_memo(&mut work, &memo);
     assert_eq!(work, identity_occ(), "memo round trip failed");
+}
+
+pub fn commutator_once(data: &[u8]) {
+    let text = String::from_utf8_lossy(data);
+    let units = decompose(&text);
+    assert_eq!(decompose(&text), units, "decompose must be deterministic");
+    let Some(units) = units else {
+        return;
+    };
+    let mut derived = Vec::new();
+    for unit in &units {
+        let expansion = unit.expansion();
+        let mut cube = Cube::solved();
+        cube.apply_alg(&expansion);
+        let mut restored = cube;
+        restored.apply_alg(&expansion.inverse());
+        assert!(restored.is_solved(), "expansion not invertible: {text:?}");
+        derived.extend_from_slice(expansion.moves());
+    }
+    let derived_alg = Alg::new(derived);
+    let verified = decompose_verified(&text, &derived_alg)
+        .expect("derived expansion must verify against itself");
+    let mut candidate = Cube::solved();
+    for unit in &verified {
+        candidate.apply_alg(&unit.expansion());
+    }
+    let mut reference = Cube::solved();
+    reference.apply_alg(&derived_alg);
+    assert_eq!(candidate, reference, "verified order mismatch: {text:?}");
+    if let Ok(alg) = Alg::parse(&text) {
+        if let Some(verified) = decompose_verified(&text, &alg) {
+            let mut candidate = Cube::solved();
+            for unit in &verified {
+                candidate.apply_alg(&unit.expansion());
+            }
+            let mut reference = Cube::solved();
+            reference.apply_alg(&alg);
+            assert_eq!(candidate, reference, "verified order mismatch: {text:?}");
+        }
+    }
 }
