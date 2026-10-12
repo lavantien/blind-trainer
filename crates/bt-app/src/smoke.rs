@@ -12,6 +12,11 @@ const SMOKE_FATAL_REASON: &str = "smoke tour complete";
 
 pub struct SmokePlugin {
     pub dir: PathBuf,
+    pub seed: u64,
+}
+
+pub fn smoke_seeds(seed: u64) -> (u64, u64, u64) {
+    (seed, seed.wrapping_add(1), seed.wrapping_add(2))
 }
 
 #[derive(Debug)]
@@ -49,12 +54,16 @@ impl Plugin for SmokePlugin {
     fn build(&self, app: &mut App) {
         std::fs::create_dir_all(&self.dir)
             .unwrap_or_else(|err| panic!("smoke output dir {}: {err}", self.dir.display()));
+        let (memo_seed, solve_seed, drill_seed) = smoke_seeds(self.seed);
         app.insert_resource(SmokeTour {
             dir: self.dir.clone(),
             phase: SmokePhase::WaitForBoot { waited: 0.0 },
             entered: Vec::new(),
             shots: Vec::new(),
         })
+        .insert_resource(crate::views::memo::MemoSeed(memo_seed))
+        .insert_resource(crate::views::solve::SolveSeed(solve_seed))
+        .insert_resource(crate::views::drill::DrillSeed(drill_seed))
         .init_resource::<SmokeFonts>()
         .add_systems(Update, (track_fonts, run_smoke).chain());
     }
@@ -242,5 +251,11 @@ mod tests {
         names.sort();
         names.dedup();
         assert_eq!(names.len(), total);
+    }
+
+    #[test]
+    fn smoke_seeds_pin_the_tour_determinism() {
+        assert_eq!(smoke_seeds(20261012), (20261012, 20261013, 20261014));
+        assert_eq!(smoke_seeds(u64::MAX), (u64::MAX, 0, 1));
     }
 }

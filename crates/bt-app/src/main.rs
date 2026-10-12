@@ -1,7 +1,7 @@
 use bevy::asset::AssetPlugin;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bt_app::logic::{AppConfig, AppLogicPlugin, RuntimePaths, app_config_from, load_config_value};
+use bt_app::logic::{AppLogicPlugin, RuntimePaths, app_config_from, load_config_value};
 use bt_app::present::PresentationPlugin;
 use bt_app::smoke::SmokePlugin;
 use std::path::PathBuf;
@@ -11,11 +11,11 @@ fn main() {
     let smoke_dir = parse_smoke(&args);
     let paths = RuntimePaths::from_env();
     let asset_root = paths.assets_root.clone();
-    let window = load_config_value(&paths.config_path)
+    let config = load_config_value(&paths.config_path)
         .ok()
         .and_then(|value| app_config_from(&value).ok())
-        .map(|config| config.window)
-        .unwrap_or_else(|| AppConfig::default().window);
+        .unwrap_or_default();
+    let window = config.window.clone();
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins
@@ -35,7 +35,10 @@ fn main() {
     .add_plugins(AppLogicPlugin::with_paths(paths))
     .add_plugins(PresentationPlugin);
     if let Some(dir) = smoke_dir {
-        app.add_plugins(SmokePlugin { dir });
+        app.add_plugins(SmokePlugin {
+            dir,
+            seed: config.smoke_seed,
+        });
     }
     app.run();
 }

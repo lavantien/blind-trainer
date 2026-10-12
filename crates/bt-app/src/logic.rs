@@ -18,6 +18,7 @@ const DEFAULT_WINDOW_TITLE: &str = "blind trainer";
 const DEFAULT_MEMO_CADENCE_MS: u32 = 800;
 const DEFAULT_MEMO_MODE: &str = "syllables";
 const DEFAULT_DRILL_REPS: u32 = 5;
+const DEFAULT_SMOKE_SEED: u64 = 20261012;
 const DEFAULT_REF_GROUND: &str = "ref_ground";
 const DEFAULT_ASSETS_ROOT: &str = "assets";
 
@@ -75,6 +76,12 @@ pub struct AppConfig {
     pub window: WindowCfg,
     pub memo: MemoCfg,
     pub drill: DrillCfg,
+    #[serde(default = "default_smoke_seed")]
+    pub smoke_seed: u64,
+}
+
+fn default_smoke_seed() -> u64 {
+    DEFAULT_SMOKE_SEED
 }
 
 impl Default for AppConfig {
@@ -92,6 +99,7 @@ impl Default for AppConfig {
             drill: DrillCfg {
                 reps: DEFAULT_DRILL_REPS,
             },
+            smoke_seed: DEFAULT_SMOKE_SEED,
         }
     }
 }
