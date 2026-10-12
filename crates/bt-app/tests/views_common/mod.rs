@@ -15,6 +15,7 @@ use std::time::Duration;
 
 pub const COVERED_ALG: &str = "R2 U' S R2 S' R2 U R2";
 pub const COVERED_POSITION: &str = "UF-UB-UR";
+pub const COVERED_COMMUTATOR: &str = "R2 U':[S,R2]";
 
 static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -37,6 +38,17 @@ impl Fixture {
 }
 
 pub fn fixture(tag: &str) -> Fixture {
+    let built = bare_fixture(tag);
+    add_edge_row(
+        &built.base,
+        COVERED_POSITION,
+        COVERED_ALG,
+        COVERED_COMMUTATOR,
+    );
+    built
+}
+
+pub fn bare_fixture(tag: &str) -> Fixture {
     let base = std::env::temp_dir()
         .join("bt-app-views-tests")
         .join(format!(
@@ -59,7 +71,6 @@ pub fn fixture(tag: &str) -> Fixture {
             std::fs::write(&path, sheet_header()).expect("sheet file");
         }
     }
-    add_edge_row(&base, COVERED_POSITION, COVERED_ALG);
     Fixture {
         paths: RuntimePaths {
             config_path: base.join("config").join("config.json"),
@@ -94,11 +105,11 @@ fn sheet_header() -> String {
     "Position\tAlg\tCommutator\tReconstruction Link\tYoutube Link\n".to_string()
 }
 
-fn add_edge_row(base: &Path, position: &str, alg: &str) {
+pub fn add_edge_row(base: &Path, position: &str, alg: &str, commutator: &str) {
     let path = base.join("vendor").join("cherry").join("edge.tsv");
     let mut text = std::fs::read_to_string(&path).expect("edge sheet");
     text.push_str(&format!(
-        "{position}\t{alg}\t\t\thttps://example.test/recon\n"
+        "{position}\t{alg}\t{commutator}\t\thttps://example.test/recon\n"
     ));
     std::fs::write(&path, text).expect("append edge row");
 }

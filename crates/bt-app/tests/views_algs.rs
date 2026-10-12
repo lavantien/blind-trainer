@@ -47,7 +47,10 @@ fn algs_search_routes_the_selected_case_into_drill() {
     let pending = app.world().resource::<PendingDrill>().0;
     assert_eq!(pending, None, "drill enter consumed the pending case");
     let session = app.world().resource::<DrillSession>();
-    assert_eq!(session.case, Some(edge_case('A', 'B')));
+    assert_eq!(
+        session.side_a.as_ref().map(|side| side.case),
+        Some(edge_case('A', 'B'))
+    );
 }
 
 #[test]

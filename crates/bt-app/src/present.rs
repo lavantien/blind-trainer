@@ -31,15 +31,6 @@ impl Plugin for PresentationPlugin {
             .add_systems(
                 Update,
                 (
-                    (
-                        views::drill::read_input,
-                        views::drill::bind_text,
-                        IntoScheduleConfigs::run_if(
-                            views::drill::focus_input_on_memo,
-                            in_state(AppState::Drill),
-                        ),
-                    )
-                        .chain(),
                     (views::algs::read_query, views::algs::bind_detail).chain(),
                     IntoScheduleConfigs::run_if(views::memo::bind_text, in_state(AppState::Memo)),
                     IntoScheduleConfigs::run_if(views::solve::bind_text, in_state(AppState::Solve)),

@@ -68,10 +68,9 @@ impl AppState {
 #[source(AppState = AppState::Drill)]
 pub enum DrillPhase {
     #[default]
-    Ready,
-    Memo,
-    Exec,
-    Review,
+    Card,
+    Reps,
+    Rate,
 }
 
 #[derive(SubStates, Clone, Copy, PartialEq, Eq, Hash, Debug, Default)]

@@ -1,5 +1,6 @@
 pub mod algs;
 pub mod drill;
+pub mod drill_view;
 pub mod images;
 pub mod memo;
 pub mod menu;
@@ -135,7 +136,6 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(solve::SolveSession::default())
             .insert_resource(stats::StatsSnapshot::default())
             .insert_resource(drill::DrillSeed(time_seed()))
-            .insert_resource(drill::DrillDraft::default())
             .insert_resource(drill::DrillSession::default())
             .insert_resource(algs::AlgsQuery::default())
             .insert_resource(algs::AlgsBrowser::default())
@@ -144,11 +144,19 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(
                 Update,
                 (
-                    IntoScheduleConfigs::run_if(drill::swap_target, in_state(AppState::Drill)),
-                    IntoScheduleConfigs::run_if(drill::ready_keys, in_state(DrillPhase::Ready)),
-                    IntoScheduleConfigs::run_if(drill::input_keys, in_state(DrillPhase::Memo)),
-                    IntoScheduleConfigs::run_if(drill::verdict_keys, in_state(DrillPhase::Exec)),
-                    IntoScheduleConfigs::run_if(drill::review_keys, in_state(DrillPhase::Review)),
+                    IntoScheduleConfigs::run_if(drill::card_keys, in_state(DrillPhase::Card)),
+                    IntoScheduleConfigs::run_if(drill::ensure_card, in_state(DrillPhase::Card)),
+                    (
+                        IntoScheduleConfigs::run_if(drill::reps_tick, in_state(DrillPhase::Reps)),
+                        IntoScheduleConfigs::run_if(drill::reps_keys, in_state(DrillPhase::Reps)),
+                        IntoScheduleConfigs::run_if(drill::reps_bind, in_state(DrillPhase::Reps)),
+                    )
+                        .chain(),
+                    (
+                        IntoScheduleConfigs::run_if(drill::rate_keys, in_state(DrillPhase::Rate)),
+                        IntoScheduleConfigs::run_if(drill::rate_bind, in_state(DrillPhase::Rate)),
+                    )
+                        .chain(),
                     IntoScheduleConfigs::run_if(memo::intro_keys, in_state(MemoPhase::Intro)),
                     IntoScheduleConfigs::run_if(memo::stream, in_state(MemoPhase::Stream)),
                     IntoScheduleConfigs::run_if(memo::recall_keys, in_state(MemoPhase::Recall)),
@@ -180,10 +188,9 @@ impl Plugin for ViewsLogicPlugin {
                 OnEnter(AppState::Drill),
                 (drill::enter, drill::sync_net).chain(),
             )
-            .add_systems(OnEnter(DrillPhase::Ready), drill::enter_ready)
-            .add_systems(OnEnter(DrillPhase::Memo), drill::enter_memo)
-            .add_systems(OnEnter(DrillPhase::Exec), drill::enter_exec)
-            .add_systems(OnEnter(DrillPhase::Review), drill::enter_review)
+            .add_systems(OnEnter(DrillPhase::Card), drill::enter_card)
+            .add_systems(OnEnter(DrillPhase::Reps), drill::enter_reps)
+            .add_systems(OnEnter(DrillPhase::Rate), drill::enter_rate)
             .add_systems(OnEnter(AppState::Memo), memo::enter)
             .add_systems(OnEnter(MemoPhase::Intro), memo::enter_intro)
             .add_systems(OnEnter(MemoPhase::Stream), memo::enter_stream)
