@@ -1,14 +1,20 @@
 use bevy::prelude::*;
 
-pub const ROOT_REM: f32 = 16.0;
-pub const FONT_TITLE: f32 = 1.75;
-pub const FONT_HEADING: f32 = 1.25;
+pub const ROOT_REM: f32 = 20.0;
+pub const FONT_FOCAL: f32 = 3.4;
+pub const FONT_TITLE: f32 = 2.2;
+pub const FONT_ALG: f32 = 1.7;
+pub const FONT_HEADING: f32 = 1.3;
 pub const FONT_BODY: f32 = 1.0;
-pub const FONT_SMALL: f32 = 0.85;
+pub const FONT_SMALL: f32 = 0.8;
+pub const FONT_MICRO: f32 = 0.75;
 pub const SPACING_REM: f32 = 0.5;
 pub const PANEL_PADDING_REM: f32 = 1.0;
+pub const HEADER_HEIGHT_REM: f32 = 3.5;
+pub const HAIRLINE_REM: f32 = 0.05;
+pub const DRILL_NET_WIDTH_PCT: f32 = 0.44;
 pub const PULSE_HZ: f32 = 2.0;
-pub const NET_VIEW_RESERVE_REM: f32 = 7.0;
+pub const NET_VIEW_RESERVE_REM: f32 = 8.0;
 pub const DYNAMIC_BAND_REM: f32 = 16.5;
 pub const PULSE_LERP_PER_S: f32 = 8.0;
 
@@ -40,12 +46,24 @@ pub fn danger() -> Color {
     Color::srgb(0.92, 0.35, 0.35)
 }
 
-pub fn buffer_highlight() -> Color {
+pub fn teal() -> Color {
     Color::srgb(0.30, 0.90, 0.85)
 }
 
-pub fn target_highlight() -> Color {
+pub fn interchange() -> Color {
     Color::srgb(0.98, 0.55, 0.25)
+}
+
+pub fn setup() -> Color {
+    Color::srgb(0.55, 0.62, 0.75)
+}
+
+pub fn ok() -> Color {
+    Color::srgb(0.36, 0.78, 0.44)
+}
+
+pub fn hairline() -> Color {
+    Color::srgb(0.26, 0.28, 0.33)
 }
 
 pub const FACE_COUNT: usize = 6;
@@ -86,11 +104,23 @@ mod tests {
     }
 
     #[test]
-    fn font_sizes_form_a_scale() {
-        let title = FONT_TITLE;
-        let heading = FONT_HEADING;
-        let body = FONT_BODY;
-        let small = FONT_SMALL;
-        assert!(title > heading && heading > body && body > small && small > 0.0);
+    fn font_scale_is_pinned() {
+        assert_eq!(FONT_MICRO, 0.75);
+        assert_eq!(FONT_SMALL, 0.8);
+        assert_eq!(FONT_BODY, 1.0);
+        assert_eq!(FONT_HEADING, 1.3);
+        assert_eq!(FONT_ALG, 1.7);
+        assert_eq!(FONT_TITLE, 2.2);
+        assert_eq!(FONT_FOCAL, 3.4);
+    }
+
+    #[test]
+    fn mechanic_palette_is_distinct() {
+        let colors = [teal(), interchange(), setup(), ok()];
+        for (i, left) in colors.iter().enumerate() {
+            for right in colors.iter().skip(i + 1) {
+                assert_ne!(left.to_linear(), right.to_linear());
+            }
+        }
     }
 }
