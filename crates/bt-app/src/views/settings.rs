@@ -201,6 +201,7 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: 
             @FeathersNumberInput {
                 @label_text: {Some("cadence ms")},
             }
+            Node { width: px(160.0), flex_grow: 0.0, flex_shrink: 0.0 }
             on(on_cadence_change)
         })
         .insert(CadenceInput)
@@ -216,6 +217,7 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: 
             @FeathersNumberInput {
                 @label_text: {Some("drill reps")},
             }
+            Node { width: px(160.0), flex_grow: 0.0, flex_shrink: 0.0 }
             on(on_reps_change)
         })
         .insert(RepsInput)
