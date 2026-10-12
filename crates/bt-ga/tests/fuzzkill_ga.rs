@@ -266,7 +266,7 @@ fn draw_cuts_stay_bounded_and_spread() {
         for n in 2usize..=12 {
             let (cut1, cut2) = draw_cuts(&mut rng, n);
             assert!(cut1 < cut2, "seed {seed} n {n} cuts ({cut1},{cut2})");
-            assert!(cut2 <= n - 1, "seed {seed} n {n} cuts ({cut1},{cut2})");
+            assert!(cut2 < n, "seed {seed} n {n} cuts ({cut1},{cut2})");
             assert!(cut1 <= n - 2, "seed {seed} n {n} cuts ({cut1},{cut2})");
             if n == 8 {
                 seen.insert((cut1, cut2));
@@ -369,7 +369,7 @@ fn run_trajectory_is_pinned_for_reproducible_inputs() {
     let outcome = bt_ga::ga::run(&env, &params);
     assert_eq!(outcome.best, vec![4, 0, 3]);
     let mut expected = vec![0.396_645_84_f32; 4];
-    expected.extend(std::iter::repeat(0.396_020_83_f32).take(22));
+    expected.extend(std::iter::repeat_n(0.396_020_83_f32, 22));
     assert_eq!(outcome.per_gen_best, expected);
     assert_eq!(outcome.best_generation, 4);
     assert_eq!(outcome.stagnation_tail, 21);
