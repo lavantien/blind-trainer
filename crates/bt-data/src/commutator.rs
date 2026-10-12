@@ -77,9 +77,6 @@ pub fn decompose(text: &str) -> Option<Vec<Expanded>> {
     let units = parse_expr(trimmed, 0)?;
     let mut expanded = Vec::new();
     flatten(&units, None, &mut expanded);
-    if expanded.is_empty() {
-        return None;
-    }
     Some(expanded)
 }
 
@@ -133,14 +130,10 @@ fn flatten(units: &[Unit], inherited: Option<&Alg>, out: &mut Vec<Expanded>) {
 
 fn parse_expr(text: &str, depth: u32) -> Option<Vec<Unit>> {
     let parts = split_depth_zero(text, '+')?;
-    let units = parts
+    parts
         .iter()
         .map(|part| parse_unit(part.trim(), depth))
-        .collect::<Option<Vec<Unit>>>()?;
-    if units.is_empty() {
-        return None;
-    }
-    Some(units)
+        .collect()
 }
 
 fn parse_unit(text: &str, depth: u32) -> Option<Unit> {
