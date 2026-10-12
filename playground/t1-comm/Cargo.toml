@@ -1,0 +1,10 @@
+[package]
+name = "t1-comm"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bt-core = { path = "../../crates/bt-core" }
+bt-data = { path = "../../crates/bt-data" }
+
+[workspace]
