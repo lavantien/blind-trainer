@@ -35,7 +35,10 @@ impl Plugin for PresentationPlugin {
                         views::drill::read_input,
                         views::drill::sync_input,
                         views::drill::bind_text,
-                        views::drill::focus_input_on_memo,
+                        IntoScheduleConfigs::run_if(
+                            views::drill::focus_input_on_memo,
+                            in_state(AppState::Drill),
+                        ),
                     )
                         .chain(),
                     (
@@ -44,8 +47,8 @@ impl Plugin for PresentationPlugin {
                         views::algs::bind_detail,
                     )
                         .chain(),
-                    views::memo::bind_text,
-                    views::solve::bind_text,
+                    IntoScheduleConfigs::run_if(views::memo::bind_text, in_state(AppState::Memo)),
+                    IntoScheduleConfigs::run_if(views::solve::bind_text, in_state(AppState::Solve)),
                     views::stats::bind_text,
                     views::settings::bind_text,
                 )
