@@ -116,6 +116,83 @@ pub fn net_geometry(config: &AppConfig) -> NetGeometry {
     )
 }
 
+pub fn drill_net_geometry(config: &AppConfig) -> NetGeometry {
+    let width = config.window.width as f32 * theme::DRILL_NET_WIDTH_PCT;
+    let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);
+    NetGeometry::for_region(
+        width,
+        (config.window.height as f32 - chrome).max(theme::ROOT_REM),
+    )
+}
+
+fn content_node() -> Node {
+    Node {
+        width: Val::Percent(100.0),
+        flex_grow: 1.0,
+        flex_direction: FlexDirection::Column,
+        ..default()
+    }
+}
+
+pub fn spawn_view_frame(
+    commands: &mut Commands,
+    fonts: &FontBook,
+    state: AppState,
+    title: &str,
+    context: &str,
+) -> Entity {
+    let root = commands
+        .spawn((
+            DespawnOnExit(state),
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                padding: UiRect::all(theme::rem(theme::PANEL_PADDING_REM)),
+                ..default()
+            },
+            BackgroundColor(theme::background()),
+        ))
+        .id();
+    commands.entity(root).with_children(|parent| {
+        parent
+            .spawn((
+                Node {
+                    width: Val::Percent(100.0),
+                    height: theme::rem(theme::HEADER_HEIGHT_REM),
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::SpaceBetween,
+                    column_gap: theme::rem(theme::SPACING_REM),
+                    border: UiRect::bottom(theme::rem(theme::HAIRLINE_REM)),
+                    ..default()
+                },
+                BorderColor::all(theme::hairline()),
+            ))
+            .with_children(|header| {
+                header.spawn((
+                    Text::new(title),
+                    TextFont {
+                        font: FontSource::Handle(fonts.bold.clone()),
+                        font_size: FontSize::Rem(theme::FONT_TITLE),
+                        ..default()
+                    },
+                    TextColor(theme::text_primary()),
+                ));
+                header.spawn((
+                    Text::new(context),
+                    TextFont {
+                        font: FontSource::Handle(fonts.regular.clone()),
+                        font_size: FontSize::Rem(theme::FONT_SMALL),
+                        ..default()
+                    },
+                    TextColor(theme::text_muted()),
+                ));
+            });
+    });
+    commands.spawn((content_node(), ChildOf(root))).id()
+}
+
 pub fn spawn_text_view(
     commands: &mut Commands,
     fonts: &FontBook,
@@ -124,22 +201,14 @@ pub fn spawn_text_view(
     lines: &[&str],
     geometry: Option<NetGeometry>,
 ) -> Entity {
-    let mut root = commands.spawn((
-        DespawnOnExit(state),
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            flex_direction: FlexDirection::Column,
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            row_gap: theme::rem(theme::SPACING_REM),
-            padding: UiRect::all(theme::rem(theme::PANEL_PADDING_REM)),
-            ..default()
-        },
-        BackgroundColor(theme::background()),
-    ));
-    root.with_children(|parent| {
-        spawn_title(parent, fonts, title);
+    let content = spawn_view_frame(commands, fonts, state, title, "");
+    commands.entity(content).insert(Node {
+        align_items: AlignItems::Center,
+        justify_content: JustifyContent::Center,
+        row_gap: theme::rem(theme::SPACING_REM),
+        ..content_node()
+    });
+    commands.entity(content).with_children(|parent| {
         for line in lines {
             spawn_hint(parent, fonts, line);
         }
@@ -147,7 +216,7 @@ pub fn spawn_text_view(
             net::spawn_net(parent, geometry);
         }
     });
-    root.id()
+    content
 }
 
 pub fn spawn_title(parent: &mut ChildSpawnerCommands, fonts: &FontBook, title: &str) {
@@ -174,15 +243,51 @@ pub fn spawn_hint(parent: &mut ChildSpawnerCommands, fonts: &FontBook, line: &st
     ));
 }
 
+pub fn spawn_line<M: Component>(
+    parent: &mut ChildSpawnerCommands,
+    fonts: &FontBook,
+    text: &str,
+    size_rem: f32,
+    color: Color,
+    marker: M,
+) -> Entity {
+    parent
+        .spawn((
+            marker,
+            Text::new(text),
+            TextFont {
+                font: FontSource::Handle(fonts.regular.clone()),
+                font_size: FontSize::Rem(size_rem),
+                ..default()
+            },
+            TextColor(color),
+        ))
+        .id()
+}
+
 pub fn spawn_dynamic<M: Component>(
     parent: &mut ChildSpawnerCommands,
     fonts: &FontBook,
     text: &str,
     marker: M,
 ) {
-    parent.spawn((
+    spawn_line(
+        parent,
+        fonts,
+        text,
+        theme::FONT_BODY,
+        theme::text_primary(),
         marker,
-        Text::new(text),
+    );
+}
+
+pub fn spawn_spans(
+    parent: &mut ChildSpawnerCommands,
+    fonts: &FontBook,
+    spans: &[(&str, f32, Color)],
+) -> Entity {
+    let mut root = parent.spawn((
+        Text::new(""),
         TextFont {
             font: FontSource::Handle(fonts.regular.clone()),
             font_size: FontSize::Rem(theme::FONT_BODY),
@@ -190,6 +295,20 @@ pub fn spawn_dynamic<M: Component>(
         },
         TextColor(theme::text_primary()),
     ));
+    root.with_children(|text| {
+        for (chunk, size, color) in spans {
+            text.spawn((
+                TextSpan::new(*chunk),
+                TextFont {
+                    font: FontSource::Handle(fonts.regular.clone()),
+                    font_size: FontSize::Rem(*size),
+                    ..default()
+                },
+                TextColor(*color),
+            ));
+        }
+    });
+    root.id()
 }
 
 fn enter_fatal(
@@ -207,6 +326,9 @@ fn enter_fatal(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[derive(Component)]
+    struct FocalLine;
 
     #[test]
     fn net_leaves_room_for_header_and_dynamic_text() {
@@ -232,5 +354,140 @@ mod tests {
             theme::ROOT_REM * theme::DYNAMIC_BAND_REM >= line * 8.0 + box_rows + spacing,
             "band too small for eight body lines and the input box"
         );
+    }
+
+    #[test]
+    fn drill_net_fills_the_left_region() {
+        let config = AppConfig::default();
+        let geo = drill_net_geometry(&config);
+        assert_eq!(geo.quad, 41.0);
+        let width = config.window.width as f32 * theme::DRILL_NET_WIDTH_PCT;
+        let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);
+        let height = config.window.height as f32 - chrome;
+        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= width);
+        assert!(geo.quad * 9.0 + geo.gap * 8.0 <= height);
+    }
+
+    #[test]
+    fn view_frame_builds_header_and_content() {
+        let mut world = World::new();
+        let fonts = FontBook {
+            regular: Handle::default(),
+            bold: Handle::default(),
+        };
+        let content = {
+            let mut commands = world.commands();
+            spawn_view_frame(&mut commands, &fonts, AppState::Menu, "menu", "3 due")
+        };
+        world.flush();
+        let root = world
+            .get::<ChildOf>(content)
+            .expect("content parented to the frame")
+            .0;
+        let root_node = world.get::<Node>(root).expect("root node");
+        assert_eq!(root_node.height, Val::Percent(100.0));
+        let root_children = world.get::<Children>(root).expect("root children");
+        assert_eq!(root_children.len(), 2);
+        assert_eq!(root_children[1], content);
+        let header = root_children[0];
+        let header_node = world.get::<Node>(header).expect("header node");
+        assert_eq!(header_node.height, theme::rem(theme::HEADER_HEIGHT_REM));
+        assert_eq!(header_node.border.bottom, theme::rem(theme::HAIRLINE_REM));
+        assert!(world.get::<BorderColor>(header).is_some());
+        let header_children = world.get::<Children>(header).expect("header children");
+        assert_eq!(header_children.len(), 2);
+        assert!(world.get::<Text>(header_children[0]).is_some());
+        assert!(world.get::<Text>(header_children[1]).is_some());
+        let node = world.get::<Node>(content).expect("content node");
+        assert_eq!(node.flex_grow, 1.0);
+    }
+
+    #[test]
+    fn text_view_centers_its_content_region() {
+        let mut world = World::new();
+        let fonts = FontBook {
+            regular: Handle::default(),
+            bold: Handle::default(),
+        };
+        let content = {
+            let mut commands = world.commands();
+            spawn_text_view(
+                &mut commands,
+                &fonts,
+                AppState::Menu,
+                "menu",
+                &["hint"],
+                None,
+            )
+        };
+        world.flush();
+        let node = world.get::<Node>(content).expect("content node");
+        assert_eq!(node.justify_content, JustifyContent::Center);
+        assert_eq!(node.align_items, AlignItems::Center);
+        assert_eq!(
+            world.get::<Children>(content).expect("hint spawned").len(),
+            1
+        );
+    }
+
+    #[test]
+    fn spans_build_one_root_with_styled_children() {
+        let mut world = World::new();
+        let fonts = FontBook {
+            regular: Handle::default(),
+            bold: Handle::default(),
+        };
+        let holder = {
+            let mut commands = world.commands();
+            let holder = commands.spawn(()).id();
+            commands.entity(holder).with_children(|parent| {
+                spawn_line(
+                    parent,
+                    &fonts,
+                    "pair",
+                    theme::FONT_FOCAL,
+                    theme::ok(),
+                    FocalLine,
+                );
+                spawn_spans(
+                    parent,
+                    &fonts,
+                    &[
+                        ("R2 U' ", theme::FONT_ALG, theme::setup()),
+                        ("[S,R2]", theme::FONT_ALG, theme::teal()),
+                    ],
+                );
+            });
+            holder
+        };
+        world.flush();
+        let children = world.get::<Children>(holder).expect("holder children");
+        assert_eq!(children.len(), 2);
+        let line = children[0];
+        assert!(world.get::<FocalLine>(line).is_some());
+        let line_font = world.get::<TextFont>(line).expect("line font");
+        assert!(
+            matches!(line_font.font_size, FontSize::Rem(size) if size == theme::FONT_FOCAL),
+            "line scale applied"
+        );
+        assert_eq!(
+            world.get::<TextColor>(line).expect("line color").0,
+            theme::ok()
+        );
+        let root = children[1];
+        assert!(world.get::<Text>(root).is_some());
+        let span_children = world.get::<Children>(root).expect("span children");
+        assert_eq!(span_children.len(), 2);
+        let expected = [theme::setup(), theme::teal()];
+        for (index, color) in expected.into_iter().enumerate() {
+            let span = span_children[index];
+            assert!(world.get::<TextSpan>(span).is_some());
+            let font = world.get::<TextFont>(span).expect("span font");
+            assert!(
+                matches!(font.font_size, FontSize::Rem(size) if size == theme::FONT_ALG),
+                "span scale applied"
+            );
+            assert_eq!(world.get::<TextColor>(span).expect("span color").0, color);
+        }
     }
 }
