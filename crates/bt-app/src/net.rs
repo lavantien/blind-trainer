@@ -202,6 +202,10 @@ pub struct NetGeometry {
 
 impl NetGeometry {
     pub fn for_window(width: f32, height: f32) -> NetGeometry {
+        NetGeometry::for_region(width, height)
+    }
+
+    pub fn for_region(width: f32, height: f32) -> NetGeometry {
         let quad = (width / 13.5).min(height / 10.2).floor().clamp(16.0, 96.0);
         NetGeometry {
             quad,
@@ -305,11 +309,11 @@ pub fn update_net_colors(
             match net.highlight_kind(occupant) {
                 Some(HighlightKind::Buffer) => {
                     want_pulse = 1.0;
-                    highlight = Some(theme::buffer_highlight());
+                    highlight = Some(theme::teal());
                 }
                 Some(HighlightKind::Target) => {
                     want_pulse = 1.0;
-                    highlight = Some(theme::target_highlight());
+                    highlight = Some(theme::interchange());
                 }
                 None => {}
             }
@@ -432,5 +436,17 @@ mod tests {
     fn geometry_clamps_tiny_windows() {
         let geo = NetGeometry::for_window(100.0, 60.0);
         assert_eq!(geo.quad, 16.0);
+    }
+
+    #[test]
+    fn for_region_sizes_the_drill_left_region() {
+        let width = 1280.0 * crate::theme::DRILL_NET_WIDTH_PCT;
+        let chrome = crate::theme::ROOT_REM
+            * (crate::theme::HEADER_HEIGHT_REM + 2.0 * crate::theme::PANEL_PADDING_REM);
+        let height = 800.0 - chrome;
+        let geo = NetGeometry::for_region(width, height);
+        assert_eq!(geo.quad, 41.0);
+        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= width);
+        assert!(geo.quad * 9.0 + geo.gap * 8.0 <= height);
     }
 }
