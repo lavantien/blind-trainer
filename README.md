@@ -55,35 +55,33 @@ make gen-data builds data/vendor from ref_ground/, make run starts blind-trainer
 
 ### menu
 
-Digits 1 to 6 open the views, esc returns to the menu from every view and first drops any focused text input.
+Digits 1 to 6 open the views. Every row shows the view name with a one-line description, boot warnings such as a missing vendor directory appear in the header strip. esc returns to the menu from every view and first drops any focused text input.
 
 ![menu](docs/screenshots/menu.png)
 
 ### drill
 
-3-style pair drilling with mechanical verification and SM-2 scheduling. space starts the alg phase and focuses the input, the net highlights the buffer plus one target sticker and swaps to the other target every 0.6 seconds. Type the alg, enter verifies it on the emulated cube: a wrong alg comes back with named problems, it never passes. 1 to 4 rate the rep (again, hard, good, easy) into SM-2, space pulls the next case with due and uncovered pairs first.
+Physical 3-style pair drilling with SM-2 scheduling, no typed input anywhere: every alg shown is verified against the emulated cube at corpus build time. The net sits on the left with the buffer and both target stickers highlighted, the card on the right.
 
-![drill ready](docs/screenshots/drill-ready.png)
+The card shows the pair letters, orbit and position, the memo token (edges use the Vietnamese syllable, corners the image word, bare letters when uncovered), the side A alg colored by mechanic with setup muted, insertion teal, interchange orange, falling back to the raw commutator when it does not decompose, the prepare line holding side B, the vendor alg of the flipped case or the derived inverse labeled inverse, plus qtm and htm lengths, solver, verified badge, SRS due for both sides, and muted alternative vendor rows.
 
-The input phase with the alg typed in:
+![drill card](docs/screenshots/drill-card.png)
 
-![drill memo](docs/screenshots/drill-memo.png)
+Apply prepare to your solved cube, space starts the rep phase. The net mirrors the physical cube from the prepared state, each space executes the shown alg, records a split, and flips to the other side, alternating A and B until the even rep count (drill reps rounded up, minimum 2, default 6) ends back in the prepared state. The timer shows whole seconds.
 
-A verified alg:
+![drill reps](docs/screenshots/drill-reps.png)
 
-![drill exec correct](docs/screenshots/drill-exec-correct.png)
+Rate AB then BA with 1 to 4 (again, hard, good, easy), each rating writes SM-2 for its own position and the next covered pair loads automatically, due or new pairs first. esc aborts to the menu writing nothing.
 
-A wrong alg rejected with named problems:
+![drill rate a](docs/screenshots/drill-rate-a.png)
 
-![drill exec wrong](docs/screenshots/drill-exec-wrong.png)
+The second prompt:
 
-After rating, space loads the next case:
-
-![drill review](docs/screenshots/drill-review.png)
+![drill rate b](docs/screenshots/drill-rate-b.png)
 
 ### memo training
 
-Streaming memo on seeded scrambles. Intro shows the pair count, space starts the stream, syllables appear at the configured cadence, image mode flashes an English word for 620 of the 818 pairs and falls back to the bare letters for the rest. When the stream ends the app asks you to recall, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
+Streaming memo on seeded scrambles with per-orbit tokens by default: edges stream Vietnamese syllables, corners stream image words, both fall back to the bare letters. Intro shows the seed, pair count, mode, and cadence, space starts the stream. The current token renders focal with the 4 previous tokens muted below it and a stream counter. When the stream ends the app asks you to recall with no tokens shown, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
 
 ![memo intro](docs/screenshots/memo-intro.png)
 
@@ -91,7 +89,7 @@ Mid stream:
 
 ![memo stream](docs/screenshots/memo-stream.png)
 
-Recall prompt after the last syllable:
+The recall prompt hides every token:
 
 ![memo recall](docs/screenshots/memo-recall.png)
 
@@ -101,7 +99,7 @@ Full memo with residue lines:
 
 ### solve
 
-The timed full cycle. Ready shows the scramble seed and pair count, space starts the memo clock, syllables stream while the memo timer runs. space again switches to execution, space stops everything. The app replays your memo against the vendor corpus on the emulated cube, reports solved or failed with the broken pairs, and logs the record with memo, exec, and total splits. space starts the next scramble.
+The timed full cycle with the net on the left and a rail on the right. Ready shows the scramble seed and pair count, space starts the memo clock and the token stream with a focal counter, space again switches to execution, space stops everything. The app replays your memo against the vendor corpus on the emulated cube, reports solved or failed with the broken pairs, and logs the record with memo, exec, and total splits. space starts the next scramble.
 
 ![solve ready](docs/screenshots/solve-ready.png)
 
@@ -119,7 +117,7 @@ Result with splits:
 
 ### algs
 
-Browser over the full 818 pair space. Slash focuses the filter, typed letters filter the list, up down always move the selection, n p and d work when the filter is not focused, esc drops the filter focus first and exits the view on the second press. Each row lists solver, alg, qtm and htm lengths, a verification badge, the commutator, and links.
+Two-column browser over the full 818 pair space: the windowed pair list with a caret on the selection sits left, the selected case right. Slash focuses the filter, typed letters filter by pair prefix, up down and n p move the selection, d or enter sends the case to the drill, esc drops the filter focus first and exits the view on the second press. The detail shows the letters, orbit, position, and coverage, the first vendor alg colored by mechanic when its commutator decomposes, alternative algs, solver, qtm and htm lengths, a verification badge, and recon and video links.
 
 ![algs](docs/screenshots/algs.png)
 
@@ -129,13 +127,13 @@ Filtered to b with the selection moved:
 
 ### stats
 
-Aggregates over the solve log and srs store: solve count, memo and exec mean and median, due counts per orbit, and the trailing streak of successful reviews.
+A block grid over the solve log and srs store: solve count, trailing streak of successful reviews, memo and exec mean and median, and due counts per orbit.
 
 ![stats](docs/screenshots/stats.png)
 
 ### settings
 
-Memo cadence, memo mode (syllables or images), and drill reps. The number inputs and the select apply immediately, 1 and 2 switch the memo mode from the keyboard, everything persists across restarts.
+Memo cadence, memo mode (syllables, images, or per-orbit, the default), and drill reps. The number inputs and the select apply immediately, 1 2 and 3 switch the memo mode from the keyboard when no input is focused, everything persists across restarts.
 
 ![settings](docs/screenshots/settings.png)
 
@@ -169,10 +167,11 @@ cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, m
 - fuzz: cargo fuzz run over the notation, classify, memo targets in fuzz/.
 - mutation: cargo mutants over bt-core, bt-scheme, bt-data, bt-ga.
 - e2e: headless flow suite (cargo test --release -p bt-app --test e2e) plus windowed blind-trainer.exe --smoke writing screenshots to artifacts/e2e.
+- baselines: copy the artifacts/e2e pngs into tests/visual/baselines.
 - visual: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
-- screenshots: drive the windowed app through every usage state into docs/screenshots, fatal state included.
+- screenshots: drive the windowed app through every usage state into docs/screenshots, 17 usage shots plus the fatal screen.
 - run: cargo run --release -p bt-app.
-- chain: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs, each as a separate make invocation so a failure names its step.
+- chain: test, fmt, lint, check, build, fuzz, mutation, e2e, baselines, visual, verify-algs, each as a separate make invocation so a failure names its step.
 
 ## config hub
 
