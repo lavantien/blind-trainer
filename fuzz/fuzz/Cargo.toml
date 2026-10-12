@@ -11,6 +11,7 @@ cargo-fuzz = true
 libfuzzer-sys = "0.4"
 serde_json = "1.0"
 bt-core = { path = "../../crates/bt-core" }
+bt-data = { path = "../../crates/bt-data" }
 bt-scheme = { path = "../../crates/bt-scheme" }
 
 [lib]
@@ -34,6 +35,13 @@ bench = false
 [[bin]]
 name = "memo"
 path = "fuzz_targets/memo.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "commutator"
+path = "fuzz_targets/commutator.rs"
 test = false
 doc = false
 bench = false
