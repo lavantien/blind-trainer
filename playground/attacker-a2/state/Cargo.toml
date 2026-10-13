@@ -1,0 +1,18 @@
+[package]
+name = "attacker-a2-state"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+bevy = { version = "0.20.0", default-features = false }
+bt-app = { path = "../../../crates/bt-app" }
+bt-core = { path = "../../../crates/bt-core" }
+bt-data = { path = "../../../crates/bt-data" }
+bt-scheme = { path = "../../../crates/bt-scheme" }
+serde_json = "1.0"
+
+[profile.dev]
+opt-level = 1

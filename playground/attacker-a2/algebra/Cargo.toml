@@ -1,0 +1,15 @@
+[package]
+name = "attacker-a2-algebra"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+bt-core = { path = "../../../crates/bt-core" }
+bt-data = { path = "../../../crates/bt-data" }
+bt-scheme = { path = "../../../crates/bt-scheme" }
+
+[profile.dev]
+opt-level = 1
