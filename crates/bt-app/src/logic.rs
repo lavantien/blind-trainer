@@ -32,6 +32,13 @@ pub struct RuntimePaths {
 
 impl RuntimePaths {
     pub fn from_env() -> RuntimePaths {
+        let exe_dir = std::env::current_exe()
+            .ok()
+            .and_then(|exe| exe.parent().map(|dir| dir.to_path_buf()));
+        RuntimePaths::resolve(RuntimePaths::workspace_layout(), exe_dir.as_deref())
+    }
+
+    fn workspace_layout() -> RuntimePaths {
         let config_path = paths::config_path();
         let config = load_config_value(&config_path).unwrap_or(serde_json::Value::Null);
         let vendor_root =
@@ -43,12 +50,26 @@ impl RuntimePaths {
             .and_then(|fonts| Path::new(fonts).parent())
             .map(|assets| paths::workspace_root().join(assets))
             .unwrap_or_else(|| paths::workspace_root().join(DEFAULT_ASSETS_ROOT));
-        let user_root = paths::user_root();
         RuntimePaths {
             config_path,
             vendor_root,
-            user_root,
+            user_root: paths::user_root(),
             assets_root,
+        }
+    }
+
+    pub fn resolve(primary: RuntimePaths, exe_dir: Option<&Path>) -> RuntimePaths {
+        let Some(dir) = exe_dir else {
+            return primary;
+        };
+        RuntimePaths {
+            config_path: resolve_root(
+                primary.config_path,
+                &[dir.join("config").join("config.json")],
+            ),
+            vendor_root: resolve_root(primary.vendor_root, &[dir.join(DEFAULT_REF_GROUND)]),
+            assets_root: resolve_root(primary.assets_root, &[dir.join(DEFAULT_ASSETS_ROOT)]),
+            user_root: primary.user_root,
         }
     }
 }
@@ -82,6 +103,17 @@ pub struct AppConfig {
 
 fn default_smoke_seed() -> u64 {
     DEFAULT_SMOKE_SEED
+}
+
+fn resolve_root(primary: PathBuf, candidates: &[PathBuf]) -> PathBuf {
+    if primary.exists() {
+        return primary;
+    }
+    candidates
+        .iter()
+        .find(|candidate| candidate.exists())
+        .cloned()
+        .unwrap_or(primary)
 }
 
 impl Default for AppConfig {
@@ -445,6 +477,76 @@ mod tests {
             .to_string(),
         )
         .expect("write config");
+    }
+
+    #[test]
+    fn resolve_swaps_missing_roots_to_the_install_layout() {
+        let primary = temp_paths("resolve-missing");
+        let install = std::env::temp_dir()
+            .join("bt-app-logic-tests")
+            .join(format!("resolve-install-{}", std::process::id()));
+        std::fs::create_dir_all(install.join("config")).expect("install config dir");
+        std::fs::create_dir_all(install.join("ref_ground")).expect("install vendor dir");
+        std::fs::create_dir_all(install.join("assets")).expect("install assets dir");
+        std::fs::write(
+            install.join("config").join("config.json"),
+            serde_json::json!({}).to_string(),
+        )
+        .expect("install config file");
+        let resolved = RuntimePaths::resolve(
+            RuntimePaths {
+                config_path: primary.config_path.with_extension("absent"),
+                vendor_root: primary.vendor_root.join("absent"),
+                user_root: primary.user_root.clone(),
+                assets_root: primary.assets_root.join("absent"),
+            },
+            Some(&install),
+        );
+        assert_eq!(
+            resolved.config_path,
+            install.join("config").join("config.json")
+        );
+        assert_eq!(resolved.vendor_root, install.join("ref_ground"));
+        assert_eq!(resolved.assets_root, install.join("assets"));
+        assert_eq!(resolved.user_root, primary.user_root);
+    }
+
+    #[test]
+    fn resolve_keeps_existing_workspace_roots() {
+        let primary = temp_paths("resolve-keeps");
+        std::fs::create_dir_all(&primary.vendor_root).expect("vendor exists");
+        let resolved = RuntimePaths::resolve(primary.clone(), Some(&std::env::temp_dir()));
+        assert_eq!(resolved.config_path, primary.config_path);
+        assert_eq!(resolved.vendor_root, primary.vendor_root);
+        assert_eq!(resolved.assets_root, primary.assets_root);
+    }
+
+    #[test]
+    fn resolve_returns_primary_when_nothing_exists() {
+        let primary = temp_paths("resolve-none");
+        let resolved = RuntimePaths::resolve(
+            RuntimePaths {
+                config_path: primary.config_path.with_extension("absent"),
+                vendor_root: primary.vendor_root.join("absent"),
+                user_root: primary.user_root.clone(),
+                assets_root: primary.assets_root.join("absent"),
+            },
+            Some(&primary.vendor_root),
+        );
+        assert_eq!(
+            resolved.config_path,
+            primary.config_path.with_extension("absent")
+        );
+        assert_eq!(resolved.vendor_root, primary.vendor_root.join("absent"));
+        assert_eq!(resolved.assets_root, primary.assets_root.join("absent"));
+    }
+
+    #[test]
+    fn resolve_without_exe_dir_is_identity() {
+        let primary = temp_paths("resolve-identity");
+        let resolved = RuntimePaths::resolve(primary.clone(), None);
+        assert_eq!(resolved.config_path, primary.config_path);
+        assert_eq!(resolved.vendor_root, primary.vendor_root);
     }
 
     #[test]
