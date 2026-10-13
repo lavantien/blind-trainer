@@ -9,7 +9,9 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain
+.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain coverage diagrams
+
+COVERAGE_TARGET := C:/Users/lavantien/dev/github/bt-coverage-target
 
 setup:
 	rustup component add rustfmt clippy
@@ -87,3 +89,9 @@ chain:
 	$(MAKE) baselines
 	$(MAKE) visual
 	$(MAKE) verify-algs
+
+coverage:
+	CARGO_TARGET_DIR=$(COVERAGE_TARGET) pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
+
+diagrams:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/diagrams.ps1
