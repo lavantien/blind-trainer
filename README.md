@@ -231,7 +231,7 @@ config/config.json is the single centralized hub for every tunable: app window a
 
 ## development
 
-Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file.
+Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file. CI on every main push runs fmt, clippy, check, the release build, and every self-contained test suite on GitHub Actions. The vendor-data oracles need the local ref_ground grounding and stay on the make chain.
 
 ![verification chain](docs/diagrams/verification-chain.png)
 

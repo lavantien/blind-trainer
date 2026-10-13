@@ -27,6 +27,7 @@ jobs:
         run: cargo build --release -p bt-app
       - name: test self-contained suites
         run: |
-          cargo test -p bt-core -p bt-ga -p bt-app
-          cargo test -p bt-scheme --lib
-          cargo test -p bt-data --lib
+          cargo test -p bt-app
+          cargo test -p bt-core --lib --test fuzzkill_analysis --test geometric_oracle --test parse_roundtrip
+          cargo test -p bt-scheme --lib --test scramble_oracle
+          cargo test -p bt-data --lib --test fuzzkill_data --test srs_sm2
