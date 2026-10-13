@@ -1,0 +1,1077 @@
+cherry	edge	2	UF-UB-UL	U M2 U M' U2 M U M2 U'
+cherry	edge	3	UF-UB-UL	U2 R2 U' S' U2 S U' R2 U2
+cherry	edge	4	UF-UB-UR	R2 U' S R2 S' R2 U R2
+cherry	edge	5	UF-UB-LB	U' R E' R' U2 R E R' U'
+cherry	edge	6	UF-UB-LF	U' R' E R U2 R' E' R U'
+cherry	edge	7	UF-UB-LD	U L' E' L U2 L' E L U
+cherry	edge	8	UF-UB-FL	L U S' L2 S L2 U' L'
+cherry	edge	9	UF-UB-FR	R' U' S R2 S' R2 U R
+cherry	edge	10	UF-UB-FD	R' F' R U R' E R U' R' E' F R
+cherry	edge	11	UF-UB-RU	S U' S R2 S' R2 U S'
+cherry	edge	12	UF-UB-RF	U L E' L' U2 L E L' U
+cherry	edge	13	UF-UB-RB	U L' E L U2 L' E' L U
+cherry	edge	14	UF-UB-BL	L' U S' L2 S L2 U' L
+cherry	edge	15	UF-UB-BD	U M' U M' U2 M U M U'
+cherry	edge	16	UF-UB-DF	U2 M' U2 M
+cherry	edge	17	UF-UB-DL	U S' L2 S L2 U'
+cherry	edge	18	UF-UB-DB	M U2 M' U2
+cherry	edge	19	UF-UL-UB	U R' U R' U' R' U' R' U R U R2 U'
+cherry	edge	20	UF-UL-UB	U M2 U' M' U2 M U' M2 U'
+cherry	edge	21	UF-UL-UR	M2 U' M U2 M' U' M2
+cherry	edge	22	UF-UL-LF	U' R' E R U' R' E' R U2
+cherry	edge	23	UF-UL-LD	U L E L' U' L E' L'
+cherry	edge	24	UF-UL-FL	U E L E' L' U' L E L' E'
+cherry	edge	25	UF-UL-FR	U L' E2 L U' L' E2 L
+cherry	edge	26	UF-UL-RU	S R' F R S' R' F' R
+cherry	edge	27	UF-UL-RF	U L E' L' U' L E L'
+cherry	edge	28	UF-UL-RB	U L' E L U' L' E' L
+cherry	edge	29	UF-UL-RD	U' R' E' R U' R' E R U2
+cherry	edge	30	UF-UL-BU	l U L' U' M' U L U' L'
+cherry	edge	31	UF-UL-BR	U L E2 L' U' L E2 L'
+cherry	edge	32	UF-UL-BL	u L' E L U' L' E' L E
+cherry	edge	33	UF-UL-BD	U' M U' M' U' M U' M'
+cherry	edge	34	UF-UL-DL	L U' L S' L2 S L U L'
+cherry	edge	35	UF-UL-DB	M2 L' U L U' M2 U L' U' L
+cherry	edge	36	UF-UR-UB	R2 U' S' U2 S U' R2
+cherry	edge	37	UF-UR-UL	M2 U M U2 M' U M2
+cherry	edge	38	UF-UR-LU	S' L F' L' S L F L'
+cherry	edge	39	UF-UR-LB	U' L S L' U L S' L'
+cherry	edge	40	UF-UR-LB	U' R E' R' U R E R'
+cherry	edge	41	UF-UR-LF	U' R' E R U R' E' R
+cherry	edge	42	UF-UR-FL	U' R E2 R' U R E2 R'
+cherry	edge	43	UF-UR-FR	U' E' R' E R U R' E' R E
+cherry	edge	44	UF-UR-FD	r U' R' U M U' R U R'
+cherry	edge	45	UF-UR-RF	U L E' L' U L E L' U2
+cherry	edge	46	UF-UR-RB	U L' E L U L' E' L U2
+cherry	edge	47	UF-UR-RD	U' R' E' R U R' E R
+cherry	edge	48	UF-UR-BU	r' U' R U M' U' R' U R
+cherry	edge	49	UF-UR-BR	R U R U R U' R' U' R' U'
+cherry	edge	50	UF-UR-BR	u' R E' R' U R E R' E'
+cherry	edge	51	UF-UR-BL	U' R' E2 R U R' E2 R
+cherry	edge	52	UF-UR-DF	R2 f2 R2 U' R2 f2 R2 U'
+cherry	edge	53	UF-UR-DL	l F L' S' L2 S L' F' l'
+cherry	edge	54	UF-UR-DL	R U L' E L2 E' L' U' R'
+cherry	edge	55	UF-UR-DR	U' R' E R2 E' R' U R E R2 E' R
+cherry	edge	56	UF-UR-DR	R' U R' S R2 S' R' U' R
+cherry	edge	57	UF-UR-DB	r M' U' R' U M2 U' R U R'
+cherry	edge	58	UF-LU-UB	U M' U M U2 M' U M U'
+cherry	edge	59	UF-LU-UR	L F' L' S' L F L' S
+cherry	edge	60	UF-LU-LB	S U' R E' R' U R E R' S'
+cherry	edge	61	UF-LU-LF	S U' R' E R U R' E' R S'
+cherry	edge	62	UF-LU-LD	S' D' M D2 M' D' S
+cherry	edge	63	UF-LU-LD	L E' L' U L E L2 E' L U' L E L'
+cherry	edge	64	UF-LU-FL	r U r' E r U r' E' r U2 r'
+cherry	edge	65	UF-LU-FR	S' U L' E' L2 E L' U' S
+cherry	edge	66	UF-LU-FD	U' D S' R' F R S R' F' R U D'
+cherry	edge	67	UF-LU-RU	M U M' U2 M U M'
+cherry	edge	68	UF-LU-RF	R M U M' U2 M U R' M'
+cherry	edge	69	UF-LU-RB	r' U M' U2 M U r
+cherry	edge	70	UF-LU-BU	L' U' L U M' U' L' U l
+cherry	edge	71	UF-LU-BR	S' U L E L2 E' L U' S
+cherry	edge	72	UF-LU-BR	R' U' r U R' U' M U R U' R' U R
+cherry	edge	73	UF-LU-BL	L' u L' E L2 E' L' u' L
+cherry	edge	74	UF-LU-BL	S U' R' E2 R U R' E2 R S'
+cherry	edge	75	UF-LU-DF	L' F' L2 E' L2 E F L
+cherry	edge	76	UF-LU-DL	L F' L' S L F L' S'
+cherry	edge	77	UF-LU-DR	r U' r S' r' U r S r2
+cherry	edge	78	UF-LU-DB	M L' U' L U M2 U' L' U l
+cherry	edge	79	UF-LB-UB	U R E' R' U2 R E R' U
+cherry	edge	80	UF-LB-UL	U2 R E' R' U R E R' U
+cherry	edge	81	UF-LB-UR	R E' R' U' R E R' U
+cherry	edge	82	UF-LB-LU	S R E' R' U' R E R' U S'
+cherry	edge	83	UF-LB-LF	r U L' S' L2 S L' U' r'
+cherry	edge	84	UF-LB-FL	E L' U L E' L' U' L
+cherry	edge	85	UF-LB-FR	R2 E' R' U' R E R' U R'
+cherry	edge	86	UF-LB-RU	l U M' U2 M U l'
+cherry	edge	87	UF-LB-RF	l' U' L' E' L2 E L' U l
+cherry	edge	88	UF-LB-RF	E2 r U r' E2 r U' r'
+cherry	edge	89	UF-LB-RB	u R S R2 S' R u'
+cherry	edge	90	UF-LB-RD	S' R E' R' U' R E R' U S
+cherry	edge	91	UF-LB-BU	U' L U M' U' L' U M
+cherry	edge	92	UF-LB-BD	U' M U r E' r' U' r E R' U
+cherry	edge	93	UF-LB-DF	F' L2 E' L2 E F
+cherry	edge	94	UF-LB-DL	u L' E L2 E' L' u'
+cherry	edge	95	UF-LB-DR	u' R' E R2 E' R' u
+cherry	edge	96	UF-LF-UB	U R' E R U2 R' E' R U
+cherry	edge	97	UF-LF-UL	U2 R' E R U R' E' R U
+cherry	edge	98	UF-LF-UR	R' E R U' R' E' R U
+cherry	edge	99	UF-LF-LU	S R' E R U' R' E' R U S'
+cherry	edge	100	UF-LF-FR	E R U' R' E' R U R'
+cherry	edge	101	UF-LF-FD	M2 U' L' U M U' L U M
+cherry	edge	102	UF-LF-RU	M L' U M' U2 M U M' L
+cherry	edge	103	UF-LF-RB	r U R' E R2 E' R' U' r'
+cherry	edge	104	UF-LF-RD	S' R' E R U' R' E' R U S
+cherry	edge	105	UF-LF-BU	U' L' U M' U' L U M
+cherry	edge	106	UF-LF-BR	R2 E R U' R' E' R U R
+cherry	edge	107	UF-LF-BL	E' L U L' E L U' L'
+cherry	edge	108	UF-LF-BD	U' M U R' E R U' R' E' r U
+cherry	edge	109	UF-LD-UB	U' L' E' L U2 L' E L U'
+cherry	edge	110	UF-LD-UL	L E L' U L E' L' U'
+cherry	edge	111	UF-LD-UL	L' E' L U L' E L U'
+cherry	edge	112	UF-LD-UR	U2 L' E' L U' L' E L U'
+cherry	edge	113	UF-LD-LB	U S' U' L' U S U' L
+cherry	edge	114	UF-LD-FL	S' U' R E R2 E' R U S
+cherry	edge	115	UF-LD-FR	U L F2 L' S L F2 L' S' U'
+cherry	edge	116	UF-LD-FD	U L F L' S L F' L' S' U'
+cherry	edge	117	UF-LD-RF	S U L E' L' U' L E L' S'
+cherry	edge	118	UF-LD-RB	L F' E L2 E' L2 F L'
+cherry	edge	119	UF-LD-RB	S U L' E L U' L' E' L S'
+cherry	edge	120	UF-LD-RD	R' F R' S' R2 S R' F' R
+cherry	edge	121	UF-LD-BU	U' L2 U M' U' L2 U M
+cherry	edge	122	UF-LD-BD	U S' R' D R S R' D' R U'
+cherry	edge	123	UF-LD-BD	U r' U' r S r' U r S' U'
+cherry	edge	124	UF-LD-DF	L F' L2 E' L2 E F L'
+cherry	edge	125	UF-LD-DR	L' F' L S L' F L S'
+cherry	edge	126	UF-FL-UB	U R E2 R' U2 R E2 R' U
+cherry	edge	127	UF-FL-UL	E L E' L' U L E L' U' E'
+cherry	edge	128	UF-FL-UR	R E R2 E' R U' R' E R2 E' R' U
+cherry	edge	129	UF-FL-UR	R E2 R' U' R E2 R' U
+cherry	edge	130	UF-FL-LU	r U2 r' E r U' r' E' r U' r'
+cherry	edge	131	UF-FL-LB	L' U L E L' U' L E'
+cherry	edge	132	UF-FL-FR	R' U' R' E R2 E' R' U R
+cherry	edge	133	UF-FL-FD	M' U L' U' M U L U'
+cherry	edge	134	UF-FL-RU	R' E r U r' E' r U' M
+cherry	edge	135	UF-FL-RF	L' U L E' L' U' L E
+cherry	edge	136	UF-FL-RD	U' S' R' F2 R S R' F2 R U
+cherry	edge	137	UF-FL-BU	M U L' U' M' U L U'
+cherry	edge	138	UF-FL-BL	U' L S' L2 S L U
+cherry	edge	139	UF-FL-DF	U' D R' E R2 E' R' U D'
+cherry	edge	140	UF-FL-DL	U' L U L U' L' U' L' U' L U2
+cherry	edge	141	UF-FL-DR	U' R' E R2 E' R' U
+cherry	edge	142	UF-FL-DB	U' D' R' E R2 E' R' U D
+cherry	edge	143	UF-FR-UB	R' U S R2 S' R2 U' R
+cherry	edge	144	UF-FR-UL	L' E2 L U L' E2 L U'
+cherry	edge	145	UF-FR-UR	E' R' E R U' R' E' R U E
+cherry	edge	146	UF-FR-LU	S' U L E' L2 E L U' S
+cherry	edge	147	UF-FR-LB	R U' R E' R' U R E R2
+cherry	edge	148	UF-FR-LF	R U' R' E R U R' E'
+cherry	edge	149	UF-FR-LD	D M' U' R U M U' R' U D'
+cherry	edge	150	UF-FR-FL	R' U' R E R2 E' R U R
+cherry	edge	151	UF-FR-FD	M' U' R U M U' R' U
+cherry	edge	152	UF-FR-RB	R U' R' E' R U R' E
+cherry	edge	153	UF-FR-RD	R' u' R' E' R2 E R' u R
+cherry	edge	154	UF-FR-BU	M U' R U M' U' R' U
+cherry	edge	155	UF-FR-BR	U R' S R2 S' R' U'
+cherry	edge	156	UF-FR-BL	R' U' R' E' R2 E R' U R
+cherry	edge	157	UF-FR-BD	U2 M U R U' M' U R' U
+cherry	edge	158	UF-FR-DF	U D' L E' L2 E L U' D
+cherry	edge	159	UF-FR-DL	U L E' L2 E L U'
+cherry	edge	160	UF-FR-DR	U R' U' R' U R U R U R' U2
+cherry	edge	161	UF-FD-UB	R' F' E R U R' E' R U' R' F R
+cherry	edge	162	UF-FD-UL	L' U L U' M' U L' U' l
+cherry	edge	163	UF-FD-UR	R U' R' U M' U' R U r'
+cherry	edge	164	UF-FD-LF	M' U' L' U M' U' L U M2
+cherry	edge	165	UF-FD-LD	U S L F L' S' L F' L' U'
+cherry	edge	166	UF-FD-FL	U L' U' M' U L U' M
+cherry	edge	167	UF-FD-FR	U' R U M' U' R' U M
+cherry	edge	168	UF-FD-RU	r U R' U' M' U R U' r' M
+cherry	edge	169	UF-FD-RF	M D R' D' M' D R D'
+cherry	edge	170	UF-FD-RB	M D R D' M' D R' D'
+cherry	edge	171	UF-FD-BU	U' S R' F' R S' R' F R U
+cherry	edge	172	UF-FD-BR	U' R' U M' U' R U M
+cherry	edge	173	UF-FD-BL	U L U' M' U L' U' M
+cherry	edge	174	UF-FD-BD	U M' U' M U2 M U M' U
+cherry	edge	175	UF-FD-DR	U' R2 U M' U' R2 U M
+cherry	edge	176	UF-RU-UB	S U S R2 S' R2 U' S'
+cherry	edge	177	UF-RU-UL	R' F R S R' F' R S'
+cherry	edge	178	UF-RU-LF	M L' U' M' U2 M U' M' L
+cherry	edge	179	UF-RU-LD	R F R S' R2 S R F' R'
+cherry	edge	180	UF-RU-FL	S U' R E R2 E' R U S'
+cherry	edge	181	UF-RU-FR	R' U' E' R' E R2 E' R' U E R
+cherry	edge	182	UF-RU-FD	r M' U R' U' M U R U' r'
+cherry	edge	183	UF-RU-RF	S' U L E' L' U' L E L' S
+cherry	edge	184	UF-RU-RB	S' U L' E L U' L' E' L S
+cherry	edge	185	UF-RU-RD	R' E R U' R' E' R2 E R' U R' E' R
+cherry	edge	186	UF-RU-BU	R U R' U' M' U R U' r'
+cherry	edge	187	UF-RU-BR	R u' R E' R2 E R u R'
+cherry	edge	188	UF-RU-BL	S U' R' E' R2 E R' U S'
+cherry	edge	189	UF-RU-BD	U D S L F' L' S' L F L' U' D'
+cherry	edge	190	UF-RU-BD	M' U' M' U' M U' M' U' M2
+cherry	edge	191	UF-RU-DF	R F R2 E R2 E' F' R'
+cherry	edge	192	UF-RU-DL	l' U l' S l U' l' S' l2
+cherry	edge	193	UF-RU-DL	R' F R' S' R F' R' S R2
+cherry	edge	194	UF-RU-DL	l' U R' E R U' R' E' R l
+cherry	edge	195	UF-RU-DR	R' F R S' R' F' R S
+cherry	edge	196	UF-RU-DB	D' R' F R S' R' F' R S D
+cherry	edge	197	UF-RF-UB	U' L E' L' U2 L E L' U'
+cherry	edge	198	UF-RF-UB	U' R S' R' U2 R S R' U'
+cherry	edge	199	UF-RF-UR	U2 L E' L' U' L E L' U'
+cherry	edge	200	UF-RF-UR	U2 R S' R' U' R S R' U'
+cherry	edge	201	UF-RF-LU	R M U' M' U2 M U' R' M'
+cherry	edge	202	UF-RF-LU	R M U' M' U2 M U' M' x' R' x
+cherry	edge	203	UF-RF-LF	U E R S R2 S' R U' E'
+cherry	edge	204	UF-RF-FL	E' L' U L E L' U' L
+cherry	edge	205	UF-RF-FD	M2 U R U' M U R' U' M
+cherry	edge	206	UF-RF-RU	S' L E' L' U L E L' U' S
+cherry	edge	207	UF-RF-RB	l' U' R' S R2 S' R' U l
+cherry	edge	208	UF-RF-RD	R' U' S U R U' S' U
+cherry	edge	209	UF-RF-BD	U M U' L E' L' U L E l' U'
+cherry	edge	210	UF-RF-DF	R2 F R2 E R2 E' F' R2
+cherry	edge	211	UF-RF-DR	U' E' R' E R2 E' R' U E
+cherry	edge	212	UF-RF-DB	M U R U' M2 U R' U' M
+cherry	edge	213	UF-RB-UL	L' E L U L' E' L U'
+cherry	edge	214	UF-RB-UR	U2 L' E L U' L' E' L U'
+cherry	edge	215	UF-RB-LU	r' U' M' U2 M U' r
+cherry	edge	216	UF-RB-LB	u R' S R2 S' R' u'
+cherry	edge	217	UF-RB-LF	r U R E R2 E' R U' r'
+cherry	edge	218	UF-RB-LD	S L' E L U L' E' L U' S'
+cherry	edge	219	UF-RB-LD	L F' L2 E L2 E' F L'
+cherry	edge	220	UF-RB-FL	L2 E L U L' E' L U' L
+cherry	edge	221	UF-RB-FR	E' R U' R' E R U R'
+cherry	edge	222	UF-RB-FD	D R D' M D R' D' M'
+cherry	edge	223	UF-RB-RU	S' L' E L U L' E' L U' S
+cherry	edge	224	UF-RB-RF	l' U' R S R2 S' R U l
+cherry	edge	225	UF-RB-RD	R U' S U R' U' S' U
+cherry	edge	226	UF-RB-BU	U R' U' M' U R U' M
+cherry	edge	227	UF-RB-BL	E L U L' E' L U' L'
+cherry	edge	228	UF-RB-BD	U M U' l' E l U l' E' L U'
+cherry	edge	229	UF-RB-DF	F R2 E R2 E' F'
+cherry	edge	230	UF-RB-DL	u L E' L2 E L u'
+cherry	edge	231	UF-RB-DR	u' R E' R2 E R u
+cherry	edge	232	UF-RB-DB	M U R' U' M2 U R U' M
+cherry	edge	233	UF-RD-UB	U R' E' R U2 R' E R U
+cherry	edge	234	UF-RD-UL	U2 R' E' R U R' E R U
+cherry	edge	235	UF-RD-UR	R' E' R U' R' E R U
+cherry	edge	236	UF-RD-LU	R' F R' S R2 S' R' F' R
+cherry	edge	237	UF-RD-LB	S' U' R E' R' U R E R' S
+cherry	edge	238	UF-RD-LB	R' F E' R2 E R2 F' R
+cherry	edge	239	UF-RD-LF	S' U' R' E R U R' E' R S
+cherry	edge	240	UF-RD-LD	L F' L S L2 S' L F L'
+cherry	edge	241	UF-RD-RU	R E' R' U' R' E R2 E' R' U R E R'
+cherry	edge	242	UF-RD-RB	U' S U R U' S' U R'
+cherry	edge	243	UF-RD-BU	U R2 U' M' U R2 U' M
+cherry	edge	244	UF-RD-BR	S U L E L2 E' L U' S'
+cherry	edge	245	UF-RD-BL	R' E' R U' R' E' R U R' E2 R
+cherry	edge	246	UF-RD-BD	U' S L' D' L S' L' D L U
+cherry	edge	247	UF-RD-DF	U' S R F' R' S' R F R' U
+cherry	edge	248	UF-RD-DL	R F R' S' R F' R' S
+cherry	edge	249	UF-RD-DB	U' S R' B R S' R' B' R U
+cherry	edge	250	UF-BU-UL	L U L' U' M U L U' l'
+cherry	edge	251	UF-BU-UL	U' S' L F' L' S L F L' U
+cherry	edge	252	UF-BU-UR	R' U' R U M U' R' U r
+cherry	edge	253	UF-BU-LU	l' U' L U M U' L' U L
+cherry	edge	254	UF-BU-LF	M' U' L' U M U' L U
+cherry	edge	255	UF-BU-LD	M' U' L2 U M U' L2 U
+cherry	edge	256	UF-BU-FL	U L' U' M U L U' M'
+cherry	edge	257	UF-BU-FR	U' R U M U' R' U M'
+cherry	edge	258	UF-BU-FD	U L F L' S' L F' L' S U'
+cherry	edge	259	UF-BU-RU	r U R' U' M U R U' R'
+cherry	edge	260	UF-BU-RF	M' U R U' M U R' U'
+cherry	edge	261	UF-BU-RB	M' U R' U' M U R U'
+cherry	edge	262	UF-BU-BR	U' R' U M U' R U M'
+cherry	edge	263	UF-BU-BL	U L U' M U L' U' M'
+cherry	edge	264	UF-BU-BD	U' l U l' S l U' l' S' U
+cherry	edge	265	UF-BU-BD	U' R B R' S R B' R' S' U
+cherry	edge	266	UF-BU-DF	U' S' L F L' S L F' L' U
+cherry	edge	267	UF-BU-DR	U' R2 U M U' R2 U M'
+cherry	edge	268	UF-BU-DB	r' U L F L' S' L F' L' S U' r
+cherry	edge	269	UF-BU-DB	r' U r U r' S' r U' r' S U' r
+cherry	edge	270	UF-BR-UB	R U S R2 S' R2 U' R'
+cherry	edge	271	UF-BR-UL	R S2 R' U R S2 R' U'
+cherry	edge	272	UF-BR-UL	L E2 L' U L E2 L' U'
+cherry	edge	273	UF-BR-UR	E R E' R' U' R E R' u
+cherry	edge	274	UF-BR-LU	S' U L' E L2 E' L' U' S
+cherry	edge	275	UF-BR-LU	R' U' R U R' U' M' U R U' r' U R
+cherry	edge	276	UF-BR-LB	R' U' R E' R' U R E
+cherry	edge	277	UF-BR-LF	R' U' R' E R U R' E' R2
+cherry	edge	278	UF-BR-LD	D M' U' R' U M U' R U D'
+cherry	edge	279	UF-BR-FL	R U' R E R2 E' R U R'
+cherry	edge	280	UF-BR-FD	M' U' R' U M U' R U
+cherry	edge	281	UF-BR-RU	R u' R' E' R2 E R' u R'
+cherry	edge	282	UF-BR-RF	R' U' R E R' U R E'
+cherry	edge	283	UF-BR-RD	D' M' U' R' U M U' R U D
+cherry	edge	284	UF-BR-RD	S U L' E L2 E' L' U' S'
+cherry	edge	285	UF-BR-BU	M U' R' U M' U' R U
+cherry	edge	286	UF-BR-BL	R U' R' E' R2 E R' U R'
+cherry	edge	287	UF-BR-BD	U2 M U R' U' M' U R U
+cherry	edge	288	UF-BR-DF	U D' L' E L2 E' L' U' D
+cherry	edge	289	UF-BR-DF	U R' U M' U2 M U R U'
+cherry	edge	290	UF-BR-DL	U L' E L2 E' L' U'
+cherry	edge	291	UF-BR-DR	U R U R U' R' U' R' U' R
+cherry	edge	292	UF-BR-DB	M2 U' R' U M2 U' R U
+cherry	edge	293	UF-BL-UL	E' L' E L U L' E' L u'
+cherry	edge	294	UF-BL-UR	R' E2 R U' R' E2 R U
+cherry	edge	295	UF-BL-LU	L' u L E L2 E' L u' L
+cherry	edge	296	UF-BL-LF	L U L' E' L U' L' E
+cherry	edge	297	UF-BL-LD	S' U' R E' R2 E R U S
+cherry	edge	298	UF-BL-FL	U' L' S' L2 S L' U
+cherry	edge	299	UF-BL-FR	R' U' R E' R2 E R U R
+cherry	edge	300	UF-BL-FD	M' U L U' M U L' U'
+cherry	edge	301	UF-BL-RU	S U' R E' R2 E R U S'
+cherry	edge	302	UF-BL-RD	R' E2 R U' R' E R U R' E R
+cherry	edge	303	UF-BL-BU	M U L U' M' U L' U'
+cherry	edge	304	UF-BL-BR	R U' R E' R2 E R U R'
+cherry	edge	305	UF-BL-BD	U2 M U' L U M' U' L' U'
+cherry	edge	306	UF-BL-DF	U' D R E' R2 E R U D'
+cherry	edge	307	UF-BL-DL	U' L' U' L' U L U L U L'
+cherry	edge	308	UF-BL-DR	U' R E' R2 E R U
+cherry	edge	309	UF-BL-DB	U' D' R E' R2 E R U D
+cherry	edge	310	UF-BL-DB	M2 U L U' M2 U L' U'
+cherry	edge	311	UF-BD-UB	U' M' U M' U2 M U M U
+cherry	edge	312	UF-BD-UB	U M' U' M' U2 M U' M U'
+cherry	edge	313	UF-BD-UR	M U' M' U' M U' M' U'
+cherry	edge	314	UF-BD-LU	U' D' R' F R S' R' F' R S U D
+cherry	edge	315	UF-BD-LB	U' R E' r' U r E r' U' M' U
+cherry	edge	316	UF-BD-LF	U' r' E R U R' E' R U' M' U
+cherry	edge	317	UF-BD-LD	U S r' U' r S' r' U r U'
+cherry	edge	318	UF-BD-LD	U S L' B' L S' L' B L U'
+cherry	edge	319	UF-BD-FR	U' R U' M U R' U' M' U2
+cherry	edge	320	UF-BD-FD	U' M U' M' U2 M' U M U'
+cherry	edge	321	UF-BD-RU	U D L F' L' S L F L' S' U' D'
+cherry	edge	322	UF-BD-RF	U l E' L' U' L E L' U M' U'
+cherry	edge	323	UF-BD-RB	U L' E l U' l' E' l U M' U'
+cherry	edge	324	UF-BD-RD	U' L' D' L S L' D L S' U
+cherry	edge	325	UF-BD-BU	U' S l U l' S' l U' l' U
+cherry	edge	326	UF-BD-BU	U' x' E R U R' E' R U' R' x U
+cherry	edge	327	UF-BD-BR	U' R' U' M U R U' M' U2
+cherry	edge	328	UF-BD-BL	U L U M U' L' U M' U2
+cherry	edge	329	UF-BD-DF	D L' F' L S L' F L S' D'
+cherry	edge	330	UF-BD-DL	U L2 U M U' L2 U M' U2
+cherry	edge	331	UF-DF-UB	M' U2 M U2
+cherry	edge	332	UF-DF-UL	R' F R S R' F2 R S' R' F R
+cherry	edge	333	UF-DF-UR	L F' L' S' L F2 L' S L F' L'
+cherry	edge	334	UF-DF-LU	L' F L2 E' L2 E F' L
+cherry	edge	335	UF-DF-LB	F L2 E' L2 E F'
+cherry	edge	336	UF-DF-LF	L2 F L2 E' L2 E F' L2
+cherry	edge	337	UF-DF-LD	L F L2 E' L2 E F' L'
+cherry	edge	338	UF-DF-RF	R2 F' R2 E R2 E' F R2
+cherry	edge	339	UF-DF-RF	R2 F E R2 E' R2 F' R2
+cherry	edge	340	UF-DF-RB	F' R2 E R2 E' F
+cherry	edge	341	UF-DF-RB	F E R2 E' R2 F'
+cherry	edge	342	UF-DF-RD	U' R F' R' S R F R' S' U
+cherry	edge	343	UF-DF-RD	R' F' R2 E R2 E' F R
+cherry	edge	344	UF-DF-RD	R' F E R2 E' R2 F' R
+cherry	edge	345	UF-DF-BR	U D' L E L2 E' L U' D
+cherry	edge	346	UF-DF-BL	U' D R' E' R2 E R' U D'
+cherry	edge	347	UF-DF-BD	D S L' F' L S' L' F L D'
+cherry	edge	348	UF-DF-DL	L F' L' S L F2 L' S' L F' L'
+cherry	edge	349	UF-DF-DR	R' F R S' R' F2 R S R' F R
+cherry	edge	350	UF-DF-DB	u2 M' u2 M'
+cherry	edge	351	UF-DL-UB	U' S' L2 S L2 U
+cherry	edge	352	UF-DL-UL	L E' L2 E L U L' E' L2 E L' U'
+cherry	edge	353	UF-DL-UL	L' U' L S' L2 S L U L
+cherry	edge	354	UF-DL-UR	L U L' U' L' U' L' U L U
+cherry	edge	355	UF-DL-LU	S L F' L' S' L F L'
+cherry	edge	356	UF-DL-LF	U E L' E' L2 E L' U' E'
+cherry	edge	357	UF-DL-FL	U2 L' U L U L U L' U' L' U
+cherry	edge	358	UF-DL-FR	U L' E' L2 E L' U'
+cherry	edge	359	UF-DL-FD	U' L F L' S' L2 S L' F' L' U
+cherry	edge	360	UF-DL-RU	R2 S' R F R' S R F' R
+cherry	edge	361	UF-DL-RF	U E L E L2 E' L U' E'
+cherry	edge	362	UF-DL-RB	u L' E' L2 E L' u'
+cherry	edge	363	UF-DL-BR	U L E L2 E' L U'
+cherry	edge	364	UF-DL-BL	L U' L' U' L' U' L U L U
+cherry	edge	365	UF-DL-BD	D L F L2 E' L2 E F' L' D'
+cherry	edge	366	UF-DL-DF	L F L' S L F2 L' S' L F L'
+cherry	edge	367	UF-DL-DB	U' R' D' R D R D R D' R' U D'
+cherry	edge	368	UF-DR-UL	R' U' R U R U R U' R' U'
+cherry	edge	369	UF-DR-UR	R U R' S R2 S' R' U' R'
+cherry	edge	370	UF-DR-LU	r2 S' r' U' r S r' U r'
+cherry	edge	371	UF-DR-LU	L2 S L' F' L S' L' F L'
+cherry	edge	372	UF-DR-LB	u' R E R2 E' R u
+cherry	edge	373	UF-DR-LF	U' E' R' E' R2 E R' U E
+cherry	edge	374	UF-DR-LD	S L' F' L S' L' F L
+cherry	edge	375	UF-DR-FL	U' R E R2 E' R U
+cherry	edge	376	UF-DR-FR	U2 R U' R' U' R' U' R U R U'
+cherry	edge	377	UF-DR-FD	U R' F' R S R2 S' R F R U'
+cherry	edge	378	UF-DR-RU	S' R' F R S R' F' R
+cherry	edge	379	UF-DR-RF	U' E' R E R2 E' R U E
+cherry	edge	380	UF-DR-RB	u' R' E' R2 E R' u
+cherry	edge	381	UF-DR-BU	M U' R2 U M' U' R2 U
+cherry	edge	382	UF-DR-BU	r' U' R' U M' U' R U R
+cherry	edge	383	UF-DR-BR	R' U R U R U R' U' R' U'
+cherry	edge	384	UF-DR-BL	U' R' E' R2 E R' U
+cherry	edge	385	UF-DR-BD	D' R' F E R2 E' R2 F' R D
+cherry	edge	386	UF-DR-DF	R' F' R S' R' F2 R S R' F' R
+cherry	edge	387	UF-DR-DL	D M D2 M' D
+cherry	edge	388	UF-DR-DB	D' R' F R S' R' F2 R S R' F R D
+cherry	edge	389	UF-DB-UB	U2 M U2 M'
+cherry	edge	390	UF-DB-UR	R U' R' U M2 U' R U r' M
+cherry	edge	391	UF-DB-LB	M' U' L U M2 U' L' U M'
+cherry	edge	392	UF-DB-LF	M' U' L' U M2 U' L U M'
+cherry	edge	393	UF-DB-LD	U L B' L' S' L B L' S U'
+cherry	edge	394	UF-DB-FL	U L' U' M2 U L U' M2
+cherry	edge	395	UF-DB-FL	U' D' R E R2 E' R U D
+cherry	edge	396	UF-DB-FR	U' R U M2 U' R' U M2
+cherry	edge	397	UF-DB-FD	D' S L' F' L S' L' F L D
+cherry	edge	398	UF-DB-FD	U' r M' U' R' U M U' R U r' U
+cherry	edge	399	UF-DB-RU	D' S' R' F R S R' F' R D
+cherry	edge	400	UF-DB-RU	r U R' U' M2 U R U' R' M'
+cherry	edge	401	UF-DB-RF	M' U R U' M2 U R' U' M'
+cherry	edge	402	UF-DB-RB	M' U R' U' M2 U R U' M'
+cherry	edge	403	UF-DB-RD	U' R' B R S R' B' R S' U
+cherry	edge	404	UF-DB-BR	U' R' U M2 U' R U M2
+cherry	edge	405	UF-DB-BL	U L U' M2 U L' U' M2
+cherry	edge	406	UF-DB-DF	M' U2 M' U2 M2
+cherry	edge	407	UF-DB-DL	U L2 U' M2 U L2 U' M2
+cherry	edge	408	UF-DB-DL	U' D R D R' D' R' D' R' D R U
+cherry	edge	409	UF-DB-DR	U' R' D R' S' R2 S R' D' R U
+cherry	edge	410	UB-UL-BR	U' R S2 R' U R S2 R'
+cherry	edge	411	UB-UL-BR	U' L E2 L' U L E2 L'
+cherry	edge	412	UB-UL-DL	L U L S' L2 S L U' L'
+cherry	edge	413	UB-UL-DR	U' R' U' R U R U R U' R'
+cherry	edge	414	UB-UL-DB	U' D' R' U' R U R U R U' R' D
+cherry	edge	415	UB-UR-FR	u R' E R U' R' E' R E
+cherry	edge	416	UB-UR-BR	U E R E' R' U' R E R' E'
+cherry	edge	417	UB-LU-LF	S U R' E R U' R' E' R S'
+cherry	edge	418	UB-LU-FR	S' U' L' E' L2 E L' U S
+cherry	edge	419	UB-LU-RF	r U' M U2 M' U' r'
+cherry	edge	420	UB-LU-BR	M U l' E l U' l' E' L
+cherry	edge	421	UB-LU-DB	L B' E L2 E' L2 B L'
+cherry	edge	422	UB-LB-UL	U2 R E' R' U' R E R' U'
+cherry	edge	423	UB-LB-FL	E L' U' L E' L' U L
+cherry	edge	424	UB-LB-FR	R2 E' R' U R E R' U' R'
+cherry	edge	425	UB-LB-RU	M' L U' M U2 M' U' M L'
+cherry	edge	426	UB-LB-BR	E' R' U R E R' U' R
+cherry	edge	427	UB-LB-DB	U' l U2 R' E R U' R' E' R U' l' U
+cherry	edge	428	UB-LF-LU	S R' E R U R' E' R U' S'
+cherry	edge	429	UB-LF-FR	E R U R' E' R U' R'
+cherry	edge	430	UB-LF-FD	U M' U' r' E r U r' E' R U'
+cherry	edge	431	UB-LF-RD	S' R' E R U R' E' R U' S
+cherry	edge	432	UB-LF-BD	M2 U L' U' M' U L U' M'
+cherry	edge	433	UB-LD-FL	S' U R E R2 E' R U' S
+cherry	edge	434	UB-LD-FD	U' L F L' S L F' L' S' U
+cherry	edge	435	UB-LD-BR	U D' R' U' M U R U' M' D
+cherry	edge	436	UB-LD-DF	U' S' L' F L S L' F' L U
+cherry	edge	437	UB-FL-UL	E L E' L' U' L E L' u
+cherry	edge	438	UB-FL-LD	S' U R' E R2 E' R' U' S
+cherry	edge	439	UB-FL-DL	U L U L U' L' U' L' U' L
+cherry	edge	440	UB-FR-UR	E' R' E R U R' E' R u'
+cherry	edge	441	UB-FR-LB	R U R E' R' U' R E R2
+cherry	edge	442	UB-FR-FD	U2 M' U' R U M U' R' U'
+cherry	edge	443	UB-FR-RD	U R u' R' U R E' R' U' R U R' U'
+cherry	edge	444	UB-FR-DF	M2 U R U' M2 U R' U'
+cherry	edge	445	UB-FR-DL	U' L E' L2 E L U
+cherry	edge	446	UB-FR-DR	U' R' U' R' U R U R U R'
+cherry	edge	447	UB-FD-RF	U' L E' l' U l E l' U' M U
+cherry	edge	448	UB-FD-RB	U' l' E L U L' E' L U' M U
+cherry	edge	449	UB-RU-UL	l U' l' S l U l' S'
+cherry	edge	450	UB-RU-LF	l' U M U2 M' U l
+cherry	edge	451	UB-RU-FD	U R F' R2 E R2 E' F R' U'
+cherry	edge	452	UB-RU-RF	S' U' L E' L' U L E L' S
+cherry	edge	453	UB-RF-UR	U2 L E' L' U L E L' U
+cherry	edge	454	UB-RF-RU	U' M U l E' l' U' l E M2 L' U
+cherry	edge	455	UB-RF-DR	u R' E R2 E' R' u'
+cherry	edge	456	UB-RB-UR	U2 L' E L U L' E' L U
+cherry	edge	457	UB-RB-LU	R' M' U M U2 M' U R M
+cherry	edge	458	UB-RB-LF	l U L' E L2 E' L' U' l'
+cherry	edge	459	UB-RB-BL	r' U' r E' r' U r E
+cherry	edge	460	UB-RD-LU	l U' R E R2 E' R U l'
+cherry	edge	461	UB-RD-DB	U S R' B R S' R' B' R U'
+cherry	edge	462	UB-BR-UL	R S2 R' U' R S2 R' U
+cherry	edge	463	UB-BR-UR	E R E' R' U R E R' U' E'
+cherry	edge	464	UB-BR-LD	D' M U R' U' M' U R U' D
+cherry	edge	465	UB-BR-FL	R U R E R2 E' R U' R'
+cherry	edge	466	UB-BR-FD	U2 M' U' R' U M U' R U'
+cherry	edge	467	UB-BR-DF	M2 U R' U' M2 U R U'
+cherry	edge	468	UB-BL-UR	R' E2 R U R' E2 R U'
+cherry	edge	469	UB-BL-LD	S' U R E' R2 E R U' S
+cherry	edge	470	UB-BL-RU	R E' r' U' r E r' U M'
+cherry	edge	471	UB-BL-RB	E' r' U' r E r' U r
+cherry	edge	472	UB-BL-DR	U R E' R2 E R U'
+cherry	edge	473	UB-BD-FL	U' L' U M U' L U M'
+cherry	edge	474	UB-BD-FR	U R U' M U R' U' M'
+cherry	edge	475	UB-BD-BL	U' L U M U' L' U M'
+cherry	edge	476	UB-BD-DR	U R2 U' M U R2 U' M'
+cherry	edge	477	UB-DF-UR	R U R' U' M2 U R U' r' M
+cherry	edge	478	UB-DF-BD	D' S' R' B' R S R' B R D
+cherry	edge	479	UB-DF-DR	U R' D' R' S' R2 S R' D R U'
+cherry	edge	480	UB-DL-LB	U' E' L E L2 E' L U E
+cherry	edge	481	UB-DL-FL	L' U L U L U L' U' L' U'
+cherry	edge	482	UB-DL-FR	U' L' E' L2 E L' U
+cherry	edge	483	UB-DL-RF	u' L E L2 E' L u
+cherry	edge	484	UB-DL-RD	S' R' B' R S R' B R
+cherry	edge	485	UB-DL-BD	M U' L2 U M' U' L2 U
+cherry	edge	486	UB-DL-DB	U R' D' R D R D R D' R' U' D'
+cherry	edge	487	UB-DR-LB	U E R E R2 E' R U' E'
+cherry	edge	488	UB-DR-LF	u R' E' R2 E R' u'
+cherry	edge	489	UB-DR-FD	U' R' F' R S R2 S' R F R U
+cherry	edge	490	UB-DB-FD	U r M' U' R' U M U' R U r' U'
+cherry	edge	491	UB-DB-BR	U' D L E L2 E' L U D'
+cherry	edge	492	UB-DB-DL	U D R D R' D' R' D' R' D R U'
+cherry	edge	493	UR-UL-DL	L2 S' L2 S
+cherry	edge	494	UR-LU-BL	l U2 l' S l U2 l' S'
+cherry	edge	495	UR-LU-DL	D S' L F L' S L F' L' D'
+cherry	edge	496	UR-LB-LD	E' R E l E' R' E l'
+cherry	edge	497	UR-LB-DF	L S' L F L' S L F' L2
+cherry	edge	498	UR-LF-BD	M U R' E R U' R' E' r
+cherry	edge	499	UR-LD-FL	l' U2 l' S l U2 l' S' l2
+cherry	edge	500	UR-LD-FD	l' U' l' S l U l' S' l2
+cherry	edge	501	UR-FL-RF	L' U2 L E' L' U2 L E
+cherry	edge	502	UR-FL-RB	L' U2 L' E L U2 L' E' L2
+cherry	edge	503	UR-FR-LD	R' E' R' S' R S R E
+cherry	edge	504	UR-FR-FD	U M' U' R U M U' R'
+cherry	edge	505	UR-FR-RB	U R U' R' E' R U R' u'
+cherry	edge	506	UR-FR-RD	R u' R' U R E' R' U' R U R'
+cherry	edge	507	UR-FD-RF	l' U2 l E' l' U' l E l' U' l
+cherry	edge	508	UR-FD-RD	S' R' F' R S R' F R
+cherry	edge	509	UR-FD-BL	l U' M U2 M' U' l'
+cherry	edge	510	UR-FD-DB	r U' R' U M' U' R U r' M
+cherry	edge	511	UR-BR-FL	U' R U R E R2 E' R U' R' U
+cherry	edge	512	UR-BR-RF	U' R' U R E R' U' R u
+cherry	edge	513	UR-BR-BD	U' M U R' U' M' U R
+cherry	edge	514	UR-BL-LF	L U2 L' E' L U2 L' E
+cherry	edge	515	UR-BL-FL	L' S' L2 S L'
+cherry	edge	516	UR-BL-DR	R E' R2 E R
+cherry	edge	517	UR-BD-LU	S R B R' S' R B' R'
+cherry	edge	518	UR-BD-LB	R E' r' U r E r' U' M'
+cherry	edge	519	UR-BD-RB	l U2 l' E l U l' E' l U l'
+cherry	edge	520	UR-BD-DL	U2 L2 U M U' L2 U M' U
+cherry	edge	521	UR-DF-DB	u' M' u2 M' u'
+cherry	edge	522	UR-DL-UL	S' L2 S L2
+cherry	edge	523	UR-DL-LF	U' u' L' E' L2 E L' U u
+cherry	edge	524	UR-DL-BD	R' B R' S' R2 S R' B' R
+cherry	edge	525	UR-DR-RF	E' R E R2 E' R E
+cherry	edge	526	UR-DR-DF	D R' D R' S' R2 S R' D' R D'
+cherry	edge	527	UR-DB-DL	D R D R' D' R' D' R' D R
+cherry	edge	528	UL-LB-FD	r U' r E' r' U' r E r' U2 r'
+cherry	edge	529	UL-LF-BD	r' U r' E r U r' E' r U2 r
+cherry	edge	530	UL-LD-RD	U' R' F R' S' R2 S R' F' R U
+cherry	edge	531	UL-FL-DF	U M2 U' L' U M2 U' L
+cherry	edge	532	UL-FR-RB	R U2 R' E' R U2 R' E
+cherry	edge	533	UL-RF-DF	R S R' F' R S' R' F
+cherry	edge	534	UL-RB-RD	E R' S R' S' R E' R
+cherry	edge	535	UL-RD-DL	U' R F R' S' R F' R' S U
+cherry	edge	536	UL-BR-RF	R' U2 R E R' U2 R E'
+cherry	edge	537	UL-DL-FL	E2 L E L2 E' L E2
+cherry	edge	538	UL-DR-LD	U' S L' F' L S' L' F L U
+cherry	edge	539	UL-DR-FL	U2 R E R2 E' R U2
+cherry	edge	540	UL-DB-LB	l U R' E R U R' E' R U2 l'
+cherry	edge	541	FR-DR-LF	R' S R E R E' R' S'
+cherry	edge	542	FL-RB-RD	R S R E R' E' R' S'
+cherry	edge	543	FL-BD-DR	M U R E R2 E' R U' M'
+cherry	edge	544	FL-DF-RD	R' F R U' R' E R2 E' R' U R' F' R
+cherry	edge	545	FL-DF-BL	D L S L2 S' L D'
+cherry	edge	546	FL-DL-FD	L' U' M' U L' U' M U L2
+cherry	edge	547	FL-DL-DB	L' U' M2 U L' U' M2 U L2
+cherry	edge	548	FL-DR-BD	M U R' E R2 E' R' U' M'
+cherry	edge	549	DB-BR-LB	E l U' l' E' l U l'
+cherry	edge	550	DB-BR-DL	M2 U L' E L2 E' L' U' M2
+cherry	edge	551	DB-DR-LB	D' l' S' l D l' S l
+cherry	edge	552	DR-DL-LB	S' R' E' R2 E R' S
+cherry	corner	2	UFR-UBL-UBR	R' B' R2 D R' U' R D' R' U R' B R
+cherry	corner	3	UFR-UBL-UFL	R' D R U2 R' D' R U R' D R U R' D' R
+cherry	corner	4	UFR-UBL-LUF	F U2 R' D' R U2 R' D R F'
+cherry	corner	5	UFR-UBL-FUL	l' U D' R D R' U2 R D' R' U D l
+cherry	corner	6	UFR-UBL-FDL	D R' D' R U2 R' D R U2 D'
+cherry	corner	7	UFR-UBL-RUB	R' U D R2 U' R' D' R U R' D R' U' D' R
+cherry	corner	8	UFR-UBL-RDF	R' D' R U2 R' D R U2
+cherry	corner	9	UFR-UBL-RDB	U' R D R' U2 R D' R' U'
+cherry	corner	10	UFR-UBL-BUR	R' U2 D' R' D R U2 R' D' R D R
+cherry	corner	11	UFR-UBL-BDR	U' D R D' R' U2 R D R' U' D'
+cherry	corner	12	UFR-UBL-BDL	U' D' R D R' U2 R D' R' U' D
+cherry	corner	13	UFR-UBL-DFL	R F' R' U' R D R' U2 R D' R' U' R F R'
+cherry	corner	14	UFR-UBL-DFR	D R D' R2 D R U2 R' D' R U2 R D R' D'
+cherry	corner	15	UFR-UBL-DBR	R D' R2 D R U2 R' D' R U2 R D R'
+cherry	corner	16	UFR-UBR-UBL	R' B' R U' R D R' U R D' R2 B R
+cherry	corner	17	UFR-UBR-UFL	R F' R2 D R U R' D' R U' R F R'
+cherry	corner	18	UFR-UBR-LUB	R U R D R' U' R D' R2
+cherry	corner	19	UFR-UBR-LUF	R2 D' R U' R' D R U R
+cherry	corner	20	UFR-UBR-LDB	U' R D' R' U R D R'
+cherry	corner	21	UFR-UBR-LDF	R' D R U R' D' R U'
+cherry	corner	22	UFR-UBR-FUL	R2 U' D' R U R' D R U' R' U R2
+cherry	corner	23	UFR-UBR-FDL	D R' D' R U R' D R U' D'
+cherry	corner	24	UFR-UBR-FDR	D' R' D R U R' D' R U' D
+cherry	corner	25	UFR-UBR-RDF	R' D' R U R' D R U'
+cherry	corner	26	UFR-UBR-RDB	U' R D R' U R D' R'
+cherry	corner	27	UFR-UBR-BUL	R2 D' R U2 R' D R U2 R
+cherry	corner	28	UFR-UBR-BDR	U' D R D' R' U R D R' D'
+cherry	corner	29	UFR-UBR-BDL	U' D' R D R' U R D' R' D
+cherry	corner	30	UFR-UBR-DFR	R' D R U' R D' R' U R D R' U R' D' R U'
+cherry	corner	31	UFR-UBR-DBL	R' B D' R U R' D R U' R' B' R
+cherry	corner	32	UFR-UBR-DBR	U' R D' R' U R' D R U R' D' R U' R D R'
+cherry	corner	33	UFR-UFL-UBL	R' D R U' R' D' R U' R' D R U2 R' D' R
+cherry	corner	34	UFR-UFL-UBR	R F' R' U R' D R U' R' D' R2 F R'
+cherry	corner	35	UFR-UFL-LUB	U' R2 U' R U R' D' R U' R' U D R2 U
+cherry	corner	36	UFR-UFL-LDB	U' R D' R' U' R D R' U2
+cherry	corner	37	UFR-UFL-LDF	R' D R U' R' D' R U
+cherry	corner	38	UFR-UFL-FDL	D R' D' R U' R' D R U D'
+cherry	corner	39	UFR-UFL-FDR	D' R' D R U' R' D' R U D
+cherry	corner	40	UFR-UFL-RUB	U' R' U2 R' D' R U2 R' D R2 U
+cherry	corner	41	UFR-UFL-RDB	U' R D R' U' R D' R' U2
+cherry	corner	42	UFR-UFL-BUR	R' U' D' R' D R U R' D' R D R
+cherry	corner	43	UFR-UFL-BUL	F R F' r U R' U' r'
+cherry	corner	44	UFR-UFL-BUL	U' R' U' R' D' R U R' D R2 U
+cherry	corner	45	UFR-UFL-BDL	D R' D R U' R' D' R U D'
+cherry	corner	46	UFR-UFL-DFL	R D R' D' R' D' R U' R' D R U D R D' R'
+cherry	corner	47	UFR-UFL-DFR	D R D' R2 D R U' R' D' R U R D R' D'
+cherry	corner	48	UFR-UFL-DBL	R' D' R2 U' R' D R U R' D' R' D R
+cherry	corner	49	UFR-UFL-DBR	R D' R2 D R U' R' D' R U R D R'
+cherry	corner	50	UFR-LUB-UBR	R2 D R' U R D' R' U' R'
+cherry	corner	51	UFR-LUB-UFL	R U R2 D' R U2 R' D R U2 R U' R'
+cherry	corner	52	UFR-LUB-LUF	r2 U R' U' r' F R F' L' x'
+cherry	corner	53	UFR-LUB-LUF	r2 U R' U' r' F R F' r'
+cherry	corner	54	UFR-LUB-LDB	R D' R D R' U R D' R' U' D R'
+cherry	corner	55	UFR-LUB-LDF	U R' U' R' D R U R' D' R2 U'
+cherry	corner	56	UFR-LUB-FDL	R U R' D R U R' D' R U2 R'
+cherry	corner	57	UFR-LUB-FDR	R U R2 D' R U' R' D R U R U' R'
+cherry	corner	58	UFR-LUB-RUB	R' D R2 D' R2 U R2 D R2 D' R2 U' R'
+cherry	corner	59	UFR-LUB-RDB	R U D' R' D R U R' D' R U2 D R'
+cherry	corner	60	UFR-LUB-BUR	R' F' r U R U' r' F
+cherry	corner	61	UFR-LUB-BDR	R U R' D' R U R' D R U2 R'
+cherry	corner	62	UFR-LUB-BDL	U D R' U' R' D R U R' D' R2 U' D'
+cherry	corner	63	UFR-LUB-DFL	R D' R D' R' U R D R' U' D R'
+cherry	corner	64	UFR-LUB-DBR	D R2 D' R' U R D R' U' R' D'
+cherry	corner	65	UFR-LUF-UBR	R' U' R' D' R U R' D R2
+cherry	corner	66	UFR-LUF-LDB	U' R U' D' R' U R D R' U' R U R' U
+cherry	corner	67	UFR-LUF-LDF	R' U' D R U R' D' R U' R' U R
+cherry	corner	68	UFR-LUF-FDL	D R' U' D' R U R' D R U' R' U R D'
+cherry	corner	69	UFR-LUF-FDR	R F R' U R U' F' U R' U'
+cherry	corner	70	UFR-LUF-RUB	R U' D' R' D R' U R D' R' U' R2 U D R'
+cherry	corner	71	UFR-LUF-RDF	R' U' D' R U R' D R U' R' U R
+cherry	corner	72	UFR-LUF-RDB	D' R F R' U R U' F' U R' U' D
+cherry	corner	73	UFR-LUF-BUR	R' F R U R' D R U' R' D' F' R
+cherry	corner	74	UFR-LUF-DFL	U' R' U R U' R' D R U R' U' D' R U
+cherry	corner	75	UFR-LUF-DFR	U' D' R' U R U' R' D R U R' U' D' R U D
+cherry	corner	76	UFR-LUF-DBL	U' D R' U R U' R' D R U R' U' D' R U D'
+cherry	corner	77	UFR-LUF-DBR	R U' R' D R' U R D' R' U' R2 U R'
+cherry	corner	78	UFR-LDB-UBL	U R D' R' U2 R D R' U
+cherry	corner	79	UFR-LDB-UBR	R D' R' U' R D R' U
+cherry	corner	80	UFR-LDB-UFL	U2 R D' R' U R D R' U
+cherry	corner	81	UFR-LDB-LUB	R U D' R D R' U' R D' R' D R'
+cherry	corner	82	UFR-LDB-LUF	U' R U' R' U R D' R' U' R U D R' U
+cherry	corner	83	UFR-LDB-FUL	R U' D R' D R U2 R' D' R U' D' R'
+cherry	corner	84	UFR-LDB-FDL	D2 R U R' D' R U' R' D'
+cherry	corner	85	UFR-LDB-FDR	l' U D R U' R' D' R U R' U' l
+cherry	corner	86	UFR-LDB-RUB	U R2 D' R' U2 R D R' U2 R' U'
+cherry	corner	87	UFR-LDB-RDF	D2 R U R' D2 R U' R'
+cherry	corner	88	UFR-LDB-RDB	R' U R2 D' R' U' R D R' U R' U' R
+cherry	corner	89	UFR-LDB-BUL	U2 R2 D' R' U R D R' U' R' U2
+cherry	corner	90	UFR-LDB-BDR	D2 R U R' D R U' R' D
+cherry	corner	91	UFR-LDF-UBR	U R' D R U' R' D' R
+cherry	corner	92	UFR-LDF-LUB	U R2 D R U' R' D' R U R U'
+cherry	corner	93	UFR-LDF-LUF	R' U' R U R' D R U' R' U D' R
+cherry	corner	94	UFR-LDF-LDB	D R' F' R D' R' D F D' R
+cherry	corner	95	UFR-LDF-FUL	D R' F2 R D' R' D F2 D' R
+cherry	corner	96	UFR-LDF-FDR	U D R U' R' D' R U R' U'
+cherry	corner	97	UFR-LDF-RUB	U R U R' D R U2 R' D' R U R' U'
+cherry	corner	98	UFR-LDF-BUR	R' U R U' R' D R U R' U' D' R
+cherry	corner	99	UFR-LDF-BUL	U' R' U' D R' D' R U R' D R D' R U
+cherry	corner	100	UFR-LDF-BDL	U D R U' R' D R U R' U' D2
+cherry	corner	101	UFR-LDF-DFR	U D R U' D' R' D R U R' D' R D R' U' D'
+cherry	corner	102	UFR-LDF-DBL	U D' R D2 R U' R' D2 R U R2 U' D
+cherry	corner	103	UFR-LDF-DBR	U R D R U' R' D' R U R2 U'
+cherry	corner	104	UFR-FUL-UBL	l' U' D' R D R' U2 R D' R' U' D l
+cherry	corner	105	UFR-FUL-UBR	R2 U' R U R' D' R U' R' U D R2
+cherry	corner	106	UFR-FUL-LDF	R' D F2 D' R D R' F2 R D'
+cherry	corner	107	UFR-FUL-FDL	R U R' D R U2 R' D' R U R'
+cherry	corner	108	UFR-FUL-FDR	D' R' D F2 D' R D R' F2 R
+cherry	corner	109	UFR-FUL-RUB	R' U' R2 D' R2 D R2 U R2 D' R2 D R'
+cherry	corner	110	UFR-FUL-RDB	R U D' R' D R U2 R' D' R U D R'
+cherry	corner	111	UFR-FUL-BDR	R U R' D' R U2 R' D R U R'
+cherry	corner	112	UFR-FUL-BDL	D' R U D' R' D R U2 R' D' R U D R' D
+cherry	corner	113	UFR-FUL-DBL	R2 D' R' U2 R D R' U2 R'
+cherry	corner	114	UFR-FDL-UBL	U2 D R' D' R U2 R' D R D'
+cherry	corner	115	UFR-FDL-UBL	U D' R D' R' U2 R D R' U D
+cherry	corner	116	UFR-FDL-UFL	U' D R' D' R U R' D R D'
+cherry	corner	117	UFR-FDL-LUB	R U2 R' D R U' R' D' R U' R'
+cherry	corner	118	UFR-FDL-LDB	D R U R' D R U' R' D2
+cherry	corner	119	UFR-FDL-FUL	R U' R' D R U2 R' D' R U' R'
+cherry	corner	120	UFR-FDL-FDR	D' R' D F' D' R D R' F R
+cherry	corner	121	UFR-FDL-RDF	D R U R' D' R U' R'
+cherry	corner	122	UFR-FDL-RDB	R D2 R' U' R D' R' U R D' R'
+cherry	corner	123	UFR-FDL-BUR	U R' U' D R U R' D' R U' R' U R U'
+cherry	corner	124	UFR-FDL-BUR	R' U L' U' R U L U'
+cherry	corner	125	UFR-FDL-BUL	r' D R D' r2 U R' U' r'
+cherry	corner	126	UFR-FDL-BDR	D R U R' D2 R U' R' D
+cherry	corner	127	UFR-FDL-BDL	D' R D' R' U' R D2 R' U R D' R' D
+cherry	corner	128	UFR-FDL-DFR	L' U F2 U' L U L' F2 L U'
+cherry	corner	129	UFR-FDL-DBL	D R U D R' D' R U' R' D R D' R' D'
+cherry	corner	130	UFR-FDL-DBR	D R2 D' R' U' R D R' U R' D'
+cherry	corner	131	UFR-FDR-UBR	U D' R' D R U' R' D' R D
+cherry	corner	132	UFR-FDR-UFL	U' D' R' D R U R' D' R D
+cherry	corner	133	UFR-FDR-LUB	R U R' U' R' D' R U R' D R2 U' R'
+cherry	corner	134	UFR-FDR-LUF	U R U' F U R' U' R F' R'
+cherry	corner	135	UFR-FDR-LDF	U R U' R' D R U R' U' D'
+cherry	corner	136	UFR-FDR-FDL	R' F' R D' R' D F D' R D
+cherry	corner	137	UFR-FDR-RUB	U' R' U R D R' U2 R D' R' U R U
+cherry	corner	138	UFR-FDR-RDB	U R U' R' D' R U R' U' D
+cherry	corner	139	UFR-FDR-BUR	D' R' U R U' R' D R U R' U' D' R D
+cherry	corner	140	UFR-FDR-BUL	R U' r' F R F' r U R2
+cherry	corner	141	UFR-FDR-BDR	R U R' U' D' R U R' D R U' R' U R U' R'
+cherry	corner	142	UFR-FDR-BDL	U R U' R' D2 R U R' U' D2
+cherry	corner	143	UFR-FDR-DFL	U R U' F2 U R' U' R F2 R'
+cherry	corner	144	UFR-FDR-DBL	U' D R2 D R U R' D' R U' R U D'
+cherry	corner	145	UFR-FDR-DBR	U R U' D' R' D R U R' D' R D R' U'
+cherry	corner	146	UFR-RUB-UBL	R' U D R D' R U' R' D R U R2 U' D' R
+cherry	corner	147	UFR-RUB-LUF	R U' D' R2 U R D R' U' R D' R U D R'
+cherry	corner	148	UFR-RUB-LDF	U R U' R' D R U2 R' D' R U' R' U'
+cherry	corner	149	UFR-RUB-FDL	U D' R U2 R D' R' U2 R D R2 U' D
+cherry	corner	150	UFR-RUB-RDB	U R U' R' D' R U2 R' D R U' R' U'
+cherry	corner	151	UFR-RUB-BDR	U D R U2 R D' R' U2 R D R2 U' D'
+cherry	corner	152	UFR-RUB-BDL	U' R' U' R D' R' U2 R D R' U' R U
+cherry	corner	153	UFR-RUB-DFL	U' R2 D R U2 R' D' R U2 R U
+cherry	corner	154	UFR-RUB-DBR	f' U2 R D R' U2 R D' R' f
+cherry	corner	155	UFR-RDF-UBL	U2 R' D' R U2 R' D R
+cherry	corner	156	UFR-RDF-UBR	U R' D' R U' R' D R
+cherry	corner	157	UFR-RDF-UFL	U' R' D' R U R' D R
+cherry	corner	158	UFR-RDF-LUB	D' R U2 R' D R U' R' D' R U' R' D
+cherry	corner	159	UFR-RDF-LUF	R' U' R U R' D' R U' R' U D R
+cherry	corner	160	UFR-RDF-LDB	R U R' D2 R U' R' D2
+cherry	corner	161	UFR-RDF-LDF	U R' D' R U' R' D2 R U R' D' R U'
+cherry	corner	162	UFR-RDF-FUL	D' R U' R' D R U2 R' D' R U' R' D
+cherry	corner	163	UFR-RDF-FDL	R U R' D R U' R' D'
+cherry	corner	164	UFR-RDF-RUB	U' R' U D R D' R' U2 R D R' U D' R U
+cherry	corner	165	UFR-RDF-RDB	R U D' R' D R U' R' D' R D R'
+cherry	corner	166	UFR-RDF-BUR	R' U R U' R' D' R U R' U' D R
+cherry	corner	167	UFR-RDF-BUL	R' D R' U R D' R' U' R2
+cherry	corner	168	UFR-RDF-BDR	R U R' D' R U' R' D
+cherry	corner	169	UFR-RDF-BDL	U R' D' R U' R' D' R U R' D2 R U'
+cherry	corner	170	UFR-RDF-DFL	R U D R' D' R U' R' D R D' R'
+cherry	corner	171	UFR-RDF-DBL	R2 D' R' U' R D R' U R'
+cherry	corner	172	UFR-RDF-DBR	R U R' D R U' R D' R' U' R D R' U R' D'
+cherry	corner	173	UFR-RDB-UBR	R D R' U' R D' R' U
+cherry	corner	174	UFR-RDB-UFL	U2 R D R' U R D' R' U
+cherry	corner	175	UFR-RDB-LUB	R U2 D' R' D R U' R' D' R U' D R'
+cherry	corner	176	UFR-RDB-LUF	U D' R U' F U R' U' R F' R' D
+cherry	corner	177	UFR-RDB-LDB	R D R' U' R D2 R' U R D R'
+cherry	corner	178	UFR-RDB-LDF	U D' R U' R' D2 R U R' U' D'
+cherry	corner	179	UFR-RDB-FDL	R D R' U' R D R' U R D2 R'
+cherry	corner	180	UFR-RDB-FDR	U D' R U' R' D R U R' U'
+cherry	corner	181	UFR-RDB-RUB	U R U R' D' R U2 R' D R U R' U'
+cherry	corner	182	UFR-RDB-RDF	R D' R' D R U R' D' R U' D R'
+cherry	corner	183	UFR-RDB-DFL	U' R2 D R U R' D' R U' R U
+cherry	corner	184	UFR-RDB-DFR	R U' D' R2 D R U2 R' D' R U2 R U D R'
+cherry	corner	185	UFR-RDB-DBL	U D' R' D L2 D' R D L2 U'
+cherry	corner	186	UFR-RDB-DBL	U D' R' D r2 U' R U r2 U'
+cherry	corner	187	UFR-BUR-UBL	R' D' R' D R U2 R' D' R U2 D R
+cherry	corner	188	UFR-BUR-UFL	R' D' R' D R U' R' D' R U D R
+cherry	corner	189	UFR-BUR-LUF	R' F D R U R' D' R U' R' F' R
+cherry	corner	190	UFR-BUR-LDB	R U' L U R' U' L' U
+cherry	corner	191	UFR-BUR-FUL	R U' D' R' D' R U2 R' D R U' D R'
+cherry	corner	192	UFR-BUR-FDL	U R' U' R U R' D R U' R' U D' R U'
+cherry	corner	193	UFR-BUR-FDR	D' R' U D R U' R' D' R U R' U' R D
+cherry	corner	194	UFR-BUR-RDF	R' U D' R U' R' D R U R' U' R
+cherry	corner	195	UFR-BUR-BUL	R U' L' U R' U' L U
+cherry	corner	196	UFR-BUR-BDR	R U' R' U R D R' U' R U D' R'
+cherry	corner	197	UFR-BUR-BDL	D R' U D R U' R' D' R U R' U' R D'
+cherry	corner	198	UFR-BUR-DFR	U R' U' R U R' D' R U' R' U D R U'
+cherry	corner	199	UFR-BUL-UBR	R' U2 R' D' R U2 R' D R2
+cherry	corner	200	UFR-BUL-UFL	r U R U' r' F R' F'
+cherry	corner	201	UFR-BUL-LUF	F l U' l' F' l U l'
+cherry	corner	202	UFR-BUL-LDB	U2 R U R D' R' U' R D R2 U2
+cherry	corner	203	UFR-BUL-LDF	U' R' D R' D' R U' R' D R U D' R U
+cherry	corner	204	UFR-BUL-FUL	R U R' U' D R D R' U2 R D' R' U' D' R U' R'
+cherry	corner	205	UFR-BUL-FDL	r U R U' r2 D R' D' r
+cherry	corner	206	UFR-BUL-FDR	R2 U' r' F R' F' r U R'
+cherry	corner	207	UFR-BUL-RUB	U R2 U' R U R' D' R U' R' U D R2 U'
+cherry	corner	208	UFR-BUL-RDF	R2 U R D R' U' R D' R
+cherry	corner	209	UFR-BUL-RDB	R' U2 R' D' R U' R' D R U' R
+cherry	corner	210	UFR-BUL-BDR	D' R2 U R D R' U' R D' R D
+cherry	corner	211	UFR-BUL-BDL	U' R' U' R D' R' U' R D R' U2 R U
+cherry	corner	212	UFR-BUL-DFL	U' R2 D R U' R' D' R U R U
+cherry	corner	213	UFR-BUL-DFR	U' D' R2 D R U' R' D' R U R U D
+cherry	corner	214	UFR-BUL-DBR	U R D' R U' R' D R U R2 U'
+cherry	corner	215	UFR-BDR-UBL	U D R D' R' U2 R D R' U D'
+cherry	corner	216	UFR-BDR-UBR	D R D' R' U' R D R' U D'
+cherry	corner	217	UFR-BDR-UFL	U' D' R' D' R U R' D R D
+cherry	corner	218	UFR-BDR-LUB	R U2 R' D' R U' R' D R U' R'
+cherry	corner	219	UFR-BDR-LDF	U R' U' R' D R U2 R' D' R U' R U'
+cherry	corner	220	UFR-BDR-FUL	R U' R' D' R U2 R' D R U' R'
+cherry	corner	221	UFR-BDR-FDL	D' R U R' D2 R U' R' D'
+cherry	corner	222	UFR-BDR-FDR	R U R' U' R U R' D' R U' R' U D R U' R'
+cherry	corner	223	UFR-BDR-RDF	D' R U R' D R U' R'
+cherry	corner	224	UFR-BDR-BUR	R U' D R' U R D' R' U' R U R'
+cherry	corner	225	UFR-BDR-BUL	D' R' D R' U R D' R' U' R2 D
+cherry	corner	226	UFR-BDR-BDL	U2 L U R' U' L' U R U
+cherry	corner	227	UFR-BDR-DFL	D' R2 D' R' U' R D R' U R' D
+cherry	corner	228	UFR-BDL-UBL	U D' R D R' U2 R D' R' U D
+cherry	corner	229	UFR-BDL-UBR	D' R D R' U' R D' R' U D
+cherry	corner	230	UFR-BDL-UFL	U' D R' D R U R' D' R D'
+cherry	corner	231	UFR-BDL-UFL	l U' D' R D' R' U2 R D R' U' D l'
+cherry	corner	232	UFR-BDL-LUF	D R' U' R U R' D R U' R' U D' R D'
+cherry	corner	233	UFR-BDL-LDF	U D2 R U' R' D' R U R' U' D'
+cherry	corner	234	UFR-BDL-FUL	D' R U' D' R' D R U2 R' D' R U' D R' D
+cherry	corner	235	UFR-BDL-FDL	D' R D R' U' R D2 R' U R D R' D
+cherry	corner	236	UFR-BDL-RUB	U' R' U R D' R' U2 R D R' U R U
+cherry	corner	237	UFR-BDL-RDB	U D2 R U' R' D R U R' U' D
+cherry	corner	238	UFR-BDL-RDB	U' D' R' U' R D R' U R U
+cherry	corner	239	UFR-BDL-DFR	U' D' R2 D R U R' D' R U' R U D
+cherry	corner	240	UFR-BDL-DBR	U R D2 R U' R' D2 R U R2 U'
+cherry	corner	241	UFR-DFL-UBL	R F' R' U R D R' U2 R D' R' U R F R'
+cherry	corner	242	UFR-DFL-UBR	R F' D R' U' R D' R' U R F R'
+cherry	corner	243	UFR-DFL-UFL	R D R' U' D' R' D' R U R' D R D R D' R'
+cherry	corner	244	UFR-DFL-LUB	R U D' R D' R' U' R D R' D R'
+cherry	corner	245	UFR-DFL-LUB	D' R U R D' R' U' R D R2 D
+cherry	corner	246	UFR-DFL-LDB	D' R U' D' R' U R D2 R' U' R U D' R' D
+cherry	corner	247	UFR-DFL-FUL	R U' D R' D' R U2 R' D R U' D' R'
+cherry	corner	248	UFR-DFL-FDR	R F2 R' U R U' F2 U R' U'
+cherry	corner	249	UFR-DFL-RUB	U' R' U2 R' D R U2 R' D' R2 U
+cherry	corner	250	UFR-DFL-RDF	R D R' D' R U R' D R U' D' R'
+cherry	corner	251	UFR-DFL-RDB	U' R' U R' D R U' R' D' R2 U
+cherry	corner	252	UFR-DFL-BUL	U' R' U' R' D R U R' D' R2 U
+cherry	corner	253	UFR-DFL-BDR	D' R U' R D' R' U R D R2 D
+cherry	corner	254	UFR-DFL-BDL	l U D' R D R' U2 R D' R' U D l'
+cherry	corner	255	UFR-DFL-DBL	R U' D2 R' U R D R' U' R U D R'
+cherry	corner	256	UFR-DFL-DBR	R U' R' D2 R' U R D2 R' U' R2 U R'
+cherry	corner	257	UFR-DFR-UBL	D R D' R' U2 R' D R U2 R' D' R2 D R' D'
+cherry	corner	258	UFR-DFR-UBR	U R' D R U' R D' R' U' R D R' U R' D' R
+cherry	corner	259	UFR-DFR-UFL	U' R' D R U' R D' R' U R D R' U R' D' R
+cherry	corner	260	UFR-DFR-UFL	D R D' R' U' R' D R U R' D' R2 D R' D'
+cherry	corner	261	UFR-DFR-LUB	U R' D' R' D' R U' R' D R U D R U'
+cherry	corner	262	UFR-DFR-LUF	U' D' R' U D R U' R' D' R U R' U' R U D
+cherry	corner	263	UFR-DFR-LDB	D2 R U' R D' R' U R D R2 D2
+cherry	corner	264	UFR-DFR-LDB	U D L' U' R2 U L U' R2 D'
+cherry	corner	265	UFR-DFR-LDF	U D R D' R' D R U' R' D' R U D R' U' D'
+cherry	corner	266	UFR-DFR-FUL	D' R U' D R' D' R U2 R' D R U' D' R' D
+cherry	corner	267	UFR-DFR-FDL	U L' F2 L U' L' U F2 U' L
+cherry	corner	268	UFR-DFR-BUR	U R' U' D' R U R' D R U' R' U R U'
+cherry	corner	269	UFR-DFR-BUL	U' D' R' U' R' D R U R' D' R2 U D
+cherry	corner	270	UFR-DFR-BDR	D' R D R' D' R U R' D R U' D' R' D
+cherry	corner	271	UFR-DFR-BDL	U' D' R' U R' D R U' R' D' R2 U D
+cherry	corner	272	UFR-DBL-UBL	R' U' D' R D R U' R' D' R U R2 U D R
+cherry	corner	273	UFR-DBL-UFL	R' D' R D R U' R' D' R U R2 D R
+cherry	corner	274	UFR-DBL-FUL	R U2 R D' R' U2 R D R2
+cherry	corner	275	UFR-DBL-FDL	D R D R' D' R U R' D R U' D' R' D'
+cherry	corner	276	UFR-DBL-RUB	U' D R' U2 R' D R U2 R' D' R2 U D'
+cherry	corner	277	UFR-DBL-RDF	R U' R D' R' U R D R2
+cherry	corner	278	UFR-DBL-RDB	U r2 U' R' U r2 D' R U' D
+cherry	corner	279	UFR-DBL-BUL	R2 U R' U' R D' R' U R U' D R2
+cherry	corner	280	UFR-DBL-DBR	R U' R' D' R' U R D R' U' R2 U R'
+cherry	corner	281	UFR-DBR-UBL	R D' R' U2 R' D R U2 R' D' R2 D R'
+cherry	corner	282	UFR-DBR-UBR	R D' R' U R' D R U' R' D' R U' R D R' U
+cherry	corner	283	UFR-DBR-UFL	R D' R' U' R' D R U R' D' R2 D R'
+cherry	corner	284	UFR-DBR-LUB	D R U R D' R' U' R D R2 D'
+cherry	corner	285	UFR-DBR-LUF	R U' R2 U R D R' U' R D' R U R'
+cherry	corner	286	UFR-DBR-LDF	U R2 U' R' D R U R' D' R' U'
+cherry	corner	287	UFR-DBR-FUL	D R U2 R D' R' U2 R D R2 D'
+cherry	corner	288	UFR-DBR-FDL	D R U' R D' R' U R D R2 D'
+cherry	corner	289	UFR-DBR-RUB	f' R D R' U2 R D' R' U2 f
+cherry	corner	290	UFR-DBR-RDF	D R U' R D' R' U R D R' U R' D' R U' R'
+cherry	corner	291	UFR-DBR-BUR	D R U' D' R' U R D R' U' R U R' D'
+cherry	corner	292	UFR-DBR-BDL	U R2 U' R' D2 R U R' D2 R' U'
+cherry	corner	293	UFL-UBL-RDF	U' R' D' R U' R' D R U2
+cherry	corner	294	UFL-UBL-DFL	U R D R' D' R' U R D R' U' R2 D' R' U'
+cherry	corner	295	UFL-UBR-LDB	U2 R D' R' U2 R D R'
+cherry	corner	296	UFL-UBR-FDR	U' D' R' D R U2 R' D' R U' D
+cherry	corner	297	UFL-UBR-BDL	U' D R' D R U2 R' D' R U' D'
+cherry	corner	298	UFL-LUB-FDL	U' R U R' D R U2 R' D' R U R' U
+cherry	corner	299	UFL-LUB-RDF	U R' U R D R' U2 R D' R' U R U'
+cherry	corner	300	UFL-LDB-UBL	U R D' R' U R D R' U2
+cherry	corner	301	UFL-LDB-RDB	R' U R2 D' R' U R D R' U' R' U' R
+cherry	corner	302	UFL-LDF-UBR	U R' D R U2 R' D' R U
+cherry	corner	303	UFL-LDF-FDR	D R U' R' D' R U l' x'
+cherry	corner	304	UFL-FDR-UBL	U2 D' R' D R U R' D' R U D
+cherry	corner	305	UFL-FDR-LDF	R U' R' D R U R' D'
+cherry	corner	306	UFL-FDR-DBL	D' R D R U' R' D' R U R2 D
+cherry	corner	307	UFL-FDR-DBR	R U' D' R' D R U R' D' R D R'
+cherry	corner	308	UFL-BUL-RUB	F R' F' r U R U' r'
+cherry	corner	309	UFL-BDR-BUR	D R' U' R D' R' U' R D R' U2 R D'
+cherry	corner	310	UFL-BDL-LDF	D2 R U' R' D' R U R' D'
+cherry	corner	311	UFL-DFR-BUR	R' D' R' D' R U' R' D R U D R
+cherry	corner	312	UFL-DBL-UBL	U' R' D' R D R U' R' D' R U R2 D R U
+cherry	corner	313	UFL-DBL-LDF	D' R2 U' R' D2 R U R' D2 R' D
+cherry	corner	314	UFL-DBL-RUB	D' R2 U' R' D' R U R' D R' D
+cherry	corner	315	UFL-DBR-UBR	R2 U' R2 D' R2 D R2 U R2 D' R2 D
+cherry	corner	316	UFL-DBR-LDF	R2 U' R' D R U R' D' R'
+cherry	corner	317	UFL-DBR-FDR	R D' R' D R U' R' D' R U D R'
+cherry	corner	318	UBR-UBL-LDF	U R' D R U R' D' R U2
+cherry	corner	319	UBR-UBL-RDB	R D R' U R D' R' U'
+cherry	corner	320	UBR-LUB-LDB	R U D' R' U' R D R' U R U' R'
+cherry	corner	321	UBR-LDF-UBL	U2 R' D R U' R' D' R U'
+cherry	corner	322	UBR-FDL-UBL	U D' R D' R' U' R D R' D
+cherry	corner	323	UBR-FDL-LUB	D' R U R' U' R D' R' U R U' D R' D
+cherry	corner	324	UBR-FDR-DBR	R' U R U R' D' R U2 R' D R U R' U' R
+cherry	corner	325	UBR-BUL-LDB	R D' B2 D R' D' R B2 R' D
+cherry	corner	326	UBR-BDL-UBL	U D' R D R' U' R D' R' D
+cherry	corner	327	UBR-DFR-UBL	R' D R U R D' R' U' R D R2 D' R
+cherry	corner	328	UBL-LDF-DBR	R U' D R U' R' D' R U R' U R'
+cherry	corner	329	UBL-BDR-LDF	U' R' U' R' D R U2 R' D' R U' R U
+cherry	flips	2	UF & UB	M' U2 M U R' F' R S R' F R S' U
+cherry	flips	3	UF & UL	L E2 L2 E L U L' E' L2 E2 L' U'
+cherry	flips	4	UF & UR	R' E2 R2 E' R' U' R E R2 E2 R U
+cherry	flips	5	UF & FL	R' E R U' R' E' R2 E2 R' U R E2 R'
+cherry	flips	6	UF & FR	L E' L' U L E L2 E2 L U' L' E2 L
+cherry	flips	7	UF & BR	L' E L U L' E' L2 E2 L' U' L E2 L'
+cherry	flips	8	UF & BL	R E' R' U' R E R2 E2 R U R' E2 R
+cherry	flips	9	UF & DR	U R' E' R U2 R' E R S R2 S' R2 U
+cherry	flips	10	UF & DB	M U R' F' R S R' F R S' U M' U2
+cherry	flips	11	UB & UR	U R' E2 R2 E' R' U' R E R2 E2 R
+cherry	flips	12	UB & FL	R' E R U R' E' R2 E2 R' U' R E2 R'
+cherry	flips	13	UB & DF	U R' F' R S R' F R S' U M' U2 M
+cherry	flips	14	UB & DB	U2 M U R' F' R S R' F R S' U M'
+cherry	flips	15	UR & FL	S R' E R2 E' R2 F2 R S' R' F2 R
+cherry	flips	16	UR & FR	U L E' L' U L E L2 E2 L U' L' E2 L U'
+cherry	flips	17	UR & BL	U R E' R' U' R E R2 E2 R U R' E2 R U'
+cherry	flips	18	UR & DF	R' F' R S R' F R S' U M' U2 M U
+cherry	flips	19	UR & DB	U M U R' F' R S R' F R S' U M' U
+cherry	flips	20	UL & BL	U R' E2 R U R' E2 R2 E' R' U' R E R' U'
+cherry	flips	21	FR & BL	R2 E' R2 F2 R S' R' F2 R S R' E
+cherry	flips	22	FR & DB	l E' L' U' L E L2 E2 L U L' E2 M' L
+cherry	flips	23	FL & DF	F L' S' L F' L' S U' M' U2 M U' L
+cherry	flips	24	FL & DR	R' E R2 E' R2 F2 R S' R' F2 R S
+cherry	flips	25	DF & BR	R2 F' R S R' F R S' U M' U2 M U R
+cherry	flips	26	DR & DL	U' R2 S' R2 S U R F R' S' R F' R' S
+cherry	twists	2	UFR & UBR	R' D' R D R' D' R U R' D R D' R' D R U'
+cherry	twists	3	UFR & UFL	R' D' R D R' D' R U' R' D R D' R' D R U
+cherry	twists	4	UFR & DBL	D' R D R' U' R D' R' D R D' R' U R D R'
+cherry	twists	5	UFL & UFR	R' D R D' R' D R U' R' D' R D R' D' R U
+cherry	twists	6	UFL & DBR	U' R D R' U' R D' R' D R D' R' U R D R' U D'
+cherry	twists	7	UBR & UFR	R' D R D' R' D R U R' D' R D R' D' R U'
+cherry	twists	8	UBR & DFR	D' R' D R U R' D' R D R' D' R U' R' D R
+cherry	twists	9	DFR & UBR	R' D' R U R' D R D' R' D R U' R' D' R D
+cherry	twists	10	DFR & UFR	U' R' D' R U R' D R D' R' D R U' R' D' R U D
+cherry	twists	11	DFL & UFR	U' D R' D' R U R' D R D' R' D R U' R' D' R U
+cherry	twists	12	DFL & DFR	R U R' U' R U R' D R U' R' U R U' R' D'
+cherry	twists	13	DBR & UFR	D R D' R' U' R D R' D' R D R' U R D' R'
+cherry	twists	14	DBR & DFR	R U R' U' R U R' D' R U' R' U R U' R' D
+cherry	twists	15	DBR & DBL	R' U' R U R' U' R D' R' U R U' R' U R D
+cherry	twists	16	DBL & UBR	U R U' R' U R D' R' U' R U R' U' R D R'
+cherry	twists	17	DBL & UFL	U' R D' R' U' R D R' D' R D R' U R D' R' U D
+cherry	twists	18	DBL & UFR	R D' R' U' R D R' D' R D R' U R D' R' D
+cherry	twists	19	DBL & DFL	D R U R' U' R U R' D R U' R' U R U' R' D2
+cherry	twists	20	DBL & DFR	R U R' U' R U R' D2 R U' R' U R U' R' D2
+cherry	twists	21	DBL & DBR	R' U R U' R' U R D' R' U' R U R' U' R D
+cherry	parity	2	UF-UL, UFR-UFL	U' R U R' F' R U R' U' R' F R2 U' R'
+cherry	parity	3	UF-UL, UFR-FUL	R' D R2 U' R2 U R2 D' R2 U R2 U' R2 U' R
+cherry	parity	4	UF-UL, UFL-LDB	U D2 R' F R2 U' R' U' R U R' F' R U R' U2 D2
+cherry	parity	5	UF-UL, UFL-LDF	D R U' R U R' F' R U R' U' R' F R2 U' R2 D'
+cherry	parity	6	UF-UL, UFL-FDR	R U' R U R' F' R U R' U' R' F R2 U' R2
+cherry	parity	7	UF-UL, UFL-DFL	D2 R2 U' R2 U R2 D' R2 U R2 U' R2 U' D'
+cherry	parity	8	UF-UR, UFR-UBR	R U R' F' R U R' U' R' F R2 U' R' U'
+cherry	parity	9	UF-UR, UFR-LUF	U2 R' U R U2 R' L' U R U' L
+cherry	parity	10	UF-UR, UFR-LDB	R U D' R' F' R U R' U' R' F R2 U' R' U' R D R'
+cherry	parity	11	UF-UR, UFR-FDL	L' U L' U' L F L' U' L U L F' L2 U L2
+cherry	parity	12	UF-UR, UFR-FDL	U2 D R' F R2 U' R' U' R U R' F' R U R' U D'
+cherry	parity	13	UF-UR, UFR-RUB	U R' U R U' x' U L' U L U2 R U' R' U x
+cherry	parity	14	UF-UR, UFR-RDF	U2 R' F R2 U' R' U' R U R' F' R U R' U
+cherry	parity	15	UF-UR, UFR-BUR	U R U' R' z R2 U D R' D' R U' R z'
+cherry	parity	16	UF-UR, UFR-BDR	U2 D' R' F R2 U' R' U' R U R' F' R U R' U D
+cherry	parity	17	UF-UR, UFR-DFL	U' x U2 R2 F R F' R U2 r' U L U
+cherry	parity	18	UF-UR, UFR-DFR	U D R2 U' R2 U R2 D' R2 U R2 U' R2 U2
+cherry	parity	19	UF-UR, UFR-DBL	r2 D r2 U' r U r' U' r2 D r D' r U
+cherry	parity	20	UF-UR, UFR-DBR	U R2 U' R U R' F' R U R' U' R' F R2 U' R U'
+cherry	parity	21	UF-BR, UBR-BDL	U D' R' F' R U R' U' R' F R2 U' R' U' R D
+cherry	parity	22	UB-UL, UFR-UBL	F R' F R2 U' R' U' R U R' F' R U R' U' F'
+cherry	parity	23	UB-UL, UFR-BUL	U' R' U' R U R' F' R U R' U' R' F R2
+cherry	parity	24	UB-UR, UBR-UBL	U R U R' F' R U R' U' R' F R2 U' R' U2
+cherry	parity	25	UB-UR, UBR-RDF	U' R' F R2 U' R' U' R U R' F' R U R'
+cherry	parity	26	UB-UR, UBR-BDL	U' D' R2 U' R' U' R U R' F' R U R' U' R' F U D
+cherry	parity	27	UB-UR, UBR-DFL	x U2 R2 F R F' R U2 r' U L
+cherry	ltct	2	UF-UR, UBR-LUB[FUR]	U R U2 R D R' U' R D' R2 U R U2 R'
+cherry	ltct	3	UF-UR, UFR-BUL[LDB]	U D' R2 D' R U R' D R2 U R' U2 R D
+cherry	ltct	4	UF-UR, UFR-RUB[RDB]	U D' R U' R2 D' R U R' D R U R U' R' U2 D
+cherry	ltct	5	UF-UR, UFR-FUL[FDL]	U2 D2 R' U R2 D R' U' R D' R' U' R' U R U' D2
+cherry	ltct	6	UF-UR, UFR-DFL[RUB]	l F' L' F M' U L' U2 L U2
+cherry	ltct	7	UF-UR, UFR-FUL[RUB]	U' f R' F' R U2 R U2 R' U2 S'
+cherry	ltct	8	UF-UR, UFR-LUF[LUB]	R U R D R' U R D' R2 U' R U' R' U'
+cherry	ltct	9	UF-UR, UFR-LUF[BUR]	U R U2 R' U' F' R U R' U' R' F R2 U' R'
+eggins	edge	2	UF-UB-UL	L2 U' L2 S' L2 S U L2
+eggins	edge	3	UF-UB-RF	U L E' L' U2 L E L' U
+eggins	edge	4	UF-UL-LD	U L E L' U' L E' L'
+eggins	edge	5	UF-UL-FR	U L' E2 L U' L' E2 L
+eggins	edge	6	UF-UL-RB	U L' E L U' L' E' L
+eggins	edge	7	UF-UL-BD	U' M U' M' U' M U' M'
+eggins	edge	8	UF-UL-DF	F' R S R' F2 R S' R' F'
+eggins	edge	9	UF-UR-FL	U' R E2 R' U R E2 R'
+eggins	edge	10	UF-LU-UR	L F' L' S' L F L' S
+eggins	edge	11	UF-LU-FD	M2 L' U' L U M U' L' U l
+eggins	edge	12	UF-LU-DF	L' F' L2 E' L2 E F L
+eggins	edge	13	UF-LB-UR	R E' R' U' R E R' U
+eggins	edge	14	UF-LF-UR	R' E R U' R' E' R U
+eggins	edge	15	UF-LF-RF	U E R' S R2 S' R' U' E'
+eggins	edge	16	UF-LD-UB	U' L E L' U2 L E' L' U'
+eggins	edge	17	UF-LD-UR	U2 L E L' U' L E' L' U'
+eggins	edge	18	UF-LD-FL	S' U' R E R2 E' R U S
+eggins	edge	19	UF-LD-BL	S' U' R' E' R2 E R' U S
+eggins	edge	20	UF-LD-DR	L' F' L S L' F L S'
+eggins	edge	21	UF-FL-UR	R E2 R' U' R E2 R' U
+eggins	edge	22	UF-FL-RU	R' M' E R U R' E' R U' M
+eggins	edge	23	UF-FL-DL	U' L U L U' L' U' L' U' L U2
+eggins	edge	24	UF-FL-DR	U' R' E R2 E' R' U
+eggins	edge	25	UF-FL-DB	U' D' R' E R2 E' R' U D
+eggins	edge	26	UF-FR-UB	R' U' R2 S R2 S' U R
+eggins	edge	27	UF-FR-LB	R U' R E' R' U R E R2
+eggins	edge	28	UF-FR-RB	R U' R' E' R U R' E
+eggins	edge	29	UF-FR-DB	U D L E' L2 E L U' D'
+eggins	edge	30	UF-FD-UL	L' U L U' M' U L' U' l
+eggins	edge	31	UF-FD-FR	U' R U M' U' R' U M
+eggins	edge	32	UF-FD-BD	U M' U' M U2 M U M' U
+eggins	edge	33	UF-RU-LB	l U' M' U2 M U' l'
+eggins	edge	34	UF-RU-BD	M' U' M' U' M U' M' U' M2
+eggins	edge	35	UF-RU-DR	R' F R S' R' F' R S
+eggins	edge	36	UF-RU-DB	D' R' F R S' R' F' R S D
+eggins	edge	37	UF-RF-UB	U' L E' L' U2 L E L' U'
+eggins	edge	38	UF-RF-UL	L E' L' U L E L' U'
+eggins	edge	39	UF-RF-RB	M' U' R' S R2 S' R' U M
+eggins	edge	40	UF-RB-FD	D R D' M D R' D' M'
+eggins	edge	41	UF-RB-BL	E L U L' E' L U' L'
+eggins	edge	42	UF-RD-UB	U R' E' R U2 R' E R U
+eggins	edge	43	UF-RD-RU	F' R' E R2 E' R' F
+eggins	edge	44	UF-RD-BR	S U L E L2 E' L U' S'
+eggins	edge	45	UF-RD-DB	U' S R' B R S' R' B' R U
+eggins	edge	46	UF-BU-LF	M' U' L' U M U' L U
+eggins	edge	47	UF-BU-RF	M' U R U' M U R' U'
+eggins	edge	48	UF-BR-UB	R U' R2 S R2 S' U R'
+eggins	edge	49	UF-BR-FD	M' U' R' U M U' R U
+eggins	edge	50	UF-BR-DF	U D' L' E L2 E' L' U' D
+eggins	edge	51	UF-BL-LU	L U' L' S L U' L' S' L U2 L'
+eggins	edge	52	UF-BL-BD	U2 M U' L U M' U' L' U'
+eggins	edge	53	UF-BL-DF	U' D R E' R2 E R U D'
+eggins	edge	54	UF-BD-FL	U' R' B R2 E R2 E' B' R U
+eggins	edge	55	UF-BD-RD	U' S' l U l' S l U' l' U
+eggins	edge	56	UF-DF-BR	U D' L E L2 E' L U' D
+eggins	edge	57	UF-DF-DL	L F' L' S L F2 L' S' L F' L'
+eggins	edge	58	UF-DL-UR	l F L S' L2 S L F' l'
+eggins	edge	59	UF-DL-DR	U' R2 S' R2 S U
+eggins	edge	60	UF-DR-UL	R' U' R U R U R U' R' U'
+eggins	edge	61	UF-DR-UR	R U R' S R2 S' R' U' R'
+eggins	edge	62	UF-DR-LB	u' R E R2 E' R u
+eggins	edge	63	UF-DR-RB	u' R' E' R2 E R' u
+eggins	edge	64	UF-DB-BR	U' R' U M2 U' R U M2
+eggins	edge	65	UB-UR-BL	U R' E2 R U' R' E2 R
+eggins	edge	66	UB-LB-UL	U2 R E' R' U' R E R' U'
+eggins	edge	67	UB-LD-UL	L E L' U' L E' L' U
+eggins	edge	68	UB-FR-BR	U' R' S R2 S' R' U
+eggins	edge	69	UB-FD-LU	U' D' L F' L' S L F L' S' U D
+eggins	edge	70	UB-DL-RU	l2 S l' U' l S' l' U l'
+eggins	edge	71	UB-DR-BD	M U R2 U' M' U R2 U'
+eggins	edge	72	FR-RD-DL	S L' F2 L S' L' F2 L
+eggins	corner	2	UFR-UBL-LUF	f U2 R' D' R U2 R' D R f'
+eggins	corner	3	UFR-UBL-FDL	U' D' R D' R' U2 R D R' U' D
+eggins	corner	4	UFR-UBL-RUB	R' U D R2 U' R' D' R U R' D R' U' D' R
+eggins	corner	5	UFR-UBR-LUF	R2 D' R U' R' D R U R
+eggins	corner	6	UFR-UBR-LDB	U' R D' R' U R D R'
+eggins	corner	7	UFR-UFL-FDR	D' R' D R U' R' D' R U D
+eggins	corner	8	UFR-LUB-LUF	L U' R' U L' U' R U
+eggins	corner	9	UFR-LUB-DFR	D2 R2 D' R' U R D R' U' R' D2
+eggins	corner	10	UFR-LDB-UFL	U2 R D' R' U R D R' U
+eggins	corner	11	UFR-LDB-FUL	D R U' R' D R U2 R' D' R U' R' D'
+eggins	corner	12	UFR-LDF-RDB	U' D2 R' U' R D2 R' U R U
+eggins	corner	13	UFR-FUL-LDB	R U D R' D R U2 R' D' R U D' R'
+eggins	corner	14	UFR-FUL-BUL	R U R' U D R D R' U2 R D' R' U D' R U' R'
+eggins	corner	15	UFR-FDL-LDB	D R U R' D R U' R' D2
+eggins	corner	16	UFR-FDL-BDL	D' R D' R' U' R D2 R' U R D' R' D
+eggins	corner	17	UFR-FDR-FDL	U R U' D R' D' R U R' D R D' R' U'
+eggins	corner	18	UFR-FDR-DBR	U R U' D' R' D R U R' D' R D R' U'
+eggins	corner	19	UFR-RUB-RDB	U R U' R' D' R U2 R' D R U' R' U'
+eggins	corner	20	UFR-RDB-LUF	R' U R' D' R U2 R' D R U R
+eggins	corner	21	UFR-RDB-DFL	U' R2 D R U R' D' R U' R U
+eggins	corner	22	UFR-BUR-UBL	R' D' R' D R U2 R' D' R U2 D R
+eggins	corner	23	UFR-BUL-UBR	R' U2 R' D' R U2 R' D R2
+eggins	corner	24	UFR-BUL-BDL	U' R' U' R D' R' U' R D R' U2 R U
+eggins	corner	25	UFR-BUL-DFL	U' R2 D R U' R' D' R U R U
+eggins	corner	26	UFR-BDR-BUL	D' R' D R' U R D' R' U' R2 D
+eggins	corner	27	UFR-BDL-BUR	D R' U R U' R' D R U R' U' D' R D'
+eggins	corner	28	UFR-DFL-BDR	D' R U' R D' R' U R D R2 D
+eggins	corner	29	UFR-DFR-UFL	U' R' D R U' R D' R' U R D R' U R' D' R
+eggins	corner	30	UFR-DFR-LDB	D2 R U' R D' R' U R D R2 D2
+eggins	corner	31	UFR-DFR-FDL	R U' R' U2 R' D R U2 R' D' R2 U R'
+eggins	corner	32	UFR-DFR-BDR	D' R D R' D' R U R' D R U' D' R' D
+eggins	corner	33	UFR-DBL-LUF	R2 D' R U' R' D' R U R' D2 R2
+eggins	corner	34	UFR-DBL-DFL	R U' D' R' U R D' R' U' R U D2 R'
+eggins	corner	35	UFR-DBR-LUF	R U' R2 U R D R' U' R D' R U R'
+eggins	corner	36	UFL-LUB-RDF	U R' U R D R' U2 R D' R' U R U'
+eggins	corner	37	UFL-LDF-RDB	D R U' R' D2 R U R' D
+eggins	corner	38	UFL-RUB-DBL	D' R D' R U' R' D R U R2 D
+eggins	corner	39	UFL-BDR-RUB	U' D' R' D R' U R D' R' U' R2 U D
+eggins	twists	2	UFR & UBR	U R' D R D' R' D R U' R' D' R D R' D' R
+eggins	twists	3	UFR & DFL	U R' D R U' R' D' R D R' D' R U R' D R U' D'
+eggins	twists	4	UFR & DFR	U D' R U' R' D R U R' U' R U R' D' R U' R' D
+eggins	twists	5	DFR & UBR	R' D' R U R' D R D' R' D R U' R' D' R D
+eggins	twists	6	DBR & UBR	U R U R' D' R U' R' U R U' R' D R U R' U2
+eggins	parity	2	UF-UR, UFR-LUB	U R' U' R U R' F' R U R' U' R' F R2 U2
+eggins	parity	3	UF-UR, UFR-RUB	U R' U R U' x' U L' U L U2 R U' R' U x
+eggins	ltct	2	UF-UR, DFR-LDF[FUR]	U D R' U2 R D R' U' R D' R2 U R U2 R' U R2 U' D'
+eggins	ltct	3	UF-UR, UFR-UBR[BUL]	U R2 D R' U R D' R2 U R U2 R'
+eggins	ltct	4	UF-UR, UFR-UBL[RUB]	U2 R U R' U2 R' D' R U R' D R2 U' R' U R U' R'

@@ -2,3 +2,4 @@
 *.png binary
 *.ttf binary
 *.xlsx binary
+ref_ground/** -text

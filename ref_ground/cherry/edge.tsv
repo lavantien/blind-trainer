@@ -1,0 +1,552 @@
+Position          	Alg                                                                      	Commutator                    	Reconstruction Link	Youtube Link
+UF-UB-UL	U M2 U M' U2 M U M2 U'	U M2 U:[M',U2]	https://bit.ly/2ZWpEPq	3BLD: 16.04 Former WB Ao12
+UF-UB-UL	U2 R2 U' S' U2 S U' R2 U2	U2 R2 U':[S',U2]	https://bit.ly/3k1xHQW	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-UB-UR	R2 U' S R2 S' R2 U R2	R2 U':[S,R2]	https://bit.ly/3GukU2y	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-UB-LB	U' R E' R' U2 R E R' U'	U':[R E' R',U2]	https://bit.ly/2Ymdwpw	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-UB-LF	U' R' E R U2 R' E' R U'	U':[R' E R,U2]	https://bit.ly/3yWYXZP	14.21 3BLD WB Ao5 again but with a twist...
+UF-UB-LD	U L' E' L U2 L' E L U	U:[L' E' L,U2]	https://bit.ly/3oCxLdO	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-UB-FL	L U S' L2 S L2 U' L'	L U:[S',L2]	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-UB-FR	R' U' S R2 S' R2 U R	R' U':[S,R2]	https://bit.ly/45M6RTI	12.91 3x3 Blindfolded Mean [Former WB]
+UF-UB-FD	R' F' R U R' E R U' R' E' F R	R' F':[R U R',E]	https://bit.ly/3lld4Qw	3BLD: 14.97 Ao12 (WB)
+UF-UB-RU	S U' S R2 S' R2 U S'	S U':[S,R2]	https://bit.ly/3a5Yf26	3BLD: 14.97 Ao12 (WB)
+UF-UB-RF	U L E' L' U2 L E L' U	U:[L E' L',U2]	https://bit.ly/3CSEkgy	3BLD: 16.46 Ao25 (Former WB)
+UF-UB-RB	U L' E L U2 L' E' L U	U:[L' E L,U2]	https://bit.ly/3mKGQj6	3BLD: 16.46 Ao25 (Former WB)
+UF-UB-BL	L' U S' L2 S L2 U' L	L' U:[S',L2]	https://bit.ly/34AtvDp	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-UB-BD	U M' U M' U2 M U M U'	U M' U:[M',U2]	https://bit.ly/3HkAxvd	3BLD: 15.95 WB Ao12
+UF-UB-DF	U2 M' U2 M	[U2,M']	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-UB-DL	U S' L2 S L2 U'	U:[S',L2]	https://bit.ly/3ypoeLF	How To Not Get WR (Part 2)
+UF-UB-DB	M U2 M' U2	[M,U2]	https://bit.ly/3pPZC9f	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-UL-UB	U R' U R' U' R' U' R' U R U R2 U'	Not found.	https://bit.ly/3wnqXCp	3BLD: 16.46 Ao25 (Former WB)
+UF-UL-UB	U M2 U' M' U2 M U' M2 U'	U M2 U':[M',U2]	https://bit.ly/2TImJWW	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-UL-UR	M2 U' M U2 M' U' M2	M2 U':[M,U2]	https://bit.ly/3FRLyDQ	3BLD: 14.97 Ao12 (WB)
+UF-UL-LF	U' R' E R U' R' E' R U2	U':[R' E R,U']	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-UL-LD	U L E L' U' L E' L'	[U,L E L']	https://bit.ly/44Lf0ak	The solve that made me NATIONAL Champion!
+UF-UL-FL	U E L E' L' U' L E L' E'	E:[U,L E' L']	https://bit.ly/3h9TF3G	Sub-13 3BLD Singles Compilation
+UF-UL-FR	U L' E2 L U' L' E2 L	[U,L' E2 L]	https://tinyurl.com/vb2znfab	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-UL-RU	S R' F R S' R' F' R	[S,R' F R]	https://bit.ly/3Uzo4N0	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-UL-RF	U L E' L' U' L E L'	[U,L E' L']	https://bit.ly/3LjJC8k	3BLD: 14.97 Ao12 (WB)
+UF-UL-RB	U L' E L U' L' E' L	[U,L' E L]	https://bit.ly/3a5Yf26	3BLD: 14.97 Ao12 (WB)
+UF-UL-RD	U' R' E' R U' R' E R U2	U':[R' E' R,U']	https://bit.ly/45M6RTI	12.91 3x3 Blindfolded Mean [Former WB]
+UF-UL-BU	l U L' U' M' U L U' L'	l:[U L' U',M']	https://bit.ly/30ewJui	3BLD: 15.95 WB Ao12
+UF-UL-BR	U L E2 L' U' L E2 L'	[U,L E2 L']	https://bit.ly/3vFIKmr	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-UL-BL	u L' E L U' L' E' L E	u:[L' E L,U']	https://bit.ly/33X6eez	3BLD: 14.43 World Record FAIL (DNF by a wrong move)
+UF-UL-BD	U' M U' M' U' M U' M'	[U',M]+M U:[U,M']	https://bit.ly/2UeMIW5	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-UL-DL	L U' L S' L2 S L U L'	L U' L:[S',L2]	https://bit.ly/33X6eez	3BLD: 14.43 World Record FAIL (DNF by a wrong move)
+UF-UL-DB	M2 L' U L U' M2 U L' U' L	L':[M2,U L U']	https://bit.ly/3cRPur3	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-UR-UB	R2 U' S' U2 S U' R2	R2 U':[S',U2]	https://bit.ly/3sFTVgx	3BLD: 14.97 Ao12 (WB)
+UF-UR-UL	M2 U M U2 M' U M2	M2 U:[M,U2]	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-UR-LU	S' L F' L' S L F L'	[S',L F' L']	https://bit.ly/3ObDPDU	3BLD: 13.70 Ao5 (WB)
+UF-UR-LB	U' L S L' U L S' L'	[U',L S L']	https://bit.ly/44Lf0ak	The solve that made me NATIONAL Champion!
+UF-UR-LB	U' R E' R' U R E R'	[U',R E' R']	https://bit.ly/3oYbTYO	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-LF	U' R' E R U R' E' R	[U',R' E R]	https://bit.ly/3JBhnlJ	3BLD: 11.83 Single
+UF-UR-FL	U' R E2 R' U R E2 R'	[U',R E2 R']	https://bit.ly/3CSEkgy	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-FR	U' E' R' E R U R' E' R E	E':[U',R' E R]	https://bit.ly/3AgtJuZ	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-UR-FD	r U' R' U M U' R U R'	r:[U' R' U,M]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-UR-RF	U L E' L' U L E L' U2	U:[L E' L',U]	https://bit.ly/2YMvSRi	3BLD: 15.95 WB Ao12
+UF-UR-RB	U L' E L U L' E' L U2	U:[L' E L,U]	https://bit.ly/3lc6SLe	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-RD	U' R' E' R U R' E R	[U',R' E' R]	https://bit.ly/3YEfD3i	I won the WORLD CHAMPIONSHIP
+UF-UR-BU	r' U' R U M' U' R' U R	r':[U' R U,M']	https://bit.ly/4d4hPqT	Audience stays CALM + RESPECTFUL after World Record
+UF-UR-BR	R U R U R U' R' U' R' U'	Not found.	https://bit.ly/3wnqXCp	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-BR	u' R E' R' U R E R' E'	u':[R E' R',U]	https://bit.ly/3q9hcVk	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-UR-BL	U' R' E2 R U R' E2 R	[U',R' E2 R]	https://bit.ly/3mOT1M5	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-DF	R2 f2 R2 U' R2 f2 R2 U'	Not found.	https://bit.ly/3157nPL	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-DL	l F L' S' L2 S L' F' l'	l F L':[S',L2]	https://bit.ly/34Oi8I9	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-UR-DL	R U L' E L2 E' L' U' R'	R U L':[E,L2]	https://bit.ly/3CXL5hi	3BLD: 16.46 Ao25 (Former WB)
+UF-UR-DR	U' R' E R2 E' R' U R E R2 E' R	[U',R' E R2 E' R']	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-UR-DR	R' U R' S R2 S' R' U' R	R' U R':[S,R2]	https://bit.ly/2TZhClj	16.05 3BLD Ao12
+UF-UR-DB	r M' U' R' U M2 U' R U R'	R:[M2,U' R' U]	https://bit.ly/3vHYwxc	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LU-UB	U M' U M U2 M' U M U'	U M' U:[M,U2]	https://bit.ly/3mKGQj6	3BLD: 16.46 Ao25 (Former WB)
+UF-LU-UR	L F' L' S' L F L' S	[L F' L',S']	https://bit.ly/3PpKFGU	3BLD: 14.97 Ao12 (WB)
+UF-LU-LB	S U' R E' R' U R E R' S'	S:[U',R E' R']	https://bit.ly/436n8QU	One turn off from World Record...
+UF-LU-LF	S U' R' E R U R' E' R S'	S:[U',R' E R]	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UF-LU-LD	S' D' M D2 M' D' S	S' D':[M,D2]	https://bit.ly/2YPiZp3	Sub-13 3BLD Singles Compilation
+UF-LU-LD	L E' L' U L E L2 E' L U' L E L'	L E' L' U L:[E,L2]	https://bit.ly/3yWoL5j	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-LU-FL	r U r' E r U r' E' r U2 r'	r U:[r' E r,U]	https://bit.ly/3nUMGOo	3BLD: 16.46 Ao25 (Former WB)
+UF-LU-FR	S' U L' E' L2 E L' U' S	S' U L':[E',L2]	https://bit.ly/3wEqLQs	Rubik's Cube World Record, but it's Blindfolded... [4K]
+UF-LU-FD	U' D S' R' F R S R' F' R U D'	U' D:[S',R' F R]	https://bit.ly/4d4hPqT	Audience stays CALM + RESPECTFUL after World Record
+UF-LU-RU	M U M' U2 M U M'	M U:[M',U2]	https://bit.ly/3sfGSoE	I won the WORLD CHAMPIONSHIP
+UF-LU-RF	R M U M' U2 M U R' M'	R M U:[M',U2]	https://bit.ly/3zEALJy	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LU-RB	r' U M' U2 M U r	r' U:[M',U2]	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-LU-BU	L' U' L U M' U' L' U l	L':[U' L U,M']	https://bit.ly/3YEfD3i	I won the WORLD CHAMPIONSHIP
+UF-LU-BR	S' U L E L2 E' L U' S	S' U L:[E,L2]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-LU-BR	R' U' r U R' U' M U R U' R' U R	R' U' r:[U R' U',M]	https://bit.ly/3xCbldZ	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LU-BL	L' u L' E L2 E' L' u' L	L' u L':[E,L2]	https://bit.ly/3ypoeLF	How To Not Get WR (Part 2)
+UF-LU-BL	S U' R' E2 R U R' E2 R S'	S:[U',R' E2 R]	https://bit.ly/3ktxEhG	3BLD: 15.95 WB Ao12
+UF-LU-DF	L' F' L2 E' L2 E F L	L' F':[L2,E']	https://bit.ly/31C1om0	3BLD: 16.46 Ao25 (Former WB)
+UF-LU-DL	L F' L' S L F L' S'	[L F' L',S]	https://bit.ly/3CdWLLk	3BLD: 15.95 WB Ao12
+UF-LU-DR	r U' r S' r' U r S r2	r:[U',r S' r']	https://bit.ly/38By9n3	3BLD: 14.97 Ao12 (WB)
+UF-LU-DB	M L' U' L U M2 U' L' U l	M L':[U' L U,M2]	https://bit.ly/3xuQeKs	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LB-UB	U R E' R' U2 R E R' U	U:[R E' R',U2]	https://bit.ly/3NdvVvP	12.91 3x3 Blindfolded Mean [Former WB]
+UF-LB-UL	U2 R E' R' U R E R' U	U':[U',R E' R']	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-LB-UR	R E' R' U' R E R' U	[R E' R',U']	https://bit.ly/3p6XjOC	3BLD: 16.46 Ao25 (Former WB)
+UF-LB-LU	S R E' R' U' R E R' U S'	S:[R E' R',U']	https://bit.ly/3LmMOA4	3BLD: 14.21 Ao5 (WB)
+UF-LB-LF	r U L' S' L2 S L' U' r'	r U L':[S',L2]	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-LB-FL	E L' U L E' L' U' L	[E,L' U L]	https://bit.ly/3k1xHQW	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-LB-FR	R2 E' R' U' R E R' U R'	R:[R E' R',U']	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UF-LB-RU	l U M' U2 M U l'	l U:[M',U2]	https://bit.ly/3FYFkSD	3BLD: 14.97 Ao12 (WB)
+UF-LB-RF	l' U' L' E' L2 E L' U l	l' U' L':[E',L2]	https://bit.ly/3LpYfqB	3BLD: 14.21 Ao5 (WB)
+UF-LB-RF	E2 r U r' E2 r U' r'	[E2,r U r']	https://bit.ly/3qeeUVg	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LB-RB	u R S R2 S' R u'	u R:[S,R2]	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-LB-RD	S' R E' R' U' R E R' U S	S':[R E' R',U']	https://bit.ly/34Oi8I9	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-LB-BU	U' L U M' U' L' U M	[U' L U,M']	https://bit.ly/3a7P29v	3BLD: 14.21 Ao5 (WB)
+UF-LB-BD	U' M U r E' r' U' r E R' U	U' M:[U,r E' r']	https://bit.ly/2Ssw3hg	16.05 3BLD Ao12
+UF-LB-DF	F' L2 E' L2 E F	F':[L2,E']	https://bit.ly/3tFsAdw	Sub-13 3BLD Singles Compilation
+UF-LB-DL	u L' E L2 E' L' u'	u L':[E,L2]	https://bit.ly/3kUUcsL	16.22 Official 3BLD WR Mean FAIL
+UF-LB-DR	u' R' E R2 E' R' u	u' R':[E,R2]	https://bit.ly/343Nl9V	3BLD: 11.91 Single
+UF-LF-UB	U R' E R U2 R' E' R U	U:[R' E R,U2]	https://bit.ly/3OFoXQC	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-LF-UL	U2 R' E R U R' E' R U	U':[U',R' E R]	https://bit.ly/3lia2Ne	3BLD: 14.97 Ao12 (WB)
+UF-LF-UR	R' E R U' R' E' R U	[R' E R,U']	https://bit.ly/3w1eoyl	3BLD: 13.74 on 10 Algs
+UF-LF-LU	S R' E R U' R' E' R U S'	S:[R' E R,U']	https://bit.ly/3GAvfuz	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-LF-FR	E R U' R' E' R U R'	[E,R U' R']	https://bit.ly/3FRLyDQ	3BLD: 14.97 Ao12 (WB)
+UF-LF-FD	M2 U' L' U M U' L U M	M':[M',U' L' U]	https://bit.ly/3PVPpEt	3BLD: 13.10 Mo3 (WB)
+UF-LF-RU	M L' U M' U2 M U M' L	M L' U:[M',U2]	https://bit.ly/33X6eez	3BLD: 14.43 World Record FAIL (DNF by a wrong move)
+UF-LF-RB	r U R' E R2 E' R' U' r'	r U R':[E,R2]	https://bit.ly/45M6RTI	12.91 3x3 Blindfolded Mean [Former WB]
+UF-LF-RD	S' R' E R U' R' E' R U S	S':[R' E R,U']	https://bit.ly/3GukU2y	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-LF-BU	U' L' U M' U' L U M	[U' L' U,M']	https://bit.ly/3A23hVW	16.05 3BLD Ao12
+UF-LF-BR	R2 E R U' R' E' R U R	R':[R' E R,U']	https://bit.ly/3AZAL89	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-LF-BL	E' L U L' E L U' L'	[E',L U L']	https://bit.ly/3gjw5Ap	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-LF-BD	U' M U R' E R U' R' E' r U	U' M:[U,R' E R]	https://bit.ly/38By9n3	3BLD: 14.97 Ao12 (WB)
+UF-LD-UB	U' L' E' L U2 L' E L U'	U':[L' E' L,U2]	https://bit.ly/3yIOscE	3BLD: 14.97 Ao12 (WB)
+UF-LD-UL	L E L' U L E' L' U'	[L E L',U]	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-LD-UL	L' E' L U L' E L U'	[L' E' L,U]	https://bit.ly/3vIJ1VK	Sub-13 3BLD Singles Compilation
+UF-LD-UR	U2 L' E' L U' L' E L U'	U:[U,L' E' L]	https://bit.ly/3lld4Qw	3BLD: 14.97 Ao12 (WB)
+UF-LD-LB	U S' U' L' U S U' L	[U S' U',L']	https://bit.ly/3lhciUm	Sub-13 3BLD Singles Compilation
+UF-LD-FL	S' U' R E R2 E' R U S	S' U' R:[E,R2]	https://tinyurl.com/vb2znfab	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-LD-FR	U L F2 L' S L F2 L' S' U'	U:[L F2 L',S]	https://bit.ly/3GAvfuz	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-LD-FD	U L F L' S L F' L' S' U'	U:[L F L',S]	https://bit.ly/4bym39U	Breaking World Record during the Superbowl
+UF-LD-RF	S U L E' L' U' L E L' S'	S:[U,L E' L']	https://bit.ly/3h4LzJI	3BLD: 14.41 Former WB Ao5 (13.83 Mo3)
+UF-LD-RB	L F' E L2 E' L2 F L'	L F':[E,L2]	https://bit.ly/3YCRF8f	I won the WORLD CHAMPIONSHIP
+UF-LD-RB	S U L' E L U' L' E' L S'	S:[U,L' E L]	https://bit.ly/3kfEfMz	3BLD: 16.46 Ao25 (Former WB)
+UF-LD-RD	R' F R' S' R2 S R' F' R	R' F R':[S',R2]	https://bit.ly/3DgLN96	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-LD-BU	U' L2 U M' U' L2 U M	[U' L2 U,M']	https://bit.ly/3zEALJy	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-LD-BD	U S' R' D R S R' D' R U'	U:[S',R' D R]	https://bit.ly/4d4hPqT	Audience stays CALM + RESPECTFUL after World Record
+UF-LD-BD	U r' U' r S r' U r S' U'	U:[r' U' r,S]	https://bit.ly/3AO65qo	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-LD-DF	L F' L2 E' L2 E F L'	L F':[L2,E']	https://bit.ly/3LjJC8k	3BLD: 14.97 Ao12 (WB)
+UF-LD-DR	L' F' L S L' F L S'	[L' F' L,S]	https://bit.ly/3NdvVvP	12.91 3x3 Blindfolded Mean [Former WB]
+UF-FL-UB	U R E2 R' U2 R E2 R' U	U:[R E2 R',U2]	https://bit.ly/3Uzo4N0	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-FL-UL	E L E' L' U L E L' U' E'	E:[L E' L',U]	https://bit.ly/34AtvDp	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FL-UR	R E R2 E' R U' R' E R2 E' R' U	[R E R2 E' R,U']	https://bit.ly/3a5Yf26	3BLD: 14.97 Ao12 (WB)
+UF-FL-UR	R E2 R' U' R E2 R' U	[R E2 R',U']	https://bit.ly/35WO65T	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FL-LU	r U2 r' E r U' r' E' r U' r'	r U:[U,r' E r]	https://bit.ly/3x4U2RQ	16.22 Official 3BLD WR Mean FAIL
+UF-FL-LB	L' U L E L' U' L E'	[L' U L,E]	https://bit.ly/3C141xM	Almost getting a World Record...
+UF-FL-FR	R' U' R' E R2 E' R' U R	R' U' R':[E,R2]	https://bit.ly/303K8Wk	3BLD: 16.46 Ao25 (Former WB)
+UF-FL-FD	M' U L' U' M U L U'	[M',U L' U']	https://bit.ly/3ljrot4	3BLD: 14.97 Ao12 (WB)
+UF-FL-RU	R' E r U r' E' r U' M	R':[E,r U r']	https://bit.ly/2Ssw3hg	16.05 3BLD Ao12
+UF-FL-RF	L' U L E' L' U' L E	[L' U L,E']	https://bit.ly/3diDZsL	16.05 3BLD Ao12
+UF-FL-RD	U' S' R' F2 R S R' F2 R U	U':[S',R' F2 R]	https://bit.ly/3wIZxYb	3BLD: 15.95 WB Ao12
+UF-FL-BU	M U L' U' M' U L U'	[M,U L' U']	https://bit.ly/3hkRERg	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-FL-BL	U' L S' L2 S L U	U' L:[S',L2]	https://bit.ly/2TImJWW	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-FL-DF	U' D R' E R2 E' R' U D'	U' D R':[E,R2]	https://bit.ly/3wnqXCp	3BLD: 16.46 Ao25 (Former WB)
+UF-FL-DL	U' L U L U' L' U' L' U' L U2	Not found.	https://bit.ly/2ZWpEPq	3BLD: 16.04 Former WB Ao12
+UF-FL-DR	U' R' E R2 E' R' U	U' R':[E,R2]	https://bit.ly/3mKGQj6	3BLD: 16.46 Ao25 (Former WB)
+UF-FL-DB	U' D' R' E R2 E' R' U D	U' D' R':[E,R2]	https://bit.ly/3h4LzJI	3BLD: 14.41 Former WB Ao5 (13.83 Mo3)
+UF-FR-UB	R' U S R2 S' R2 U' R	R' U:[S,R2]	https://bit.ly/3AZAL89	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FR-UL	L' E2 L U L' E2 L U'	[L' E2 L,U]	https://bit.ly/3mOT1M5	3BLD: 16.46 Ao25 (Former WB)
+UF-FR-UR	E' R' E R U' R' E' R U E	E':[R' E R,U']	https://bit.ly/3ypoeLF	How To Not Get WR (Part 2)
+UF-FR-LU	S' U L E' L2 E L U' S	S' U L:[E',L2]	https://bit.ly/3p6XjOC	3BLD: 16.46 Ao25 (Former WB)
+UF-FR-LB	R U' R E' R' U R E R2	R:[U',R E' R']	https://bit.ly/3PpKFGU	3BLD: 14.97 Ao12 (WB)
+UF-FR-LF	R U' R' E R U R' E'	[R U' R',E]	https://bit.ly/tommy1461	14.61 Official Rubik’s Cube Blindfolded World Record (Tommy Cherry)
+UF-FR-LD	D M' U' R U M U' R' U D'	D:[M',U' R U]	https://bit.ly/3dMK28W	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-FR-FL	R' U' R E R2 E' R U R	R' U' R:[E,R2]	https://bit.ly/2Ymdwpw	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-FR-FD	M' U' R U M U' R' U	[M',U' R U]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-FR-RB	R U' R' E' R U R' E	[R U' R',E']	https://bit.ly/2Zq5WLo	3BLD: 16.46 Ao25 (Former WB)
+UF-FR-RD	R' u' R' E' R2 E R' u R	R' u' R':[E',R2]	https://bit.ly/3cTc81K	3BLD: 16.46 Ao25 (Former WB)
+UF-FR-BU	M U' R U M' U' R' U	[M,U' R U]	https://bit.ly/3lhciUm	Sub-13 3BLD Singles Compilation
+UF-FR-BR	U R' S R2 S' R' U'	U R':[S,R2]	https://bit.ly/3vIJ1VK	Sub-13 3BLD Singles Compilation
+UF-FR-BL	R' U' R' E' R2 E R' U R	R' U' R':[E',R2]	https://bit.ly/38By9n3	3BLD: 14.97 Ao12 (WB)
+UF-FR-BD	U2 M U R U' M' U R' U	U':[U' M U,R]	https://bit.ly/3L1LjrW	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FR-DF	U D' L E' L2 E L U' D	U D' L:[E',L2]	https://bit.ly/3AO65qo	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FR-DL	U L E' L2 E L U'	U L:[E',L2]	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-FR-DR	U R' U' R' U R U R U R' U2	Not found.	https://bit.ly/3CVNcSK	3BLD: 16.46 Ao25 (Former WB)
+UF-FD-UB	R' F' E R U R' E' R U' R' F R	R' F':[E,R U R']	https://bit.ly/3sH4sry	3BLD: 14.21 Ao5 (WB)
+UF-FD-UL	L' U L U' M' U L' U' l	L':[U L U',M']	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-FD-UR	R U' R' U M' U' R U r'	R:[U' R' U,M']	https://bit.ly/3vIJ1VK	Sub-13 3BLD Singles Compilation
+UF-FD-LF	M' U' L' U M' U' L U M2	M':[U' L' U,M']	https://bit.ly/3Wb7Ebe	When you get a World Record but can't react...
+UF-FD-LD	U S L F L' S' L F' L' U'	U:[S,L F L']	https://bit.ly/30ewJui	3BLD: 15.95 WB Ao12
+UF-FD-FL	U L' U' M' U L U' M	[U L' U',M']	https://bit.ly/44Lf0ak	The solve that made me NATIONAL Champion!
+UF-FD-FR	U' R U M' U' R' U M	[U' R U,M']	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-FD-RU	r U R' U' M' U R U' r' M	r:[U R' U',M']	https://bit.ly/3hkRERg	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-FD-RF	M D R' D' M' D R D'	[M,D R' D']	https://bit.ly/3cQSHXJ	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-FD-RB	M D R D' M' D R' D'	[M,D R D']	https://bit.ly/3dMK28W	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-FD-BU	U' S R' F' R S' R' F R U	U':[S,R' F' R]	https://bit.ly/3CXL5hi	3BLD: 16.46 Ao25 (Former WB)
+UF-FD-BR	U' R' U M' U' R U M	[U' R' U,M']	https://bit.ly/3NeiWYo	3BLD: 13.10 Mo3 (WB)
+UF-FD-BL	U L U' M' U L' U' M	[U L U',M']	https://bit.ly/2U6NyUO	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-FD-BD	U M' U' M U2 M U M' U	U M':[U',M U2 M]	https://bit.ly/3gkVsSr	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-FD-DR	U' R2 U M' U' R2 U M	[U' R2 U,M']	https://bit.ly/3sFTVgx	3BLD: 14.97 Ao12 (WB)
+UF-RU-UB	S U S R2 S' R2 U' S'	S U:[S,R2]	https://bit.ly/3NeiWYo	3BLD: 13.10 Mo3 (WB)
+UF-RU-UL	R' F R S R' F' R S'	[R' F R,S]	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-RU-LF	M L' U' M' U2 M U' M' L	M L' U':[M',U2]	https://bit.ly/3BgSUOW	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RU-LD	R F R S' R2 S R F' R'	R F R:[S',R2]	https://bit.ly/303K8Wk	3BLD: 16.46 Ao25 (Former WB)
+UF-RU-FL	S U' R E R2 E' R U S'	S U' R:[E,R2]	https://bit.ly/3c6tGqy	3BLD: 15.95 WB Ao12
+UF-RU-FR	R' U' E' R' E R2 E' R' U E R	R' U' E' R':[E,R2]	https://bit.ly/3lc6SLe	3BLD: 16.46 Ao25 (Former WB)
+UF-RU-FD	r M' U R' U' M U R U' r'	r:[M',U R' U']	https://bit.ly/3gjw5Ap	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RU-RF	S' U L E' L' U' L E L' S	S':[U,L E' L']	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-RU-RB	S' U L' E L U' L' E' L S	S':[U,L' E L]	https://bit.ly/3a7P29v	3BLD: 14.21 Ao5 (WB)
+UF-RU-RD	R' E R U' R' E' R2 E R' U R' E' R	R' E R U' R':[E',R2]	https://bit.ly/3oCxLdO	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-RU-BU	R U R' U' M' U R U' r'	R:[U R' U',M']	https://bit.ly/3YCRF8f	I won the WORLD CHAMPIONSHIP
+UF-RU-BR	R u' R E' R2 E R u R'	R u' R:[E',R2]	https://bit.ly/3CVNcSK	3BLD: 16.46 Ao25 (Former WB)
+UF-RU-BL	S U' R' E' R2 E R' U S'	S U' R':[E',R2]	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UF-RU-BD	U D S L F' L' S' L F L' U' D'	U D:[S,L F' L']	https://bit.ly/tommy1461	14.61 Official Rubik’s Cube Blindfolded World Record (Tommy Cherry)
+UF-RU-BD	M' U' M' U' M U' M' U' M2	M':[[U',M']+M' U:[U,M]]	https://bit.ly/2Yo3uVs	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-RU-DF	R F R2 E R2 E' F' R'	R F:[R2,E]	https://bit.ly/3yWoL5j	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-RU-DL	l' U l' S l U' l' S' l2	l':[U,l' S l]	https://bit.ly/3ypoeLF	How To Not Get WR (Part 2)
+UF-RU-DL	R' F R' S' R F' R' S R2	R':[F,R' S' R]	https://bit.ly/2XagtsJ	Sub-13 3BLD Singles Compilation
+UF-RU-DL	l' U R' E R U' R' E' R l	l':[U,R' E R]	https://bit.ly/3hdkfry	16.05 3BLD Ao12
+UF-RU-DR	R' F R S' R' F' R S	[R' F R,S']	https://bit.ly/2St7lxh	16.05 3BLD Ao12
+UF-RU-DB	D' R' F R S' R' F' R S D	D':[R' F R,S']	https://bit.ly/3o6JP5f	3BLD: 16.46 Ao25 (Former WB)
+UF-RF-UB	U' L E' L' U2 L E L' U'	U':[L E' L',U2]	https://bit.ly/3Wb7Ebe	When you get a World Record but can't react...
+UF-RF-UB	U' R S' R' U2 R S R' U'	U':[R S' R',U2]	https://bit.ly/3yWoL5j	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-RF-UR	U2 L E' L' U' L E L' U'	U:[U,L E' L']	https://bit.ly/3GT129p	3BLD: 11.30 Single
+UF-RF-UR	U2 R S' R' U' R S R' U'	U:[U,R S' R']	https://bit.ly/3x4U2RQ	16.22 Official 3BLD WR Mean FAIL
+UF-RF-LU	R M U' M' U2 M U' R' M'	R M U':[M',U2]	https://tinyurl.com/4267y8x9	Breakdown of my 11.56 World Record 3x3 Blindfolded Solve
+UF-RF-LU	R M U' M' U2 M U' M' x' R' x	R M U':[[M',U2]+U M':[x',R']]	https://bit.ly/3NdvVvP	12.91 3x3 Blindfolded Mean [Former WB]
+UF-RF-LF	U E R S R2 S' R U' E'	U E R:[S,R2]	https://bit.ly/436n8QU	One turn off from World Record...
+UF-RF-FL	E' L' U L E L' U' L	[E',L' U L]	https://bit.ly/3gb81QL	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-RF-FD	M2 U R U' M U R' U' M	M':[M',U R U']	https://bit.ly/3wRfVVw	13.72 3BLD Former WB Mo3 (Part of 14.57 Ao5)
+UF-RF-RU	S' L E' L' U L E L' U' S	S':[L E' L',U]	https://bit.ly/4bym39U	Breaking World Record during the Superbowl
+UF-RF-RB	l' U' R' S R2 S' R' U l	l' U' R':[S,R2]	https://bit.ly/3vDJoB5	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-RF-RD	R' U' S U R U' S' U	[R',U' S U]	https://bit.ly/3BgSUOW	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RF-BD	U M U' L E' L' U L E l' U'	U M:[U',L E' L']	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-RF-DF	R2 F R2 E R2 E' F' R2	R2 F:[R2,E]	https://bit.ly/3gjw5Ap	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RF-DR	U' E' R' E R2 E' R' U E	U' E' R':[E,R2]	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-RF-DB	M U R U' M2 U R' U' M	M:[U R U',M2]	https://bit.ly/3Jpc0pO	15.17 Official 3BLD Single (Florida Fall 2021 Winning Solve)
+UF-RB-UL	L' E L U L' E' L U'	[L' E L,U]	https://bit.ly/3lia2Ne	3BLD: 14.97 Ao12 (WB)
+UF-RB-UR	U2 L' E L U' L' E' L U'	U:[U,L' E L]	https://bit.ly/3zMgbXP	13.72 3BLD Former WB Mo3 (Part of 14.57 Ao5)
+UF-RB-LU	r' U' M' U2 M U' r	r' U':[M',U2]	https://bit.ly/2Yo3uVs	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-RB-LB	u R' S R2 S' R' u'	u R':[S,R2]	https://bit.ly/2TZe6aB	16.05 3BLD Ao12
+UF-RB-LF	r U R E R2 E' R U' r'	r U R:[E,R2]	https://bit.ly/2ZrtHCO	15.87 Official 3BLD Single
+UF-RB-LD	S L' E L U L' E' L U' S'	S:[L' E L,U]	https://bit.ly/3LpYfqB	3BLD: 14.21 Ao5 (WB)
+UF-RB-LD	L F' L2 E L2 E' F L'	L F':[L2,E]	https://bit.ly/3BgSUOW	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RB-FL	L2 E L U L' E' L U' L	L':[L' E L,U]	https://bit.ly/3p6XjOC	3BLD: 16.46 Ao25 (Former WB)
+UF-RB-FR	E' R U' R' E R U R'	[E',R U' R']	https://bit.ly/3wFx2cP	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-RB-FD	D R D' M D R' D' M'	[D R D',M]	https://bit.ly/3lhciUm	Sub-13 3BLD Singles Compilation
+UF-RB-RU	S' L' E L U L' E' L U' S	S':[L' E L,U]	https://bit.ly/3ktxEhG	3BLD: 15.95 WB Ao12
+UF-RB-RF	l' U' R S R2 S' R U l	l' U' R:[S,R2]	https://bit.ly/3A37z1L	3BLD: 13.70 Ao5 (WB)
+UF-RB-RD	R U' S U R' U' S' U	[R,U' S U]	https://bit.ly/3xlRHms	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-RB-BU	U R' U' M' U R U' M	[U R' U',M']	https://bit.ly/44Lf0ak	The solve that made me NATIONAL Champion!
+UF-RB-BL	E L U L' E' L U' L'	[E,L U L']	https://bit.ly/3FRLyDQ	3BLD: 14.97 Ao12 (WB)
+UF-RB-BD	U M U' l' E l U l' E' L U'	U M:[U',l' E l]	https://tinyurl.com/4267y8x9	Breakdown of my 11.56 World Record 3x3 Blindfolded Solve
+UF-RB-DF	F R2 E R2 E' F'	F:[R2,E]	https://bit.ly/3ypoeLF	How To Not Get WR (Part 2)
+UF-RB-DL	u L E' L2 E L u'	u L:[E',L2]	https://bit.ly/3157nPL	3BLD: 16.46 Ao25 (Former WB)
+UF-RB-DR	u' R E' R2 E R u	u' R:[E',R2]	https://bit.ly/3oYbTYO	3BLD: 16.46 Ao25 (Former WB)
+UF-RB-DB	M U R' U' M2 U R U' M	M:[U R' U',M2]	https://bit.ly/3CSEkgy	3BLD: 16.46 Ao25 (Former WB)
+UF-RD-UB	U R' E' R U2 R' E R U	U:[R' E' R,U2]	https://bit.ly/3w1eoyl	3BLD: 13.74 on 10 Algs
+UF-RD-UL	U2 R' E' R U R' E R U	U':[U',R' E' R]	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-RD-UR	R' E' R U' R' E R U	[R' E' R,U']	https://bit.ly/3C141xM	Almost getting a World Record...
+UF-RD-LU	R' F R' S R2 S' R' F' R	R' F R':[S,R2]	https://bit.ly/38q8DBr	3BLD: 14.97 Ao12 (WB)
+UF-RD-LB	S' U' R E' R' U R E R' S	S':[U',R E' R']	https://bit.ly/3wFpqYO	3BLD: 15.95 WB Ao12
+UF-RD-LB	R' F E' R2 E R2 F' R	R' F:[E',R2]	https://bit.ly/3CeChSR	3BLD: 15.95 WB Ao12
+UF-RD-LF	S' U' R' E R U R' E' R S	S':[U',R' E R]	https://bit.ly/31C1om0	3BLD: 16.46 Ao25 (Former WB)
+UF-RD-LD	L F' L S L2 S' L F L'	L F' L:[S,L2]	https://bit.ly/3a7P29v	3BLD: 14.21 Ao5 (WB)
+UF-RD-RU	R E' R' U' R' E R2 E' R' U R E R'	R E' R' U' R':[E,R2]	https://bit.ly/3dMK28W	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-RD-RB	U' S U R U' S' U R'	[U' S U,R]	https://bit.ly/3AO65qo	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-RD-BU	U R2 U' M' U R2 U' M	[U R2 U',M']	https://bit.ly/3sfGSoE	I won the WORLD CHAMPIONSHIP
+UF-RD-BR	S U L E L2 E' L U' S'	S U L:[E,L2]	https://bit.ly/3x4U2RQ	16.22 Official 3BLD WR Mean FAIL
+UF-RD-BL	R' E' R U' R' E' R U R' E2 R	R' E':[R U' R',E']	https://bit.ly/3zMgbXP	13.72 3BLD Former WB Mo3 (Part of 14.57 Ao5)
+UF-RD-BD	U' S L' D' L S' L' D L U	U':[S,L' D' L]	https://bit.ly/4c2p0yx	Audience stays CALM + RESPECTFUL after World Record
+UF-RD-DF	U' S R F' R' S' R F R' U	U':[S,R F' R']	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UF-RD-DL	R F R' S' R F' R' S	[R F R',S']	https://bit.ly/3ljrot4	3BLD: 14.97 Ao12 (WB)
+UF-RD-DB	U' S R' B R S' R' B' R U	U':[S,R' B R]	https://bit.ly/3h5Fdde	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-BU-UL	L U L' U' M U L U' l'	L:[U L' U',M]	https://bit.ly/3CeChSR	3BLD: 15.95 WB Ao12
+UF-BU-UL	U' S' L F' L' S L F L' U	U':[S',L F' L']	https://bit.ly/3AgtJuZ	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-BU-UR	R' U' R U M U' R' U r	R':[U' R U,M]	https://bit.ly/2Zq5WLo	3BLD: 16.46 Ao25 (Former WB)
+UF-BU-LU	l' U' L U M U' L' U L	l':[U' L U,M]	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-BU-LF	M' U' L' U M U' L U	[M',U' L' U]	https://tinyurl.com/4267y8x9	Breakdown of my 11.56 World Record 3x3 Blindfolded Solve
+UF-BU-LD	M' U' L2 U M U' L2 U	[M',U' L2 U]	https://bit.ly/3diDZsL	16.05 3BLD Ao12
+UF-BU-FL	U L' U' M U L U' M'	[U L' U',M]	https://bit.ly/3A37z1L	3BLD: 13.70 Ao5 (WB)
+UF-BU-FR	U' R U M U' R' U M'	[U' R U,M]	https://bit.ly/3h9TF3G	Sub-13 3BLD Singles Compilation
+UF-BU-FD	U L F L' S' L F' L' S U'	U:[L F L',S']	https://bit.ly/3JBhnlJ	3BLD: 11.83 Single
+UF-BU-RU	r U R' U' M U R U' R'	r:[U R' U',M]	https://bit.ly/48ahL5R	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BU-RF	M' U R U' M U R' U'	[M',U R U']	https://bit.ly/3C141xM	Almost getting a World Record...
+UF-BU-RB	M' U R' U' M U R U'	[M',U R' U']	https://bit.ly/3kfEfMz	3BLD: 16.46 Ao25 (Former WB)
+UF-BU-BR	U' R' U M U' R U M'	[U' R' U,M]	https://bit.ly/3Jpc0pO	15.17 Official 3BLD Single (Florida Fall 2021 Winning Solve)
+UF-BU-BL	U L U' M U L' U' M'	[U L U',M]	https://bit.ly/3lia2Ne	3BLD: 14.97 Ao12 (WB)
+UF-BU-BD	U' l U l' S l U' l' S' U	U':[l U l',S]	https://bit.ly/3LpYfqB	3BLD: 14.21 Ao5 (WB)
+UF-BU-BD	U' R B R' S R B' R' S' U	U':[R B R',S]	https://bit.ly/3qeeUVg	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-BU-DF	U' S' L F L' S L F' L' U	U':[S',L F L']	https://bit.ly/3vCdRPX	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-BU-DR	U' R2 U M U' R2 U M'	[U' R2 U,M]	https://bit.ly/2Ssw3hg	16.05 3BLD Ao12
+UF-BU-DB	r' U L F L' S' L F' L' S U' r	r' U:[L F L',S']	https://bit.ly/3CVNcSK	3BLD: 16.46 Ao25 (Former WB)
+UF-BU-DB	r' U r U r' S' r U' r' S U' r	r' U:[r U r',S']	https://bit.ly/3CdWLLk	3BLD: 15.95 WB Ao12
+UF-BR-UB	R U S R2 S' R2 U' R'	R U:[S,R2]	https://bit.ly/3sH4sry	3BLD: 14.21 Ao5 (WB)
+UF-BR-UL	R S2 R' U R S2 R' U'	[R S2 R',U]	https://bit.ly/3OFoXQC	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BR-UL	L E2 L' U L E2 L' U'	[L E2 L',U]	https://bit.ly/3C141xM	Almost getting a World Record...
+UF-BR-UR	E R E' R' U' R E R' u	E:[R E' R',U']	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-BR-LU	S' U L' E L2 E' L' U' S	S' U L':[E,L2]	https://bit.ly/3oCxLdO	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-BR-LU	R' U' R U R' U' M' U R U' r' U R	R' U' R:[U R' U',M']	https://bit.ly/3cQSHXJ	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-BR-LB	R' U' R E' R' U R E	[R' U' R,E']	https://bit.ly/3sfGSoE	I won the WORLD CHAMPIONSHIP
+UF-BR-LF	R' U' R' E R U R' E' R2	R':[U',R' E R]	https://bit.ly/3GBHK8N	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-BR-LD	D M' U' R' U M U' R U D'	D:[M',U' R' U]	https://bit.ly/2YMvSRi	3BLD: 15.95 WB Ao12
+UF-BR-FL	R U' R E R2 E' R U R'	R U' R:[E,R2]	https://bit.ly/3ds4ZpK	3BLD: 14.41 Former WB Ao5 (13.83 Mo3)
+UF-BR-FD	M' U' R' U M U' R U	[M',U' R' U]	https://bit.ly/3LdnGwQ	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-BR-RU	R u' R' E' R2 E R' u R'	R u' R':[E',R2]	https://bit.ly/38q8DBr	3BLD: 14.97 Ao12 (WB)
+UF-BR-RF	R' U' R E R' U R E'	[R' U' R,E]	https://bit.ly/3CXL5hi	3BLD: 16.46 Ao25 (Former WB)
+UF-BR-RD	D' M' U' R' U M U' R U D	D':[M',U' R' U]	https://bit.ly/3uvKVP5	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BR-RD	S U L' E L2 E' L' U' S'	S U L':[E,L2]	https://bit.ly/3CdWLLk	3BLD: 15.95 WB Ao12
+UF-BR-BU	M U' R' U M' U' R U	[M,U' R' U]	https://bit.ly/3wEqLQs	Rubik's Cube World Record, but it's Blindfolded... [4K]
+UF-BR-BL	R U' R' E' R2 E R' U R'	R U' R':[E',R2]	https://bit.ly/31C1om0	3BLD: 16.46 Ao25 (Former WB)
+UF-BR-BD	U2 M U R' U' M' U R U	U':[U' M U,R']	https://bit.ly/3wKUt4A	Sub-13 3BLD Singles Compilation
+UF-BR-DF	U D' L' E L2 E' L' U' D	U D' L':[E,L2]	https://bit.ly/48ahL5R	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BR-DF	U R' U M' U2 M U R U'	U R' U:[M',U2]	https://bit.ly/34Oi8I9	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-BR-DL	U L' E L2 E' L' U'	U L':[E,L2]	https://bit.ly/3w1eoyl	3BLD: 13.74 on 10 Algs
+UF-BR-DR	U R U R U' R' U' R' U' R	Not found.	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-BR-DB	M2 U' R' U M2 U' R U	[M2,U' R' U]	https://bit.ly/3kUUcsL	16.22 Official 3BLD WR Mean FAIL
+UF-BL-UL	E' L' E L U L' E' L u'	E':[L' E L,U]	https://bit.ly/3157nPL	3BLD: 16.46 Ao25 (Former WB)
+UF-BL-UR	R' E2 R U' R' E2 R U	[R' E2 R,U']	https://bit.ly/3rIuBWU	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-BL-LU	L' u L E L2 E' L u' L	L' u L:[E,L2]	https://bit.ly/3ds4ZpK	3BLD: 14.41 Former WB Ao5 (13.83 Mo3)
+UF-BL-LF	L U L' E' L U' L' E	[L U L',E']	https://bit.ly/48ahL5R	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BL-LD	S' U' R E' R2 E R U S	S' U' R:[E',R2]	https://bit.ly/3Jpc0pO	15.17 Official 3BLD Single (Florida Fall 2021 Winning Solve)
+UF-BL-FL	U' L' S' L2 S L' U	U' L':[S',L2]	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-BL-FR	R' U' R E' R2 E R U R	R' U' R:[E',R2]	https://bit.ly/3ljrot4	3BLD: 14.97 Ao12 (WB)
+UF-BL-FD	M' U L U' M U L' U'	[M',U L U']	https://bit.ly/38q8DBr	3BLD: 14.97 Ao12 (WB)
+UF-BL-RU	S U' R E' R2 E R U S'	S U' R:[E',R2]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-BL-RD	R' E2 R U' R' E R U R' E R	R' E':[E',R U' R']	https://bit.ly/3pPZC9f	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UF-BL-BU	M U L U' M' U L' U'	[M,U L U']	https://bit.ly/3xbEixu	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-BL-BR	R U' R E' R2 E R U R'	R U' R:[E',R2]	https://bit.ly/4d4hPqT	Audience stays CALM + RESPECTFUL after World Record
+UF-BL-BD	U2 M U' L U M' U' L' U'	U:[U M U',L]	https://bit.ly/3hkRERg	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-BL-DF	U' D R E' R2 E R U D'	U' D R:[E',R2]	https://bit.ly/3AZAL89	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-BL-DL	U' L' U' L' U L U L U L'	Not found.	https://bit.ly/45M6RTI	12.91 3x3 Blindfolded Mean [Former WB]
+UF-BL-DR	U' R E' R2 E R U	U' R:[E',R2]	https://tinyurl.com/vb2znfab	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-BL-DB	U' D' R E' R2 E R U D	U' D' R:[E',R2]	https://bit.ly/3Wb7Ebe	When you get a World Record but can't react...
+UF-BL-DB	M2 U L U' M2 U L' U'	[M2,U L U']	https://bit.ly/3qb5A4u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-BD-UB	U' M' U M' U2 M U M U	U' M' U:[M',U2]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-BD-UB	U M' U' M' U2 M U' M U'	U M' U':[M',U2]	https://bit.ly/38q8DBr	3BLD: 14.97 Ao12 (WB)
+UF-BD-UR	M U' M' U' M U' M' U'	[M,U']+U:[U,M]	https://bit.ly/3ql35MI	13.72 3BLD Former WB Mo3 (Part of 14.57 Ao5)
+UF-BD-LU	U' D' R' F R S' R' F' R S U D	U' D':[R' F R,S']	https://bit.ly/3ljrot4	3BLD: 14.97 Ao12 (WB)
+UF-BD-LB	U' R E' r' U r E r' U' M' U	U' R:[E',r' U r]	https://bit.ly/3sH4sry	3BLD: 14.21 Ao5 (WB)
+UF-BD-LF	U' r' E R U R' E' R U' M' U	U' r':[E,R U R']	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-BD-LD	U S r' U' r S' r' U r U'	U:[S,r' U' r]	https://bit.ly/3ds4ZpK	3BLD: 14.41 Former WB Ao5 (13.83 Mo3)
+UF-BD-LD	U S L' B' L S' L' B L U'	U:[S,L' B' L]	https://bit.ly/3wRfVVw	13.72 3BLD Former WB Mo3 (Part of 14.57 Ao5)
+UF-BD-FR	U' R U' M U R' U' M' U2	U':[R,U' M U]	https://bit.ly/3hdkfry	16.05 3BLD Ao12
+UF-BD-FD	U' M U' M' U2 M' U M U'	U' M:[U',M' U2 M']	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-BD-RU	U D L F' L' S L F L' S' U' D'	U D:[L F' L',S]	https://bit.ly/3wIZxYb	3BLD: 15.95 WB Ao12
+UF-BD-RF	U l E' L' U' L E L' U M' U'	U l:[E',L' U' L]	https://bit.ly/3LdnGwQ	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-BD-RB	U L' E l U' l' E' l U M' U'	U L':[E,l U' l']	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UF-BD-RD	U' L' D' L S L' D L S' U	U':[L' D' L,S]	https://bit.ly/30ewJui	3BLD: 15.95 WB Ao12
+UF-BD-BU	U' S l U l' S' l U' l' U	U':[S,l U l']	https://bit.ly/2YPiZp3	Sub-13 3BLD Singles Compilation
+UF-BD-BU	U' x' E R U R' E' R U' R' x U	U' x':[E,R U R']	http://bit.ly/1290RECON	12.90 3BLD Single (Twitch Highlight)
+UF-BD-BR	U' R' U' M U R U' M' U2	U':[R',U' M U]	https://bit.ly/3ro6Zqv	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-BD-BL	U L U M U' L' U M' U2	U:[L,U M U']	https://bit.ly/3OFoXQC	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-BD-DF	D L' F' L S L' F L S' D'	D:[L' F' L,S]	https://bit.ly/3PpKFGU	3BLD: 14.97 Ao12 (WB)
+UF-BD-DL	U L2 U M U' L2 U M' U2	U:[L2,U M U']	https://bit.ly/3mKGQj6	3BLD: 16.46 Ao25 (Former WB)
+UF-DF-UB	M' U2 M U2	[M',U2]	https://bit.ly/3sfGSoE	I won the WORLD CHAMPIONSHIP
+UF-DF-UL	R' F R S R' F2 R S' R' F R	R' F:[R S R',F2]	https://bit.ly/4c2p0yx	Audience stays CALM + RESPECTFUL after World Record
+UF-DF-UR	L F' L' S' L F2 L' S L F' L'	L F':[L' S' L,F2]	https://bit.ly/3cRPur3	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-DF-LU	L' F L2 E' L2 E F' L	L' F:[L2,E']	https://bit.ly/3lcWKSq	3BLD: 16.46 Ao25 (Former WB)
+UF-DF-LB	F L2 E' L2 E F'	F:[L2,E']	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-DF-LF	L2 F L2 E' L2 E F' L2	L2 F:[L2,E']	https://bit.ly/3ktxEhG	3BLD: 15.95 WB Ao12
+UF-DF-LD	L F L2 E' L2 E F' L'	L F:[L2,E']	https://bit.ly/3h5Fdde	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UF-DF-RF	R2 F' R2 E R2 E' F R2	R2 F':[R2,E]	https://bit.ly/3o6JP5f	3BLD: 16.46 Ao25 (Former WB)
+UF-DF-RF	R2 F E R2 E' R2 F' R2	R2 F:[E,R2]	https://bit.ly/2TZhClj	16.05 3BLD Ao12
+UF-DF-RB	F' R2 E R2 E' F	F':[R2,E]	https://bit.ly/2ZXC1uf	3BLD: 16.46 Ao25 (Former WB)
+UF-DF-RB	F E R2 E' R2 F'	F:[E,R2]	https://bit.ly/3qeeUVg	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-DF-RD	U' R F' R' S R F R' S' U	U':[R F' R',S]	https://bit.ly/3AdITmI	Almost getting a World Record...
+UF-DF-RD	R' F' R2 E R2 E' F R	R' F':[R2,E]	https://bit.ly/3LpYfqB	3BLD: 14.21 Ao5 (WB)
+UF-DF-RD	R' F E R2 E' R2 F' R	R' F:[E,R2]	https://bit.ly/2YPiZp3	Sub-13 3BLD Singles Compilation
+UF-DF-BR	U D' L E L2 E' L U' D	U D' L:[E,L2]	https://bit.ly/3yIOscE	3BLD: 14.97 Ao12 (WB)
+UF-DF-BL	U' D R' E' R2 E R' U D'	U' D R':[E',R2]	https://bit.ly/3A37z1L	3BLD: 13.70 Ao5 (WB)
+UF-DF-BD	D S L' F' L S' L' F L D'	D:[S,L' F' L]	https://bit.ly/3a7P29v	3BLD: 14.21 Ao5 (WB)
+UF-DF-DL	L F' L' S L F2 L' S' L F' L'	L F':[L' S L,F2]	https://bit.ly/343Nl9V	3BLD: 11.91 Single
+UF-DF-DR	R' F R S' R' F2 R S R' F R	R' F:[R S' R',F2]	https://bit.ly/3a5Yf26	3BLD: 14.97 Ao12 (WB)
+UF-DF-DB	u2 M' u2 M'	Not found.	https://bit.ly/2St7lxh	16.05 3BLD Ao12
+UF-DL-UB	U' S' L2 S L2 U	U':[S',L2]	https://bit.ly/43oMCKq	12.91 3x3 Blindfolded Mean [Former WB]
+UF-DL-UL	L E' L2 E L U L' E' L2 E L' U'	[L E' L2 E L,U]	https://bit.ly/3Wb7Ebe	When you get a World Record but can't react...
+UF-DL-UL	L' U' L S' L2 S L U L	L' U' L:[S',L2]	https://bit.ly/3HkAxvd	3BLD: 15.95 WB Ao12
+UF-DL-UR	L U L' U' L' U' L' U L U	Not found.	https://bit.ly/3gb81QL	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+UF-DL-LU	S L F' L' S' L F L'	[S,L F' L']	https://bit.ly/3h9TF3G	Sub-13 3BLD Singles Compilation
+UF-DL-LF	U E L' E' L2 E L' U' E'	U E L':[E',L2]	https://bit.ly/3BVmV9c	Almost getting a World Record...
+UF-DL-FL	U2 L' U L U L U L' U' L' U	Not found.	https://bit.ly/3Jpc0pO	15.17 Official 3BLD Single (Florida Fall 2021 Winning Solve)
+UF-DL-FR	U L' E' L2 E L' U'	U L':[E',L2]	https://bit.ly/3ObDPDU	3BLD: 13.70 Ao5 (WB)
+UF-DL-FD	U' L F L' S' L2 S L' F' L' U	U' L F L':[S',L2]	https://bit.ly/3lc6SLe	3BLD: 16.46 Ao25 (Former WB)
+UF-DL-RU	R2 S' R F R' S R F' R	R':[R' S' R,F]	https://bit.ly/3mOT1M5	3BLD: 16.46 Ao25 (Former WB)
+UF-DL-RF	U E L E L2 E' L U' E'	U E L:[E,L2]	https://bit.ly/3sH4sry	3BLD: 14.21 Ao5 (WB)
+UF-DL-RB	u L' E' L2 E L' u'	u L':[E',L2]	https://bit.ly/3rIuBWU	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DL-BR	U L E L2 E' L U'	U L:[E,L2]	https://bit.ly/3YEfD3i	I won the WORLD CHAMPIONSHIP
+UF-DL-BL	L U' L' U' L' U' L U L U	Not found.	https://bit.ly/3L1LjrW	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DL-BD	D L F L2 E' L2 E F' L' D'	D L F:[L2,E']	https://bit.ly/3tFsAdw	Sub-13 3BLD Singles Compilation
+UF-DL-DF	L F L' S L F2 L' S' L F L'	L F:[L' S L,F2]	https://bit.ly/3wEqLQs	Rubik's Cube World Record, but it's Blindfolded... [4K]
+UF-DL-DB	U' R' D' R D R D R D' R' U D'	Not found.	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-DR-UL	R' U' R U R U R U' R' U'	Not found.	https://bit.ly/3Jpc0pO	15.17 Official 3BLD Single (Florida Fall 2021 Winning Solve)
+UF-DR-UR	R U R' S R2 S' R' U' R'	R U R':[S,R2]	https://bit.ly/3LdnGwQ	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DR-LU	r2 S' r' U' r S r' U r'	r2:[S',r' U' r]	https://bit.ly/3gkVsSr	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DR-LU	L2 S L' F' L S' L' F L'	L:[L S L',F']	https://bit.ly/3kUUcsL	16.22 Official 3BLD WR Mean FAIL
+UF-DR-LB	u' R E R2 E' R u	u' R:[E,R2]	https://bit.ly/33X6eez	3BLD: 14.43 World Record FAIL (DNF by a wrong move)
+UF-DR-LF	U' E' R' E' R2 E R' U E	U' E' R':[E',R2]	https://bit.ly/4cmOmHT	Audience stays CALM + RESPECTFUL after World Record
+UF-DR-LD	S L' F' L S' L' F L	[S,L' F' L]	https://bit.ly/3FYFkSD	3BLD: 14.97 Ao12 (WB)
+UF-DR-FL	U' R E R2 E' R U	U' R:[E,R2]	https://bit.ly/3sUoJJb	Sub-13 3BLD Singles Compilation
+UF-DR-FR	U2 R U' R' U' R' U' R U R U'	Not found.	https://bit.ly/48ahL5R	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-DR-FD	U R' F' R S R2 S' R F R U'	U R' F' R:[S,R2]	https://bit.ly/3LjJC8k	3BLD: 14.97 Ao12 (WB)
+UF-DR-RU	S' R' F R S R' F' R	[S',R' F R]	https://bit.ly/3lld4Qw	3BLD: 14.97 Ao12 (WB)
+UF-DR-RF	U' E' R E R2 E' R U E	U' E' R:[E,R2]	https://bit.ly/3Uzo4N0	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-DR-RB	u' R' E' R2 E R' u	u' R':[E',R2]	https://bit.ly/3mOT1M5	3BLD: 16.46 Ao25 (Former WB)
+UF-DR-BU	M U' R2 U M' U' R2 U	[M,U' R2 U]	https://bit.ly/3zU5iWj	3BLD: 13.70 Ao5 (WB)
+UF-DR-BU	r' U' R' U M' U' R U R	r':[U' R' U,M']	https://bit.ly/3ro6Zqv	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DR-BR	R' U R U R U R' U' R' U'	Not found.	https://bit.ly/3Wb7Ebe	When you get a World Record but can't react...
+UF-DR-BL	U' R' E' R2 E R' U	U' R':[E',R2]	https://bit.ly/3YEfD3i	I won the WORLD CHAMPIONSHIP
+UF-DR-BD	D' R' F E R2 E' R2 F' R D	D' R' F:[E,R2]	https://bit.ly/436n8QU	One turn off from World Record...
+UF-DR-DF	R' F' R S' R' F2 R S R' F' R	R' F':[R S' R',F2]	https://bit.ly/3zEALJy	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF-DR-DL	D M D2 M' D	D:[M,D2]	https://bit.ly/tommy1461	14.61 Official Rubik’s Cube Blindfolded World Record (Tommy Cherry)
+UF-DR-DB	D' R' F R S' R' F2 R S R' F R D	D' R' F:[R S' R',F2]	https://bit.ly/3uvKVP5	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UF-DB-UB	U2 M U2 M'	[U2,M]	https://bit.ly/3yIOscE	3BLD: 14.97 Ao12 (WB)
+UF-DB-UR	R U' R' U M2 U' R U r' M	R:[U' R' U,M2]	https://bit.ly/34AtvDp	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DB-LB	M' U' L U M2 U' L' U M'	M':[U' L U,M2]	https://bit.ly/3nUMGOo	3BLD: 16.46 Ao25 (Former WB)
+UF-DB-LF	M' U' L' U M2 U' L U M'	M':[U' L' U,M2]	https://bit.ly/3YEfD3i	I won the WORLD CHAMPIONSHIP
+UF-DB-LD	U L B' L' S' L B L' S U'	U:[L B' L',S']	https://bit.ly/3FRLyDQ	3BLD: 14.97 Ao12 (WB)
+UF-DB-FL	U L' U' M2 U L U' M2	[U L' U',M2]	https://bit.ly/3sfGSoE	I won the WORLD CHAMPIONSHIP
+UF-DB-FL	U' D' R E R2 E' R U D	U' D' R:[E,R2]	https://bit.ly/34Oi8I9	28.92 WB 2-Man 3BLD Relay with Stanley Chapel
+UF-DB-FR	U' R U M2 U' R' U M2	[U' R U,M2]	https://bit.ly/3rIuBWU	3BLD: 15.84 Ao12 (Former PB/WB)
+UF-DB-FD	D' S L' F' L S' L' F L D	D':[S,L' F' L]	https://tinyurl.com/mue3szxe	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF-DB-FD	U' r M' U' R' U M U' R U r' U	U' r:[M',U' R' U]	https://bit.ly/3oCxLdO	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UF-DB-RU	D' S' R' F R S R' F' R D	D':[S',R' F R]	https://bit.ly/3A37z1L	3BLD: 13.70 Ao5 (WB)
+UF-DB-RU	r U R' U' M2 U R U' R' M'	r:[U R' U',M2]	https://bit.ly/3wFpqYO	3BLD: 15.95 WB Ao12
+UF-DB-RF	M' U R U' M2 U R' U' M'	M':[U R U',M2]	https://bit.ly/322jazb	3BLD: 15.95 WB Ao12
+UF-DB-RB	M' U R' U' M2 U R U' M'	M':[U R' U',M2]	https://bit.ly/3FYFkSD	3BLD: 14.97 Ao12 (WB)
+UF-DB-RD	U' R' B R S R' B' R S' U	U':[R' B R,S]	https://bit.ly/3wEqLQs	Rubik's Cube World Record, but it's Blindfolded... [4K]
+UF-DB-BR	U' R' U M2 U' R U M2	[U' R' U,M2]	https://bit.ly/3LjJC8k	3BLD: 14.97 Ao12 (WB)
+UF-DB-BL	U L U' M2 U L' U' M2	[U L U',M2]	https://bit.ly/3a5Yf26	3BLD: 14.97 Ao12 (WB)
+UF-DB-DF	M' U2 M' U2 M2	M':[U2,M']	https://bit.ly/3jlQaZB	16.05 3BLD Ao12
+UF-DB-DL	U L2 U' M2 U L2 U' M2	[U L2 U',M2]	https://bit.ly/3C141xM	Almost getting a World Record...
+UF-DB-DL	U' D R D R' D' R' D' R' D R U	Not found.	https://bit.ly/3yWYXZP	14.21 3BLD WB Ao5 again but with a twist...
+UF-DB-DR	U' R' D R' S' R2 S R' D' R U	U' R' D R':[S',R2]	https://bit.ly/2ZrtHCO	15.87 Official 3BLD Single
+UB-UL-BR	U' R S2 R' U R S2 R'	[U',R S2 R']	https://bit.ly/3zg5kWJ	When you get a World Record but have to stay quiet...
+UB-UL-BR	U' L E2 L' U L E2 L'	[U',L E2 L']	https://bit.ly/3BNb5dA	3BLD: 16.46 Ao25 (Former WB)
+UB-UL-DL	L U L S' L2 S L U' L'	L U L:[S',L2]	https://bit.ly/3wFpqYO	3BLD: 15.95 WB Ao12
+UB-UL-DR	U' R' U' R U R U R U' R'	Not found.	https://bit.ly/3qlKPou	3BLD: 16.46 Ao25 (Former WB)
+UB-UL-DB	U' D' R' U' R U R U R U' R' D	Not found.	https://bit.ly/48ahL5R	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UB-UR-FR	u R' E R U' R' E' R E	u:[R' E R,U']	https://bit.ly/3gkVsSr	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-UR-BR	U E R E' R' U' R E R' E'	E:[U,R E' R']	https://bit.ly/3wjcFD7	3BLD: 16.04 Former WB Ao12
+UB-LU-LF	S U R' E R U' R' E' R S'	S:[U,R' E R]	https://bit.ly/3uvKVP5	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UB-LU-FR	S' U' L' E' L2 E L' U S	S' U' L':[E',L2]	https://bit.ly/3FYFkSD	3BLD: 14.97 Ao12 (WB)
+UB-LU-RF	r U' M U2 M' U' r'	r U':[M,U2]	https://bit.ly/3i4ckyp	16.22 Official 3BLD WR Mean FAIL
+UB-LU-BR	M U l' E l U' l' E' L	M:[U,l' E l]	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-LU-DB	L B' E L2 E' L2 B L'	L B':[E,L2]	https://bit.ly/3b6KO2M	Rubik's Cube Blindfolded in 10.78 Seconds
+UB-LB-UL	U2 R E' R' U' R E R' U'	U:[U,R E' R']	https://bit.ly/3naNY8V	3BLD: 15.95 WB Ao12
+UB-LB-FL	E L' U' L E' L' U L	[E,L' U' L]	https://bit.ly/3wjcFD7	3BLD: 16.04 Former WB Ao12
+UB-LB-FR	R2 E' R' U R E R' U' R'	R:[R E' R',U]	https://bit.ly/2Yo3uVs	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UB-LB-RU	M' L U' M U2 M' U' M L'	M' L U':[M,U2]	https://bit.ly/3QsUTpD	14.75 3x3 Blindfolded Single (NAC 2022)
+UB-LB-BR	E' R' U R E R' U' R	[E',R' U R]	https://bit.ly/3gkVsSr	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-LB-DB	U' l U2 R' E R U' R' E' R U' l' U	U' l U:[U,R' E R]	https://bit.ly/35WO65T	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-LF-LU	S R' E R U R' E' R U' S'	S:[R' E R,U]	https://bit.ly/3QsUTpD	14.75 3x3 Blindfolded Single (NAC 2022)
+UB-LF-FR	E R U R' E' R U' R'	[E,R U R']	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-LF-FD	U M' U' r' E r U r' E' R U'	U M':[U',r' E r]	https://bit.ly/3qlKPou	3BLD: 16.46 Ao25 (Former WB)
+UB-LF-RD	S' R' E R U R' E' R U' S	S':[R' E R,U]	https://bit.ly/3wjcFD7	3BLD: 16.04 Former WB Ao12
+UB-LF-BD	M2 U L' U' M' U L U' M'	M:[M,U L' U']	https://bit.ly/3BNb5dA	3BLD: 16.46 Ao25 (Former WB)
+UB-LD-FL	S' U R E R2 E' R U' S	S' U R:[E,R2]	https://bit.ly/3LmMOA4	3BLD: 14.21 Ao5 (WB)
+UB-LD-FD	U' L F L' S L F' L' S' U	U':[L F L',S]	https://bit.ly/3uvKVP5	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UB-LD-BR	U D' R' U' M U R U' M' D	D':[U R' U',M]	https://bit.ly/314H6BF	3BLD: 16.46 Ao25 (Former WB)
+UB-LD-DF	U' S' L' F L S L' F' L U	U':[S',L' F L]	https://bit.ly/35WO65T	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-FL-UL	E L E' L' U' L E L' u	E:[L E' L',U']	https://bit.ly/4bym39U	Breaking World Record during the Superbowl
+UB-FL-LD	S' U R' E R2 E' R' U' S	S' U R':[E,R2]	https://bit.ly/3zWW0Jf	3BLD: 13.70 Ao5 (WB)
+UB-FL-DL	U L U L U' L' U' L' U' L	Not found.	https://bit.ly/3wKUt4A	Sub-13 3BLD Singles Compilation
+UB-FR-UR	E' R' E R U R' E' R u'	E':[R' E R,U]	https://bit.ly/3qlKPou	3BLD: 16.46 Ao25 (Former WB)
+UB-FR-LB	R U R E' R' U' R E R2	R:[U,R E' R']	https://bit.ly/3xBHu55	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-FR-FD	U2 M' U' R U M U' R' U'	U:[U M' U',R]	https://bit.ly/3QsUTpD	14.75 3x3 Blindfolded Single (NAC 2022)
+UB-FR-RD	U R u' R' U R E' R' U' R U R' U'	U R u':[R' U R,E']	https://bit.ly/3cQlGdZ	3BLD: 16.46 Ao25 (Former WB)
+UB-FR-DF	M2 U R U' M2 U R' U'	[M2,U R U']	https://bit.ly/314H6BF	3BLD: 16.46 Ao25 (Former WB)
+UB-FR-DL	U' L E' L2 E L U	U' L:[E',L2]	https://bit.ly/3wArqR8	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-FR-DR	U' R' U' R' U R U R U R'	Not found.	https://bit.ly/35WO65T	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-FD-RF	U' L E' l' U l E l' U' M U	U' L:[E',l' U l]	https://bit.ly/3wjcFD7	3BLD: 16.04 Former WB Ao12
+UB-FD-RB	U' l' E L U L' E' L U' M U	U' l':[E,L U L']	https://bit.ly/3naNY8V	3BLD: 15.95 WB Ao12
+UB-RU-UL	l U' l' S l U l' S'	[l U' l',S]	https://bit.ly/3naNY8V	3BLD: 15.95 WB Ao12
+UB-RU-LF	l' U M U2 M' U l	l' U:[M,U2]	https://bit.ly/3AdITmI	Almost getting a World Record...
+UB-RU-FD	U R F' R2 E R2 E' F R' U'	U R F':[R2,E]	https://bit.ly/3nUMGOo	3BLD: 16.46 Ao25 (Former WB)
+UB-RU-RF	S' U' L E' L' U L E L' S	S':[U',L E' L']	https://bit.ly/4c2p0yx	Audience stays CALM + RESPECTFUL after World Record
+UB-RF-UR	U2 L E' L' U L E L' U	U':[U',L E' L']	https://bit.ly/3iY8JTt	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-RF-RU	U' M U l E' l' U' l E M2 L' U	U' M:[U,l E' l']	https://bit.ly/3uvKVP5	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UB-RF-DR	u R' E R2 E' R' u'	u R':[E,R2]	https://bit.ly/3HkQzF4	3BLD: 15.95 WB Ao12
+UB-RB-UR	U2 L' E L U L' E' L U	U':[U',L' E L]	https://bit.ly/3QsUTpD	14.75 3x3 Blindfolded Single (NAC 2022)
+UB-RB-LU	R' M' U M U2 M' U R M	R' M' U:[M,U2]	https://bit.ly/3cQlGdZ	3BLD: 16.46 Ao25 (Former WB)
+UB-RB-LF	l U L' E L2 E' L' U' l'	l U L':[E,L2]	https://bit.ly/3HkQzF4	3BLD: 15.95 WB Ao12
+UB-RB-BL	r' U' r E' r' U r E	[r' U' r,E']	https://bit.ly/3b6KO2M	Rubik's Cube Blindfolded in 10.78 Seconds
+UB-RD-LU	l U' R E R2 E' R U l'	l U' R:[E,R2]	https://bit.ly/3iY8JTt	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-RD-DB	U S R' B R S' R' B' R U'	U:[S,R' B R]	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-BR-UL	R S2 R' U' R S2 R' U	[R S2 R',U']	https://bit.ly/3AdITmI	Almost getting a World Record...
+UB-BR-UR	E R E' R' U R E R' U' E'	E:[R E' R',U]	https://bit.ly/3h5Fdde	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UB-BR-LD	D' M U R' U' M' U R U' D	D':[M,U R' U']	https://bit.ly/3jiC4rS	16.05 3BLD Ao12
+UB-BR-FL	R U R E R2 E' R U' R'	R U R:[E,R2]	https://bit.ly/4c2p0yx	Audience stays CALM + RESPECTFUL after World Record
+UB-BR-FD	U2 M' U' R' U M U' R U'	U:[U M' U',R']	https://bit.ly/35WO65T	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-BR-DF	M2 U R' U' M2 U R U'	[M2,U R' U']	https://bit.ly/3wFpqYO	3BLD: 15.95 WB Ao12
+UB-BL-UR	R' E2 R U R' E2 R U'	[R' E2 R,U]	https://bit.ly/3h5Fdde	3BLD: 13.28 Mo3 and 14.26 Ao5 FAIL
+UB-BL-LD	S' U R E' R2 E R U' S	S' U R:[E',R2]	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-BL-RU	R E' r' U' r E r' U M'	R:[E',r' U' r]	https://bit.ly/3BNb5dA	3BLD: 16.46 Ao25 (Former WB)
+UB-BL-RB	E' r' U' r E r' U r	[E',r' U' r]	https://bit.ly/3iY8JTt	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-BL-DR	U R E' R2 E R U'	U R:[E',R2]	https://bit.ly/4bym39U	Breaking World Record during the Superbowl
+UB-BD-FL	U' L' U M U' L U M'	[U' L' U,M]	https://bit.ly/3LmMOA4	3BLD: 14.21 Ao5 (WB)
+UB-BD-FR	U R U' M U R' U' M'	[U R U',M]	https://bit.ly/3naNY8V	3BLD: 15.95 WB Ao12
+UB-BD-BL	U' L U M U' L' U M'	[U' L U,M]	https://bit.ly/3qlKPou	3BLD: 16.46 Ao25 (Former WB)
+UB-BD-DR	U R2 U' M U R2 U' M'	[U R2 U',M]	https://bit.ly/3zWW0Jf	3BLD: 13.70 Ao5 (WB)
+UB-DF-UR	R U R' U' M2 U R U' r' M	R:[U R' U',M2]	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-DF-BD	D' S' R' B' R S R' B R D	D':[S',R' B' R]	https://bit.ly/3iY8JTt	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-DF-DR	U R' D' R' S' R2 S R' D R U'	U R' D' R':[S',R2]	https://bit.ly/3cQlGdZ	3BLD: 16.46 Ao25 (Former WB)
+UB-DL-LB	U' E' L E L2 E' L U E	U' E' L:[E,L2]	https://bit.ly/4c2p0yx	Audience stays CALM + RESPECTFUL after World Record
+UB-DL-FL	L' U L U L U L' U' L' U'	Not found.	https://bit.ly/3gkVsSr	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-DL-FR	U' L' E' L2 E L' U	U' L':[E',L2]	https://bit.ly/3bf44dX	3BLD: 13.70 Ao5 (WB)
+UB-DL-RF	u' L E L2 E' L u	u' L:[E,L2]	https://bit.ly/2St7lxh	16.05 3BLD Ao12
+UB-DL-RD	S' R' B' R S R' B R	[S',R' B' R]	https://bit.ly/3QsUTpD	14.75 3x3 Blindfolded Single (NAC 2022)
+UB-DL-BD	M U' L2 U M' U' L2 U	[M,U' L2 U]	https://bit.ly/3AdITmI	Almost getting a World Record...
+UB-DL-DB	U R' D' R D R D R D' R' U' D'	Not found.	https://bit.ly/3wjcFD7	3BLD: 16.04 Former WB Ao12
+UB-DR-LB	U E R E R2 E' R U' E'	U E R:[E,R2]	https://bit.ly/3zg5kWJ	When you get a World Record but have to stay quiet...
+UB-DR-LF	u R' E' R2 E R' u'	u R':[E',R2]	https://bit.ly/314H6BF	3BLD: 16.46 Ao25 (Former WB)
+UB-DR-FD	U' R' F' R S R2 S' R F R U	U' R' F' R:[S,R2]	https://bit.ly/3rIuBWU	3BLD: 15.84 Ao12 (Former PB/WB)
+UB-DB-FD	U r M' U' R' U M U' R U r' U'	U r:[M',U' R' U]	https://bit.ly/3wArqR8	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UB-DB-BR	U' D L E L2 E' L U D'	U' D L:[E,L2]	https://bit.ly/4bym39U	Breaking World Record during the Superbowl
+UB-DB-DL	U D R D R' D' R' D' R' D R U'	Not found.	https://bit.ly/3cQlGdZ	3BLD: 16.46 Ao25 (Former WB)
+UR-UL-DL	L2 S' L2 S	[L2,S']	https://bit.ly/3GT129p	3BLD: 11.30 Single
+UR-LU-BL	l U2 l' S l U2 l' S'	[l U2 l',S]	https://bit.ly/3nZENao	3BLD: 16.46 Ao25 (Former WB)
+UR-LU-DL	D S' L F L' S L F' L' D'	D:[S',L F L']	https://bit.ly/3PVPpEt	3BLD: 13.10 Mo3 (WB)
+UR-LB-LD	E' R E l E' R' E l'	[E' R E,l]	https://bit.ly/3sUoJJb	Sub-13 3BLD Singles Compilation
+UR-LB-DF	L S' L F L' S L F' L2	L:[S',L F L']	https://bit.ly/3zWW0Jf	3BLD: 13.70 Ao5 (WB)
+UR-LF-BD	M U R' E R U' R' E' r	M:[U,R' E R]	https://bit.ly/3GT129p	3BLD: 11.30 Single
+UR-LD-FL	l' U2 l' S l U2 l' S' l2	l':[U2,l' S l]	https://bit.ly/38XxKeF	12.96 Rubik's Cube Blindfolded World Record FAIL
+UR-LD-FD	l' U' l' S l U l' S' l2	l':[U',l' S l]	https://bit.ly/3OFoXQC	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UR-FL-RF	L' U2 L E' L' U2 L E	[L' U2 L,E']	https://bit.ly/3zg5kWJ	When you get a World Record but have to stay quiet...
+UR-FL-RB	L' U2 L' E L U2 L' E' L2	L':[U2,L' E L]	https://bit.ly/3i4ckyp	16.22 Official 3BLD WR Mean FAIL
+UR-FR-LD	R' E' R' S' R S R E	[R',E' R' S']	https://bit.ly/3zg5kWJ	When you get a World Record but have to stay quiet...
+UR-FR-FD	U M' U' R U M U' R'	[U M' U',R]	https://bit.ly/3sUoJJb	Sub-13 3BLD Singles Compilation
+UR-FR-RB	U R U' R' E' R U R' u'	U:[R U' R',E']	https://bit.ly/3zWW0Jf	3BLD: 13.70 Ao5 (WB)
+UR-FR-RD	R u' R' U R E' R' U' R U R'	R u':[R' U R,E']	https://bit.ly/3nZENao	3BLD: 16.46 Ao25 (Former WB)
+UR-FD-RF	l' U2 l E' l' U' l E l' U' l	l' U:[U,l E' l']	https://bit.ly/3lia2Ne	3BLD: 14.97 Ao12 (WB)
+UR-FD-RD	S' R' F' R S R' F R	[S',R' F' R]	https://tinyurl.com/4267y8x9	Breakdown of my 11.56 World Record 3x3 Blindfolded Solve
+UR-FD-BL	l U' M U2 M' U' l'	l U':[M,U2]	https://bit.ly/38XxKeF	12.96 Rubik's Cube Blindfolded World Record FAIL
+UR-FD-DB	r U' R' U M' U' R U r' M	r:[U' R' U,M']	https://bit.ly/3NdvVvP	12.91 3x3 Blindfolded Mean [Former WB]
+UR-BR-FL	U' R U R E R2 E' R U' R' U	U' R U R:[E,R2]	https://bit.ly/3cTc81K	3BLD: 16.46 Ao25 (Former WB)
+UR-BR-RF	U' R' U R E R' U' R u	U':[R' U R,E]	https://bit.ly/3PVPpEt	3BLD: 13.10 Mo3 (WB)
+UR-BR-BD	U' M U R' U' M' U R	[U' M U,R']	https://bit.ly/38XxKeF	12.96 Rubik's Cube Blindfolded World Record FAIL
+UR-BL-LF	L U2 L' E' L U2 L' E	[L U2 L',E']	https://bit.ly/3cQlGdZ	3BLD: 16.46 Ao25 (Former WB)
+UR-BL-FL	L' S' L2 S L'	L':[S',L2]	https://bit.ly/2ZXC1uf	3BLD: 16.46 Ao25 (Former WB)
+UR-BL-DR	R E' R2 E R	R:[E',R2]	https://tinyurl.com/4267y8x9	Breakdown of my 11.56 World Record 3x3 Blindfolded Solve
+UR-BD-LU	S R B R' S' R B' R'	[S,R B R']	https://bit.ly/2ScCq8u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UR-BD-LB	R E' r' U r E r' U' M'	R:[E',r' U r]	https://bit.ly/3PVPpEt	3BLD: 13.10 Mo3 (WB)
+UR-BD-RB	l U2 l' E l U l' E' l U l'	l U':[U',l' E l]	https://bit.ly/2TImJWW	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UR-BD-DL	U2 L2 U M U' L2 U M' U	U':[U' L2 U,M]	https://bit.ly/3i4ckyp	16.22 Official 3BLD WR Mean FAIL
+UR-DF-DB	u' M' u2 M' u'	Not found.	https://bit.ly/3zg5kWJ	When you get a World Record but have to stay quiet...
+UR-DL-UL	S' L2 S L2	[S',L2]	https://bit.ly/3x5raer	3BLD: 13.10 Mo3 (WB)
+UR-DL-LF	U' u' L' E' L2 E L' U u	U' u' L':[E',L2]	https://bit.ly/3cTc81K	3BLD: 16.46 Ao25 (Former WB)
+UR-DL-BD	R' B R' S' R2 S R' B' R	R' B R':[S',R2]	https://bit.ly/3nZENao	3BLD: 16.46 Ao25 (Former WB)
+UR-DR-RF	E' R E R2 E' R E	E' R:[E,R2]	https://bit.ly/3OFoXQC	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+UR-DR-DF	D R' D R' S' R2 S R' D' R D'	D R' D R':[S',R2]	https://bit.ly/3b6KO2M	Rubik's Cube Blindfolded in 10.78 Seconds
+UR-DB-DL	D R D R' D' R' D' R' D R	Not found.	https://bit.ly/3gMU3UE	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UL-LB-FD	r U' r E' r' U' r E r' U2 r'	r U':[r E' r',U']	https://bit.ly/3CVNcSK	3BLD: 16.46 Ao25 (Former WB)
+UL-LF-BD	r' U r' E r U r' E' r U2 r	r' U:[r' E r,U]	https://bit.ly/2Zxufr2	3BLD: 16.46 Ao25 (Former WB)
+UL-LD-RD	U' R' F R' S' R2 S R' F' R U	U' R' F R':[S',R2]	https://bit.ly/2U6NyUO	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UL-FL-DF	U M2 U' L' U M2 U' L	[U M2 U',L']	https://bit.ly/3qb5A4u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UL-FR-RB	R U2 R' E' R U2 R' E	[R U2 R',E']	https://bit.ly/3qb5A4u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UL-RF-DF	R S R' F' R S' R' F	[R S R',F']	https://bit.ly/3YCRF8f	I won the WORLD CHAMPIONSHIP
+UL-RB-RD	E R' S R' S' R E' R	[E R' S,R']	https://bit.ly/2U6NyUO	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UL-RD-DL	U' R F R' S' R F' R' S U	U':[R F R',S']	https://bit.ly/3CSEkgy	3BLD: 16.46 Ao25 (Former WB)
+UL-BR-RF	R' U2 R E R' U2 R E'	[R' U2 R,E]	https://bit.ly/3tFsAdw	Sub-13 3BLD Singles Compilation
+UL-DL-FL	E2 L E L2 E' L E2	E2 L:[E,L2]	https://bit.ly/3CVNcSK	3BLD: 16.46 Ao25 (Former WB)
+UL-DR-LD	U' S L' F' L S' L' F L U	U':[S,L' F' L]	https://bit.ly/2Zxufr2	3BLD: 16.46 Ao25 (Former WB)
+UL-DR-FL	U2 R E R2 E' R U2	U2 R:[E,R2]	https://bit.ly/3YCRF8f	I won the WORLD CHAMPIONSHIP
+UL-DB-LB	l U R' E R U R' E' R U2 l'	l U:[R' E R,U]	https://bit.ly/3YCRF8f	I won the WORLD CHAMPIONSHIP
+FR-DR-LF	R' S R E R E' R' S'	[R',S R E]	https://bit.ly/4d4hPqT	Audience stays CALM + RESPECTFUL after World Record
+FL-RB-RD	R S R E R' E' R' S'	[R,S R E]	https://bit.ly/3ObDPDU	3BLD: 13.70 Ao5 (WB)
+FL-BD-DR	M U R E R2 E' R U' M'	M U R:[E,R2]	https://bit.ly/3ObDPDU	3BLD: 13.70 Ao5 (WB)
+FL-DF-RD	R' F R U' R' E R2 E' R' U R' F' R	R' F R U' R':[E,R2]	https://bit.ly/2ScCq8u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+FL-DF-BL	D L S L2 S' L D'	D L:[S,L2]	https://bit.ly/3hdkfry	16.05 3BLD Ao12
+FL-DL-FD	L' U' M' U L' U' M U L2	L':[U' M' U,L']	https://bit.ly/3vydRQU	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+FL-DL-DB	L' U' M2 U L' U' M2 U L2	L':[U' M2 U,L']	https://bit.ly/3NeiWYo	3BLD: 13.10 Mo3 (WB)
+FL-DR-BD	M U R' E R2 E' R' U' M'	M U R':[E,R2]	https://bit.ly/3vC6Z4Z	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+DB-BR-LB	E l U' l' E' l U l'	[E,l U' l']	https://bit.ly/3Uzo4N0	Rubik's Cube Blindfolded: 12.76 Average of 5 [WB]
+DB-BR-DL	M2 U L' E L2 E' L' U' M2	M2 U L':[E,L2]	https://bit.ly/3vZP748	16.05 3BLD Ao12
+DB-DR-LB	D' l' S' l D l' S l	[D',l' S' l]	https://bit.ly/3vC6Z4Z	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+DR-DL-LB	S' R' E' R2 E R' S	S' R':[E',R2]	https://bit.ly/3c6tGqy	3BLD: 15.95 WB Ao12

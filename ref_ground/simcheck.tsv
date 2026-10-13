@@ -1,0 +1,1078 @@
+solver	sheet	rowid	position	moves	qtm	match	note
+cherry	edge	2	UF-UB-UL	9	12	CYCLE_A	defects:UF=ok,UB=ok,UL=ok clean
+cherry	edge	3	UF-UB-UL	9	14	CYCLE_A	defects:UF=ok,UB=ok,UL=ok clean
+cherry	edge	4	UF-UB-UR	8	12	CYCLE_A	defects:UF=ok,UB=ok,UR=ok clean
+cherry	edge	5	UF-UB-LB	9	10	CYCLE_A	defects:UF=ok,UB=flip,BL=flip
+cherry	edge	6	UF-UB-LF	9	10	CYCLE_A	defects:UF=ok,UB=flip,FL=flip
+cherry	edge	7	UF-UB-LD	9	10	CYCLE_A	defects:UF=ok,UB=flip,DL=flip
+cherry	edge	8	UF-UB-FL	8	10	CYCLE_A	defects:UF=ok,UB=ok,FL=ok clean
+cherry	edge	9	UF-UB-FR	8	10	CYCLE_A	defects:UF=ok,UB=ok,FR=ok clean
+cherry	edge	10	UF-UB-FD	12	12	CYCLE_A	defects:UF=ok,UB=flip,DF=flip
+cherry	edge	11	UF-UB-RU	8	10	CYCLE_A	defects:UF=ok,UB=flip,UR=flip
+cherry	edge	12	UF-UB-RF	9	10	CYCLE_A	defects:UF=ok,UB=flip,FR=flip
+cherry	edge	13	UF-UB-RB	9	10	CYCLE_A	defects:UF=ok,UB=flip,BR=flip
+cherry	edge	14	UF-UB-BL	8	10	CYCLE_A	defects:UF=ok,UB=ok,BL=ok clean
+cherry	edge	15	UF-UB-BD	9	10	CYCLE_A	defects:UF=ok,UB=flip,DB=flip
+cherry	edge	16	UF-UB-DF	4	6	CYCLE_A	defects:UF=ok,UB=ok,DF=ok clean
+cherry	edge	17	UF-UB-DL	6	8	CYCLE_A	defects:UF=ok,UB=ok,DL=ok clean
+cherry	edge	18	UF-UB-DB	4	6	CYCLE_A	defects:UF=ok,UB=ok,DB=ok clean
+cherry	edge	19	UF-UL-UB	13	14	CYCLE_A	defects:UF=ok,UL=ok,UB=ok clean
+cherry	edge	20	UF-UL-UB	9	12	CYCLE_A	defects:UF=ok,UL=ok,UB=ok clean
+cherry	edge	21	UF-UL-UR	7	10	CYCLE_A	defects:UF=ok,UL=ok,UR=ok clean
+cherry	edge	22	UF-UL-LF	9	10	CYCLE_A	defects:UF=ok,UL=flip,FL=flip
+cherry	edge	23	UF-UL-LD	8	8	CYCLE_A	defects:UF=ok,UL=flip,DL=flip
+cherry	edge	24	UF-UL-FL	10	10	CYCLE_A	defects:UF=ok,UL=ok,FL=ok clean
+cherry	edge	25	UF-UL-FR	8	10	CYCLE_A	defects:UF=ok,UL=ok,FR=ok clean
+cherry	edge	26	UF-UL-RU	8	8	CYCLE_A	defects:UF=ok,UL=flip,UR=flip
+cherry	edge	27	UF-UL-RF	8	8	CYCLE_A	defects:UF=ok,UL=flip,FR=flip
+cherry	edge	28	UF-UL-RB	8	8	CYCLE_A	defects:UF=ok,UL=flip,BR=flip
+cherry	edge	29	UF-UL-RD	9	10	CYCLE_A	defects:UF=ok,UL=flip,DR=flip
+cherry	edge	30	UF-UL-BU	9	9	CYCLE_A	defects:UF=ok,UL=flip,UB=flip
+cherry	edge	31	UF-UL-BR	8	10	CYCLE_A	defects:UF=ok,UL=ok,BR=ok clean
+cherry	edge	32	UF-UL-BL	9	9	CYCLE_A	defects:UF=ok,UL=ok,BL=ok clean
+cherry	edge	33	UF-UL-BD	8	8	CYCLE_A	defects:UF=ok,UL=flip,DB=flip
+cherry	edge	34	UF-UL-DL	9	10	CYCLE_A	defects:UF=ok,UL=ok,DL=ok clean
+cherry	edge	35	UF-UL-DB	10	12	CYCLE_A	defects:UF=ok,UL=ok,DB=ok clean
+cherry	edge	36	UF-UR-UB	7	10	CYCLE_A	defects:UF=ok,UR=ok,UB=ok clean
+cherry	edge	37	UF-UR-UL	7	10	CYCLE_A	defects:UF=ok,UR=ok,UL=ok clean
+cherry	edge	38	UF-UR-LU	8	8	CYCLE_A	defects:UF=ok,UR=flip,UL=flip
+cherry	edge	39	UF-UR-LB	8	8	CYCLE_A	defects:UF=ok,UR=flip,BL=flip
+cherry	edge	40	UF-UR-LB	8	8	CYCLE_A	defects:UF=ok,UR=flip,BL=flip
+cherry	edge	41	UF-UR-LF	8	8	CYCLE_A	defects:UF=ok,UR=flip,FL=flip
+cherry	edge	42	UF-UR-FL	8	10	CYCLE_A	defects:UF=ok,UR=ok,FL=ok clean
+cherry	edge	43	UF-UR-FR	10	10	CYCLE_A	defects:UF=ok,UR=ok,FR=ok clean
+cherry	edge	44	UF-UR-FD	9	9	CYCLE_A	defects:UF=ok,UR=flip,DF=flip
+cherry	edge	45	UF-UR-RF	9	10	CYCLE_A	defects:UF=ok,UR=flip,FR=flip
+cherry	edge	46	UF-UR-RB	9	10	CYCLE_A	defects:UF=ok,UR=flip,BR=flip
+cherry	edge	47	UF-UR-RD	8	8	CYCLE_A	defects:UF=ok,UR=flip,DR=flip
+cherry	edge	48	UF-UR-BU	9	9	CYCLE_A	defects:UF=ok,UR=flip,UB=flip
+cherry	edge	49	UF-UR-BR	10	10	CYCLE_A	defects:UF=ok,UR=ok,BR=ok clean
+cherry	edge	50	UF-UR-BR	9	9	CYCLE_A	defects:UF=ok,UR=ok,BR=ok clean
+cherry	edge	51	UF-UR-BL	8	10	CYCLE_A	defects:UF=ok,UR=ok,BL=ok clean
+cherry	edge	52	UF-UR-DF	8	14	CYCLE_A	defects:UF=ok,UR=ok,DF=ok clean
+cherry	edge	53	UF-UR-DL	9	10	CYCLE_A	defects:UF=ok,UR=ok,DL=ok clean
+cherry	edge	54	UF-UR-DL	9	10	CYCLE_A	defects:UF=ok,UR=ok,DL=ok clean
+cherry	edge	55	UF-UR-DR	12	14	CYCLE_A	defects:UF=ok,UR=ok,DR=ok clean
+cherry	edge	56	UF-UR-DR	9	10	CYCLE_A	defects:UF=ok,UR=ok,DR=ok clean
+cherry	edge	57	UF-UR-DB	10	11	CYCLE_A	defects:UF=ok,UR=ok,DB=ok clean
+cherry	edge	58	UF-LU-UB	9	10	CYCLE_A	defects:UF=flip,UL=flip,UB=ok
+cherry	edge	59	UF-LU-UR	8	8	CYCLE_A	defects:UF=flip,UL=flip,UR=ok
+cherry	edge	60	UF-LU-LB	10	10	CYCLE_A	defects:UF=flip,UL=ok,BL=flip
+cherry	edge	61	UF-LU-LF	10	10	CYCLE_A	defects:UF=flip,UL=ok,FL=flip
+cherry	edge	62	UF-LU-LD	7	8	CYCLE_A	defects:UF=flip,UL=ok,DL=flip
+cherry	edge	63	UF-LU-LD	13	14	CYCLE_A	defects:UF=flip,UL=ok,DL=flip
+cherry	edge	64	UF-LU-FL	11	12	CYCLE_A	defects:UF=flip,UL=flip,FL=ok
+cherry	edge	65	UF-LU-FR	9	10	CYCLE_A	defects:UF=flip,UL=flip,FR=ok
+cherry	edge	66	UF-LU-FD	12	12	CYCLE_A	defects:UF=flip,UL=ok,DF=flip
+cherry	edge	67	UF-LU-RU	7	8	CYCLE_A	defects:UF=flip,UL=ok,UR=flip
+cherry	edge	68	UF-LU-RF	9	10	CYCLE_A	defects:UF=flip,UL=ok,FR=flip
+cherry	edge	69	UF-LU-RB	7	8	CYCLE_A	defects:UF=flip,UL=ok,BR=flip
+cherry	edge	70	UF-LU-BU	9	9	CYCLE_A	defects:UF=flip,UL=ok,UB=flip
+cherry	edge	71	UF-LU-BR	9	10	CYCLE_A	defects:UF=flip,UL=flip,BR=ok
+cherry	edge	72	UF-LU-BR	13	13	CYCLE_A	defects:UF=flip,UL=flip,BR=ok
+cherry	edge	73	UF-LU-BL	9	10	CYCLE_A	defects:UF=flip,UL=flip,BL=ok
+cherry	edge	74	UF-LU-BL	10	12	CYCLE_A	defects:UF=flip,UL=flip,BL=ok
+cherry	edge	75	UF-LU-DF	8	10	CYCLE_A	defects:UF=flip,UL=flip,DF=ok
+cherry	edge	76	UF-LU-DL	8	8	CYCLE_A	defects:UF=flip,UL=flip,DL=ok
+cherry	edge	77	UF-LU-DR	9	10	CYCLE_A	defects:UF=flip,UL=flip,DR=ok
+cherry	edge	78	UF-LU-DB	10	11	CYCLE_A	defects:UF=flip,UL=flip,DB=ok
+cherry	edge	79	UF-LB-UB	9	10	CYCLE_A	defects:UF=flip,BL=flip,UB=ok
+cherry	edge	80	UF-LB-UL	9	10	CYCLE_A	defects:UF=flip,BL=flip,UL=ok
+cherry	edge	81	UF-LB-UR	8	8	CYCLE_A	defects:UF=flip,BL=flip,UR=ok
+cherry	edge	82	UF-LB-LU	10	10	CYCLE_A	defects:UF=flip,BL=ok,UL=flip
+cherry	edge	83	UF-LB-LF	9	10	CYCLE_A	defects:UF=flip,BL=ok,FL=flip
+cherry	edge	84	UF-LB-FL	8	8	CYCLE_A	defects:UF=flip,BL=flip,FL=ok
+cherry	edge	85	UF-LB-FR	9	10	CYCLE_A	defects:UF=flip,BL=flip,FR=ok
+cherry	edge	86	UF-LB-RU	7	8	CYCLE_A	defects:UF=flip,BL=ok,UR=flip
+cherry	edge	87	UF-LB-RF	9	10	CYCLE_A	defects:UF=flip,BL=ok,FR=flip
+cherry	edge	88	UF-LB-RF	8	10	CYCLE_A	defects:UF=flip,BL=ok,FR=flip
+cherry	edge	89	UF-LB-RB	7	8	CYCLE_A	defects:UF=flip,BL=ok,BR=flip
+cherry	edge	90	UF-LB-RD	10	10	CYCLE_A	defects:UF=flip,BL=ok,DR=flip
+cherry	edge	91	UF-LB-BU	8	8	CYCLE_A	defects:UF=flip,BL=ok,UB=flip
+cherry	edge	92	UF-LB-BD	11	11	CYCLE_A	defects:UF=flip,BL=ok,DB=flip
+cherry	edge	93	UF-LB-DF	6	8	CYCLE_A	defects:UF=flip,BL=flip,DF=ok
+cherry	edge	94	UF-LB-DL	7	8	CYCLE_A	defects:UF=flip,BL=flip,DL=ok
+cherry	edge	95	UF-LB-DR	7	8	CYCLE_A	defects:UF=flip,BL=flip,DR=ok
+cherry	edge	96	UF-LF-UB	9	10	CYCLE_A	defects:UF=flip,FL=flip,UB=ok
+cherry	edge	97	UF-LF-UL	9	10	CYCLE_A	defects:UF=flip,FL=flip,UL=ok
+cherry	edge	98	UF-LF-UR	8	8	CYCLE_A	defects:UF=flip,FL=flip,UR=ok
+cherry	edge	99	UF-LF-LU	10	10	CYCLE_A	defects:UF=flip,FL=ok,UL=flip
+cherry	edge	100	UF-LF-FR	8	8	CYCLE_A	defects:UF=flip,FL=flip,FR=ok
+cherry	edge	101	UF-LF-FD	9	10	CYCLE_A	defects:UF=flip,FL=ok,DF=flip
+cherry	edge	102	UF-LF-RU	9	10	CYCLE_A	defects:UF=flip,FL=ok,UR=flip
+cherry	edge	103	UF-LF-RB	9	10	CYCLE_A	defects:UF=flip,FL=ok,BR=flip
+cherry	edge	104	UF-LF-RD	10	10	CYCLE_A	defects:UF=flip,FL=ok,DR=flip
+cherry	edge	105	UF-LF-BU	8	8	CYCLE_A	defects:UF=flip,FL=ok,UB=flip
+cherry	edge	106	UF-LF-BR	9	10	CYCLE_A	defects:UF=flip,FL=flip,BR=ok
+cherry	edge	107	UF-LF-BL	8	8	CYCLE_A	defects:UF=flip,FL=flip,BL=ok
+cherry	edge	108	UF-LF-BD	11	11	CYCLE_A	defects:UF=flip,FL=ok,DB=flip
+cherry	edge	109	UF-LD-UB	9	10	CYCLE_A	defects:UF=flip,DL=flip,UB=ok
+cherry	edge	110	UF-LD-UL	8	8	CYCLE_A	defects:UF=flip,DL=flip,UL=ok
+cherry	edge	111	UF-LD-UL	8	8	CYCLE_A	defects:UF=flip,DL=flip,UL=ok
+cherry	edge	112	UF-LD-UR	9	10	CYCLE_A	defects:UF=flip,DL=flip,UR=ok
+cherry	edge	113	UF-LD-LB	8	8	CYCLE_A	defects:UF=flip,DL=ok,BL=flip
+cherry	edge	114	UF-LD-FL	9	10	CYCLE_A	defects:UF=flip,DL=flip,FL=ok
+cherry	edge	115	UF-LD-FR	10	12	CYCLE_A	defects:UF=flip,DL=flip,FR=ok
+cherry	edge	116	UF-LD-FD	10	10	CYCLE_A	defects:UF=flip,DL=ok,DF=flip
+cherry	edge	117	UF-LD-RF	10	10	CYCLE_A	defects:UF=flip,DL=ok,FR=flip
+cherry	edge	118	UF-LD-RB	8	10	CYCLE_A	defects:UF=flip,DL=ok,BR=flip
+cherry	edge	119	UF-LD-RB	10	10	CYCLE_A	defects:UF=flip,DL=ok,BR=flip
+cherry	edge	120	UF-LD-RD	9	10	CYCLE_A	defects:UF=flip,DL=ok,DR=flip
+cherry	edge	121	UF-LD-BU	8	10	CYCLE_A	defects:UF=flip,DL=ok,UB=flip
+cherry	edge	122	UF-LD-BD	10	10	CYCLE_A	defects:UF=flip,DL=ok,DB=flip
+cherry	edge	123	UF-LD-BD	10	10	CYCLE_A	defects:UF=flip,DL=ok,DB=flip
+cherry	edge	124	UF-LD-DF	8	10	CYCLE_A	defects:UF=flip,DL=flip,DF=ok
+cherry	edge	125	UF-LD-DR	8	8	CYCLE_A	defects:UF=flip,DL=flip,DR=ok
+cherry	edge	126	UF-FL-UB	9	12	CYCLE_A	defects:UF=ok,FL=ok,UB=ok clean
+cherry	edge	127	UF-FL-UL	10	10	CYCLE_A	defects:UF=ok,FL=ok,UL=ok clean
+cherry	edge	128	UF-FL-UR	12	14	CYCLE_A	defects:UF=ok,FL=ok,UR=ok clean
+cherry	edge	129	UF-FL-UR	8	10	CYCLE_A	defects:UF=ok,FL=ok,UR=ok clean
+cherry	edge	130	UF-FL-LU	11	12	CYCLE_A	defects:UF=ok,FL=flip,UL=flip
+cherry	edge	131	UF-FL-LB	8	8	CYCLE_A	defects:UF=ok,FL=flip,BL=flip
+cherry	edge	132	UF-FL-FR	9	10	CYCLE_A	defects:UF=ok,FL=ok,FR=ok clean
+cherry	edge	133	UF-FL-FD	8	8	CYCLE_A	defects:UF=ok,FL=flip,DF=flip
+cherry	edge	134	UF-FL-RU	9	9	CYCLE_A	defects:UF=ok,FL=flip,UR=flip
+cherry	edge	135	UF-FL-RF	8	8	CYCLE_A	defects:UF=ok,FL=flip,FR=flip
+cherry	edge	136	UF-FL-RD	10	12	CYCLE_A	defects:UF=ok,FL=flip,DR=flip
+cherry	edge	137	UF-FL-BU	8	8	CYCLE_A	defects:UF=ok,FL=flip,UB=flip
+cherry	edge	138	UF-FL-BL	7	8	CYCLE_A	defects:UF=ok,FL=ok,BL=ok clean
+cherry	edge	139	UF-FL-DF	9	10	CYCLE_A	defects:UF=ok,FL=ok,DF=ok clean
+cherry	edge	140	UF-FL-DL	11	12	CYCLE_A	defects:UF=ok,FL=ok,DL=ok clean
+cherry	edge	141	UF-FL-DR	7	8	CYCLE_A	defects:UF=ok,FL=ok,DR=ok clean
+cherry	edge	142	UF-FL-DB	9	10	CYCLE_A	defects:UF=ok,FL=ok,DB=ok clean
+cherry	edge	143	UF-FR-UB	8	10	CYCLE_A	defects:UF=ok,FR=ok,UB=ok clean
+cherry	edge	144	UF-FR-UL	8	10	CYCLE_A	defects:UF=ok,FR=ok,UL=ok clean
+cherry	edge	145	UF-FR-UR	10	10	CYCLE_A	defects:UF=ok,FR=ok,UR=ok clean
+cherry	edge	146	UF-FR-LU	9	10	CYCLE_A	defects:UF=ok,FR=flip,UL=flip
+cherry	edge	147	UF-FR-LB	9	10	CYCLE_A	defects:UF=ok,FR=flip,BL=flip
+cherry	edge	148	UF-FR-LF	8	8	CYCLE_A	defects:UF=ok,FR=flip,FL=flip
+cherry	edge	149	UF-FR-LD	10	10	CYCLE_A	defects:UF=ok,FR=flip,DL=flip
+cherry	edge	150	UF-FR-FL	9	10	CYCLE_A	defects:UF=ok,FR=ok,FL=ok clean
+cherry	edge	151	UF-FR-FD	8	8	CYCLE_A	defects:UF=ok,FR=flip,DF=flip
+cherry	edge	152	UF-FR-RB	8	8	CYCLE_A	defects:UF=ok,FR=flip,BR=flip
+cherry	edge	153	UF-FR-RD	9	10	CYCLE_A	defects:UF=ok,FR=flip,DR=flip
+cherry	edge	154	UF-FR-BU	8	8	CYCLE_A	defects:UF=ok,FR=flip,UB=flip
+cherry	edge	155	UF-FR-BR	7	8	CYCLE_A	defects:UF=ok,FR=ok,BR=ok clean
+cherry	edge	156	UF-FR-BL	9	10	CYCLE_A	defects:UF=ok,FR=ok,BL=ok clean
+cherry	edge	157	UF-FR-BD	9	10	CYCLE_A	defects:UF=ok,FR=flip,DB=flip
+cherry	edge	158	UF-FR-DF	9	10	CYCLE_A	defects:UF=ok,FR=ok,DF=ok clean
+cherry	edge	159	UF-FR-DL	7	8	CYCLE_A	defects:UF=ok,FR=ok,DL=ok clean
+cherry	edge	160	UF-FR-DR	11	12	CYCLE_A	defects:UF=ok,FR=ok,DR=ok clean
+cherry	edge	161	UF-FD-UB	12	12	CYCLE_A	defects:UF=flip,DF=flip,UB=ok
+cherry	edge	162	UF-FD-UL	9	9	CYCLE_A	defects:UF=flip,DF=flip,UL=ok
+cherry	edge	163	UF-FD-UR	9	9	CYCLE_A	defects:UF=flip,DF=flip,UR=ok
+cherry	edge	164	UF-FD-LF	9	10	CYCLE_A	defects:UF=flip,DF=ok,FL=flip
+cherry	edge	165	UF-FD-LD	10	10	CYCLE_A	defects:UF=flip,DF=ok,DL=flip
+cherry	edge	166	UF-FD-FL	8	8	CYCLE_A	defects:UF=flip,DF=flip,FL=ok
+cherry	edge	167	UF-FD-FR	8	8	CYCLE_A	defects:UF=flip,DF=flip,FR=ok
+cherry	edge	168	UF-FD-RU	10	10	CYCLE_A	defects:UF=flip,DF=ok,UR=flip
+cherry	edge	169	UF-FD-RF	8	8	CYCLE_A	defects:UF=flip,DF=ok,FR=flip
+cherry	edge	170	UF-FD-RB	8	8	CYCLE_A	defects:UF=flip,DF=ok,BR=flip
+cherry	edge	171	UF-FD-BU	10	10	CYCLE_A	defects:UF=flip,DF=ok,UB=flip
+cherry	edge	172	UF-FD-BR	8	8	CYCLE_A	defects:UF=flip,DF=flip,BR=ok
+cherry	edge	173	UF-FD-BL	8	8	CYCLE_A	defects:UF=flip,DF=flip,BL=ok
+cherry	edge	174	UF-FD-BD	9	10	CYCLE_A	defects:UF=flip,DF=ok,DB=flip
+cherry	edge	175	UF-FD-DR	8	10	CYCLE_A	defects:UF=flip,DF=flip,DR=ok
+cherry	edge	176	UF-RU-UB	8	10	CYCLE_A	defects:UF=flip,UR=flip,UB=ok
+cherry	edge	177	UF-RU-UL	8	8	CYCLE_A	defects:UF=flip,UR=flip,UL=ok
+cherry	edge	178	UF-RU-LF	9	10	CYCLE_A	defects:UF=flip,UR=ok,FL=flip
+cherry	edge	179	UF-RU-LD	9	10	CYCLE_A	defects:UF=flip,UR=ok,DL=flip
+cherry	edge	180	UF-RU-FL	9	10	CYCLE_A	defects:UF=flip,UR=flip,FL=ok
+cherry	edge	181	UF-RU-FR	11	12	CYCLE_A	defects:UF=flip,UR=flip,FR=ok
+cherry	edge	182	UF-RU-FD	10	10	CYCLE_A	defects:UF=flip,UR=ok,DF=flip
+cherry	edge	183	UF-RU-RF	10	10	CYCLE_A	defects:UF=flip,UR=ok,FR=flip
+cherry	edge	184	UF-RU-RB	10	10	CYCLE_A	defects:UF=flip,UR=ok,BR=flip
+cherry	edge	185	UF-RU-RD	13	14	CYCLE_A	defects:UF=flip,UR=ok,DR=flip
+cherry	edge	186	UF-RU-BU	9	9	CYCLE_A	defects:UF=flip,UR=ok,UB=flip
+cherry	edge	187	UF-RU-BR	9	10	CYCLE_A	defects:UF=flip,UR=flip,BR=ok
+cherry	edge	188	UF-RU-BL	9	10	CYCLE_A	defects:UF=flip,UR=flip,BL=ok
+cherry	edge	189	UF-RU-BD	12	12	CYCLE_A	defects:UF=flip,UR=ok,DB=flip
+cherry	edge	190	UF-RU-BD	9	10	CYCLE_A	defects:UF=flip,UR=ok,DB=flip
+cherry	edge	191	UF-RU-DF	8	10	CYCLE_A	defects:UF=flip,UR=flip,DF=ok
+cherry	edge	192	UF-RU-DL	9	10	CYCLE_A	defects:UF=flip,UR=flip,DL=ok
+cherry	edge	193	UF-RU-DL	9	10	CYCLE_A	defects:UF=flip,UR=flip,DL=ok
+cherry	edge	194	UF-RU-DL	10	10	CYCLE_A	defects:UF=flip,UR=flip,DL=ok
+cherry	edge	195	UF-RU-DR	8	8	CYCLE_A	defects:UF=flip,UR=flip,DR=ok
+cherry	edge	196	UF-RU-DB	10	10	CYCLE_A	defects:UF=flip,UR=flip,DB=ok
+cherry	edge	197	UF-RF-UB	9	10	CYCLE_A	defects:UF=flip,FR=flip,UB=ok
+cherry	edge	198	UF-RF-UB	9	10	CYCLE_A	defects:UF=flip,FR=flip,UB=ok
+cherry	edge	199	UF-RF-UR	9	10	CYCLE_A	defects:UF=flip,FR=flip,UR=ok
+cherry	edge	200	UF-RF-UR	9	10	CYCLE_A	defects:UF=flip,FR=flip,UR=ok
+cherry	edge	201	UF-RF-LU	9	10	CYCLE_A	defects:UF=flip,FR=ok,UL=flip
+cherry	edge	202	UF-RF-LU	11	10	CYCLE_A	defects:UF=flip,FR=ok,UL=flip
+cherry	edge	203	UF-RF-LF	9	10	CYCLE_A	defects:UF=flip,FR=ok,FL=flip
+cherry	edge	204	UF-RF-FL	8	8	CYCLE_A	defects:UF=flip,FR=flip,FL=ok
+cherry	edge	205	UF-RF-FD	9	10	CYCLE_A	defects:UF=flip,FR=ok,DF=flip
+cherry	edge	206	UF-RF-RU	10	10	CYCLE_A	defects:UF=flip,FR=ok,UR=flip
+cherry	edge	207	UF-RF-RB	9	10	CYCLE_A	defects:UF=flip,FR=ok,BR=flip
+cherry	edge	208	UF-RF-RD	8	8	CYCLE_A	defects:UF=flip,FR=ok,DR=flip
+cherry	edge	209	UF-RF-BD	11	11	CYCLE_A	defects:UF=flip,FR=ok,DB=flip
+cherry	edge	210	UF-RF-DF	8	12	CYCLE_A	defects:UF=flip,FR=flip,DF=ok
+cherry	edge	211	UF-RF-DR	9	10	CYCLE_A	defects:UF=flip,FR=flip,DR=ok
+cherry	edge	212	UF-RF-DB	9	10	CYCLE_A	defects:UF=flip,FR=flip,DB=ok
+cherry	edge	213	UF-RB-UL	8	8	CYCLE_A	defects:UF=flip,BR=flip,UL=ok
+cherry	edge	214	UF-RB-UR	9	10	CYCLE_A	defects:UF=flip,BR=flip,UR=ok
+cherry	edge	215	UF-RB-LU	7	8	CYCLE_A	defects:UF=flip,BR=ok,UL=flip
+cherry	edge	216	UF-RB-LB	7	8	CYCLE_A	defects:UF=flip,BR=ok,BL=flip
+cherry	edge	217	UF-RB-LF	9	10	CYCLE_A	defects:UF=flip,BR=ok,FL=flip
+cherry	edge	218	UF-RB-LD	10	10	CYCLE_A	defects:UF=flip,BR=ok,DL=flip
+cherry	edge	219	UF-RB-LD	8	10	CYCLE_A	defects:UF=flip,BR=ok,DL=flip
+cherry	edge	220	UF-RB-FL	9	10	CYCLE_A	defects:UF=flip,BR=flip,FL=ok
+cherry	edge	221	UF-RB-FR	8	8	CYCLE_A	defects:UF=flip,BR=flip,FR=ok
+cherry	edge	222	UF-RB-FD	8	8	CYCLE_A	defects:UF=flip,BR=ok,DF=flip
+cherry	edge	223	UF-RB-RU	10	10	CYCLE_A	defects:UF=flip,BR=ok,UR=flip
+cherry	edge	224	UF-RB-RF	9	10	CYCLE_A	defects:UF=flip,BR=ok,FR=flip
+cherry	edge	225	UF-RB-RD	8	8	CYCLE_A	defects:UF=flip,BR=ok,DR=flip
+cherry	edge	226	UF-RB-BU	8	8	CYCLE_A	defects:UF=flip,BR=ok,UB=flip
+cherry	edge	227	UF-RB-BL	8	8	CYCLE_A	defects:UF=flip,BR=flip,BL=ok
+cherry	edge	228	UF-RB-BD	11	11	CYCLE_A	defects:UF=flip,BR=ok,DB=flip
+cherry	edge	229	UF-RB-DF	6	8	CYCLE_A	defects:UF=flip,BR=flip,DF=ok
+cherry	edge	230	UF-RB-DL	7	8	CYCLE_A	defects:UF=flip,BR=flip,DL=ok
+cherry	edge	231	UF-RB-DR	7	8	CYCLE_A	defects:UF=flip,BR=flip,DR=ok
+cherry	edge	232	UF-RB-DB	9	10	CYCLE_A	defects:UF=flip,BR=flip,DB=ok
+cherry	edge	233	UF-RD-UB	9	10	CYCLE_A	defects:UF=flip,DR=flip,UB=ok
+cherry	edge	234	UF-RD-UL	9	10	CYCLE_A	defects:UF=flip,DR=flip,UL=ok
+cherry	edge	235	UF-RD-UR	8	8	CYCLE_A	defects:UF=flip,DR=flip,UR=ok
+cherry	edge	236	UF-RD-LU	9	10	CYCLE_A	defects:UF=flip,DR=ok,UL=flip
+cherry	edge	237	UF-RD-LB	10	10	CYCLE_A	defects:UF=flip,DR=ok,BL=flip
+cherry	edge	238	UF-RD-LB	8	10	CYCLE_A	defects:UF=flip,DR=ok,BL=flip
+cherry	edge	239	UF-RD-LF	10	10	CYCLE_A	defects:UF=flip,DR=ok,FL=flip
+cherry	edge	240	UF-RD-LD	9	10	CYCLE_A	defects:UF=flip,DR=ok,DL=flip
+cherry	edge	241	UF-RD-RU	13	14	CYCLE_A	defects:UF=flip,DR=ok,UR=flip
+cherry	edge	242	UF-RD-RB	8	8	CYCLE_A	defects:UF=flip,DR=ok,BR=flip
+cherry	edge	243	UF-RD-BU	8	10	CYCLE_A	defects:UF=flip,DR=ok,UB=flip
+cherry	edge	244	UF-RD-BR	9	10	CYCLE_A	defects:UF=flip,DR=flip,BR=ok
+cherry	edge	245	UF-RD-BL	11	12	CYCLE_A	defects:UF=flip,DR=flip,BL=ok
+cherry	edge	246	UF-RD-BD	10	10	CYCLE_A	defects:UF=flip,DR=ok,DB=flip
+cherry	edge	247	UF-RD-DF	10	10	CYCLE_A	defects:UF=flip,DR=flip,DF=ok
+cherry	edge	248	UF-RD-DL	8	8	CYCLE_A	defects:UF=flip,DR=flip,DL=ok
+cherry	edge	249	UF-RD-DB	10	10	CYCLE_A	defects:UF=flip,DR=flip,DB=ok
+cherry	edge	250	UF-BU-UL	9	9	CYCLE_A	defects:UF=flip,UB=flip,UL=ok
+cherry	edge	251	UF-BU-UL	10	10	CYCLE_A	defects:UF=flip,UB=flip,UL=ok
+cherry	edge	252	UF-BU-UR	9	9	CYCLE_A	defects:UF=flip,UB=flip,UR=ok
+cherry	edge	253	UF-BU-LU	9	9	CYCLE_A	defects:UF=flip,UB=ok,UL=flip
+cherry	edge	254	UF-BU-LF	8	8	CYCLE_A	defects:UF=flip,UB=ok,FL=flip
+cherry	edge	255	UF-BU-LD	8	10	CYCLE_A	defects:UF=flip,UB=ok,DL=flip
+cherry	edge	256	UF-BU-FL	8	8	CYCLE_A	defects:UF=flip,UB=flip,FL=ok
+cherry	edge	257	UF-BU-FR	8	8	CYCLE_A	defects:UF=flip,UB=flip,FR=ok
+cherry	edge	258	UF-BU-FD	10	10	CYCLE_A	defects:UF=flip,UB=ok,DF=flip
+cherry	edge	259	UF-BU-RU	9	9	CYCLE_A	defects:UF=flip,UB=ok,UR=flip
+cherry	edge	260	UF-BU-RF	8	8	CYCLE_A	defects:UF=flip,UB=ok,FR=flip
+cherry	edge	261	UF-BU-RB	8	8	CYCLE_A	defects:UF=flip,UB=ok,BR=flip
+cherry	edge	262	UF-BU-BR	8	8	CYCLE_A	defects:UF=flip,UB=flip,BR=ok
+cherry	edge	263	UF-BU-BL	8	8	CYCLE_A	defects:UF=flip,UB=flip,BL=ok
+cherry	edge	264	UF-BU-BD	10	10	CYCLE_A	defects:UF=flip,UB=ok,DB=flip
+cherry	edge	265	UF-BU-BD	10	10	CYCLE_A	defects:UF=flip,UB=ok,DB=flip
+cherry	edge	266	UF-BU-DF	10	10	CYCLE_A	defects:UF=flip,UB=flip,DF=ok
+cherry	edge	267	UF-BU-DR	8	10	CYCLE_A	defects:UF=flip,UB=flip,DR=ok
+cherry	edge	268	UF-BU-DB	12	12	CYCLE_A	defects:UF=flip,UB=flip,DB=ok
+cherry	edge	269	UF-BU-DB	12	12	CYCLE_A	defects:UF=flip,UB=flip,DB=ok
+cherry	edge	270	UF-BR-UB	8	10	CYCLE_A	defects:UF=ok,BR=ok,UB=ok clean
+cherry	edge	271	UF-BR-UL	8	10	CYCLE_A	defects:UF=ok,BR=ok,UL=ok clean
+cherry	edge	272	UF-BR-UL	8	10	CYCLE_A	defects:UF=ok,BR=ok,UL=ok clean
+cherry	edge	273	UF-BR-UR	9	9	CYCLE_A	defects:UF=ok,BR=ok,UR=ok clean
+cherry	edge	274	UF-BR-LU	9	10	CYCLE_A	defects:UF=ok,BR=flip,UL=flip
+cherry	edge	275	UF-BR-LU	13	13	CYCLE_A	defects:UF=ok,BR=flip,UL=flip
+cherry	edge	276	UF-BR-LB	8	8	CYCLE_A	defects:UF=ok,BR=flip,BL=flip
+cherry	edge	277	UF-BR-LF	9	10	CYCLE_A	defects:UF=ok,BR=flip,FL=flip
+cherry	edge	278	UF-BR-LD	10	10	CYCLE_A	defects:UF=ok,BR=flip,DL=flip
+cherry	edge	279	UF-BR-FL	9	10	CYCLE_A	defects:UF=ok,BR=ok,FL=ok clean
+cherry	edge	280	UF-BR-FD	8	8	CYCLE_A	defects:UF=ok,BR=flip,DF=flip
+cherry	edge	281	UF-BR-RU	9	10	CYCLE_A	defects:UF=ok,BR=flip,UR=flip
+cherry	edge	282	UF-BR-RF	8	8	CYCLE_A	defects:UF=ok,BR=flip,FR=flip
+cherry	edge	283	UF-BR-RD	10	10	CYCLE_A	defects:UF=ok,BR=flip,DR=flip
+cherry	edge	284	UF-BR-RD	9	10	CYCLE_A	defects:UF=ok,BR=flip,DR=flip
+cherry	edge	285	UF-BR-BU	8	8	CYCLE_A	defects:UF=ok,BR=flip,UB=flip
+cherry	edge	286	UF-BR-BL	9	10	CYCLE_A	defects:UF=ok,BR=ok,BL=ok clean
+cherry	edge	287	UF-BR-BD	9	10	CYCLE_A	defects:UF=ok,BR=flip,DB=flip
+cherry	edge	288	UF-BR-DF	9	10	CYCLE_A	defects:UF=ok,BR=ok,DF=ok clean
+cherry	edge	289	UF-BR-DF	9	10	CYCLE_A	defects:UF=ok,BR=ok,DF=ok clean
+cherry	edge	290	UF-BR-DL	7	8	CYCLE_A	defects:UF=ok,BR=ok,DL=ok clean
+cherry	edge	291	UF-BR-DR	10	10	CYCLE_A	defects:UF=ok,BR=ok,DR=ok clean
+cherry	edge	292	UF-BR-DB	8	10	CYCLE_A	defects:UF=ok,BR=ok,DB=ok clean
+cherry	edge	293	UF-BL-UL	9	9	CYCLE_A	defects:UF=ok,BL=ok,UL=ok clean
+cherry	edge	294	UF-BL-UR	8	10	CYCLE_A	defects:UF=ok,BL=ok,UR=ok clean
+cherry	edge	295	UF-BL-LU	9	10	CYCLE_A	defects:UF=ok,BL=flip,UL=flip
+cherry	edge	296	UF-BL-LF	8	8	CYCLE_A	defects:UF=ok,BL=flip,FL=flip
+cherry	edge	297	UF-BL-LD	9	10	CYCLE_A	defects:UF=ok,BL=flip,DL=flip
+cherry	edge	298	UF-BL-FL	7	8	CYCLE_A	defects:UF=ok,BL=ok,FL=ok clean
+cherry	edge	299	UF-BL-FR	9	10	CYCLE_A	defects:UF=ok,BL=ok,FR=ok clean
+cherry	edge	300	UF-BL-FD	8	8	CYCLE_A	defects:UF=ok,BL=flip,DF=flip
+cherry	edge	301	UF-BL-RU	9	10	CYCLE_A	defects:UF=ok,BL=flip,UR=flip
+cherry	edge	302	UF-BL-RD	11	12	CYCLE_A	defects:UF=ok,BL=flip,DR=flip
+cherry	edge	303	UF-BL-BU	8	8	CYCLE_A	defects:UF=ok,BL=flip,UB=flip
+cherry	edge	304	UF-BL-BR	9	10	CYCLE_A	defects:UF=ok,BL=ok,BR=ok clean
+cherry	edge	305	UF-BL-BD	9	10	CYCLE_A	defects:UF=ok,BL=flip,DB=flip
+cherry	edge	306	UF-BL-DF	9	10	CYCLE_A	defects:UF=ok,BL=ok,DF=ok clean
+cherry	edge	307	UF-BL-DL	10	10	CYCLE_A	defects:UF=ok,BL=ok,DL=ok clean
+cherry	edge	308	UF-BL-DR	7	8	CYCLE_A	defects:UF=ok,BL=ok,DR=ok clean
+cherry	edge	309	UF-BL-DB	9	10	CYCLE_A	defects:UF=ok,BL=ok,DB=ok clean
+cherry	edge	310	UF-BL-DB	8	10	CYCLE_A	defects:UF=ok,BL=ok,DB=ok clean
+cherry	edge	311	UF-BD-UB	9	10	CYCLE_A	defects:UF=flip,DB=flip,UB=ok
+cherry	edge	312	UF-BD-UB	9	10	CYCLE_A	defects:UF=flip,DB=flip,UB=ok
+cherry	edge	313	UF-BD-UR	8	8	CYCLE_A	defects:UF=flip,DB=flip,UR=ok
+cherry	edge	314	UF-BD-LU	12	12	CYCLE_A	defects:UF=flip,DB=ok,UL=flip
+cherry	edge	315	UF-BD-LB	11	11	CYCLE_A	defects:UF=flip,DB=ok,BL=flip
+cherry	edge	316	UF-BD-LF	11	11	CYCLE_A	defects:UF=flip,DB=ok,FL=flip
+cherry	edge	317	UF-BD-LD	10	10	CYCLE_A	defects:UF=flip,DB=ok,DL=flip
+cherry	edge	318	UF-BD-LD	10	10	CYCLE_A	defects:UF=flip,DB=ok,DL=flip
+cherry	edge	319	UF-BD-FR	9	10	CYCLE_A	defects:UF=flip,DB=flip,FR=ok
+cherry	edge	320	UF-BD-FD	9	10	CYCLE_A	defects:UF=flip,DB=ok,DF=flip
+cherry	edge	321	UF-BD-RU	12	12	CYCLE_A	defects:UF=flip,DB=ok,UR=flip
+cherry	edge	322	UF-BD-RF	11	11	CYCLE_A	defects:UF=flip,DB=ok,FR=flip
+cherry	edge	323	UF-BD-RB	11	11	CYCLE_A	defects:UF=flip,DB=ok,BR=flip
+cherry	edge	324	UF-BD-RD	10	10	CYCLE_A	defects:UF=flip,DB=ok,DR=flip
+cherry	edge	325	UF-BD-BU	10	10	CYCLE_A	defects:UF=flip,DB=ok,UB=flip
+cherry	edge	326	UF-BD-BU	12	10	CYCLE_A	defects:UF=flip,DB=ok,UB=flip
+cherry	edge	327	UF-BD-BR	9	10	CYCLE_A	defects:UF=flip,DB=flip,BR=ok
+cherry	edge	328	UF-BD-BL	9	10	CYCLE_A	defects:UF=flip,DB=flip,BL=ok
+cherry	edge	329	UF-BD-DF	10	10	CYCLE_A	defects:UF=flip,DB=flip,DF=ok
+cherry	edge	330	UF-BD-DL	9	12	CYCLE_A	defects:UF=flip,DB=flip,DL=ok
+cherry	edge	331	UF-DF-UB	4	6	CYCLE_A	defects:UF=ok,DF=ok,UB=ok clean
+cherry	edge	332	UF-DF-UL	11	12	CYCLE_A	defects:UF=ok,DF=ok,UL=ok clean
+cherry	edge	333	UF-DF-UR	11	12	CYCLE_A	defects:UF=ok,DF=ok,UR=ok clean
+cherry	edge	334	UF-DF-LU	8	10	CYCLE_A	defects:UF=ok,DF=flip,UL=flip
+cherry	edge	335	UF-DF-LB	6	8	CYCLE_A	defects:UF=ok,DF=flip,BL=flip
+cherry	edge	336	UF-DF-LF	8	12	CYCLE_A	defects:UF=ok,DF=flip,FL=flip
+cherry	edge	337	UF-DF-LD	8	10	CYCLE_A	defects:UF=ok,DF=flip,DL=flip
+cherry	edge	338	UF-DF-RF	8	12	CYCLE_A	defects:UF=ok,DF=flip,FR=flip
+cherry	edge	339	UF-DF-RF	8	12	CYCLE_A	defects:UF=ok,DF=flip,FR=flip
+cherry	edge	340	UF-DF-RB	6	8	CYCLE_A	defects:UF=ok,DF=flip,BR=flip
+cherry	edge	341	UF-DF-RB	6	8	CYCLE_A	defects:UF=ok,DF=flip,BR=flip
+cherry	edge	342	UF-DF-RD	10	10	CYCLE_A	defects:UF=ok,DF=flip,DR=flip
+cherry	edge	343	UF-DF-RD	8	10	CYCLE_A	defects:UF=ok,DF=flip,DR=flip
+cherry	edge	344	UF-DF-RD	8	10	CYCLE_A	defects:UF=ok,DF=flip,DR=flip
+cherry	edge	345	UF-DF-BR	9	10	CYCLE_A	defects:UF=ok,DF=ok,BR=ok clean
+cherry	edge	346	UF-DF-BL	9	10	CYCLE_A	defects:UF=ok,DF=ok,BL=ok clean
+cherry	edge	347	UF-DF-BD	10	10	CYCLE_A	defects:UF=ok,DF=flip,DB=flip
+cherry	edge	348	UF-DF-DL	11	12	CYCLE_A	defects:UF=ok,DF=ok,DL=ok clean
+cherry	edge	349	UF-DF-DR	11	12	CYCLE_A	defects:UF=ok,DF=ok,DR=ok clean
+cherry	edge	350	UF-DF-DB	4	6	CYCLE_A	defects:UF=ok,DF=ok,DB=ok clean
+cherry	edge	351	UF-DL-UB	6	8	CYCLE_A	defects:UF=ok,DL=ok,UB=ok clean
+cherry	edge	352	UF-DL-UL	12	14	CYCLE_A	defects:UF=ok,DL=ok,UL=ok clean
+cherry	edge	353	UF-DL-UL	9	10	CYCLE_A	defects:UF=ok,DL=ok,UL=ok clean
+cherry	edge	354	UF-DL-UR	10	10	CYCLE_A	defects:UF=ok,DL=ok,UR=ok clean
+cherry	edge	355	UF-DL-LU	8	8	CYCLE_A	defects:UF=ok,DL=flip,UL=flip
+cherry	edge	356	UF-DL-LF	9	10	CYCLE_A	defects:UF=ok,DL=flip,FL=flip
+cherry	edge	357	UF-DL-FL	11	12	CYCLE_A	defects:UF=ok,DL=ok,FL=ok clean
+cherry	edge	358	UF-DL-FR	7	8	CYCLE_A	defects:UF=ok,DL=ok,FR=ok clean
+cherry	edge	359	UF-DL-FD	11	12	CYCLE_A	defects:UF=ok,DL=flip,DF=flip
+cherry	edge	360	UF-DL-RU	9	10	CYCLE_A	defects:UF=ok,DL=flip,UR=flip
+cherry	edge	361	UF-DL-RF	9	10	CYCLE_A	defects:UF=ok,DL=flip,FR=flip
+cherry	edge	362	UF-DL-RB	7	8	CYCLE_A	defects:UF=ok,DL=flip,BR=flip
+cherry	edge	363	UF-DL-BR	7	8	CYCLE_A	defects:UF=ok,DL=ok,BR=ok clean
+cherry	edge	364	UF-DL-BL	10	10	CYCLE_A	defects:UF=ok,DL=ok,BL=ok clean
+cherry	edge	365	UF-DL-BD	10	12	CYCLE_A	defects:UF=ok,DL=flip,DB=flip
+cherry	edge	366	UF-DL-DF	11	12	CYCLE_A	defects:UF=ok,DL=ok,DF=ok clean
+cherry	edge	367	UF-DL-DB	12	12	CYCLE_A	defects:UF=ok,DL=ok,DB=ok clean
+cherry	edge	368	UF-DR-UL	10	10	CYCLE_A	defects:UF=ok,DR=ok,UL=ok clean
+cherry	edge	369	UF-DR-UR	9	10	CYCLE_A	defects:UF=ok,DR=ok,UR=ok clean
+cherry	edge	370	UF-DR-LU	9	10	CYCLE_A	defects:UF=ok,DR=flip,UL=flip
+cherry	edge	371	UF-DR-LU	9	10	CYCLE_A	defects:UF=ok,DR=flip,UL=flip
+cherry	edge	372	UF-DR-LB	7	8	CYCLE_A	defects:UF=ok,DR=flip,BL=flip
+cherry	edge	373	UF-DR-LF	9	10	CYCLE_A	defects:UF=ok,DR=flip,FL=flip
+cherry	edge	374	UF-DR-LD	8	8	CYCLE_A	defects:UF=ok,DR=flip,DL=flip
+cherry	edge	375	UF-DR-FL	7	8	CYCLE_A	defects:UF=ok,DR=ok,FL=ok clean
+cherry	edge	376	UF-DR-FR	11	12	CYCLE_A	defects:UF=ok,DR=ok,FR=ok clean
+cherry	edge	377	UF-DR-FD	11	12	CYCLE_A	defects:UF=ok,DR=flip,DF=flip
+cherry	edge	378	UF-DR-RU	8	8	CYCLE_A	defects:UF=ok,DR=flip,UR=flip
+cherry	edge	379	UF-DR-RF	9	10	CYCLE_A	defects:UF=ok,DR=flip,FR=flip
+cherry	edge	380	UF-DR-RB	7	8	CYCLE_A	defects:UF=ok,DR=flip,BR=flip
+cherry	edge	381	UF-DR-BU	8	10	CYCLE_A	defects:UF=ok,DR=flip,UB=flip
+cherry	edge	382	UF-DR-BU	9	9	CYCLE_A	defects:UF=ok,DR=flip,UB=flip
+cherry	edge	383	UF-DR-BR	10	10	CYCLE_A	defects:UF=ok,DR=ok,BR=ok clean
+cherry	edge	384	UF-DR-BL	7	8	CYCLE_A	defects:UF=ok,DR=ok,BL=ok clean
+cherry	edge	385	UF-DR-BD	10	12	CYCLE_A	defects:UF=ok,DR=flip,DB=flip
+cherry	edge	386	UF-DR-DF	11	12	CYCLE_A	defects:UF=ok,DR=ok,DF=ok clean
+cherry	edge	387	UF-DR-DL	5	6	CYCLE_A	defects:UF=ok,DR=ok,DL=ok clean
+cherry	edge	388	UF-DR-DB	13	14	CYCLE_A	defects:UF=ok,DR=ok,DB=ok clean
+cherry	edge	389	UF-DB-UB	4	6	CYCLE_A	defects:UF=ok,DB=ok,UB=ok clean
+cherry	edge	390	UF-DB-UR	10	11	CYCLE_A	defects:UF=ok,DB=ok,UR=ok clean
+cherry	edge	391	UF-DB-LB	9	10	CYCLE_A	defects:UF=ok,DB=flip,BL=flip
+cherry	edge	392	UF-DB-LF	9	10	CYCLE_A	defects:UF=ok,DB=flip,FL=flip
+cherry	edge	393	UF-DB-LD	10	10	CYCLE_A	defects:UF=ok,DB=flip,DL=flip
+cherry	edge	394	UF-DB-FL	8	10	CYCLE_A	defects:UF=ok,DB=ok,FL=ok clean
+cherry	edge	395	UF-DB-FL	9	10	CYCLE_A	defects:UF=ok,DB=ok,FL=ok clean
+cherry	edge	396	UF-DB-FR	8	10	CYCLE_A	defects:UF=ok,DB=ok,FR=ok clean
+cherry	edge	397	UF-DB-FD	10	10	CYCLE_A	defects:UF=ok,DB=flip,DF=flip
+cherry	edge	398	UF-DB-FD	12	12	CYCLE_A	defects:UF=ok,DB=flip,DF=flip
+cherry	edge	399	UF-DB-RU	10	10	CYCLE_A	defects:UF=ok,DB=flip,UR=flip
+cherry	edge	400	UF-DB-RU	10	11	CYCLE_A	defects:UF=ok,DB=flip,UR=flip
+cherry	edge	401	UF-DB-RF	9	10	CYCLE_A	defects:UF=ok,DB=flip,FR=flip
+cherry	edge	402	UF-DB-RB	9	10	CYCLE_A	defects:UF=ok,DB=flip,BR=flip
+cherry	edge	403	UF-DB-RD	10	10	CYCLE_A	defects:UF=ok,DB=flip,DR=flip
+cherry	edge	404	UF-DB-BR	8	10	CYCLE_A	defects:UF=ok,DB=ok,BR=ok clean
+cherry	edge	405	UF-DB-BL	8	10	CYCLE_A	defects:UF=ok,DB=ok,BL=ok clean
+cherry	edge	406	UF-DB-DF	5	8	CYCLE_A	defects:UF=ok,DB=ok,DF=ok clean
+cherry	edge	407	UF-DB-DL	8	12	CYCLE_A	defects:UF=ok,DB=ok,DL=ok clean
+cherry	edge	408	UF-DB-DL	12	12	CYCLE_A	defects:UF=ok,DB=ok,DL=ok clean
+cherry	edge	409	UF-DB-DR	11	12	CYCLE_A	defects:UF=ok,DB=ok,DR=ok clean
+cherry	edge	410	UB-UL-BR	8	10	CYCLE_A	defects:UB=ok,UL=ok,BR=ok clean
+cherry	edge	411	UB-UL-BR	8	10	CYCLE_A	defects:UB=ok,UL=ok,BR=ok clean
+cherry	edge	412	UB-UL-DL	9	10	CYCLE_A	defects:UB=ok,UL=ok,DL=ok clean
+cherry	edge	413	UB-UL-DR	10	10	CYCLE_A	defects:UB=ok,UL=ok,DR=ok clean
+cherry	edge	414	UB-UL-DB	12	12	CYCLE_A	defects:UB=ok,UL=ok,DB=ok clean
+cherry	edge	415	UB-UR-FR	9	9	CYCLE_A	defects:UB=ok,UR=ok,FR=ok clean
+cherry	edge	416	UB-UR-BR	10	10	CYCLE_A	defects:UB=ok,UR=ok,BR=ok clean
+cherry	edge	417	UB-LU-LF	10	10	CYCLE_A	defects:UB=flip,UL=ok,FL=flip
+cherry	edge	418	UB-LU-FR	9	10	CYCLE_A	defects:UB=flip,UL=flip,FR=ok
+cherry	edge	419	UB-LU-RF	7	8	CYCLE_A	defects:UB=flip,UL=ok,FR=flip
+cherry	edge	420	UB-LU-BR	9	9	CYCLE_A	defects:UB=flip,UL=flip,BR=ok
+cherry	edge	421	UB-LU-DB	8	10	CYCLE_A	defects:UB=flip,UL=flip,DB=ok
+cherry	edge	422	UB-LB-UL	9	10	CYCLE_A	defects:UB=flip,BL=flip,UL=ok
+cherry	edge	423	UB-LB-FL	8	8	CYCLE_A	defects:UB=flip,BL=flip,FL=ok
+cherry	edge	424	UB-LB-FR	9	10	CYCLE_A	defects:UB=flip,BL=flip,FR=ok
+cherry	edge	425	UB-LB-RU	9	10	CYCLE_A	defects:UB=flip,BL=ok,UR=flip
+cherry	edge	426	UB-LB-BR	8	8	CYCLE_A	defects:UB=flip,BL=flip,BR=ok
+cherry	edge	427	UB-LB-DB	13	14	CYCLE_A	defects:UB=flip,BL=flip,DB=ok
+cherry	edge	428	UB-LF-LU	10	10	CYCLE_A	defects:UB=flip,FL=ok,UL=flip
+cherry	edge	429	UB-LF-FR	8	8	CYCLE_A	defects:UB=flip,FL=flip,FR=ok
+cherry	edge	430	UB-LF-FD	11	11	CYCLE_A	defects:UB=flip,FL=ok,DF=flip
+cherry	edge	431	UB-LF-RD	10	10	CYCLE_A	defects:UB=flip,FL=ok,DR=flip
+cherry	edge	432	UB-LF-BD	9	10	CYCLE_A	defects:UB=flip,FL=ok,DB=flip
+cherry	edge	433	UB-LD-FL	9	10	CYCLE_A	defects:UB=flip,DL=flip,FL=ok
+cherry	edge	434	UB-LD-FD	10	10	CYCLE_A	defects:UB=flip,DL=ok,DF=flip
+cherry	edge	435	UB-LD-BR	10	10	CYCLE_A	defects:UB=flip,DL=flip,BR=ok
+cherry	edge	436	UB-LD-DF	10	10	CYCLE_A	defects:UB=flip,DL=flip,DF=ok
+cherry	edge	437	UB-FL-UL	9	9	CYCLE_A	defects:UB=ok,FL=ok,UL=ok clean
+cherry	edge	438	UB-FL-LD	9	10	CYCLE_A	defects:UB=ok,FL=flip,DL=flip
+cherry	edge	439	UB-FL-DL	10	10	CYCLE_A	defects:UB=ok,FL=ok,DL=ok clean
+cherry	edge	440	UB-FR-UR	9	9	CYCLE_A	defects:UB=ok,FR=ok,UR=ok clean
+cherry	edge	441	UB-FR-LB	9	10	CYCLE_A	defects:UB=ok,FR=flip,BL=flip
+cherry	edge	442	UB-FR-FD	9	10	CYCLE_A	defects:UB=ok,FR=flip,DF=flip
+cherry	edge	443	UB-FR-RD	13	13	CYCLE_A	defects:UB=ok,FR=flip,DR=flip
+cherry	edge	444	UB-FR-DF	8	10	CYCLE_A	defects:UB=ok,FR=ok,DF=ok clean
+cherry	edge	445	UB-FR-DL	7	8	CYCLE_A	defects:UB=ok,FR=ok,DL=ok clean
+cherry	edge	446	UB-FR-DR	10	10	CYCLE_A	defects:UB=ok,FR=ok,DR=ok clean
+cherry	edge	447	UB-FD-RF	11	11	CYCLE_A	defects:UB=flip,DF=ok,FR=flip
+cherry	edge	448	UB-FD-RB	11	11	CYCLE_A	defects:UB=flip,DF=ok,BR=flip
+cherry	edge	449	UB-RU-UL	8	8	CYCLE_A	defects:UB=flip,UR=flip,UL=ok
+cherry	edge	450	UB-RU-LF	7	8	CYCLE_A	defects:UB=flip,UR=ok,FL=flip
+cherry	edge	451	UB-RU-FD	10	12	CYCLE_A	defects:UB=flip,UR=ok,DF=flip
+cherry	edge	452	UB-RU-RF	10	10	CYCLE_A	defects:UB=flip,UR=ok,FR=flip
+cherry	edge	453	UB-RF-UR	9	10	CYCLE_A	defects:UB=flip,FR=flip,UR=ok
+cherry	edge	454	UB-RF-RU	12	13	CYCLE_A	defects:UB=flip,FR=ok,UR=flip
+cherry	edge	455	UB-RF-DR	7	8	CYCLE_A	defects:UB=flip,FR=flip,DR=ok
+cherry	edge	456	UB-RB-UR	9	10	CYCLE_A	defects:UB=flip,BR=flip,UR=ok
+cherry	edge	457	UB-RB-LU	9	10	CYCLE_A	defects:UB=flip,BR=ok,UL=flip
+cherry	edge	458	UB-RB-LF	9	10	CYCLE_A	defects:UB=flip,BR=ok,FL=flip
+cherry	edge	459	UB-RB-BL	8	8	CYCLE_A	defects:UB=flip,BR=flip,BL=ok
+cherry	edge	460	UB-RD-LU	9	10	CYCLE_A	defects:UB=flip,DR=ok,UL=flip
+cherry	edge	461	UB-RD-DB	10	10	CYCLE_A	defects:UB=flip,DR=flip,DB=ok
+cherry	edge	462	UB-BR-UL	8	10	CYCLE_A	defects:UB=ok,BR=ok,UL=ok clean
+cherry	edge	463	UB-BR-UR	10	10	CYCLE_A	defects:UB=ok,BR=ok,UR=ok clean
+cherry	edge	464	UB-BR-LD	10	10	CYCLE_A	defects:UB=ok,BR=flip,DL=flip
+cherry	edge	465	UB-BR-FL	9	10	CYCLE_A	defects:UB=ok,BR=ok,FL=ok clean
+cherry	edge	466	UB-BR-FD	9	10	CYCLE_A	defects:UB=ok,BR=flip,DF=flip
+cherry	edge	467	UB-BR-DF	8	10	CYCLE_A	defects:UB=ok,BR=ok,DF=ok clean
+cherry	edge	468	UB-BL-UR	8	10	CYCLE_A	defects:UB=ok,BL=ok,UR=ok clean
+cherry	edge	469	UB-BL-LD	9	10	CYCLE_A	defects:UB=ok,BL=flip,DL=flip
+cherry	edge	470	UB-BL-RU	9	9	CYCLE_A	defects:UB=ok,BL=flip,UR=flip
+cherry	edge	471	UB-BL-RB	8	8	CYCLE_A	defects:UB=ok,BL=flip,BR=flip
+cherry	edge	472	UB-BL-DR	7	8	CYCLE_A	defects:UB=ok,BL=ok,DR=ok clean
+cherry	edge	473	UB-BD-FL	8	8	CYCLE_A	defects:UB=flip,DB=flip,FL=ok
+cherry	edge	474	UB-BD-FR	8	8	CYCLE_A	defects:UB=flip,DB=flip,FR=ok
+cherry	edge	475	UB-BD-BL	8	8	CYCLE_A	defects:UB=flip,DB=flip,BL=ok
+cherry	edge	476	UB-BD-DR	8	10	CYCLE_A	defects:UB=flip,DB=flip,DR=ok
+cherry	edge	477	UB-DF-UR	10	11	CYCLE_A	defects:UB=ok,DF=ok,UR=ok clean
+cherry	edge	478	UB-DF-BD	10	10	CYCLE_A	defects:UB=ok,DF=flip,DB=flip
+cherry	edge	479	UB-DF-DR	11	12	CYCLE_A	defects:UB=ok,DF=ok,DR=ok clean
+cherry	edge	480	UB-DL-LB	9	10	CYCLE_A	defects:UB=ok,DL=flip,BL=flip
+cherry	edge	481	UB-DL-FL	10	10	CYCLE_A	defects:UB=ok,DL=ok,FL=ok clean
+cherry	edge	482	UB-DL-FR	7	8	CYCLE_A	defects:UB=ok,DL=ok,FR=ok clean
+cherry	edge	483	UB-DL-RF	7	8	CYCLE_A	defects:UB=ok,DL=flip,FR=flip
+cherry	edge	484	UB-DL-RD	8	8	CYCLE_A	defects:UB=ok,DL=flip,DR=flip
+cherry	edge	485	UB-DL-BD	8	10	CYCLE_A	defects:UB=ok,DL=flip,DB=flip
+cherry	edge	486	UB-DL-DB	12	12	CYCLE_A	defects:UB=ok,DL=ok,DB=ok clean
+cherry	edge	487	UB-DR-LB	9	10	CYCLE_A	defects:UB=ok,DR=flip,BL=flip
+cherry	edge	488	UB-DR-LF	7	8	CYCLE_A	defects:UB=ok,DR=flip,FL=flip
+cherry	edge	489	UB-DR-FD	11	12	CYCLE_A	defects:UB=ok,DR=flip,DF=flip
+cherry	edge	490	UB-DB-FD	12	12	CYCLE_A	defects:UB=ok,DB=flip,DF=flip
+cherry	edge	491	UB-DB-BR	9	10	CYCLE_A	defects:UB=ok,DB=ok,BR=ok clean
+cherry	edge	492	UB-DB-DL	12	12	CYCLE_A	defects:UB=ok,DB=ok,DL=ok clean
+cherry	edge	493	UR-UL-DL	4	6	CYCLE_A	defects:UR=ok,UL=ok,DL=ok clean
+cherry	edge	494	UR-LU-BL	8	10	CYCLE_A	defects:UR=flip,UL=flip,BL=ok
+cherry	edge	495	UR-LU-DL	10	10	CYCLE_A	defects:UR=flip,UL=flip,DL=ok
+cherry	edge	496	UR-LB-LD	8	8	CYCLE_A	defects:UR=flip,BL=ok,DL=flip
+cherry	edge	497	UR-LB-DF	9	10	CYCLE_A	defects:UR=flip,BL=flip,DF=ok
+cherry	edge	498	UR-LF-BD	9	9	CYCLE_A	defects:UR=flip,FL=ok,DB=flip
+cherry	edge	499	UR-LD-FL	9	12	CYCLE_A	defects:UR=flip,DL=flip,FL=ok
+cherry	edge	500	UR-LD-FD	9	10	CYCLE_A	defects:UR=flip,DL=ok,DF=flip
+cherry	edge	501	UR-FL-RF	8	10	CYCLE_A	defects:UR=ok,FL=flip,FR=flip
+cherry	edge	502	UR-FL-RB	9	12	CYCLE_A	defects:UR=ok,FL=flip,BR=flip
+cherry	edge	503	UR-FR-LD	8	8	CYCLE_A	defects:UR=ok,FR=flip,DL=flip
+cherry	edge	504	UR-FR-FD	8	8	CYCLE_A	defects:UR=ok,FR=flip,DF=flip
+cherry	edge	505	UR-FR-RB	9	9	CYCLE_A	defects:UR=ok,FR=flip,BR=flip
+cherry	edge	506	UR-FR-RD	11	11	CYCLE_A	defects:UR=ok,FR=flip,DR=flip
+cherry	edge	507	UR-FD-RF	11	12	CYCLE_A	defects:UR=flip,DF=ok,FR=flip
+cherry	edge	508	UR-FD-RD	8	8	CYCLE_A	defects:UR=flip,DF=ok,DR=flip
+cherry	edge	509	UR-FD-BL	7	8	CYCLE_A	defects:UR=flip,DF=flip,BL=ok
+cherry	edge	510	UR-FD-DB	10	10	CYCLE_A	defects:UR=flip,DF=flip,DB=ok
+cherry	edge	511	UR-BR-FL	11	12	CYCLE_A	defects:UR=ok,BR=ok,FL=ok clean
+cherry	edge	512	UR-BR-RF	9	9	CYCLE_A	defects:UR=ok,BR=flip,FR=flip
+cherry	edge	513	UR-BR-BD	8	8	CYCLE_A	defects:UR=ok,BR=flip,DB=flip
+cherry	edge	514	UR-BL-LF	8	10	CYCLE_A	defects:UR=ok,BL=flip,FL=flip
+cherry	edge	515	UR-BL-FL	5	6	CYCLE_A	defects:UR=ok,BL=ok,FL=ok clean
+cherry	edge	516	UR-BL-DR	5	6	CYCLE_A	defects:UR=ok,BL=ok,DR=ok clean
+cherry	edge	517	UR-BD-LU	8	8	CYCLE_A	defects:UR=flip,DB=ok,UL=flip
+cherry	edge	518	UR-BD-LB	9	9	CYCLE_A	defects:UR=flip,DB=ok,BL=flip
+cherry	edge	519	UR-BD-RB	11	12	CYCLE_A	defects:UR=flip,DB=ok,BR=flip
+cherry	edge	520	UR-BD-DL	9	12	CYCLE_A	defects:UR=flip,DB=flip,DL=ok
+cherry	edge	521	UR-DF-DB	5	6	CYCLE_A	defects:UR=ok,DF=ok,DB=ok clean
+cherry	edge	522	UR-DL-UL	4	6	CYCLE_A	defects:UR=ok,DL=ok,UL=ok clean
+cherry	edge	523	UR-DL-LF	9	10	CYCLE_A	defects:UR=ok,DL=flip,FL=flip
+cherry	edge	524	UR-DL-BD	9	10	CYCLE_A	defects:UR=ok,DL=flip,DB=flip
+cherry	edge	525	UR-DR-RF	7	8	CYCLE_A	defects:UR=ok,DR=flip,FR=flip
+cherry	edge	526	UR-DR-DF	11	12	CYCLE_A	defects:UR=ok,DR=ok,DF=ok clean
+cherry	edge	527	UR-DB-DL	10	10	CYCLE_A	defects:UR=ok,DB=ok,DL=ok clean
+cherry	edge	528	UL-LB-FD	11	12	CYCLE_A	defects:UL=flip,BL=ok,DF=flip
+cherry	edge	529	UL-LF-BD	11	12	CYCLE_A	defects:UL=flip,FL=ok,DB=flip
+cherry	edge	530	UL-LD-RD	11	12	CYCLE_A	defects:UL=flip,DL=ok,DR=flip
+cherry	edge	531	UL-FL-DF	8	10	CYCLE_A	defects:UL=ok,FL=ok,DF=ok clean
+cherry	edge	532	UL-FR-RB	8	10	CYCLE_A	defects:UL=ok,FR=flip,BR=flip
+cherry	edge	533	UL-RF-DF	8	8	CYCLE_A	defects:UL=flip,FR=flip,DF=ok
+cherry	edge	534	UL-RB-RD	8	8	CYCLE_A	defects:UL=flip,BR=ok,DR=flip
+cherry	edge	535	UL-RD-DL	10	10	CYCLE_A	defects:UL=flip,DR=flip,DL=ok
+cherry	edge	536	UL-BR-RF	8	10	CYCLE_A	defects:UL=ok,BR=flip,FR=flip
+cherry	edge	537	UL-DL-FL	7	10	CYCLE_A	defects:UL=ok,DL=ok,FL=ok clean
+cherry	edge	538	UL-DR-LD	10	10	CYCLE_A	defects:UL=ok,DR=flip,DL=flip
+cherry	edge	539	UL-DR-FL	7	10	CYCLE_A	defects:UL=ok,DR=ok,FL=ok clean
+cherry	edge	540	UL-DB-LB	11	12	CYCLE_A	defects:UL=ok,DB=flip,BL=flip
+cherry	edge	541	FR-DR-LF	8	8	CYCLE_A	defects:FR=ok,DR=flip,FL=flip
+cherry	edge	542	FL-RB-RD	8	8	CYCLE_A	defects:FL=flip,BR=ok,DR=flip
+cherry	edge	543	FL-BD-DR	9	10	CYCLE_A	defects:FL=flip,DB=flip,DR=ok
+cherry	edge	544	FL-DF-RD	13	14	CYCLE_A	defects:FL=ok,DF=flip,DR=flip
+cherry	edge	545	FL-DF-BL	7	8	CYCLE_A	defects:FL=ok,DF=ok,BL=ok clean
+cherry	edge	546	FL-DL-FD	9	10	CYCLE_A	defects:FL=ok,DL=flip,DF=flip
+cherry	edge	547	FL-DL-DB	9	12	CYCLE_A	defects:FL=ok,DL=ok,DB=ok clean
+cherry	edge	548	FL-DR-BD	9	10	CYCLE_A	defects:FL=ok,DR=flip,DB=flip
+cherry	edge	549	DB-BR-LB	8	8	CYCLE_A	defects:DB=ok,BR=flip,BL=flip
+cherry	edge	550	DB-BR-DL	9	12	CYCLE_A	defects:DB=ok,BR=ok,DL=ok clean
+cherry	edge	551	DB-DR-LB	8	8	CYCLE_A	defects:DB=ok,DR=flip,BL=flip
+cherry	edge	552	DR-DL-LB	7	8	CYCLE_A	defects:DR=ok,DL=flip,BL=flip
+cherry	corner	2	UFR-UBL-UBR	13	14	CYCLE_A	defects:UFR=+0,UBL=+0,UBR=+0 clean
+cherry	corner	3	UFR-UBL-UFL	15	16	CYCLE_A	defects:UFR=+0,UBL=+0,UFL=+0 clean
+cherry	corner	4	UFR-UBL-LUF	10	12	CYCLE_A	defects:UFR=+0,UBL=+1,UFL=-1
+cherry	corner	5	UFR-UBL-FUL	13	14	CYCLE_A	defects:UFR=+0,UBL=-1,UFL=+1
+cherry	corner	6	UFR-UBL-FDL	10	12	CYCLE_A	defects:UFR=+0,UBL=+1,DFL=-1
+cherry	corner	7	UFR-UBL-RUB	15	16	CYCLE_A	defects:UFR=+0,UBL=+1,UBR=-1
+cherry	corner	8	UFR-UBL-RDF	8	10	CYCLE_A	defects:UFR=+0,UBL=+1,DFR=-1
+cherry	corner	9	UFR-UBL-RDB	9	10	CYCLE_A	defects:UFR=+0,UBL=-1,DBR=+1
+cherry	corner	10	UFR-UBL-BUR	12	14	CYCLE_A	defects:UFR=+0,UBL=-1,UBR=+1
+cherry	corner	11	UFR-UBL-BDR	11	12	CYCLE_A	defects:UFR=+0,UBL=+1,DBR=-1
+cherry	corner	12	UFR-UBL-BDL	11	12	CYCLE_A	defects:UFR=+0,UBL=-1,DBL=+1
+cherry	corner	13	UFR-UBL-DFL	15	16	CYCLE_A	defects:UFR=+0,UBL=+0,DFL=+0 clean
+cherry	corner	14	UFR-UBL-DFR	15	18	CYCLE_A	defects:UFR=+0,UBL=+0,DFR=+0 clean
+cherry	corner	15	UFR-UBL-DBR	13	16	CYCLE_A	defects:UFR=+0,UBL=+0,DBR=+0 clean
+cherry	corner	16	UFR-UBR-UBL	13	14	CYCLE_A	defects:UFR=+0,UBR=+0,UBL=+0 clean
+cherry	corner	17	UFR-UBR-UFL	13	14	CYCLE_A	defects:UFR=+0,UBR=+0,UFL=+0 clean
+cherry	corner	18	UFR-UBR-LUB	9	10	CYCLE_A	defects:UFR=+0,UBR=-1,UBL=+1
+cherry	corner	19	UFR-UBR-LUF	9	10	CYCLE_A	defects:UFR=+0,UBR=+1,UFL=-1
+cherry	corner	20	UFR-UBR-LDB	8	8	CYCLE_A	defects:UFR=+0,UBR=+1,DBL=-1
+cherry	corner	21	UFR-UBR-LDF	8	8	CYCLE_A	defects:UFR=+0,UBR=-1,DFL=+1
+cherry	corner	22	UFR-UBR-FUL	12	14	CYCLE_A	defects:UFR=+0,UBR=-1,UFL=+1
+cherry	corner	23	UFR-UBR-FDL	10	10	CYCLE_A	defects:UFR=+0,UBR=+1,DFL=-1
+cherry	corner	24	UFR-UBR-FDR	10	10	CYCLE_A	defects:UFR=+0,UBR=-1,DFR=+1
+cherry	corner	25	UFR-UBR-RDF	8	8	CYCLE_A	defects:UFR=+0,UBR=+1,DFR=-1
+cherry	corner	26	UFR-UBR-RDB	8	8	CYCLE_A	defects:UFR=+0,UBR=-1,DBR=+1
+cherry	corner	27	UFR-UBR-BUL	9	12	CYCLE_A	defects:UFR=+0,UBR=+1,UBL=-1
+cherry	corner	28	UFR-UBR-BDR	10	10	CYCLE_A	defects:UFR=+0,UBR=+1,DBR=-1
+cherry	corner	29	UFR-UBR-BDL	10	10	CYCLE_A	defects:UFR=+0,UBR=-1,DBL=+1
+cherry	corner	30	UFR-UBR-DFR	16	16	CYCLE_A	defects:UFR=+0,UBR=+0,DFR=+0 clean
+cherry	corner	31	UFR-UBR-DBL	12	12	CYCLE_A	defects:UFR=+0,UBR=+0,DBL=+0 clean
+cherry	corner	32	UFR-UBR-DBR	16	16	CYCLE_A	defects:UFR=+0,UBR=+0,DBR=+0 clean
+cherry	corner	33	UFR-UFL-UBL	15	16	CYCLE_A	defects:UFR=+0,UFL=+0,UBL=+0 clean
+cherry	corner	34	UFR-UFL-UBR	13	14	CYCLE_A	defects:UFR=+0,UFL=+0,UBR=+0 clean
+cherry	corner	35	UFR-UFL-LUB	14	16	CYCLE_A	defects:UFR=+0,UFL=-1,UBL=+1
+cherry	corner	36	UFR-UFL-LDB	9	10	CYCLE_A	defects:UFR=+0,UFL=+1,DBL=-1
+cherry	corner	37	UFR-UFL-LDF	8	8	CYCLE_A	defects:UFR=+0,UFL=-1,DFL=+1
+cherry	corner	38	UFR-UFL-FDL	10	10	CYCLE_A	defects:UFR=+0,UFL=+1,DFL=-1
+cherry	corner	39	UFR-UFL-FDR	10	10	CYCLE_A	defects:UFR=+0,UFL=-1,DFR=+1
+cherry	corner	40	UFR-UFL-RUB	11	14	CYCLE_A	defects:UFR=+0,UFL=+1,UBR=-1
+cherry	corner	41	UFR-UFL-RDB	9	10	CYCLE_A	defects:UFR=+0,UFL=-1,DBR=+1
+cherry	corner	42	UFR-UFL-BUR	12	12	CYCLE_A	defects:UFR=+0,UFL=-1,UBR=+1
+cherry	corner	43	UFR-UFL-BUL	8	8	CYCLE_A	defects:UFR=+0,UFL=+1,UBL=-1
+cherry	corner	44	UFR-UFL-BUL	11	12	CYCLE_A	defects:UFR=+0,UFL=+1,UBL=-1
+cherry	corner	45	UFR-UFL-BDL	10	10	CYCLE_A	defects:UFR=+0,UFL=-1,DBL=+1
+cherry	corner	46	UFR-UFL-DFL	16	16	CYCLE_A	defects:UFR=+0,UFL=+0,DFL=+0 clean
+cherry	corner	47	UFR-UFL-DFR	15	16	CYCLE_A	defects:UFR=+0,UFL=+0,DFR=+0 clean
+cherry	corner	48	UFR-UFL-DBL	13	14	CYCLE_A	defects:UFR=+0,UFL=+0,DBL=+0 clean
+cherry	corner	49	UFR-UFL-DBR	13	14	CYCLE_A	defects:UFR=+0,UFL=+0,DBR=+0 clean
+cherry	corner	50	UFR-LUB-UBR	9	10	CYCLE_A	defects:UFR=-1,UBL=+1,UBR=+0
+cherry	corner	51	UFR-LUB-UFL	13	16	CYCLE_A	defects:UFR=-1,UBL=+1,UFL=+0
+cherry	corner	52	UFR-LUB-LUF	10	10	CYCLE_A	defects:UFR=-1,UBL=-1,UFL=-1
+cherry	corner	53	UFR-LUB-LUF	9	10	CYCLE_A	defects:UFR=-1,UBL=-1,UFL=-1
+cherry	corner	54	UFR-LUB-LDB	12	12	CYCLE_A	defects:UFR=-1,UBL=-1,DBL=-1
+cherry	corner	55	UFR-LUB-LDF	11	12	CYCLE_A	defects:UFR=-1,UBL=+0,DFL=+1
+cherry	corner	56	UFR-LUB-FDL	11	12	CYCLE_A	defects:UFR=-1,UBL=-1,DFL=-1
+cherry	corner	57	UFR-LUB-FDR	13	14	CYCLE_A	defects:UFR=-1,UBL=+0,DFR=+1
+cherry	corner	58	UFR-LUB-RUB	13	18	CYCLE_A	defects:UFR=-1,UBL=-1,UBR=-1
+cherry	corner	59	UFR-LUB-RDB	13	14	CYCLE_A	defects:UFR=-1,UBL=+0,DBR=+1
+cherry	corner	60	UFR-LUB-BUR	8	8	CYCLE_A	defects:UFR=-1,UBL=+0,UBR=+1
+cherry	corner	61	UFR-LUB-BDR	11	12	CYCLE_A	defects:UFR=-1,UBL=-1,DBR=-1
+cherry	corner	62	UFR-LUB-BDL	13	14	CYCLE_A	defects:UFR=-1,UBL=+0,DBL=+1
+cherry	corner	63	UFR-LUB-DFL	12	12	CYCLE_A	defects:UFR=-1,UBL=+1,DFL=+0
+cherry	corner	64	UFR-LUB-DBR	11	12	CYCLE_A	defects:UFR=-1,UBL=+1,DBR=+0
+cherry	corner	65	UFR-LUF-UBR	9	10	CYCLE_A	defects:UFR=+1,UFL=-1,UBR=+0
+cherry	corner	66	UFR-LUF-LDB	14	14	CYCLE_A	defects:UFR=+1,UFL=+0,DBL=-1
+cherry	corner	67	UFR-LUF-LDF	12	12	CYCLE_A	defects:UFR=+1,UFL=+1,DFL=+1
+cherry	corner	68	UFR-LUF-FDL	14	14	CYCLE_A	defects:UFR=+1,UFL=+0,DFL=-1
+cherry	corner	69	UFR-LUF-FDR	10	10	CYCLE_A	defects:UFR=+1,UFL=+1,DFR=+1
+cherry	corner	70	UFR-LUF-RUB	15	16	CYCLE_A	defects:UFR=+1,UFL=+0,UBR=-1
+cherry	corner	71	UFR-LUF-RDF	12	12	CYCLE_A	defects:UFR=+1,UFL=+0,DFR=-1
+cherry	corner	72	UFR-LUF-RDB	12	12	CYCLE_A	defects:UFR=+1,UFL=+1,DBR=+1
+cherry	corner	73	UFR-LUF-BUR	12	12	CYCLE_A	defects:UFR=+1,UFL=+1,UBR=+1
+cherry	corner	74	UFR-LUF-DFL	14	14	CYCLE_A	defects:UFR=+1,UFL=-1,DFL=+0
+cherry	corner	75	UFR-LUF-DFR	16	16	CYCLE_A	defects:UFR=+1,UFL=-1,DFR=+0
+cherry	corner	76	UFR-LUF-DBL	16	16	CYCLE_A	defects:UFR=+1,UFL=-1,DBL=+0
+cherry	corner	77	UFR-LUF-DBR	13	14	CYCLE_A	defects:UFR=+1,UFL=-1,DBR=+0
+cherry	corner	78	UFR-LDB-UBL	9	10	CYCLE_A	defects:UFR=+1,DBL=-1,UBL=+0
+cherry	corner	79	UFR-LDB-UBR	8	8	CYCLE_A	defects:UFR=+1,DBL=-1,UBR=+0
+cherry	corner	80	UFR-LDB-UFL	9	10	CYCLE_A	defects:UFR=+1,DBL=-1,UFL=+0
+cherry	corner	81	UFR-LDB-LUB	12	12	CYCLE_A	defects:UFR=+1,DBL=+1,UBL=+1
+cherry	corner	82	UFR-LDB-LUF	14	14	CYCLE_A	defects:UFR=+1,DBL=+0,UFL=-1
+cherry	corner	83	UFR-LDB-FUL	13	14	CYCLE_A	defects:UFR=+1,DBL=+1,UFL=+1
+cherry	corner	84	UFR-LDB-FDL	9	10	CYCLE_A	defects:UFR=+1,DBL=+0,DFL=-1
+cherry	corner	85	UFR-LDB-FDR	12	12	CYCLE_A	defects:UFR=+1,DBL=+1,DFR=+1
+cherry	corner	86	UFR-LDB-RUB	11	14	CYCLE_A	defects:UFR=+1,DBL=+0,UBR=-1
+cherry	corner	87	UFR-LDB-RDF	8	10	CYCLE_A	defects:UFR=+1,DBL=+0,DFR=-1
+cherry	corner	88	UFR-LDB-RDB	13	14	CYCLE_A	defects:UFR=+1,DBL=+1,DBR=+1
+cherry	corner	89	UFR-LDB-BUL	11	14	CYCLE_A	defects:UFR=+1,DBL=+0,UBL=-1
+cherry	corner	90	UFR-LDB-BDR	9	10	CYCLE_A	defects:UFR=+1,DBL=+0,DBR=-1
+cherry	corner	91	UFR-LDF-UBR	8	8	CYCLE_A	defects:UFR=-1,DFL=+1,UBR=+0
+cherry	corner	92	UFR-LDF-LUB	11	12	CYCLE_A	defects:UFR=-1,DFL=+0,UBL=+1
+cherry	corner	93	UFR-LDF-LUF	12	12	CYCLE_A	defects:UFR=-1,DFL=-1,UFL=-1
+cherry	corner	94	UFR-LDF-LDB	10	10	CYCLE_A	defects:UFR=-1,DFL=-1,DBL=-1
+cherry	corner	95	UFR-LDF-FUL	10	12	CYCLE_A	defects:UFR=-1,DFL=+0,UFL=+1
+cherry	corner	96	UFR-LDF-FDR	10	10	CYCLE_A	defects:UFR=-1,DFL=+0,DFR=+1
+cherry	corner	97	UFR-LDF-RUB	13	14	CYCLE_A	defects:UFR=-1,DFL=-1,UBR=-1
+cherry	corner	98	UFR-LDF-BUR	12	12	CYCLE_A	defects:UFR=-1,DFL=+0,UBR=+1
+cherry	corner	99	UFR-LDF-BUL	14	14	CYCLE_A	defects:UFR=-1,DFL=-1,UBL=-1
+cherry	corner	100	UFR-LDF-BDL	11	12	CYCLE_A	defects:UFR=-1,DFL=+0,DBL=+1
+cherry	corner	101	UFR-LDF-DFR	16	16	CYCLE_A	defects:UFR=-1,DFL=+1,DFR=+0
+cherry	corner	102	UFR-LDF-DBL	13	16	CYCLE_A	defects:UFR=-1,DFL=+1,DBL=+0
+cherry	corner	103	UFR-LDF-DBR	11	12	CYCLE_A	defects:UFR=-1,DFL=+1,DBR=+0
+cherry	corner	104	UFR-FUL-UBL	13	14	CYCLE_A	defects:UFR=-1,UFL=+1,UBL=+0
+cherry	corner	105	UFR-FUL-UBR	12	14	CYCLE_A	defects:UFR=-1,UFL=+1,UBR=+0
+cherry	corner	106	UFR-FUL-LDF	10	12	CYCLE_A	defects:UFR=-1,UFL=+0,DFL=+1
+cherry	corner	107	UFR-FUL-FDL	11	12	CYCLE_A	defects:UFR=-1,UFL=-1,DFL=-1
+cherry	corner	108	UFR-FUL-FDR	10	12	CYCLE_A	defects:UFR=-1,UFL=+0,DFR=+1
+cherry	corner	109	UFR-FUL-RUB	13	18	CYCLE_A	defects:UFR=-1,UFL=-1,UBR=-1
+cherry	corner	110	UFR-FUL-RDB	13	14	CYCLE_A	defects:UFR=-1,UFL=+0,DBR=+1
+cherry	corner	111	UFR-FUL-BDR	11	12	CYCLE_A	defects:UFR=-1,UFL=-1,DBR=-1
+cherry	corner	112	UFR-FUL-BDL	15	16	CYCLE_A	defects:UFR=-1,UFL=+0,DBL=+1
+cherry	corner	113	UFR-FUL-DBL	9	12	CYCLE_A	defects:UFR=-1,UFL=+1,DBL=+0
+cherry	corner	114	UFR-FDL-UBL	10	12	CYCLE_A	defects:UFR=+1,DFL=-1,UBL=+0
+cherry	corner	115	UFR-FDL-UBL	11	12	CYCLE_A	defects:UFR=+1,DFL=-1,UBL=+0
+cherry	corner	116	UFR-FDL-UFL	10	10	CYCLE_A	defects:UFR=+1,DFL=-1,UFL=+0
+cherry	corner	117	UFR-FDL-LUB	11	12	CYCLE_A	defects:UFR=+1,DFL=+1,UBL=+1
+cherry	corner	118	UFR-FDL-LDB	9	10	CYCLE_A	defects:UFR=+1,DFL=+0,DBL=-1
+cherry	corner	119	UFR-FDL-FUL	11	12	CYCLE_A	defects:UFR=+1,DFL=+1,UFL=+1
+cherry	corner	120	UFR-FDL-FDR	10	10	CYCLE_A	defects:UFR=+1,DFL=+1,DFR=+1
+cherry	corner	121	UFR-FDL-RDF	8	8	CYCLE_A	defects:UFR=+1,DFL=+0,DFR=-1
+cherry	corner	122	UFR-FDL-RDB	11	12	CYCLE_A	defects:UFR=+1,DFL=+1,DBR=+1
+cherry	corner	123	UFR-FDL-BUR	14	14	CYCLE_A	defects:UFR=+1,DFL=+1,UBR=+1
+cherry	corner	124	UFR-FDL-BUR	8	8	CYCLE_A	defects:UFR=+1,DFL=+1,UBR=+1
+cherry	corner	125	UFR-FDL-BUL	9	10	CYCLE_A	defects:UFR=+1,DFL=+0,UBL=-1
+cherry	corner	126	UFR-FDL-BDR	9	10	CYCLE_A	defects:UFR=+1,DFL=+0,DBR=-1
+cherry	corner	127	UFR-FDL-BDL	13	14	CYCLE_A	defects:UFR=+1,DFL=+1,DBL=+1
+cherry	corner	128	UFR-FDL-DFR	10	12	CYCLE_A	defects:UFR=+1,DFL=-1,DFR=+0
+cherry	corner	129	UFR-FDL-DBL	14	14	CYCLE_A	defects:UFR=+1,DFL=-1,DBL=+0
+cherry	corner	130	UFR-FDL-DBR	11	12	CYCLE_A	defects:UFR=+1,DFL=-1,DBR=+0
+cherry	corner	131	UFR-FDR-UBR	10	10	CYCLE_A	defects:UFR=-1,DFR=+1,UBR=+0
+cherry	corner	132	UFR-FDR-UFL	10	10	CYCLE_A	defects:UFR=-1,DFR=+1,UFL=+0
+cherry	corner	133	UFR-FDR-LUB	13	14	CYCLE_A	defects:UFR=-1,DFR=+0,UBL=+1
+cherry	corner	134	UFR-FDR-LUF	10	10	CYCLE_A	defects:UFR=-1,DFR=-1,UFL=-1
+cherry	corner	135	UFR-FDR-LDF	10	10	CYCLE_A	defects:UFR=-1,DFR=+0,DFL=+1
+cherry	corner	136	UFR-FDR-FDL	10	10	CYCLE_A	defects:UFR=-1,DFR=-1,DFL=-1
+cherry	corner	137	UFR-FDR-RUB	13	14	CYCLE_A	defects:UFR=-1,DFR=-1,UBR=-1
+cherry	corner	138	UFR-FDR-RDB	10	10	CYCLE_A	defects:UFR=-1,DFR=+0,DBR=+1
+cherry	corner	139	UFR-FDR-BUR	14	14	CYCLE_A	defects:UFR=-1,DFR=+0,UBR=+1
+cherry	corner	140	UFR-FDR-BUL	9	10	CYCLE_A	defects:UFR=-1,DFR=-1,UBL=-1
+cherry	corner	141	UFR-FDR-BDR	16	16	CYCLE_A	defects:UFR=-1,DFR=-1,DBR=-1
+cherry	corner	142	UFR-FDR-BDL	10	12	CYCLE_A	defects:UFR=-1,DFR=+0,DBL=+1
+cherry	corner	143	UFR-FDR-DFL	10	12	CYCLE_A	defects:UFR=-1,DFR=+1,DFL=+0
+cherry	corner	144	UFR-FDR-DBL	13	14	CYCLE_A	defects:UFR=-1,DFR=+1,DBL=+0
+cherry	corner	145	UFR-FDR-DBR	14	14	CYCLE_A	defects:UFR=-1,DFR=+1,DBR=+0
+cherry	corner	146	UFR-RUB-UBL	15	16	CYCLE_A	defects:UFR=+1,UBR=-1,UBL=+0
+cherry	corner	147	UFR-RUB-LUF	15	16	CYCLE_A	defects:UFR=+1,UBR=+0,UFL=-1
+cherry	corner	148	UFR-RUB-LDF	13	14	CYCLE_A	defects:UFR=+1,UBR=+1,DFL=+1
+cherry	corner	149	UFR-RUB-FDL	13	16	CYCLE_A	defects:UFR=+1,UBR=+0,DFL=-1
+cherry	corner	150	UFR-RUB-RDB	13	14	CYCLE_A	defects:UFR=+1,UBR=+1,DBR=+1
+cherry	corner	151	UFR-RUB-BDR	13	16	CYCLE_A	defects:UFR=+1,UBR=+0,DBR=-1
+cherry	corner	152	UFR-RUB-BDL	13	14	CYCLE_A	defects:UFR=+1,UBR=+1,DBL=+1
+cherry	corner	153	UFR-RUB-DFL	11	14	CYCLE_A	defects:UFR=+1,UBR=-1,DFL=+0
+cherry	corner	154	UFR-RUB-DBR	10	12	CYCLE_A	defects:UFR=+1,UBR=-1,DBR=+0
+cherry	corner	155	UFR-RDF-UBL	8	10	CYCLE_A	defects:UFR=+1,DFR=-1,UBL=+0
+cherry	corner	156	UFR-RDF-UBR	8	8	CYCLE_A	defects:UFR=+1,DFR=-1,UBR=+0
+cherry	corner	157	UFR-RDF-UFL	8	8	CYCLE_A	defects:UFR=+1,DFR=-1,UFL=+0
+cherry	corner	158	UFR-RDF-LUB	13	14	CYCLE_A	defects:UFR=+1,DFR=+1,UBL=+1
+cherry	corner	159	UFR-RDF-LUF	12	12	CYCLE_A	defects:UFR=+1,DFR=+0,UFL=-1
+cherry	corner	160	UFR-RDF-LDB	8	10	CYCLE_A	defects:UFR=+1,DFR=+0,DBL=-1
+cherry	corner	161	UFR-RDF-LDF	13	14	CYCLE_A	defects:UFR=+1,DFR=+1,DFL=+1
+cherry	corner	162	UFR-RDF-FUL	13	14	CYCLE_A	defects:UFR=+1,DFR=+1,UFL=+1
+cherry	corner	163	UFR-RDF-FDL	8	8	CYCLE_A	defects:UFR=+1,DFR=+0,DFL=-1
+cherry	corner	164	UFR-RDF-RUB	15	16	CYCLE_A	defects:UFR=+1,DFR=+0,UBR=-1
+cherry	corner	165	UFR-RDF-RDB	12	12	CYCLE_A	defects:UFR=+1,DFR=+1,DBR=+1
+cherry	corner	166	UFR-RDF-BUR	12	12	CYCLE_A	defects:UFR=+1,DFR=+1,UBR=+1
+cherry	corner	167	UFR-RDF-BUL	9	10	CYCLE_A	defects:UFR=+1,DFR=+0,UBL=-1
+cherry	corner	168	UFR-RDF-BDR	8	8	CYCLE_A	defects:UFR=+1,DFR=+0,DBR=-1
+cherry	corner	169	UFR-RDF-BDL	13	14	CYCLE_A	defects:UFR=+1,DFR=+1,DBL=+1
+cherry	corner	170	UFR-RDF-DFL	12	12	CYCLE_A	defects:UFR=+1,DFR=-1,DFL=+0
+cherry	corner	171	UFR-RDF-DBL	9	10	CYCLE_A	defects:UFR=+1,DFR=-1,DBL=+0
+cherry	corner	172	UFR-RDF-DBR	16	16	CYCLE_A	defects:UFR=+1,DFR=-1,DBR=+0
+cherry	corner	173	UFR-RDB-UBR	8	8	CYCLE_A	defects:UFR=-1,DBR=+1,UBR=+0
+cherry	corner	174	UFR-RDB-UFL	9	10	CYCLE_A	defects:UFR=-1,DBR=+1,UFL=+0
+cherry	corner	175	UFR-RDB-LUB	13	14	CYCLE_A	defects:UFR=-1,DBR=+0,UBL=+1
+cherry	corner	176	UFR-RDB-LUF	12	12	CYCLE_A	defects:UFR=-1,DBR=-1,UFL=-1
+cherry	corner	177	UFR-RDB-LDB	11	12	CYCLE_A	defects:UFR=-1,DBR=-1,DBL=-1
+cherry	corner	178	UFR-RDB-LDF	11	12	CYCLE_A	defects:UFR=-1,DBR=+0,DFL=+1
+cherry	corner	179	UFR-RDB-FDL	11	12	CYCLE_A	defects:UFR=-1,DBR=-1,DFL=-1
+cherry	corner	180	UFR-RDB-FDR	10	10	CYCLE_A	defects:UFR=-1,DBR=+0,DFR=+1
+cherry	corner	181	UFR-RDB-RUB	13	14	CYCLE_A	defects:UFR=-1,DBR=-1,UBR=-1
+cherry	corner	182	UFR-RDB-RDF	12	12	CYCLE_A	defects:UFR=-1,DBR=-1,DFR=-1
+cherry	corner	183	UFR-RDB-DFL	11	12	CYCLE_A	defects:UFR=-1,DBR=+1,DFL=+0
+cherry	corner	184	UFR-RDB-DFR	15	18	CYCLE_A	defects:UFR=-1,DBR=+1,DFR=+0
+cherry	corner	185	UFR-RDB-DBL	10	12	CYCLE_A	defects:UFR=-1,DBR=+1,DBL=+0
+cherry	corner	186	UFR-RDB-DBL	10	12	CYCLE_A	defects:UFR=-1,DBR=+1,DBL=+0
+cherry	corner	187	UFR-BUR-UBL	12	14	CYCLE_A	defects:UFR=-1,UBR=+1,UBL=+0
+cherry	corner	188	UFR-BUR-UFL	12	12	CYCLE_A	defects:UFR=-1,UBR=+1,UFL=+0
+cherry	corner	189	UFR-BUR-LUF	12	12	CYCLE_A	defects:UFR=-1,UBR=-1,UFL=-1
+cherry	corner	190	UFR-BUR-LDB	8	8	CYCLE_A	defects:UFR=-1,UBR=-1,DBL=-1
+cherry	corner	191	UFR-BUR-FUL	13	14	CYCLE_A	defects:UFR=-1,UBR=+0,UFL=+1
+cherry	corner	192	UFR-BUR-FDL	14	14	CYCLE_A	defects:UFR=-1,UBR=-1,DFL=-1
+cherry	corner	193	UFR-BUR-FDR	14	14	CYCLE_A	defects:UFR=-1,UBR=+0,DFR=+1
+cherry	corner	194	UFR-BUR-RDF	12	12	CYCLE_A	defects:UFR=-1,UBR=-1,DFR=-1
+cherry	corner	195	UFR-BUR-BUL	8	8	CYCLE_A	defects:UFR=-1,UBR=-1,UBL=-1
+cherry	corner	196	UFR-BUR-BDR	12	12	CYCLE_A	defects:UFR=-1,UBR=-1,DBR=-1
+cherry	corner	197	UFR-BUR-BDL	14	14	CYCLE_A	defects:UFR=-1,UBR=+0,DBL=+1
+cherry	corner	198	UFR-BUR-DFR	14	14	CYCLE_A	defects:UFR=-1,UBR=+1,DFR=+0
+cherry	corner	199	UFR-BUL-UBR	9	12	CYCLE_A	defects:UFR=+1,UBL=-1,UBR=+0
+cherry	corner	200	UFR-BUL-UFL	8	8	CYCLE_A	defects:UFR=+1,UBL=-1,UFL=+0
+cherry	corner	201	UFR-BUL-LUF	8	8	CYCLE_A	defects:UFR=+1,UBL=+0,UFL=-1
+cherry	corner	202	UFR-BUL-LDB	11	14	CYCLE_A	defects:UFR=+1,UBL=+0,DBL=-1
+cherry	corner	203	UFR-BUL-LDF	14	14	CYCLE_A	defects:UFR=+1,UBL=+1,DFL=+1
+cherry	corner	204	UFR-BUL-FUL	17	18	CYCLE_A	defects:UFR=+1,UBL=+1,UFL=+1
+cherry	corner	205	UFR-BUL-FDL	9	10	CYCLE_A	defects:UFR=+1,UBL=+0,DFL=-1
+cherry	corner	206	UFR-BUL-FDR	9	10	CYCLE_A	defects:UFR=+1,UBL=+1,DFR=+1
+cherry	corner	207	UFR-BUL-RUB	14	16	CYCLE_A	defects:UFR=+1,UBL=+0,UBR=-1
+cherry	corner	208	UFR-BUL-RDF	9	10	CYCLE_A	defects:UFR=+1,UBL=+0,DFR=-1
+cherry	corner	209	UFR-BUL-RDB	11	12	CYCLE_A	defects:UFR=+1,UBL=+1,DBR=+1
+cherry	corner	210	UFR-BUL-BDR	11	12	CYCLE_A	defects:UFR=+1,UBL=+0,DBR=-1
+cherry	corner	211	UFR-BUL-BDL	13	14	CYCLE_A	defects:UFR=+1,UBL=+1,DBL=+1
+cherry	corner	212	UFR-BUL-DFL	11	12	CYCLE_A	defects:UFR=+1,UBL=-1,DFL=+0
+cherry	corner	213	UFR-BUL-DFR	13	14	CYCLE_A	defects:UFR=+1,UBL=-1,DFR=+0
+cherry	corner	214	UFR-BUL-DBR	11	12	CYCLE_A	defects:UFR=+1,UBL=-1,DBR=+0
+cherry	corner	215	UFR-BDR-UBL	11	12	CYCLE_A	defects:UFR=+1,DBR=-1,UBL=+0
+cherry	corner	216	UFR-BDR-UBR	10	10	CYCLE_A	defects:UFR=+1,DBR=-1,UBR=+0
+cherry	corner	217	UFR-BDR-UFL	10	10	CYCLE_A	defects:UFR=+1,DBR=-1,UFL=+0
+cherry	corner	218	UFR-BDR-LUB	11	12	CYCLE_A	defects:UFR=+1,DBR=+1,UBL=+1
+cherry	corner	219	UFR-BDR-LDF	13	14	CYCLE_A	defects:UFR=+1,DBR=+1,DFL=+1
+cherry	corner	220	UFR-BDR-FUL	11	12	CYCLE_A	defects:UFR=+1,DBR=+1,UFL=+1
+cherry	corner	221	UFR-BDR-FDL	9	10	CYCLE_A	defects:UFR=+1,DBR=+0,DFL=-1
+cherry	corner	222	UFR-BDR-FDR	16	16	CYCLE_A	defects:UFR=+1,DBR=+1,DFR=+1
+cherry	corner	223	UFR-BDR-RDF	8	8	CYCLE_A	defects:UFR=+1,DBR=+0,DFR=-1
+cherry	corner	224	UFR-BDR-BUR	12	12	CYCLE_A	defects:UFR=+1,DBR=+1,UBR=+1
+cherry	corner	225	UFR-BDR-BUL	11	12	CYCLE_A	defects:UFR=+1,DBR=+0,UBL=-1
+cherry	corner	226	UFR-BDR-BDL	9	10	CYCLE_A	defects:UFR=+1,DBR=+1,DBL=+1
+cherry	corner	227	UFR-BDR-DFL	11	12	CYCLE_A	defects:UFR=+1,DBR=-1,DFL=+0
+cherry	corner	228	UFR-BDL-UBL	11	12	CYCLE_A	defects:UFR=-1,DBL=+1,UBL=+0
+cherry	corner	229	UFR-BDL-UBR	10	10	CYCLE_A	defects:UFR=-1,DBL=+1,UBR=+0
+cherry	corner	230	UFR-BDL-UFL	10	10	CYCLE_A	defects:UFR=-1,DBL=+1,UFL=+0
+cherry	corner	231	UFR-BDL-UFL	13	14	CYCLE_A	defects:UFR=-1,DBL=+1,UFL=+0
+cherry	corner	232	UFR-BDL-LUF	14	14	CYCLE_A	defects:UFR=-1,DBL=-1,UFL=-1
+cherry	corner	233	UFR-BDL-LDF	11	12	CYCLE_A	defects:UFR=-1,DBL=+0,DFL=+1
+cherry	corner	234	UFR-BDL-FUL	15	16	CYCLE_A	defects:UFR=-1,DBL=+0,UFL=+1
+cherry	corner	235	UFR-BDL-FDL	13	14	CYCLE_A	defects:UFR=-1,DBL=-1,DFL=-1
+cherry	corner	236	UFR-BDL-RUB	13	14	CYCLE_A	defects:UFR=-1,DBL=-1,UBR=-1
+cherry	corner	237	UFR-BDL-RDB	11	12	CYCLE_A	defects:UFR=-1,DBL=+0,DBR=+1
+cherry	corner	238	UFR-BDL-RDB	10	10	CYCLE_A	defects:UFR=-1,DBL=+0,DBR=+1
+cherry	corner	239	UFR-BDL-DFR	13	14	CYCLE_A	defects:UFR=-1,DBL=+1,DFR=+0
+cherry	corner	240	UFR-BDL-DBR	11	14	CYCLE_A	defects:UFR=-1,DBL=+1,DBR=+0
+cherry	corner	241	UFR-DFL-UBL	15	16	CYCLE_A	defects:UFR=+0,DFL=+0,UBL=+0 clean
+cherry	corner	242	UFR-DFL-UBR	12	12	CYCLE_A	defects:UFR=+0,DFL=+0,UBR=+0 clean
+cherry	corner	243	UFR-DFL-UFL	16	16	CYCLE_A	defects:UFR=+0,DFL=+0,UFL=+0 clean
+cherry	corner	244	UFR-DFL-LUB	12	12	CYCLE_A	defects:UFR=+0,DFL=-1,UBL=+1
+cherry	corner	245	UFR-DFL-LUB	11	12	CYCLE_A	defects:UFR=+0,DFL=-1,UBL=+1
+cherry	corner	246	UFR-DFL-LDB	15	16	CYCLE_A	defects:UFR=+0,DFL=+1,DBL=-1
+cherry	corner	247	UFR-DFL-FUL	13	14	CYCLE_A	defects:UFR=+0,DFL=-1,UFL=+1
+cherry	corner	248	UFR-DFL-FDR	10	12	CYCLE_A	defects:UFR=+0,DFL=-1,DFR=+1
+cherry	corner	249	UFR-DFL-RUB	11	14	CYCLE_A	defects:UFR=+0,DFL=+1,UBR=-1
+cherry	corner	250	UFR-DFL-RDF	12	12	CYCLE_A	defects:UFR=+0,DFL=+1,DFR=-1
+cherry	corner	251	UFR-DFL-RDB	11	12	CYCLE_A	defects:UFR=+0,DFL=-1,DBR=+1
+cherry	corner	252	UFR-DFL-BUL	11	12	CYCLE_A	defects:UFR=+0,DFL=+1,UBL=-1
+cherry	corner	253	UFR-DFL-BDR	11	12	CYCLE_A	defects:UFR=+0,DFL=+1,DBR=-1
+cherry	corner	254	UFR-DFL-BDL	13	14	CYCLE_A	defects:UFR=+0,DFL=-1,DBL=+1
+cherry	corner	255	UFR-DFL-DBL	13	14	CYCLE_A	defects:UFR=+0,DFL=+0,DBL=+0 clean
+cherry	corner	256	UFR-DFL-DBR	13	16	CYCLE_A	defects:UFR=+0,DFL=+0,DBR=+0 clean
+cherry	corner	257	UFR-DFR-UBL	15	18	CYCLE_A	defects:UFR=+0,DFR=+0,UBL=+0 clean
+cherry	corner	258	UFR-DFR-UBR	16	16	CYCLE_A	defects:UFR=+0,DFR=+0,UBR=+0 clean
+cherry	corner	259	UFR-DFR-UFL	16	16	CYCLE_A	defects:UFR=+0,DFR=+0,UFL=+0 clean
+cherry	corner	260	UFR-DFR-UFL	15	16	CYCLE_A	defects:UFR=+0,DFR=+0,UFL=+0 clean
+cherry	corner	261	UFR-DFR-LUB	14	14	CYCLE_A	defects:UFR=+0,DFR=-1,UBL=+1
+cherry	corner	262	UFR-DFR-LUF	16	16	CYCLE_A	defects:UFR=+0,DFR=+1,UFL=-1
+cherry	corner	263	UFR-DFR-LDB	11	14	CYCLE_A	defects:UFR=+0,DFR=+1,DBL=-1
+cherry	corner	264	UFR-DFR-LDB	10	12	CYCLE_A	defects:UFR=+0,DFR=+1,DBL=-1
+cherry	corner	265	UFR-DFR-LDF	16	16	CYCLE_A	defects:UFR=+0,DFR=-1,DFL=+1
+cherry	corner	266	UFR-DFR-FUL	15	16	CYCLE_A	defects:UFR=+0,DFR=-1,UFL=+1
+cherry	corner	267	UFR-DFR-FDL	10	12	CYCLE_A	defects:UFR=+0,DFR=+1,DFL=-1
+cherry	corner	268	UFR-DFR-BUR	14	14	CYCLE_A	defects:UFR=+0,DFR=-1,UBR=+1
+cherry	corner	269	UFR-DFR-BUL	13	14	CYCLE_A	defects:UFR=+0,DFR=+1,UBL=-1
+cherry	corner	270	UFR-DFR-BDR	14	14	CYCLE_A	defects:UFR=+0,DFR=+1,DBR=-1
+cherry	corner	271	UFR-DFR-BDL	13	14	CYCLE_A	defects:UFR=+0,DFR=-1,DBL=+1
+cherry	corner	272	UFR-DBL-UBL	15	16	CYCLE_A	defects:UFR=+0,DBL=+0,UBL=+0 clean
+cherry	corner	273	UFR-DBL-UFL	13	14	CYCLE_A	defects:UFR=+0,DBL=+0,UFL=+0 clean
+cherry	corner	274	UFR-DBL-FUL	9	12	CYCLE_A	defects:UFR=+0,DBL=-1,UFL=+1
+cherry	corner	275	UFR-DBL-FDL	14	14	CYCLE_A	defects:UFR=+0,DBL=+1,DFL=-1
+cherry	corner	276	UFR-DBL-RUB	13	16	CYCLE_A	defects:UFR=+0,DBL=+1,UBR=-1
+cherry	corner	277	UFR-DBL-RDF	9	10	CYCLE_A	defects:UFR=+0,DBL=+1,DFR=-1
+cherry	corner	278	UFR-DBL-RDB	10	12	CYCLE_A	defects:UFR=+0,DBL=-1,DBR=+1
+cherry	corner	279	UFR-DBL-BUL	12	14	CYCLE_A	defects:UFR=+0,DBL=+1,UBL=-1
+cherry	corner	280	UFR-DBL-DBR	13	14	CYCLE_A	defects:UFR=+0,DBL=+0,DBR=+0 clean
+cherry	corner	281	UFR-DBR-UBL	13	16	CYCLE_A	defects:UFR=+0,DBR=+0,UBL=+0 clean
+cherry	corner	282	UFR-DBR-UBR	16	16	CYCLE_A	defects:UFR=+0,DBR=+0,UBR=+0 clean
+cherry	corner	283	UFR-DBR-UFL	13	14	CYCLE_A	defects:UFR=+0,DBR=+0,UFL=+0 clean
+cherry	corner	284	UFR-DBR-LUB	11	12	CYCLE_A	defects:UFR=+0,DBR=-1,UBL=+1
+cherry	corner	285	UFR-DBR-LUF	13	14	CYCLE_A	defects:UFR=+0,DBR=+1,UFL=-1
+cherry	corner	286	UFR-DBR-LDF	11	12	CYCLE_A	defects:UFR=+0,DBR=-1,DFL=+1
+cherry	corner	287	UFR-DBR-FUL	11	14	CYCLE_A	defects:UFR=+0,DBR=-1,UFL=+1
+cherry	corner	288	UFR-DBR-FDL	11	12	CYCLE_A	defects:UFR=+0,DBR=+1,DFL=-1
+cherry	corner	289	UFR-DBR-RUB	10	12	CYCLE_A	defects:UFR=+0,DBR=+1,UBR=-1
+cherry	corner	290	UFR-DBR-RDF	16	16	CYCLE_A	defects:UFR=+0,DBR=+1,DFR=-1
+cherry	corner	291	UFR-DBR-BUR	14	14	CYCLE_A	defects:UFR=+0,DBR=-1,UBR=+1
+cherry	corner	292	UFR-DBR-BDL	11	14	CYCLE_A	defects:UFR=+0,DBR=-1,DBL=+1
+cherry	corner	293	UFL-UBL-RDF	9	10	CYCLE_A	defects:UFL=+0,UBL=+1,DFR=-1
+cherry	corner	294	UFL-UBL-DFL	15	16	CYCLE_A	defects:UFL=+0,UBL=+0,DFL=+0 clean
+cherry	corner	295	UFL-UBR-LDB	8	10	CYCLE_A	defects:UFL=+0,UBR=+1,DBL=-1
+cherry	corner	296	UFL-UBR-FDR	11	12	CYCLE_A	defects:UFL=+0,UBR=-1,DFR=+1
+cherry	corner	297	UFL-UBR-BDL	11	12	CYCLE_A	defects:UFL=+0,UBR=-1,DBL=+1
+cherry	corner	298	UFL-LUB-FDL	13	14	CYCLE_A	defects:UFL=-1,UBL=-1,DFL=-1
+cherry	corner	299	UFL-LUB-RDF	13	14	CYCLE_A	defects:UFL=-1,UBL=-1,DFR=-1
+cherry	corner	300	UFL-LDB-UBL	9	10	CYCLE_A	defects:UFL=+1,DBL=-1,UBL=+0
+cherry	corner	301	UFL-LDB-RDB	13	14	CYCLE_A	defects:UFL=+1,DBL=+1,DBR=+1
+cherry	corner	302	UFL-LDF-UBR	9	10	CYCLE_A	defects:UFL=-1,DFL=+1,UBR=+0
+cherry	corner	303	UFL-LDF-FDR	9	8	CYCLE_A	defects:UFL=-1,DFL=+0,DFR=+1
+cherry	corner	304	UFL-FDR-UBL	11	12	CYCLE_A	defects:UFL=-1,DFR=+1,UBL=+0
+cherry	corner	305	UFL-FDR-LDF	8	8	CYCLE_A	defects:UFL=-1,DFR=+0,DFL=+1
+cherry	corner	306	UFL-FDR-DBL	11	12	CYCLE_A	defects:UFL=-1,DFR=+1,DBL=+0
+cherry	corner	307	UFL-FDR-DBR	12	12	CYCLE_A	defects:UFL=-1,DFR=+1,DBR=+0
+cherry	corner	308	UFL-BUL-RUB	8	8	CYCLE_A	defects:UFL=+1,UBL=+0,UBR=-1
+cherry	corner	309	UFL-BDR-BUR	13	14	CYCLE_A	defects:UFL=+1,DBR=+1,UBR=+1
+cherry	corner	310	UFL-BDL-LDF	9	10	CYCLE_A	defects:UFL=-1,DBL=+0,DFL=+1
+cherry	corner	311	UFL-DFR-BUR	12	12	CYCLE_A	defects:UFL=+0,DFR=-1,UBR=+1
+cherry	corner	312	UFL-DBL-UBL	15	16	CYCLE_A	defects:UFL=+0,DBL=+0,UBL=+0 clean
+cherry	corner	313	UFL-DBL-LDF	11	14	CYCLE_A	defects:UFL=+0,DBL=-1,DFL=+1
+cherry	corner	314	UFL-DBL-RUB	11	12	CYCLE_A	defects:UFL=+0,DBL=+1,UBR=-1
+cherry	corner	315	UFL-DBR-UBR	12	18	CYCLE_A	defects:UFL=+0,DBR=+0,UBR=+0 clean
+cherry	corner	316	UFL-DBR-LDF	9	10	CYCLE_A	defects:UFL=+0,DBR=-1,DFL=+1
+cherry	corner	317	UFL-DBR-FDR	12	12	CYCLE_A	defects:UFL=+0,DBR=-1,DFR=+1
+cherry	corner	318	UBR-UBL-LDF	9	10	CYCLE_A	defects:UBR=+0,UBL=-1,DFL=+1
+cherry	corner	319	UBR-UBL-RDB	8	8	CYCLE_A	defects:UBR=+0,UBL=-1,DBR=+1
+cherry	corner	320	UBR-LUB-LDB	12	12	CYCLE_A	defects:UBR=-1,UBL=-1,DBL=-1
+cherry	corner	321	UBR-LDF-UBL	9	10	CYCLE_A	defects:UBR=-1,DFL=+1,UBL=+0
+cherry	corner	322	UBR-FDL-UBL	10	10	CYCLE_A	defects:UBR=+1,DFL=-1,UBL=+0
+cherry	corner	323	UBR-FDL-LUB	14	14	CYCLE_A	defects:UBR=+1,DFL=+1,UBL=+1
+cherry	corner	324	UBR-FDR-DBR	15	16	CYCLE_A	defects:UBR=-1,DFR=+1,DBR=+0
+cherry	corner	325	UBR-BUL-LDB	10	12	CYCLE_A	defects:UBR=+1,UBL=+0,DBL=-1
+cherry	corner	326	UBR-BDL-UBL	10	10	CYCLE_A	defects:UBR=-1,DBL=+1,UBL=+0
+cherry	corner	327	UBR-DFR-UBL	13	14	CYCLE_A	defects:UBR=+0,DFR=+0,UBL=+0 clean
+cherry	corner	328	UBL-LDF-DBR	12	12	CYCLE_A	defects:UBL=-1,DFL=+1,DBR=+0
+cherry	corner	329	UBL-BDR-LDF	13	14	CYCLE_A	defects:UBL=+1,DBR=+1,DFL=+1
+cherry	flips	2	UF & UB	13	14	YES	
+cherry	flips	3	UF & UL	12	16	YES	
+cherry	flips	4	UF & UR	12	16	YES	
+cherry	flips	5	UF & FL	13	16	YES	
+cherry	flips	6	UF & FR	13	16	YES	
+cherry	flips	7	UF & BR	13	16	YES	
+cherry	flips	8	UF & BL	13	16	YES	
+cherry	flips	9	UF & DR	13	16	YES	
+cherry	flips	10	UF & DB	13	14	YES	
+cherry	flips	11	UB & UR	12	16	YES	
+cherry	flips	12	UB & FL	13	16	YES	
+cherry	flips	13	UB & DF	13	14	YES	
+cherry	flips	14	UB & DB	13	14	YES	
+cherry	flips	15	UR & FL	12	16	YES	
+cherry	flips	16	UR & FR	15	18	YES	
+cherry	flips	17	UR & BL	15	18	YES	
+cherry	flips	18	UR & DF	13	14	YES	
+cherry	flips	19	UR & DB	14	14	YES	
+cherry	flips	20	UL & BL	15	18	YES	
+cherry	flips	21	FR & BL	12	16	YES	
+cherry	flips	22	FR & DB	14	17	YES	
+cherry	flips	23	FL & DF	13	14	YES	
+cherry	flips	24	FL & DR	12	16	YES	
+cherry	flips	25	DF & BR	14	16	YES	
+cherry	flips	26	DR & DL	14	16	YES	
+cherry	twists	2	UFR & UBR	16	16	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+cherry	twists	3	UFR & UFL	16	16	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[UFL>FUL LUF>UFL FUL>LUF] d2=-1
+cherry	twists	4	UFR & DBL	16	16	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[LDB>DBL BDL>LDB DBL>BDL] d2=-1
+cherry	twists	5	UFL & UFR	16	16	YES	cyc1=[UFL>LUF LUF>FUL FUL>UFL] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	6	UFL & DBR	18	18	YES	cyc1=[UFL>LUF LUF>FUL FUL>UFL] d1=+1 cyc2=[RDB>BDR BDR>DBR DBR>RDB] d2=-1
+cherry	twists	7	UBR & UFR	16	16	YES	cyc1=[UBR>RUB RUB>BUR BUR>UBR] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	8	UBR & DFR	16	16	YES	cyc1=[UBR>RUB RUB>BUR BUR>UBR] d1=+1 cyc2=[FDR>RDF RDF>DFR DFR>FDR] d2=-1
+cherry	twists	9	DFR & UBR	16	16	YES	cyc1=[FDR>DFR RDF>FDR DFR>RDF] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+cherry	twists	10	DFR & UFR	18	18	YES	cyc1=[FDR>DFR RDF>FDR DFR>RDF] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	11	DFL & UFR	18	18	YES	cyc1=[LDF>DFL FDL>LDF DFL>FDL] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	12	DFL & DFR	16	16	YES	cyc1=[LDF>DFL FDL>LDF DFL>FDL] d1=+1 cyc2=[FDR>RDF RDF>DFR DFR>FDR] d2=-1
+cherry	twists	13	DBR & UFR	16	16	YES	cyc1=[RDB>DBR BDR>RDB DBR>BDR] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	14	DBR & DFR	16	16	YES	cyc1=[RDB>DBR BDR>RDB DBR>BDR] d1=+1 cyc2=[FDR>RDF RDF>DFR DFR>FDR] d2=-1
+cherry	twists	15	DBR & DBL	16	16	YES	cyc1=[RDB>DBR BDR>RDB DBR>BDR] d1=+1 cyc2=[LDB>DBL BDL>LDB DBL>BDL] d2=-1
+cherry	twists	16	DBL & UBR	16	16	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+cherry	twists	17	DBL & UFL	18	18	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[UFL>FUL LUF>UFL FUL>LUF] d2=-1
+cherry	twists	18	DBL & UFR	16	16	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[UFR>RUF FUR>UFR RUF>FUR] d2=-1
+cherry	twists	19	DBL & DFL	17	18	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[LDF>FDL FDL>DFL DFL>LDF] d2=-1
+cherry	twists	20	DBL & DFR	16	18	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[FDR>RDF RDF>DFR DFR>FDR] d2=-1
+cherry	twists	21	DBL & DBR	16	16	YES	cyc1=[LDB>BDL BDL>DBL DBL>LDB] d1=+1 cyc2=[RDB>BDR BDR>DBR DBR>RDB] d2=-1
+cherry	parity	2	UF-UL, UFR-UFL	14	15	YES	defects: UF=ok,UL=ok UFR=+0,UFL=+0 clean
+cherry	parity	3	UF-UL, UFR-FUL	15	21	YES	defects: UF=ok,UL=ok UFR=-1,UFL=+1
+cherry	parity	4	UF-UL, UFL-LDB	17	21	YES	defects: UF=ok,UL=ok UFL=+1,DBL=-1
+cherry	parity	5	UF-UL, UFL-LDF	17	19	YES	defects: UF=ok,UL=ok UFL=-1,DFL=+1
+cherry	parity	6	UF-UL, UFL-FDR	15	17	YES	defects: UF=ok,UL=ok UFL=-1,DFR=+1
+cherry	parity	7	UF-UL, UFL-DFL	14	21	YES	defects: UF=ok,UL=ok UFL=+0,DFL=+0 clean
+cherry	parity	8	UF-UR, UFR-UBR	14	15	YES	defects: UF=ok,UR=ok UFR=+0,UBR=+0 clean
+cherry	parity	9	UF-UR, UFR-LUF	11	13	YES	defects: UF=ok,UR=ok UFR=+1,UFL=-1
+cherry	parity	10	UF-UR, UFR-LDB	18	19	YES	defects: UF=ok,UR=ok UFR=+1,DBL=-1
+cherry	parity	11	UF-UR, UFR-FDL	15	17	YES	defects: UF=ok,UR=ok UFR=+1,DFL=-1
+cherry	parity	12	UF-UR, UFR-FDL	17	19	YES	defects: UF=ok,UR=ok UFR=+1,DFL=-1
+cherry	parity	13	UF-UR, UFR-RUB	16	15	YES	defects: UF=ok,UR=ok UFR=+1,UBR=-1
+cherry	parity	14	UF-UR, UFR-RDF	15	17	YES	defects: UF=ok,UR=ok UFR=+1,DFR=-1
+cherry	parity	15	UF-UR, UFR-BUR	14	13	YES	defects: UF=ok,UR=ok UFR=-1,UBR=+1
+cherry	parity	16	UF-UR, UFR-BDR	17	19	YES	defects: UF=ok,UR=ok UFR=+1,DBR=-1
+cherry	parity	17	UF-UR, UFR-DFL	13	15	YES	defects: UF=ok,UR=ok UFR=+0,DFL=+0 clean
+cherry	parity	18	UF-UR, UFR-DFR	14	21	YES	defects: UF=ok,UR=ok UFR=+0,DFR=+0 clean
+cherry	parity	19	UF-UR, UFR-DBL	14	17	YES	defects: UF=ok,UR=ok UFR=+0,DBL=+0 clean
+cherry	parity	20	UF-UR, UFR-DBR	17	19	YES	defects: UF=ok,UR=ok UFR=+0,DBR=+0 clean
+cherry	parity	21	UF-BR, UBR-BDL	16	17	YES	defects: UF=ok,BR=ok UBR=-1,DBL=+1
+cherry	parity	22	UB-UL, UFR-UBL	16	17	YES	defects: UB=ok,UL=ok UFR=+0,UBL=+0 clean
+cherry	parity	23	UB-UL, UFR-BUL	14	15	YES	defects: UB=ok,UL=ok UFR=+1,UBL=-1
+cherry	parity	24	UB-UR, UBR-UBL	15	17	YES	defects: UB=ok,UR=ok UBR=+0,UBL=+0 clean
+cherry	parity	25	UB-UR, UBR-RDF	14	15	YES	defects: UB=ok,UR=ok UBR=+1,DFR=-1
+cherry	parity	26	UB-UR, UBR-BDL	18	19	YES	defects: UB=ok,UR=ok UBR=-1,DBL=+1
+cherry	parity	27	UB-UR, UBR-DFL	11	13	YES	defects: UB=ok,UR=ok UBR=+0,DFL=+0 clean
+cherry	ltct	2	UF-UR, UBR-LUB[FUR]	14	17	REPORTED	named e=UF/UR c=UBR/LUB[FUR] | edges: UR->UF UF->UR | corners: UBL->BUR [UBL>BUR LUB>RUB BUL>UBR] tw=-1 UBR->LUB [UBR>LUB RUB>UBL BUR>BUL] tw=-1 UFR->RUF [UFR>RUF FUR>UFR RUF>FUR] tw=-1
+cherry	ltct	3	UF-UR, UFR-BUL[LDB]	14	17	REPORTED	named e=UF/UR c=UFR/BUL[LDB] | edges: UR->UF UF->UR | corners: UBL->UFR [UBL>UFR LUB>RUF BUL>FUR] tw=+0 UFR->BUL [UFR>BUL FUR>LUB RUF>UBL] tw=+1 LDB->DBL [LDB>DBL BDL>LDB DBL>BDL] tw=-1
+cherry	ltct	4	UF-UR, UFR-RUB[RDB]	17	19	REPORTED	named e=UF/UR c=UFR/RUB[RDB] | edges: UR->UF UF->UR | corners: UBR->FUR [UBR>FUR RUB>RUF BUR>UFR] tw=+1 UFR->RUB [UFR>RUB FUR>BUR RUF>UBR] tw=+1 RDB->DBR [RDB>DBR BDR>RDB DBR>BDR] tw=+1
+cherry	ltct	5	UF-UR, UFR-FUL[FDL]	17	21	REPORTED	named e=UF/UR c=UFR/FUL[FDL] | edges: UR->UF UF->UR | corners: UFR->FUL [UFR>FUL FUR>UFL RUF>LUF] tw=-1 UFL->RUF [UFL>RUF LUF>UFR FUL>FUR] tw=-1 LDF->FDL [LDF>FDL FDL>DFL DFL>LDF] tw=-1
+cherry	ltct	6	UF-UR, UFR-DFL[RUB]	10	12	REPORTED	named e=UF/UR c=UFR/DFL[RUB] | edges: UR->UF UF->UR | corners: UBR->BUR [UBR>BUR RUB>UBR BUR>RUB] tw=-1 UFR->DFL [UFR>DFL FUR>FDL RUF>LDF] tw=+0 LDF->UFR [LDF>UFR FDL>RUF DFL>FUR] tw=+1
+cherry	ltct	7	UF-UR, UFR-FUL[RUB]	11	14	REPORTED	named e=UF/UR c=UFR/FUL[RUB] | edges: UR->UF UF->UR | corners: UBR->BUR [UBR>BUR RUB>UBR BUR>RUB] tw=-1 UFR->FUL [UFR>FUL FUR>UFL RUF>LUF] tw=-1 UFL->RUF [UFL>RUF LUF>UFR FUL>FUR] tw=-1
+cherry	ltct	8	UF-UR, UFR-LUF[LUB]	14	15	REPORTED	named e=UF/UR c=UFR/LUF[LUB] | edges: UR->UF UF->UR | corners: UBL->BUL [UBL>BUL LUB>UBL BUL>LUB] tw=+1 UFR->LUF [UFR>LUF FUR>FUL RUF>UFL] tw=+1 UFL->FUR [UFL>FUR LUF>RUF FUL>UFR] tw=+1
+cherry	ltct	9	UF-UR, UFR-LUF[BUR]	15	17	REPORTED	named e=UF/UR c=UFR/LUF[BUR] | edges: UR->UF UF->UR | corners: UBR->RUB [UBR>RUB RUB>BUR BUR>UBR] tw=+1 UFR->LUF [UFR>LUF FUR>FUL RUF>UFL] tw=+1 UFL->FUR [UFL>FUR LUF>RUF FUL>UFR] tw=+1
+eggins	edge	2	UF-UB-UL	8	12	CYCLE_A	defects:UF=ok,UB=ok,UL=ok clean
+eggins	edge	3	UF-UB-RF	9	10	CYCLE_A	defects:UF=ok,UB=flip,FR=flip
+eggins	edge	4	UF-UL-LD	8	8	CYCLE_A	defects:UF=ok,UL=flip,DL=flip
+eggins	edge	5	UF-UL-FR	8	10	CYCLE_A	defects:UF=ok,UL=ok,FR=ok clean
+eggins	edge	6	UF-UL-RB	8	8	CYCLE_A	defects:UF=ok,UL=flip,BR=flip
+eggins	edge	7	UF-UL-BD	8	8	CYCLE_A	defects:UF=ok,UL=flip,DB=flip
+eggins	edge	8	UF-UL-DF	9	10	CYCLE_A	defects:UF=ok,UL=ok,DF=ok clean
+eggins	edge	9	UF-UR-FL	8	10	CYCLE_A	defects:UF=ok,UR=ok,FL=ok clean
+eggins	edge	10	UF-LU-UR	8	8	CYCLE_A	defects:UF=flip,UL=flip,UR=ok
+eggins	edge	11	UF-LU-FD	10	11	CYCLE_A	defects:UF=flip,UL=ok,DF=flip
+eggins	edge	12	UF-LU-DF	8	10	CYCLE_A	defects:UF=flip,UL=flip,DF=ok
+eggins	edge	13	UF-LB-UR	8	8	CYCLE_A	defects:UF=flip,BL=flip,UR=ok
+eggins	edge	14	UF-LF-UR	8	8	CYCLE_A	defects:UF=flip,FL=flip,UR=ok
+eggins	edge	15	UF-LF-RF	9	10	CYCLE_A	defects:UF=flip,FL=ok,FR=flip
+eggins	edge	16	UF-LD-UB	9	10	CYCLE_A	defects:UF=flip,DL=flip,UB=ok
+eggins	edge	17	UF-LD-UR	9	10	CYCLE_A	defects:UF=flip,DL=flip,UR=ok
+eggins	edge	18	UF-LD-FL	9	10	CYCLE_A	defects:UF=flip,DL=flip,FL=ok
+eggins	edge	19	UF-LD-BL	9	10	CYCLE_A	defects:UF=flip,DL=flip,BL=ok
+eggins	edge	20	UF-LD-DR	8	8	CYCLE_A	defects:UF=flip,DL=flip,DR=ok
+eggins	edge	21	UF-FL-UR	8	10	CYCLE_A	defects:UF=ok,FL=ok,UR=ok clean
+eggins	edge	22	UF-FL-RU	10	10	CYCLE_A	defects:UF=ok,FL=flip,UR=flip
+eggins	edge	23	UF-FL-DL	11	12	CYCLE_A	defects:UF=ok,FL=ok,DL=ok clean
+eggins	edge	24	UF-FL-DR	7	8	CYCLE_A	defects:UF=ok,FL=ok,DR=ok clean
+eggins	edge	25	UF-FL-DB	9	10	CYCLE_A	defects:UF=ok,FL=ok,DB=ok clean
+eggins	edge	26	UF-FR-UB	8	10	CYCLE_A	defects:UF=ok,FR=ok,UB=ok clean
+eggins	edge	27	UF-FR-LB	9	10	CYCLE_A	defects:UF=ok,FR=flip,BL=flip
+eggins	edge	28	UF-FR-RB	8	8	CYCLE_A	defects:UF=ok,FR=flip,BR=flip
+eggins	edge	29	UF-FR-DB	9	10	CYCLE_A	defects:UF=ok,FR=ok,DB=ok clean
+eggins	edge	30	UF-FD-UL	9	9	CYCLE_A	defects:UF=flip,DF=flip,UL=ok
+eggins	edge	31	UF-FD-FR	8	8	CYCLE_A	defects:UF=flip,DF=flip,FR=ok
+eggins	edge	32	UF-FD-BD	9	10	CYCLE_A	defects:UF=flip,DF=ok,DB=flip
+eggins	edge	33	UF-RU-LB	7	8	CYCLE_A	defects:UF=flip,UR=ok,BL=flip
+eggins	edge	34	UF-RU-BD	9	10	CYCLE_A	defects:UF=flip,UR=ok,DB=flip
+eggins	edge	35	UF-RU-DR	8	8	CYCLE_A	defects:UF=flip,UR=flip,DR=ok
+eggins	edge	36	UF-RU-DB	10	10	CYCLE_A	defects:UF=flip,UR=flip,DB=ok
+eggins	edge	37	UF-RF-UB	9	10	CYCLE_A	defects:UF=flip,FR=flip,UB=ok
+eggins	edge	38	UF-RF-UL	8	8	CYCLE_A	defects:UF=flip,FR=flip,UL=ok
+eggins	edge	39	UF-RF-RB	9	10	CYCLE_A	defects:UF=flip,FR=ok,BR=flip
+eggins	edge	40	UF-RB-FD	8	8	CYCLE_A	defects:UF=flip,BR=ok,DF=flip
+eggins	edge	41	UF-RB-BL	8	8	CYCLE_A	defects:UF=flip,BR=flip,BL=ok
+eggins	edge	42	UF-RD-UB	9	10	CYCLE_A	defects:UF=flip,DR=flip,UB=ok
+eggins	edge	43	UF-RD-RU	7	8	CYCLE_A	defects:UF=flip,DR=ok,UR=flip
+eggins	edge	44	UF-RD-BR	9	10	CYCLE_A	defects:UF=flip,DR=flip,BR=ok
+eggins	edge	45	UF-RD-DB	10	10	CYCLE_A	defects:UF=flip,DR=flip,DB=ok
+eggins	edge	46	UF-BU-LF	8	8	CYCLE_A	defects:UF=flip,UB=ok,FL=flip
+eggins	edge	47	UF-BU-RF	8	8	CYCLE_A	defects:UF=flip,UB=ok,FR=flip
+eggins	edge	48	UF-BR-UB	8	10	CYCLE_A	defects:UF=ok,BR=ok,UB=ok clean
+eggins	edge	49	UF-BR-FD	8	8	CYCLE_A	defects:UF=ok,BR=flip,DF=flip
+eggins	edge	50	UF-BR-DF	9	10	CYCLE_A	defects:UF=ok,BR=ok,DF=ok clean
+eggins	edge	51	UF-BL-LU	11	12	CYCLE_A	defects:UF=ok,BL=flip,UL=flip
+eggins	edge	52	UF-BL-BD	9	10	CYCLE_A	defects:UF=ok,BL=flip,DB=flip
+eggins	edge	53	UF-BL-DF	9	10	CYCLE_A	defects:UF=ok,BL=ok,DF=ok clean
+eggins	edge	54	UF-BD-FL	10	12	CYCLE_A	defects:UF=flip,DB=flip,FL=ok
+eggins	edge	55	UF-BD-RD	10	10	CYCLE_A	defects:UF=flip,DB=ok,DR=flip
+eggins	edge	56	UF-DF-BR	9	10	CYCLE_A	defects:UF=ok,DF=ok,BR=ok clean
+eggins	edge	57	UF-DF-DL	11	12	CYCLE_A	defects:UF=ok,DF=ok,DL=ok clean
+eggins	edge	58	UF-DL-UR	9	10	CYCLE_A	defects:UF=ok,DL=ok,UR=ok clean
+eggins	edge	59	UF-DL-DR	6	8	CYCLE_A	defects:UF=ok,DL=ok,DR=ok clean
+eggins	edge	60	UF-DR-UL	10	10	CYCLE_A	defects:UF=ok,DR=ok,UL=ok clean
+eggins	edge	61	UF-DR-UR	9	10	CYCLE_A	defects:UF=ok,DR=ok,UR=ok clean
+eggins	edge	62	UF-DR-LB	7	8	CYCLE_A	defects:UF=ok,DR=flip,BL=flip
+eggins	edge	63	UF-DR-RB	7	8	CYCLE_A	defects:UF=ok,DR=flip,BR=flip
+eggins	edge	64	UF-DB-BR	8	10	CYCLE_A	defects:UF=ok,DB=ok,BR=ok clean
+eggins	edge	65	UB-UR-BL	8	10	CYCLE_A	defects:UB=ok,UR=ok,BL=ok clean
+eggins	edge	66	UB-LB-UL	9	10	CYCLE_A	defects:UB=flip,BL=flip,UL=ok
+eggins	edge	67	UB-LD-UL	8	8	CYCLE_A	defects:UB=flip,DL=flip,UL=ok
+eggins	edge	68	UB-FR-BR	7	8	CYCLE_A	defects:UB=ok,FR=ok,BR=ok clean
+eggins	edge	69	UB-FD-LU	12	12	CYCLE_A	defects:UB=flip,DF=ok,UL=flip
+eggins	edge	70	UB-DL-RU	9	10	CYCLE_A	defects:UB=ok,DL=flip,UR=flip
+eggins	edge	71	UB-DR-BD	8	10	CYCLE_A	defects:UB=ok,DR=flip,DB=flip
+eggins	edge	72	FR-RD-DL	8	10	CYCLE_A	defects:FR=flip,DR=flip,DL=ok
+eggins	corner	2	UFR-UBL-LUF	10	12	CYCLE_A	defects:UFR=+0,UBL=+1,UFL=-1
+eggins	corner	3	UFR-UBL-FDL	11	12	CYCLE_A	defects:UFR=+0,UBL=+1,DFL=-1
+eggins	corner	4	UFR-UBL-RUB	15	16	CYCLE_A	defects:UFR=+0,UBL=+1,UBR=-1
+eggins	corner	5	UFR-UBR-LUF	9	10	CYCLE_A	defects:UFR=+0,UBR=+1,UFL=-1
+eggins	corner	6	UFR-UBR-LDB	8	8	CYCLE_A	defects:UFR=+0,UBR=+1,DBL=-1
+eggins	corner	7	UFR-UFL-FDR	10	10	CYCLE_A	defects:UFR=+0,UFL=-1,DFR=+1
+eggins	corner	8	UFR-LUB-LUF	8	8	CYCLE_A	defects:UFR=-1,UBL=-1,UFL=-1
+eggins	corner	9	UFR-LUB-DFR	11	14	CYCLE_A	defects:UFR=-1,UBL=+1,DFR=+0
+eggins	corner	10	UFR-LDB-UFL	9	10	CYCLE_A	defects:UFR=+1,DBL=-1,UFL=+0
+eggins	corner	11	UFR-LDB-FUL	13	14	CYCLE_A	defects:UFR=+1,DBL=+1,UFL=+1
+eggins	corner	12	UFR-LDF-RDB	10	12	CYCLE_A	defects:UFR=-1,DFL=+0,DBR=+1
+eggins	corner	13	UFR-FUL-LDB	13	14	CYCLE_A	defects:UFR=-1,UFL=-1,DBL=-1
+eggins	corner	14	UFR-FUL-BUL	17	18	CYCLE_A	defects:UFR=-1,UFL=-1,UBL=-1
+eggins	corner	15	UFR-FDL-LDB	9	10	CYCLE_A	defects:UFR=+1,DFL=+0,DBL=-1
+eggins	corner	16	UFR-FDL-BDL	13	14	CYCLE_A	defects:UFR=+1,DFL=+1,DBL=+1
+eggins	corner	17	UFR-FDR-FDL	14	14	CYCLE_A	defects:UFR=-1,DFR=-1,DFL=-1
+eggins	corner	18	UFR-FDR-DBR	14	14	CYCLE_A	defects:UFR=-1,DFR=+1,DBR=+0
+eggins	corner	19	UFR-RUB-RDB	13	14	CYCLE_A	defects:UFR=+1,UBR=+1,DBR=+1
+eggins	corner	20	UFR-RDB-LUF	11	12	CYCLE_A	defects:UFR=-1,DBR=-1,UFL=-1
+eggins	corner	21	UFR-RDB-DFL	11	12	CYCLE_A	defects:UFR=-1,DBR=+1,DFL=+0
+eggins	corner	22	UFR-BUR-UBL	12	14	CYCLE_A	defects:UFR=-1,UBR=+1,UBL=+0
+eggins	corner	23	UFR-BUL-UBR	9	12	CYCLE_A	defects:UFR=+1,UBL=-1,UBR=+0
+eggins	corner	24	UFR-BUL-BDL	13	14	CYCLE_A	defects:UFR=+1,UBL=+1,DBL=+1
+eggins	corner	25	UFR-BUL-DFL	11	12	CYCLE_A	defects:UFR=+1,UBL=-1,DFL=+0
+eggins	corner	26	UFR-BDR-BUL	11	12	CYCLE_A	defects:UFR=+1,DBR=+0,UBL=-1
+eggins	corner	27	UFR-BDL-BUR	14	14	CYCLE_A	defects:UFR=-1,DBL=+0,UBR=+1
+eggins	corner	28	UFR-DFL-BDR	11	12	CYCLE_A	defects:UFR=+0,DFL=+1,DBR=-1
+eggins	corner	29	UFR-DFR-UFL	16	16	CYCLE_A	defects:UFR=+0,DFR=+0,UFL=+0 clean
+eggins	corner	30	UFR-DFR-LDB	11	14	CYCLE_A	defects:UFR=+0,DFR=+1,DBL=-1
+eggins	corner	31	UFR-DFR-FDL	13	16	CYCLE_A	defects:UFR=+0,DFR=+1,DFL=-1
+eggins	corner	32	UFR-DFR-BDR	14	14	CYCLE_A	defects:UFR=+0,DFR=+1,DBR=-1
+eggins	corner	33	UFR-DBL-LUF	11	14	CYCLE_A	defects:UFR=+0,DBL=+1,UFL=-1
+eggins	corner	34	UFR-DBL-DFL	13	14	CYCLE_A	defects:UFR=+0,DBL=+0,DFL=+0 clean
+eggins	corner	35	UFR-DBR-LUF	13	14	CYCLE_A	defects:UFR=+0,DBR=+1,UFL=-1
+eggins	corner	36	UFL-LUB-RDF	13	14	CYCLE_A	defects:UFL=-1,UBL=-1,DFR=-1
+eggins	corner	37	UFL-LDF-RDB	9	10	CYCLE_A	defects:UFL=-1,DFL=+0,DBR=+1
+eggins	corner	38	UFL-RUB-DBL	11	12	CYCLE_A	defects:UFL=+1,UBR=-1,DBL=+0
+eggins	corner	39	UFL-BDR-RUB	13	14	CYCLE_A	defects:UFL=+1,DBR=+0,UBR=-1
+eggins	twists	2	UFR & UBR	16	16	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+eggins	twists	3	UFR & DFL	18	18	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[LDF>FDL FDL>DFL DFL>LDF] d2=-1
+eggins	twists	4	UFR & DFR	18	18	YES	cyc1=[UFR>FUR FUR>RUF RUF>UFR] d1=+1 cyc2=[FDR>RDF RDF>DFR DFR>FDR] d2=-1
+eggins	twists	5	DFR & UBR	16	16	YES	cyc1=[FDR>DFR RDF>FDR DFR>RDF] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+eggins	twists	6	DBR & UBR	17	18	YES	cyc1=[RDB>DBR BDR>RDB DBR>BDR] d1=+1 cyc2=[UBR>BUR RUB>UBR BUR>RUB] d2=-1
+eggins	parity	2	UF-UR, UFR-LUB	15	17	YES	defects: UF=ok,UR=ok UFR=-1,UBL=+1
+eggins	parity	3	UF-UR, UFR-RUB	16	15	YES	defects: UF=ok,UR=ok UFR=+1,UBR=-1
+eggins	ltct	2	UF-UR, DFR-LDF[FUR]	19	23	REPORTED	named e=UF/UR c=DFR/LDF[FUR] | edges: UR->UF UF->UR | corners: UFR->RUF [UFR>RUF FUR>UFR RUF>FUR] tw=-1 LDF->RDF [LDF>RDF FDL>DFR DFL>FDR] tw=-1 FDR->FDL [FDR>FDL RDF>DFL DFR>LDF] tw=-1
+eggins	ltct	3	UF-UR, UFR-UBR[BUL]	12	15	REPORTED	named e=UF/UR c=UFR/UBR[BUL] | edges: UR->UF UF->UR | corners: UBL->LUB [UBL>LUB LUB>BUL BUL>UBL] tw=-1 UBR->FUR [UBR>FUR RUB>RUF BUR>UFR] tw=+1 UFR->UBR [UFR>UBR FUR>RUB RUF>BUR] tw=+0
+eggins	ltct	4	UF-UR, UFR-UBL[RUB]	18	21	REPORTED	named e=UF/UR c=UFR/UBL[RUB] | edges: UR->UF UF->UR | corners: UBL->FUR [UBL>FUR LUB>UFR BUL>RUF] tw=+1 UBR->BUR [UBR>BUR RUB>UBR BUR>RUB] tw=-1 UFR->UBL [UFR>UBL FUR>BUL RUF>LUB] tw=+0

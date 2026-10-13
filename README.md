@@ -3,7 +3,7 @@
 [![CI](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml)
 [![coverage](docs/badges/coverage.svg)](scripts/coverage-badge.ps1)
 
-A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves. Every alg is mechanically verified against an emulated cube, so misspellings and wrong algs never contaminate muscle memory. Grounding data is the reconstructed alg sets of Tommy Cherry and Charlie Eggins, sha-256 pinned under local ref_ground/.
+A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves. Every alg is mechanically verified against an emulated cube, so misspellings and wrong algs never contaminate muscle memory. Grounding data is the reconstructed alg sets of Tommy Cherry and Charlie Eggins, sha-256 pinned under ref_ground/.
 
 ## usage
 
@@ -231,10 +231,10 @@ config/config.json is the single centralized hub for every tunable: app window a
 
 ## development
 
-Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file. CI on every main push runs fmt, clippy, check, the release build, and every self-contained test suite on GitHub Actions. The vendor-data oracles need the local ref_ground grounding and stay on the make chain.
+Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file. CI on every main push runs fmt, clippy, check, the release build, and a self-contained test subset on GitHub Actions, the full oracle suite runs on the make chain.
 
 ![verification chain](docs/diagrams/verification-chain.png)
 
 ## licensing
 
-Repository code is MIT. ref_ground/ and ref_doc/ are gitignored local grounding derived from GPL-3.0 blddb exports, see DATA_PROVENANCE.md for hashes, retrieval dates, and regeneration steps.
+Repository code is MIT. ref_ground/ ships GPL-3.0 derived data from blddb exports, the workbooks and TSV tables, ref_doc/ is gitignored local grounding, see DATA_PROVENANCE.md for hashes and regeneration steps.

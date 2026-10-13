@@ -1,6 +1,10 @@
 /target
 /target-*/
-/ref_ground/
+/ref_ground/__pycache__/
+/ref_ground/*.py
+/ref_ground/*.c
+/ref_ground/*.md
+/ref_ground/*.json
 /ref_doc/*
 !/ref_doc/README.md
 /data/vendor/

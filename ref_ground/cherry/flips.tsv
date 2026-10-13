@@ -1,0 +1,26 @@
+Position          	Alg                                                                      	Commutator                                        	Reconstruction Link	Youtube Link
+UF & UB	M' U2 M U R' F' R S R' F R S' U	[M',U2]+U':[R' F' R,S]	https://bit.ly/3157nPL	3BLD: 16.46 Ao25 (Former WB)
+UF & UL	L E2 L2 E L U L' E' L2 E2 L' U'	[L E2 L2 E L,U]	https://bit.ly/3wFx2cP	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+UF & UR	R' E2 R2 E' R' U' R E R2 E2 R U	[R' E2 R2 E' R',U']	https://bit.ly/3CdWLLk	3BLD: 15.95 WB Ao12
+UF & FL	R' E R U' R' E' R2 E2 R' U R E2 R'	R' E R:[U',R' E' R2 E2 R']	https://bit.ly/30ewJui	3BLD: 15.95 WB Ao12
+UF & FR	L E' L' U L E L2 E2 L U' L' E2 L	L E' L':[U,L E L2 E2 L]	https://bit.ly/3yIOscE	3BLD: 14.97 Ao12 (WB)
+UF & BR	L' E L U L' E' L2 E2 L' U' L E2 L'	L' E L:[U,L' E' L2 E2 L']	https://bit.ly/3ljrot4	3BLD: 14.97 Ao12 (WB)
+UF & BL	R E' R' U' R E R2 E2 R U R' E2 R	R E' R':[U',R E R2 E2 R]	https://bit.ly/3PuDspd	3BLD: 14.21 Ao5 (WB)
+UF & DR	U R' E' R U2 R' E R S R2 S' R2 U	U:[[R' E' R,U2]+U2:[S,R2]]	https://tinyurl.com/y5abxbfy	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UF & DB	M U R' F' R S R' F R S' U M' U2	M U:[[R' F' R,S]+U:[M',U2]]	https://bit.ly/3gjw5Ap	3BLD: 15.84 Ao12 (Former PB/WB)
+UB & UR	U R' E2 R2 E' R' U' R E R2 E2 R	[U,R' E2 R2 E' R']	https://bit.ly/3GBHK8N	15.24 Official Rubik’s Cube Blindfolded World Record Mean (Tommy Cherry)
+UB & FL	R' E R U R' E' R2 E2 R' U' R E2 R'	R' E R:[U,R' E' R2 E2 R']	https://tinyurl.com/vb2znfab	Rubik's Cube Blindfolded WORLD RECORD Mean (14.72 Seconds)
+UB & DF	U R' F' R S R' F R S' U M' U2 M	U:[[R' F' R,S]+U:[M',U2]]	https://bit.ly/2Yo3uVs	3BLD: 11.89 Single, 14.52 Mo3 (With Commentary)
+UB & DB	U2 M U R' F' R S R' F R S' U M'	[U2,M]+M U':[R' F' R,S]	https://bit.ly/3x4U2RQ	16.22 Official 3BLD WR Mean FAIL
+UR & FL	S R' E R2 E' R2 F2 R S' R' F2 R	S R':[[E,R2]+[F2,R S' R']]	https://bit.ly/3LpYfqB	3BLD: 14.21 Ao5 (WB)
+UR & FR	U L E' L' U L E L2 E2 L U' L' E2 L U'	U L E' L':[U,L E L2 E2 L]	https://bit.ly/2TZe6aB	16.05 3BLD Ao12
+UR & BL	U R E' R' U' R E R2 E2 R U R' E2 R U'	U R E' R':[U',R E R2 E2 R]	https://bit.ly/3cTc81K	3BLD: 16.46 Ao25 (Former WB)
+UR & DF	R' F' R S R' F R S' U M' U2 M U	[R' F' R,S]+U:[M',U2]	https://bit.ly/3i4ckyp	16.22 Official 3BLD WR Mean FAIL
+UR & DB	U M U R' F' R S R' F R S' U M' U	U M U:[[R' F' R,S]+U:[M',U2]]	https://bit.ly/45M6RTI	12.91 3x3 Blindfolded Mean [Former WB]
+UL & BL	U R' E2 R U R' E2 R2 E' R' U' R E R' U'	U R' E2 R:[U,R' E2 R2 E' R']	https://bit.ly/322jazb	3BLD: 15.95 WB Ao12
+FR & BL	R2 E' R2 F2 R S' R' F2 R S R' E	[R2,E']+E':[F2,R S' R']	https://bit.ly/3AdITmI	Almost getting a World Record...
+FR & DB	l E' L' U' L E L2 E2 L U L' E2 M' L	l E' L':[U',L E L2 E2 L]	https://bit.ly/2U6NyUO	17.95 3BLD AO25 (Counting 28.16 and 23.84)
+FL & DF	F L' S' L F' L' S U' M' U2 M U' L	[F,L' S' L]+L' U':[M',U2]	https://bit.ly/3ObDPDU	3BLD: 13.70 Ao5 (WB)
+FL & DR	R' E R2 E' R2 F2 R S' R' F2 R S	R':[[E,R2]+[F2,R S' R']]	https://bit.ly/3yWoL5j	3BLD: 14.35 Mo3 (Angstrom WeiLong GTS3 M)
+DF & BR	R2 F' R S R' F R S' U M' U2 M U R	R':[[R' F' R,S]+U:[M',U2]]	https://bit.ly/3LmMOA4	3BLD: 14.21 Ao5 (WB)
+DR & DL	U' R2 S' R2 S U R F R' S' R F' R' S	U':[[R2,S']+U:[R F R',S']]	https://bit.ly/3qb5A4u	17.95 3BLD AO25 (Counting 28.16 and 23.84)
