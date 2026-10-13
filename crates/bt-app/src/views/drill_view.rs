@@ -233,7 +233,11 @@ pub fn spawn(
                 ..default()
             })
             .with_children(|region| {
-                crate::net::spawn_net(region, crate::present::drill_net_geometry(config));
+                crate::net::spawn_net(
+                    region,
+                    crate::present::drill_net_geometry(config),
+                    fonts.bold.clone(),
+                );
             });
         parent.spawn((
             DrillCardRoot,

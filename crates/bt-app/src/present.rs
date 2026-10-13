@@ -204,7 +204,7 @@ pub fn spawn_text_view(
             spawn_hint(parent, fonts, line);
         }
         if let Some(geometry) = geometry {
-            net::spawn_net(parent, geometry);
+            net::spawn_net(parent, geometry, fonts.bold.clone());
         }
     });
     content

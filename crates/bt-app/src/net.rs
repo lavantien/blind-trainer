@@ -158,6 +158,16 @@ pub fn face_of(sticker: u8) -> usize {
     }
 }
 
+pub fn letter_color(face: usize) -> Color {
+    let linear = theme::face_color(face).to_linear();
+    let luminance = 0.2126 * linear.red + 0.7152 * linear.green + 0.0722 * linear.blue;
+    if luminance >= 0.5 {
+        Color::srgb(0.08, 0.08, 0.08)
+    } else {
+        Color::srgb(0.96, 0.96, 0.96)
+    }
+}
+
 pub fn grid_of(sticker: u8) -> (usize, usize, usize) {
     let face = face_of(sticker);
     let bytes = name_of(sticker).as_bytes();
@@ -227,7 +237,11 @@ pub struct NetView;
 
 const NET_BANDS: [&[usize]; 3] = [&[0], &[1, 2, 3, 4], &[5]];
 
-pub fn spawn_net(parent: &mut ChildSpawnerCommands, geo: NetGeometry) -> Entity {
+pub fn spawn_net(
+    parent: &mut ChildSpawnerCommands,
+    geo: NetGeometry,
+    font: Handle<Font>,
+) -> Entity {
     parent
         .spawn((
             NetView,
@@ -248,7 +262,7 @@ pub fn spawn_net(parent: &mut ChildSpawnerCommands, geo: NetGeometry) -> Entity 
                     })
                     .with_children(|row_parent| {
                         for &face in band {
-                            spawn_face(row_parent, face, geo);
+                            spawn_face(row_parent, face, geo, &font);
                         }
                     });
             }
@@ -256,7 +270,12 @@ pub fn spawn_net(parent: &mut ChildSpawnerCommands, geo: NetGeometry) -> Entity 
         .id()
 }
 
-fn spawn_face(parent: &mut ChildSpawnerCommands, face: usize, geo: NetGeometry) {
+fn spawn_face(
+    parent: &mut ChildSpawnerCommands,
+    face: usize,
+    geo: NetGeometry,
+    font: &Handle<Font>,
+) {
     parent
         .spawn(Node {
             flex_direction: FlexDirection::Column,
@@ -274,7 +293,7 @@ fn spawn_face(parent: &mut ChildSpawnerCommands, face: usize, geo: NetGeometry) 
                     .with_children(|row_parent| {
                         for col in 0..3usize {
                             let grid = face * 9 + row * 3 + col;
-                            row_parent.spawn((
+                            let mut cell = row_parent.spawn((
                                 NetCell { grid },
                                 NetPulse(0.0),
                                 Node {
@@ -285,6 +304,26 @@ fn spawn_face(parent: &mut ChildSpawnerCommands, face: usize, geo: NetGeometry) 
                                 },
                                 BackgroundColor(theme::face_color(face)),
                             ));
+                            if grid % 9 == 4 {
+                                cell.with_children(|cell_parent| {
+                                    cell_parent.spawn((
+                                        Node {
+                                            width: Val::Percent(100.0),
+                                            height: Val::Percent(100.0),
+                                            align_items: AlignItems::Center,
+                                            justify_content: JustifyContent::Center,
+                                            ..default()
+                                        },
+                                        Text::new(theme::face_name(face)),
+                                        TextFont {
+                                            font: FontSource::Handle(font.clone()),
+                                            font_size: FontSize::Px(geo.quad * 0.45),
+                                            ..default()
+                                        },
+                                        TextColor(letter_color(face)),
+                                    ));
+                                });
+                            }
                         }
                     });
             }
@@ -332,63 +371,72 @@ pub fn update_net_colors(
 mod tests {
     use super::*;
 
-    const EXPECTED: [(u8, usize, usize, usize); 48] = [
-        (0, 0, 0, 0),
-        (1, 0, 0, 2),
-        (2, 0, 2, 2),
-        (3, 0, 2, 0),
-        (4, 1, 0, 0),
-        (5, 1, 0, 2),
-        (6, 1, 2, 2),
-        (7, 1, 2, 0),
-        (8, 2, 0, 0),
-        (9, 2, 0, 2),
-        (10, 2, 2, 2),
-        (11, 2, 2, 0),
-        (12, 3, 0, 0),
-        (13, 3, 0, 2),
-        (14, 3, 2, 2),
-        (15, 3, 2, 0),
-        (16, 4, 0, 0),
-        (17, 4, 0, 2),
-        (18, 4, 2, 2),
-        (19, 4, 2, 0),
-        (20, 5, 0, 0),
-        (21, 5, 0, 2),
-        (22, 5, 2, 2),
-        (23, 5, 2, 0),
-        (24, 0, 0, 1),
-        (25, 0, 1, 2),
-        (26, 0, 2, 1),
-        (27, 0, 1, 0),
-        (28, 1, 0, 1),
-        (29, 1, 1, 2),
-        (30, 1, 2, 1),
-        (31, 1, 1, 0),
-        (32, 2, 0, 1),
-        (33, 2, 1, 2),
-        (34, 2, 2, 1),
-        (35, 2, 1, 0),
-        (36, 3, 0, 1),
-        (37, 3, 1, 2),
-        (38, 3, 2, 1),
-        (39, 3, 1, 0),
-        (40, 4, 0, 1),
-        (41, 4, 1, 2),
-        (42, 4, 2, 1),
-        (43, 4, 1, 0),
-        (44, 5, 0, 1),
-        (45, 5, 1, 2),
-        (46, 5, 2, 1),
-        (47, 5, 1, 0),
-    ];
+    fn axis_unit(byte: u8) -> (i8, i8, i8) {
+        match byte {
+            b'U' => (0, 1, 0),
+            b'D' => (0, -1, 0),
+            b'R' => (1, 0, 0),
+            b'L' => (-1, 0, 0),
+            b'F' => (0, 0, -1),
+            b'B' => (0, 0, 1),
+            other => panic!("axis byte unexpected: {other}"),
+        }
+    }
+
+    fn sticker_placement(sticker: u8) -> ((i8, i8, i8), (i8, i8, i8)) {
+        let bytes = name_of(sticker).as_bytes();
+        let mut pos = (0, 0, 0);
+        for &byte in bytes {
+            let unit = axis_unit(byte);
+            pos = (pos.0 + unit.0, pos.1 + unit.1, pos.2 + unit.2);
+        }
+        (pos, axis_unit(bytes[0]))
+    }
+
+    fn cell_placement(face: usize, row: usize, col: usize) -> ((i8, i8, i8), (i8, i8, i8)) {
+        let (r, c) = (row as i8, col as i8);
+        match face {
+            0 => ((c - 1, 1, 1 - r), (0, 1, 0)),
+            1 => ((-1, 1 - r, 1 - c), (-1, 0, 0)),
+            2 => ((c - 1, 1 - r, -1), (0, 0, -1)),
+            3 => ((1, 1 - r, c - 1), (1, 0, 0)),
+            4 => ((1 - c, 1 - r, 1), (0, 0, 1)),
+            5 => ((c - 1, -1, r - 1), (0, -1, 0)),
+            other => panic!("face index unexpected: {other}"),
+        }
+    }
 
     #[test]
-    fn grid_matches_position_map() {
-        for (sticker, face, row, col) in EXPECTED {
-            assert_eq!(grid_of(sticker), (face, row, col), "sticker {sticker}");
-            assert_eq!(grid_index(sticker), face * 9 + row * 3 + col);
+    fn grid_matches_physical_unfold() {
+        for sticker in 0u8..48 {
+            let placement = sticker_placement(sticker);
+            let mut hits = Vec::new();
+            for face in 0..6usize {
+                for row in 0..3usize {
+                    for col in 0..3usize {
+                        if cell_placement(face, row, col) == placement {
+                            hits.push((face, row, col));
+                        }
+                    }
+                }
+            }
+            assert_eq!(hits.len(), 1, "sticker {sticker} at {placement:?}");
+            assert_eq!(grid_of(sticker), hits[0], "sticker {sticker}");
+            assert_eq!(
+                grid_index(sticker),
+                hits[0].0 * 9 + hits[0].1 * 3 + hits[0].2
+            );
         }
+    }
+
+    #[test]
+    fn letter_ink_contrasts_face_luminance() {
+        let dark = Color::srgb(0.08, 0.08, 0.08);
+        let light = Color::srgb(0.96, 0.96, 0.96);
+        assert_eq!(letter_color(0), dark);
+        assert_eq!(letter_color(5), dark);
+        assert_eq!(letter_color(3), light);
+        assert_eq!(letter_color(4), light);
     }
 
     #[test]
