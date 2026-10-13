@@ -1,51 +1,9 @@
 # blind trainer
 
+[![CI](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml)
+[![coverage](docs/badges/coverage.svg)](scripts/coverage-badge.ps1)
+
 A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves. Every alg is mechanically verified against an emulated cube, so misspellings and wrong algs never contaminate muscle memory. Grounding data is the reconstructed alg sets of Tommy Cherry and Charlie Eggins, sha-256 pinned under local ref_ground/.
-
-## architecture
-
-Rust workspace. Arrows point from dependent to dependency:
-
-```
-bt-core
-  <- bt-scheme
-       <- bt-data
-            <- bt-app
-            <- bt-gendata
-            <- bt-verify (also depends on bt-scheme)
-       <- bt-ga
-            <- bt-ga-run
-       <- bt-memofreq
-bt-visual-diff (no crate dependencies)
-```
-
-- bt-core: cube model, precomputed move permutations, siGN notation dialect parse/format/inverse/qtm, piece and orientation analysis. std only.
-- bt-scheme: Speffz letter maps, floating-buffer pair spaces, classifier mirroring the blddb tracer, memo generator, seeded scrambles.
-- bt-data: TSV corpus loader, alg verification verdicts, SM-2 spaced repetition, user-dir overlay.
-- bt-ga: Vietnamese syllable inventory, perceptual features, genetic assignment optimizer. bt-app consumes its JSON output and never depends on the crate.
-- bt-app: Bevy desktop app shipped as blind-trainer.exe, keyboard-first UI, JSON persistence in the user dir. AppLogicPlugin carries all game flow with no rendering, PresentationPlugin owns the UI, so headless e2e drives complete flows through MinimalPlugins.
-- tools: bt-gendata builds data/vendor from ref_ground/, bt-verify writes the alg verification report, bt-memofreq runs the memo frequency Monte Carlo, bt-ga-run runs the optimizer into data/ga/, bt-visual-diff compares screenshots against committed baselines.
-- fuzz/: cargo-fuzz targets, excluded from the workspace.
-
-## cube model
-
-Sticker id = face*4 + position within face. Corners 0..23, edges 24..47, centers 48..53. Face order U L F R B D, each face a 2x2 grid numbered row-major:
-
-```
-U: 0 1     L: 4 5     F: 8 9     R: 12 13    B: 16 17    D: 20 21
-   2 3        6 7        10 11      14 15       18 19       22 23
-edges: UB=24 UR=25 UF=26 UL=27 LU=28 ... DL=47 (orbit order follows the Speffz table)
-```
-
-Cube state is `occ: [u8; 54]` where occ[i] is the home sticker id currently at position i. The inverse state is the transpose: inverse[i] = position of home sticker i. Solved means occ[i] == i for all i. Speffz anchors: edge UF is sticker 26 letter C, corner UFR is sticker 2 letter C, the full map is equality-tested against ref_ground/position_map.tsv.
-
-## notation
-
-siGN dialect: faces U D L R F B with ' and 2, lowercase wides, inner slices 2U 2D 2L 2R 2F 2B, slices M E S, rotations x y z. M follows L, E follows D, S follows F. Rotation pins: z = F S B', x = R M' L', y = U E' D'. M2' canonicalizes to M2 because both produce the same permutation. Only face turns keep centers fixed, wides, inners, slices, and rotations move them, which is what makes centers_fixed a meaningful predicate. Every vendor alg in ref_ground is center-fixed by cancellation.
-
-## execution model
-
-3-style with floating-buffer sticker-following execution. Edge buffer UF, corner buffer UFR. Floating order: edges UF UB UR UL FR FL DF DB DR DL BR BL, corners UFR UFL UBR UBL DFR DFL DBR DBL. A case written A-B-C cycles sticker A to B, B to C, C to A (CYCLE_A direction, verified on all 988 vendor 3-style rows). The first position token of a vendor alg names the floating buffer the alg starts from, which is how later memo pairs execute at non-UF/UFR buffers: memo generation records each pair's floating buffer head, and the ideal cycle oracle takes that buffer as an argument. Defects: which pieces an alg flips or twists is read from the simcheck notes produced by the independent pysim simulator, never inferred from position tokens, the two derivations disagree on 213 of 1077 rows.
 
 ## usage
 
@@ -143,13 +101,105 @@ If the config cannot be read, or the vendor directory exists but its sheets are 
 
 ![fatal](docs/screenshots/fatal.png)
 
+## schemes
+
+### letters
+
+Speffz letter scheme, one letter per sticker position per orbit, A through X:
+
+```
+edges   A UB  B UR  C UF  D UL  E LU  F LF  G LD  H LB
+        I FU  J FR  K FD  L FL  M RU  N RB  O RD  P RF
+        Q BU  R BL  S BD  T BR  U DF  V DR  W DB  X DL
+corners A UBL B UBR C UFR D UFL E LUB F LUF G LDF H LDB
+        I FUL J FUR K FDR L FDL M RUF N RUB O RDB P RDF
+        Q BUR R BUL S BDL T BDR U DFL V DFR W DBR X DBL
+```
+
+The full map is equality-tested against ref_ground/position_map.tsv.
+
+### colors
+
+White up, green front, red right, blue back, orange left, yellow down. The net lays out U on top, L F R B across the middle band with F centered, D at the bottom, faces identified by color.
+
+### buffers
+
+Edge buffer UF, corner buffer UFR, both letter C. When the buffer piece itself gets displaced the buffer floats: edges follow UF UB UR UL FR FL DF DB DR DL BR BL, corners follow UFR UFL UBR UBL DFR DFL DBR DBL.
+
+### memo tokens
+
+Edge pairs memo as single Vietnamese syllables from data/ga/syllables.json, one syllable per pair, assigned by the genetic optimizer under memo-frequency weighting, make ga regenerates the assignment. Corner pairs memo as image words from the 620-entry letter-pair table embedded in bt-app, AB is Anthony Brooks, QM is Quail Man, pairs without an entry fall back to the bare letters. The memo mode setting picks the stream: syllables, images, or per-orbit, the default, syllables for edges and image words for corners.
+
+### scheduling
+
+SM-2 spaced repetition schedules every drilled position separately. Ratings 1 to 4 map to again, hard, good, easy, intervals clamp to 1..365 days from the config hub.
+
+## cube model
+
+Sticker id = face*4 + position within face. Corners 0..23, edges 24..47, centers 48..53. Face order U L F R B D, each face a 2x2 grid numbered row-major:
+
+```
+U: 0 1     L: 4 5     F: 8 9     R: 12 13    B: 16 17    D: 20 21
+   2 3        6 7        10 11      14 15       18 19       22 23
+edges: UB=24 UR=25 UF=26 UL=27 LU=28 ... DL=47 (orbit order follows the Speffz table)
+```
+
+Cube state is `occ: [u8; 54]` where occ[i] is the home sticker id currently at position i. The inverse state is the transpose: inverse[i] = position of home sticker i. Solved means occ[i] == i for all i. Speffz anchors: edge UF is sticker 26 letter C, corner UFR is sticker 2 letter C, the full map is equality-tested against ref_ground/position_map.tsv.
+
+## notation
+
+siGN dialect: faces U D L R F B with ' and 2, lowercase wides, inner slices 2U 2D 2L 2R 2F 2B, slices M E S, rotations x y z. M follows L, E follows D, S follows F. Rotation pins: z = F S B', x = R M' L', y = U E' D'. M2' canonicalizes to M2 because both produce the same permutation. Only face turns keep centers fixed, wides, inners, slices, and rotations move them, which is what makes centers_fixed a meaningful predicate. Every vendor alg in ref_ground is center-fixed by cancellation.
+
+## execution model
+
+3-style with floating-buffer sticker-following execution. Edge buffer UF, corner buffer UFR, floating orders listed under schemes. A case written A-B-C cycles sticker A to B, B to C, C to A (CYCLE_A direction, verified on all 988 vendor 3-style rows). The first position token of a vendor alg names the floating buffer the alg starts from, which is how later memo pairs execute at non-UF/UFR buffers: memo generation records each pair's floating buffer head, and the ideal cycle oracle takes that buffer as an argument. Defects: which pieces an alg flips or twists is read from the simcheck notes produced by the independent pysim simulator, never inferred from position tokens, the two derivations disagree on 213 of 1077 rows.
+
+## architecture
+
+Rust workspace, arrows run left to right from dependency to consumer:
+
+![workspace](docs/diagrams/workspace.png)
+
+bt-ga also builds on bt-data, bt-verify also on bt-scheme and bt-gendata, bt-ga-run and bt-memofreq also on bt-data and bt-scheme. bt-visual-diff has no crate dependencies.
+
+- bt-core: cube model, precomputed move permutations, siGN notation dialect parse/format/inverse/qtm, piece and orientation analysis. std only.
+
+  ![cube core pipeline](docs/diagrams/cube-core.png)
+
+- bt-scheme: Speffz letter maps, floating-buffer pair spaces, classifier mirroring the blddb tracer, memo generator, seeded scrambles.
+
+  ![scheme pipeline](docs/diagrams/scheme.png)
+
+- bt-data: TSV corpus loader, alg verification verdicts, SM-2 spaced repetition, user-dir overlay.
+
+  ![data pipeline](docs/diagrams/data.png)
+
+- bt-ga: Vietnamese syllable inventory, perceptual features, genetic assignment optimizer. bt-app consumes its JSON output and never depends on the crate.
+
+  ![ga pipeline](docs/diagrams/ga.png)
+
+- bt-app: Bevy desktop app shipped as blind-trainer.exe, keyboard-first UI, JSON persistence in the user dir. AppLogicPlugin carries all game flow with no rendering, PresentationPlugin owns the UI, so headless e2e drives complete flows through MinimalPlugins.
+
+  ![app boot](docs/diagrams/app-boot.png)
+
+- tools: bt-gendata builds data/vendor from ref_ground/, bt-verify writes the alg verification report, bt-memofreq runs the memo frequency Monte Carlo, bt-ga-run runs the optimizer into data/ga/, bt-visual-diff compares screenshots against committed baselines.
+- fuzz/: cargo-fuzz targets, excluded from the workspace.
+
+App flows, one per view cycle:
+
+![drill flow](docs/diagrams/drill-flow.png)
+
+![memo flow](docs/diagrams/memo-flow.png)
+
+![solve flow](docs/diagrams/solve-flow.png)
+
 ## runtime notes
 
-Bevy 0.20 with bevy_feathers. The bevy facade needs the custom_cursor feature enabled alongside bevy_feathers, without it bevy_winit 0.20.0 fails to build from feature skew. The release binary resolves assets through an absolute AssetPlugin file_path built at startup, the default asset root is exe-relative and wrong for installed layouts. Text input uses the shipped FeathersTextInput, no custom widget.
+Bevy with bevy_feathers. The bevy facade needs the custom_cursor feature enabled alongside bevy_feathers, without it bevy_winit fails to build from feature skew. Runtime roots for config, vendor data, and assets resolve from the workspace layout first and fall back to an exe-relative install layout when the workspace paths are missing, assets load through an absolute AssetPlugin file_path built at startup. Text input uses the shipped FeathersTextInput, no custom widget.
 
 ## host tooling
 
-cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, memo under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). Two PATH requirements when a standalone stable Rust install exists on the machine: the rustup proxy dir (~/.cargo/bin) must precede the standalone bin dir or every toolchain pin (fuzz/rust-toolchain.toml, RUSTUP_TOOLCHAIN) is bypassed and the build rejects -Z flags, and the MSVC ASan runtime dir (VC\Tools\MSVC\<ver>\bin\Hostx64\x64 holding clang_rt.asan_dynamic-x86_64.dll) must be on PATH or the built fuzz binaries die with STATUS_DLL_NOT_FOUND. cargo-mutants 27.1.0, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths, run with scratch-local targets (no CARGO_TARGET_DIR) which need roughly 10 GB of free disk. Both tools compile nothing from bt-app.
+cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). Two PATH requirements when a standalone stable Rust install exists on the machine: the rustup proxy dir (~/.cargo/bin) must precede the standalone bin dir or every toolchain pin (fuzz/rust-toolchain.toml, RUSTUP_TOOLCHAIN) is bypassed and the build rejects -Z flags, and the MSVC ASan runtime dir (VC\Tools\MSVC\<ver>\bin\Hostx64\x64 holding clang_rt.asan_dynamic-x86_64.dll) must be on PATH or the built fuzz binaries die with STATUS_DLL_NOT_FOUND. cargo-mutants, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths, run with scratch-local targets (no CARGO_TARGET_DIR) which need roughly 10 GB of free disk. Both tools compile nothing from bt-app.
 
 ## make targets
 
@@ -159,6 +209,8 @@ cargo-fuzz 0.13.2 with the nightly MSVC toolchain, targets notation, classify, m
 - verify-algs: verify every vendor alg against the emulated cube, write the report.
 - memofreq: Monte Carlo memo pair frequencies.
 - ga: run the syllable GA into data/ga/.
+- coverage: run cargo llvm-cov over the workspace into a private target dir and regenerate docs/badges/coverage.svg via scripts/coverage-badge.ps1.
+- diagrams: render every docs/diagrams png from scripts/diagrams.typ via scripts/diagrams.ps1.
 - fmt: cargo fmt --all -- --check.
 - lint: cargo clippy --workspace --all-targets -- -D warnings.
 - check: cargo check --workspace.
@@ -180,6 +232,8 @@ config/config.json is the single centralized hub for every tunable: app window a
 ## development
 
 Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file.
+
+![verification chain](docs/diagrams/verification-chain.png)
 
 ## licensing
 
