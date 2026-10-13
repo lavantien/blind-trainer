@@ -8,7 +8,7 @@ use crate::present::FontBook;
 use crate::states::DrillPhase;
 use crate::theme;
 use crate::theme::FONT_ALG;
-use crate::views::{NowDay, PendingDrill, SyllableBook};
+use crate::views::{PendingDrill, SyllableBook};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
@@ -127,7 +127,11 @@ pub fn card_key(sheet: SheetClass, position: &str) -> String {
 }
 
 pub fn even_reps(n: u32) -> u32 {
-    n.saturating_add(n % 2).max(2)
+    (n.saturating_add(n % 2).max(2)) & !1
+}
+
+pub fn has_commutator(text: &str) -> bool {
+    !text.is_empty() && text != "Not found."
 }
 
 fn row_to_side(case: &CaseId, row: &Row) -> DrillSide {
@@ -352,6 +356,7 @@ pub fn card_content(
         };
     };
     let sheet = sheet_of(a.case.orbit);
+    let mechanics = mechanic_spans(&a.commutator, &a.alg);
     let mut rows = vec![
         (a.letters(), RowStyle::Focal),
         (
@@ -368,7 +373,7 @@ pub fn card_content(
         ),
         (a.alg_text.clone(), RowStyle::Alg),
     ];
-    if !a.commutator.is_empty() {
+    if mechanics.is_none() && has_commutator(&a.commutator) {
         rows.push((format!("commutator {}", a.commutator), RowStyle::Small));
     }
     rows.push((
@@ -401,10 +406,7 @@ pub fn card_content(
             RowStyle::Micro,
         ));
     }
-    CardContent {
-        rows,
-        mechanics: mechanic_spans(&a.commutator, &a.alg),
-    }
+    CardContent { rows, mechanics }
 }
 
 pub fn card_lines(
@@ -483,9 +485,16 @@ fn set_net(net: &mut NetState, cube: Cube, side: &DrillSide) {
     net.targets = [Some(side.case.t1), Some(side.case.t2)];
 }
 
+fn clear_net(net: &mut NetState) {
+    net.cube = Cube::solved();
+    net.buffer_sticker = None;
+    net.targets = [None, None];
+}
+
 pub fn sync_net(session: Res<DrillSession>, mut net: ResMut<NetState>) {
-    if let Some((a, _)) = session.sides() {
-        set_net(&mut net, Cube::solved(), a);
+    match session.sides() {
+        Some((a, _)) => set_net(&mut net, Cube::solved(), a),
+        None => clear_net(&mut net),
     }
 }
 
@@ -494,13 +503,12 @@ pub fn enter(
     mut session: ResMut<DrillSession>,
     corpus: Res<VendorCorpus>,
     stores: Res<Stores>,
-    now_day: Res<NowDay>,
     seed: Res<DrillSeed>,
     mut next: ResMut<NextState<DrillPhase>>,
 ) {
     let case = pending.0.take().or_else(|| {
         let mut rng = Rng::new(seed.0);
-        pick_pair(&corpus.0, &stores, now_day.0, &mut rng)
+        pick_pair(&corpus.0, &stores, crate::views::now_day(), &mut rng)
     });
     match case {
         Some(case) => install_pair(&mut session, &corpus.0, &stores, case),
@@ -515,8 +523,9 @@ pub fn enter_card(
     mut net: ResMut<NetState>,
 ) {
     messages.clear();
-    if let Some((a, _)) = session.sides() {
-        set_net(&mut net, Cube::solved(), a);
+    match session.sides() {
+        Some((a, _)) => set_net(&mut net, Cube::solved(), a),
+        None => clear_net(&mut net),
     }
 }
 
@@ -561,7 +570,8 @@ pub fn card_keys(
         return;
     }
     for input in inputs.read() {
-        if input.state == ButtonState::Pressed && input.key_code == KeyCode::Space {
+        if input.state == ButtonState::Pressed && !input.repeat && input.key_code == KeyCode::Space
+        {
             next.set(DrillPhase::Reps);
             return;
         }
@@ -587,7 +597,8 @@ pub fn reps_keys(
     mut next: ResMut<NextState<DrillPhase>>,
 ) {
     for input in inputs.read() {
-        if input.state == ButtonState::Pressed && input.key_code == KeyCode::Space {
+        if input.state == ButtonState::Pressed && !input.repeat && input.key_code == KeyCode::Space
+        {
             if session.current_side().is_none() {
                 return;
             }
@@ -637,10 +648,10 @@ pub fn rate_keys(
     corpus: Res<VendorCorpus>,
     mut stores: ResMut<Stores>,
     sm2: Res<Sm2>,
-    now_day: Res<NowDay>,
     mut seed: ResMut<DrillSeed>,
     mut next: ResMut<NextState<DrillPhase>>,
 ) {
+    let day = crate::views::now_day();
     let sides = session
         .sides()
         .map(|(a, b)| (a.case.orbit, a.position.clone(), b.position.clone()));
@@ -648,7 +659,7 @@ pub fn rate_keys(
         return;
     };
     for input in inputs.read() {
-        if input.state != ButtonState::Pressed {
+        if input.state != ButtonState::Pressed || input.repeat {
             continue;
         }
         let Some(rating) = rating_of(input.key_code) else {
@@ -659,19 +670,12 @@ pub fn rate_keys(
         } else {
             &position_b
         };
-        write_review(
-            &mut stores,
-            &sm2.0,
-            sheet_of(orbit),
-            position,
-            rating,
-            now_day.0,
-        );
+        write_review(&mut stores, &sm2.0, sheet_of(orbit), position, rating, day);
         commands.write_message(SaveStores);
         session.rate_step += 1;
         if session.rate_step > 1 {
             let mut rng = Rng::new(seed.0);
-            let picked = pick_pair(&corpus.0, &stores, now_day.0, &mut rng);
+            let picked = pick_pair(&corpus.0, &stores, day, &mut rng);
             seed.0 = seed.0.wrapping_add(1);
             match picked {
                 Some(case) => install_pair(&mut session, &corpus.0, &stores, case),
@@ -698,7 +702,6 @@ pub fn ensure_card(
     corpus: Res<VendorCorpus>,
     stores: Res<Stores>,
     book: Res<SyllableBook>,
-    now_day: Res<NowDay>,
     fonts: Option<Res<FontBook>>,
     roots: Query<Entity, With<DrillCardRoot>>,
     panels: Query<(), With<CardPanel>>,
@@ -709,7 +712,7 @@ pub fn ensure_card(
     let (Some(fonts), Some(root)) = (fonts.as_deref(), roots.iter().next()) else {
         return;
     };
-    let content = card_content(&session, &corpus.0, &book, &stores, now_day.0);
+    let content = card_content(&session, &corpus.0, &book, &stores, crate::views::now_day());
     spawn_card(&mut commands, root, fonts, &content);
 }
 
@@ -801,6 +804,13 @@ mod tests {
     }
 
     #[test]
+    fn even_reps_survives_the_u32_maximum() {
+        let reps = even_reps(u32::MAX);
+        assert_eq!(reps % 2, 0);
+        assert!(reps >= 2);
+    }
+
+    #[test]
     fn side_b_uses_the_vendor_flip_when_it_alternates() {
         let alg = "R2 U' S R2 S' R2 U R2";
         let inverse = Alg::parse(alg).expect("alg parses").inverse().format();
@@ -876,7 +886,7 @@ mod tests {
     }
 
     #[test]
-    fn card_lines_carry_the_full_pair_card() {
+    fn card_content_carries_the_full_pair_card() {
         let alg = "R2 U' S R2 S' R2 U R2";
         let parsed = Alg::parse(alg).expect("alg parses");
         let corpus = Corpus::from_rows(vec![
@@ -892,7 +902,7 @@ mod tests {
         let stores = stores_with_reps(4);
         let mut session = DrillSession::default();
         install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
-        let lines = card_lines(
+        let content = card_content(
             &session,
             &corpus,
             &book_with(Some(("edge", "AB", "tả"))),
@@ -900,6 +910,7 @@ mod tests {
             0,
         );
         let inverse = parsed.inverse().format();
+        let lines: Vec<String> = content.rows.iter().map(|(text, _)| text.clone()).collect();
         assert_eq!(
             lines,
             vec![
@@ -907,13 +918,42 @@ mod tests {
                 "edge UF-UB-UR".to_string(),
                 "memo tả".to_string(),
                 alg.to_string(),
-                "commutator R2 U':[S,R2]".to_string(),
                 format!("prepare BA inverse: {inverse}"),
                 format!("{} qtm {} htm cherry verified", parsed.qtm(), parsed.htm()),
                 "srs AB new, BA new".to_string(),
                 "alt eggins M2 U M2 U2 M U M2".to_string(),
             ]
         );
+        let spans = content.mechanics.expect("verified commutator yields spans");
+        assert_eq!(spans[0], ("R2 U': ".to_string(), FONT_ALG, theme::setup()));
+        assert_eq!(spans[2], ("S".to_string(), FONT_ALG, theme::teal()));
+        assert_eq!(spans[4], ("R2".to_string(), FONT_ALG, theme::interchange()));
+    }
+
+    #[test]
+    fn card_skips_the_raw_commutator_row_when_undecomposable() {
+        let stores = stores_with_reps(4);
+        for commutator in ["Not found.", ""] {
+            let corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", commutator);
+            let mut session = DrillSession::default();
+            install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
+            let content = card_content(&session, &corpus, &book_with(None), &stores, 0);
+            assert!(content.mechanics.is_none(), "commutator {commutator}");
+            assert!(
+                !content
+                    .rows
+                    .iter()
+                    .any(|(text, _)| text.starts_with("commutator")),
+                "placeholder must not render: {commutator}"
+            );
+            assert!(
+                content
+                    .rows
+                    .iter()
+                    .any(|(text, style)| *style == RowStyle::Alg && !text.is_empty()),
+                "alg row stays: {commutator}"
+            );
+        }
     }
 
     #[test]

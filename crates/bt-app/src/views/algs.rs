@@ -2,7 +2,7 @@ use crate::logic::{AppConfig, NavIntent, NetState, VendorCorpus};
 use crate::states::AppState;
 use crate::theme;
 use crate::views::PendingDrill;
-use crate::views::drill::{buffer_of, case_position};
+use crate::views::drill::{buffer_of, case_position, has_commutator};
 use bevy::feathers::controls::{FeathersTextInput, FeathersTextInputContainer};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
@@ -239,9 +239,15 @@ pub fn mechanic_spans(units: &[Expanded]) -> Vec<(String, Color)> {
             spans.push((format!("{}: ", setup.format()), theme::setup()));
         }
         spans.push(("[".to_string(), theme::text_muted()));
-        spans.push((unit.a.format(), theme::teal()));
-        spans.push((",".to_string(), theme::text_muted()));
-        spans.push((unit.b.format(), theme::interchange()));
+        if unit.b_first {
+            spans.push((unit.b.format(), theme::interchange()));
+            spans.push((",".to_string(), theme::text_muted()));
+            spans.push((unit.a.format(), theme::teal()));
+        } else {
+            spans.push((unit.a.format(), theme::teal()));
+            spans.push((",".to_string(), theme::text_muted()));
+            spans.push((unit.b.format(), theme::interchange()));
+        }
         spans.push(("]".to_string(), theme::text_muted()));
     }
     spans
@@ -277,6 +283,15 @@ mod tests {
         assert_eq!(list_window(818, 6, 10), 1..11);
         assert_eq!(list_window(818, 817, 10), 808..818);
         assert_eq!(list_window(3, 2, 10), 0..3);
+    }
+
+    #[test]
+    fn list_capacity_fits_the_window_and_floors_at_one() {
+        let mut config = AppConfig::default();
+        config.window.height = 800;
+        assert_eq!(list_capacity(&config), 21);
+        config.window.height = 0;
+        assert_eq!(list_capacity(&config), 1);
     }
 
     #[test]
@@ -495,14 +510,16 @@ fn spawn_detail(
                         theme::text_primary(),
                         AlgsDetailLine,
                     );
-                    crate::present::spawn_line(
-                        detail,
-                        fonts,
-                        &format!("commutator {}", row.commutator),
-                        theme::FONT_SMALL,
-                        theme::text_muted(),
-                        AlgsDetailLine,
-                    );
+                    if has_commutator(&row.commutator) {
+                        crate::present::spawn_line(
+                            detail,
+                            fonts,
+                            &format!("commutator {}", row.commutator),
+                            theme::FONT_SMALL,
+                            theme::text_muted(),
+                            AlgsDetailLine,
+                        );
+                    }
                 }
             }
         } else {

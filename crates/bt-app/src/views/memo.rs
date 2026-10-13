@@ -1,8 +1,8 @@
 use crate::logic::{SaveStores, Sm2};
 use crate::persist::{MemoMode, Stores};
 use crate::states::{AppState, MemoPhase};
+use crate::views::SyllableBook;
 use crate::views::drill::{case_position, rating_of, sheet_of, write_review};
-use crate::views::{NowDay, SyllableBook};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
@@ -197,7 +197,6 @@ pub fn review_keys(
     session: Res<MemoSession>,
     mut stores: ResMut<Stores>,
     sm2: Res<Sm2>,
-    now_day: Res<NowDay>,
     mut next: ResMut<NextState<MemoPhase>>,
 ) {
     for input in inputs.read() {
@@ -217,7 +216,13 @@ pub fn review_keys(
                 let Some(rating) = rating_of(key) else {
                     continue;
                 };
-                rate_pairs(&mut stores, &sm2.0, &session, rating, now_day.0);
+                rate_pairs(
+                    &mut stores,
+                    &sm2.0,
+                    &session,
+                    rating,
+                    crate::views::now_day(),
+                );
                 commands.write_message(SaveStores);
                 next.set(MemoPhase::Intro);
                 return;

@@ -189,7 +189,7 @@ pub fn spawn(commands: &mut Commands, fonts: &crate::present::FontBook, stores: 
         fonts,
         AppState::Settings,
         "settings",
-        &["edits save immediately, esc menu"],
+        &["esc menu"],
         None,
     );
     commands.entity(entity).with_children(|parent| {

@@ -88,14 +88,6 @@ pub fn spawn(commands: &mut Commands, fonts: &FontBook, warnings: &[String]) -> 
                     );
                 });
         }
-        spawn_line(
-            parent,
-            fonts,
-            "esc back to menu",
-            theme::FONT_SMALL,
-            theme::text_muted(),
-            MenuRowText,
-        );
     });
     content
 }

@@ -83,28 +83,28 @@ fn spawn_panel<M: Component, B: FnOnce(&mut ChildSpawnerCommands)>(
 pub fn spawn_card(commands: &mut Commands, root: Entity, fonts: &FontBook, content: &CardContent) {
     spawn_panel(commands, root, DrillPhase::Card, CardPanel, |panel| {
         for (text, style) in &content.rows {
-            if *style == RowStyle::Alg && content.mechanics.is_some() {
+            if *style == RowStyle::Alg
+                && let Some(spans) = &content.mechanics
+            {
+                let refs: Vec<(&str, f32, Color)> = spans
+                    .iter()
+                    .map(|(text, size, color)| (text.as_str(), *size, *color))
+                    .collect();
+                panel
+                    .spawn((
+                        DrillLine,
+                        Node {
+                            flex_direction: FlexDirection::Column,
+                            ..default()
+                        },
+                    ))
+                    .with_children(|mechanics| {
+                        spawn_spans(mechanics, fonts, &refs);
+                    });
                 continue;
             }
             let (size, color) = style.metrics();
             spawn_line(panel, fonts, text, size, color, DrillLine);
-        }
-        if let Some(spans) = &content.mechanics {
-            let refs: Vec<(&str, f32, Color)> = spans
-                .iter()
-                .map(|(text, size, color)| (text.as_str(), *size, *color))
-                .collect();
-            panel
-                .spawn((
-                    DrillLine,
-                    Node {
-                        flex_direction: FlexDirection::Column,
-                        ..default()
-                    },
-                ))
-                .with_children(|mechanics| {
-                    spawn_spans(mechanics, fonts, &refs);
-                });
         }
     });
 }

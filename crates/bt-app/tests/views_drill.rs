@@ -100,17 +100,22 @@ fn card_pins_the_pair_with_inverse_side_b() {
     let book = app.world().resource::<bt_app::views::SyllableBook>();
     let stores = app.world().resource::<bt_app::persist::Stores>();
     let now = app.world().resource::<bt_app::views::NowDay>().0;
-    let lines = drill::card_lines(session, corpus, book, stores, now);
+    let content = drill::card_content(session, corpus, book, stores, now);
+    let lines: Vec<String> = content.rows.iter().map(|(text, _)| text.clone()).collect();
     assert_eq!(lines[0], "AB");
     assert_eq!(lines[1], "edge UF-UB-UR");
     assert_eq!(lines[2], "memo AB", "fixture ships no syllables");
     assert_eq!(lines[3], COVERED_ALG);
-    assert_eq!(lines[4], format!("commutator {COVERED_COMMUTATOR}"));
     assert_eq!(
-        lines[5],
+        lines[4],
         format!("prepare BA inverse: {}", a.alg.inverse().format())
     );
-    assert_eq!(lines[7], "srs AB new, BA new");
+    assert_eq!(lines[6], "srs AB new, BA new");
+    assert!(
+        !lines.iter().any(|line| line.starts_with("commutator")),
+        "the decomposed spans replace the raw commutator row"
+    );
+    assert_eq!(mechanic_spans(&a.commutator, &a.alg), content.mechanics);
     let net = app.world().resource::<NetState>();
     assert_eq!(net.buffer_sticker, Some(EDGE_BUFFER_STICKER));
     let case = edge_case('A', 'B');

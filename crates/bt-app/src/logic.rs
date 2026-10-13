@@ -212,9 +212,9 @@ fn default_settings(config: &AppConfig) -> Result<Settings, String> {
     let memo_mode = MemoMode::parse(&config.memo.mode)
         .ok_or_else(|| format!("config app.memo.mode invalid: {}", config.memo.mode))?;
     Ok(Settings {
-        memo_cadence_ms: config.memo.cadence_ms,
+        memo_cadence_ms: config.memo.cadence_ms.clamp(1, 10_000),
         memo_mode,
-        drill_reps: config.drill.reps,
+        drill_reps: config.drill.reps.clamp(1, 100),
     })
 }
 
