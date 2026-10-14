@@ -206,10 +206,10 @@ fn solved_cube_fails_every_named_edge_cycle_slot() {
 }
 
 #[test]
-fn edge_sheet_checks_only_the_named_pieces() {
+fn edge_sheet_flags_unnamed_piece_disturbance() {
     let verdict = verify(&alg("M2"), "UF-UB-UL", SheetClass::Edge);
     assert!(!verdict.ok());
-    assert_eq!(verdict.problems.len(), 7);
+    assert_eq!(verdict.problems.len(), 11);
     assert!(verdict.problems.contains(&Problem::CentersMoved));
     let wrong = verdict
         .problems
@@ -217,6 +217,12 @@ fn edge_sheet_checks_only_the_named_pieces() {
         .filter(|p| matches!(p, Problem::WrongCycle { .. }))
         .count();
     assert_eq!(wrong, 6);
+    let residue = verdict
+        .problems
+        .iter()
+        .filter(|p| matches!(p, Problem::NonFixedResidue { .. }))
+        .count();
+    assert_eq!(residue, 4);
     assert!(verdict.problems.contains(&Problem::WrongCycle {
         sticker: "UL".to_string(),
         expected: "UF".to_string(),
@@ -227,7 +233,13 @@ fn edge_sheet_checks_only_the_named_pieces() {
         "UF-UR-UL",
         SheetClass::Edge,
     );
-    assert!(extra.ok(), "{extra}");
+    assert!(!extra.ok());
+    let corner_residue = extra
+        .problems
+        .iter()
+        .filter(|p| matches!(p, Problem::NonFixedResidue { .. }))
+        .count();
+    assert_eq!(corner_residue, 9);
 }
 
 #[test]
