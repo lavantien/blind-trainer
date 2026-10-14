@@ -9,7 +9,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
+.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
 
 COVERAGE_TARGET := C:/Users/lavantien/dev/github/bt-coverage-target
 
@@ -51,6 +51,9 @@ build:
 
 test:
 	cargo test --workspace
+
+test-crate:
+	cargo test -p $(p)
 
 fuzz:
 	cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done
