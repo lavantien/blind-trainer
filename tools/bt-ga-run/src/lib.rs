@@ -462,6 +462,7 @@ fn write_outputs(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bt_ga::dist::CaseCount;
 
     #[test]
     fn crate_id_matches_package() {
@@ -489,5 +490,307 @@ mod tests {
         }
         assert!(assignment.pool_size >= CASE_COUNT);
         assert_eq!(assignment.freq_sha256.len(), 64);
+    }
+
+    fn synth_inputs(pool_size: usize) -> RunInputs {
+        let pool = (0..pool_size)
+            .map(|i| PoolEntry {
+                text: format!("syllable-{i}"),
+                frequency: (pool_size - i) as u64,
+            })
+            .collect();
+        let cases = enumerate_cases(Orbit::Edge)
+            .into_iter()
+            .chain(enumerate_cases(Orbit::Corner))
+            .enumerate()
+            .map(|(i, case)| {
+                let (l1, l2) = case.letters();
+                CaseCount {
+                    orbit: match case.orbit {
+                        Orbit::Edge => "edge".to_string(),
+                        Orbit::Corner => "corner".to_string(),
+                    },
+                    letters: format!("{l1}{l2}"),
+                    count: 1000 - i as u64,
+                }
+            })
+            .collect();
+        let freq = FreqData {
+            cases,
+            adjacent: Vec::new(),
+            cooccurring: Vec::new(),
+            total_draws: 1,
+            seed: 2,
+        };
+        RunInputs {
+            params: GaParams {
+                seed: 77,
+                population: 12,
+                generations: 3,
+                elite: 2,
+                swap: 0.2,
+                replace: 0.1,
+                w_conf: 0.5,
+                w_flow: 0.3,
+                w_cplx: 0.2,
+            },
+            env: GaEnv {
+                pool_size,
+                case_count: CASE_COUNT,
+                lengths: vec![3.0; pool_size],
+                feats: Vec::new(),
+                conf_table: Vec::new(),
+                flow_table: Vec::new(),
+                cooc: Vec::new(),
+                adj: Vec::new(),
+            },
+            pool,
+            inventory_report: InventoryReport {
+                generated: 100,
+                kept: 10,
+                dropped_not_in_wordlist: 90,
+                wordlist_size: 10,
+                wordlist_covered: 9,
+            },
+            freq,
+            freq_bytes: b"synthetic freq fixture".to_vec(),
+        }
+    }
+
+    fn outcome_with_best(best: Vec<u32>) -> RunOutcome {
+        RunOutcome {
+            best,
+            best_fitness: 0.75,
+            best_parts: [0.1, 0.2, 0.3],
+            per_gen_best: vec![0.5],
+            best_generation: 2,
+            stagnation_tail: 1,
+            max_stagnation: 5,
+            evaluations: 100,
+        }
+    }
+
+    #[test]
+    fn config_path_keeps_absolute_paths_and_joins_relative_ones() {
+        let absolute = if cfg!(windows) {
+            "C:/fixtures/config.json"
+        } else {
+            "/tmp/config.json"
+        };
+        assert_eq!(config_path(absolute).unwrap(), PathBuf::from(absolute));
+        let joined = config_path("config/config.json").unwrap();
+        assert_eq!(joined, workspace_root().join("config").join("config.json"));
+        assert!(joined.is_absolute());
+    }
+
+    #[test]
+    fn build_assignment_maps_pool_texts_onto_scheme_cases() {
+        let inputs = synth_inputs(900);
+        let identity: Vec<u32> = (0..CASE_COUNT as u32).collect();
+        let outcome = outcome_with_best(identity);
+        let assignment = build_assignment(&inputs, &outcome).expect("identity assignment is valid");
+        assert_eq!(assignment.cases.len(), CASE_COUNT);
+        let edge = enumerate_cases(Orbit::Edge);
+        let corner = enumerate_cases(Orbit::Corner);
+        assert_eq!(edge.len() + corner.len(), CASE_COUNT);
+        let first = &assignment.cases[0];
+        assert_eq!(
+            (first.orbit.as_str(), first.letters.as_str()),
+            ("edge", "AB")
+        );
+        assert_eq!(first.syllable, "syllable-0");
+        assert_eq!(first.frequency, 1000);
+        let boundary = &assignment.cases[edge.len()];
+        assert_eq!(
+            (boundary.orbit.as_str(), boundary.letters.as_str()),
+            ("corner", "AB")
+        );
+        assert_eq!(boundary.syllable, format!("syllable-{}", edge.len()));
+        assert_eq!(boundary.frequency, 1000 - edge.len() as u64);
+        let last = assignment.cases.last().unwrap();
+        assert_eq!(
+            (last.orbit.as_str(), last.letters.as_str()),
+            ("corner", "XW")
+        );
+        assert_eq!(assignment.pool_size, 900);
+        assert_eq!(assignment.seed, inputs.params.seed);
+        assert_eq!(assignment.best_fitness, 0.75);
+        assert_eq!(assignment.freq_sha256, sha256_hex(&inputs.freq_bytes));
+        let syllable_bytes = serde_json::to_vec(&assignment.cases).unwrap();
+        assert_eq!(assignment.syllables_sha256, sha256_hex(&syllable_bytes));
+        let mut texts = HashSet::new();
+        for case in &assignment.cases {
+            assert!(texts.insert(case.syllable.as_str()), "{}", case.syllable);
+        }
+        assert_eq!(texts.len(), CASE_COUNT);
+    }
+
+    #[test]
+    fn build_assignment_rejects_a_short_chromosome() {
+        let inputs = synth_inputs(CASE_COUNT);
+        let outcome = outcome_with_best((0..5u32).collect());
+        let offenders = build_assignment(&inputs, &outcome).unwrap_err();
+        assert_eq!(offenders, vec!["best chromosome has 5 genes, expected 818"]);
+    }
+
+    #[test]
+    fn build_assignment_rejects_a_duplicate_gene() {
+        let inputs = synth_inputs(CASE_COUNT);
+        let mut best: Vec<u32> = (0..CASE_COUNT as u32).collect();
+        best[100] = best[99];
+        let outcome = outcome_with_best(best);
+        let offenders = build_assignment(&inputs, &outcome).unwrap_err();
+        assert_eq!(offenders, vec!["duplicate pool index 99 in assignment"]);
+    }
+
+    #[test]
+    fn build_assignment_rejects_an_out_of_range_gene() {
+        let inputs = synth_inputs(CASE_COUNT);
+        let mut best: Vec<u32> = (0..CASE_COUNT as u32).collect();
+        best[0] = CASE_COUNT as u32;
+        let outcome = outcome_with_best(best);
+        let offenders = build_assignment(&inputs, &outcome).unwrap_err();
+        assert_eq!(offenders, vec!["pool index 818 outside pool 818"]);
+    }
+
+    #[test]
+    fn build_assignment_rejects_a_duplicate_syllable() {
+        let mut inputs = synth_inputs(CASE_COUNT);
+        inputs.pool[1].text = inputs.pool[0].text.clone();
+        let outcome = outcome_with_best((0..CASE_COUNT as u32).collect());
+        let offenders = build_assignment(&inputs, &outcome).unwrap_err();
+        assert_eq!(offenders, vec!["duplicate syllable syllable-0"]);
+    }
+
+    #[test]
+    fn build_report_copies_run_state_and_the_pool_head() {
+        let mut inputs = synth_inputs(15);
+        inputs.params.generations = 7;
+        let outcome = outcome_with_best(Vec::new());
+        let assignment = SyllableAssignment {
+            cases: Vec::new(),
+            pool_size: inputs.pool.len(),
+            seed: inputs.params.seed,
+            best_fitness: outcome.best_fitness,
+            freq_sha256: "f".repeat(64),
+            syllables_sha256: "s".repeat(64),
+        };
+        let config = serde_json::json!({
+            "ga": {
+                "seed": 11,
+                "population": 30,
+                "generations": 7,
+                "elite": 2
+            }
+        });
+        let report = build_report(&inputs, &outcome, &assignment, &config);
+        assert_eq!(report.pool_size, 15);
+        assert_eq!(report.pool_top.len(), 10);
+        assert_eq!(report.pool_top[0], ("syllable-0".to_string(), 15));
+        assert_eq!(report.pool_top[9], ("syllable-9".to_string(), 6));
+        assert_eq!(report.best_fitness, 0.75);
+        assert_eq!(report.best_parts, [0.1, 0.2, 0.3]);
+        assert_eq!(report.best_generation, 2);
+        assert_eq!(report.generations_run, 7);
+        assert_eq!(report.per_gen_best, vec![0.5]);
+        assert_eq!(report.stagnation_tail, 1);
+        assert_eq!(report.max_stagnation, 5);
+        assert_eq!(report.evaluations, 100);
+        assert_eq!(report.freq_sha256, assignment.freq_sha256);
+        assert_eq!(report.syllables_sha256, assignment.syllables_sha256);
+        assert_eq!(report.inventory, inputs.inventory_report);
+        assert_eq!(report.run_config, config);
+    }
+
+    fn fixture_report(per_gen_best: Vec<f32>) -> GaReport {
+        GaReport {
+            run_config: serde_json::json!({
+                "ga": {
+                    "seed": 11,
+                    "population": 30,
+                    "generations": 7,
+                    "elite": 2,
+                    "weights": {"confusion": 0.5, "flow": 0.3, "complexity": 0.2},
+                    "mutation": {"swap": 0.02, "replace": 0.01}
+                }
+            }),
+            inventory: InventoryReport {
+                generated: 100,
+                kept: 10,
+                dropped_not_in_wordlist: 90,
+                wordlist_size: 10,
+                wordlist_covered: 9,
+            },
+            pool_size: 15,
+            pool_top: vec![("ma".to_string(), 500), ("to".to_string(), 400)],
+            best_fitness: 0.654321,
+            best_parts: [0.1, 0.2, 0.3],
+            best_generation: 4,
+            generations_run: 7,
+            per_gen_best,
+            stagnation_tail: 3,
+            max_stagnation: 9,
+            evaluations: 42,
+            freq_sha256: "f".repeat(64),
+            syllables_sha256: "s".repeat(64),
+        }
+    }
+
+    fn trajectory_of(md: &str) -> &str {
+        md.split("## trajectory\n\n")
+            .nth(1)
+            .unwrap()
+            .split("\n\n## artifacts")
+            .next()
+            .unwrap()
+    }
+
+    #[test]
+    fn render_markdown_prints_config_inventory_pool_result_and_artifacts() {
+        let report = fixture_report((0..10).map(|i| i as f32 / 100.0).collect());
+        let md = render_markdown(&report);
+        assert!(md.starts_with("# ga run report\n\n## run config\n\n"));
+        assert!(md.contains(
+            "seed 11 population 30 generations 7 elite 2 tournament 2 weights conf 0.5 flow 0.3 cplx 0.2 mutation swap 0.02 replace 0.01\n"
+        ));
+        assert!(md.contains("generated 100 kept 10 dropped 90 wordlist 10 covered 9 (90.0%)\n"));
+        assert!(md.contains("size 15 top entries\n"));
+        assert!(md.contains("| ma | 500 |\n| to | 400 |\n"));
+        assert!(md.contains("best fitness 0.654321 at generation 4 of 7\n"));
+        assert!(md.contains(
+            "parts conf 0.100000 flow 0.200000 cplx 0.300000 (weighted 0.050000 0.060000 0.060000)\n"
+        ));
+        assert!(md.contains("stagnation tail 3 max 9\nevaluations 42\n"));
+        assert_eq!(
+            trajectory_of(&md),
+            "0.000000 0.010000 0.020000 0.030000 0.040000 0.050000 0.060000 0.070000 0.080000 0.090000"
+        );
+        assert!(md.contains(&format!("freq.json sha256 {}\n", "f".repeat(64))));
+        assert!(md.contains(&format!("syllables.json sha256 {}\n", "s".repeat(64))));
+    }
+
+    #[test]
+    fn render_markdown_samples_long_trajectories_to_twenty_points() {
+        let report = fixture_report((0..40).map(|i| i as f32 / 100.0).collect());
+        let md = render_markdown(&report);
+        let trajectory = trajectory_of(&md);
+        let points: Vec<&str> = trajectory.split(' ').collect();
+        assert_eq!(points.len(), 20);
+        assert_eq!(points[0], "0.000000");
+        assert_eq!(points[19], "0.380000");
+        assert!(!trajectory.contains("0.010000"));
+        assert!(!trajectory.contains("0.390000"));
+    }
+
+    #[test]
+    fn render_markdown_defaults_missing_config_sections_to_zero() {
+        let mut report = fixture_report(Vec::new());
+        report.run_config = serde_json::json!({});
+        let md = render_markdown(&report);
+        assert!(md.contains(
+            "seed 0 population 0 generations 0 elite 0 tournament 2 weights conf 0 flow 0 cplx 0 mutation swap 0 replace 0\n"
+        ));
+        assert!(md.contains("(weighted 0.000000 0.000000 0.000000)\n"));
+        assert_eq!(trajectory_of(&md), "");
     }
 }
