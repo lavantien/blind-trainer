@@ -1,5 +1,6 @@
 pub mod algs;
 pub mod drill;
+pub mod drill_card;
 pub mod drill_view;
 pub mod images;
 pub mod memo;
