@@ -280,3 +280,375 @@ pub fn manifest(
         },
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::CorpusFileEntry;
+    use crate::synth::{SynthLimits, synth_case};
+    use bt_core::Alg;
+    use bt_data::corpus::{Row, Solver};
+
+    fn limits() -> SynthLimits {
+        SynthLimits {
+            max_setup: 2,
+            max_insert: 4,
+            node_budget: 100_000_000,
+        }
+    }
+
+    fn row(solver: Solver, sheet: SheetClass, rowid: usize, position: &str, alg: &Alg) -> Row {
+        Row {
+            solver,
+            sheet,
+            rowid,
+            position: position.to_string(),
+            alg_text: alg.format(),
+            alg: alg.clone(),
+            commutator: String::new(),
+            recon_link: String::new(),
+            youtube_link: String::new(),
+        }
+    }
+
+    fn position_of(orbit: Orbit, t1: u8, t2: u8) -> String {
+        let buffer = match orbit {
+            Orbit::Edge => EDGE_BUFFER_STICKER,
+            Orbit::Corner => CORNER_BUFFER_STICKER,
+        };
+        format!("{}-{}-{}", name_of(buffer), name_of(t1), name_of(t2))
+    }
+
+    #[test]
+    fn build_catalogs_the_whole_pair_space_from_an_empty_corpus() {
+        let corpus = Corpus::from_rows(Vec::new());
+        let built = build(&corpus);
+        assert_eq!(built.cases.cases.len(), crate::TOTAL_CASES);
+        assert!(
+            built
+                .cases
+                .cases
+                .iter()
+                .all(|case| !case.covered && case.vendor_algs.is_empty())
+        );
+        assert!(built.specials.specials.is_empty());
+        assert_eq!(built.rows_in_pair_space, 0);
+        assert_eq!(built.rows_other_buffer, 0);
+        assert!(built.offenders.is_empty(), "{}", built.offenders.join("\n"));
+        let first = &built.cases.cases[0];
+        assert_eq!(
+            (
+                first.orbit.as_str(),
+                first.t1,
+                first.t2,
+                first.t1_letter,
+                first.t2_letter
+            ),
+            ("edge", 24, 25, 'A', 'B')
+        );
+        assert_eq!(
+            (first.t1_name.as_str(), first.t2_name.as_str()),
+            ("UB", "UR")
+        );
+        let boundary = &built.cases.cases[440];
+        assert_eq!(
+            (boundary.orbit.as_str(), boundary.t1, boundary.t2),
+            ("corner", 0, 1)
+        );
+        let last = built.cases.cases.last().unwrap();
+        assert_eq!(
+            (
+                last.orbit.as_str(),
+                last.t1,
+                last.t2,
+                last.t1_letter,
+                last.t2_letter
+            ),
+            ("corner", 23, 22, 'X', 'W')
+        );
+    }
+
+    #[test]
+    fn build_attaches_a_verified_edge_three_style_to_its_case() {
+        let case = enumerate_cases(Orbit::Edge)[0];
+        let hit =
+            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let corpus = Corpus::from_rows(vec![row(
+            Solver::Cherry,
+            SheetClass::Edge,
+            1,
+            &position_of(Orbit::Edge, case.t1, case.t2),
+            &hit.alg,
+        )]);
+        let built = build(&corpus);
+        assert!(built.offenders.is_empty(), "{}", built.offenders.join("\n"));
+        assert_eq!(built.rows_in_pair_space, 1);
+        assert_eq!(built.rows_other_buffer, 0);
+        let slot = built
+            .cases
+            .cases
+            .iter()
+            .position(|entry| entry.t1 == case.t1 && entry.t2 == case.t2)
+            .unwrap();
+        let entry = &built.cases.cases[slot];
+        assert!(entry.covered);
+        assert_eq!(entry.vendor_algs.len(), 1);
+        let alg = &entry.vendor_algs[0];
+        assert_eq!(alg.solver, "cherry");
+        assert_eq!(alg.rowid, 1);
+        assert_eq!(alg.position, position_of(Orbit::Edge, case.t1, case.t2));
+        assert_eq!(alg.alg, hit.alg.format());
+        assert_eq!(alg.qtm, hit.alg.qtm());
+        assert_eq!(alg.htm, hit.alg.htm());
+        assert!(alg.ok);
+        assert!(alg.problems.is_empty());
+        assert_eq!(
+            built
+                .cases
+                .cases
+                .iter()
+                .filter(|entry| entry.covered)
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn build_attaches_a_verified_corner_three_style_to_its_case() {
+        let case = enumerate_cases(Orbit::Corner)[0];
+        let hit =
+            synth_case(Orbit::Corner, case.t1, case.t2, &limits()).expect("corner AB synthesizes");
+        let corpus = Corpus::from_rows(vec![row(
+            Solver::Eggins,
+            SheetClass::Corner,
+            1,
+            &position_of(Orbit::Corner, case.t1, case.t2),
+            &hit.alg,
+        )]);
+        let built = build(&corpus);
+        assert!(built.offenders.is_empty(), "{}", built.offenders.join("\n"));
+        assert_eq!(built.rows_in_pair_space, 1);
+        let slot = built
+            .cases
+            .cases
+            .iter()
+            .position(|entry| entry.t1 == case.t1 && entry.t2 == case.t2)
+            .unwrap();
+        let entry = &built.cases.cases[slot];
+        assert_eq!(entry.orbit, "corner");
+        assert!(entry.covered);
+        assert_eq!(entry.vendor_algs[0].solver, "eggins");
+        assert_eq!(
+            built
+                .cases
+                .cases
+                .iter()
+                .filter(|entry| entry.covered)
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn build_routes_special_sheets_with_their_verdicts() {
+        let alg = Alg::parse("").unwrap();
+        let corpus = Corpus::from_rows(vec![row(
+            Solver::Cherry,
+            SheetClass::Flips,
+            1,
+            "UF & zz",
+            &alg,
+        )]);
+        let built = build(&corpus);
+        assert_eq!(built.specials.specials.len(), 1);
+        let special = &built.specials.specials[0];
+        assert_eq!(
+            (
+                special.class.as_str(),
+                special.solver.as_str(),
+                special.rowid
+            ),
+            ("flips", "cherry", 1)
+        );
+        assert_eq!(special.alg, "");
+        assert!(!special.ok);
+        assert!(
+            special
+                .problems
+                .iter()
+                .any(|problem| problem.contains("bad position"))
+        );
+        assert_eq!(built.rows_in_pair_space, 0);
+        assert_eq!(built.offenders.len(), 1);
+        assert!(built.offenders[0].starts_with("cherry/flips/1 UF & zz: "));
+        assert!(built.cases.cases.iter().all(|entry| !entry.covered));
+    }
+
+    #[test]
+    fn build_flags_non_three_style_and_wrong_orbit_rows() {
+        let plain = Alg::parse("R").unwrap();
+        let corner_case = enumerate_cases(Orbit::Corner)[0];
+        let corner_hit = synth_case(Orbit::Corner, corner_case.t1, corner_case.t2, &limits())
+            .expect("corner AB synthesizes");
+        let corpus = Corpus::from_rows(vec![
+            row(Solver::Cherry, SheetClass::Edge, 1, "UF-UB-UR", &plain),
+            row(
+                Solver::Eggins,
+                SheetClass::Edge,
+                2,
+                "UF-UB-UR",
+                &corner_hit.alg,
+            ),
+        ]);
+        let built = build(&corpus);
+        assert_eq!(built.offenders.len(), 4, "{}", built.offenders.join("\n"));
+        assert!(
+            built.offenders.iter().any(|offender| {
+                offender.starts_with("cherry/edge/1 is not a three style case: ")
+            })
+        );
+        assert!(
+            built
+                .offenders
+                .iter()
+                .any(|offender| offender.starts_with("eggins/edge/2 walks the wrong orbit Corner"))
+        );
+        assert!(
+            built
+                .offenders
+                .iter()
+                .any(|offender| offender.starts_with("cherry/edge/1 UF-UB-UR: "))
+        );
+        assert!(
+            built
+                .offenders
+                .iter()
+                .any(|offender| offender.starts_with("eggins/edge/2 UF-UB-UR: "))
+        );
+        assert_eq!(built.rows_in_pair_space, 0);
+        assert_eq!(built.rows_other_buffer, 0);
+        assert!(built.cases.cases.iter().all(|entry| !entry.covered));
+    }
+
+    #[test]
+    fn build_counts_other_buffer_walks_without_covering() {
+        let case = enumerate_cases(Orbit::Edge)[0];
+        let hit =
+            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let conjugated =
+            Alg::parse(&format!("U {} U'", hit.alg.format())).expect("conjugated alg parses");
+        let position = classify_alg(&conjugated)
+            .position()
+            .expect("conjugated alg stays a three style");
+        let corpus = Corpus::from_rows(vec![row(
+            Solver::Cherry,
+            SheetClass::Edge,
+            1,
+            &position,
+            &conjugated,
+        )]);
+        let built = build(&corpus);
+        assert!(built.offenders.is_empty(), "{}", built.offenders.join("\n"));
+        assert_eq!(built.rows_other_buffer, 1);
+        assert_eq!(built.rows_in_pair_space, 0);
+        assert!(built.cases.cases.iter().all(|entry| !entry.covered));
+    }
+
+    #[test]
+    fn manifest_counts_orbits_and_special_classes() {
+        let case = enumerate_cases(Orbit::Edge)[0];
+        let hit =
+            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let plain = Alg::parse("").unwrap();
+        let corpus = Corpus::from_rows(vec![
+            row(
+                Solver::Cherry,
+                SheetClass::Edge,
+                1,
+                &position_of(Orbit::Edge, case.t1, case.t2),
+                &hit.alg,
+            ),
+            row(Solver::Cherry, SheetClass::Flips, 1, "UF & zz", &plain),
+            row(Solver::Eggins, SheetClass::Twists, 1, "zz & yy", &plain),
+        ]);
+        let built = build(&corpus);
+        let digest = CorpusDigest {
+            sha256: "d".repeat(64),
+            rows: 3,
+            files: vec![CorpusFileEntry {
+                solver: "cherry".to_string(),
+                sheet: "edge".to_string(),
+                rows: 1,
+                sha256: "e".repeat(64),
+            }],
+        };
+        let manifest = manifest(
+            &built,
+            &digest,
+            &"c".repeat(64),
+            &"p".repeat(64),
+            "stamp".to_string(),
+        );
+        assert_eq!(manifest.generated_at, "stamp");
+        assert_eq!(manifest.generator, "bt-gendata");
+        assert_eq!(manifest.corpus_sha256, "d".repeat(64));
+        assert_eq!(manifest.corpus_rows, 3);
+        assert_eq!(manifest.corpus_files, digest.files);
+        assert_eq!(manifest.rows_in_pair_space, 1);
+        assert_eq!(manifest.rows_other_buffer, 0);
+        assert_eq!(manifest.cases.path, "cases.json");
+        assert_eq!(manifest.cases.sha256, "c".repeat(64));
+        assert_eq!(manifest.cases.entries, crate::TOTAL_CASES);
+        assert_eq!(
+            manifest.cases.edge,
+            OrbitCoverage {
+                total: 440,
+                covered: 1,
+                uncovered: 439
+            }
+        );
+        assert_eq!(
+            manifest.cases.corner,
+            OrbitCoverage {
+                total: 378,
+                covered: 0,
+                uncovered: 378
+            }
+        );
+        assert_eq!(manifest.specials.path, "specials.json");
+        assert_eq!(manifest.specials.sha256, "p".repeat(64));
+        assert_eq!(manifest.specials.entries, 2);
+        let counts = &manifest.specials.counts;
+        assert_eq!(counts.len(), crate::SPECIAL_COUNTS.len());
+        for (count, &(solver, class, _)) in counts.iter().zip(crate::SPECIAL_COUNTS.iter()) {
+            assert_eq!(
+                (count.solver.as_str(), count.class.as_str()),
+                (solver, class)
+            );
+        }
+        assert_eq!(
+            (
+                counts[0].solver.as_str(),
+                counts[0].class.as_str(),
+                counts[0].rows
+            ),
+            ("cherry", "flips", 1)
+        );
+        assert_eq!(
+            (
+                counts[4].solver.as_str(),
+                counts[4].class.as_str(),
+                counts[4].rows
+            ),
+            ("eggins", "flips", 0)
+        );
+        assert_eq!(
+            (
+                counts[5].solver.as_str(),
+                counts[5].class.as_str(),
+                counts[5].rows
+            ),
+            ("eggins", "twists", 1)
+        );
+    }
+}
