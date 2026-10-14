@@ -803,4 +803,43 @@ mod tests {
             assert_eq!(work, std::array::from_fn(|i| i as u8), "{text}");
         }
     }
+
+    #[test]
+    #[should_panic(expected = "corner_succ on non corner sticker 26")]
+    fn corner_succ_rejects_edge_sticker() {
+        corner_succ(26);
+    }
+
+    #[test]
+    #[should_panic(expected = "edge_mate on non edge sticker 2")]
+    fn edge_mate_rejects_corner_sticker() {
+        edge_mate(2);
+    }
+
+    #[test]
+    #[should_panic(expected = "parity must hit both orbits")]
+    fn walk_panics_when_parity_hits_one_orbit() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        apply_aligned_swap(&mut occ, Orbit::Edge, 26, 24);
+        let _ = memo_occ(&occ);
+    }
+
+    #[test]
+    fn stale_pending_pointing_at_reserved_piece_is_dropped() {
+        let mut occ = std::array::from_fn(|i| i as u8);
+        apply_sticker_cycles(&mut occ, &ideal_cycle_at(Orbit::Edge, 26, 24, 25));
+        let expected = {
+            let mut probe = occ;
+            OrbitWalk::new(Orbit::Edge, &mut probe).run()
+        };
+        let mut work = occ;
+        let mut walk = OrbitWalk::new(Orbit::Edge, &mut work);
+        walk.pending = vec![33];
+        walk.reserved[piece_index(33) as usize] = true;
+        let outcome = walk.run();
+        assert_eq!(outcome.letters, expected.letters);
+        assert_eq!(outcome.pairs, expected.pairs);
+        assert_eq!(outcome.buffers, expected.buffers);
+        assert_eq!(outcome.parity, expected.parity);
+    }
 }

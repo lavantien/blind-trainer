@@ -403,6 +403,7 @@ mod tests {
             "F R U R' U' F'",
             "x y z M E S",
             "l2 2B' S2",
+            "E2",
         ] {
             let state = after(alg);
             for orbit in [Orbit::Edge, Orbit::Corner] {
@@ -525,5 +526,18 @@ mod tests {
     #[should_panic]
     fn twist_accessor_rejects_edge_head() {
         classify(&Cube::solved()).defects.twist(head_sticker("UF"));
+    }
+
+    #[test]
+    fn e2_leaves_corners_solved_with_two_edge_swap_blocks() {
+        let state = after("E2");
+        assert!(trace(&state, Orbit::Corner).is_solved());
+        let edge = trace(&state, Orbit::Edge);
+        assert_eq!(edge.blocks, vec![vec![33, 41, 33], vec![35, 43, 35]]);
+        assert!(matches!(
+            classify(&state).class,
+            Classification::Unclassified(_)
+        ));
+        assert_eq!(classify(&state).position(), None);
     }
 }
