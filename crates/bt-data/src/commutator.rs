@@ -469,4 +469,59 @@ mod tests {
         assert!(decompose("U:[[[R,U]]]").is_none());
         assert!(decompose("[[[[R,U]]]]").is_none());
     }
+
+    #[test]
+    fn expansion_matches_the_commutator_definition() {
+        let units = decompose("R2 U':[S,R2]").unwrap();
+        assert_eq!(units[0].expansion().format(), "R2 U' S R2 S' R2 U R2");
+        let manual = Expanded {
+            setup: None,
+            a: alg("R"),
+            b: alg("U"),
+            b_first: true,
+        };
+        assert_eq!(manual.expansion().format(), "U R U' R'");
+    }
+
+    #[test]
+    fn setup_inside_a_slot_expands_inline() {
+        let units = decompose("[U':[R,U],S]").unwrap();
+        assert_eq!(units.len(), 1);
+        assert_eq!(setup_text(&units[0]), "");
+        assert_eq!(units[0].a.format(), "U' R U R' U' U");
+        assert_eq!(units[0].b.format(), "S");
+        decompose_verified("[U':[R,U],S]", &alg("U' R U R' U' U S U' U R U' R' U S'")).unwrap();
+    }
+
+    #[test]
+    fn triple_sum_parses_and_verifies() {
+        let text = "[R,U]+[F,D]+[S,E2]";
+        let units = decompose(text).unwrap();
+        assert_eq!(units.len(), 3);
+        assert_eq!(concatenation(&units), alg("R U R' U' F D F' D' S E2 S' E2"));
+        let verified = decompose_verified(text, &alg("R U R' U' F D F' D' S E2 S' E2")).unwrap();
+        assert!(!verified.iter().any(|u| u.b_first));
+    }
+
+    #[test]
+    fn empty_unit_inside_a_sum_is_rejected() {
+        assert!(decompose("[R,U] + + [F,D]").is_none());
+        assert!(decompose("+ [R,U]").is_none());
+    }
+
+    #[test]
+    fn padded_not_found_marker_is_rejected() {
+        assert!(decompose(" Not found. ").is_none());
+        assert!(decompose("\tNot found.\n").is_none());
+        assert!(decompose("Not found. now really").is_none());
+        assert!(decompose("prefix Not found.").is_none());
+    }
+
+    #[test]
+    fn malformed_cores_return_none() {
+        assert!(decompose("[R,U,U]").is_none());
+        assert!(decompose("[R,U,,F]").is_none());
+        assert!(decompose("[R U]").is_none());
+        assert!(decompose("[R,U] U").is_none());
+    }
 }
