@@ -147,6 +147,7 @@ pub struct SaveOutcome {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bt_data::paths::UserAlg;
     use std::sync::atomic::{AtomicU64, Ordering};
 
     static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -296,5 +297,90 @@ mod tests {
         std::fs::write(&path, b"{not json").expect("write");
         let err = Stores::load(&root, sample_settings()).expect_err("must fail");
         assert!(err.contains("settings.json"), "unexpected error: {err}");
+    }
+
+    #[test]
+    fn corrupt_srs_and_solves_report_their_paths() {
+        let srs_root = temp_root("corrupt-srs");
+        let srs_file = srs_path(&srs_root);
+        std::fs::create_dir_all(srs_file.parent().expect("parent")).expect("dirs");
+        std::fs::write(&srs_file, b"{not json").expect("write");
+        let err = Stores::load(&srs_root, sample_settings()).expect_err("must fail");
+        assert!(err.contains("srs.json"), "unexpected error: {err}");
+        let solves_root = temp_root("corrupt-solves");
+        let solves_file = solves_path(&solves_root);
+        std::fs::create_dir_all(solves_file.parent().expect("parent")).expect("dirs");
+        std::fs::write(&solves_file, b"{not json").expect("write");
+        let err = Stores::load(&solves_root, sample_settings()).expect_err("must fail");
+        assert!(err.contains("solves.json"), "unexpected error: {err}");
+    }
+
+    #[test]
+    fn memo_mode_index_round_trips_through_the_label_order() {
+        for (index, (_, mode)) in MemoMode::LABELS.iter().enumerate() {
+            assert_eq!(mode.index(), index);
+            assert_eq!(MemoMode::from_index(index), Some(*mode));
+        }
+        assert_eq!(MemoMode::from_index(MemoMode::LABELS.len()), None);
+    }
+
+    #[test]
+    fn every_store_saves_into_its_own_user_subdir() {
+        let root = temp_root("subdirs");
+        save_settings(&root, &sample_settings()).expect("settings");
+        save_srs(&root, &SrsStore::default()).expect("srs");
+        save_solves(&root, &SolveLog::default()).expect("solves");
+        save_user_algs(&root, &UserAlgs::new()).expect("user algs");
+        assert!(root.join("settings").join("settings.json").is_file());
+        assert!(root.join("srs").join("srs.json").is_file());
+        assert!(root.join("solves").join("solves.json").is_file());
+        assert!(root.join("algs").join("user-algs.json").is_file());
+    }
+
+    #[test]
+    fn user_algs_round_trip_through_the_store() {
+        let root = temp_root("algs-roundtrip");
+        let mut algs = UserAlgs::new();
+        algs.entries.insert(
+            "edge/UF-UB-UR".to_string(),
+            UserAlg {
+                alg: "R2 U' S R2 S' R2 U R2".to_string(),
+            },
+        );
+        save_user_algs(&root, &algs).expect("save");
+        let stores = Stores::load(&root, sample_settings()).expect("load");
+        assert_eq!(stores.user_algs.entries.len(), 1);
+        assert_eq!(
+            stores
+                .user_algs
+                .entries
+                .get("edge/UF-UB-UR")
+                .map(|entry| entry.alg.as_str()),
+            Some("R2 U' S R2 S' R2 U R2")
+        );
+    }
+
+    #[test]
+    fn saving_into_a_file_root_fails_loudly() {
+        let file = temp_root("file-root").join("blocker");
+        std::fs::write(&file, b"occupied").expect("write");
+        assert!(save_settings(&file, &sample_settings()).is_err());
+        assert!(save_srs(&file, &SrsStore::default()).is_err());
+        assert!(save_solves(&file, &SolveLog::default()).is_err());
+        let err = save_user_algs(&file, &UserAlgs::new()).expect_err("must fail");
+        assert!(err.contains("blocker"), "unexpected error: {err}");
+    }
+
+    #[test]
+    fn settings_json_uses_the_documented_field_names() {
+        let json = serde_json::to_value(sample_settings()).expect("ser");
+        assert_eq!(
+            json,
+            serde_json::json!({
+                "memo_cadence_ms": 900,
+                "memo_mode": "images",
+                "drill_reps": 7
+            })
+        );
     }
 }

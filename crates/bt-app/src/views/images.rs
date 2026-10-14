@@ -658,4 +658,36 @@ mod tests {
         assert_eq!(image_for(['J', 'X']), None);
         assert_eq!(image_for(['X', 'X']), None);
     }
+
+    #[test]
+    fn table_holds_the_documented_620_entries() {
+        assert_eq!(PAIR_IMAGES.len(), 620);
+    }
+
+    #[test]
+    fn every_key_is_two_uppercase_letters_with_a_word() {
+        for (key, value) in PAIR_IMAGES {
+            let bytes = key.as_bytes();
+            assert_eq!(bytes.len(), 2, "key {key} must be exactly two letters");
+            assert!(
+                bytes.iter().all(|byte| byte.is_ascii_uppercase()),
+                "key {key} must use uppercase letters"
+            );
+            assert!(!value.is_empty(), "pair {key} must map to a word");
+        }
+    }
+
+    #[test]
+    fn image_for_resolves_every_entry_and_rejects_other_input() {
+        for (key, value) in PAIR_IMAGES {
+            let letters: [char; 2] = key
+                .chars()
+                .collect::<Vec<char>>()
+                .try_into()
+                .expect("two chars per key");
+            assert_eq!(image_for(letters), Some(value), "pair {key}");
+        }
+        assert_eq!(image_for(['a', 'b']), None);
+        assert_eq!(image_for(['A', '-']), None);
+    }
 }

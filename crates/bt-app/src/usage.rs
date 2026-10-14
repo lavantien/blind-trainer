@@ -496,9 +496,24 @@ fn run_usage(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::ecs::message::Messages;
     use bt_core::Alg;
     use bt_data::corpus::{Row, SheetClass, Solver};
     use bt_scheme::{EDGE_BUFFER_STICKER, apply_sticker_cycles, ideal_cycle_at, state_array};
+    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::time::Duration;
+
+    static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    fn usage_dir(tag: &str) -> PathBuf {
+        std::env::temp_dir()
+            .join("bt-app-usage-tests")
+            .join(format!(
+                "{tag}-{}-{}",
+                std::process::id(),
+                DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
+            ))
+    }
 
     fn shot_names(actions: &[Action]) -> Vec<&'static str> {
         actions
@@ -646,5 +661,339 @@ mod tests {
     #[test]
     fn covered_seed_gives_up_within_its_attempt_budget() {
         assert_eq!(covered_seed(&Corpus::from_rows(Vec::new()), 7, 8), None);
+    }
+
+    fn usage_world(dir: PathBuf, actions: Vec<Action>, expected_shots: usize) -> World {
+        let mut world = World::new();
+        world.insert_resource(State::<AppState>::new(AppState::Menu));
+        let mut time = Time::<Virtual>::default();
+        time.advance_by(Duration::from_secs_f32(0.1));
+        world.insert_resource(time);
+        world.insert_resource(SmokeFonts(true));
+        world.insert_resource(UsageTour {
+            dir,
+            actions,
+            index: 0,
+            mode: Mode::Act,
+            shots: Vec::new(),
+            expected_shots,
+        });
+        world.insert_resource(PendingDrill::default());
+        world.insert_resource(SolveSeed(0));
+        world.init_resource::<Messages<KeyboardInput>>();
+        world.init_resource::<Messages<NavIntent>>();
+        world.init_resource::<Messages<AppExit>>();
+        world
+    }
+
+    fn step(world: &mut World) {
+        let mut schedule = Schedule::default();
+        schedule.add_systems(run_usage);
+        schedule.run(world);
+    }
+
+    fn exit_taken(world: &mut World) -> Option<u8> {
+        world
+            .resource_mut::<Messages<AppExit>>()
+            .drain()
+            .next()
+            .map(|exit| match exit {
+                AppExit::Success => 0,
+                AppExit::Error(code) => code.get(),
+            })
+    }
+
+    #[test]
+    fn the_verdict_follows_the_expected_shot_count() {
+        let mut ok = usage_world(usage_dir("finish-ok"), Vec::new(), 0);
+        step(&mut ok);
+        assert_eq!(exit_taken(&mut ok), Some(0));
+        assert!(matches!(ok.resource::<UsageTour>().mode, Mode::Done));
+        let mut gap = usage_world(usage_dir("finish-gap"), Vec::new(), 2);
+        step(&mut gap);
+        assert_eq!(exit_taken(&mut gap), Some(1));
+        assert!(matches!(gap.resource::<UsageTour>().mode, Mode::Done));
+    }
+
+    #[test]
+    fn press_and_press_char_write_keyboard_input() {
+        let dir = usage_dir("press");
+        let mut world = usage_world(
+            dir,
+            vec![
+                Action::Press(KeyCode::Space),
+                Action::PressChar {
+                    key: KeyCode::KeyB,
+                    ch: 'b',
+                },
+            ],
+            0,
+        );
+        step(&mut world);
+        assert_eq!(world.resource::<UsageTour>().index, 1);
+        let inputs: Vec<KeyboardInput> = world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .drain()
+            .collect();
+        assert_eq!(inputs.len(), 1);
+        assert_eq!(inputs[0].key_code, KeyCode::Space);
+        assert!(matches!(inputs[0].logical_key, Key::Space));
+        assert_eq!(inputs[0].state, ButtonState::Pressed);
+        assert!(inputs[0].text.is_none());
+        step(&mut world);
+        assert_eq!(world.resource::<UsageTour>().index, 2);
+        let typed: Vec<KeyboardInput> = world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .drain()
+            .collect();
+        assert_eq!(typed.len(), 1);
+        assert_eq!(typed[0].key_code, KeyCode::KeyB);
+        assert!(matches!(
+            &typed[0].logical_key,
+            Key::Character(text) if text.as_str() == "b"
+        ));
+        assert_eq!(typed[0].text.as_ref().map(|text| text.as_str()), Some("b"));
+    }
+
+    #[test]
+    fn nav_and_pin_actions_forward_their_effects() {
+        let dir = usage_dir("nav-pin");
+        let mut world = usage_world(
+            dir,
+            vec![
+                Action::NavOpen(AppState::Algs),
+                Action::NavMenu,
+                Action::PinDrill,
+            ],
+            0,
+        );
+        step(&mut world);
+        let intents: Vec<NavIntent> = world
+            .resource_mut::<Messages<NavIntent>>()
+            .drain()
+            .collect();
+        assert!(matches!(
+            intents.as_slice(),
+            [NavIntent::Open(AppState::Algs)]
+        ));
+        assert_eq!(world.resource::<UsageTour>().index, 1);
+        step(&mut world);
+        let intents: Vec<NavIntent> = world
+            .resource_mut::<Messages<NavIntent>>()
+            .drain()
+            .collect();
+        assert!(matches!(intents.as_slice(), [NavIntent::ToMenu]));
+        assert_eq!(world.resource::<UsageTour>().index, 2);
+        assert_eq!(world.resource::<PendingDrill>().0, None);
+        step(&mut world);
+        assert_eq!(world.resource::<UsageTour>().index, 3);
+        assert_eq!(world.resource::<PendingDrill>().0, Some(pinned_case()));
+    }
+
+    #[test]
+    fn pick_solve_seed_without_a_corpus_stops_the_tour() {
+        let dir = usage_dir("pick-seed");
+        let mut world = usage_world(dir, vec![Action::PickSolveSeed], 0);
+        step(&mut world);
+        assert_eq!(exit_taken(&mut world), Some(1));
+        assert!(matches!(world.resource::<UsageTour>().mode, Mode::Done));
+        assert_eq!(world.resource::<UsageTour>().index, 0);
+        assert_eq!(world.resource::<SolveSeed>().0, 0);
+    }
+
+    #[test]
+    fn waits_pass_immediately_when_the_target_matches() {
+        let dir = usage_dir("wait-hit");
+        let mut world = usage_world(
+            dir,
+            vec![
+                Action::WaitApp(AppState::Menu),
+                Action::WaitFonts,
+                Action::WaitDrill(DrillPhase::Card),
+                Action::WaitMemo(MemoPhase::Intro),
+                Action::WaitSolve(SolvePhase::Ready),
+            ],
+            0,
+        );
+        world.insert_resource(State::<DrillPhase>::new(DrillPhase::Card));
+        world.insert_resource(State::<MemoPhase>::new(MemoPhase::Intro));
+        world.insert_resource(State::<SolvePhase>::new(SolvePhase::Ready));
+        for expected in 1..=5 {
+            step(&mut world);
+            assert!(
+                matches!(world.resource::<UsageTour>().mode, Mode::WaitUntil { .. }),
+                "action {expected} must arm the wait first"
+            );
+            step(&mut world);
+            assert_eq!(
+                world.resource::<UsageTour>().index,
+                expected,
+                "wait {expected} must resolve on the next frame"
+            );
+            assert!(matches!(world.resource::<UsageTour>().mode, Mode::Act));
+        }
+    }
+
+    #[test]
+    fn waits_time_out_when_the_target_never_arrives() {
+        let mut world = usage_world(usage_dir("wait-timeout"), Vec::new(), 0);
+        world.resource_mut::<UsageTour>().mode = Mode::WaitUntil {
+            until: Wait::Drill(DrillPhase::Rate),
+            waited: 0.0,
+        };
+        step(&mut world);
+        assert_eq!(world.resource::<UsageTour>().index, 0);
+        assert_eq!(exit_taken(&mut world), None);
+        let mut stuck = usage_world(usage_dir("wait-stuck"), Vec::new(), 0);
+        stuck.resource_mut::<UsageTour>().mode = Mode::WaitUntil {
+            until: Wait::App(AppState::Stats),
+            waited: 29.95,
+        };
+        step(&mut stuck);
+        assert_eq!(exit_taken(&mut stuck), Some(1));
+        assert!(matches!(stuck.resource::<UsageTour>().mode, Mode::Done));
+    }
+
+    fn elapse_left(world: &World) -> f32 {
+        match &world.resource::<UsageTour>().mode {
+            Mode::Elapse { left } => *left,
+            other => panic!("expected elapse mode, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn elapse_counts_down_by_the_frame_delta() {
+        let dir = usage_dir("elapse");
+        let mut world = usage_world(dir, vec![Action::Elapse(0.25)], 0);
+        step(&mut world);
+        assert!((elapse_left(&world) - 0.25).abs() < 1e-6);
+        step(&mut world);
+        assert!((elapse_left(&world) - 0.15).abs() < 1e-6);
+        step(&mut world);
+        assert!((elapse_left(&world) - 0.05).abs() < 1e-6);
+        assert_eq!(world.resource::<UsageTour>().index, 0);
+        step(&mut world);
+        assert_eq!(world.resource::<UsageTour>().index, 1);
+        assert!(matches!(world.resource::<UsageTour>().mode, Mode::Act));
+    }
+
+    fn shot_clock(world: &World) -> f32 {
+        match &world.resource::<UsageTour>().mode {
+            Mode::Shot { clock, .. } => *clock,
+            other => panic!("expected shot mode, got {other:?}"),
+        }
+    }
+
+    fn shot_taken(world: &World) -> bool {
+        match &world.resource::<UsageTour>().mode {
+            Mode::Shot { taken, .. } => *taken,
+            other => panic!("expected shot mode, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn shot_dwells_then_captures_then_waits_for_the_file() {
+        let dir = usage_dir("shot");
+        std::fs::create_dir_all(&dir).expect("usage dir");
+        let mut world = usage_world(dir.clone(), vec![Action::Shot("probe")], 1);
+        step(&mut world);
+        assert!((shot_clock(&world) + 0.4).abs() < 1e-6);
+        let mut frames = 0;
+        while !shot_taken(&world) {
+            step(&mut world);
+            frames += 1;
+            assert!(frames < 10, "shot must fire once the dwell elapses");
+        }
+        assert!(shot_clock(&world) > -0.4);
+        assert_eq!(world.resource::<UsageTour>().index, 0);
+        let mut shots = world.query::<&bevy::render::view::screenshot::Screenshot>();
+        assert_eq!(shots.iter(&world).count(), 1);
+        step(&mut world);
+        assert!(shot_taken(&world));
+        assert_eq!(world.resource::<UsageTour>().shots.len(), 0);
+        std::fs::write(dir.join("probe.png"), b"png").expect("shot lands");
+        step(&mut world);
+        let tour = world.resource::<UsageTour>();
+        assert_eq!(tour.shots, vec![dir.join("probe.png")]);
+        assert_eq!(tour.index, 1);
+        assert!(matches!(tour.mode, Mode::Act));
+    }
+
+    #[test]
+    fn done_mode_stays_done_without_side_effects() {
+        let dir = usage_dir("done");
+        let mut world = usage_world(dir, vec![Action::Press(KeyCode::Space)], 0);
+        world.resource_mut::<UsageTour>().mode = Mode::Done;
+        step(&mut world);
+        assert!(matches!(world.resource::<UsageTour>().mode, Mode::Done));
+        assert_eq!(world.resource::<UsageTour>().index, 0);
+        assert!(world.resource::<Messages<KeyboardInput>>().is_empty());
+    }
+
+    #[test]
+    fn fatal_script_shoots_only_the_fatal_screen() {
+        let actions = fatal_script();
+        assert_eq!(shot_names(&actions), vec!["fatal"]);
+        assert!(matches!(
+            actions.first(),
+            Some(Action::WaitApp(AppState::Fatal))
+        ));
+    }
+
+    #[test]
+    fn script_elapsed_times_are_frame_dwells_or_cadence_scaled() {
+        let actions = script(0.8);
+        let partial = 0.8f32 * 3.25;
+        let mut stream_waits = 0;
+        let mut frame_dwells = 0;
+        for action in &actions {
+            if let Action::Elapse(secs) = action {
+                let near = |a: f32, b: f32| (a - b).abs() < 1e-6;
+                assert!(
+                    near(*secs, 0.1)
+                        || near(*secs, 0.3)
+                        || near(*secs, 1.6)
+                        || near(*secs, partial),
+                    "unexpected elapse duration {secs}"
+                );
+                if near(*secs, partial) {
+                    stream_waits += 1;
+                }
+                if near(*secs, 0.1) {
+                    frame_dwells += 1;
+                }
+            }
+        }
+        assert_eq!(stream_waits, 2, "memo stream and solve memo waits");
+        assert!(frame_dwells > 0);
+    }
+
+    #[test]
+    fn plugin_build_wires_the_tour_and_the_seeds() {
+        let dir = usage_dir("plugin-tour");
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins);
+        app.add_plugins(UsagePlugin::tour(dir.clone(), 5, 800));
+        assert!(dir.is_dir());
+        assert_eq!(app.world().resource::<crate::views::memo::MemoSeed>().0, 5);
+        assert_eq!(
+            app.world().resource::<crate::views::solve::SolveSeed>().0,
+            6
+        );
+        assert_eq!(
+            app.world().resource::<crate::views::drill::DrillSeed>().0,
+            7
+        );
+        let tour = app.world().resource::<UsageTour>();
+        assert_eq!(tour.expected_shots, 17);
+        assert_eq!(tour.index, 0);
+        assert!(matches!(tour.mode, Mode::Act));
+        assert!(tour.shots.is_empty());
+        let fatal_dir = usage_dir("plugin-fatal");
+        let mut fatal = App::new();
+        fatal.add_plugins(MinimalPlugins);
+        fatal.add_plugins(UsagePlugin::fatal_shot(fatal_dir.clone()));
+        assert!(fatal_dir.is_dir());
+        assert_eq!(fatal.world().resource::<UsageTour>().expected_shots, 1);
     }
 }

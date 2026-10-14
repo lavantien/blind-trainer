@@ -439,6 +439,12 @@ impl Plugin for AppLogicPlugin {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::ecs::message::Messages;
+    use bevy::ecs::schedule::{IntoScheduleConfigs, Schedule};
+    use bevy::ecs::system::ScheduleSystem;
+    use bevy::input::keyboard::Key;
+    use bevy::input_focus::InputFocus;
+    use bt_data::srs::Card;
     use std::sync::atomic::{AtomicU64, Ordering};
 
     static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -634,5 +640,360 @@ mod tests {
         assert_eq!(net.highlight_kind(5), Some(HighlightKind::Target));
         assert_eq!(net.highlight_kind(9), Some(HighlightKind::Target));
         assert_eq!(net.highlight_kind(7), None);
+    }
+
+    #[test]
+    fn display_path_relativizes_only_inside_the_workspace() {
+        let inside = paths::workspace_root()
+            .join("crates")
+            .join("bt-app")
+            .join("Cargo.toml");
+        let expected = Path::new("crates")
+            .join("bt-app")
+            .join("Cargo.toml")
+            .display()
+            .to_string();
+        assert_eq!(display_path(&inside), expected);
+        let outside = Path::new("/definitely-not-the-workspace/config.json");
+        assert_eq!(display_path(outside), outside.display().to_string());
+    }
+
+    #[test]
+    fn load_config_value_reports_read_and_parse_errors() {
+        let valid = temp_paths("loadcfg-valid");
+        let value = load_config_value(&valid.config_path).expect("valid config");
+        assert_eq!(
+            value.pointer("/app/memo/mode").and_then(|v| v.as_str()),
+            Some("images")
+        );
+        let mut missing = temp_paths("loadcfg-missing");
+        missing.config_path = missing.config_path.with_extension("absent");
+        let err = load_config_value(&missing.config_path).expect_err("read error");
+        assert!(err.contains("cannot read config"), "unexpected: {err}");
+        let broken = temp_paths("loadcfg-broken");
+        std::fs::write(&broken.config_path, b"{not json").expect("rewrite config");
+        let err = load_config_value(&broken.config_path).expect_err("parse error");
+        assert!(err.contains("cannot parse config"), "unexpected: {err}");
+    }
+
+    #[test]
+    fn app_config_from_reads_the_section_and_defaults_the_seed() {
+        let value = serde_json::json!({
+            "app": {
+                "window": {"width": 100, "height": 200, "title": "w"},
+                "memo": {"cadence_ms": 250, "mode": "syllables"},
+                "drill": {"reps": 2}
+            }
+        });
+        let config = app_config_from(&value).expect("parses");
+        assert_eq!(config.window.width, 100);
+        assert_eq!(config.window.height, 200);
+        assert_eq!(config.window.title, "w");
+        assert_eq!(config.memo.cadence_ms, 250);
+        assert_eq!(config.memo.mode, "syllables");
+        assert_eq!(config.drill.reps, 2);
+        assert_eq!(config.smoke_seed, DEFAULT_SMOKE_SEED);
+        let pinned = serde_json::json!({
+            "app": {
+                "window": {"width": 1, "height": 2, "title": "w"},
+                "memo": {"cadence_ms": 1, "mode": "images"},
+                "drill": {"reps": 1},
+                "smoke_seed": 99
+            }
+        });
+        assert_eq!(app_config_from(&pinned).expect("parses").smoke_seed, 99);
+    }
+
+    #[test]
+    fn app_config_from_rejects_malformed_and_missing_sections() {
+        let malformed = serde_json::json!({"app": {"window": null}});
+        let err = app_config_from(&malformed).expect_err("malformed");
+        assert!(
+            err.starts_with("config app section malformed"),
+            "unexpected: {err}"
+        );
+        assert_eq!(
+            app_config_from(&serde_json::json!({})).expect_err("missing"),
+            "config app section missing"
+        );
+    }
+
+    #[test]
+    fn last_save_all_ok_requires_every_store() {
+        assert!(!LastSave::default().all_ok());
+        let full = LastSave {
+            settings_ok: true,
+            srs_ok: true,
+            solves_ok: true,
+            user_algs_ok: true,
+        };
+        assert!(full.all_ok());
+        let no_algs = LastSave {
+            settings_ok: true,
+            srs_ok: true,
+            solves_ok: true,
+            user_algs_ok: false,
+        };
+        assert!(!no_algs.all_ok());
+    }
+
+    fn rewrite_config(paths: &RuntimePaths, cadence_ms: u32, reps: u32) {
+        std::fs::write(
+            &paths.config_path,
+            serde_json::json!({
+                "app": {
+                    "window": {"width": 640, "height": 480, "title": "t"},
+                    "memo": {"cadence_ms": cadence_ms, "mode": "images"},
+                    "drill": {"reps": reps}
+                },
+                "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}}
+            })
+            .to_string(),
+        )
+        .expect("rewrite config");
+    }
+
+    #[test]
+    fn boot_clamps_out_of_range_settings() {
+        let low = temp_paths("clamp-low");
+        rewrite_config(&low, 0, 0);
+        let booted = boot(&low).expect("boot");
+        assert_eq!(booted.stores.settings.memo_cadence_ms, 1);
+        assert_eq!(booted.stores.settings.drill_reps, 1);
+        let high = temp_paths("clamp-high");
+        rewrite_config(&high, 99_999, 999);
+        let booted = boot(&high).expect("boot");
+        assert_eq!(booted.stores.settings.memo_cadence_ms, 10_000);
+        assert_eq!(booted.stores.settings.drill_reps, 100);
+    }
+
+    fn input_world(state: AppState) -> World {
+        let mut world = World::new();
+        world.insert_resource(State::<AppState>::new(state));
+        world.init_resource::<Messages<KeyboardInput>>();
+        world.init_resource::<Messages<NavIntent>>();
+        world
+    }
+
+    fn key_input(key_code: KeyCode, logical: Key, pressed: bool) -> KeyboardInput {
+        KeyboardInput {
+            key_code,
+            logical_key: logical,
+            state: if pressed {
+                ButtonState::Pressed
+            } else {
+                ButtonState::Released
+            },
+            text: None,
+            repeat: false,
+            window: Entity::PLACEHOLDER,
+        }
+    }
+
+    fn nav_intents(world: &mut World) -> Vec<NavIntent> {
+        world
+            .resource_mut::<Messages<NavIntent>>()
+            .drain()
+            .collect()
+    }
+
+    fn next_pending(world: &World) -> Option<AppState> {
+        match world.resource::<NextState<AppState>>() {
+            NextState::Unchanged => None,
+            NextState::Pending(state) | NextState::PendingIfDifferent(state) => Some(*state),
+        }
+    }
+
+    fn system_schedule<M>(systems: impl IntoScheduleConfigs<ScheduleSystem, M>) -> Schedule {
+        let mut schedule = Schedule::default();
+        schedule.add_systems(systems);
+        schedule
+    }
+
+    #[test]
+    fn menu_keys_open_their_views_only_from_menu() {
+        let mut world = input_world(AppState::Menu);
+        let mut schedule = system_schedule(keyboard_intents);
+        for (key, target) in AppState::MENU_KEYS {
+            world
+                .resource_mut::<Messages<KeyboardInput>>()
+                .write(key_input(key, Key::Character("1".into()), true));
+            schedule.run(&mut world);
+            let intents = nav_intents(&mut world);
+            assert!(
+                matches!(intents.as_slice(), [NavIntent::Open(open)] if *open == target),
+                "key {key:?} should open {target:?}, got {intents:?}"
+            );
+        }
+        let mut other = input_world(AppState::Drill);
+        other
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(KeyCode::Digit1, Key::Character("1".into()), true));
+        system_schedule(keyboard_intents).run(&mut other);
+        assert!(nav_intents(&mut other).is_empty());
+    }
+
+    #[test]
+    fn escape_leaves_a_view_but_released_keys_do_nothing() {
+        let mut world = input_world(AppState::Drill);
+        let mut schedule = system_schedule(keyboard_intents);
+        world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(KeyCode::Escape, Key::Escape, true));
+        schedule.run(&mut world);
+        assert!(matches!(
+            nav_intents(&mut world).as_slice(),
+            [NavIntent::ToMenu]
+        ));
+        world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(
+                KeyCode::Digit1,
+                Key::Character("1".into()),
+                false,
+            ));
+        schedule.run(&mut world);
+        assert!(nav_intents(&mut world).is_empty());
+    }
+
+    #[test]
+    fn bootstrap_and_fatal_swallow_buffered_keys() {
+        let mut world = input_world(AppState::Bootstrap);
+        let mut schedule = system_schedule(keyboard_intents);
+        world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(KeyCode::Escape, Key::Escape, true));
+        world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(KeyCode::Digit2, Key::Character("2".into()), true));
+        schedule.run(&mut world);
+        assert!(nav_intents(&mut world).is_empty());
+        world.insert_resource(State::<AppState>::new(AppState::Menu));
+        schedule.run(&mut world);
+        assert!(
+            nav_intents(&mut world).is_empty(),
+            "keys buffered during bootstrap must not fire later"
+        );
+    }
+
+    #[test]
+    fn escape_while_typing_clears_focus_instead_of_navigating() {
+        let mut world = input_world(AppState::Algs);
+        let editor = world.spawn(bevy::text::EditableText::new("query")).id();
+        world.insert_resource(InputFocus::from_entity(editor));
+        world
+            .resource_mut::<Messages<KeyboardInput>>()
+            .write(key_input(KeyCode::Escape, Key::Escape, true));
+        system_schedule(keyboard_intents).run(&mut world);
+        assert!(nav_intents(&mut world).is_empty());
+        assert_eq!(world.resource::<InputFocus>().get(), None);
+    }
+
+    #[test]
+    fn nav_to_menu_is_skipped_when_already_there() {
+        let mut world = input_world(AppState::Menu);
+        world.insert_resource(NextState::<AppState>::default());
+        world
+            .resource_mut::<Messages<NavIntent>>()
+            .write(NavIntent::ToMenu);
+        system_schedule(apply_nav_intent).run(&mut world);
+        assert_eq!(next_pending(&world), None);
+        let mut moving = input_world(AppState::Drill);
+        moving.insert_resource(NextState::<AppState>::default());
+        moving
+            .resource_mut::<Messages<NavIntent>>()
+            .write(NavIntent::ToMenu);
+        system_schedule(apply_nav_intent).run(&mut moving);
+        assert_eq!(next_pending(&moving), Some(AppState::Menu));
+        let mut opening = input_world(AppState::Menu);
+        opening.insert_resource(NextState::<AppState>::default());
+        opening
+            .resource_mut::<Messages<NavIntent>>()
+            .write(NavIntent::Open(AppState::Stats));
+        system_schedule(apply_nav_intent).run(&mut opening);
+        assert_eq!(next_pending(&opening), Some(AppState::Stats));
+    }
+
+    fn sample_stores() -> Stores {
+        Stores {
+            settings: Settings {
+                memo_cadence_ms: 300,
+                memo_mode: MemoMode::Syllables,
+                drill_reps: 5,
+            },
+            srs: persist::SrsStore::default(),
+            solves: persist::SolveLog::default(),
+            user_algs: paths::UserAlgs::new(),
+        }
+    }
+
+    #[test]
+    fn settings_change_persists_to_the_user_root() {
+        let paths = temp_paths("apply-settings");
+        let mut world = input_world(AppState::Menu);
+        world.insert_resource(PersistenceRoot(paths.user_root.clone()));
+        world.insert_resource(sample_stores());
+        world.insert_resource(LastSave::default());
+        world.init_resource::<Messages<SettingsChanged>>();
+        let expected = Settings {
+            memo_cadence_ms: 640,
+            memo_mode: MemoMode::PerOrbit,
+            drill_reps: 6,
+        };
+        world
+            .resource_mut::<Messages<SettingsChanged>>()
+            .write(SettingsChanged(expected));
+        system_schedule(apply_settings_change).run(&mut world);
+        assert_eq!(world.resource::<Stores>().settings, expected);
+        assert!(world.resource::<LastSave>().settings_ok);
+        let reloaded = Stores::load(&paths.user_root, sample_settings_default()).expect("reload");
+        assert_eq!(reloaded.settings, expected);
+    }
+    fn sample_settings_default() -> Settings {
+        Settings {
+            memo_cadence_ms: 1,
+            memo_mode: MemoMode::Images,
+            drill_reps: 1,
+        }
+    }
+    #[test]
+    fn save_stores_request_persists_every_store() {
+        let paths = temp_paths("save-stores");
+        let mut stores = sample_stores();
+        stores.srs.cards.insert(
+            "edge/UF".to_string(),
+            Card {
+                ease: 2.5,
+                interval_days: 3,
+                due_day: 4,
+                reps: 1,
+                lapses: 0,
+                reviews: vec![],
+            },
+        );
+        stores.solves.solves.push(persist::SolveRecord {
+            started_ms: 9,
+            memo_ms: 1000,
+            exec_ms: 2000,
+            success: false,
+        });
+        let mut world = input_world(AppState::Menu);
+        world.insert_resource(PersistenceRoot(paths.user_root.clone()));
+        world.insert_resource(stores);
+        world.insert_resource(LastSave::default());
+        world.init_resource::<Messages<SaveStores>>();
+        let mut schedule = system_schedule(save_stores_on_request);
+        schedule.run(&mut world);
+        assert_eq!(*world.resource::<LastSave>(), LastSave::default());
+        world
+            .resource_mut::<Messages<SaveStores>>()
+            .write(SaveStores);
+        schedule.run(&mut world);
+        let last = *world.resource::<LastSave>();
+        assert!(last.all_ok());
+        let reloaded = Stores::load(&paths.user_root, sample_settings_default()).expect("reload");
+        assert_eq!(reloaded.srs.cards.len(), 1);
+        assert_eq!(reloaded.solves.solves.len(), 1);
+        assert_eq!(reloaded.settings.drill_reps, 5);
     }
 }

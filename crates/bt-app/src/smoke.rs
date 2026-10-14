@@ -225,6 +225,66 @@ fn run_smoke(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::ecs::message::Messages;
+    use std::path::Path;
+    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::time::Duration;
+
+    static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    fn tour_dir(tag: &str) -> PathBuf {
+        let dir = std::env::temp_dir()
+            .join("bt-app-smoke-tests")
+            .join(format!(
+                "{tag}-{}-{}",
+                std::process::id(),
+                DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
+            ));
+        std::fs::create_dir_all(&dir).expect("tour dir");
+        dir
+    }
+
+    fn smoke_world(
+        dir: PathBuf,
+        phase: SmokePhase,
+        entered: Vec<AppState>,
+        state: AppState,
+        dt: f32,
+    ) -> World {
+        let mut world = World::new();
+        world.insert_resource(State::<AppState>::new(state));
+        world.insert_resource(NextState::<AppState>::default());
+        world.insert_resource(FatalReason::default());
+        let mut time = Time::<Virtual>::default();
+        time.advance_by(Duration::from_secs_f32(dt));
+        world.insert_resource(time);
+        world.insert_resource(SmokeFonts(true));
+        world.insert_resource(SmokeTour {
+            dir,
+            phase,
+            entered,
+            shots: Vec::new(),
+        });
+        world.init_resource::<Messages<AppExit>>();
+        world
+    }
+
+    fn step(world: &mut World) {
+        let mut schedule = Schedule::default();
+        schedule.add_systems(run_smoke);
+        schedule.run(world);
+    }
+
+    fn exit_taken(world: &mut World) -> Option<u8> {
+        world
+            .resource_mut::<Messages<AppExit>>()
+            .drain()
+            .next()
+            .map(|exit| match exit {
+                AppExit::Success => 0,
+                AppExit::Error(code) => code.get(),
+            })
+    }
 
     #[test]
     fn tour_covers_all_views_once() {
@@ -260,5 +320,372 @@ mod tests {
     fn smoke_seeds_pin_the_tour_determinism() {
         assert_eq!(smoke_seeds(20261012), (20261012, 20261013, 20261014));
         assert_eq!(smoke_seeds(u64::MAX), (u64::MAX, 0, 1));
+    }
+
+    #[test]
+    fn wait_for_boot_exits_with_error_one_after_the_stuck_limit() {
+        let mut world = smoke_world(
+            tour_dir("boot-stuck"),
+            SmokePhase::WaitForBoot { waited: 9.95 },
+            Vec::new(),
+            AppState::Bootstrap,
+            0.1,
+        );
+        step(&mut world);
+        assert!(matches!(
+            world.resource::<SmokeTour>().phase,
+            SmokePhase::WaitForBoot { .. }
+        ));
+        step(&mut world);
+        assert_eq!(exit_taken(&mut world), Some(1));
+        assert!(matches!(
+            world.resource::<SmokeTour>().phase,
+            SmokePhase::Done
+        ));
+    }
+
+    #[test]
+    fn wait_for_boot_needs_both_menu_and_ready_fonts() {
+        let mut world = smoke_world(
+            tour_dir("boot-wait"),
+            SmokePhase::WaitForBoot { waited: 0.0 },
+            Vec::new(),
+            AppState::Menu,
+            0.1,
+        );
+        world.insert_resource(SmokeFonts(false));
+        step(&mut world);
+        let waited = match &world.resource::<SmokeTour>().phase {
+            SmokePhase::WaitForBoot { waited } => *waited,
+            other => panic!("must keep waiting for boot, got {other:?}"),
+        };
+        assert!((waited - 0.1).abs() < 1e-6);
+        world.insert_resource(State::<AppState>::new(AppState::Bootstrap));
+        world.insert_resource(SmokeFonts(true));
+        step(&mut world);
+        let waited = match &world.resource::<SmokeTour>().phase {
+            SmokePhase::WaitForBoot { waited } => *waited,
+            other => panic!("must keep waiting for boot, got {other:?}"),
+        };
+        assert!((waited - 0.2).abs() < 1e-6);
+        world.insert_resource(State::<AppState>::new(AppState::Menu));
+        step(&mut world);
+        let tour = world.resource::<SmokeTour>();
+        assert!(matches!(
+            tour.phase,
+            SmokePhase::Dwell {
+                state: AppState::Menu,
+                ..
+            }
+        ));
+        assert_eq!(tour.entered, vec![AppState::Menu]);
+    }
+
+    #[test]
+    fn dwell_shoots_once_then_waits_for_the_file() {
+        let dir = tour_dir("dwell-shoot");
+        let mut world = smoke_world(
+            dir.clone(),
+            SmokePhase::Dwell {
+                state: AppState::Menu,
+                waited: 0.45,
+                stuck: 0.0,
+            },
+            vec![AppState::Menu],
+            AppState::Menu,
+            0.1,
+        );
+        step(&mut world);
+        let tour = world.resource::<SmokeTour>();
+        assert_eq!(tour.shots.len(), 1);
+        let (shot_state, shot_path) = &tour.shots[0];
+        assert_eq!(*shot_state, AppState::Menu);
+        assert_eq!(*shot_path, dir.join("menu.png"));
+        assert!(matches!(
+            tour.phase,
+            SmokePhase::WaitForShot {
+                state: AppState::Menu,
+                ..
+            }
+        ));
+        let mut shots = world.query::<&Screenshot>();
+        assert_eq!(shots.iter(&world).count(), 1);
+    }
+
+    #[test]
+    fn dwell_times_out_with_error_three_when_the_state_never_arrives() {
+        let mut world = smoke_world(
+            tour_dir("dwell-stuck"),
+            SmokePhase::Dwell {
+                state: AppState::Memo,
+                waited: 0.0,
+                stuck: 9.95,
+            },
+            vec![AppState::Memo],
+            AppState::Menu,
+            0.1,
+        );
+        step(&mut world);
+        assert_eq!(exit_taken(&mut world), Some(3));
+        assert!(matches!(
+            world.resource::<SmokeTour>().phase,
+            SmokePhase::Done
+        ));
+    }
+
+    #[test]
+    fn wait_for_shot_blocks_until_the_file_lands_then_advances() {
+        let dir = tour_dir("shot-wait");
+        let mut world = smoke_world(
+            dir.clone(),
+            SmokePhase::WaitForShot {
+                state: AppState::Menu,
+                path: dir.join("menu.png"),
+            },
+            vec![AppState::Menu],
+            AppState::Menu,
+            0.1,
+        );
+        step(&mut world);
+        assert!(matches!(
+            world.resource::<SmokeTour>().phase,
+            SmokePhase::WaitForShot { .. }
+        ));
+        std::fs::write(dir.join("menu.png"), b"png").expect("shot lands");
+        step(&mut world);
+        let tour = world.resource::<SmokeTour>();
+        assert_eq!(tour.entered, vec![AppState::Menu, AppState::Drill]);
+        assert!(matches!(
+            tour.phase,
+            SmokePhase::Dwell {
+                state: AppState::Drill,
+                ..
+            }
+        ));
+        assert!(matches!(
+            world.resource::<NextState<AppState>>(),
+            NextState::Pending(AppState::Drill)
+        ));
+        assert_eq!(world.resource::<FatalReason>().0, "");
+    }
+
+    #[test]
+    fn the_fatal_stop_sets_the_fatal_reason() {
+        let dir = tour_dir("fatal-stop");
+        std::fs::write(dir.join("settings.png"), b"png").expect("shot lands");
+        let mut world = smoke_world(
+            dir.clone(),
+            SmokePhase::WaitForShot {
+                state: AppState::Settings,
+                path: dir.join("settings.png"),
+            },
+            AppState::TOUR[..7].to_vec(),
+            AppState::Settings,
+            0.1,
+        );
+        step(&mut world);
+        let tour = world.resource::<SmokeTour>();
+        assert_eq!(tour.entered.len(), AppState::TOUR.len());
+        assert!(matches!(
+            tour.phase,
+            SmokePhase::Dwell {
+                state: AppState::Fatal,
+                ..
+            }
+        ));
+        assert_eq!(world.resource::<FatalReason>().0, SMOKE_FATAL_REASON);
+        assert!(matches!(
+            world.resource::<NextState<AppState>>(),
+            NextState::Pending(AppState::Fatal)
+        ));
+    }
+
+    #[test]
+    fn a_full_tour_with_landed_shots_exits_successfully() {
+        let mut world = smoke_world(
+            tour_dir("full-tour"),
+            SmokePhase::WaitForBoot { waited: 0.0 },
+            Vec::new(),
+            AppState::Menu,
+            0.1,
+        );
+        for _ in 0..400 {
+            step(&mut world);
+            let pending = {
+                let tour = world.resource::<SmokeTour>();
+                match &tour.phase {
+                    SmokePhase::Done => None,
+                    SmokePhase::WaitForShot { path, .. } => Some((path.clone(), None)),
+                    SmokePhase::Dwell { state, .. } => Some((PathBuf::new(), Some(*state))),
+                    SmokePhase::WaitForBoot { .. } => Some((PathBuf::new(), None)),
+                }
+            };
+            let Some((shot_path, dwell_state)) = pending else {
+                break;
+            };
+            if let Some(state) = dwell_state {
+                world.insert_resource(State::<AppState>::new(state));
+            } else if !shot_path.as_os_str().is_empty()
+                && !matches!(std::fs::metadata(&shot_path), Ok(meta) if meta.len() > 0)
+            {
+                std::fs::write(&shot_path, b"png").expect("shot lands");
+            }
+        }
+        let tour = world.resource::<SmokeTour>();
+        assert!(
+            matches!(tour.phase, SmokePhase::Done),
+            "tour must end Done, phase is {:?}",
+            tour.phase
+        );
+        assert_eq!(tour.entered, AppState::TOUR.to_vec());
+        assert_eq!(tour.shots.len(), AppState::TOUR.len());
+        assert_eq!(world.resource::<FatalReason>().0, SMOKE_FATAL_REASON);
+        assert_eq!(exit_taken(&mut world), Some(0));
+    }
+
+    fn landed_tour(dir: &Path, entered: Vec<AppState>, bytes: &[u8]) -> SmokeTour {
+        let shots: Vec<(AppState, PathBuf)> = AppState::TOUR
+            .iter()
+            .map(|state| (*state, dir.join(format!("{}.png", state.slug()))))
+            .collect();
+        for (_, path) in &shots {
+            std::fs::write(path, bytes).expect("shot file");
+        }
+        SmokeTour {
+            dir: dir.to_path_buf(),
+            phase: SmokePhase::Done,
+            entered,
+            shots,
+        }
+    }
+
+    #[test]
+    fn finish_accepts_only_complete_and_ordered_tours() {
+        let ok_dir = tour_dir("finish-ok");
+        let mut world = World::new();
+        world.init_resource::<Messages<AppExit>>();
+        let tour = landed_tour(&ok_dir, AppState::TOUR.to_vec(), b"png");
+        {
+            let mut commands = world.commands();
+            finish(&mut commands, &tour);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(0));
+    }
+
+    #[test]
+    fn finish_rejects_empty_shot_files() {
+        let dir = tour_dir("finish-empty");
+        let mut world = World::new();
+        world.init_resource::<Messages<AppExit>>();
+        let tour = landed_tour(&dir, AppState::TOUR.to_vec(), b"");
+        {
+            let mut commands = world.commands();
+            finish(&mut commands, &tour);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(1));
+    }
+
+    #[test]
+    fn finish_rejects_out_of_order_tours() {
+        let dir = tour_dir("finish-order");
+        let mut world = World::new();
+        world.init_resource::<Messages<AppExit>>();
+        let mut reversed = AppState::TOUR.to_vec();
+        reversed.reverse();
+        let tour = landed_tour(&dir, reversed, b"png");
+        {
+            let mut commands = world.commands();
+            finish(&mut commands, &tour);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(1));
+    }
+
+    #[test]
+    fn finish_rejects_shot_paths_named_for_another_state() {
+        let dir = tour_dir("finish-renamed");
+        let mut world = World::new();
+        world.init_resource::<Messages<AppExit>>();
+        let mut tour = landed_tour(&dir, AppState::TOUR.to_vec(), b"png");
+        let stray = dir.parent().expect("parent").join("renamed.png");
+        std::fs::write(&stray, b"png").expect("stray file");
+        tour.shots.last_mut().expect("last shot").1 = stray;
+        {
+            let mut commands = world.commands();
+            finish(&mut commands, &tour);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(1));
+    }
+
+    #[test]
+    fn shoot_removes_a_stale_file_before_spawning() {
+        let dir = tour_dir("shoot-stale");
+        let path = dir.join("menu.png");
+        std::fs::write(&path, b"stale").expect("stale file");
+        let mut world = World::new();
+        {
+            let mut commands = world.commands();
+            shoot(&mut commands, path.clone());
+        }
+        world.flush();
+        assert!(std::fs::metadata(&path).is_err(), "stale shot must go");
+        let mut shots = world.query::<&Screenshot>();
+        assert_eq!(shots.iter(&world).count(), 1);
+    }
+
+    #[test]
+    fn exit_with_maps_the_verdict_to_the_exit_code() {
+        let mut world = World::new();
+        world.init_resource::<Messages<AppExit>>();
+        {
+            let mut commands = world.commands();
+            exit_with(&mut commands, true);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(0));
+        {
+            let mut commands = world.commands();
+            exit_with(&mut commands, false);
+        }
+        world.flush();
+        assert_eq!(exit_taken(&mut world), Some(1));
+    }
+
+    #[test]
+    fn plugin_build_creates_the_dir_and_pins_the_seeds() {
+        let dir = std::env::temp_dir()
+            .join("bt-app-smoke-tests")
+            .join(format!(
+                "plugin-{}-{}",
+                std::process::id(),
+                DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
+            ));
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins);
+        app.add_plugins(SmokePlugin {
+            dir: dir.clone(),
+            seed: 7,
+        });
+        assert!(dir.is_dir(), "plugin must create the output dir");
+        assert_eq!(app.world().resource::<crate::views::memo::MemoSeed>().0, 7);
+        assert_eq!(
+            app.world().resource::<crate::views::solve::SolveSeed>().0,
+            8
+        );
+        assert_eq!(
+            app.world().resource::<crate::views::drill::DrillSeed>().0,
+            9
+        );
+        assert!(!app.world().resource::<SmokeFonts>().0);
+        let tour = app.world().resource::<SmokeTour>();
+        assert!(matches!(
+            tour.phase,
+            SmokePhase::WaitForBoot { waited: 0.0 }
+        ));
+        assert!(tour.entered.is_empty());
+        assert!(tour.shots.is_empty());
     }
 }
