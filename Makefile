@@ -12,6 +12,7 @@ export BT_ARTIFACTS := $(ARTIFACTS)
 .PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
 
 COVERAGE_TARGET := C:/Users/lavantien/dev/github/bt-coverage-target
+MUTATION_TARGET := C:/Users/lavantien/dev/github/bt-mutation-target
 
 setup:
 	rustup component add rustfmt clippy
@@ -59,7 +60,7 @@ fuzz:
 	cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done
 
 mutation:
-	cargo mutants $(addprefix -p ,$(MUTATION_PACKAGES))
+	CARGO_TARGET_DIR=$(MUTATION_TARGET) cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
 
 e2e:
 	cargo test --release -p bt-app --test e2e
