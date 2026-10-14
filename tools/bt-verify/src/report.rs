@@ -136,10 +136,10 @@ pub fn build_report(
             summary.failed += 1;
             failures.push(outcome.clone());
         }
-        if outcome.qtm_match {
+        if record.is_some() && outcome.qtm_match {
             summary.qtm_agreed += 1;
         }
-        if outcome.position_match {
+        if record.is_some() && outcome.position_match {
             summary.position_agreed += 1;
         }
         rows.push(outcome);
