@@ -9,7 +9,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain coverage diagrams
+.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
 
 COVERAGE_TARGET := C:/Users/lavantien/dev/github/bt-coverage-target
 
@@ -26,6 +26,9 @@ gen-data:
 
 verify-algs:
 	cargo run --release -p bt-verify
+
+synth-simcheck:
+	python -I scripts/synth_simcheck.py
 
 memofreq:
 	cargo run --release -p bt-memofreq
@@ -92,6 +95,9 @@ chain:
 
 coverage:
 	CARGO_TARGET_DIR=$(COVERAGE_TARGET) pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
+
+alg-coverage:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/alg-coverage-badge.ps1
 
 diagrams:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/diagrams.ps1

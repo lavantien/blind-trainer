@@ -13,3 +13,6 @@
 !/artifacts/.gitkeep
 
 /mutants.out*/
+__pycache__/
+/playground/attacker-a/gen/
+/playground/attacker-b/out/

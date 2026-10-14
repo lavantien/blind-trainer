@@ -3,6 +3,7 @@ pub mod build;
 pub mod hash;
 pub mod model;
 pub mod out;
+pub mod synth;
 pub mod when;
 
 pub use hash::sha256_hex;
@@ -13,6 +14,11 @@ pub const CORNER_CASES: usize = 378;
 pub const TOTAL_CASES: usize = 818;
 pub const EDGE_COVERED: usize = 372;
 pub const CORNER_COVERED: usize = 288;
+pub const EDGE_GENERATED: usize = 68;
+pub const CORNER_GENERATED: usize = 89;
+pub const EDGE_TOTAL_COVERED: usize = 440;
+pub const CORNER_TOTAL_COVERED: usize = 377;
+pub const TOTAL_COVERED: usize = 817;
 pub const TOTAL_SPECIALS: usize = 89;
 pub const SPECIAL_COUNTS: [(&str, &str, usize); 8] = [
     ("cherry", "flips", 25),
@@ -43,6 +49,10 @@ mod tests {
         assert_eq!(EDGE_CASES + CORNER_CASES, TOTAL_CASES);
         assert_eq!(EDGE_CASES - EDGE_COVERED, 68);
         assert_eq!(CORNER_CASES - CORNER_COVERED, 90);
+        assert_eq!(EDGE_COVERED + EDGE_GENERATED, EDGE_TOTAL_COVERED);
+        assert_eq!(CORNER_COVERED + CORNER_GENERATED, CORNER_TOTAL_COVERED);
+        assert_eq!(EDGE_TOTAL_COVERED + CORNER_TOTAL_COVERED, TOTAL_COVERED);
+        assert_eq!(TOTAL_CASES - TOTAL_COVERED, 1);
         assert_eq!(
             SPECIAL_COUNTS.iter().map(|&(_, _, n)| n).sum::<usize>(),
             TOTAL_SPECIALS

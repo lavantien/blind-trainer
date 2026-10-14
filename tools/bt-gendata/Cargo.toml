@@ -3,6 +3,7 @@ name = "bt-gendata"
 edition.workspace = true
 
 [dependencies]
+bt-core = { path = "../../crates/bt-core" }
 bt-data = { path = "../../crates/bt-data" }
 bt-scheme = { path = "../../crates/bt-scheme" }
 serde.workspace = true

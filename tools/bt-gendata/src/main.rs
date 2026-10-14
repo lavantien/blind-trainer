@@ -4,6 +4,7 @@ use bt_gendata::audit::audit;
 use bt_gendata::build::{build, manifest};
 use bt_gendata::hash::{digest_corpus, sha256_hex};
 use bt_gendata::out::write_atomic;
+use bt_gendata::synth::{SynthLimits, synthesize};
 use bt_gendata::when::now_iso8601;
 use std::path::PathBuf;
 
@@ -20,12 +21,15 @@ fn run() -> Result<(), Vec<String>> {
     let root = vendor_root().map_err(|e| vec![e.to_string()])?;
     let corpus = Corpus::load(&root).map_err(|e| vec![e.to_string()])?;
     let digest = digest_corpus(&root).map_err(|e| vec![e])?;
-    let built = build(&corpus);
+    let mut built = build(&corpus);
     let offenders = audit(&built, &corpus, digest.rows);
     if !offenders.is_empty() {
         return Err(offenders);
     }
-    let out = data_vendor_path().map_err(|e| vec![e])?;
+    let config = load_config().map_err(|e| vec![e.to_string()])?;
+    let limits = synth_limits(&config).map_err(|e| vec![e])?;
+    let (edge_added, corner_added) = synthesize(&mut built.cases, &limits);
+    let out = data_vendor_path(&config).map_err(|e| vec![e])?;
     let cases_bytes = serde_json::to_vec_pretty(&built.cases).map_err(|e| vec![e.to_string()])?;
     let specials_bytes =
         serde_json::to_vec_pretty(&built.specials).map_err(|e| vec![e.to_string()])?;
@@ -41,17 +45,42 @@ fn run() -> Result<(), Vec<String>> {
     write_atomic(&out.join("specials.json"), &specials_bytes).map_err(|e| vec![e])?;
     write_atomic(&out.join("manifest.json"), &manifest_bytes).map_err(|e| vec![e])?;
     println!(
-        "gendata: {} cases ({} covered), {} specials, manifest at {}",
+        "gendata: {} cases ({} covered, {} generated: {} edge, {} corner), {} specials, manifest at {}",
         record.cases.entries,
         record.cases.edge.covered + record.cases.corner.covered,
+        edge_added + corner_added,
+        edge_added,
+        corner_added,
         record.specials.entries,
         out.join("manifest.json").display()
     );
     Ok(())
 }
 
-fn data_vendor_path() -> Result<PathBuf, String> {
-    let config = load_config().map_err(|e| e.to_string())?;
+fn synth_limits(config: &serde_json::Value) -> Result<SynthLimits, String> {
+    let max_setup = config
+        .pointer("/synth/max_setup")
+        .and_then(|value| value.as_u64())
+        .ok_or_else(|| "config section missing: synth.max_setup".to_string())?
+        as usize;
+    let max_insert = config
+        .pointer("/synth/max_insert")
+        .and_then(|value| value.as_u64())
+        .ok_or_else(|| "config section missing: synth.max_insert".to_string())?
+        as usize;
+    let node_budget = config
+        .pointer("/synth/node_budget")
+        .and_then(|value| value.as_u64())
+        .ok_or_else(|| "config section missing: synth.node_budget".to_string())?
+        as usize;
+    Ok(SynthLimits {
+        max_setup,
+        max_insert,
+        node_budget,
+    })
+}
+
+fn data_vendor_path(config: &serde_json::Value) -> Result<PathBuf, String> {
     let relative = config
         .pointer("/paths/data_vendor")
         .and_then(|value| value.as_str())
