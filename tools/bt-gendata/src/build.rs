@@ -540,6 +540,7 @@ mod tests {
         let position = classify_alg(&conjugated)
             .position()
             .expect("conjugated alg stays a three style");
+        assert_eq!(position, "UF-UL-UR");
         let corpus = Corpus::from_rows(vec![row(
             Solver::Cherry,
             SheetClass::Edge,
