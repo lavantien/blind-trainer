@@ -724,4 +724,141 @@ mod tests {
             report.wordlist_covered
         );
     }
+
+    #[test]
+    fn nucleus_rime_marks_and_gaps_are_pinned() {
+        assert_eq!(nucleus_rime(Nucleus::Ia, Coda::T), Some(("iê", 1)));
+        assert_eq!(nucleus_rime(Nucleus::Wa, Coda::M), Some(("ươ", 1)));
+        assert_eq!(nucleus_rime(Nucleus::Ua, Coda::Ng), Some(("uô", 1)));
+        assert_eq!(nucleus_rime(Nucleus::U, Coda::T), Some(("u", 0)));
+        assert_eq!(nucleus_rime(Nucleus::E, Coda::Ng), Some(("a", 0)));
+        assert_eq!(nucleus_rime(Nucleus::Ah, Coda::P), Some(("â", 0)));
+        assert_eq!(nucleus_rime(Nucleus::I, Coda::Open), Some(("i", 0)));
+        assert!(nucleus_rime(Nucleus::Uw, Coda::N).is_none());
+        assert!(nucleus_rime(Nucleus::Or, Coda::K).is_none());
+    }
+
+    #[test]
+    fn tone_char_marks_every_base_and_passes_unknown_through() {
+        assert_eq!(tone_char('a', Tone::Huyen), 'à');
+        assert_eq!(tone_char('a', Tone::Sac), 'á');
+        assert_eq!(tone_char('a', Tone::Hoi), 'ả');
+        assert_eq!(tone_char('a', Tone::Nga), 'ã');
+        assert_eq!(tone_char('a', Tone::Nang), 'ạ');
+        assert_eq!(tone_char('e', Tone::Sac), 'é');
+        assert_eq!(tone_char('i', Tone::Nang), 'ị');
+        assert_eq!(tone_char('o', Tone::Hoi), 'ỏ');
+        assert_eq!(tone_char('u', Tone::Nga), 'ũ');
+        assert_eq!(tone_char('y', Tone::Huyen), 'ỳ');
+        assert_eq!(tone_char('ă', Tone::Nga), 'ẵ');
+        assert_eq!(tone_char('â', Tone::Hoi), 'ẩ');
+        assert_eq!(tone_char('ê', Tone::Sac), 'ế');
+        assert_eq!(tone_char('ô', Tone::Sac), 'ố');
+        assert_eq!(tone_char('ơ', Tone::Huyen), 'ờ');
+        assert_eq!(tone_char('ư', Tone::Sac), 'ứ');
+        assert_eq!(tone_char('q', Tone::Sac), 'q');
+        assert_eq!(tone_char('w', Tone::Nang), 'w');
+        assert_eq!(tone_char('a', Tone::Ngang), 'a');
+    }
+
+    #[test]
+    fn zero_onset_variants_fill_the_remaining_coda_arms() {
+        assert_eq!(
+            zero_onset_variants(Nucleus::I, Coda::M, Tone::Sac),
+            vec!["ím".to_string(), "ým".to_string()]
+        );
+        assert_eq!(
+            zero_onset_variants(Nucleus::I, Coda::P, Tone::Nang),
+            vec!["ịp".to_string(), "ỵp".to_string()]
+        );
+        assert_eq!(
+            zero_onset_variants(Nucleus::I, Coda::Ng, Tone::Sac),
+            vec!["ính".to_string(), "ýnh".to_string()]
+        );
+        assert_eq!(
+            zero_onset_variants(Nucleus::U, Coda::Open, Tone::Ngang),
+            vec!["u".to_string()]
+        );
+        assert!(zero_onset_variants(Nucleus::Uw, Coda::N, Tone::Sac).is_empty());
+        assert!(zero_onset_variants(Nucleus::Ah, Coda::Open, Tone::Ngang).is_empty());
+    }
+
+    #[test]
+    fn render_pins_mark_positions_and_prefix_rules() {
+        assert_eq!(
+            render("l", Nucleus::Ia, Coda::T, Tone::Nang).unwrap(),
+            "liệt"
+        );
+        assert_eq!(
+            render("x", Nucleus::Wa, Coda::Open, Tone::Ngang).unwrap(),
+            "xưa"
+        );
+        assert_eq!(render("", Nucleus::Uw, Coda::Open, Tone::Sac).unwrap(), "ứ");
+        assert_eq!(
+            render("b", Nucleus::Ah, Coda::N, Tone::Huyen).unwrap(),
+            "bần"
+        );
+        assert_eq!(render("b", Nucleus::Oh, Coda::K, Tone::Sac).unwrap(), "bốc");
+        assert_eq!(render("b", Nucleus::E, Coda::K, Tone::Sac).unwrap(), "bách");
+        assert_eq!(
+            render("b", Nucleus::A, Coda::Ng, Tone::Ngang).unwrap(),
+            "bang"
+        );
+        assert_eq!(
+            render("l", Nucleus::Ua, Coda::N, Tone::Huyen).unwrap(),
+            "luồn"
+        );
+        assert!(render("b", Nucleus::Ah, Coda::Open, Tone::Sac).is_none());
+    }
+
+    #[test]
+    fn onset_spellings_track_frontness_and_z_alternates() {
+        assert_eq!(onset_spellings(Onset::K, Nucleus::I), vec!["k"]);
+        assert_eq!(onset_spellings(Onset::K, Nucleus::A), vec!["c", "k"]);
+        assert_eq!(onset_spellings(Onset::Ng, Nucleus::Eh), vec!["ngh"]);
+        assert_eq!(onset_spellings(Onset::Ng, Nucleus::Oh), vec!["ng"]);
+        assert_eq!(onset_spellings(Onset::G, Nucleus::Ia), vec!["gh"]);
+        assert_eq!(onset_spellings(Onset::G, Nucleus::A), vec!["g"]);
+        assert_eq!(onset_spellings(Onset::Z, Nucleus::Oh), vec!["d", "r"]);
+        assert_eq!(onset_spellings(Onset::Z, Nucleus::A), vec!["d", "r", "gi"]);
+        assert_eq!(onset_spellings(Onset::Z, Nucleus::Wa), vec!["d", "r", "gi"]);
+        assert_eq!(onset_spellings(Onset::Z, Nucleus::Ua), vec!["d", "r"]);
+        assert_eq!(onset_spellings(Onset::B, Nucleus::A), vec!["b"]);
+        assert_eq!(onset_spellings(Onset::Zero, Nucleus::A), vec![""]);
+    }
+
+    #[test]
+    fn build_inventory_pins_cells_across_feature_slots() {
+        let wordlist = wordlist_from(&["nghiệm", "xưa", "mút", "gịa"]);
+        let (entries, report) = build_inventory(&wordlist);
+        let cell = |text: &str| {
+            entries
+                .iter()
+                .find(|e| e.text == text)
+                .unwrap_or_else(|| panic!("{text} missing"))
+        };
+        let nghiêm = cell("nghiệm");
+        assert_eq!(
+            (nghiêm.onset, nghiêm.nucleus, nghiêm.coda, nghiêm.tone),
+            (Onset::Ng, Nucleus::Ia, Coda::M, Tone::Nang)
+        );
+        let xưa = cell("xưa");
+        assert_eq!(
+            (xưa.onset, xưa.nucleus, xưa.coda, xưa.tone),
+            (Onset::X, Nucleus::Wa, Coda::Open, Tone::Ngang)
+        );
+        let mutt = cell("mút");
+        assert_eq!(
+            (mutt.onset, mutt.nucleus, mutt.coda, mutt.tone),
+            (Onset::M, Nucleus::U, Coda::T, Tone::Sac)
+        );
+        let gịa = cell("gịa");
+        assert_eq!(
+            (gịa.onset, gịa.nucleus, gịa.coda, gịa.tone),
+            (Onset::Z, Nucleus::Ia, Coda::Open, Tone::Nang)
+        );
+        assert_eq!(report.wordlist_size, 4);
+        assert_eq!(report.wordlist_covered, 4);
+        assert!(entries.iter().all(|e| wordlist.contains(&e.text)));
+    }
 }

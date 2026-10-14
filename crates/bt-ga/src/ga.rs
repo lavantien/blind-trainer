@@ -526,4 +526,172 @@ mod tests {
         let err = build_env(2, lengths, feats, CASE_COUNT, vec![], vec![]);
         assert!(err.is_err());
     }
+
+    #[test]
+    #[should_panic]
+    fn run_rejects_elite_equal_to_population() {
+        let env = env_fixture(2, &["ma", "má", "mù"]);
+        let mut params = small_params(1);
+        params.elite = params.population;
+        run(&env, &params);
+    }
+
+    #[test]
+    #[should_panic]
+    fn run_rejects_population_below_two() {
+        let env = env_fixture(2, &["ma", "má", "mù"]);
+        let mut params = small_params(1);
+        params.population = 1;
+        params.elite = 0;
+        run(&env, &params);
+    }
+
+    #[test]
+    #[should_panic]
+    fn run_rejects_zero_elite() {
+        let env = env_fixture(2, &["ma", "má", "mù"]);
+        let mut params = small_params(1);
+        params.elite = 0;
+        run(&env, &params);
+    }
+
+    #[test]
+    fn run_with_zero_generations_returns_the_initial_best() {
+        let env = env_fixture(3, &["ma", "má", "mù", "mút"]);
+        let mut params = small_params(9);
+        params.generations = 0;
+        let outcome = run(&env, &params);
+        assert_eq!(outcome.per_gen_best.len(), 1);
+        assert_eq!(outcome.best_generation, 0);
+        assert_eq!(outcome.stagnation_tail, 0);
+        assert_eq!(outcome.max_stagnation, 0);
+        assert_eq!(outcome.evaluations, params.population as u64);
+        assert!(is_injective(&outcome.best));
+        assert!(outcome.best.iter().all(|g| (*g as usize) < env.pool_size));
+        assert_eq!(outcome.best_fitness, outcome.per_gen_best[0]);
+        let recomposed = params.w_conf * outcome.best_parts[0]
+            + params.w_flow * outcome.best_parts[1]
+            + params.w_cplx * outcome.best_parts[2];
+        assert!((outcome.best_fitness - recomposed).abs() < 1e-5);
+    }
+
+    #[test]
+    fn run_survives_extreme_mutation_gates() {
+        let env = env_fixture(4, &["ma", "má", "mù", "mút", "mơ", "không"]);
+        let mut always = small_params(21);
+        always.swap = 1.0;
+        always.replace = 1.0;
+        let outcome = run(&env, &always);
+        assert!(is_injective(&outcome.best));
+        assert!(outcome.best.iter().all(|g| (*g as usize) < env.pool_size));
+        assert_eq!(outcome.per_gen_best.len(), always.generations + 1);
+        let mut never = small_params(21);
+        never.swap = 0.0;
+        never.replace = 0.0;
+        let outcome = run(&env, &never);
+        assert!(is_injective(&outcome.best));
+        assert_eq!(
+            outcome.evaluations,
+            (never.population + never.generations * (never.population - never.elite)) as u64
+        );
+    }
+
+    #[test]
+    fn run_reports_the_best_generation_consistently() {
+        let env = env_fixture(5, &["ma", "má", "mù", "mút", "mơ", "không", "lông", "tía"]);
+        let params = small_params(77);
+        let outcome = run(&env, &params);
+        assert!(outcome.best_generation < outcome.per_gen_best.len());
+        assert_eq!(
+            outcome.per_gen_best[outcome.best_generation],
+            outcome.best_fitness
+        );
+        let direct = fitness(&params, &env, &outcome.best);
+        assert!((direct - outcome.best_fitness).abs() < 1e-5);
+        let replay = run(&env, &params);
+        assert_eq!(replay.best, outcome.best);
+    }
+
+    #[test]
+    fn two_gene_operators_have_pinned_outcomes() {
+        let mut rng = Rng::new(3);
+        for _ in 0..25 {
+            let mut chrom = vec![5u32, 9];
+            mutate_swap(&mut chrom, &mut rng);
+            assert_eq!(chrom, vec![9, 5]);
+            let mut zero = vec![0u32];
+            mutate_replace(&mut zero, &mut rng, 2);
+            assert_eq!(zero, vec![1]);
+            let mut one = vec![1u32];
+            mutate_replace(&mut one, &mut rng, 2);
+            assert_eq!(one, vec![0]);
+        }
+    }
+
+    #[test]
+    fn config_ga_params_reads_the_documented_shape() {
+        let config = serde_json::json!({
+            "ga": {
+                "tournament": 2,
+                "seed": 7,
+                "population": 10,
+                "generations": 3,
+                "elite": 2,
+                "mutation": {"swap": 0.1, "replace": 0.2},
+                "weights": {"confusion": 1.0, "flow": 0.5, "complexity": 0.25}
+            }
+        });
+        let params = config_ga_params(&config).expect("valid config");
+        assert_eq!(
+            (
+                params.seed,
+                params.population,
+                params.generations,
+                params.elite
+            ),
+            (7, 10, 3, 2)
+        );
+        assert!((params.swap - 0.1).abs() < 1e-9);
+        assert!((params.replace - 0.2).abs() < 1e-9);
+        assert!((params.w_conf - 1.0).abs() < 1e-6);
+        assert!((params.w_flow - 0.5).abs() < 1e-6);
+        assert!((params.w_cplx - 0.25).abs() < 1e-6);
+    }
+
+    #[test]
+    fn config_ga_params_rejects_foreign_tournament_and_null_sections() {
+        let base = || {
+            serde_json::json!({
+                "ga": {
+                    "tournament": 2,
+                    "seed": 1,
+                    "population": 4,
+                    "generations": 1,
+                    "elite": 1,
+                    "mutation": {"swap": 0.0, "replace": 0.0},
+                    "weights": {"confusion": 1.0, "flow": 0.0, "complexity": 0.0}
+                }
+            })
+        };
+        let mut foreign = base();
+        foreign["ga"]["tournament"] = serde_json::json!(3);
+        let err = config_ga_params(&foreign).unwrap_err();
+        assert!(err.contains("tournament"), "{err}");
+        for pointer in [
+            "/ga/seed",
+            "/ga/population",
+            "/ga/generations",
+            "/ga/elite",
+            "/ga/mutation/swap",
+            "/ga/mutation/replace",
+            "/ga/weights/confusion",
+            "/ga/weights/flow",
+            "/ga/weights/complexity",
+        ] {
+            let mut broken = base();
+            broken.pointer_mut(pointer).unwrap().take();
+            let err = config_ga_params(&broken).unwrap_err();
+            assert!(err.contains(pointer), "{pointer}: {err}");
+        }
+    }
 }

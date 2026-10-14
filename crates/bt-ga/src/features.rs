@@ -746,4 +746,124 @@ mod tests {
         let k = f("can");
         assert!(flow_penalty(&j, 2, &k, 3) >= 1.25);
     }
+
+    #[test]
+    fn parse_keeps_the_longest_onset_prefix() {
+        let nghỉ = f("nghỉ");
+        assert_eq!(nghỉ.onset.map(|o| o.place), Some(Place::Velar));
+        assert_eq!(nghỉ.onset.map(|o| o.manner), Some(Manner::Nasal));
+        assert_eq!(nghỉ.nucleus, Nucleus::I);
+        assert_eq!(nghỉ.coda, Coda::Open);
+        assert_eq!(nghỉ.tone, Tone::Hoi);
+        let ngà = f("ngà");
+        assert_eq!(ngà.onset.map(|o| o.place), Some(Place::Velar));
+        assert_eq!(ngà.nucleus, Nucleus::A);
+        let na = f("na");
+        assert_eq!(na.onset.map(|o| o.place), Some(Place::Dental));
+        let nhà = f("nhà");
+        assert_eq!(nhà.onset.map(|o| o.place), Some(Place::Palatal));
+        assert_eq!(nhà.nucleus, Nucleus::A);
+    }
+
+    #[test]
+    fn parse_rejects_stacked_tones_combining_marks_and_case() {
+        assert!(parse("màá").is_none());
+        assert!(parse("a\u{0301}").is_none());
+        assert!(parse("mả\u{0303}").is_none());
+        assert!(parse("KHÔNG").is_none());
+    }
+
+    #[test]
+    fn merged_gi_expands_the_long_rimes() {
+        let giêm = f("giêm");
+        assert_eq!(giêm.onset.map(|o| o.place), Some(Place::Dental));
+        assert_eq!(giêm.nucleus, Nucleus::Ia);
+        assert_eq!(giêm.coda, Coda::M);
+        let giêc = f("giêc");
+        assert_eq!(giêc.nucleus, Nucleus::Ia);
+        assert_eq!(giêc.coda, Coda::K);
+        assert!(parse("giêx").is_none());
+        assert!(parse("giao").is_none());
+    }
+
+    #[test]
+    fn every_rime_row_parses_back_to_itself() {
+        for &(letters, nucleus, coda) in RIMES {
+            let parsed = f(letters);
+            assert_eq!(parsed.onset, None, "{letters}");
+            assert_eq!(parsed.nucleus, nucleus, "{letters}");
+            assert_eq!(parsed.coda, coda, "{letters}");
+            assert_eq!(parsed.tone, Tone::Ngang, "{letters}");
+        }
+    }
+
+    #[test]
+    fn every_tone_marked_row_is_detected_through_parse() {
+        for (marked, base, tone) in TONE_MARKED {
+            let open = !matches!(base, 'ă' | 'â');
+            let text = if open {
+                format!("m{marked}")
+            } else {
+                format!("m{marked}n")
+            };
+            let parsed = parse(&text).unwrap_or_else(|| panic!("parse failed for {text}"));
+            assert_eq!(parsed.tone, tone, "{text}");
+            assert_eq!(
+                parsed.coda,
+                if open { Coda::Open } else { Coda::N },
+                "{text}"
+            );
+            assert_eq!(
+                parsed.onset.map(|o| o.manner),
+                Some(Manner::Nasal),
+                "{text}"
+            );
+        }
+    }
+
+    #[test]
+    fn confusion_bounds_hold_across_a_parsed_corpus() {
+        let words = [
+            "không", "của", "tía", "anh", "mút", "đặt", "trăng", "y", "òn", "gì", "xinh", "vững",
+            "được", "ngăn", "ma", "má", "en", "ôn", "áp", "ác",
+        ];
+        for a in &words {
+            let fa = f(a);
+            assert_eq!(confusion(&fa, &fa), 1.0, "{a}");
+            for b in &words {
+                let got = confusion(&fa, &f(b));
+                assert!(got > 0.0 && got <= 1.0, "{a}/{b}: {got}");
+            }
+        }
+    }
+
+    #[test]
+    fn onset_feature_collapse_makes_cross_spelling_pairs_homophonous() {
+        let dì = f("dì");
+        let xì = f("xì");
+        assert_eq!(dì.onset, xì.onset);
+        assert_eq!(confusion(&dì, &xì), 1.0);
+        let gà = f("gà");
+        let khà = f("khà");
+        assert_eq!(gà.onset, khà.onset);
+        assert_eq!(confusion(&gà, &khà), 1.0);
+        let pha = f("pha");
+        let va = f("va");
+        assert_eq!(pha.onset, va.onset);
+        assert_eq!(confusion(&pha, &va), 1.0);
+    }
+
+    #[test]
+    fn flow_penalty_pins_exact_values_on_parsed_syllables() {
+        let ma = f("ma");
+        for len in 2..=6 {
+            let expected = 1.0 + 0.25 * (len as f32 - 2.0);
+            assert_eq!(flow_penalty(&ma, 2, &ma, len), expected);
+        }
+        let áp = f("áp");
+        assert_eq!(flow_penalty(&áp, 2, &f("ban"), 3), 1.25);
+        assert_eq!(flow_penalty(&f("ám"), 2, &ma, 2), 1.0);
+        let báp = f("báp");
+        assert_eq!(flow_penalty(&báp, 3, &báp, 2), 2.25);
+    }
 }
