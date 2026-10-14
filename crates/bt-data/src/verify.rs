@@ -629,3 +629,23 @@ fn verify_ltct(cube: &mut Cube, verdict: &mut Verdict, position: &str) {
         verdict.problems.push(Problem::TwistSumNotZero { sum });
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::chirality;
+
+    #[test]
+    fn chirality_pins_the_face_normal_triple_product() {
+        assert_eq!(chirality([12, 8, 0]), -1);
+        assert_eq!(chirality([0, 12, 8]), -1);
+        assert_eq!(chirality([8, 0, 12]), -1);
+    }
+
+    #[test]
+    fn chirality_pins_canonical_corner_handedness() {
+        assert_eq!(chirality([2, 9, 12]), 1);
+        assert_eq!(chirality([1, 16, 13]), -1);
+        assert_eq!(chirality([22, 19, 14]), 1);
+        assert_eq!(chirality([20, 11, 6]), 1);
+    }
+}

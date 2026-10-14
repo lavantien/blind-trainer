@@ -111,7 +111,7 @@ fn pick_orders(
             b: units[index].b.clone(),
             b_first,
         };
-        let mut next = cube.clone();
+        let mut next = *cube;
         next.apply_alg(&candidate.expansion());
         chosen[index] = b_first;
         if pick_orders(units, index + 1, &next, reference, chosen) {
@@ -547,5 +547,13 @@ mod tests {
         assert!(decompose("[R,U,,F]").is_none());
         assert!(decompose("[R U]").is_none());
         assert!(decompose("[R,U] U").is_none());
+    }
+
+    #[test]
+    fn parse_core_rejects_unbalanced_delimiters() {
+        assert!(parse_core("[R,U2", 0).is_none());
+        assert!(parse_core("Q[R,U]", 0).is_none());
+        assert!(parse_core("[R,U]Q", 0).is_none());
+        assert!(parse_core("R,U]", 0).is_none());
     }
 }
