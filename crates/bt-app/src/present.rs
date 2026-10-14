@@ -352,7 +352,7 @@ mod tests {
     fn drill_net_fills_the_left_region() {
         let config = AppConfig::default();
         let geo = drill_net_geometry(&config);
-        assert_eq!(geo.quad, 38.0);
+        assert_eq!(geo.quad, 37.0);
         let frame = 2.0 * theme::ROOT_REM * theme::PANEL_PADDING_REM;
         let width = (config.window.width as f32 - frame) * theme::DRILL_NET_WIDTH_PCT;
         let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);

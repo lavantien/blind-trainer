@@ -228,7 +228,7 @@ impl NetGeometry {
     }
 
     pub fn for_region(width: f32, height: f32) -> NetGeometry {
-        let quad = (width / 14.0).min(height / 10.5).floor().clamp(16.0, 96.0);
+        let quad = (width / 14.7).min(height / 11.0).floor().clamp(16.0, 96.0);
         NetGeometry {
             quad,
             gap: (quad * 0.12).max(2.0),
@@ -236,11 +236,11 @@ impl NetGeometry {
     }
 
     pub fn net_width(&self) -> f32 {
-        self.quad * 12.0 + self.gap * 11.0 + face_stroke(self.quad) * 8.0
+        face_plate(*self) * 4.0 + self.gap * 3.0
     }
 
     pub fn net_height(&self) -> f32 {
-        self.quad * 9.0 + self.gap * 8.0 + face_stroke(self.quad) * 6.0
+        face_plate(*self) * 3.0 + self.gap * 2.0
     }
 }
 
@@ -260,7 +260,15 @@ pub struct NetPulse(pub f32);
 #[derive(Component)]
 pub struct NetView;
 
-const NET_BANDS: [&[usize]; 3] = [&[0], &[1, 2, 3, 4], &[5]];
+const NET_BANDS: [&[Option<usize>]; 3] = [
+    &[None, Some(0), None, None],
+    &[Some(1), Some(2), Some(3), Some(4)],
+    &[None, Some(5), None, None],
+];
+
+pub fn face_plate(geo: NetGeometry) -> f32 {
+    geo.quad * 3.0 + geo.gap * 2.0 + face_stroke(geo.quad) * 4.0
+}
 
 pub fn spawn_net(
     parent: &mut ChildSpawnerCommands,
@@ -286,8 +294,16 @@ pub fn spawn_net(
                         ..default()
                     })
                     .with_children(|row_parent| {
-                        for &face in band {
-                            spawn_face(row_parent, face, geo, &font);
+                        for &slot in band {
+                            match slot {
+                                Some(face) => spawn_face(row_parent, face, geo, &font),
+                                None => {
+                                    row_parent.spawn(Node {
+                                        width: Val::Px(face_plate(geo)),
+                                        ..default()
+                                    });
+                                }
+                            }
                         }
                     });
             }
@@ -514,9 +530,50 @@ mod tests {
     #[test]
     fn net_footprint_sums_cells_gaps_and_face_strokes() {
         let geo = NetGeometry::for_region(563.2, 690.0);
-        assert_eq!(geo.quad, 40.0);
-        assert!((geo.net_width() - 558.4).abs() < 1e-4);
-        assert!((geo.net_height() - 417.6).abs() < 1e-4);
+        assert_eq!(geo.quad, 38.0);
+        assert!((geo.net_width() - 554.8).abs() < 1e-4);
+        assert!((geo.net_height() - 414.96).abs() < 1e-4);
+    }
+
+    #[test]
+    fn u_and_d_bands_seat_faces_over_the_f_slot() {
+        let mut world = World::new();
+        let geo = NetGeometry::for_region(563.2, 690.0);
+        {
+            let mut commands = world.commands();
+            let holder = commands.spawn(()).id();
+            commands.entity(holder).with_children(|parent| {
+                spawn_net(parent, geo, Handle::default());
+            });
+        }
+        world.flush();
+        let view = world
+            .query_filtered::<Entity, With<NetView>>()
+            .single(&world)
+            .expect("one net view");
+        let bands = world.get::<Children>(view).expect("three bands");
+        assert_eq!(bands.len(), 3);
+        let expected = [
+            vec![None, Some(0usize), None, None],
+            vec![Some(1usize), Some(2), Some(3), Some(4)],
+            vec![None, Some(5usize), None, None],
+        ];
+        for (band, wanted) in bands.iter().zip(expected) {
+            let children = world.get::<Children>(band).expect("band children");
+            assert_eq!(children.len(), wanted.len());
+            for (slot, face) in children.iter().zip(wanted) {
+                match face {
+                    Some(index) => {
+                        assert_eq!(world.get::<NetFace>(slot).expect("face marker").face, index)
+                    }
+                    None => {
+                        assert!(world.get::<NetFace>(slot).is_none());
+                        let node = world.get::<Node>(slot).expect("spacer node");
+                        assert_eq!(node.width, Val::Px(face_plate(geo)));
+                    }
+                }
+            }
+        }
     }
 
     #[test]
@@ -632,7 +689,7 @@ mod tests {
             * (crate::theme::HEADER_HEIGHT_REM + 2.0 * crate::theme::PANEL_PADDING_REM);
         let height = 800.0 - chrome;
         let geo = NetGeometry::for_region(width, height);
-        assert_eq!(geo.quad, 40.0);
+        assert_eq!(geo.quad, 38.0);
         assert!(geo.net_width() <= width);
         assert!(geo.net_height() <= height);
     }
