@@ -518,9 +518,7 @@ fn onset_confusion(a: Option<OnsetFeatures>, b: Option<OnsetFeatures>) -> f32 {
             }
             let same_place = x.place == y.place;
             let same_manner = x.manner == y.manner;
-            if same_place && same_manner {
-                0.60
-            } else if same_place || same_manner {
+            if same_place || same_manner {
                 0.20
             } else {
                 0.10
