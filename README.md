@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml)
 [![coverage](docs/badges/coverage.svg)](scripts/coverage-badge.ps1)
+[![alg coverage](docs/badges/alg-coverage.svg)](scripts/alg-coverage-badge.ps1)
 
 A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves. Every alg is mechanically verified against an emulated cube, so misspellings and wrong algs never contaminate muscle memory. Grounding data is the reconstructed alg sets of Tommy Cherry and Charlie Eggins, sha-256 pinned under ref_ground/.
 
@@ -182,7 +183,7 @@ bt-ga also builds on bt-data, bt-verify also on bt-scheme and bt-gendata, bt-ga-
 
   ![app boot](docs/diagrams/app-boot.png)
 
-- tools: bt-gendata builds data/vendor from ref_ground/, bt-verify writes the alg verification report, bt-memofreq runs the memo frequency Monte Carlo, bt-ga-run runs the optimizer into data/ga/, bt-visual-diff compares screenshots against committed baselines.
+- tools: bt-gendata builds data/vendor from ref_ground/ and synthesizes verified commutator algs for every uncovered pair, bt-verify writes the alg verification report, bt-memofreq runs the memo frequency Monte Carlo, bt-ga-run runs the optimizer into data/ga/, bt-visual-diff compares screenshots against committed baselines.
 - fuzz/: cargo-fuzz targets, excluded from the workspace.
 
 App flows, one per view cycle:
@@ -205,11 +206,12 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo und
 
 - setup: ensure rustfmt and clippy components, report cargo-fuzz and cargo-mutants availability.
 - docs-fetch: snapshot reference docs into ref_doc/ via scripts/fetch_docs.ps1.
-- gen-data: build data/vendor from ref_ground/.
+- gen-data: build data/vendor from ref_ground/, then synthesize and verify commutator algs for uncovered pairs (knobs in the synth config section).
 - verify-algs: verify every vendor alg against the emulated cube, write the report.
 - memofreq: Monte Carlo memo pair frequencies.
 - ga: run the syllable GA into data/ga/.
 - coverage: run cargo llvm-cov over the workspace into a private target dir and regenerate docs/badges/coverage.svg via scripts/coverage-badge.ps1.
+- alg-coverage: regenerate docs/badges/alg-coverage.svg from data/vendor/manifest.json via scripts/alg-coverage-badge.ps1.
 - diagrams: render every docs/diagrams png from scripts/diagrams.typ via scripts/diagrams.ps1.
 - fmt: cargo fmt --all -- --check.
 - lint: cargo clippy --workspace --all-targets -- -D warnings.
