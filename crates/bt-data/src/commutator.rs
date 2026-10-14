@@ -84,25 +84,41 @@ pub fn decompose_verified(text: &str, alg: &Alg) -> Option<Vec<Expanded>> {
     let mut expanded = decompose(text)?;
     let mut reference = Cube::solved();
     reference.apply_alg(alg);
-    for b_first in [false, true] {
-        let mut cube = Cube::solved();
-        for unit in &expanded {
-            let candidate = Expanded {
-                setup: unit.setup.clone(),
-                a: unit.a.clone(),
-                b: unit.b.clone(),
-                b_first,
-            };
-            cube.apply_alg(&candidate.expansion());
+    let mut chosen = vec![false; expanded.len()];
+    if pick_orders(&expanded, 0, &Cube::solved(), &reference, &mut chosen) {
+        for (unit, flag) in expanded.iter_mut().zip(chosen) {
+            unit.b_first = flag;
         }
-        if cube == reference {
-            for unit in &mut expanded {
-                unit.b_first = b_first;
-            }
-            return Some(expanded);
-        }
+        return Some(expanded);
     }
     None
+}
+
+fn pick_orders(
+    units: &[Expanded],
+    index: usize,
+    cube: &Cube,
+    reference: &Cube,
+    chosen: &mut [bool],
+) -> bool {
+    if index == units.len() {
+        return cube == reference;
+    }
+    for b_first in [false, true] {
+        let candidate = Expanded {
+            setup: units[index].setup.clone(),
+            a: units[index].a.clone(),
+            b: units[index].b.clone(),
+            b_first,
+        };
+        let mut next = cube.clone();
+        next.apply_alg(&candidate.expansion());
+        chosen[index] = b_first;
+        if pick_orders(units, index + 1, &next, reference, chosen) {
+            return true;
+        }
+    }
+    false
 }
 
 fn flatten(units: &[Unit], inherited: Option<&Alg>, out: &mut Vec<Expanded>) {
@@ -368,6 +384,14 @@ mod tests {
         let units = decompose_verified("[R,U]+[F,D]", &alg("U R U' R' D F D' F'")).unwrap();
         assert_eq!(units.len(), 2);
         assert!(units.iter().all(|u| u.b_first));
+    }
+
+    #[test]
+    fn b_first_is_chosen_per_unit_in_a_combo() {
+        let units = decompose_verified("[R,U]+[F,D]", &alg("U R U' R' F D F' D'")).unwrap();
+        assert_eq!(units.len(), 2);
+        assert!(units[0].b_first);
+        assert!(!units[1].b_first);
     }
 
     #[test]
