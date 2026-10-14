@@ -464,4 +464,11 @@ mod tests {
             assert!(cube.is_solved(), "{:?}", mv);
         }
     }
+
+    #[test]
+    fn geometry_helpers_return_sentinels_off_the_surface() {
+        assert_eq!(face_of_normal([2, 2, 2]), 6);
+        assert_eq!(cell_of(0, [0, 1, 2]), (9, 9));
+        assert_eq!(cell_of(0, [2, 1, 0]), (9, 9));
+    }
 }

@@ -265,6 +265,25 @@ fn rotations_flip_none_center_relative() {
 }
 
 #[test]
+fn center_priority_tie_on_a_slot_resolves_to_not_high() {
+    let mut occ = std::array::from_fn(|i| i as u8);
+    occ.swap(50, 53);
+    let cube = Cube::from_occ(occ);
+    assert!(edge_flip(&cube, 2));
+    assert!(!edge_flip(&cube, 0));
+}
+
+#[test]
+fn piece_priority_tie_on_a_slot_resolves_to_not_high() {
+    let mut occ = std::array::from_fn(|i| i as u8);
+    occ.swap(24, 26);
+    occ.swap(32, 44);
+    let cube = Cube::from_occ(occ);
+    assert!(edge_flip(&cube, 2));
+    assert!(!edge_flip(&cube, 0));
+}
+
+#[test]
 fn ud_turns_twist_no_corners() {
     for text in ["U", "U'", "U2", "D", "D'", "D2"] {
         assert_eq!(twist_map(&apply(text)), [0i8; 8], "{}", text);
