@@ -8,3 +8,6 @@ bt-gendata = { path = "../bt-gendata" }
 bt-scheme = { path = "../../crates/bt-scheme" }
 serde.workspace = true
 serde_json.workspace = true
+
+[dev-dependencies]
+bt-core = { path = "../../crates/bt-core" }

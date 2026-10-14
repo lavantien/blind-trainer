@@ -1975,6 +1975,7 @@ dependencies = [
 name = "bt-verify"
 version = "0.0.0"
 dependencies = [
+ "bt-core",
  "bt-data",
  "bt-gendata",
  "bt-scheme",
