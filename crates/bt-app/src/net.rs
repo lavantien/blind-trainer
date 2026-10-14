@@ -158,14 +158,18 @@ pub fn face_of(sticker: u8) -> usize {
     }
 }
 
-pub fn letter_color(face: usize) -> Color {
-    let linear = theme::face_color(face).to_linear();
+pub fn ink_for(color: Color) -> Color {
+    let linear = color.to_linear();
     let luminance = 0.2126 * linear.red + 0.7152 * linear.green + 0.0722 * linear.blue;
     if luminance >= 0.5 {
         Color::srgb(0.08, 0.08, 0.08)
     } else {
         Color::srgb(0.96, 0.96, 0.96)
     }
+}
+
+pub fn letter_color(face: usize) -> Color {
+    ink_for(theme::face_color(face))
 }
 
 pub fn grid_of(sticker: u8) -> (usize, usize, usize) {
@@ -210,23 +214,44 @@ pub struct NetGeometry {
     pub gap: f32,
 }
 
+pub fn cell_stroke(quad: f32) -> f32 {
+    (quad * 0.06).clamp(1.5, 4.0)
+}
+
+pub fn face_stroke(quad: f32) -> f32 {
+    (quad * 0.08).clamp(2.0, 5.0)
+}
+
 impl NetGeometry {
     pub fn for_window(width: f32, height: f32) -> NetGeometry {
         NetGeometry::for_region(width, height)
     }
 
     pub fn for_region(width: f32, height: f32) -> NetGeometry {
-        let quad = (width / 13.5).min(height / 10.2).floor().clamp(16.0, 96.0);
+        let quad = (width / 14.0).min(height / 10.5).floor().clamp(16.0, 96.0);
         NetGeometry {
             quad,
             gap: (quad * 0.12).max(2.0),
         }
+    }
+
+    pub fn net_width(&self) -> f32 {
+        self.quad * 12.0 + self.gap * 11.0 + face_stroke(self.quad) * 8.0
+    }
+
+    pub fn net_height(&self) -> f32 {
+        self.quad * 9.0 + self.gap * 8.0 + face_stroke(self.quad) * 6.0
     }
 }
 
 #[derive(Component)]
 pub struct NetCell {
     pub grid: usize,
+}
+
+#[derive(Component)]
+pub struct NetFace {
+    pub face: usize,
 }
 
 #[derive(Component, Default)]
@@ -276,12 +301,19 @@ fn spawn_face(
     geo: NetGeometry,
     font: &Handle<Font>,
 ) {
+    let stroke = Val::Px(face_stroke(geo.quad));
     parent
-        .spawn(Node {
-            flex_direction: FlexDirection::Column,
-            row_gap: Val::Px(geo.gap),
-            ..default()
-        })
+        .spawn((
+            NetFace { face },
+            Node {
+                flex_direction: FlexDirection::Column,
+                row_gap: Val::Px(geo.gap),
+                border: UiRect::all(stroke),
+                padding: UiRect::all(stroke),
+                ..default()
+            },
+            BorderColor::all(theme::text_primary()),
+        ))
         .with_children(|face_parent| {
             for row in 0..3usize {
                 face_parent
@@ -299,10 +331,12 @@ fn spawn_face(
                                 Node {
                                     width: Val::Px(geo.quad),
                                     height: Val::Px(geo.quad),
+                                    border: UiRect::all(Val::Px(cell_stroke(geo.quad))),
                                     border_radius: BorderRadius::all(Val::Px(geo.quad * 0.15)),
                                     ..default()
                                 },
                                 BackgroundColor(theme::face_color(face)),
+                                BorderColor::all(ink_for(theme::face_color(face))),
                             ));
                             if grid % 9 == 4 {
                                 cell.with_children(|cell_parent| {
@@ -333,11 +367,16 @@ fn spawn_face(
 pub fn update_net_colors(
     net: Res<NetState>,
     time: Res<Time<Virtual>>,
-    mut cells: Query<(&NetCell, &mut BackgroundColor, &mut NetPulse)>,
+    mut cells: Query<(
+        &NetCell,
+        &mut BackgroundColor,
+        &mut BorderColor,
+        &mut NetPulse,
+    )>,
 ) {
     let dt = time.delta_secs();
     let wave = 0.6 + 0.4 * (time.elapsed_secs() * std::f32::consts::TAU * theme::PULSE_HZ).sin();
-    for (cell, mut background, mut pulse) in cells.iter_mut() {
+    for (cell, mut background, mut border, mut pulse) in cells.iter_mut() {
         let face = cell.grid / 9;
         let mut base = theme::face_color(face);
         let mut want_pulse = 0.0f32;
@@ -364,6 +403,7 @@ pub fn update_net_colors(
             Some(color) => base.mix(&color, pulse.0 * wave),
             None => base,
         };
+        *border = BorderColor::all(ink_for(background.0));
     }
 }
 
@@ -439,6 +479,105 @@ mod tests {
         assert_eq!(letter_color(4), light);
     }
 
+    fn luminance(color: Color) -> f32 {
+        let linear = color.to_linear();
+        0.2126 * linear.red + 0.7152 * linear.green + 0.0722 * linear.blue
+    }
+
+    #[test]
+    fn ink_for_contrasts_faces_highlights_and_mixes() {
+        let mut colors = Vec::new();
+        for face in 0..theme::FACE_COUNT {
+            colors.push(theme::face_color(face));
+            colors.push(theme::face_color(face).mix(&theme::teal(), 0.5));
+            colors.push(theme::face_color(face).mix(&theme::interchange(), 0.5));
+        }
+        for color in colors {
+            let ink = ink_for(color);
+            assert!(
+                (luminance(ink) - luminance(color)).abs() >= 0.35,
+                "ink {ink:?} too close to {color:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn stroke_widths_track_quad_within_clamps() {
+        assert_eq!(cell_stroke(16.0), 1.5);
+        assert!((cell_stroke(41.0) - 2.46).abs() < 1e-5);
+        assert_eq!(cell_stroke(96.0), 4.0);
+        assert_eq!(face_stroke(16.0), 2.0);
+        assert!((face_stroke(41.0) - 3.28).abs() < 1e-5);
+        assert_eq!(face_stroke(96.0), 5.0);
+    }
+
+    #[test]
+    fn net_footprint_sums_cells_gaps_and_face_strokes() {
+        let geo = NetGeometry::for_region(563.2, 690.0);
+        assert_eq!(geo.quad, 40.0);
+        assert!((geo.net_width() - 558.4).abs() < 1e-4);
+        assert!((geo.net_height() - 417.6).abs() < 1e-4);
+    }
+
+    #[test]
+    fn spawn_net_borders_every_cell_and_face() {
+        let mut world = World::new();
+        let geo = NetGeometry::for_region(563.2, 690.0);
+        {
+            let mut commands = world.commands();
+            let holder = commands.spawn(()).id();
+            commands.entity(holder).with_children(|parent| {
+                spawn_net(parent, geo, Handle::default());
+            });
+        }
+        world.flush();
+        let cell_stroke = Val::Px(cell_stroke(geo.quad));
+        let mut cells = world.query::<(&NetCell, &Node, &BorderColor)>();
+        assert_eq!(cells.iter(&world).count(), 54);
+        for (cell, node, border) in cells.iter(&world) {
+            assert_eq!(node.border, UiRect::all(cell_stroke));
+            assert_eq!(
+                *border,
+                BorderColor::all(ink_for(theme::face_color(cell.grid / 9)))
+            );
+        }
+        let face_stroke = Val::Px(face_stroke(geo.quad));
+        let mut faces = world.query::<(&NetFace, &Node, &BorderColor)>();
+        let mut seen = Vec::new();
+        for (marker, node, border) in faces.iter(&world) {
+            seen.push(marker.face);
+            assert_eq!(node.border, UiRect::all(face_stroke));
+            assert_eq!(node.padding, UiRect::all(face_stroke));
+            assert_eq!(*border, BorderColor::all(theme::text_primary()));
+        }
+        seen.sort_unstable();
+        assert_eq!(seen, vec![0, 1, 2, 3, 4, 5]);
+    }
+
+    #[test]
+    fn update_net_colors_keeps_border_ink_matched() {
+        let mut world = World::new();
+        world.insert_resource(NetState::default());
+        world.insert_resource(Time::<Virtual>::default());
+        let geo = NetGeometry::for_region(563.2, 690.0);
+        {
+            let mut commands = world.commands();
+            let holder = commands.spawn(()).id();
+            commands.entity(holder).with_children(|parent| {
+                spawn_net(parent, geo, Handle::default());
+            });
+        }
+        world.flush();
+        let mut schedule = Schedule::default();
+        schedule.add_systems(update_net_colors);
+        schedule.run(&mut world);
+        let mut cells = world.query_filtered::<(&BackgroundColor, &BorderColor), With<NetCell>>();
+        assert_eq!(cells.iter(&world).count(), 54);
+        for (background, border) in cells.iter(&world) {
+            assert_eq!(*border, BorderColor::all(ink_for(background.0)));
+        }
+    }
+
     #[test]
     fn grid_covers_all_cells_once() {
         let mut seen = [false; 54];
@@ -468,16 +607,16 @@ mod tests {
     fn geometry_fits_configured_window() {
         let geo = NetGeometry::for_window(1280.0, 800.0);
         assert!(geo.quad >= 16.0 && geo.quad <= 96.0);
-        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= 1280.0);
-        assert!(geo.quad * 9.0 + geo.gap * 8.0 <= 800.0);
+        assert!(geo.net_width() <= 1280.0);
+        assert!(geo.net_height() <= 800.0);
     }
 
     #[test]
     fn geometry_fits_window_with_view_reserve() {
         let reserve = crate::theme::ROOT_REM * crate::theme::NET_VIEW_RESERVE_REM;
         let geo = NetGeometry::for_window(1280.0, 800.0 - reserve);
-        assert!(geo.quad * 9.0 + geo.gap * 8.0 + reserve <= 800.0);
-        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= 1280.0);
+        assert!(geo.net_height() + reserve <= 800.0);
+        assert!(geo.net_width() <= 1280.0);
     }
 
     #[test]
@@ -493,8 +632,8 @@ mod tests {
             * (crate::theme::HEADER_HEIGHT_REM + 2.0 * crate::theme::PANEL_PADDING_REM);
         let height = 800.0 - chrome;
         let geo = NetGeometry::for_region(width, height);
-        assert_eq!(geo.quad, 41.0);
-        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= width);
-        assert!(geo.quad * 9.0 + geo.gap * 8.0 <= height);
+        assert_eq!(geo.quad, 40.0);
+        assert!(geo.net_width() <= width);
+        assert!(geo.net_height() <= height);
     }
 }

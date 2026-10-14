@@ -108,7 +108,8 @@ pub fn net_geometry(config: &AppConfig) -> NetGeometry {
 }
 
 pub fn drill_net_geometry(config: &AppConfig) -> NetGeometry {
-    let width = config.window.width as f32 * theme::DRILL_NET_WIDTH_PCT;
+    let frame = 2.0 * theme::ROOT_REM * theme::PANEL_PADDING_REM;
+    let width = (config.window.width as f32 - frame) * theme::DRILL_NET_WIDTH_PCT;
     let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);
     NetGeometry::for_region(
         width,
@@ -327,7 +328,7 @@ mod tests {
         let geo = net_geometry(&config);
         let header = theme::ROOT_REM * theme::NET_VIEW_RESERVE_REM;
         let band = theme::ROOT_REM * theme::DYNAMIC_BAND_REM;
-        let net = geo.quad * 9.0 + geo.gap * 8.0;
+        let net = geo.net_height();
         assert!(
             header + net + band <= config.window.height as f32,
             "header {header} + net {net} + band {band} exceeds {}",
@@ -351,12 +352,13 @@ mod tests {
     fn drill_net_fills_the_left_region() {
         let config = AppConfig::default();
         let geo = drill_net_geometry(&config);
-        assert_eq!(geo.quad, 41.0);
-        let width = config.window.width as f32 * theme::DRILL_NET_WIDTH_PCT;
+        assert_eq!(geo.quad, 38.0);
+        let frame = 2.0 * theme::ROOT_REM * theme::PANEL_PADDING_REM;
+        let width = (config.window.width as f32 - frame) * theme::DRILL_NET_WIDTH_PCT;
         let chrome = theme::ROOT_REM * (theme::HEADER_HEIGHT_REM + 2.0 * theme::PANEL_PADDING_REM);
         let height = config.window.height as f32 - chrome;
-        assert!(geo.quad * 12.0 + geo.gap * 11.0 <= width);
-        assert!(geo.quad * 9.0 + geo.gap * 8.0 <= height);
+        assert!(geo.net_width() <= width);
+        assert!(geo.net_height() <= height);
     }
 
     #[test]
