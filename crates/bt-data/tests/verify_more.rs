@@ -1,6 +1,6 @@
 use bt_core::Alg;
 use bt_data::corpus::SheetClass;
-use bt_data::verify::{Note, Problem, verify};
+use bt_data::verify::{DefectKind, Note, Problem, verify};
 
 const X2: &str = "R' D' R D R' D' R D";
 const X4: &str = "R' D' R D R' D' R D R' D' R D R' D' R D";
@@ -51,6 +51,28 @@ fn inflated_alg_with_cancelling_tail_still_verifies() {
         SheetClass::Edge,
     );
     assert!(inflated.ok(), "{inflated}");
+}
+
+#[test]
+fn three_style_disturbing_unnamed_pieces_reports_residue() {
+    let verdict = verify(
+        &alg(&format!("{EDGE_CYCLE} D")),
+        "UF-UR-UL",
+        SheetClass::Edge,
+    );
+    assert!(!verdict.ok(), "{verdict}");
+    let residue: Vec<&Problem> = verdict
+        .problems
+        .iter()
+        .filter(|p| matches!(p, Problem::NonFixedResidue { .. }))
+        .collect();
+    assert!(!residue.is_empty());
+    assert!(
+        verdict
+            .problems
+            .iter()
+            .all(|p| matches!(p, Problem::NonFixedResidue { .. }))
+    );
 }
 
 #[test]
@@ -139,11 +161,11 @@ fn ltct_with_flipped_edge_swaps_reports_unexpected_flip() {
         vec![
             Problem::UnexpectedDefect {
                 piece: "UR".to_string(),
-                defect: "flip",
+                defect: DefectKind::Flip,
             },
             Problem::UnexpectedDefect {
                 piece: "UL".to_string(),
-                defect: "flip",
+                defect: DefectKind::Flip,
             },
         ]
     );
@@ -155,12 +177,9 @@ fn ltct_with_flipped_edge_swaps_reports_unexpected_flip() {
             ("UBL".to_string(), 1),
         ]
     );
-    let flipped_word = format!("{}ed", "flip");
     assert_eq!(
         verdict.to_string(),
-        format!(
-            "piece UR is {flipped_word} but should be intact\npiece UL is {flipped_word} but should be intact"
-        )
+        "piece UR is flipped but should be intact\npiece UL is flipped but should be intact"
     );
 }
 
@@ -219,11 +238,11 @@ fn solved_cube_reports_missing_flips_and_twists_with_zero_notes() {
         vec![
             Problem::MissingDefect {
                 piece: "UF".to_string(),
-                defect: "flip",
+                defect: DefectKind::Flip,
             },
             Problem::MissingDefect {
                 piece: "UB".to_string(),
-                defect: "flip",
+                defect: DefectKind::Flip,
             },
         ]
     );
@@ -234,11 +253,11 @@ fn solved_cube_reports_missing_flips_and_twists_with_zero_notes() {
         vec![
             Problem::MissingDefect {
                 piece: "UFR".to_string(),
-                defect: "twist",
+                defect: DefectKind::Twist,
             },
             Problem::MissingDefect {
                 piece: "UBR".to_string(),
-                defect: "twist",
+                defect: DefectKind::Twist,
             },
         ]
     );
@@ -280,7 +299,7 @@ fn solved_cube_reports_ltct_swaps_displaced_and_bracket_untwisted() {
         verdict.problems.last(),
         Some(&Problem::MissingDefect {
             piece: "UBL".to_string(),
-            defect: "twist",
+            defect: DefectKind::Twist,
         })
     );
     assert_eq!(twist_notes(&verdict), vec![("UBL".to_string(), 0)]);
@@ -317,7 +336,7 @@ fn t_perm_on_twists_sheet_reports_displaced_and_missing_twists() {
     }));
     assert!(verdict.problems.contains(&Problem::MissingDefect {
         piece: "UFR".to_string(),
-        defect: "twist",
+        defect: DefectKind::Twist,
     }));
     let residue = verdict
         .problems
@@ -339,7 +358,7 @@ fn ltct_bracket_on_untwisted_corner_reports_sum_and_missing_defect() {
     );
     assert!(verdict.problems.contains(&Problem::MissingDefect {
         piece: "UFL".to_string(),
-        defect: "twist",
+        defect: DefectKind::Twist,
     }));
     assert_eq!(
         twist_notes(&verdict),

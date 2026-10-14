@@ -378,7 +378,7 @@ fn verify_reports_displaced_and_center_problems() {
     );
     assert!(!style.ok());
     assert!(
-        !style
+        style
             .problems
             .iter()
             .any(|p| matches!(p, Problem::NonFixedResidue { .. }))

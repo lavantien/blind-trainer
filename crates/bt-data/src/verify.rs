@@ -35,11 +35,11 @@ pub enum Problem {
     },
     UnexpectedDefect {
         piece: String,
-        defect: &'static str,
+        defect: DefectKind,
     },
     MissingDefect {
         piece: String,
-        defect: &'static str,
+        defect: DefectKind,
     },
     NonFixedResidue {
         sticker: String,
@@ -52,6 +52,12 @@ pub enum Problem {
     TwistSumNotZero {
         sum: i32,
     },
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum DefectKind {
+    Flip,
+    Twist,
 }
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -82,10 +88,10 @@ impl fmt::Display for Problem {
                 "piece {piece} should sit in slot {expected_slot} but sits in {actual_slot}"
             ),
             Problem::UnexpectedDefect { piece, defect } => {
-                write!(f, "piece {piece} is {defect}ed but should be intact")
+                write!(f, "piece {piece} is {defect} but should be intact")
             }
             Problem::MissingDefect { piece, defect } => {
-                write!(f, "piece {piece} should be {defect}ed but is intact")
+                write!(f, "piece {piece} should be {defect} but is intact")
             }
             Problem::NonFixedResidue { sticker, position } => {
                 write!(
@@ -99,6 +105,15 @@ impl fmt::Display for Problem {
             Problem::TwistSumNotZero { sum } => {
                 write!(f, "corner twist sum is {sum}, not 0 mod 3")
             }
+        }
+    }
+}
+
+impl fmt::Display for DefectKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DefectKind::Flip => write!(f, "flipped"),
+            DefectKind::Twist => write!(f, "twisted"),
         }
     }
 }
@@ -346,9 +361,7 @@ fn verify_three_style(cube: &mut Cube, verdict: &mut Verdict, position: &str, ed
         }
     }
     for sticker in 0..48u8 {
-        let Some(want) = expected_position(&expected, sticker) else {
-            continue;
-        };
+        let want = expected_position(&expected, sticker).unwrap_or(sticker);
         let got = cube.position_of(sticker);
         if want == got {
             continue;
@@ -446,7 +459,7 @@ fn verify_flip_pair(cube: &mut Cube, verdict: &mut Verdict, position: &str) {
         if !defect_of(cube, piece).flipped {
             verdict.problems.push(Problem::MissingDefect {
                 piece: piece_label(piece),
-                defect: "flip",
+                defect: DefectKind::Flip,
             });
         }
     }
@@ -482,7 +495,7 @@ fn verify_twist_pair(cube: &mut Cube, verdict: &mut Verdict, position: &str) {
         if *twist == 0 {
             verdict.problems.push(Problem::MissingDefect {
                 piece: piece_label(*piece),
-                defect: "twist",
+                defect: DefectKind::Twist,
             });
         }
     }
@@ -589,7 +602,7 @@ fn verify_ltct(cube: &mut Cube, verdict: &mut Verdict, position: &str) {
         if defect_of(cube, piece).flipped {
             verdict.problems.push(Problem::UnexpectedDefect {
                 piece: piece_label(piece),
-                defect: "flip",
+                defect: DefectKind::Flip,
             });
         }
     }
@@ -605,7 +618,7 @@ fn verify_ltct(cube: &mut Cube, verdict: &mut Verdict, position: &str) {
     if bracket_twist == 0 {
         verdict.problems.push(Problem::MissingDefect {
             piece: piece_label(bracket_piece),
-            defect: "twist",
+            defect: DefectKind::Twist,
         });
     }
     let mut sum = bracket_twist as i32;
