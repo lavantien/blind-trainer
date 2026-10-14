@@ -268,6 +268,7 @@ pub fn rate_lines(session: &DrillSession) -> Vec<String> {
 mod tests {
     use super::*;
     use crate::views::drill::install_pair;
+    use bt_data::srs::Card;
 
     fn edge_case(first: char, second: char) -> CaseId {
         CaseId {
@@ -329,6 +330,17 @@ mod tests {
 
     fn single_pair_corpus(alg: &str, commutator: &str) -> Corpus {
         Corpus::from_rows(vec![edge_row("UF-UB-UR", alg, commutator)])
+    }
+
+    fn seen_card(due_day: i64) -> Card {
+        Card {
+            ease: 2.5,
+            interval_days: 6,
+            due_day,
+            reps: 2,
+            lapses: 0,
+            reviews: Vec::new(),
+        }
     }
 
     #[test]
@@ -448,6 +460,72 @@ mod tests {
     }
 
     #[test]
+    fn card_falls_back_to_the_raw_commutator_row_when_present_but_undecomposable() {
+        let corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "junk text");
+        let stores = stores_with_reps(4);
+        let mut session = DrillSession::default();
+        install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
+        let content = card_content(&session, &corpus, &book_with(None), &stores, 0);
+        assert!(content.mechanics.is_none());
+        assert_eq!(
+            content
+                .rows
+                .iter()
+                .find(|(text, _)| text.starts_with("commutator "))
+                .expect("raw commutator row renders"),
+            &("commutator junk text".to_string(), RowStyle::Small)
+        );
+    }
+
+    #[test]
+    fn card_srs_line_reads_each_side_card_state() {
+        let corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "");
+        let mut stores = stores_with_reps(4);
+        stores
+            .srs
+            .cards
+            .insert(card_key(SheetClass::Edge, "UF-UB-UR"), seen_card(0));
+        stores
+            .srs
+            .cards
+            .insert(card_key(SheetClass::Edge, "UF-UR-UB"), seen_card(10));
+        let mut session = DrillSession::default();
+        install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
+        let content = card_content(&session, &corpus, &book_with(None), &stores, 0);
+        assert_eq!(
+            content
+                .rows
+                .iter()
+                .find(|(text, _)| text.starts_with("srs "))
+                .expect("srs row renders")
+                .0,
+            "srs AB due, BA ok"
+        );
+    }
+
+    #[test]
+    fn card_prepare_line_prefers_the_vendor_flip_alg() {
+        let alg = "R2 U' S R2 S' R2 U R2";
+        let inverse = Alg::parse(alg).expect("alg parses").inverse().format();
+        let corpus = Corpus::from_rows(vec![
+            edge_row("UF-UB-UR", alg, ""),
+            row(Solver::Eggins, SheetClass::Edge, "UF-UR-UB", &inverse, ""),
+        ]);
+        let stores = stores_with_reps(4);
+        let mut session = DrillSession::default();
+        install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
+        let content = card_content(&session, &corpus, &book_with(None), &stores, 0);
+        assert_eq!(
+            content
+                .rows
+                .iter()
+                .find(|(text, _)| text.starts_with("prepare "))
+                .expect("prepare row renders"),
+            &(format!("prepare BA eggins: {inverse}"), RowStyle::Body)
+        );
+    }
+
+    #[test]
     fn card_lines_pick_tokens_per_orbit_with_letter_fallback() {
         let stores = stores_with_reps(4);
         let corner_corpus = Corpus::from_rows(vec![row(
@@ -491,6 +569,20 @@ mod tests {
     }
 
     #[test]
+    fn mechanic_spans_join_multiple_units_with_a_separator() {
+        let alg = Alg::parse("S R2 S' R2 U R2 U' R2").expect("alg parses");
+        let spans = mechanic_spans("[S,R2] + [U,R2]", &alg).expect("two units verify");
+        let joined: String = spans.iter().map(|(text, _, _)| text.as_str()).collect();
+        assert_eq!(joined, "[S, R2] + [U, R2]");
+        assert_eq!(
+            spans[5],
+            (" + ".to_string(), FONT_ALG, theme::text_primary())
+        );
+        assert_eq!(spans[7], ("U".to_string(), FONT_ALG, theme::teal()));
+        assert_eq!(spans[9], ("R2".to_string(), FONT_ALG, theme::interchange()));
+    }
+
+    #[test]
     fn reps_lines_show_the_executing_side_in_whole_seconds() {
         let mut session = DrillSession::default();
         install_pair(
@@ -527,5 +619,12 @@ mod tests {
         assert_eq!(rate_lines(&session)[1], "2 reps avg 1.5s");
         session.rate_step = 1;
         assert_eq!(rate_lines(&session)[0], "rate BA");
+    }
+
+    #[test]
+    fn reps_and_rate_lines_report_no_pair_without_sides() {
+        let session = DrillSession::default();
+        assert_eq!(reps_lines(&session), vec!["no pair".to_string()]);
+        assert_eq!(rate_lines(&session), vec!["no pair".to_string()]);
     }
 }
