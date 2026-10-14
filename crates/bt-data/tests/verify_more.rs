@@ -76,7 +76,7 @@ fn three_style_disturbing_unnamed_pieces_reports_residue() {
 }
 
 #[test]
-fn inverse_cycle_direction_fails_the_original_claim() {
+fn opposite_direction_cycle_fails_the_original_claim() {
     let verdict = verify(&alg("M2 U' M' U2 M U' M2"), "UF-UR-UL", SheetClass::Edge);
     assert!(!verdict.ok());
     assert!(verdict.problems.contains(&Problem::WrongCycle {
