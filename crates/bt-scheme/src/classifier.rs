@@ -464,8 +464,38 @@ mod tests {
         assert!(!is_swap_block(&[26, 32, 26]));
         assert!(is_twist_block(&[2, 12, 9, 2]));
         assert!(!is_twist_block(&[2, 12, 3, 2]));
+        assert!(!is_twist_block(&[2, 9, 2]));
         assert!(is_swap_twist_block(&[2, 16, 9, 1, 12, 13, 2]));
         assert!(!is_swap_twist_block(&[2, 16, 9, 1, 12, 25, 2]));
+    }
+
+    #[test]
+    fn twist_pair_position_keeps_first_when_first_is_plus() {
+        let defects = Defects {
+            edge_flips: std::array::from_fn(|slot| (piece_head(Piece::Edge(slot as u8)), false)),
+            corner_twists: std::array::from_fn(|slot| {
+                let head = piece_head(Piece::Corner(slot as u8));
+                let twist = if slot == 2 || slot == 3 { 1 } else { 0 };
+                (head, twist as i8)
+            }),
+        };
+        let report = Report {
+            edge: Trace {
+                orbit: Orbit::Edge,
+                blocks: Vec::new(),
+            },
+            corner: Trace {
+                orbit: Orbit::Corner,
+                blocks: Vec::new(),
+            },
+            class: Classification::TwistPair {
+                first: 2,
+                second: 3,
+            },
+            defects,
+            qtm: None,
+        };
+        assert_eq!(report.position().unwrap(), "UFR & UFL");
     }
 
     fn orbit_floating(orbit: Orbit) -> &'static [&'static str] {

@@ -279,6 +279,54 @@ mod tests {
     }
 
     #[test]
+    fn perm_sign_on_odd_length_permutations() {
+        assert_eq!(perm_sign(&[0u8, 1, 2]), 1);
+        assert_eq!(perm_sign(&[1u8, 2, 0]), 1);
+        assert_eq!(perm_sign(&[1u8, 0, 2]), -1);
+    }
+
+    #[test]
+    fn build_occ_rotates_twisted_corner_successor_cycles() {
+        let mut occ = identity_occ();
+        let edges: Vec<u8> = (0..12u8).collect();
+        let corners: Vec<u8> = (0..8u8).collect();
+        let flips = vec![false; 12];
+        let twists = vec![1u8, 0, 0, 0, 0, 0, 0, 0];
+        build_occ(&mut occ, &edges, &flips, &corners, &twists);
+        assert_eq!(occ[1], 16);
+        assert_eq!(occ[13], 1);
+        assert_eq!(occ[16], 13);
+        for (i, &s) in occ.iter().enumerate() {
+            if !matches!(i, 1 | 13 | 16) {
+                assert_eq!(s, i as u8);
+            }
+        }
+    }
+
+    #[test]
+    fn random_occ_flips_follow_the_generator_stream() {
+        let mut rng = Rng::new(0);
+        for i in (1..12usize).rev() {
+            rng.below(i as u64 + 1);
+        }
+        for i in (1..8usize).rev() {
+            rng.below(i as u64 + 1);
+        }
+        let mut flips: Vec<bool> = (0..12).map(|_| rng.next_u64() & 1 == 1).collect();
+        if flips.iter().filter(|f| **f).count() % 2 == 1 {
+            flips[11] = !flips[11];
+        }
+        let occ = random_occ(0);
+        for slot in 0..12u8 {
+            assert_eq!(
+                edge_flipped(&occ, slot),
+                flips[slot as usize],
+                "slot {slot}"
+            );
+        }
+    }
+
+    #[test]
     fn identity_and_single_transposition_legality() {
         assert!(occ_is_legal(&identity_occ()));
         let mut occ = identity_occ();

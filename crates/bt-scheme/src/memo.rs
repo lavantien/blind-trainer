@@ -842,4 +842,71 @@ mod tests {
         assert_eq!(outcome.buffers, expected.buffers);
         assert_eq!(outcome.parity, expected.parity);
     }
+
+    #[test]
+    #[should_panic(expected = "t2 on t1 piece")]
+    fn walk_pair_guard_rejects_same_piece_targets() {
+        let mut occ = occ_of(&[(26, 24), (24, 24)]);
+        let _ = OrbitWalk::new(Orbit::Edge, &mut occ).run();
+    }
+
+    #[test]
+    #[should_panic(expected = "memo walk spin budget exceeded")]
+    fn walk_spin_budget_stops_a_stalled_zero_letter_loop() {
+        let mut occ = occ_of(&[(2, 9), (9, 9)]);
+        let _ = OrbitWalk::new(Orbit::Corner, &mut occ).run();
+    }
+
+    #[test]
+    #[should_panic(expected = "memo walk letter budget exceeded")]
+    fn walk_letter_budget_stops_an_unbounded_pair_loop() {
+        let mut occ = occ_of(&[
+            (24, 36),
+            (25, 27),
+            (26, 28),
+            (27, 33),
+            (28, 40),
+            (32, 25),
+            (33, 24),
+            (36, 39),
+            (39, 24),
+            (40, 39),
+        ]);
+        let _ = OrbitWalk::new(Orbit::Edge, &mut occ).run();
+    }
+
+    #[test]
+    fn walk_skips_reserved_displaced_pieces_in_both_scans() {
+        let mut occ = occ_of(&[
+            (24, 47),
+            (40, 30),
+            (47, 24),
+            (30, 40),
+            (25, 27),
+            (36, 28),
+            (27, 25),
+            (28, 36),
+        ]);
+        let mut walk = OrbitWalk::new(Orbit::Edge, &mut occ);
+        walk.reserved[0] = true;
+        let outcome = walk.run();
+        assert_eq!(outcome.letters, vec!['D', 'A', 'X', 'A']);
+        assert_eq!(
+            outcome.pairs,
+            vec![
+                CaseId {
+                    orbit: Orbit::Edge,
+                    t1: 27,
+                    t2: 24
+                },
+                CaseId {
+                    orbit: Orbit::Edge,
+                    t1: 47,
+                    t2: 24
+                }
+            ]
+        );
+        assert_eq!(outcome.buffers, vec![25, 25]);
+        assert_eq!(outcome.parity, None);
+    }
 }
