@@ -22,7 +22,7 @@ New-Item -ItemType Directory -Force $reportDir | Out-Null
 $prefix = ($root -replace '\\', '/') + '/'
 function Convert-Rel([string]$absolute) {
     $rel = $absolute -replace '\\', '/'
-    if ($rel.StartsWith($prefix)) { $rel.Substring($prefix.Length) } else { $rel }
+    if ($rel.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) { $rel.Substring($prefix.Length) } else { $rel }
 }
 
 $all = foreach ($file in $data.files) {

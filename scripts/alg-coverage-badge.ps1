@@ -14,7 +14,7 @@ $covered = [int]$manifest.cases.edge.covered + [int]$manifest.cases.corner.cover
 if ($total -le 0) {
     throw 'manifest reports no cases'
 }
-$percent = 100.0 * $covered / $total
+$percent = [math]::Min(100.0, [math]::Max(0.0, 100.0 * $covered / $total))
 
 $badgeDir = Join-Path $root 'docs/badges'
 New-Item -ItemType Directory -Force $badgeDir | Out-Null

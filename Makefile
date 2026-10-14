@@ -11,8 +11,8 @@ export BT_ARTIFACTS := $(ARTIFACTS)
 
 .PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
 
-COVERAGE_TARGET := C:/Users/lavantien/dev/github/bt-coverage-target
-MUTATION_TARGET := C:/Users/lavantien/dev/github/bt-mutation-target
+COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
+MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
 
 setup:
 	rustup component add rustfmt clippy
@@ -54,6 +54,7 @@ test:
 	cargo test --workspace
 
 test-crate:
+	@test -n "$(p)" || { echo 'usage: make test-crate p=<crate>'; exit 2; }
 	cargo test -p $(p)
 
 fuzz:
