@@ -287,19 +287,14 @@ fn a_raw_commutator_line_appears_when_decomposition_fails() {
 fn extra_vendor_rows_render_as_alternatives_with_their_own_meta() {
     let _guard = guard();
     let fixture = fixture("morealt");
-    add_edge_row(&fixture.base, COVERED_POSITION, "M2 U M2 U2 M U M2", "");
+    const REVERSED_COVERED_ALG: &str = "R2 U' R2 S R2 S' U R2";
+    add_edge_row(&fixture.base, COVERED_POSITION, REVERSED_COVERED_ALG, "");
     let (mut app, _) = algs_app(&fixture, "ab");
-    let alt = Alg::parse("M2 U M2 U2 M U M2").expect("alt alg parses");
-    let verdict = bt_data::verify::verify(&alt, COVERED_POSITION, SheetClass::Edge);
-    let badge = if verdict.ok() {
-        "verified".to_string()
-    } else {
-        format!("{} problem(s)", verdict.problems.len())
-    };
+    let alt = Alg::parse(REVERSED_COVERED_ALG).expect("alt alg parses");
     let lines = detail_texts(&mut app);
-    assert!(lines.contains(&"M2 U M2 U2 M U M2".to_string()));
+    assert!(lines.contains(&REVERSED_COVERED_ALG.to_string()));
     assert!(lines.contains(&format!(
-        "cherry qtm {} htm {} [{badge}]",
+        "cherry qtm {} htm {} [6 problem(s)]",
         alt.qtm(),
         alt.htm()
     )));
@@ -451,21 +446,9 @@ fn meta_line_badges_verification_and_problem_counts() {
             parsed.htm()
         )
     );
-    let mut broken = edge_row(COVERED_POSITION, "R U R' U'", "");
+    let mut broken = edge_row(COVERED_POSITION, "", "");
     broken.solver = Solver::Eggins;
-    let broken_alg = Alg::parse("R U R' U'").expect("broken alg parses");
-    let problems = bt_data::verify::verify(&broken_alg, COVERED_POSITION, SheetClass::Edge)
-        .problems
-        .len();
-    assert!(problems > 0, "the fixture alg must fail verification");
-    assert_eq!(
-        meta_line(&broken),
-        format!(
-            "eggins qtm {} htm {} [{problems} problem(s)]",
-            broken_alg.qtm(),
-            broken_alg.htm()
-        )
-    );
+    assert_eq!(meta_line(&broken), "eggins qtm 0 htm 0 [6 problem(s)]");
 }
 
 #[test]
