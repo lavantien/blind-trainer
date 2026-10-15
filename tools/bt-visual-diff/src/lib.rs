@@ -54,7 +54,7 @@ enum Cli {
 
 fn parse_cli(argv: &[String]) -> Result<Cli, ArgsError> {
     if argv.iter().any(|arg| arg == "--selftest") {
-        if argv.len() != 2 || argv[0] != "--selftest" {
+        if argv.len() != 2 || argv[0] != "--selftest" || argv[1].is_empty() {
             return Err(ArgsError::Usage);
         }
         return Ok(Cli::Selftest {
@@ -879,6 +879,7 @@ mod tests {
             parse_cli(&argv(&["--update", "--selftest", "wd"])),
             Err(ArgsError::Usage)
         );
+        assert_eq!(parse_cli(&argv(&["--selftest", ""])), Err(ArgsError::Usage));
     }
 
     #[test]

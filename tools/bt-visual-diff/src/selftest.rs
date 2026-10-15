@@ -22,6 +22,7 @@ fn scenarios() -> Vec<(&'static str, &'static str)> {
         ("identical.png", "ok"),
         ("over.png", "over"),
         ("missing.png", "missing-baseline"),
+        ("at-tolerance.png", "ok"),
     ]
 }
 
@@ -72,6 +73,10 @@ fn over_pixel(tolerance: u16) -> [u8; 4] {
     [delta, 0, 0, 255]
 }
 
+fn within_pixel(tolerance: u16) -> [u8; 4] {
+    [tolerance as u8, 0, 0, 255]
+}
+
 fn config_file(workdir: &Path) -> PathBuf {
     workdir.join("config.json")
 }
@@ -109,6 +114,10 @@ pub(crate) fn materialize(workdir: &Path, tolerance: u16) -> Result<(PathBuf, Pa
     write(shots.join("over.png"), &solid_image())?;
     write(bases.join("over.png"), &over_base)?;
     write(shots.join("missing.png"), &solid_image())?;
+    let mut within_base = solid_image();
+    within_base.put_pixel(OVER_AT.0, OVER_AT.1, image::Rgba(within_pixel(tolerance)));
+    write(shots.join("at-tolerance.png"), &solid_image())?;
+    write(bases.join("at-tolerance.png"), &within_base)?;
     Ok((shots, bases))
 }
 
@@ -175,7 +184,15 @@ mod tests {
             report("identical.png", Verdict::Ok),
             report("over.png", Verdict::Over { pixels_over: 1 }),
             report("missing.png", Verdict::Missing { side: Side::Base }),
+            report("at-tolerance.png", Verdict::Ok),
         ]
+    }
+
+    #[test]
+    fn within_pixel_lands_exactly_at_tolerance() {
+        assert_eq!(within_pixel(SEEDED_TOLERANCE)[0], SEEDED_TOLERANCE as u8);
+        assert_eq!(within_pixel(255)[0], 255);
+        assert_ne!(within_pixel(SEEDED_TOLERANCE), over_pixel(SEEDED_TOLERANCE));
     }
 
     #[test]
@@ -209,17 +226,18 @@ mod tests {
     #[test]
     fn evaluate_passes_when_reports_match_expectations() {
         let checks = evaluate(&matching_reports());
-        assert_eq!(checks.len(), 3);
+        assert_eq!(checks.len(), 4);
         assert!(checks.iter().all(|check| check.passed));
         assert_eq!(checks[0].name, "identical.png");
         assert_eq!(checks[1].name, "over.png");
         assert_eq!(checks[2].name, "missing.png");
+        assert_eq!(checks[3].name, "at-tolerance.png");
     }
 
     #[test]
     fn evaluate_flags_absent_and_unexpected_verdicts() {
         let absent = evaluate(&[]);
-        assert_eq!(absent.len(), 3);
+        assert_eq!(absent.len(), 4);
         assert!(absent.iter().all(|check| !check.passed));
         assert!(absent.iter().all(|check| check.actual == "absent"));
         let mut reports = matching_reports();
@@ -261,7 +279,7 @@ mod tests {
     }
 
     #[test]
-    fn materialize_writes_the_three_scenarios() {
+    fn materialize_writes_every_scenario() {
         let dir = temp_dir("materialize");
         let (shots, bases) = materialize(&dir, SEEDED_TOLERANCE).expect("fixtures");
         for path in [
@@ -270,6 +288,8 @@ mod tests {
             shots.join("over.png"),
             bases.join("over.png"),
             shots.join("missing.png"),
+            shots.join("at-tolerance.png"),
+            bases.join("at-tolerance.png"),
         ] {
             assert!(path.is_file(), "{} missing", path.display());
         }
@@ -287,6 +307,18 @@ mod tests {
             base.get_pixel(OVER_AT.0, OVER_AT.1)
         );
         assert_eq!(shot.get_pixel(0, 0), base.get_pixel(0, 0));
+        let shot = image::open(shots.join("at-tolerance.png"))
+            .expect("png")
+            .to_rgba8();
+        let base = image::open(bases.join("at-tolerance.png"))
+            .expect("png")
+            .to_rgba8();
+        let differing = shot
+            .pixels()
+            .zip(base.pixels())
+            .filter(|(a, b)| a != b)
+            .count();
+        assert_eq!(differing, 1);
     }
 
     #[test]
@@ -317,6 +349,8 @@ mod tests {
         let checks = execute(&shots, &bases, SEEDED_TOLERANCE).expect("checks");
         assert!(checks[0].passed);
         assert!(!checks[1].passed);
+        assert!(checks[2].passed);
+        assert!(checks[3].passed);
         assert_eq!(checks[1].actual, "ok");
         assert_eq!(exit_code(&checks), EXIT_DIFF);
     }
@@ -332,6 +366,7 @@ mod tests {
         assert!(checks[0].passed);
         assert!(checks[1].passed);
         assert!(!checks[2].passed);
+        assert!(checks[3].passed);
         assert_eq!(exit_code(&checks), EXIT_DIFF);
     }
 
