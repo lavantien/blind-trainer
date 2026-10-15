@@ -32,6 +32,8 @@ pub const SPECIAL_COUNTS: [(&str, &str, usize); 8] = [
     ("eggins", "ltct", 3),
 ];
 
+pub const SYNTH_ALGORITHM: &str = "first-setup-plateau-1";
+
 pub fn crate_id() -> &'static str {
     "bt-gendata"
 }

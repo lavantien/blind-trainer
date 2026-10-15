@@ -25,7 +25,8 @@ fn run() -> Result<(), Vec<String>> {
     let config = load_config().map_err(|e| vec![e.to_string()])?;
     let limits = synth_limits(&config).map_err(|e| vec![e])?;
     let scoring = scoring_from_config(&config).map_err(|e| vec![e])?;
-    let params_sha256 = synth_params_sha256(&config).map_err(|e| vec![e])?;
+    let params_sha256 =
+        synth_params_sha256(&config, bt_gendata::SYNTH_ALGORITHM).map_err(|e| vec![e])?;
     let out = data_vendor_path(&config).map_err(|e| vec![e])?;
     let existing: Option<Manifest> = std::fs::read_to_string(out.join("manifest.json"))
         .ok()
@@ -70,12 +71,15 @@ fn run() -> Result<(), Vec<String>> {
     Ok(())
 }
 
-fn synth_params_sha256(config: &serde_json::Value) -> Result<String, String> {
+fn synth_params_sha256(config: &serde_json::Value, generator: &str) -> Result<String, String> {
     let section = config
         .pointer("/synth")
         .ok_or_else(|| "config section missing: synth".to_string())?;
     let canonical = serde_json::to_string(section).map_err(|e| e.to_string())?;
-    Ok(sha256_hex(canonical.as_bytes()))
+    let mut preimage = canonical.into_bytes();
+    preimage.push(0);
+    preimage.extend_from_slice(generator.as_bytes());
+    Ok(sha256_hex(&preimage))
 }
 
 fn synth_limits(config: &serde_json::Value) -> Result<SynthLimits, String> {
@@ -124,17 +128,31 @@ mod tests {
         let config = json!({"synth": {"max_setup": 3, "scoring": {"penalty_other": 2.0}}});
         let reordered = json!({"synth": {"scoring": {"penalty_other": 2.0}, "max_setup": 3}});
         assert_eq!(
-            synth_params_sha256(&config).unwrap(),
-            synth_params_sha256(&reordered).unwrap()
+            synth_params_sha256(&config, bt_gendata::SYNTH_ALGORITHM).unwrap(),
+            synth_params_sha256(&reordered, bt_gendata::SYNTH_ALGORITHM).unwrap()
         );
         let changed = json!({"synth": {"max_setup": 4, "scoring": {"penalty_other": 2.0}}});
         assert_ne!(
-            synth_params_sha256(&config).unwrap(),
-            synth_params_sha256(&changed).unwrap()
+            synth_params_sha256(&config, bt_gendata::SYNTH_ALGORITHM).unwrap(),
+            synth_params_sha256(&changed, bt_gendata::SYNTH_ALGORITHM).unwrap()
         );
         assert_eq!(
-            synth_params_sha256(&json!({})).unwrap_err(),
+            synth_params_sha256(&json!({}), bt_gendata::SYNTH_ALGORITHM).unwrap_err(),
             "config section missing: synth"
+        );
+    }
+
+    #[test]
+    fn synth_params_hash_binds_the_generator_version() {
+        let config = json!({"synth": {"max_setup": 3}});
+        let current = synth_params_sha256(&config, bt_gendata::SYNTH_ALGORITHM).unwrap();
+        assert_eq!(
+            current,
+            synth_params_sha256(&config, bt_gendata::SYNTH_ALGORITHM).unwrap()
+        );
+        assert_ne!(
+            current,
+            synth_params_sha256(&config, "first-setup-plateau-2").unwrap()
         );
     }
 }
