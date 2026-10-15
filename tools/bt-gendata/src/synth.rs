@@ -554,6 +554,31 @@ mod tests {
     }
 
     #[test]
+    fn plateau_stays_inside_the_first_matching_setup() {
+        fn setup_of(text: &str) -> Option<&str> {
+            text.split_once(':').map(|(head, _)| head)
+        }
+        let (t1, t2) = case_of(Orbit::Corner, 'A', 'K');
+        let candidates = synth_candidates(Orbit::Corner, t1, t2, &limits());
+        assert!(candidates.len() >= 2);
+        let q0 = candidates[0].alg.qtm();
+        let setup = setup_of(&candidates[0].commutator);
+        for candidate in &candidates {
+            assert!(
+                candidate.alg.qtm() <= q0,
+                "{} exceeds the first-hit qtm {q0}",
+                candidate.alg.format()
+            );
+            assert_eq!(
+                setup_of(&candidate.commutator),
+                setup,
+                "{} leaves the first matching setup",
+                candidate.commutator
+            );
+        }
+    }
+
+    #[test]
     fn scoring_flips_the_selected_alg_for_the_pinned_case() {
         let (t1, t2) = case_of(Orbit::Corner, 'A', 'K');
         let mut inverted = test_scoring();
