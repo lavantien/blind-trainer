@@ -257,13 +257,14 @@ impl Geometry for Sq1 {
     }
 
     fn invert_alg(&self, alg: &Alg) -> Alg {
+        let canonical = |turn: i32| if turn == -TURN_MAX { TURN_MAX } else { turn };
         alg.iter()
             .rev()
             .map(|mv| match *mv {
                 Move::Slash => Move::Slash,
                 Move::Twist { top, bottom } => Move::Twist {
-                    top: -top,
-                    bottom: -bottom,
+                    top: canonical(-top),
+                    bottom: canonical(-bottom),
                 },
             })
             .collect()

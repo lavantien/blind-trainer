@@ -516,3 +516,24 @@ fn cubeshape_pack_oracle_sweeps_all_169_rows() {
         );
     }
 }
+
+#[test]
+fn inversion_stays_inside_the_parse_domain() {
+    let sq1 = Sq1;
+    assert_eq!(
+        sq1.invert_alg(&vec![Move::Twist { top: 0, bottom: 6 }]),
+        vec![Move::Twist { top: 0, bottom: 6 }]
+    );
+    for top in -5..=6 {
+        for bottom in -5..=6 {
+            if top == 0 && bottom == 0 {
+                continue;
+            }
+            let alg = vec![Move::Twist { top, bottom }];
+            let inverted = sq1.invert_alg(&alg);
+            let text = sq1.format_alg(&inverted);
+            let reparsed = sq1.parse_alg(&text).expect("inverse formats and reparses");
+            assert_eq!(reparsed, inverted, "round trip failed for ({top},{bottom})");
+        }
+    }
+}
