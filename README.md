@@ -232,6 +232,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 - visual-diff: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
 - visual: visual-selftest, then the diff; on a mismatch it re-renders and re-diffs once, exit 2 regression versus exit 3 infra flake, verdict appended to artifacts/visual/report.md.
 - memguard: report the combined working set of every process whose executable lives under the repo against the memguard.cap_bytes hub cap, -Kill takes down the largest offender tree. memguard-selftest proves the matcher with a repo sleeper and a command-line decoy.
+- clean-rust: size the regenerable rust caches against the disk.free_floor_gb hub floor: incremental caches, cargo-mutants TEMP scratch dirs older than disk.scratch_stale_hours, external coverage and mutation targets, and the detached e2e and fuzz targets. clean-rust-apply deletes them in that order, deep clean of e2e and fuzz targets only when no cargo or rustc process is live (exit 3 refusal). clean-rust-selftest proves stale scratch selection and that a fresh active scratch survives.
 - release-verify: byte-verify the dist zip against staging, then run the packaged exe hermetically (BT_* scrubbed, fresh APPDATA, foreign cwd) through the smoke plus negative paths. release-verify-selftest runs its unit suite.
 - screenshots: drive the windowed app through every usage state into docs/screenshots, 17 usage shots plus the fatal screen.
 - run: cargo run --release -p bt-app.

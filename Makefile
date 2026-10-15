@@ -11,7 +11,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
+.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -128,6 +128,15 @@ memguard:
 memguard-selftest:
 	cargo build --release -p bt-sleeper
 	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -SelfTest -SleeperPath target/release/bt-sleeper.exe
+
+clean-rust:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+
+clean-rust-apply:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+
+clean-rust-selftest:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -SelfTest -WorkDir $(ARTIFACTS)/clean-rust-selftest
 
 run:
 	cargo run --release -p bt-app
