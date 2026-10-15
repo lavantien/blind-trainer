@@ -1,0 +1,165 @@
+case_key	alg	front_json	source_url	source_at
+f2l.fr.01	U2 (R U R') U (R U' R')	{"case":"01","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.01	U2 (F U F') U (F U' F')	{"case":"01","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.01	U2 (B U B') U (B U' B')	{"case":"01","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.01	U2 (L U L') U (L U' L')	{"case":"01","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.02	F' L' U2 L F	{"case":"02","slot":"fr","group":"1a both on top, white faces up","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.02	L' B' U2 B L	{"case":"02","slot":"fl","group":"1a both on top, white faces up","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.02	R' F' U2 F R	{"case":"02","slot":"br","group":"1a both on top, white faces up","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.02	B' R' U2 R B	{"case":"02","slot":"bl","group":"1a both on top, white faces up","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.03	U (R U2 R') U (R U' R')	{"case":"03","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.03	U (F U2 F') U (F U' F')	{"case":"03","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.03	U (B U2 B') U (B U' B')	{"case":"03","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.03	U (L U2 L') U (L U' L')	{"case":"03","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.04	y U' (L' U2 L) U' (L' U L)	{"case":"04","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.04	y U' (B' U2 B) U' (B' U B)	{"case":"04","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.04	y U' (F' U2 F) U' (F' U F)	{"case":"04","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.04	y U' (R' U2 R) U' (R' U R)	{"case":"04","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.05	U (R U' R') U' (R U' R' U R U' R')	{"case":"05","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.05	U (F U' F') U' (F U' F' U F U' F')	{"case":"05","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.05	U (B U' B') U' (B U' B' U B U' B')	{"case":"05","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.05	U (L U' L') U' (L U' L' U L U' L')	{"case":"05","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.06	F (U R U' R') F' (R U' R')	{"case":"06","slot":"fr","group":"1a both on top, white faces up","alt":4}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.06	L (U F U' F') L' (F U' F')	{"case":"06","slot":"fl","group":"1a both on top, white faces up","alt":4}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.06	R (U B U' B') R' (B U' B')	{"case":"06","slot":"br","group":"1a both on top, white faces up","alt":4}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.06	B (U L U' L') B' (L U' L')	{"case":"06","slot":"bl","group":"1a both on top, white faces up","alt":4}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.07	(R U2 R') U' (R U R')	{"case":"07","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.07	(F U2 F') U' (F U F')	{"case":"07","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.07	(B U2 B') U' (B U B')	{"case":"07","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.07	(L U2 L') U' (L U L')	{"case":"07","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.08	y (L' U2 L) U (L' U' L)	{"case":"08","slot":"fr","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.08	y (B' U2 B) U (B' U' B)	{"case":"08","slot":"fl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.08	y (F' U2 F) U (F' U' F)	{"case":"08","slot":"br","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.08	y (R' U2 R) U (R' U' R)	{"case":"08","slot":"bl","group":"1a both on top, white faces up"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.09	(R U R')	{"case":"09","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.09	(F U F')	{"case":"09","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.09	(B U B')	{"case":"09","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.09	(L U L')	{"case":"09","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.10	y (L' U' L)	{"case":"10","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.10	y (B' U' B)	{"case":"10","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.10	y (F' U' F)	{"case":"10","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.10	y (R' U' R)	{"case":"10","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.11	U' (R U R') U (R U R')	{"case":"11","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.11	U' (F U F') U (F U F')	{"case":"11","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.11	U' (B U B') U (B U B')	{"case":"11","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.11	U' (L U L') U (L U L')	{"case":"11","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.12	y U (L' U' L) U' (L' U' L)	{"case":"12","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.12	y U (B' U' B) U' (B' U' B)	{"case":"12","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.12	y U (F' U' F) U' (F' U' F)	{"case":"12","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.12	y U (R' U' R) U' (R' U' R)	{"case":"12","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.13	R' U2 R2 U R2' U R	{"case":"13","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.13	F' U2 F2 U F2 U F	{"case":"13","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.13	B' U2 B2 U B2 U B	{"case":"13","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.13	L' U2 L2 U L2 U L	{"case":"13","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.14	y L U2 L2' U' L2 U' L'	{"case":"14","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.14	y B U2 B2 U' B2 U' B'	{"case":"14","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.14	y F U2 F2 U' F2 U' F'	{"case":"14","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.14	y R U2 R2 U' R2 U' R'	{"case":"14","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.15	U' (R U' R') U (R U R')	{"case":"15","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.15	U' (F U' F') U (F U F')	{"case":"15","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.15	U' (B U' B') U (B U B')	{"case":"15","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.15	U' (L U' L') U (L U L')	{"case":"15","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.16	y U (L' U L) U' (L' U' L)	{"case":"16","slot":"fr","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.16	y U (B' U B) U' (B' U' B)	{"case":"16","slot":"fl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.16	y U (F' U F) U' (F' U' F)	{"case":"16","slot":"br","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.16	y U (R' U R) U' (R' U' R)	{"case":"16","slot":"bl","group":"1a both on top, white faces side, stickers different"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.17	y U' (L' U L)	{"case":"17","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.17	y U' (B' U B)	{"case":"17","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.17	y U' (F' U F)	{"case":"17","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.17	y U' (R' U R)	{"case":"17","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.18	U (R U' R')	{"case":"18","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.18	U (F U' F')	{"case":"18","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.18	U (B U' B')	{"case":"18","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.18	U (L U' L')	{"case":"18","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.19	r' U2 R2 U R2' U r	{"case":"19","slot":"fr","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.19	f' U2 F2 U F2 U f	{"case":"19","slot":"fl","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.19	b' U2 B2 U B2 U b	{"case":"19","slot":"br","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.19	l' U2 L2 U L2 U l	{"case":"19","slot":"bl","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.20	U' (R U2 R') U2 (R U' R')	{"case":"20","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.20	U' (F U2 F') U2 (F U' F')	{"case":"20","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.20	U' (B U2 B') U2 (B U' B')	{"case":"20","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.20	U' (L U2 L') U2 (L U' L')	{"case":"20","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.21	U' (R U R') U2 (R U' R')	{"case":"21","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.21	U' (F U F') U2 (F U' F')	{"case":"21","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.21	U' (B U B') U2 (B U' B')	{"case":"21","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.21	U' (L U L') U2 (L U' L')	{"case":"21","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.22	U' r U' R' U R U r'	{"case":"22","slot":"fr","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.22	U' f U' F' U F U f'	{"case":"22","slot":"fl","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.22	U' b U' B' U B U b'	{"case":"22","slot":"br","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.22	U' l U' L' U L U l'	{"case":"22","slot":"bl","group":"1a both on top, white faces side, stickers same","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.23	M U (L F' L') U' M'	{"case":"23","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.23	S' U (B L' B') U' S	{"case":"23","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.23	S U (F R' F') U' S'	{"case":"23","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.23	M' U (R B' R') U' M	{"case":"23","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.24	y M U' (R' F R) U M'	{"case":"24","slot":"fr","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.24	y S' U' (F' L F) U S	{"case":"24","slot":"fl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.24	y S U' (B' R B) U S'	{"case":"24","slot":"br","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.24	y M' U' (L' B L) U M	{"case":"24","slot":"bl","group":"1a both on top, white faces side, stickers same"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.25	U (R U R') U2 (R U R')	{"case":"25","slot":"fr","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.25	U (F U F') U2 (F U F')	{"case":"25","slot":"fl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.25	U (B U B') U2 (B U B')	{"case":"25","slot":"br","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.25	U (L U L') U2 (L U L')	{"case":"25","slot":"bl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.26	U' R U' R' U2 R U' R'	{"case":"26","slot":"fr","group":"1b edge in slot","alt":2}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.26	U' F U' F' U2 F U' F'	{"case":"26","slot":"fl","group":"1b edge in slot","alt":2}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.26	U' B U' B' U2 B U' B'	{"case":"26","slot":"br","group":"1b edge in slot","alt":2}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.26	U' L U' L' U2 L U' L'	{"case":"26","slot":"bl","group":"1b edge in slot","alt":2}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.27	U (F' U' F) U' (R U R')	{"case":"27","slot":"fr","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.27	U (L' U' L) U' (F U F')	{"case":"27","slot":"fl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.27	U (R' U' R) U' (B U B')	{"case":"27","slot":"br","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.27	U (B' U' B) U' (L U L')	{"case":"27","slot":"bl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.28	U2 (R U R') (F R' F' R)	{"case":"28","slot":"fr","group":"1b edge in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.28	U2 (F U F') (L F' L' F)	{"case":"28","slot":"fl","group":"1b edge in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.28	U2 (B U B') (R B' R' B)	{"case":"28","slot":"br","group":"1b edge in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.28	U2 (L U L') (B L' B' L)	{"case":"28","slot":"bl","group":"1b edge in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.29	(U R U' R')3	{"case":"29","slot":"fr","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.29	(U F U' F')3	{"case":"29","slot":"fl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.29	(U B U' B')3	{"case":"29","slot":"br","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.29	(U L U' L')3	{"case":"29","slot":"bl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.30	U' (R' F R F') (R U' R')	{"case":"30","slot":"fr","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.30	U' (F' L F L') (F U' F')	{"case":"30","slot":"fl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.30	U' (B' R B R') (B U' B')	{"case":"30","slot":"br","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.30	U' (L' B L B') (L U' L')	{"case":"30","slot":"bl","group":"1b edge in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.31	(R U R') U' (R U R')	{"case":"31","slot":"fr","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.31	(F U F') U' (F U F')	{"case":"31","slot":"fl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.31	(B U B') U' (B U B')	{"case":"31","slot":"br","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.31	(L U L') U' (L U L')	{"case":"31","slot":"bl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.32	M' (U R U' R') (U R U' r')	{"case":"32","slot":"fr","group":"1b corner in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.32	S (U F U' F') (U F U' f')	{"case":"32","slot":"fl","group":"1b corner in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.32	S' (U B U' B') (U B U' b')	{"case":"32","slot":"br","group":"1b corner in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.32	M (U L U' L') (U L U' l')	{"case":"32","slot":"bl","group":"1b corner in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.33	(R U' R') U (R U' R')	{"case":"33","slot":"fr","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.33	(F U' F') U (F U' F')	{"case":"33","slot":"fl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.33	(B U' B') U (B U' B')	{"case":"33","slot":"br","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.33	(L U' L') U (L U' L')	{"case":"33","slot":"bl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.34	y (L' U L) U' (L' U L)	{"case":"34","slot":"fr","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.34	y (B' U B) U' (B' U B)	{"case":"34","slot":"fl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.34	y (F' U F) U' (F' U F)	{"case":"34","slot":"br","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.34	y (R' U R) U' (R' U R)	{"case":"34","slot":"bl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.35	U' (R' F R F') (R U R')	{"case":"35","slot":"fr","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.35	U' (F' L F L') (F U F')	{"case":"35","slot":"fl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.35	U' (B' R B R') (B U B')	{"case":"35","slot":"br","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.35	U' (L' B L B') (L U L')	{"case":"35","slot":"bl","group":"1b corner in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.36	U (R U' R') (F R' F' R)	{"case":"36","slot":"fr","group":"1b corner in slot","alt":3}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.36	U (F U' F') (L F' L' F)	{"case":"36","slot":"fl","group":"1b corner in slot","alt":3}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.36	U (B U' B') (R B' R' B)	{"case":"36","slot":"br","group":"1b corner in slot","alt":3}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.36	U (L U' L') (B L' B' L)	{"case":"36","slot":"bl","group":"1b corner in slot","alt":3}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.37	(R U' R') U (R U2 R' U R U' R')	{"case":"37","slot":"fr","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.37	(F U' F') U (F U2 F' U F U' F')	{"case":"37","slot":"fl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.37	(B U' B') U (B U2 B' U B U' B')	{"case":"37","slot":"br","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.37	(L U' L') U (L U2 L' U L U' L')	{"case":"37","slot":"bl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.38	(R U' R') U' (R U R' U2 R U' R')	{"case":"38","slot":"fr","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.38	(F U' F') U' (F U F' U2 F U' F')	{"case":"38","slot":"fl","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.38	(B U' B') U' (B U B' U2 B U' B')	{"case":"38","slot":"br","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.38	(L U' L') U' (L U L' U2 L U' L')	{"case":"38","slot":"bl","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.39	(R U' R') (F' L' U2 L F)	{"case":"39","slot":"fr","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.39	(F U' F') (L' B' U2 B L)	{"case":"39","slot":"fl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.39	(B U' B') (R' F' U2 F R)	{"case":"39","slot":"br","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.39	(L U' L') (B' R' U2 R B)	{"case":"39","slot":"bl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.40	(F' L' U2 L F) (R U R')	{"case":"40","slot":"fr","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.40	(L' B' U2 B L) (F U F')	{"case":"40","slot":"fl","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.40	(R' F' U2 F R) (B U B')	{"case":"40","slot":"br","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.40	(B' R' U2 R B) (L U L')	{"case":"40","slot":"bl","group":"1c both in slot","alt":1}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fr.41	R2' U2' F R2 F' U2' R' U R'	{"case":"41","slot":"fr","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.fl.41	F2 U2 L F2 L' U2 F' U F'	{"case":"41","slot":"fl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.br.41	B2 U2 R B2 R' U2 B' U B'	{"case":"41","slot":"br","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
+f2l.bl.41	L2 U2 B L2 B' U2 L' U L'	{"case":"41","slot":"bl","group":"1c both in slot"}	https://jperm.net/3x3/cfop/f2l	2026-10-16
