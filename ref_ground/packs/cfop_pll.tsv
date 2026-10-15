@@ -1,0 +1,22 @@
+case_key	alg	front_json	source_url	source_at
+pll.h	M2 U M2 U2 M2 U M2	{"case":"H"}	https://jperm.net/algs/pll	2026-10-16
+pll.z	M' U M2 U M2 U M' U2 M2	{"case":"Z"}	https://jperm.net/algs/pll	2026-10-16
+pll.ua	M2 U M U2 M' U M2	{"case":"Ua"}	https://jperm.net/algs/pll	2026-10-16
+pll.ub	M2 U' M U2 M' U' M2	{"case":"Ub"}	https://jperm.net/algs/pll	2026-10-16
+pll.aa	x L2 D2 L' U' L D2 L' U L'	{"case":"Aa"}	https://jperm.net/algs/pll	2026-10-16
+pll.ab	x' L2 D2 L U L' D2 L U' L	{"case":"Ab"}	https://jperm.net/algs/pll	2026-10-16
+pll.e	x' L' U L D' L' U' L D L' U' L D' L' U L D	{"case":"E"}	https://jperm.net/algs/pll	2026-10-16
+pll.f	R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R	{"case":"F"}	https://jperm.net/algs/pll	2026-10-16
+pll.ja	x R2 F R F' R U2 r' U r U2	{"case":"Ja"}	https://jperm.net/algs/pll	2026-10-16
+pll.jb	R U R' F' R U R' U' R' F R2 U' R'	{"case":"Jb"}	https://jperm.net/algs/pll	2026-10-16
+pll.ra	R U' R' U' R U R D R' U' R D' R' U2 R'	{"case":"Ra"}	https://jperm.net/algs/pll	2026-10-16
+pll.rb	R2 F R U R U' R' F' R U2 R' U2 R	{"case":"Rb"}	https://jperm.net/algs/pll	2026-10-16
+pll.t	R U R' U' R' F R2 U' R' U' (R U R') F'	{"case":"T"}	https://jperm.net/algs/pll	2026-10-16
+pll.y	F R U' R' U' R U R' F' R U R' U' R' F R F'	{"case":"Y"}	https://jperm.net/algs/pll	2026-10-16
+pll.v	R' U R' U' y R' F' R2 U' R' U R' F R F	{"case":"V"}	https://jperm.net/algs/pll	2026-10-16
+pll.na	R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'	{"case":"Na"}	https://jperm.net/algs/pll	2026-10-16
+pll.nb	R' (U R U' R') F' U' F R U R' F R' F' R U' R	{"case":"Nb"}	https://jperm.net/algs/pll	2026-10-16
+pll.ga	R2 U R' U R' U' R U' R2 (U' D) R' U R D'	{"case":"Ga"}	https://jperm.net/algs/pll	2026-10-16
+pll.gb	R' U' R (U D') R2 U R' U R U' R U' R2 D	{"case":"Gb"}	https://jperm.net/algs/pll	2026-10-16
+pll.gc	R2 U' R U' R U R' U R2 (U D') R U' R' D	{"case":"Gc"}	https://jperm.net/algs/pll	2026-10-16
+pll.gd	R U R' (U' D) R2 U' R U' R' U R' U R2 D'	{"case":"Gd"}	https://jperm.net/algs/pll	2026-10-16

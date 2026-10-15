@@ -1,6 +1,8 @@
 # pack seed provenance
 
-The 15 TSVs in this directory are byte-identical copies of cubing-trainer's seed packs at commit f7ecf2e19a32960d0c0338c528594e0d0c68804f (https://github.com/lavantien/cubing-trainer, MIT, same author), source path db/seeds/packs/<file>. Import date 2026-10-15, copied with a plain file copy and verified by sha-256 against the origin tree. Original data capture date for every row is 2026-10-10, recorded per row in the source_at column. Each row carries its own ultimate source in the source_url column. The full sourcing story per pack, including archived page snapshots, case key derivation, and recorded discrepancies, lives in cubing-trainer at db/seeds/packs/PROVENANCE.md at the pinned commit and is the reference of record for content questions.
+The 15 imported TSVs in this directory are byte-identical copies of cubing-trainer's seed packs at commit f7ecf2e19a32960d0c0338c528594e0d0c68804f (https://github.com/lavantien/cubing-trainer, MIT, same author), source path db/seeds/packs/<file>. Import date 2026-10-15, copied with a plain file copy and verified by sha-256 against the origin tree. Original data capture date for every row is 2026-10-10, recorded per row in the source_at column. Each row carries its own ultimate source in the source_url column. The full sourcing story per pack, including archived page snapshots, case key derivation, and recorded discrepancies, lives in cubing-trainer at db/seeds/packs/PROVENANCE.md at the pinned commit and is the reference of record for content questions.
+
+The 3 cfop_*.tsv files were authored in this repo on 2026-10-16 from J Perm pages fetched live that day, see the authored cfop files section below.
 
 Format: 5 tab separated columns, single header line, case_key, alg, front_json, source_url, source_at. One row per case, alg text stored verbatim from the source page. registry.json binds each file to event, method, stage, n, and the expected row count verified below.
 
@@ -23,6 +25,13 @@ Format: 5 tab separated columns, single header line, case_key, alg, front_json, 
 | bld_3style_specials.tsv | 85 | 8afb0790ad2b6c4d83b0f432b3e9a931f095f56488ce2030817c50e3bf86ca57 | per-row bit.ly and tinyurl.com short links to youtube reconstructions, data derived from the blddb workbooks |
 | bld_oldpoch.tsv | 40 | 61f8edb533f0742d3320e5c56c6e76240645c51465f4cdfdc8699361602cfe11 | jperm.net/bld (33), stefan-pochmann.de (5), speedsolving.com wiki (1), bldtrainer.com (1) |
 | bld_m2.tsv | 24 | 82a2e92b5c47ee97bd394ab44a7d24865cf04ec83129996879d5054c114f9f11 | speedsolving.com wiki M2 page (22), youtube.com J Perm M2 tutorial (1), cubefreak.net (1) |
+| cfop_pll.tsv | 21 | bf049a10d44c00b0e475e2589278b041d8f5e82517bb51f0f4bde5598e360676 | jperm.net/algs/pll |
+
+## authored cfop files
+
+All three files were captured on 2026-10-16 from jperm.net pages fetched live that day. The pll and oll case data is served to the pages by the site scripts /lib/pll.js and /lib/oll.js, archived as ref_doc/jperm/pll-algs.js and ref_doc/jperm/oll-algs.js with entries in ref_doc/MANIFEST.md. Alg text is stored verbatim from the source, including grouping parentheses. Row order follows page order, and every row points its source_url at the serving page.
+
+cfop_pll.tsv: 21 rows, one per PLL case on the page. The alg column carries the first algorithm listed for each case, verbatim. Case keys are the page's case names lowercased (pll.aa for Aa through pll.z for Z), front_json records the page case name. Five rows keep a whole-cube rotation inside the alg text, x or x' in pll.aa, pll.ab, pll.e, x in pll.ja, y in pll.v: those are J Perm's own primary algs and bt-core's grammar parses rotations, so they stay verbatim. Six rows carry grouping parentheses (pll.t, pll.nb, pll.ga, pll.gb, pll.gc, pll.gd) that the planned seed loader normalizer strips.
 
 ## registry notes
 
