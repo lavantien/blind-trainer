@@ -1,7 +1,6 @@
-#[path = "../src/fsrs.rs"]
-mod fsrs;
-
-use fsrs::{DEFAULT_WEIGHTS, FsrsConfig, Grade, MemoryState, next_interval_days};
+use bt_data::fsrs::{
+    DEFAULT_WEIGHTS, FsrsConfig, FsrsConfigError, Grade, MemoryState, next_interval_days,
+};
 use proptest::prelude::*;
 
 fn golden_config() -> FsrsConfig {
@@ -23,6 +22,149 @@ fn app_config() -> FsrsConfig {
 #[test]
 fn weight_count_is_nineteen() {
     assert_eq!(DEFAULT_WEIGHTS.len(), 19);
+    assert_eq!(Grade::ALL.len(), 4);
+}
+
+fn hub_section_text(weights: &str, retention: &str, clamps: &str) -> String {
+    format!(
+        "{{\"srs\":{{\"fsrs\":{{\"weights\":{weights},\"request_retention\":{retention},\"interval_clamp_days\":{clamps}}}}}}}"
+    )
+}
+
+fn approved_json() -> String {
+    hub_section_text(
+        "[0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621]",
+        "0.9",
+        "[1, 365]",
+    )
+}
+
+fn config_from_text(text: &str) -> Result<FsrsConfig, FsrsConfigError> {
+    let value: serde_json::Value = serde_json::from_str(text).unwrap_or(serde_json::Value::Null);
+    FsrsConfig::from_value(&value)
+}
+
+#[test]
+fn from_value_parses_the_approved_hub_section() {
+    let cfg = config_from_text(&approved_json()).expect("approved section parses");
+    assert_eq!(cfg.weights, DEFAULT_WEIGHTS);
+    assert_eq!(cfg.request_retention, 0.9);
+    assert_eq!(cfg.interval_clamp_days, [1, 365]);
+}
+
+#[test]
+fn from_value_rejects_missing_or_malformed_sections() {
+    assert_eq!(
+        FsrsConfig::from_value(&serde_json::json!({})),
+        Err(FsrsConfigError::Missing)
+    );
+    assert_eq!(
+        FsrsConfig::from_value(&serde_json::json!({"srs": {}})),
+        Err(FsrsConfigError::Missing)
+    );
+    let short_weights = hub_section_text("[0.40255]", "0.9", "[1, 365]");
+    assert_eq!(
+        config_from_text(&short_weights),
+        Err(FsrsConfigError::Malformed)
+    );
+    let one_clamp = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", "[1]");
+    assert_eq!(
+        config_from_text(&one_clamp),
+        Err(FsrsConfigError::Malformed)
+    );
+    let text_weights = hub_section_text(
+        "[\"x\", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0]",
+        "0.9",
+        "[1, 365]",
+    );
+    assert_eq!(
+        config_from_text(&text_weights),
+        Err(FsrsConfigError::Malformed)
+    );
+}
+
+#[test]
+fn from_value_rejects_non_finite_and_out_of_range_retention() {
+    for retention in ["1e999", "-1e999", "0.0", "-0.5", "1.5", "2"] {
+        let text = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), retention, "[1, 365]");
+        assert!(
+            config_from_text(&text).is_err(),
+            "retention {retention} must be rejected"
+        );
+    }
+}
+
+#[test]
+fn from_value_rejects_non_finite_weights_end_to_end() {
+    let mut weights = format!("{:?}", DEFAULT_WEIGHTS);
+    weights.replace_range(0..8, "[1e999,");
+    let text = hub_section_text(&weights, "0.9", "[1, 365]");
+    assert!(config_from_text(&text).is_err());
+    let mut negative = format!("{:?}", DEFAULT_WEIGHTS);
+    negative.replace_range(0..8, "[-1e999,");
+    let text = hub_section_text(&negative, "0.9", "[1, 365]");
+    assert!(config_from_text(&text).is_err());
+}
+
+#[test]
+fn from_value_rejects_bad_interval_clamps() {
+    for clamps in ["[0, 365]", "[10, 5]", "[-1, 365]", "[100, 99]"] {
+        let text = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", clamps);
+        let outcome = config_from_text(&text);
+        assert!(
+            matches!(outcome, Err(FsrsConfigError::Invalid(_))),
+            "clamps {clamps} must be Invalid, got {outcome:?}"
+        );
+    }
+    let wide = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", "[365, 3650]");
+    let cfg = config_from_text(&wide).expect("raised floor with wide cap parses");
+    assert_eq!(cfg.interval_clamp_days, [365, 3650]);
+}
+
+#[test]
+fn state_validity_rejects_non_finite_and_out_of_domain_values() {
+    let cfg = golden_config();
+    for grade in Grade::ALL {
+        assert!(MemoryState::initial(grade, &cfg).is_valid());
+    }
+    let bad_stability = [0.0, -1.0, f64::INFINITY, f64::NAN, -f64::INFINITY];
+    for stability in bad_stability {
+        assert!(
+            !MemoryState {
+                stability,
+                difficulty: 5.0
+            }
+            .is_valid(),
+            "stability {stability} must be invalid"
+        );
+    }
+    let bad_difficulty = [f64::NAN, f64::INFINITY, 0.5, 10.5, -1.0];
+    for difficulty in bad_difficulty {
+        assert!(
+            !MemoryState {
+                stability: 3.0,
+                difficulty
+            }
+            .is_valid(),
+            "difficulty {difficulty} must be invalid"
+        );
+    }
+}
+
+#[test]
+fn config_error_messages_are_distinct() {
+    assert_eq!(
+        FsrsConfigError::Missing.to_string(),
+        "config section missing: srs.fsrs"
+    );
+    assert_eq!(
+        FsrsConfigError::Malformed.to_string(),
+        "config section malformed: srs.fsrs"
+    );
+    assert_eq!(
+        FsrsConfigError::Invalid("weights must be finite").to_string(),
+        "config section invalid: weights must be finite"
+    );
 }
 
 #[test]
@@ -262,6 +404,7 @@ proptest! {
             prop_assert!(state.stability.is_finite());
             prop_assert!(state.stability > 0.0);
             prop_assert!((1.0..=10.0).contains(&state.difficulty));
+            prop_assert!(state.is_valid());
             prop_assert!(state.retrievability(gaps[i % gaps.len()]) <= 1.0);
         }
     }

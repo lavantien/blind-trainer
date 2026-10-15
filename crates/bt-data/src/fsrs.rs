@@ -25,6 +25,10 @@ pub enum Grade {
     Easy = 4,
 }
 
+impl Grade {
+    pub const ALL: [Grade; 4] = [Grade::Again, Grade::Hard, Grade::Good, Grade::Easy];
+}
+
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct FsrsConfig {
     pub weights: [f64; WEIGHT_COUNT],
@@ -32,10 +36,36 @@ pub struct FsrsConfig {
     pub interval_clamp_days: [i64; 2],
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum FsrsConfigError {
+    Missing,
+    Malformed,
+    Invalid(&'static str),
+}
+
+impl std::fmt::Display for FsrsConfigError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FsrsConfigError::Missing => write!(f, "config section missing: srs.fsrs"),
+            FsrsConfigError::Malformed => write!(f, "config section malformed: srs.fsrs"),
+            FsrsConfigError::Invalid(why) => write!(f, "config section invalid: {why}"),
+        }
+    }
+}
+
+impl std::error::Error for FsrsConfigError {}
+
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub struct MemoryState {
     pub stability: f64,
     pub difficulty: f64,
+}
+
+#[derive(Deserialize)]
+struct FsrsSection {
+    weights: [f64; WEIGHT_COUNT],
+    request_retention: f64,
+    interval_clamp_days: [i64; 2],
 }
 
 impl FsrsConfig {
@@ -45,6 +75,37 @@ impl FsrsConfig {
             request_retention: 0.9,
             interval_clamp_days: [1, 36500],
         }
+    }
+
+    pub fn from_value(config: &serde_json::Value) -> Result<FsrsConfig, FsrsConfigError> {
+        let section = config
+            .pointer("/srs/fsrs")
+            .ok_or(FsrsConfigError::Missing)?;
+        let parsed: FsrsSection =
+            serde_json::from_value(section.clone()).map_err(|_| FsrsConfigError::Malformed)?;
+        if parsed.weights.iter().any(|weight| !weight.is_finite()) {
+            return Err(FsrsConfigError::Invalid("weights must be finite"));
+        }
+        if !parsed.request_retention.is_finite()
+            || parsed.request_retention <= 0.0
+            || parsed.request_retention > 1.0
+        {
+            return Err(FsrsConfigError::Invalid(
+                "request_retention must be finite and in (0, 1]",
+            ));
+        }
+        if parsed.interval_clamp_days[0] < 1
+            || parsed.interval_clamp_days[1] < parsed.interval_clamp_days[0]
+        {
+            return Err(FsrsConfigError::Invalid(
+                "interval_clamp_days must be [at least 1, at least the floor]",
+            ));
+        }
+        Ok(FsrsConfig {
+            weights: parsed.weights,
+            request_retention: parsed.request_retention,
+            interval_clamp_days: parsed.interval_clamp_days,
+        })
     }
 }
 
@@ -99,6 +160,12 @@ fn forget_stability(
 }
 
 impl MemoryState {
+    pub fn is_valid(&self) -> bool {
+        self.stability.is_finite()
+            && self.stability > 0.0
+            && (MIN_DIFFICULTY..=MAX_DIFFICULTY).contains(&self.difficulty)
+    }
+
     pub fn initial(grade: Grade, cfg: &FsrsConfig) -> MemoryState {
         MemoryState {
             stability: cfg.weights[grade as usize - 1].max(MIN_INITIAL_STABILITY),

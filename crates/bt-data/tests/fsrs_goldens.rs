@@ -1,10 +1,7 @@
 mod common;
 
-#[path = "../src/fsrs.rs"]
-mod fsrs;
-
+use bt_data::fsrs::{DEFAULT_WEIGHTS, FsrsConfig, Grade, MemoryState, next_interval_days};
 use common::ref_ground;
-use fsrs::{DEFAULT_WEIGHTS, FsrsConfig, Grade, MemoryState, next_interval_days};
 use serde_json::Value;
 
 fn golden_config() -> FsrsConfig {
