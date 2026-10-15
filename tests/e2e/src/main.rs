@@ -8,10 +8,36 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
-const SMOKE_TIMEOUT: Duration = Duration::from_secs(180);
-const EXPECTED_SHOTS: [&str; 8] = [
-    "menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal",
-];
+#[derive(Debug, PartialEq, Eq)]
+struct E2eSettings {
+    shots: Vec<String>,
+    timeout: Duration,
+}
+
+fn e2e_settings_from(value: &Value) -> Result<E2eSettings, String> {
+    let section = value
+        .pointer("/e2e")
+        .ok_or_else(|| "config e2e missing".to_string())?;
+    let shots = section
+        .get("shots")
+        .and_then(Value::as_array)
+        .ok_or_else(|| "config e2e.shots must be an array of strings".to_string())?;
+    let mut slugs = Vec::with_capacity(shots.len());
+    for item in shots {
+        let slug = item
+            .as_str()
+            .ok_or_else(|| "config e2e.shots must be an array of strings".to_string())?;
+        slugs.push(slug.to_string());
+    }
+    let timeout_secs = section
+        .get("timeout_secs")
+        .and_then(Value::as_u64)
+        .ok_or_else(|| "config e2e.timeout_secs must be an unsigned integer".to_string())?;
+    Ok(E2eSettings {
+        shots: slugs,
+        timeout: Duration::from_secs(timeout_secs),
+    })
+}
 
 #[derive(Debug, PartialEq, Eq)]
 struct Args {
@@ -132,11 +158,8 @@ fn clean_pngs(dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn expected_names() -> BTreeSet<String> {
-    EXPECTED_SHOTS
-        .iter()
-        .map(|slug| format!("{slug}.png"))
-        .collect()
+fn expected_names(shots: &[String]) -> BTreeSet<String> {
+    shots.iter().map(|slug| format!("{slug}.png")).collect()
 }
 
 fn classify(found: &BTreeSet<String>, expected: &BTreeSet<String>) -> (Vec<String>, Vec<String>) {
@@ -262,6 +285,7 @@ fn real_main() -> Result<u8, String> {
     let root = workspace_root();
     let config = read_config(&config_path_from(env::var("BT_CONFIG").ok(), &root))?;
     let dims = window_dims_from(&config)?;
+    let settings = e2e_settings_from(&config)?;
     let out_dir = args
         .out_dir
         .unwrap_or_else(|| out_dir_from(env::var("BT_ARTIFACTS").ok(), &config, &root));
@@ -277,7 +301,7 @@ fn real_main() -> Result<u8, String> {
     println!("out dir: {}", out_dir.display());
     println!("window: {}x{}", dims.width, dims.height);
     clean_pngs(&out_dir)?;
-    let deadline = Instant::now() + SMOKE_TIMEOUT;
+    let deadline = Instant::now() + settings.timeout;
     let run = run_smoke(&binary, &out_dir, deadline)?;
     match run.code {
         Some(0) => {}
@@ -297,7 +321,7 @@ fn real_main() -> Result<u8, String> {
         }
     }
     let found = png_names(&out_dir)?;
-    let expected = expected_names();
+    let expected = expected_names(&settings.shots);
     let (missing, unexpected) = classify(&found, &expected);
     let mut failures = 0;
     for name in &missing {
@@ -432,22 +456,88 @@ mod tests {
         );
     }
 
+    fn e2e_settings_from_config_text(text: &str) -> Result<E2eSettings, String> {
+        let dir = temp_dir("e2e-config");
+        let path = dir.join("config.json");
+        fs::write(&path, text).expect("config file");
+        e2e_settings_from(&read_config(&path).expect("config parses"))
+    }
+
     #[test]
-    fn expected_names_cover_every_tour_slug_once() {
-        let names = expected_names();
-        assert_eq!(names.len(), EXPECTED_SHOTS.len());
-        for slug in EXPECTED_SHOTS {
+    fn e2e_settings_reads_shots_and_timeout_from_config() {
+        let settings = e2e_settings_from_config_text(
+            r#"{"e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"], "timeout_secs": 180}}"#,
+        )
+        .expect("settings");
+        assert_eq!(settings.shots.len(), 8);
+        assert_eq!(settings.shots.first().map(String::as_str), Some("menu"));
+        assert_eq!(settings.shots.last().map(String::as_str), Some("fatal"));
+        assert_eq!(settings.timeout, Duration::from_secs(180));
+    }
+
+    #[test]
+    fn e2e_settings_names_the_missing_or_malformed_key() {
+        let missing_section = e2e_settings_from_config_text(r#"{"app": {}}"#);
+        assert_eq!(
+            missing_section.expect_err("hard error"),
+            "config e2e missing"
+        );
+        let missing_shots = e2e_settings_from_config_text(r#"{"e2e": {"timeout_secs": 180}}"#);
+        assert_eq!(
+            missing_shots.expect_err("hard error"),
+            "config e2e.shots must be an array of strings"
+        );
+        let malformed_shots = e2e_settings_from_config_text(
+            r#"{"e2e": {"shots": ["menu", 7], "timeout_secs": 180}}"#,
+        );
+        assert_eq!(
+            malformed_shots.expect_err("hard error"),
+            "config e2e.shots must be an array of strings"
+        );
+        let missing_timeout = e2e_settings_from_config_text(r#"{"e2e": {"shots": ["menu"]}}"#);
+        assert_eq!(
+            missing_timeout.expect_err("hard error"),
+            "config e2e.timeout_secs must be an unsigned integer"
+        );
+        let malformed_timeout = e2e_settings_from_config_text(
+            r#"{"e2e": {"shots": ["menu"], "timeout_secs": "soon"}}"#,
+        );
+        assert_eq!(
+            malformed_timeout.expect_err("hard error"),
+            "config e2e.timeout_secs must be an unsigned integer"
+        );
+        let negative_timeout =
+            e2e_settings_from_config_text(r#"{"e2e": {"shots": ["menu"], "timeout_secs": -1}}"#);
+        assert_eq!(
+            negative_timeout.expect_err("hard error"),
+            "config e2e.timeout_secs must be an unsigned integer"
+        );
+    }
+
+    #[test]
+    fn expected_names_appends_png_to_each_slug() {
+        let shots: Vec<String> = ["menu", "drill", "fatal"]
+            .iter()
+            .map(|slug| slug.to_string())
+            .collect();
+        let names = expected_names(&shots);
+        assert_eq!(names.len(), shots.len());
+        for slug in &shots {
             assert!(names.contains(&format!("{slug}.png")));
         }
     }
 
     #[test]
     fn classify_splits_missing_and_unexpected() {
+        let shots: Vec<String> = ["menu", "drill", "memo"]
+            .iter()
+            .map(|slug| slug.to_string())
+            .collect();
         let found: BTreeSet<String> = ["menu.png", "drill.png", "stray.png"]
             .iter()
             .map(|name| name.to_string())
             .collect();
-        let (missing, unexpected) = classify(&found, &expected_names());
+        let (missing, unexpected) = classify(&found, &expected_names(&shots));
         assert!(missing.contains(&"memo.png".to_string()));
         assert!(!missing.contains(&"menu.png".to_string()));
         assert_eq!(unexpected, vec!["stray.png".to_string()]);
