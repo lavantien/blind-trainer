@@ -9,10 +9,13 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
+.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt fmt-write lint check build test test-crate mutants-gate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
+
+OUTCOMES ?= mutants.out/outcomes.json
+ALLOWLIST ?= tools/bt-mutants-gate/allowlist.tsv
 
 setup:
 	rustup component add rustfmt clippy
@@ -40,6 +43,9 @@ ga:
 fmt:
 	cargo fmt --all -- --check
 
+fmt-write:
+	cargo fmt --all
+
 lint:
 	cargo clippy --workspace --all-targets -- -D warnings
 
@@ -56,6 +62,9 @@ test:
 test-crate:
 	@test -n "$(p)" || { echo 'usage: make test-crate p=<crate>'; exit 2; }
 	cargo test -p $(p)
+
+mutants-gate:
+	cargo run -p bt-mutants-gate -- $(OUTCOMES) $(ALLOWLIST)
 
 fuzz:
 	cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done

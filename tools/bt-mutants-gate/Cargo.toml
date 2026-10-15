@@ -1,0 +1,6 @@
+[package]
+name = "bt-mutants-gate"
+edition.workspace = true
+
+[dependencies]
+serde_json.workspace = true
