@@ -7,6 +7,10 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 pub const APP_DIR_NAME: &str = "blind-trainer";
 pub const USER_ALGS_FILE: &str = "user-algs.json";
+pub const SETTINGS_FILE: &str = "settings.json";
+pub const SRS_FILE: &str = "srs.json";
+pub const SOLVES_FILE: &str = "solves.json";
+pub const DB_FILE: &str = "blind-trainer.db";
 
 #[derive(Debug)]
 pub enum PathsError {
@@ -171,6 +175,35 @@ pub fn user_algs_path_at(root: &Path) -> PathBuf {
 
 pub fn user_algs_path() -> PathBuf {
     user_algs_path_at(&user_root())
+}
+
+pub fn settings_path_at(root: &Path) -> PathBuf {
+    root.join(UserDir::Settings.name()).join(SETTINGS_FILE)
+}
+
+pub fn srs_path_at(root: &Path) -> PathBuf {
+    root.join(UserDir::Srs.name()).join(SRS_FILE)
+}
+
+pub fn solves_path_at(root: &Path) -> PathBuf {
+    root.join(UserDir::Solves.name()).join(SOLVES_FILE)
+}
+
+pub fn db_file_name() -> String {
+    load_config()
+        .ok()
+        .and_then(|config| {
+            config
+                .pointer("/paths/db_file")
+                .and_then(|value| value.as_str())
+                .map(str::to_string)
+        })
+        .filter(|name| !name.is_empty())
+        .unwrap_or_else(|| DB_FILE.to_string())
+}
+
+pub fn db_path_at(root: &Path) -> PathBuf {
+    root.join(db_file_name())
 }
 
 pub fn read_json<T: serde::de::DeserializeOwned>(path: &Path) -> Result<Option<T>, PathsError> {
