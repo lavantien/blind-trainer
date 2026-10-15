@@ -114,10 +114,10 @@ fn settings_change_persists_across_store_reload() {
         first.world().resource::<bt_app::persist::Stores>().settings,
         mutated
     );
-    let saved = std::fs::read_to_string(fixture.user_root().join("settings").join("settings.json"))
-        .expect("settings file");
-    assert!(saved.contains("1234"));
-    assert!(saved.contains("images"));
+    assert!(
+        bt_data::paths::db_path_at(fixture.user_root()).is_file(),
+        "settings persisted into the db"
+    );
 
     let mut second = headless_app(clone_paths(&fixture));
     boot_to_menu(&mut second);

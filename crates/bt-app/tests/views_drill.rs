@@ -224,7 +224,7 @@ fn rate_writes_both_cards_and_advances_to_the_next_pair() {
         .expect("side b card written");
     assert_eq!(card_b.reps, 1);
     assert!(
-        fixture.user_root().join("srs").join("srs.json").is_file(),
+        bt_data::paths::db_path_at(fixture.user_root()).is_file(),
         "srs store persisted"
     );
     let session = app.world().resource::<DrillSession>();

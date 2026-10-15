@@ -85,11 +85,7 @@ fn solve_cycle_records_exact_splits_and_a_passing_outcome() {
     assert!(lines.contains(&"exec 0.5s".to_string()));
     assert!(lines.contains(&"total 1.4s".to_string()));
     assert!(
-        fixture
-            .user_root()
-            .join("solves")
-            .join("solves.json")
-            .is_file(),
+        bt_data::paths::db_path_at(fixture.user_root()).is_file(),
         "solve log persisted"
     );
 }

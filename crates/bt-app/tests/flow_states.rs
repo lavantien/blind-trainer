@@ -167,9 +167,10 @@ fn mode_keys_apply_immediately_and_persist_per_orbit() {
         "digit 4 is not a mode key"
     );
 
-    let saved = std::fs::read_to_string(fixture.user_root().join("settings").join("settings.json"))
-        .expect("settings file");
-    assert!(saved.contains("per-orbit"), "saved: {saved}");
+    assert!(
+        bt_data::paths::db_path_at(fixture.user_root()).is_file(),
+        "settings persisted into the db"
+    );
 
     let mut reloaded = headless_app(clone_paths(&fixture));
     boot_to_menu(&mut reloaded);
