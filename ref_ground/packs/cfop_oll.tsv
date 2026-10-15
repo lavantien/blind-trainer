@@ -1,0 +1,58 @@
+case_key	alg	front_json	source_url	source_at
+oll.01	R U2 R' R' F R F' U2 R' F R F'	{"case":"1","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.02	r U r' U2 r U2 R' U2 R U' r'	{"case":"2","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.03	r' R2 U R' U r U2 r' U M'	{"case":"3","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.04	M U' r U2 r' U' R U' R' M'	{"case":"4","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.05	l' U2 L U L' U l	{"case":"5","group":"Square Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.06	r U2 R' U' R U' r'	{"case":"6","group":"Square Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.07	r U R' U R U2 r'	{"case":"7","group":"Small Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.08	l' U' L U' L' U2 l	{"case":"8","group":"Small Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.09	R U R' U' R' F R2 U R' U' F'	{"case":"9","group":"Fish Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.10	R U R' U R' F R F' R U2 R'	{"case":"10","group":"Fish Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.11	r U R' U R' F R F' R U2 r'	{"case":"11","group":"Small Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.12	M' R' U' R U' R' U2 R U' R r'	{"case":"12","group":"Small Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.13	F U R U' R2 F' R U R U' R'	{"case":"13","group":"Knight Move Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.14	R' F R U R' F' R F U' F'	{"case":"14","group":"Knight Move Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.15	l' U' l L' U' L U l' U l	{"case":"15","group":"Knight Move Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.16	r U r' R U R' U' r U' r'	{"case":"16","group":"Knight Move Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.17	F R' F' R2 r' U R U' R' U' M'	{"case":"17","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.18	r U R' U R U2 r' r' U' R U' R' U2 r	{"case":"18","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.19	r' R U R U R' U' M' R' F R F'	{"case":"19","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.20	r U R' U' M2 U R U' R' U' M'	{"case":"20","group":"Dot"}	https://jperm.net/algs/oll	2026-10-16
+oll.21	R U2 R' U' R U R' U' R U' R'	{"case":"21","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.22	R U2 (R2 U' R2 U' R2) U2 R	{"case":"22","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.23	R2 D' R U2 R' D R U2 R	{"case":"23","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.24	r U R' U' r' F R F'	{"case":"24","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.25	F' r U R' U' r' F R	{"case":"25","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.26	(R U2 R') U' R U' R'	{"case":"26","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.27	R U R' U R U2 R'	{"case":"27","group":"Cross"}	https://jperm.net/algs/oll	2026-10-16
+oll.28	r U R' U' r' R U R U' R'	{"case":"28","group":"Corners Oriented"}	https://jperm.net/algs/oll	2026-10-16
+oll.29	R U R' U' R U' R' F' U' F R U R'	{"case":"29","group":"Awkward Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.30	F R' F R2 U' R' U' R U R' F2	{"case":"30","group":"Awkward Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.31	R' U' F U R U' R' F' R	{"case":"31","group":"P Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.32	L U F' U' L' U L F L'	{"case":"32","group":"P Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.33	R U R' U' R' F R F'	{"case":"33","group":"T Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.34	R U R2 U' R' F R U R U' F'	{"case":"34","group":"C Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.35	R U2 R' R' F R F' R U2 R'	{"case":"35","group":"Fish Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.36	L' U' L U' L' U L U L F' L' F	{"case":"36","group":"W Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.37	F R' F' R U R U' R'	{"case":"37","group":"Fish Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.38	R U R' U R U' R' U' R' F R F'	{"case":"38","group":"W Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.39	L F' L' U' L U F U' L'	{"case":"39","group":"Big Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.40	R' F R U R' U' F' U R	{"case":"40","group":"Big Lightning Bolt"}	https://jperm.net/algs/oll	2026-10-16
+oll.41	R U R' U R U2 R' F R U R' U' F'	{"case":"41","group":"Awkward Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.42	R' U' R U' R' U2 R F R U R' U' F'	{"case":"42","group":"Awkward Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.43	F' U' L' U L F	{"case":"43","group":"P Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.44	F U R U' R' F'	{"case":"44","group":"P Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.45	F R U R' U' F'	{"case":"45","group":"T Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.46	R' U' R' F R F' U R	{"case":"46","group":"C Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.47	R' U' R' F R F' R' F R F' U R	{"case":"47","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.48	F R U R' U' R U R' U' F'	{"case":"48","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.49	r U' r2 U r2 U r2 U' r	{"case":"49","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.50	r' U r2 U' r2 U' r2 U r'	{"case":"50","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.51	F U R U' R' U R U' R' F'	{"case":"51","group":"I Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.52	R U R' U R U' B U' B' R'	{"case":"52","group":"I Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.53	l' U2 L U L' U' L U L' U l	{"case":"53","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.54	(r U2 R' U') R U R' U' R U' r'	{"case":"54","group":"Small L Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.55	R' F R U R U' R2 F' R2 U' R' U R U R'	{"case":"55","group":"I Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.56	(r' U' r) U' R' U R U' R' U R r' U r	{"case":"56","group":"I Shape"}	https://jperm.net/algs/oll	2026-10-16
+oll.57	R U R' U' M' U R U' r'	{"case":"57","group":"Corners Oriented"}	https://jperm.net/algs/oll	2026-10-16
