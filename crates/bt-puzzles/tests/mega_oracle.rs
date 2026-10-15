@@ -171,15 +171,21 @@ fn moved_slots(before: &mega::MegaState, after: &mega::MegaState, face: u8) -> V
 }
 
 fn ref_ground() -> PathBuf {
-    match std::env::var("BT_REF_GROUND") {
-        Ok(raw) if !raw.is_empty() => PathBuf::from(raw),
-        _ => PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .unwrap()
-            .parent()
-            .unwrap()
-            .join("ref_ground"),
+    let raw = std::env::var("BT_REF_GROUND").unwrap_or_default();
+    let path = if raw.is_empty() {
+        PathBuf::from("ref_ground")
+    } else {
+        PathBuf::from(raw)
+    };
+    if path.is_absolute() {
+        return path;
     }
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join(path)
 }
 
 fn tsv_rows() -> Vec<[String; 5]> {
