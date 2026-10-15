@@ -99,6 +99,7 @@ pub struct SpecialsInfo {
 pub struct Manifest {
     pub generated_at: String,
     pub generator: String,
+    pub synth_params_sha256: String,
     pub corpus_sha256: String,
     pub corpus_rows: usize,
     pub corpus_files: Vec<CorpusFileEntry>,
@@ -206,11 +207,11 @@ mod tests {
         assert_eq!(back, file);
     }
 
-    #[test]
-    fn manifest_round_trips_with_coverage_and_counts() {
-        let manifest = Manifest {
+    fn manifest_fixture() -> Manifest {
+        Manifest {
             generated_at: "2026-10-14T00:00:00Z".to_string(),
             generator: "bt-gendata".to_string(),
+            synth_params_sha256: "34".repeat(32),
             corpus_sha256: "ab".repeat(32),
             corpus_rows: 1077,
             corpus_files: vec![CorpusFileEntry {
@@ -253,9 +254,26 @@ mod tests {
                     },
                 ],
             },
-        };
+        }
+    }
+
+    #[test]
+    fn manifest_round_trips_with_coverage_and_counts() {
+        let manifest = manifest_fixture();
         let back: Manifest =
             serde_json::from_str(&serde_json::to_string(&manifest).unwrap()).unwrap();
         assert_eq!(back, manifest);
+    }
+
+    #[test]
+    fn manifest_without_synth_params_hash_is_rejected() {
+        let value = serde_json::to_value(&manifest_fixture()).unwrap();
+        let stripped = {
+            let mut object = value.as_object().unwrap().clone();
+            object.remove("synth_params_sha256");
+            serde_json::Value::Object(object)
+        };
+        let err = serde_json::from_value::<Manifest>(stripped).unwrap_err();
+        assert!(err.to_string().contains("synth_params_sha256"), "{err}");
     }
 }

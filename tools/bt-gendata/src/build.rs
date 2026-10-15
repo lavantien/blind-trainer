@@ -214,11 +214,26 @@ pub fn build(corpus: &Corpus) -> Built {
     }
 }
 
+pub fn regen_needed(
+    existing: Option<&Manifest>,
+    synth_params_sha256: &str,
+    corpus_sha256: &str,
+) -> bool {
+    match existing {
+        None => true,
+        Some(record) => {
+            record.synth_params_sha256 != synth_params_sha256
+                || record.corpus_sha256 != corpus_sha256
+        }
+    }
+}
+
 pub fn manifest(
     built: &Built,
     digest: &CorpusDigest,
     cases_sha256: &str,
     specials_sha256: &str,
+    synth_params_sha256: &str,
     generated_at: String,
 ) -> Manifest {
     let mut edge = OrbitCoverage {
@@ -260,6 +275,7 @@ pub fn manifest(
     Manifest {
         generated_at,
         generator: "bt-gendata".to_string(),
+        synth_params_sha256: synth_params_sha256.to_string(),
         corpus_sha256: digest.sha256.clone(),
         corpus_rows: digest.rows,
         corpus_files: digest.files.clone(),
@@ -296,6 +312,37 @@ mod tests {
             max_insert: 4,
             node_budget: 100_000_000,
         }
+    }
+
+    fn pinned_manifest(synth_params_sha256: &str, corpus_sha256: &str) -> Manifest {
+        let built = build(&Corpus::from_rows(Vec::new()));
+        let digest = CorpusDigest {
+            sha256: corpus_sha256.to_string(),
+            rows: 0,
+            files: Vec::new(),
+        };
+        manifest(
+            &built,
+            &digest,
+            "cases",
+            "specials",
+            synth_params_sha256,
+            "2026-01-01T00:00:00Z".to_string(),
+        )
+    }
+
+    #[test]
+    fn regen_is_needed_without_a_manifest_or_on_any_hash_mismatch() {
+        let record = pinned_manifest("aa", "bb");
+        assert!(regen_needed(None, "aa", "bb"));
+        assert!(regen_needed(Some(&record), "cc", "bb"));
+        assert!(regen_needed(Some(&record), "aa", "dd"));
+    }
+
+    #[test]
+    fn regen_is_skipped_only_when_both_hashes_match() {
+        let record = pinned_manifest("aa", "bb");
+        assert!(!regen_needed(Some(&record), "aa", "bb"));
     }
 
     fn row(solver: Solver, sheet: SheetClass, rowid: usize, position: &str, alg: &Alg) -> Row {
@@ -619,10 +666,12 @@ mod tests {
             &digest,
             &"c".repeat(64),
             &"p".repeat(64),
+            &"s".repeat(64),
             "stamp".to_string(),
         );
         assert_eq!(manifest.generated_at, "stamp");
         assert_eq!(manifest.generator, "bt-gendata");
+        assert_eq!(manifest.synth_params_sha256, "s".repeat(64));
         assert_eq!(manifest.corpus_sha256, "d".repeat(64));
         assert_eq!(manifest.corpus_rows, 3);
         assert_eq!(manifest.corpus_files, digest.files);

@@ -31,6 +31,7 @@ fn repeated_loads_and_builds_are_byte_identical() {
         &digest,
         &sha256_hex(&cases_a),
         &sha256_hex(&specials_a),
+        &sha256_hex(b"determinism"),
         stamp.clone(),
     );
     let manifest_b = manifest(
@@ -38,6 +39,7 @@ fn repeated_loads_and_builds_are_byte_identical() {
         &digest,
         &sha256_hex(&cases_b),
         &sha256_hex(&specials_b),
+        &sha256_hex(b"determinism"),
         stamp,
     );
     assert_eq!(
@@ -57,6 +59,7 @@ fn timestamp_is_the_only_varying_manifest_field() {
         &digest,
         &sha256_hex(&cases),
         &sha256_hex(&specials),
+        &sha256_hex(b"determinism"),
         "2026-01-01T00:00:00Z".to_string(),
     );
     let mut late = manifest(
@@ -64,6 +67,7 @@ fn timestamp_is_the_only_varying_manifest_field() {
         &digest,
         &sha256_hex(&cases),
         &sha256_hex(&specials),
+        &sha256_hex(b"determinism"),
         "2026-12-31T23:59:59Z".to_string(),
     );
     assert_ne!(

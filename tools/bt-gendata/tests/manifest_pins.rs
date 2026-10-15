@@ -18,6 +18,7 @@ fn stamped(built: &bt_gendata::build::Built) -> bt_gendata::model::Manifest {
         &digest,
         &sha256_hex(&cases),
         &sha256_hex(&specials),
+        &sha256_hex(b"manifest-pins"),
         "2026-10-12T00:00:00Z".to_string(),
     )
 }
