@@ -2038,6 +2038,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "bt-puzzles"
+version = "0.0.0"
+dependencies = [
+ "bt-core",
+]
+
+[[package]]
 name = "bt-release-verify"
 version = "0.0.0"
 dependencies = [
