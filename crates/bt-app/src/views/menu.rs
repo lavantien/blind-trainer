@@ -21,6 +21,7 @@ pub fn state_description(state: AppState) -> &'static str {
         AppState::Drill => "physical 3-style pair drilling with spaced repetition",
         AppState::Memo => "streaming memo on seeded scrambles",
         AppState::Solve => "the timed full cycle",
+        AppState::Replay => "orbit the 3d solve replay",
         AppState::Algs => "browse and filter all 818 cases",
         AppState::Stats => "solve history and review load",
         AppState::Settings => "cadence, memo mode, reps",

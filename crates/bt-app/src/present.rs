@@ -34,6 +34,18 @@ impl Plugin for PresentationPlugin {
                     (views::algs::read_query, views::algs::bind_detail).chain(),
                     IntoScheduleConfigs::run_if(views::memo::bind_text, in_state(AppState::Memo)),
                     IntoScheduleConfigs::run_if(views::solve::bind_text, in_state(AppState::Solve)),
+                    IntoScheduleConfigs::run_if(
+                        views::replay::bind_cubies,
+                        in_state(AppState::Replay),
+                    ),
+                    IntoScheduleConfigs::run_if(
+                        views::replay::bind_camera,
+                        in_state(AppState::Replay),
+                    ),
+                    IntoScheduleConfigs::run_if(
+                        views::replay::bind_stickers,
+                        in_state(AppState::Replay),
+                    ),
                     views::stats::bind_text,
                     views::settings::bind_text,
                 )
@@ -70,6 +82,11 @@ impl Plugin for PresentationPlugin {
                     views::algs::spawn(&mut commands, &fonts, &config);
                 },
             )
+            .add_systems(
+                OnEnter(AppState::Replay),
+                views::replay::spawn.after(views::replay::enter),
+            )
+            .add_systems(OnExit(AppState::Replay), views::replay::restore_ui_camera)
             .add_systems(
                 OnEnter(AppState::Stats),
                 |mut commands: Commands, fonts: Res<FontBook>| {

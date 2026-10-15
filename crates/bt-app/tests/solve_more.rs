@@ -65,6 +65,16 @@ fn same_state(left: &Cube, right: &Cube) -> bool {
     state_array(left) == state_array(right)
 }
 
+fn run_residue(corpus: &Corpus, residue: &Residue, cube: &mut Cube) -> Vec<String> {
+    let mut broken = Vec::new();
+    let mut moves = Vec::new();
+    execute_residue(corpus, residue, &mut broken, &mut moves);
+    for mv in &moves {
+        cube.apply(*mv);
+    }
+    broken
+}
+
 fn residue_case() -> Residue {
     Residue {
         parity: None,
@@ -132,8 +142,7 @@ fn flip_pair_residue_applies_the_covered_row_alg() {
         "R U R'",
     )]);
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &residue_case(), &mut broken);
+    let broken = run_residue(&corpus, &residue_case(), &mut cube);
     assert!(broken.is_empty());
     assert!(same_state(&cube, &alg_cube("R U R'")));
 }
@@ -142,8 +151,7 @@ fn flip_pair_residue_applies_the_covered_row_alg() {
 fn flip_pair_residue_reports_the_position_when_uncovered() {
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &residue_case(), &mut broken);
+    let broken = run_residue(&corpus, &residue_case(), &mut cube);
     assert_eq!(broken, vec!["UF & UL uncovered".to_string()]);
     assert!(cube.is_solved());
 }
@@ -155,8 +163,7 @@ fn twist_pair_residue_prefers_the_canonical_row() {
         row(SheetClass::Twists, Solver::Cherry, "UBL & DFR", "L' B' L"),
     ]);
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &twist_pair_residue(), &mut broken);
+    let broken = run_residue(&corpus, &twist_pair_residue(), &mut cube);
     assert!(broken.is_empty());
     assert!(same_state(&cube, &alg_cube("L' B' L")));
 }
@@ -170,8 +177,7 @@ fn twist_pair_residue_falls_back_to_the_swapped_row_when_canonical_is_missing() 
         "F2 D2",
     )]);
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &twist_pair_residue(), &mut broken);
+    let broken = run_residue(&corpus, &twist_pair_residue(), &mut cube);
     assert!(broken.is_empty());
     assert!(same_state(&cube, &alg_cube("F2 D2")));
 }
@@ -180,8 +186,7 @@ fn twist_pair_residue_falls_back_to_the_swapped_row_when_canonical_is_missing() 
 fn twist_pair_residue_reports_canonical_when_both_orders_are_missing() {
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &twist_pair_residue(), &mut broken);
+    let broken = run_residue(&corpus, &twist_pair_residue(), &mut cube);
     assert_eq!(broken, vec!["UBL & DFR uncovered".to_string()]);
 }
 
@@ -194,8 +199,7 @@ fn parity_residue_applies_the_covered_row_alg() {
         "R U R' U'",
     )]);
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &parity_residue(), &mut broken);
+    let broken = run_residue(&corpus, &parity_residue(), &mut cube);
     assert!(broken.is_empty());
     assert!(same_state(&cube, &alg_cube("R U R' U'")));
 }
@@ -204,8 +208,7 @@ fn parity_residue_applies_the_covered_row_alg() {
 fn parity_residue_reports_the_position_when_uncovered() {
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &parity_residue(), &mut broken);
+    let broken = run_residue(&corpus, &parity_residue(), &mut cube);
     assert_eq!(broken, vec!["UF-UB, UFR-UBR uncovered".to_string()]);
 }
 
@@ -218,8 +221,7 @@ fn ltct_residue_applies_the_bracketed_position_alg() {
         "B2 L2",
     )]);
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &ltct_residue(), &mut broken);
+    let broken = run_residue(&corpus, &ltct_residue(), &mut cube);
     assert!(broken.is_empty());
     assert!(same_state(&cube, &alg_cube("B2 L2")));
 }
@@ -228,8 +230,7 @@ fn ltct_residue_applies_the_bracketed_position_alg() {
 fn ltct_residue_reports_the_bracketed_position_when_uncovered() {
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &ltct_residue(), &mut broken);
+    let broken = run_residue(&corpus, &ltct_residue(), &mut cube);
     assert_eq!(broken, vec!["UF-UB, UFR-UBR[UBL] uncovered".to_string()]);
 }
 
@@ -255,8 +256,7 @@ fn twist_triple_residue_is_reported_as_unsupported() {
     };
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &residue, &mut broken);
+    let broken = run_residue(&corpus, &residue, &mut cube);
     assert_eq!(
         broken,
         vec!["residue unsupported: TwistTriple(0, 3, 21)".to_string()]
@@ -272,8 +272,7 @@ fn compound_residue_is_reported_as_unsupported() {
     };
     let corpus = Corpus::from_rows(Vec::new());
     let mut cube = Cube::solved();
-    let mut broken = Vec::new();
-    execute_residue(&corpus, &mut cube, &residue, &mut broken);
+    let broken = run_residue(&corpus, &residue, &mut cube);
     assert_eq!(broken, vec!["residue unsupported: Compound".to_string()]);
 }
 
@@ -642,7 +641,7 @@ fn bind_text_drives_every_zone_through_each_phase() {
     assert_eq!(zone_view(&mut app, SolveZoneKind::Timer).0, "");
     assert_eq!(
         zone_view(&mut app, SolveZoneKind::Hint).0,
-        "space next solve"
+        "space next solve, v 3d replay"
     );
     assert_eq!(zone_view(&mut app, SolveZoneKind::Result).0, "solved");
 

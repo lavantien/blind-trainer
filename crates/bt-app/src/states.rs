@@ -9,17 +9,19 @@ pub enum AppState {
     Drill,
     Memo,
     Solve,
+    Replay,
     Algs,
     Stats,
     Settings,
 }
 
 impl AppState {
-    pub const TOUR: [AppState; 8] = [
+    pub const TOUR: [AppState; 9] = [
         AppState::Menu,
         AppState::Drill,
         AppState::Memo,
         AppState::Solve,
+        AppState::Replay,
         AppState::Algs,
         AppState::Stats,
         AppState::Settings,
@@ -43,6 +45,7 @@ impl AppState {
             AppState::Drill => "drill",
             AppState::Memo => "memo",
             AppState::Solve => "solve",
+            AppState::Replay => "replay",
             AppState::Algs => "algs",
             AppState::Stats => "stats",
             AppState::Settings => "settings",
@@ -57,6 +60,7 @@ impl AppState {
             AppState::Drill => "drill",
             AppState::Memo => "memo training",
             AppState::Solve => "solve",
+            AppState::Replay => "3d replay",
             AppState::Algs => "algs",
             AppState::Stats => "stats",
             AppState::Settings => "settings",

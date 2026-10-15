@@ -5,6 +5,7 @@ pub mod drill_view;
 pub mod images;
 pub mod memo;
 pub mod menu;
+pub mod replay;
 pub mod settings;
 pub mod solve;
 pub mod stats;
@@ -141,6 +142,7 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(algs::AlgsQuery::default())
             .insert_resource(algs::AlgsBrowser::default())
             .insert_resource(settings::SettingsDraft::default())
+            .insert_resource(replay::ReplayScene::default())
             .configure_sets(Update, ViewsLogic.run_if(resource_exists::<Stores>))
             .add_systems(
                 Update,
@@ -168,6 +170,16 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(solve::exec_tick, in_state(SolvePhase::Exec)),
                     IntoScheduleConfigs::run_if(solve::exec_keys, in_state(SolvePhase::Exec)),
                     IntoScheduleConfigs::run_if(solve::review_keys, in_state(SolvePhase::Review)),
+                    (
+                        IntoScheduleConfigs::run_if(
+                            replay::replay_open_key,
+                            in_state(SolvePhase::Review),
+                        ),
+                        IntoScheduleConfigs::run_if(replay::keys, in_state(AppState::Replay)),
+                        IntoScheduleConfigs::run_if(replay::drag, in_state(AppState::Replay)),
+                        IntoScheduleConfigs::run_if(replay::zoom, in_state(AppState::Replay)),
+                        IntoScheduleConfigs::run_if(replay::tick, in_state(AppState::Replay)),
+                    ),
                     IntoScheduleConfigs::run_if(algs::refresh_list, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::focus_query_keys, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::list_keys, in_state(AppState::Algs)),
@@ -202,6 +214,7 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(SolvePhase::Memo), solve::enter_memo)
             .add_systems(OnEnter(SolvePhase::Exec), solve::enter_exec)
             .add_systems(OnEnter(SolvePhase::Review), solve::enter_review)
+            .add_systems(OnEnter(AppState::Replay), replay::enter)
             .add_systems(OnEnter(AppState::Algs), algs::enter)
             .add_systems(OnEnter(AppState::Stats), stats::enter)
             .add_systems(OnEnter(AppState::Settings), settings::enter);

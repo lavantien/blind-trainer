@@ -293,7 +293,7 @@ mod tests {
             assert!(!seen.contains(&state), "state {state:?} repeated in tour");
             seen.push(state);
         }
-        assert_eq!(seen.len(), 8);
+        assert_eq!(seen.len(), 9);
         assert_eq!(seen.first(), Some(&AppState::Menu));
         assert_eq!(seen.last(), Some(&AppState::Fatal));
     }
@@ -479,7 +479,7 @@ mod tests {
                 state: AppState::Settings,
                 path: dir.join("settings.png"),
             },
-            AppState::TOUR[..7].to_vec(),
+            AppState::TOUR[..8].to_vec(),
             AppState::Settings,
             0.1,
         );

@@ -7,7 +7,7 @@ use crate::views::{SyllableBook, now_unix_ms};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
-use bt_core::Cube;
+use bt_core::{Cube, Move};
 use bt_data::corpus::{Corpus, SheetClass, Solver};
 use bt_scheme::memo::memo as memo_of;
 use bt_scheme::{Memo, Residue, ResidueClass, name_of, random_state, same_piece};
@@ -84,18 +84,18 @@ pub fn pair_position(buffer: u8, case: &bt_scheme::CaseId) -> String {
 
 pub fn execute_residue(
     corpus: &Corpus,
-    cube: &mut Cube,
     residue: &Residue,
     broken: &mut Vec<String>,
+    moves: &mut Vec<Move>,
 ) {
     match residue.class() {
         ResidueClass::None => {}
         ResidueClass::FlipPair(first, second) => apply_special(
             corpus,
-            cube,
             SheetClass::Flips,
             &format!("{} & {}", name_of(first), name_of(second)),
             broken,
+            moves,
         ),
         ResidueClass::TwistPair(first, second) => {
             let canonical = format!("{} & {}", name_of(first), name_of(second));
@@ -103,16 +103,15 @@ pub fn execute_residue(
             if pick_row(corpus, SheetClass::Twists, &canonical).is_none()
                 && pick_row(corpus, SheetClass::Twists, &swapped).is_some()
             {
-                apply_special(corpus, cube, SheetClass::Twists, &swapped, broken);
+                apply_special(corpus, SheetClass::Twists, &swapped, broken, moves);
             } else {
-                apply_special(corpus, cube, SheetClass::Twists, &canonical, broken);
+                apply_special(corpus, SheetClass::Twists, &canonical, broken, moves);
             }
         }
         ResidueClass::Parity => {
             let parity = residue.parity.expect("class Parity implies parity");
             apply_special(
                 corpus,
-                cube,
                 SheetClass::Parity,
                 &format!(
                     "{}-{}, {}-{}",
@@ -122,6 +121,7 @@ pub fn execute_residue(
                     name_of(parity.corner.1)
                 ),
                 broken,
+                moves,
             );
         }
         ResidueClass::Ltct => {
@@ -136,7 +136,6 @@ pub fn execute_residue(
             match bracket {
                 Some(bracket) => apply_special(
                     corpus,
-                    cube,
                     SheetClass::Ltct,
                     &format!(
                         "{}-{}, {}-{}[{}]",
@@ -147,6 +146,7 @@ pub fn execute_residue(
                         name_of(bracket)
                     ),
                     broken,
+                    moves,
                 ),
                 None => broken.push("ltct without a bracketed corner".to_string()),
             }
@@ -157,20 +157,19 @@ pub fn execute_residue(
 
 fn apply_special(
     corpus: &Corpus,
-    cube: &mut Cube,
     sheet: SheetClass,
     position: &str,
     broken: &mut Vec<String>,
+    moves: &mut Vec<Move>,
 ) {
     match pick_row(corpus, sheet, position) {
-        Some(row) => cube.apply_alg(&row.alg),
+        Some(row) => moves.extend(row.alg.moves().iter().copied()),
         None => broken.push(format!("{position} uncovered")),
     }
 }
 
-pub fn simulate(corpus: &Corpus, scramble: &Cube, memo: &Memo) -> SolveOutcome {
-    let mut cube = *scramble;
-    let mut broken = Vec::new();
+pub fn executed_moves(corpus: &Corpus, memo: &Memo, broken: &mut Vec<String>) -> Vec<Move> {
+    let mut moves = Vec::new();
     for (case, buffer) in memo
         .pairs
         .0
@@ -180,11 +179,20 @@ pub fn simulate(corpus: &Corpus, scramble: &Cube, memo: &Memo) -> SolveOutcome {
     {
         let position = pair_position(*buffer, case);
         match pick_row(corpus, sheet_of(case.orbit), &position) {
-            Some(row) => cube.apply_alg(&row.alg),
+            Some(row) => moves.extend(row.alg.moves().iter().copied()),
             None => broken.push(format!("{position} uncovered")),
         }
     }
-    execute_residue(corpus, &mut cube, &memo.residue, &mut broken);
+    execute_residue(corpus, &memo.residue, broken, &mut moves);
+    moves
+}
+
+pub fn simulate(corpus: &Corpus, scramble: &Cube, memo: &Memo) -> SolveOutcome {
+    let mut broken = Vec::new();
+    let mut cube = *scramble;
+    for mv in executed_moves(corpus, memo, &mut broken) {
+        cube.apply(mv);
+    }
     SolveOutcome {
         success: broken.is_empty() && cube.is_solved(),
         broken,
@@ -393,7 +401,7 @@ pub fn hint_text(phase: SolvePhase) -> &'static str {
         SolvePhase::Ready => "space to start memo",
         SolvePhase::Memo => "space to finish memo",
         SolvePhase::Exec => "space to stop",
-        SolvePhase::Review => "space next solve",
+        SolvePhase::Review => "space next solve, v 3d replay",
     }
 }
 
@@ -477,6 +485,25 @@ mod tests {
         let outcome = simulate(&corpus, &scramble, &memo);
         assert!(!outcome.success);
         assert_eq!(outcome.broken, vec!["UF-UB-UR uncovered".to_string()]);
+    }
+
+    #[test]
+    fn executed_moves_walks_pairs_then_residue() {
+        let corpus = Corpus::from_rows(vec![row(
+            SheetClass::Edge,
+            "UF-UB-UR",
+            "R2 U' S R2 S' R2 U R2",
+        )]);
+        let (memo, _) = single_pair_solve('A', 'B');
+        let mut broken = Vec::new();
+        let moves = executed_moves(&corpus, &memo, &mut broken);
+        assert!(broken.is_empty());
+        assert_eq!(moves.len(), 8);
+        let mut replayed = single_pair_solve('A', 'B').1;
+        for mv in &moves {
+            replayed.apply(*mv);
+        }
+        assert!(replayed.is_solved());
     }
 
     #[test]
