@@ -1,0 +1,8 @@
+case_key	alg	front_json	source_url	source_at
+eo.01	(1,0) / (3,0) / (3,0) / (-1,-1) / (-2,1) / (-3,0) /	{"case":"sq1-eo1"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.02	(1,0) / (3,0) / (-1,-1) / (-3,0) / (0,1)	{"case":"sq1-eo2"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.03	(0,-1) / (0,-3) / (0,-3) / (1,1) / (-1,2) / (1,4) / (-1,0)	{"case":"sq1-eo3"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.04	(1,0) / (3,0) / (3,0) / (-1,-1) / (-2,1) / (-4,-1) / (1,0)	{"case":"sq1-eo4"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.05	(1,0) / (-1,-1) / (0,1)	{"case":"sq1-eo5"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.06	(0,-1) / (3,0) / (3,0) / (1,1) / (-3,0) / (-3,0) /	{"case":"sq1-eo6"}	https://sarah.cubing.net/square-1/eo	2026-10-10
+eo.07	(1,0) / (-1,-1) / (3,3) / (1,1) / (-1,0)	{"case":"sq1-eo7"}	https://sarah.cubing.net/square-1/eo	2026-10-10

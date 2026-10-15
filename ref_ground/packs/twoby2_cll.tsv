@@ -1,0 +1,43 @@
+case_key	alg	front_json	source_url	source_at
+cll.01	R' U R' U2 R U' R' U R U' R2	{"case":"L1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.02	R U2 R2 F2 R U R' F2 R F'	{"case":"L2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.03	R U2 R' F' R U2 R' U R' F2 R	{"case":"L3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.04	F R' F' R U R U' R'	{"case":"L4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.05	F R U' R' U' R U R' F'	{"case":"L5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.06	R U2 R' R' F R F' R U2 R'	{"case":"L6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.07	R2 F2 R U R' F R2 U2 R' U' R	{"case":"U1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.08	R U2 R U' R' F R' F2 U' F	{"case":"U2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.09	R' U R' F R F' R U2 R' U R	{"case":"U3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.10	F R' F' R U' R U' R' U2 R U' R'	{"case":"U4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.11	R U' R' R' F R F' R U R' U' R U R'	{"case":"U5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.12	F R U R' U' F'	{"case":"U6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.13	R' U R U2 R2 F' R U' R' F2 R2	{"case":"T1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.14	R' U R U2 R' R' F R F' R	{"case":"T2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.15	y L' U' L U L F' L' F	{"case":"T3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.16	F R U R' U' R U' R' U' R U R' F'	{"case":"T4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.17	R U R' U' R' F R F'	{"case":"T5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.18	F U' R U2 R' U' F2 R U R'	{"case":"T6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.19	R U' R2 U R2 U R2 U' R	{"case":"P1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.20	R' F2 R F' U2 R U' R' U' F	{"case":"P2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.21	F R2 U' R2 U R2 U R2 F'	{"case":"P3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.22	R U2 R' U' R U R' U2 R' F R F'	{"case":"P4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.23	R U' R' F R' F R U R' F R	{"case":"P5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.24	R' U' R' F R F' R U' R' U2 R	{"case":"P6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.25	R2 U2 R' U2 R2	{"case":"H1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.26	F R2 U' R2 U' R2 U R2 F'	{"case":"H2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.27	R U R' U R U L' U R' U' L	{"case":"H3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.28	x' U2 R U2 R2 F2 R U2 x	{"case":"H4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.29	L' U' L U' L' U2 L	{"case":"AS1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.30	L' U' L U L F' L' F L' U' L U' L' U2 L	{"case":"AS2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.31	F' L F L' U2 L' U2 L	{"case":"AS3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.32	R U2 R' U2 R' F R F'	{"case":"AS4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.33	R' F R F' R U R'	{"case":"AS5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.34	R' U R U' (R2 F R F') R U R' U' R	{"case":"AS6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.35	R U R' U R U2 R'	{"case":"S1"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.36	L' U2 L U2 L F' L' F	{"case":"S2"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.37	F R' F' R U2 R U2 R'	{"case":"S3"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.38	R U R' U' R' F R F' R U R' U R U2 R'	{"case":"S4"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.39	L F' L' F L' U' L	{"case":"S5"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.40	R U R' U R' F R F' R U2 R'	{"case":"S6"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.41	R U R' U' R' F R2 U' R' U' R U R' F'	{"case":"Adjacent"}	https://jperm.net/algs/2x2/cll	2026-10-10
+cll.42	F R U' R' U' R U R' F' R U R' U' R' F R F'	{"case":"Diagonal"}	https://jperm.net/algs/2x2/cll	2026-10-10

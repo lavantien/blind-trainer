@@ -1,0 +1,6 @@
+case_key	alg	front_json	source_url	source_at
+parity.oll4	Rw U2, X, Rw U2, Rw U2 , Rw' U2, Lw U2, Rw' U2, Rw U2, Rw' U2, Rw'	{"case":"oll4"}	https://www.speedcube.us/blogs/speedcubing-solutions/4x4-oll-parity-algorithms	2026-10-10
+parity.oll4flip	r', U2, l, F2, l', F2, r2, U2, r, U2, r', U2, F2, r2, F2	{"case":"oll4flip"}	https://www.speedcube.us/blogs/speedcubing-solutions/4x4-oll-parity-algorithms	2026-10-10
+parity.pll4	r2, U2, r2, Uw2, r2, u2	{"case":"pll4"}	https://www.speedcube.us/blogs/speedcubing-solutions/4x4-pll-parity-algorithms	2026-10-10
+parity.pll4adj	(R' U R U' ) r2, U2, r2, Uw2, r2, u2, (U R' U' R )	{"case":"pll4adj"}	https://www.speedcube.us/blogs/speedcubing-solutions/4x4-pll-parity-algorithms	2026-10-10
+parity.wing5	Rw U2 x Rw U2 Rw U2 Rw' U2 Lw U2 3Rw' U2 Rw U2 Rw' U2 Rw'	{"case":"wing5"}	https://www.speedcube.us/blogs/speedcubing-solutions/5x5-edge-parity-solution-algorithm	2026-10-10

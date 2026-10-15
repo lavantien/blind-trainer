@@ -1,0 +1,41 @@
+case_key	alg	front_json	source_url	source_at
+op.01	R U R' U' R' F R2 U' R' U' R U R' F'	{"buffer":"UR","target":"UL","kind":"edge swap"}	https://jperm.net/bld	2026-10-10
+op.02	R U' R' U' R U R' F' R U R' U' R' F R	{"buffer":"LBU","target":"DFR","kind":"corner swap"}	https://jperm.net/bld	2026-10-10
+op.03	R' F R' B2 R F' R' B2 R2 U'	{"buffer":"UFL","target":"URF","kind":"corner swap"}	https://www.speedsolving.com/wiki/index.php/Old_Pochmann	2026-10-10
+op.04	(L' U) (R U') (L U2') (R' U) (R U2 R')	{"buffer":"UR","target":"UF","kind":"edge swap"}	http://www.stefan-pochmann.de/spocc/blindsolving/3x3/old.php	2026-10-10
+op.05	(L U') (R' U) (L' U2') (R U') (R' U2 R)	{"buffer":"UR","target":"UB","kind":"edge swap"}	http://www.stefan-pochmann.de/spocc/blindsolving/3x3/old.php	2026-10-10
+op.06	(d2 L) (R U R' U' R' F R2 U' R' U' R U R' F') (L' d2)	{"buffer":"UR","target":"FR","kind":"setup example"}	http://www.stefan-pochmann.de/spocc/blindsolving/3x3/old.php	2026-10-10
+op.07	(d' L') (R U R' U' R' F R2 U' R' U' R U R' F') (L d)	{"buffer":"UR","target":"RF","kind":"setup example"}	http://www.stefan-pochmann.de/spocc/blindsolving/3x3/old.php	2026-10-10
+op.08	R U' R' U' R U R D R' U' R D' R' U2 R' U'	{"kind":"parity"}	https://jperm.net/bld	2026-10-10
+op.09	apply swap directly, no setup	{"letter":"D","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.10	Lw' D L2	{"letter":"Q","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.11	D' L2	{"letter":"U","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.12	Lw' D' L2	{"letter":"S","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.13	L	{"letter":"R","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.14	Dw L	{"letter":"N","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.15	L2	{"letter":"X","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.16	Lw D' L2	{"letter":"I","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.17	D2 L2	{"letter":"V","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.18	Dw' L'	{"letter":"P","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.19	L Dw' L	{"letter":"E","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.20	Lw D L2	{"letter":"K","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.21	Dw2 L	{"letter":"J","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.22	Dw L'	{"letter":"H","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.23	L'	{"letter":"L","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.24	D L2	{"letter":"W","orbit":"edge","target_pos":"UL"}	https://jperm.net/bld	2026-10-10
+op.25	F	{"letter":"M","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.26	D'	{"letter":"W","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.27	R D'	{"letter":"Q","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.28	D2	{"letter":"X","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.29	F2	{"letter":"D","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.30	D	{"letter":"U","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.31	F R'	{"letter":"I","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.32	apply swap directly, no setup	{"letter":"V","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.33	R F	{"letter":"P","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.34	R2 F	{"letter":"O","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.35	D F'	{"letter":"S","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.36	F2 D	{"letter":"C","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.37	R' F	{"letter":"N","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.38	F' D	{"letter":"F","orbit":"corner","target_pos":"DFR"}	https://jperm.net/bld	2026-10-10
+op.39	L' U' L U' L' U2 L R U R' U R U2 R'	{"kind":"corner twist","twists":"UBR+UFR","zero_perm":true}	http://www.stefan-pochmann.de/spocc/blindsolving/M2R2/	2026-10-10
+op.40	R U R' F' R U R' U' R' F R2 U' R' U'	{"kind":"parity","swaps":"UF-UR+UFR-UBR"}	https://bldtrainer.com/parity	2026-10-10

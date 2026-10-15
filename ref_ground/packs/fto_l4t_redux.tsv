@@ -1,0 +1,37 @@
+case_key	alg	front_json	source_url	source_at
+l4t.01	L' U L U L' U L	{"case":"Last Layer.Sune"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.02	R U' R' U' R U' R'	{"case":"Last Layer.Anti-Sune"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.03	R' U' L' U L R	{"case":"Last Layer.Left Bars"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.04	L U R U' R' L'	{"case":"Last Layer.Righty Bars"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.05	R' L R L'	{"case":"Last Three Edges.Sledge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.06	L R' L' R	{"case":"Last Three Edges.Hedge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.07	L R' L' R' U' R'	{"case":"Last Three Edges.Clockwise Cycle"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.08	R' L R L2' U L	{"case":"Last Three Edges.Counterclockwise Cycle"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.09	R U' R'	{"case":"Last Three Edges.Righty"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.10	L' U' L	{"case":"Last Three Edges.Lefty"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.11	R U R'	{"case":"Last Three Edges.Sexy"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.12	L' U L	{"case":"Last Three Edges.Ugly"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.13	R U' R' U R' L R L'	{"case":"Flipped Edges.2 Flip U"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.14	R U R' L R' L' R	{"case":"Flipped Edges.2 Flip U+D"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.15	R U' R' L' U L R U' R' L' U L	{"case":"Flipped Edges.4 Flip"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.16	R U' R' L' U' L	{"case":"Polish Flip.Right Polish Flip"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.17	L' U L R U R'	{"case":"Polish Flip.Left Polish Flip"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.18	R' L R L' U' R' L R L'	{"case":"Polish Flip.SUS"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.19	L R' L' R U L R' L' R	{"case":"Polish Flip.Anti-SUS"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.20	R U' R' L' U L	{"case":"Separated Bar.Good Niky"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.21	L' U L R U' R'	{"case":"Separated Bar.Good Sochi"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.22	R U' R2' L R L'	{"case":"Separated Bar.Super Sledge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.23	L' U L2 R' L' R	{"case":"Separated Bar.Super Hedge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.24	R U' R' U' L' U L	{"case":"Separated Bar.Bad Niky"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.25	L' U L U R U' R'	{"case":"Separated Bar.Bad Sochi"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.26	R U R' U R' L R L'	{"case":"Connected Bar.Right Spam"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.27	L' U' L U' L R' L' R	{"case":"Connected Bar.Left Spam"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.28	L R' L' R U' R U' R'	{"case":"Connected Bar.Bad Sledge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.29	R' L R L' U L' U L	{"case":"Connected Bar.Bad Hedge"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.30	L' U' L U' R U' R'	{"case":"No Bar.Bad Sexy"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.31	R U R' U L' U L	{"case":"No Bar.Bad Ugly"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.32	L' U L U' R U R'	{"case":"No Bar.Bad Righty"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.33	R U' R' U L' U' L	{"case":"No Bar.Bad Lefty"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.34	R U' R' U' R U R'	{"case":"No Bar.Double Sexy"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.35	L' U L U L' U' L	{"case":"Double Ugly.Double Ugly"}	https://docs.google.com/spreadsheets/d/1_IHL077w-9U-qtpF9hvC6CrUn7etua5QgPH8vEMqK58/edit	2026-10-10
+l4t.36	U BR U BR' F U F'	{"case":"Reduction.parity fix"}	https://docs.google.com/document/d/18CMTrFC9PYkEsheOHnywzvV0EdCb3SFGQXSK0DDb30o/edit	2026-10-10

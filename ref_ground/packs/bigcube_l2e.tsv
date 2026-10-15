@@ -1,0 +1,13 @@
+case_key	alg	front_json	source_url	source_at
+l2e.01	Rw' Lw U' R' U (R' F R F') Rw Lw'	{"case":"l2e01"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.02	Rw' U' R' U R' F R F' Rw	{"case":"l2e02"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.03	3Lw U' R' U (R' F R F') Rw'	{"case":"l2e03"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.04	Rw2' F2 U2' Rw2' U2' F2 Rw2	{"case":"l2e04"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.05	Rw U2 x Rw U2 Rw U2' Rw' U2 Lw U2 3Rw' U2' Rw U2 Rw' U2' Rw	{"case":"l2e05"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.06	Rw U2 Rw U2' x U2 Rw U2' 3Rw' U2 Lw U2' Rw2	{"case":"l2e06"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.07	F2 Rw U2 Rw U2' Rw' F2 Rw' U2 Rw' U2' Rw U2 Rw' U2' Rw2	{"case":"l2e07"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.08	B2 Rw' U2 Rw' U2' Rw B2 Rw U2 Rw U2' Rw' U2 Rw U2' Rw2	{"case":"l2e08"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.09	Rw U2 Rw2 U2' Rw' U2 Rw U2' Rw' U2 Rw2 U2' Rw	{"case":"l2e09"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.10	Rw' U2' Rw2 U2' Rw U2' Rw' U2 Rw U2' Rw2 U2' Rw'	{"case":"l2e10"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.11	Rw' U2 Rw U2' 3Lw' U2 Rw U2 Rw U2' Rw' U2 Rw U2' Rw2	{"case":"l2e11"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10
+l2e.12	Rw2 B2 Rw' U2 Rw' U2' x' U2 Rw' U2' Rw U2 Rw' U2' Rw2	{"case":"l2e12"}	https://www.speedcube.us/blogs/5x5-last-two-edges	2026-10-10

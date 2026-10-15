@@ -1,0 +1,16 @@
+case_key	alg	front_json	source_url	source_at
+sarah.01	L F' L'	{"case":"flc-a"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.02	R' F R	{"case":"flc-b"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.03	F' L F L'	{"case":"cat1.1"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.04	(y2) L F' L' F	{"case":"cat1.2"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.05	(y2) (F' L F L')2	{"case":"cat1.3"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.06	R' F R F' -> cat. 1	{"case":"L2"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.07	R' F R F' -> cat. 1	{"case":"L4"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.08	L F' L' F -> cat. 1	{"case":"L3"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.09	L F' L' F -> cat. 1	{"case":"L5"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.10	R' F R F' -> cat. 2	{"case":"Pi5"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.11	(y2) R' F R F' -> cat. 2	{"case":"Pi3"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.12	(y) R' F R F' -> cat. 2	{"case":"L1"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.13	R' F R F' (y2) R' F R F'	{"case":"l4c-1"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.14	R' F R F' (y2) R' F R F' (y2 x') R' F R F' (y2) R' F R F'	{"case":"l4c-2"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10
+sarah.15	R' F R F' (y2) R' F R F' (z2 x') R' F R F' (y2) R' F R F'	{"case":"l4c-3"}	https://sarah.cubing.net/skewb/skewb-guide.pdf	2026-10-10

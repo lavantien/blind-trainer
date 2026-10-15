@@ -1,0 +1,170 @@
+case_key	alg	front_json	source_url	source_at
+cs.001	/	{"case":"Kite / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.002	/ 3,3 /	{"case":"Barrel / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.003	/ 3,0 / -1,1	{"case":"Left Fist / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.004	/ 3,0 /	{"case":"Right Fist / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.005	/ 0,1 / 0,3 /	{"case":"Square / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.006	/ -1,0 / -3,0 /	{"case":"Shield / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.007	/ 2,0 / 3,0 /	{"case":"Muffin / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.008	/ 0,-2 / 0,-3 /	{"case":"Square / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.009	/ -1,4 / -3,0 /	{"case":"Left Pawn / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.010	/ -4,1 / 3,0 /	{"case":"Right Pawn / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.011	/ 1,2 / -3,-3 /	{"case":"Scallop / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.012	/ 2,1 / 0,3 /	{"case":"Kite / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.013	/ -3,0 / -3,0 /	{"case":"Barrel / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.014	/ -2,0 / 3,3 /	{"case":"Muffin / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.015	/ 1,0 / -3,-3 /	{"case":"Shield / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.016	/ 0,3 / 0,3 /	{"case":"Kite / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.017	/ -1,-2 / -3,0 /	{"case":"Scallop / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.018	/ -2,0 / 1,2 / -3,-3 /	{"case":"Pair / 4-2 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.019	/ 0,2 / -1,0 / -3,-3 /	{"case":"Pair / 2-2-2"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.020	/ 2,0 / -2,-1 / 3,3 /	{"case":"4-2 Left / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.021	/ -2,0 / 0,1 / 3,3 /	{"case":"2-2-2 / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.022	/ -4,0 / 4,-1 / -3,0 / -1,1	{"case":"Pair / 4-1-1"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.023	/ 0,4 / 4,-1 / -3,0 / -1,1	{"case":"4-1-1 / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.024	/ -2,3 / -2,-1 / -3,0 / -1,1	{"case":"Pair / 5-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.025	/ -3,2 / -2,-1 / 0,-3 / -1,1	{"case":"5-1 Left / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.026	/ 2,4 / -2,-1 / 3,3 /	{"case":"8 Edges / Star"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.027	/ 3,-2 / -1,-2 / 0,-3 /	{"case":"5-1 Right / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.028	/ 2,-3 / -1,-2 / -3,0 /	{"case":"Pair / 5-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.029	/ 0,2 / 2,1 / 3,3 /	{"case":"Pair / 4-2 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.030	/ 0,4 / 1,0 / -3,-3 /	{"case":"4-2 Right / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.031	/ 0,-3 / 2,1 / 3,0 /	{"case":"Shield / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.032	/ 2,4 / -4,1 / 0,3 /	{"case":"Star / 6-2"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.033	/ -4,-2 / -1,4 / -3,0 /	{"case":"6-2 / Star"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.034	/ -1,0 / 0,1 / 0,3 /	{"case":"Left Fist / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.035	/ 4,0 / -1,0 / -3,0 /	{"case":"Left Pawn / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.036	/ 0,-4 / 0,1 / 0,3 /	{"case":"Right Fist / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.037	/ -4,-2 / 1,2 / -3,-3 /	{"case":"Star / 8 Edges"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.038	/ 0,1 / -1,0 / -3,0 /	{"case":"Right Pawn / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.039	/ -4,0 / -2,-1 / 3,3 /	{"case":"Pair / 6"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.040	/ 0,4 / 1,2 / -3,-3 /	{"case":"6 / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.041	/ 3,0 / -1,-2 / 0,-3 /	{"case":"Muffin / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.042	/ 0,4 / 1,2 / 0,3 / -1,1	{"case":"5-1 Left / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.043	/ 0,-4 / 2,1 / 0,3 /	{"case":"5-1 Right / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.044	/ -1,-2 / 0,1 / 0,3 /	{"case":"3-2-1 Right / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.045	/ 4,0 / -1,0 / -3,-3 /	{"case":"Scallop / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.046	/ 0,-4 / 0,1 / 3,3 /	{"case":"Barrel / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.047	/ -2,-2 / 1,0 / -3,-3 /	{"case":"Star / 4-4"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.048	/ -3,-2 / 1,2 / 0,3 / -1,1	{"case":"Crown / 4-2 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.049	/ -2,-3 / -1,-2 / -3,0 /	{"case":"4-2 Left / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.050	/ 2,2 / 0,-1 / 3,3 /	{"case":"4-4 / Star"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.051	/ -4,0 / -2,-1 / -3,0 / -1,1	{"case":"Arrow / 5-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.052	/ 4,0 / -1,-2 / -3,0 /	{"case":"Arrow / 5-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.053	/ 2,0 / -1,0 / -3,0 /	{"case":"Arrow / 3-2-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.054	/ 0,-2 / -1,4 / -3,0 /	{"case":"3-3 / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.055	/ -2,-3 / -1,-2 / -3,0 /	{"case":"4-2 Right / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.056	/ 2,1 / -1,0 / -3,0 /	{"case":"Arrow / 3-2-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.057	/ 0,-2 / 0,1 / 0,3 /	{"case":"3-2-1 Left / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.058	/ -2,0 / -5,2 / 0,3 / -1,1	{"case":"Arrow / 3-3"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.059	/ 2,0 / -1,-2 / -3,0 /	{"case":"Arrow / 4-1-1"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.060	/ 0,-2 / 2,1 / 0,3 /	{"case":"4-1-1 / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.061	/ 0,2 / 0,1 / 0,3 /	{"case":"Right Pawn / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.062	/ -2,0 / -1,0 / -3,0 /	{"case":"Right Fist / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.063	/ -1,2 / 2,2 / 0,-1 / 3,3 /	{"case":"Right Pawn / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.064	/ 0,-4 / 3,-2 / -1,-2 / 0,-3 /	{"case":"Crown / 4-2 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.065	/ -1,0 / 0,-2 / 0,1 / 0,3 /	{"case":"Kite / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.066	/ 0,1 / -4,0 / 4,-1 / -3,0 / -1,1	{"case":"Scallop / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.067	/ 3,2 / -3,2 / 1,2 / 0,3 / -1,1	{"case":"Left Pawn / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.068	/ 0,1 / -2,0 / -2,5 / -3,0 / -1,1	{"case":"Shield / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.069	/ 1,0 / -1,-2 / 0,1 / 0,3 /	{"case":"Kite / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.070	/ -2,-3 / -2,3 / -2,-1 / -3,0 / -1,1	{"case":"Scallop / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.071	/ -3,-2 / 3,-2 / -1,-2 / 0,-3 /	{"case":"Right Pawn / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.072	/ -1,0 / 0,4 / 1,-4 / 0,3 / -1,1	{"case":"Right Fist / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.073	/ 0,-1 / 2,1 / -1,0 / -3,0 /	{"case":"Right Pawn / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.074	/ 0,-1 / 4,0 / -4,1 / 3,0 /	{"case":"Scallop / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.075	/ 0,-2 / -1,-2 / 0,1 / 0,3 /	{"case":"Shield / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.076	/ 1,0 / 0,-4 / -1,4 / 0,-3 /	{"case":"Left Fist / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.077	/ 0,2 / -3,4 / 1,2 / 0,3 / -1,1	{"case":"Muffin / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.078	/ -2,0 / 2,0 / -1,0 / -3,0 /	{"case":"Kite / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.079	/ -2,0 / -4,3 / -2,-1 / -3,0 / -1,1	{"case":"Scallop / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.080	/ 2,3 / 2,-3 / 2,1 / 3,0 /	{"case":"Scallop / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.081	/ 1,-2 / -3,4 / 1,2 / 0,3 / -1,1	{"case":"Barrel / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.082	/ 2,-1 / -4,3 / -2,-1 / -3,0 / -1,1	{"case":"Left Pawn / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.083	/ 0,-2 / 0,4 / -2,-1 / 0,-3 / -1,1	{"case":"Square / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.084	/ 1,-2 / 4,-3 / -2,-1 / -3,0 / -1,1	{"case":"Barrel / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.085	/ -2,0 / 2,0 / -1,0 / -3,-3 /	{"case":"Shield / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.086	/ 0,2 / 0,-2 / 0,1 / 3,3 /	{"case":"Barrel / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.087	/ 0,1 / 2,0 / -1,0 / -3,0 /	{"case":"Left Pawn / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.088	/ 3,-2 / 0,2 / 1,2 / 0,3 / -1,1	{"case":"Square / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.089	/ 2,-1 / 3,-4 / 1,2 / 0,3 / -1,1	{"case":"Right Pawn / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.090	/ 2,-3 / -2,0 / -2,-1 / -3,0 / -1,1	{"case":"Left Pawn / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.091	1,0 / 0,-1 / 0,2 / 2,1 / 0,3 /	{"case":"Square / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.092	0,-1 / 1,0 / -2,0 / -1,-2 / -3,0 /	{"case":"Right Pawn / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.093	/ -2,0 / 4,0 / 2,1 / 3,3 /	{"case":"Scallop / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.094	/ 2,0 / -4,0 / 1,2 / 3,0 / -1,1	{"case":"Scallop / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.095	/ 3,-2 / 0,4 / 1,2 / 0,3 / -1,1	{"case":"4-1-1 / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.096	/ 0,-1 / 2,-3 / -1,-2 / -3,0 /	{"case":"Left Pawn / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.097	/ -4,3 / -3,2 / -1,-2 / 0,-3 /	{"case":"4-2 Right / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.098	/ -4,3 / -3,2 / -1,-2 / 0,-3 /	{"case":"Arrow / 4-2 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.099	/ -3,4 / -2,3 / -1,-2 / -3,0 /	{"case":"4-2 Left / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.100	/ 0,-3 / -4,3 / -2,-1 / -3,0 / -1,1	{"case":"Arrow / 4-2 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.101	/ -3,-4 / -2,3 / -1,-2 / -3,0 /	{"case":"6 / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.102	/ -3,-2 / 2,-3 / -2,-1 / -3,0 / -1,1	{"case":"Arrow / 6"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.103	/ 0,-5 / -3,4 / -1,-2 / 0,-3 /	{"case":"3-2-1 Right / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.104	/ 0,5 / -3,2 / -1,-2 / 0,-3 /	{"case":"3-2-1 Left / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.105	/ 0,3 / 4,0 / -1,-2 / -3,0 /	{"case":"Crown / 5-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.106	/ 3,0 / 0,4 / 1,2 / 0,3 / -1,1	{"case":"5-1 Right / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.107	/ -4,1 / 0,-4 / 0,-1 / 3,3 /	{"case":"Crown / 5-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.108	/ -2,3 / 4,0 / -1,-2 / -3,0 /	{"case":"Crown / 4-1-1"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.109	/ 3,2 / 2,4 / 1,2 / -3,-3 /	{"case":"Crown / 6"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.110	/ 4,-1 / 2,0 / -1,-2 / -3,-3 /	{"case":"3-2-1 Left / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.111	/ -1,4 / 0,2 / -2,-1 / -3,-3 / -1,1	{"case":"Crown / 3-2-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.112	/ 0,-3 / -3,0 / 2,-3 / -2,-1 / -3,0 / -1,1	{"case":"3-2-1 Right / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.113	/ -3,0 / 0,-3 / -3,2 / -1,-2 / 0,-3 /	{"case":"Crown / 3-2-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.114	/ -2,1 / -2,0 / 1,2 / -3,-3 /	{"case":"3-3 / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.115	/ 1,-2 / 0,-2 / -1,-2 / -3,-3 /	{"case":"Crown / 3-3"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.116	/ -3,0 / 0,-4 / -1,-2 / 0,-3 /	{"case":"5-1 Left / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.117	/ -5,0 / -2,3 / 2,1 / 3,0 /	{"case":"Pair / 3-2-1 Left"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.118	0,2 / -2,2 / 0,-4 / 2,1 / 0,3 /	{"case":"Pair / 3-2-1 Right"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.119	/ 0,-1 / 0,2 / 1,2 / -3,-3 /	{"case":"Muffin / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.120	/ -1,0 / 0,2 / -5,2 / 0,3 / -1,1	{"case":"Left Fist / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.121	/ 1,0 / -2,0 / 2,1 / 3,3 /	{"case":"Left Pawn / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.122	/ 0,-1 / 0,2 / -1,-2 / -3,-3 /	{"case":"Muffin / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.123	/ 3,2 / 2,4 / 1,2 / -3,-3 /	{"case":"6 / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.124	/ 1,0 / 3,-2 / 2,1 / 0,3 /	{"case":"Shield / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.125	/ 1,0 / -2,3 / -1,-2 / -3,0 /	{"case":"Right Pawn / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.126	/ 0,-1 / -3,2 / 2,1 / 0,3 /	{"case":"Shield / Right Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.127	/ -1,-2 / 0,2 / -5,2 / 0,3 / -1,1	{"case":"Right Fist / Shield"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.128	/ -1,0 / 2,0 / -2,-1 / 3,3 /	{"case":"Right Pawn / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.129	/ -1,-2 / 0,2 / -5,2 / 0,3 / -1,1	{"case":"Shield / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.130	/ 0,2 / 0,-4 / 5,-2 / -3,0 /	{"case":"Left Fist / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.131	/ 0,-2 / 3,0 / -1,-2 / 0,-3 /	{"case":"3-3 / Pair"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.132	/ -2,0 / 4,0 / 2,-5 / 0,3 /	{"case":"Left Pawn / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.133	/ 2,0 / 0,-3 / 2,1 / 3,0 /	{"case":"Pair / 3-3"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.134	/ 1,0 / -2,-2 / -1,-2 / -3,-3 /	{"case":"Left Pawn / Left Pawn"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.135	/ 0,2 / 0,-4 / -1,-2 / -3,-3 /	{"case":"Shield / Scallop"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.136	/ 2,2 / -2,-1 / 2,2 / -1,0 / -3,-3 /	{"case":"Barrel / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.137	/ 0,2 / 1,0 / 0,-2 / 2,1 / 0,3 /	{"case":"Kite / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.138	1,0 / 0,-2 / -1,-2 / 2,-3 / -2,-1 / -3,0 / -1,1	{"case":"Observatory / Star"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.139	/ 2,2 / -1,2 / 2,2 / 0,-1 / 3,3 /	{"case":"Square / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.140	0,3 / -4,0 / -2,-1 / -3,2 / 2,1 / 0,3 /	{"case":"Star / 5-3"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.141	/ 0,4 / 1,2 / -2,3 / -1,-2 / -3,0 /	{"case":"5-3 / Star"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.142	/ -2,0 / -2,-1 / -3,2 / -1,-2 / 0,-3 /	{"case":"Star / Observatory"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.143	/ 0,4 / -2,-1 / 0,2 / 2,1 / 0,3 /	{"case":"Square / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.144	/ -4,0 / 1,2 / -2,0 / -1,-2 / -3,0 /	{"case":"Left Fist / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.145	/ -2,0 / -1,0 / 2,0 / 1,2 / -3,-3 /	{"case":"Right Fist / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.146	/ 0,-2 / 0,2 / 0,-2 / 0,1 / 0,3 /	{"case":"Left Fist / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.147	/ 0,-1 / 0,2 / 2,1 / -1,0 / -3,0 /	{"case":"Arrow / 2-2-2"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.148	/ 0,-4 / 1,0 / 0,-2 / -4,1 / 0,3 /	{"case":"Muffin / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.149	/ 4,0 / 0,-1 / 2,0 / -1,4 / -3,0 /	{"case":"Left Fist / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.150	/ 0,-4 / 1,2 / 0,-2 / -4,1 / 0,3 /	{"case":"Muffin / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.151	/ 4,0 / -2,-1 / 2,0 / -1,4 / -3,0 /	{"case":"Right Fist / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.152	/ 2,0 / -2,0 / 2,0 / -1,0 / -3,0 /	{"case":"Right Fist / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.153	/ 6,-3 / 2,0 / 2,1 / -1,0 / -3,0 /	{"case":"2-2-2 / Crown"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.154	/ -1,0 / 2,0 / 0,-2 / 0,1 / 0,3 /	{"case":"2-2-2 / Arrow"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.155	/ 0,2 / 0,1 / 0,-2 / -2,-1 / 3,3 /	{"case":"Barrel / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.156	/ 2,0 / 1,0 / -2,0 / -1,-2 / -3,-3 /	{"case":"Left Fist / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.157	/ 3,2 / 0,-2 / 0,2 / 0,-1 / 3,3 /	{"case":"Kite / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.158	/ 2,3 / -2,0 / 2,0 / -1,0 / -3,-3 /	{"case":"Muffin / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.159	/ -2,0 / 0,-1 / 2,0 / -1,-2 / -3,0 /	{"case":"Right Fist / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.160	/ 0,2 / 1,0 / 0,-2 / -1,-2 / 0,-3 /	{"case":"Kite / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.161	/ -2,0 / 0,-1 / 2,0 / -1,-2 / -3,0 /	{"case":"Left Fist / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.162	/ -3,-2 / 0,-2 / 0,2 / 0,-1 / 0,-3 / -1,1	{"case":"Barrel / Muffin"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.163	/ 2,3 / 2,0 / -2,0 / 1,0 / 3,0 / -1,1	{"case":"Muffin / Barrel"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.164	/ 0,-2 / 0,-1 / 0,2 / 2,1 / 3,3 /	{"case":"Barrel / Left Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.165	/ 0,3 / 2,0 / 2,1 / -1,0 / -3,0 /	{"case":"Crown / 2-2-2"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.166	1,0 / -1,0 / 0,-4 / 1,2 / 0,-2 / 2,1 / 0,3 /	{"case":"Square / Right Fist"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.167	0,-1 / 0,1 / 4,0 / -2,-1 / 2,0 / -1,-2 / -3,0 /	{"case":"Right Fist / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.168	/ -1,0 / 2,0 / -2,0 / 2,0 / -1,0 / -3,0 /	{"case":"Kite / Square"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10
+cs.169	/ 0,1 / 0,-2 / 0,2 / 0,-2 / 0,1 / 0,3 /	{"case":"Square / Kite"}	https://cubingapp.com/algorithms/SQ1-Cube-Shape	2026-10-10

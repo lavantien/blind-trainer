@@ -1,0 +1,86 @@
+case_key	alg	front_json	source_url	source_at
+flip.01	M' U2 M U R' F' R S R' F R S' U	{"position":"UF & UB","solver":"cherry","comm":"[M',U2]+U':[R' F' R,S]"}	https://bit.ly/3157nPL	2026-10-10
+flip.02	L E2 L2 E L U L' E' L2 E2 L' U'	{"position":"UF & UL","solver":"cherry","comm":"[L E2 L2 E L,U]"}	https://bit.ly/3wFx2cP	2026-10-10
+flip.03	R' E2 R2 E' R' U' R E R2 E2 R U	{"position":"UF & UR","solver":"cherry","comm":"[R' E2 R2 E' R',U']"}	https://bit.ly/3CdWLLk	2026-10-10
+flip.04	R' E R U' R' E' R2 E2 R' U R E2 R'	{"position":"UF & FL","solver":"cherry","comm":"R' E R:[U',R' E' R2 E2 R']"}	https://bit.ly/30ewJui	2026-10-10
+flip.05	L E' L' U L E L2 E2 L U' L' E2 L	{"position":"UF & FR","solver":"cherry","comm":"L E' L':[U,L E L2 E2 L]"}	https://bit.ly/3yIOscE	2026-10-10
+flip.06	L' E L U L' E' L2 E2 L' U' L E2 L'	{"position":"UF & BR","solver":"cherry","comm":"L' E L:[U,L' E' L2 E2 L']"}	https://bit.ly/3ljrot4	2026-10-10
+flip.07	R E' R' U' R E R2 E2 R U R' E2 R	{"position":"UF & BL","solver":"cherry","comm":"R E' R':[U',R E R2 E2 R]"}	https://bit.ly/3PuDspd	2026-10-10
+flip.08	U R' E' R U2 R' E R S R2 S' R2 U	{"position":"UF & DR","solver":"cherry","comm":"U:[[R' E' R,U2]+U2:[S,R2]]"}	https://tinyurl.com/y5abxbfy	2026-10-10
+flip.09	M U R' F' R S R' F R S' U M' U2	{"position":"UF & DB","solver":"cherry","comm":"M U:[[R' F' R,S]+U:[M',U2]]"}	https://bit.ly/3gjw5Ap	2026-10-10
+flip.10	U R' E2 R2 E' R' U' R E R2 E2 R	{"position":"UB & UR","solver":"cherry","comm":"[U,R' E2 R2 E' R']"}	https://bit.ly/3GBHK8N	2026-10-10
+flip.11	R' E R U R' E' R2 E2 R' U' R E2 R'	{"position":"UB & FL","solver":"cherry","comm":"R' E R:[U,R' E' R2 E2 R']"}	https://tinyurl.com/vb2znfab	2026-10-10
+flip.12	U R' F' R S R' F R S' U M' U2 M	{"position":"UB & DF","solver":"cherry","comm":"U:[[R' F' R,S]+U:[M',U2]]"}	https://bit.ly/2Yo3uVs	2026-10-10
+flip.13	U2 M U R' F' R S R' F R S' U M'	{"position":"UB & DB","solver":"cherry","comm":"[U2,M]+M U':[R' F' R,S]"}	https://bit.ly/3x4U2RQ	2026-10-10
+flip.14	S R' E R2 E' R2 F2 R S' R' F2 R	{"position":"UR & FL","solver":"cherry","comm":"S R':[[E,R2]+[F2,R S' R']]"}	https://bit.ly/3LpYfqB	2026-10-10
+flip.15	U L E' L' U L E L2 E2 L U' L' E2 L U'	{"position":"UR & FR","solver":"cherry","comm":"U L E' L':[U,L E L2 E2 L]"}	https://bit.ly/2TZe6aB	2026-10-10
+flip.16	U R E' R' U' R E R2 E2 R U R' E2 R U'	{"position":"UR & BL","solver":"cherry","comm":"U R E' R':[U',R E R2 E2 R]"}	https://bit.ly/3cTc81K	2026-10-10
+flip.17	R' F' R S R' F R S' U M' U2 M U	{"position":"UR & DF","solver":"cherry","comm":"[R' F' R,S]+U:[M',U2]"}	https://bit.ly/3i4ckyp	2026-10-10
+flip.18	U M U R' F' R S R' F R S' U M' U	{"position":"UR & DB","solver":"cherry","comm":"U M U:[[R' F' R,S]+U:[M',U2]]"}	https://bit.ly/45M6RTI	2026-10-10
+flip.19	U R' E2 R U R' E2 R2 E' R' U' R E R' U'	{"position":"UL & BL","solver":"cherry","comm":"U R' E2 R:[U,R' E2 R2 E' R']"}	https://bit.ly/322jazb	2026-10-10
+flip.20	R2 E' R2 F2 R S' R' F2 R S R' E	{"position":"FR & BL","solver":"cherry","comm":"[R2,E']+E':[F2,R S' R']"}	https://bit.ly/3AdITmI	2026-10-10
+flip.21	l E' L' U' L E L2 E2 L U L' E2 M' L	{"position":"FR & DB","solver":"cherry","comm":"l E' L':[U',L E L2 E2 L]"}	https://bit.ly/2U6NyUO	2026-10-10
+flip.22	F L' S' L F' L' S U' M' U2 M U' L	{"position":"FL & DF","solver":"cherry","comm":"[F,L' S' L]+L' U':[M',U2]"}	https://bit.ly/3ObDPDU	2026-10-10
+flip.23	R' E R2 E' R2 F2 R S' R' F2 R S	{"position":"FL & DR","solver":"cherry","comm":"R':[[E,R2]+[F2,R S' R']]"}	https://bit.ly/3yWoL5j	2026-10-10
+flip.24	R2 F' R S R' F R S' U M' U2 M U R	{"position":"DF & BR","solver":"cherry","comm":"R':[[R' F' R,S]+U:[M',U2]]"}	https://bit.ly/3LmMOA4	2026-10-10
+flip.25	U' R2 S' R2 S U R F R' S' R F' R' S	{"position":"DR & DL","solver":"cherry","comm":"U':[[R2,S']+U:[R F R',S']]"}	https://bit.ly/3qb5A4u	2026-10-10
+twist.01	R' D' R D R' D' R U R' D R D' R' D R U'	{"position":"UFR & UBR","solver":"cherry","comm":"[R' D' R D R' D' R,U]"}	https://bit.ly/3dMK28W	2026-10-10
+twist.02	R' D' R D R' D' R U' R' D R D' R' D R U	{"position":"UFR & UFL","solver":"cherry","comm":"[R' D' R D R' D' R,U']"}	https://bit.ly/2ZrtHCO	2026-10-10
+twist.03	D' R D R' U' R D' R' D R D' R' U R D R'	{"position":"UFR & DBL","solver":"cherry","comm":"D' R D R':[U',R D' R' D R D' R']"}	https://bit.ly/436n8QU	2026-10-10
+twist.04	R' D R D' R' D R U' R' D' R D R' D' R U	{"position":"UFL & UFR","solver":"cherry","comm":"[R' D R D' R' D R,U']"}	https://bit.ly/3GAvfuz	2026-10-10
+twist.05	U' R D R' U' R D' R' D R D' R' U R D R' U D'	{"position":"UFL & DBR","solver":"cherry","comm":"U' R D R':[U',R D' R' D R D' R']"}	https://bit.ly/3CXL5hi	2026-10-10
+twist.06	R' D R D' R' D R U R' D' R D R' D' R U'	{"position":"UBR & UFR","solver":"cherry","comm":"[R' D R D' R' D R,U]"}	https://bit.ly/3naNY8V	2026-10-10
+twist.07	D' R' D R U R' D' R D R' D' R U' R' D R	{"position":"UBR & DFR","solver":"cherry","comm":"D' R' D R:[U,R' D' R D R' D' R]"}	https://bit.ly/3LpYfqB	2026-10-10
+twist.08	R' D' R U R' D R D' R' D R U' R' D' R D	{"position":"DFR & UBR","solver":"cherry","comm":"R' D' R:[U,R' D R D' R' D R]"}	https://bit.ly/3HkQzF4	2026-10-10
+twist.09	U' R' D' R U R' D R D' R' D R U' R' D' R U D	{"position":"DFR & UFR","solver":"cherry","comm":"U' R' D' R:[U,R' D R D' R' D R]"}	https://bit.ly/3lld4Qw	2026-10-10
+twist.10	U' D R' D' R U R' D R D' R' D R U' R' D' R U	{"position":"DFL & UFR","solver":"cherry","comm":"U' D R' D' R:[U,R' D R D' R' D R]"}	https://bit.ly/3BNb5dA	2026-10-10
+twist.11	R U R' U' R U R' D R U' R' U R U' R' D'	{"position":"DFL & DFR","solver":"cherry","comm":"[R U R' U' R U R',D]"}	https://bit.ly/3c6tGqy	2026-10-10
+twist.12	D R D' R' U' R D R' D' R D R' U R D' R'	{"position":"DBR & UFR","solver":"cherry","comm":"D R D' R':[U',R D R' D' R D R']"}	https://bit.ly/2TZe6aB	2026-10-10
+twist.13	R U R' U' R U R' D' R U' R' U R U' R' D	{"position":"DBR & DFR","solver":"cherry","comm":"[R U R' U' R U R',D']"}	https://bit.ly/2ScCq8u	2026-10-10
+twist.14	R' U' R U R' U' R D' R' U R U' R' U R D	{"position":"DBR & DBL","solver":"cherry","comm":"[R' U' R U R' U' R,D']"}	https://bit.ly/3HkAxvd	2026-10-10
+twist.15	U R U' R' U R D' R' U' R U R' U' R D R'	{"position":"DBL & UBR","solver":"cherry","comm":"R:[R' U R U' R' U R,D']"}	https://bit.ly/3yIOscE	2026-10-10
+twist.16	U' R D' R' U' R D R' D' R D R' U R D' R' U D	{"position":"DBL & UFL","solver":"cherry","comm":"U' R D' R':[U',R D R' D' R D R']"}	https://bit.ly/2Zxufr2	2026-10-10
+twist.17	R D' R' U' R D R' D' R D R' U R D' R' D	{"position":"DBL & UFR","solver":"cherry","comm":"R D' R':[U',R D R' D' R D R']"}	https://bit.ly/3AdITmI	2026-10-10
+twist.18	D R U R' U' R U R' D R U' R' U R U' R' D2	{"position":"DBL & DFL","solver":"cherry","comm":"D:[R U R' U' R U R',D]"}	https://bit.ly/3p6XjOC	2026-10-10
+twist.19	R U R' U' R U R' D2 R U' R' U R U' R' D2	{"position":"DBL & DFR","solver":"cherry","comm":"[R U R' U' R U R',D2]"}	https://bit.ly/35WO65T	2026-10-10
+twist.20	R' U R U' R' U R D' R' U' R U R' U' R D	{"position":"DBL & DBR","solver":"cherry","comm":"[R' U R U' R' U R,D']"}	https://bit.ly/2TZhClj	2026-10-10
+twist.21	U R' D R U' R' D' R D R' D' R U R' D R U' D'	{"position":"UFR & DFL","solver":"eggins","comm":"U R' D R:[U',R' D' R D R' D' R]"}	https://bit.ly/3K0t4DH	2026-10-10
+twist.22	U D' R U' R' D R U R' U' R U R' D' R U' R' D	{"position":"UFR & DFR","solver":"eggins","comm":"U D' R U' R':[D,R U R' U' R U R']"}	https://bit.ly/3LJSrf2	2026-10-10
+twist.23	U R U R' D' R U' R' U R U' R' D R U R' U2	{"position":"DBR & UBR","solver":"eggins","comm":"U R U R':[D',R U' R' U R U' R']"}	https://bit.ly/3wm38PP	2026-10-10
+parity.01	U' R U R' F' R U R' U' R' F R2 U' R'	{"position":"UF-UL, UFR-UFL","solver":"cherry","comm":"Not found."}	https://bit.ly/3hdkfry	2026-10-10
+parity.02	R' D R2 U' R2 U R2 D' R2 U R2 U' R2 U' R	{"position":"UF-UL, UFR-FUL","solver":"cherry","comm":"Not found."}	https://bit.ly/3vZP748	2026-10-10
+parity.03	U D2 R' F R2 U' R' U' R U R' F' R U R' U2 D2	{"position":"UF-UL, UFL-LDB","solver":"cherry","comm":"Not found."}	https://bit.ly/3lcWKSq	2026-10-10
+parity.04	D R U' R U R' F' R U R' U' R' F R2 U' R2 D'	{"position":"UF-UL, UFL-LDF","solver":"cherry","comm":"Not found."}	https://bit.ly/3mKGQj6	2026-10-10
+parity.05	R U' R U R' F' R U R' U' R' F R2 U' R2	{"position":"UF-UL, UFL-FDR","solver":"cherry","comm":"Not found."}	https://bit.ly/3vydRQU	2026-10-10
+parity.06	D2 R2 U' R2 U R2 D' R2 U R2 U' R2 U' D'	{"position":"UF-UL, UFL-DFL","solver":"cherry","comm":"Not found."}	https://bit.ly/2Zq5WLo	2026-10-10
+parity.07	R U R' F' R U R' U' R' F R2 U' R' U'	{"position":"UF-UR, UFR-UBR","solver":"cherry","comm":"Not found."}	https://bit.ly/4cmOmHT	2026-10-10
+parity.08	U2 R' U R U2 R' L' U R U' L	{"position":"UF-UR, UFR-LUF","solver":"cherry","comm":"Not found."}	https://bit.ly/3CVNcSK	2026-10-10
+parity.09	R U D' R' F' R U R' U' R' F R2 U' R' U' R D R'	{"position":"UF-UR, UFR-LDB","solver":"cherry","comm":"Not found."}	https://bit.ly/3CXL5hi	2026-10-10
+parity.10	L' U L' U' L F L' U' L U L F' L2 U L2	{"position":"UF-UR, UFR-FDL","solver":"cherry","comm":"Not found."}	https://bit.ly/3CSEkgy	2026-10-10
+parity.11	U R' U R U' x' U L' U L U2 R U' R' U x	{"position":"UF-UR, UFR-RUB","solver":"cherry","comm":"Not found."}	https://bit.ly/303K8Wk	2026-10-10
+parity.12	U2 R' F R2 U' R' U' R U R' F' R U R' U	{"position":"UF-UR, UFR-RDF","solver":"cherry","comm":"Not found."}	https://bit.ly/3vTJkgA	2026-10-10
+parity.13	U R U' R' z R2 U D R' D' R U' R z'	{"position":"UF-UR, UFR-BUR","solver":"cherry","comm":"Not found."}	https://bit.ly/3sH4sry	2026-10-10
+parity.14	U2 D' R' F R2 U' R' U' R U R' F' R U R' U D	{"position":"UF-UR, UFR-BDR","solver":"cherry","comm":"Not found."}	https://bit.ly/3FYFkSD	2026-10-10
+parity.15	U' x U2 R2 F R F' R U2 r' U L U	{"position":"UF-UR, UFR-DFL","solver":"cherry","comm":"Not found."}	https://bit.ly/3sFTVgx	2026-10-10
+parity.16	U D R2 U' R2 U R2 D' R2 U R2 U' R2 U2	{"position":"UF-UR, UFR-DFR","solver":"cherry","comm":"Not found."}	https://bit.ly/3w1eoyl	2026-10-10
+parity.17	r2 D r2 U' r U r' U' r2 D r D' r U	{"position":"UF-UR, UFR-DBL","solver":"cherry","comm":"Not found."}	https://bit.ly/3LdnGwQ	2026-10-10
+parity.18	U R2 U' R U R' F' R U R' U' R' F R2 U' R U'	{"position":"UF-UR, UFR-DBR","solver":"cherry","comm":"Not found."}	https://bit.ly/35WO65T	2026-10-10
+parity.19	U D' R' F' R U R' U' R' F R2 U' R' U' R D	{"position":"UF-BR, UBR-BDL","solver":"cherry","comm":"Not found."}	https://bit.ly/45M6RTI	2026-10-10
+parity.20	F R' F R2 U' R' U' R U R' F' R U R' U' F'	{"position":"UB-UL, UFR-UBL","solver":"cherry","comm":"Not found."}	https://bit.ly/3wArqR8	2026-10-10
+parity.21	U' R' U' R U R' F' R U R' U' R' F R2	{"position":"UB-UL, UFR-BUL","solver":"cherry","comm":"Not found."}	https://bit.ly/3b6KO2M	2026-10-10
+parity.22	U R U R' F' R U R' U' R' F R2 U' R' U2	{"position":"UB-UR, UBR-UBL","solver":"cherry","comm":"Not found."}	https://bit.ly/2Ssw3hg	2026-10-10
+parity.23	U' R' F R2 U' R' U' R U R' F' R U R'	{"position":"UB-UR, UBR-RDF","solver":"cherry","comm":"Not found."}	https://bit.ly/314H6BF	2026-10-10
+parity.24	U' D' R2 U' R' U' R U R' F' R U R' U' R' F U D	{"position":"UB-UR, UBR-BDL","solver":"cherry","comm":"Not found."}	https://bit.ly/3i4ckyp	2026-10-10
+parity.25	x U2 R2 F R F' R U2 r' U L	{"position":"UB-UR, UBR-DFL","solver":"cherry","comm":"Not found."}	https://bit.ly/3HkAxvd	2026-10-10
+parity.26	U R' U' R U R' F' R U R' U' R' F R2 U2	{"position":"UF-UR, UFR-LUB","solver":"eggins","comm":"Not found."}	https://bit.ly/3OMue8W	2026-10-10
+ltct.01	U R U2 R D R' U' R D' R2 U R U2 R'	{"position":"UF-UR, UBR-LUB[FUR]","solver":"cherry","comm":"Not found."}	https://tinyurl.com/4267y8x9	2026-10-10
+ltct.02	U D' R2 D' R U R' D R2 U R' U2 R D	{"position":"UF-UR, UFR-BUL[LDB]","solver":"cherry","comm":"Not found."}	https://bit.ly/4c2p0yx	2026-10-10
+ltct.03	U D' R U' R2 D' R U R' D R U R U' R' U2 D	{"position":"UF-UR, UFR-RUB[RDB]","solver":"cherry","comm":"Not found."}	https://bit.ly/3sfGSoE	2026-10-10
+ltct.04	U2 D2 R' U R2 D R' U' R D' R' U' R' U R U' D2	{"position":"UF-UR, UFR-FUL[FDL]","solver":"cherry","comm":"Not found."}	https://tinyurl.com/vb2znfab	2026-10-10
+ltct.05	l F' L' F M' U L' U2 L U2	{"position":"UF-UR, UFR-DFL[RUB]","solver":"cherry","comm":"Not found."}	https://bit.ly/3C141xM	2026-10-10
+ltct.06	U' f R' F' R U2 R U2 R' U2 S'	{"position":"UF-UR, UFR-FUL[RUB]","solver":"cherry","comm":"Not found."}	https://bit.ly/3ObDPDU	2026-10-10
+ltct.07	R U R D R' U R D' R2 U' R U' R' U'	{"position":"UF-UR, UFR-LUF[LUB]","solver":"cherry","comm":"Not found."}	https://bit.ly/3FRLyDQ	2026-10-10
+ltct.08	U R U2 R' U' F' R U R' U' R' F R2 U' R'	{"position":"UF-UR, UFR-LUF[BUR]","solver":"cherry","comm":"Not found."}	https://bit.ly/3cQlGdZ	2026-10-10
+ltct.09	U D R' U2 R D R' U' R D' R2 U R U2 R' U R2 U' D'	{"position":"UF-UR, DFR-LDF[FUR]","solver":"eggins","comm":"Not found."}	https://bit.ly/3Pb4JhZ	2026-10-10
+ltct.10	U R2 D R' U R D' R2 U R U2 R'	{"position":"UF-UR, UFR-UBR[BUL]","solver":"eggins","comm":"Not found."}	https://bit.ly/42vkuEg	2026-10-10
+ltct.11	U2 R U R' U2 R' D' R U R' D R2 U' R' U R U' R'	{"position":"UF-UR, UFR-UBL[RUB]","solver":"eggins","comm":"Not found."}	https://bit.ly/3qogVCq	2026-10-10

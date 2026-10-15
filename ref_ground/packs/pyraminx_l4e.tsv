@@ -1,0 +1,36 @@
+case_key	alg	front_json	source_url	source_at
+l4e.01	(R U' R') U' (R U' R')	{"case":"DS2"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.02	(L' U L) U (L' U L)	{"case":"DS3"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.03	(R' L R L') U (L' U' L)	{"case":"DS4"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.04	L (U R U' R') L'	{"case":"DS5"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.05	R' (U' L' U L) R	{"case":"DS6"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.06	(R' L R L') U (R' L R L') U (R' L R L')	{"case":"DF1"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.07	(L R' L' R) U (L R' L' R)	{"case":"DF2"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.08	(R' L R L') U' (R' L R L')	{"case":"DF3"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.09	U' (R' L R L') (R U' R')	{"case":"DF4"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.10	U' (R U' R') (L' U' L)	{"case":"DF5"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.11	U (L' U L) (R U R')	{"case":"DF6"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.12	U L' U' L	{"case":"US1"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.13	U' R U R'	{"case":"US2"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.14	L R' L' R	{"case":"US3"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.15	R' L R L'	{"case":"US4"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.16	(R' L R L') (L' U L)	{"case":"US5"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.17	(L R' L' R) (R U' R')	{"case":"US6"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.18	R U' R'	{"case":"US7"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.19	L' U L	{"case":"US8"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.20	(R U R') U (R' L R L')	{"case":"UF1"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.21	(L' U' L) U' (L R' L' R)	{"case":"UF2"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.22	U (L' U L) U' (R U R')	{"case":"UF3"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.23	U' (R U' R') U (L' U' L)	{"case":"UF4"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.24	(R U R') U (L' U L)	{"case":"UF5"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.25	(L' U' L) U' (R U' R')	{"case":"UF6"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.26	U (R' L R L') U (L' U L)	{"case":"UF7"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.27	U' (L R' L' R) U' (R U' R')	{"case":"UF8"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.28	U (R U' R') (R' L R L')	{"case":"NP1"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.29	U' (L' U L) (L R' L' R)	{"case":"NP2"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.30	U' (L' U' L) U (R U R')	{"case":"NP3"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.31	U (R U R') U' (L' U' L)	{"case":"NP4"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.32	U (R U' R') U' (R U R')	{"case":"NP5"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.33	U' (L' U L) U (L' U' L)	{"case":"NP6"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.34	U' (L' U L) (R U' R')	{"case":"NP7"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10
+l4e.35	U (R U' R') (L' U L)	{"case":"NP8"}	http://cubing.mikeg.me.uk/cubing-algs/html/l4e.html	2026-10-10

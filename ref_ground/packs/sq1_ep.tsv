@@ -1,0 +1,100 @@
+case_key	alg	front_json	source_url	source_at
+ep.01	/ (-3,0) / (0,3) / (0,-3) / (0,3) / (2,0) / (0,2) / (-2,0) / (4,0) / (0,-2) / (0,2) / (-1,4) / (0,-3) / (0,3) *	{"case":"Adj on U","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.02	(U) / (3,3) / (-1,0) / (2,-4) / (4,-2) / (0,-2) / (-4,2) / (1,-5) / (3,0) / (3,3) / (3,0)	{"case":"Opp on U","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.03	/ (0,3) / (1,0) / (-3,0) / (-1,0) / (0,-3) / (1,0) / (3,0) / (-1,0)	{"case":"CwU on U"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.04	(1,0) / (-3,0) / (-1,0) / (0,3) / (1,0) / (3,0) / (-1,0) / (0,-3) /	{"case":"CcwU on U"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.05	(U) / (3,3) / (0,3) / (1,1) / (-1,-4) / (-3,-3)	{"case":"Z on U"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.06	/ (3,-3) / (3,-3) / (0,1) / (-3,3) / (-3,3) / (-1,0)	{"case":"H on U"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.07	(0,-1) / (-2,-2) / (2,0) / (-3,-3) / (0,1) / (-2,-2) / (0,-2) / (2,2) / (0,-1) / (3,3) / (3,3)	{"case":"CwO on U","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.08	/ (-3,-3) / (0,1) / (-2,-2) / (0,2) / (2,2) / (0,-1) / (3,3) / (-2,0) / (2,2) / (-3,-2)	{"case":"CcwO on U","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.09	(U2) (0,-1) / (1,-2) / (-4,0) / (0,3) / (1,0) / (3,-2) / (-4,0) / (-4,0) / (-2,2) / (-1,0) / (0,-3) / (-3,0) *	{"case":"W on U","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.10	/ (0,3) / (-3,0) / (3,0) / (-3,0) / (0,-2) / (-2,0) / (0,2) / (0,-4) / (2,0) / (-2,0) / (-4,1) / (3,0) / (-3,0) *	{"case":"Adj on D","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.11	(U2 D) (1,0) / (3,0) / (-1,-1) / (-2,1) / (-1,0)	{"case":"Adj-Adj"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.12	(D) (0,-1) / (0,-3) / (0,3) / (1,-2) / (-1,-1) / (0,3) / (0,-3) / (0,3) / (0,1)	{"case":"Opp-Adj"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.13	(D') / (-3,-3) / (0,1) / (0,-2) / (0,-4) / (-4,0) / (-4,0) / (-2,0) / (5,0) / (-3,-3) / (0,-3)	{"case":"CwU-Adj","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.14	/ (3,3) / (-5,0) / (2,0) / (4,0) / (4,0) / (0,4) / (0,2) / (0,-1) / (3,3) / (0,3)	{"case":"CcwU-Adj","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.15	/ (-3,0) / (3,3) / (3,0) / (1,0) / (4,-2) / (2,-4) / (3,-1) / (0,-3) / (-3,-3) / (0,3)	{"case":"Z-Adj","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.16	/ (-3,0) / (3,3) / (3,0) / (1,0) / (4,-2) / (2,-4) / (4,0) / (-1,-4) / (-3,-3) / (0,3)	{"case":"H-Adj","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.17	(D) / (-3,0) / (-2,0) / (5,-1) / (-5,0) / (3,0) / (-3,0) / (0,1) / (-3,0) / (-3,0) / (-1,0)	{"case":"CwO-Adj"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.18	(D) (1,0) / (3,0) / (3,0) / (0,-1) / (3,0) / (-3,0) / (5,0) / (-5,1) / (2,0) / (3,0)	{"case":"CcwO-Adj"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.19	(U) (1,0) / (3,0) / (-1,-1) / (3,0) / (-3,0) / (1,1) / (-3,0) / (5,0) *	{"case":"W-Adj"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.20	(D) / (3,3) / (1,0) / (4,-2) / (2,-4) / (0,2) / (-2,4) / (5,-1) / (0,3) / (-3,-3) / (3,0)	{"case":"Opp on D","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.21	(D) (1,0) / (-1,0) / (-3,0) / (0,-1) / (6,0) / (1,0) / (3,0) / (0,1) / (5,0)	{"case":"Adj-Opp"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.22	(1,0) / (-1,-1) / (6,0) / (1,1) / (5,0)	{"case":"Opp-Opp"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.23	(U2) / (3,0) / (-3,0) / (3,0) / (0,3) / (1,0) / (0,2) / (4,0) / (0,-4) / (2,0) / (0,5) / (3,3) / (0,-3)	{"case":"CwU-Opp","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.24	(U2 D) / (-3,-3) / (0,-5) / (-2,0) / (0,4) / (-4,0) / (0,-2) / (-1,0) / (0,-3) / (-3,0) / (3,0) / (-3,0) / (0,3)	{"case":"CcwU-Opp","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.25	(D) / (-3,-3) / (0,-3) / (-2,-2) / (2,0) / (-2,4) / (2,-4) / (0,-1) / (3,3) / (-3,0) *	{"case":"Z-Opp","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.26	(D) / (3,3) / (1,0) / (-2,4) / (2,-4) / (2,0) / (-3,-3) / (0,-3) / (-3,-3) / (3,0) *	{"case":"H-Opp","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.27	(0,-1) / (1,1) / (3,0) / (-1,-1) / (3,0) / (1,1) / (5,0)	{"case":"CwO-Opp"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.28	(D) (0,-1) / (1,1) / (-3,0) / (-1,-1) / (-3,0) / (1,1) / (5,0)	{"case":"CcwO-Opp"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.29	(U' D) (1,0) / (0,3) / (-1,0) / (0,3) / (1,0) / (2,2) / (0,1) / (0,3) / (1,0) / (-3,0) / (-1,0)	{"case":"W-Opp"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.30	/ (0,-3) / (0,-1) / (3,0) / (0,1) / (0,3) / (0,-1) / (-3,0) / (0,1)	{"case":"CwU on D"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.31	/ (3,3) / (5,0) / (2,0) / (4,0) / (0,4) / (0,4) / (0,2) / (0,1) / (3,3) / (-3,0)	{"case":"Adj-CwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.32	/ (3,3) / (5,0) / (0,2) / (-4,0) / (0,4) / (2,0) / (0,1) / (3,0) / (0,3) / (0,-3) / (0,3) / (-3,0)	{"case":"Opp-CwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.33	(U' D) (1,0) / (5,-1) / (-3,0) / (1,1) / (-3,0) / (5,0) *	{"case":"CwU-CwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.34	(U D) (1,0) / (5,-1) / (-5,1) / (-3,0) / (0,3) / (-1,-1) / (1,-2) / (-4,0) *	{"case":"CcwU-CwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.35	(U) (0,-1) / (-3,0) / (1,1) / (2,-1) / (0,-3) / (0,-3) / (1,1) / (-1,2) / (0,4)	{"case":"Z-CwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.36	(D') (0,-1) / (-3,0) / (0,-5) / (0,3) / (-5,0) / (5,0) / (0,-3) / (1,3) / (5,-1) / (0,-5) *	{"case":"H-CwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.37	(D') / (3,3) / (5,0) / (-4,0) / (0,-2) / (4,2) / (4,-2) / (-4,0) / (0,-1) / (3,0) / (3,3) / (-3,0) / (0,-3)	{"case":"CwO-CwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.38	/ (3,0) / (-3,-3) / (-3,0) / (0,1) / (4,0) / (-4,2) / (-4,-2) / (0,2) / (4,0) / (-5,0) / (-3,-3) / (0,3)	{"case":"CcwO-CwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.39	(D2) / (0,-3) / (4,0) / (0,-1) / (0,2) / (4,4) / (2,0) / (1,0) / (0,-3) / (3,0) / (-4,0) / (3,0) / (0,-3)	{"case":"W-CwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.40	(0,-1) / (3,0) / (0,1) / (0,-3) / (0,-1) / (-3,0) / (0,1) / (0,3)	{"case":"CcwU on D"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.41	(U) / (-3,-3) / (0,-1) / (0,-2) / (0,-4) / (0,-4) / (-4,0) / (-2,0) / (-5,0) / (-3,-3) / (3,0)	{"case":"Adj-CcwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.42	(D2) / (0,-3) / (0,3) / (0,-3) / (-3,0) / (0,-1) / (-2,0) / (0,-4) / (4,0) / (0,-2) / (-5,0) / (-3,-3) / (3,0)	{"case":"Opp-CcwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.43	(U D) (0,-1) / (1,-5) / (-1,5) / (0,3) / (-3,0) / (1,1) / (2,-1) / (0,4) *	{"case":"CwU-CcwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.44	(U D) (1,0) / (3,0) / (-1,-1) / (3,0) / (-5,1) / (5,0) *	{"case":"CcwU-CcwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.45	(U D)(0,-1) / (-3,0) / (1,1) / (2,-1) / (0,3) / (0,-3) / (1,1) / (-1,2) / (0,-2)	{"case":"Z-CcwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.46	(D) (0,-1) / (-5,1) / (-1,-3) / (0,3) / (-5,0) / (5,0) / (0,-3) / (0,5) / (3,0) / (0,-5) *	{"case":"H-CcwU"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.47	/ (3,0) / (0,-3) / (3,0) / (3,0) / (0,5) / (2,-4) / (-4,0) / (0,-4) / (-4,-2) / (1,0) / (-3,-3) / (-3,0)	{"case":"CwO-CcwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.48	(D) / (3,3) / (-1,0) / (4,2) / (0,4) / (4,0) / (-2,4) / (0,-5) / (-3,0) / (-3,0) / (0,3) / (-3,0) / (3,0)	{"case":"CcwO-CcwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.49	(U2 D') / (-3,0) / (4,0) / (-3,0) / (0,3) / (-1,0) / (-2,0) / (-4,-4) / (0,-2) / (0,1) / (-4,0) / (0,3) / (0,3)	{"case":"W-CcwU","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.50	(D) / (-3,-3) / (-3,0) / (-1,-1) / (4,1) / (3,3)	{"case":"Z on D"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.51	/ (-3,0) / (3,3) / (3,0) / (5,0) / (-4,2) / (-2,4) / (3,1) / (0,3) / (-3,-3) / (3,6)	{"case":"Adj-Z","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.52	(U) / (-3,-3) / (0,-1) / (-4,2) / (4,-2) / (-4,0) / (-2,-2) / (0,3) / (3,3) / (0,3) *	{"case":"Opp-Z","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.53	(U' D) (1,0) / (0,3) / (-1,-1) / (1,-2) / (-3,0) / (3,0) / (-1,-1) / (-2,1) / (2,0)	{"case":"CwU-Z"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.54	(D) (1,0) / (0,3) / (-1,-1) / (1,-2) / (3,0) / (3,0) / (-1,-1) / (-2,1) / (-4,0)	{"case":"CcwU-Z"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.55	(D) (1,0) / (0,3) / (-1,-1) / (4,-2) / (-1,-1) / (-2,1) / (-1,0)	{"case":"Z-Z"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.56	/ (3,3) / (0,-3) / (1,-5) / (4,-2) / (-2,1) / (3,3) / *	{"case":"H-Z"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.57	/ (3,3) / (3,0) / (2,2) / (2,0) / (4,-2) / (2,-4) / (2,0) / (5,5) / (0,-3) / (-3,-3) / (0,3) *	{"case":"CwO-Z","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.58	(D) / (3,3) / (0,3) / (-5,-5) / (-2,0) / (-2,4) / (-4,2) / (-2,0) / (-2,-2) / (-3,0) / (-3,-3) / *	{"case":"CcwO-Z","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.59	(U') / (3,3) / (1,-2) / (4,-4) / (2,-4) / (-2,4) / (1,0) / (0,-3) / (3,3) / (3,0) / (3,0)	{"case":"W-Z","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.60	/ (3,-3) / (3,-3) / (-1,0) / (-3,3) / (-3,3) / (0,1)	{"case":"H on D"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.61	/ (-3,0) / (3,3) / (3,0) / (5,0) / (-4,2) / (-2,4) / (2,0) / (-2,1) / (3,3) / (0,3)	{"case":"Adj-H","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.62	/ (-3,-3) / (3,0) / (-3,-3) / (2,0) / (-4,2) / (4,-2) / (1,0) / (-3,-3) / (3,0) *	{"case":"Opp-H","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.63	(U) (1,0) / (-1,5) / (3,1) / (-3,0) / (0,5) / (0,-5) / (3,0) / (-5,0) / (0,-3) / (5,0) *	{"case":"CwU-H"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.64	(U') (1,0) / (0,3) / (5,0) / (-3,0) / (0,5) / (0,-5) / (3,0) / (-3,-1) / (1,-5) / (5,0) *	{"case":"CcwU-H"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.65	/ (-3,-3) / (3,0) / (5,-1) / (2,-4) / (-1,2) / (-3,-3) / *	{"case":"Z-H"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.66	/ (3,-3) / (3,-3) / (-1,1) / (3,-3) / (3,-3) / (-5,5)	{"case":"H-H"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.67	/ (-3,-3) / (0,5) / (-4,2) / (-2,4) / (-2,0) / (-2,-2) / (-1,2) / (-3,-3) / (-3,0) *	{"case":"CwO-H","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.68	/ (3,3) / (1,-2) / (2,2) / (2,0) / (2,-4) / (4,-2) / (0,-5) / (3,3) / (3,0) *	{"case":"CcwO-H","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.69	(U2) / (3,0) / (0,-3) / (3,0) / (3,0) / (2,-1) / (0,2) / (-2,4) / (2,-4) / (2,0) / (-1,2) / (-3,-3) / (-3,0)	{"case":"W-H","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.70	/ (3,3) / (-1,0) / (2,2) / (-2,0) / (4,4) / (0,1) / (3,3) / (-2,0) / (2,2) / (0,1)	{"case":"CwO on D","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.71	(U) (0,-1) / (0,-3) / (0,-3) / (1,0) / (0,-3) / (0,3) / (0,-5) / (-1,5) / (0,-2) / (0,-3) /	{"case":"Adj-CwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.72	(1,0) / (-1,-1) / (0,-3) / (1,1) / (0,-3) / (-1,-1) / (0,-5)	{"case":"Opp-CwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.73	(U') / (-3,-3) / (0,1) / (-2,-4) / (-4,0) / (0,-4) / (-4,2) / (5,0) / (0,3) / (0,3) / (-3,0) / (0,3) / (0,-3)	{"case":"CwU-CwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.74	(U') / (0,-3) / (3,3) / (0,3) / (-1,0) / (0,-4) / (-2,4) / (2,4) / (-2,0) / (0,-4) / (0,5) / (3,3) / (-3,0)	{"case":"CcwU-CwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.75	(U) / (-3,-3) / (-3,0) / (5,5) / (0,2) / (-4,2) / (-2,4) / (0,2) / (2,2) / (0,3) / (3,3) / *	{"case":"Z-CwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.76	/ (-3,-3) / (2,-1) / (-2,-2) / (0,-2) / (4,-2) / (2,-4) / (5,0) / (-3,-3) / (0,-3) *	{"case":"H-CwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.77	(1,0) / (5,-1) / (-3,0) / (1,1) / (-4,2) / (1,1) / (0,-3) / (5,0) *	{"case":"CwO-CwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.78	(1,0) / (2,2) / (3,0) / (1,1) / (-3,0) / (2,2) / (3,0) / (-5,-5) / (-1,-3) *	{"case":"CcwO-CwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.79	(1,0) / (5,-1) / (-3,0) / (1,1) / (-3,0) / (3,0) / (-1,2) / (1,1) / (0,-3) / (2,0) *	{"case":"W-CwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.80	(0,-1) / (-2,-2) / (2,0) / (-3,-3) / (0,-1) / (-4,-4) / (2,0) / (-2,-2) / (1,0) / (-3,-3)	{"case":"CcwO on D","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.81	(U) / (0,3) / (0,2) / (1,-5) / (0,5) / (0,-3) / (0,3) / (-1,0) / (0,3) / (0,3) / (0,1)	{"case":"Adj-CcwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.82	(1,0) / (-1,-1) / (0,3) / (1,1) / (0,3) / (-1,-1) / (0,-5)	{"case":"Opp-CcwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.83	/ (-3,-3) / (0,-5) / (0,4) / (2,0) / (-2,-4) / (2,-4) / (0,4) / (1,0) / (0,-3) / (-3,-3) / (0,3) / (3,0)	{"case":"CwU-CcwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.84	(U') / (0,-3) / (3,0) / (0,-3) / (0,-3) / (-5,0) / (4,-2) / (0,4) / (4,0) / (2,4) / (0,-1) / (3,3) / (0,3)	{"case":"CcwU-CcwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.85	/ (-3,-3) / (0,-3) / (-2,-2) / (0,-2) / (2,-4) / (4,-2) / (0,-2) / (-5,-5) / (3,0) / (3,3) / (-3,0) *	{"case":"Z-CcwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.86	/ (3,3) / (-5,0) / (-2,4) / (-4,2) / (0,2) / (2,2) / (-2,1) / (3,3) / (0,3) *	{"case":"H-CcwO","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.87	(1,3) / (5,5) / (-3,0) / (-2,-2) / (3,0) / (-1,-1) / (-3,0) / (-2,-2) / (-1,0) *	{"case":"CwO-CcwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.88	(1,0) / (0,3) / (-1,-1) / (4,-2) / (-1,-1) / (3,0) / (-5,1) / (5,0) *	{"case":"CcwO-CcwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.89	(U) (1,0) / (0,3) / (-1,-1) / (1,-2) / (-3,0) / (3,0) / (-1,-1) / (3,0) / (-5,1) / (-4,0) *	{"case":"W-CcwO"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.90	(D') / (0,3) / (1,0)/ (2,-2) / (4,0) / (4,0) / (-3,2) / (-1,0) / (0,-3) / (4,0) / (-1,2) / (3,-2) *	{"case":"W on D","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.91	(D') (0,-1) / (0,-3) / (1,1) / (0,-3) / (0,3) / (-1,-1) / (0,3) / (0,-5) *	{"case":"Adj-W"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.92	(U D2) (1,0) / (0,3) / (0,-1) / (0,3) / (0,1) / (2,2) / (1,0) / (0,3) / (0,1) / (-3,0) / (-1,0)	{"case":"Opp-W"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.93	(U' D2) / (0,3) / (0,-4) / (0,3) / (-3,0) / (0,1) / (0,2) / (4,4) / (2,0) / (-1,0) / (0,4) / (-3,0) / (-3,0)	{"case":"CwU-W","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.94	(U2) / (3,0) / (0,-4) / (1,0) / (-2,0) / (-4,-4) / (0,-2) / (0,-1) / (3,0) / (0,-3) / (0,4) / (0,-3) / (3,0)	{"case":"CcwU-W","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.95	/ (-3,-3) / (2,-1) / (4,-4) / (4,-2) / (-4,2) / (0,-1) / (3,0) / (-3,-3) / (0,-3) / (0,-3)	{"case":"Z-W","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.96	(D2) / (0,-3) / (3,0) / (0,-3) / (0,-3) / (1,-2) / (-2,0) / (-4,2) / (4,-2) / (0,-2) / (-2,1) / (3,3) / (0,-6)	{"case":"H-W","parity":true}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.97	(D') (0,-1) / (-3,0) / (1,1) / (2,-1) / (0,3) / (0,-3) / (1,1) / (0,-3) / (-1,5) / (0,4) *	{"case":"CwO-W"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.98	(0,-1) / (1,-5) / (0,3) / (-1,-1) / (0,3) / (0,-3) / (-2,1) / (-1,-1) / (3,0) / (0,1) *	{"case":"CcwO-W"}	https://sarah.cubing.net/square-1/ep	2026-10-10
+ep.99	(U) (1,0) / (5,-1) / (3,3) / (3,0) / (1,1) / (-3,0) / (3,-3) / (5,0) *	{"case":"W-W"}	https://sarah.cubing.net/square-1/ep	2026-10-10

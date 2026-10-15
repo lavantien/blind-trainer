@@ -1,0 +1,25 @@
+case_key	alg	front_json	source_url	source_at
+m2.01	M2	{"buffer":"DF","target":"UB"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.02	U R U' M2 U R' U'	{"buffer":"DF","target":"FR"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.03	U R2 U' M2 U R2 U'	{"buffer":"DF","target":"DR"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.04	U R' U' M2 U R U'	{"buffer":"DF","target":"BR"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.05	R' U R U' M2 U R' U' R	{"buffer":"DF","target":"UR"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.06	U' L' U M2 U' L U	{"buffer":"DF","target":"FL"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.07	U' L2 U M2 U' L2 U	{"buffer":"DF","target":"DL"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.08	U' L U M2 U' L' U	{"buffer":"DF","target":"BL"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.09	L U' L' U M2 U' L U L'	{"buffer":"DF","target":"UL"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.10	x' U' R U M2 U' R' U x	{"buffer":"DF","target":"RU"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.11	x' U' R2 U M2 U' R2 U x	{"buffer":"DF","target":"RF"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.12	x' U' R' U M2 U' R U x	{"buffer":"DF","target":"RD"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.13	x' R' U' R U M2 U' R' U R x	{"buffer":"DF","target":"RB"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.14	x' U L' U' M2 U L U' x	{"buffer":"DF","target":"LU"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.15	x' U L2' U' M2 U L2 U' x	{"buffer":"DF","target":"LF"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.16	x' U L U' M2 U L' U' x	{"buffer":"DF","target":"LD"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.17	x' L U L' U' M2 U L U' L' x	{"buffer":"DF","target":"LB"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.18	M U2 M U2	{"buffer":"DF","target":"DB"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.19	U2 M' U2 M'	{"buffer":"DF","target":"UF"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.20	D M' U R2 U' M U R2 U' D' M2	{"buffer":"DF","target":"FU"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.21	U B' R U' B M2 B' U R' B U'	{"buffer":"DF","target":"BU"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.22	M2' D U R2 U' M' U R2 U' M D'	{"buffer":"DF","target":"BD"}	https://www.speedsolving.com/wiki/index.php/M2	2026-10-10
+m2.23	M2 U' M U2 M U' M' U2 M' U2	{"kind":"parity"}	https://www.youtube.com/watch?v=JTkSQxWk_u8	2026-10-10
+m2.24	F2 M' U M' U M' U2 M U M U M U2 F2	{"kind":"buffer edge flip","buffer":"DF","flips":"DF+UB"}	http://www.cubefreak.net/bld/m2_guide.html	2026-10-10

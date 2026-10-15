@@ -1,0 +1,8 @@
+case_key	alg	front_json	source_url	source_at
+co.01	(1,0)/(3,0)/(-1,0)	{"case":"CO 01"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.02	(1,0) / (3,6) / (-1,0)	{"case":"CO 02"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.03	(1,0)/(-1,0)	{"case":"CO 03"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.04	(1,0) / (3,3) / (-1,0)	{"case":"CO 04"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.05	(1,0) / (0,3) / (0,3) / (-1,0)	{"case":"CO 05"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.06	(1,0) / (3,0) / (3,0) / (-1,0)	{"case":"CO 06"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10
+co.07	/ (6,6) / (-1,1)	{"case":"CO 07"}	https://www.speedcube.us/blogs/square-1-co-corner-orientation	2026-10-10

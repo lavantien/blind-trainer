@@ -1,0 +1,40 @@
+case_key	alg	front_json	source_url	source_at
+4lll.01	F (R U R' U') F'	{"case":"EO1"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.02	F (U R U' R') F'	{"case":"EO2"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.03	F R U2 (R2' F R F') U2' F'	{"case":"EO3"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.04	(R U R' U') (R U R' U2') (R U' R')	{"case":"CO1"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.05	F (R U2 R' U' R U' R') F'	{"case":"CO2"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.06	(R U2 R') U (R U2 R')	{"case":"CO3"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.07	(R U R' U') (R' F R U) (R U' R' F')	{"case":"CO4"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.08	R U R' U R U2' R'	{"case":"CO5"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.09	R' U' R U' R' U2 R	{"case":"CO6"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.10	R U2 R' U' R U' R'	{"case":"CO7"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.11	R U R' U2 R U2 R'	{"case":"CO8"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.12	(R U2 R' U') (R U R' U') (R U' R')	{"case":"CO9"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.13	(R U R' U) (R U' R' U) (R U2' R')	{"case":"CO10"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.14	(R U R' U) (R U R' U') (R U2' R')	{"case":"CO11"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.15	(R U2 R' U' R U' R2') (U' R' U' R' U2 R)	{"case":"CO12"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.16	R U2 R2' U' R2 U' R2' U2 R	{"case":"CO13"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.17	R' U2' R2 U R2' U R2 U2' R'	{"case":"CO14"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.18	(R U R' U2) (R U2' R') (U R U2' R')	{"case":"CO15"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.19	(R U2 R' U') (R U2 R' U2') (R U' R')	{"case":"CO16"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.20	R2 U2' R2' U' R2 U2' R2'	{"case":"EP1"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.21	R2 U2 R2' U R2 U2 R2'	{"case":"EP2"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.22	(R U R' F') (R U R' U') (R' F R2 U' R')	{"case":"EP3"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.23	(R U R' U) (R' U' R2 U') (R' U R' U) R U2'	{"case":"EP4"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.24	(L R U2) (L' U R') (L U' R U2) (L' U2 R')	{"case":"EP5"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.25	(R' BR' R BR) (R' F' R BR') (R' BR F R)	{"case":"CP1"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.26	(R' F' BR' R) (BR R' F R) (BR R' BR R)	{"case":"CP2"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.27	BR' (R' U L U') (R' U L' U') R2 BR	{"case":"CP3"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.28	BR' R2' (U L U' R) (U L' U' R) BR	{"case":"CP4"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.29	y L' (R U2 R' U') (R U R' U') (R U R' U') R U' R' L	{"case":"CP5"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.30	(R U R' U) (R' U' R F') (R U R' U') (R' F R2 U') (R2' U R U')	{"case":"CP6"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.31	R2 U R' U' y (R U R' U') (R U R' U') (R U R') y' R U' R2'	{"case":"CP7"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.32	F (R U2 R' U' R U' R') F' R' y' (R' U' R U' R' U2 R BR) U'	{"case":"CP8"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.33	[(R U R' U) (R' U' R2 U') (R' U R' U R) U] *2	{"case":"CP9"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.34	R2 U2 R2' U' R2 U' R2' y' R2' U' R2 U' R2' U2 R2 U'	{"case":"CP10"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.35	R2' U2' R2 U R2' U R2 y R2 U R2' U R2 U2' R2' U	{"case":"CP11"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.36	R2 U2' R2' U' R2 U2' (R' U' R' U') (R' F R2 U') (R' U' R U) R' F'	{"case":"CP12"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.37	(R' U2 R U') (R' U2 R U2') (R' U' R U2') (R' U R U2') (R' U R)	{"case":"CP13"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.38	(R2 U2' R2' U') (R2 U R2' U') (R2 U' R2' U') (R2 U2' R2')	{"case":"CP14"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
+4lll.39	(R2 U2 R2' U) (R2 U' R2' U) (R2 U' R2' U') (R2 U2 R2')	{"case":"CP15"}	https://www.cubeskills.com/uploads/pdf/tutorials/intermediate-megaminx-techniques.pdf	2026-10-10
