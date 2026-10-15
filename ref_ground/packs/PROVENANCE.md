@@ -55,6 +55,6 @@ bld_3style_specials.tsv derives from the two blddb workbooks already committed u
 
 ## verification
 
-Row counts of the 15 imported files were checked against the origin files at import time: 42, 15, 35, 39, 169, 7, 7, 16, 99, 5, 12, 36, 85, 40, 24, total 633 rows. Every copy matched its origin by sha-256 before commit. The token inventory in token_inventory.md enumerates the distinct alg tokens per file and feeds the engine grammar pinning.
+Row counts of the 15 imported files were checked against the origin files at import time: 42, 15, 35, 39, 169, 7, 7, 16, 99, 5, 12, 36, 85, 40, 24, total 631 rows. Every copy matched its origin by sha-256 before commit. The token inventory in token_inventory.md enumerates the distinct alg tokens per file and feeds the engine grammar pinning.
 
 The 3 authored cfop files add 21, 57, and 164 rows, captured 2026-10-16: column format, key uniqueness, row counts, and token grammar scope were verified by playground/a8/grammar_scan.py against the bt-core Alg token grammar, and the f2l case-to-alg pairing was verified to reproduce the archived PDF's content-stream order exactly. Mechanical verification of the algs themselves is wave B work, not claimed here.
