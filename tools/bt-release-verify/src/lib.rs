@@ -189,6 +189,7 @@ fn cfg_u64(section: &Value, key: &str) -> Result<u64, String> {
     section
         .pointer(&format!("/{key}"))
         .and_then(Value::as_u64)
+        .filter(|value| *value >= 1)
         .ok_or_else(|| format!("config release.{key} must be a positive integer"))
 }
 
@@ -588,6 +589,12 @@ mod tests {
             serde_json::from_str(&full_config_json().replace("[\"menu\",", "[7,")).expect("json");
         let err = release_cfg_from(&bad_shots).expect_err("bad shots");
         assert!(err.contains("e2e.shots"), "err: {err}");
+        let zero_timeout: Value = serde_json::from_str(
+            &full_config_json().replace("\"run_timeout_secs\": 120", "\"run_timeout_secs\": 0"),
+        )
+        .expect("json");
+        let err = release_cfg_from(&zero_timeout).expect_err("zero timeout");
+        assert!(err.contains("run_timeout_secs"), "err: {err}");
     }
 
     #[test]
