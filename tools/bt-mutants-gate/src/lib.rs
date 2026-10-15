@@ -70,14 +70,28 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
         .ok_or_else(|| malformed_file("missing outcomes array"))?;
     let missed_counter = uint_counter(&root, "missed")?;
     let timeout_counter = uint_counter(&root, "timeout")?;
+    let caught_counter = uint_counter(&root, "caught")?;
+    let unviable_counter = uint_counter(&root, "unviable")?;
     let mut survivors = BTreeMap::new();
     let mut missed_seen = 0u64;
     let mut timeout_seen = 0u64;
+    let mut caught_seen = 0u64;
+    let mut unviable_seen = 0u64;
+    let mut mutant_seen = 0u64;
     for outcome in outcomes {
         let scenario = outcome
             .get("scenario")
             .ok_or_else(|| malformed_outcome("missing scenario"))?;
+        let summary = outcome
+            .get("summary")
+            .and_then(Value::as_str)
+            .ok_or_else(|| malformed_outcome("missing summary string"))?;
         if scenario.as_str() == Some("Baseline") {
+            if summary != "Success" {
+                return Err(GateError::Violation(format!(
+                    "baseline summary is '{summary}', not Success"
+                )));
+            }
             continue;
         }
         if let Some(label) = scenario.as_str() {
@@ -85,17 +99,15 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
                 "scenario string '{label}' is not Baseline"
             )));
         }
-        let summary = outcome
-            .get("summary")
-            .and_then(Value::as_str)
-            .ok_or_else(|| malformed_outcome("missing summary string"))?;
         let mutant = scenario
             .get("Mutant")
             .and_then(Value::as_object)
             .ok_or_else(|| malformed_outcome("scenario object without Mutant"))?;
         let key = parse_key(mutant)?;
+        mutant_seen += 1;
         match summary {
-            "CaughtMutant" | "Unviable" => {}
+            "CaughtMutant" => caught_seen += 1,
+            "Unviable" => unviable_seen += 1,
             "MissedMutant" => {
                 *survivors.entry(key).or_insert(0) += 1;
                 missed_seen += 1;
@@ -111,6 +123,11 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
             }
         }
     }
+    if mutant_seen == 0 {
+        return Err(GateError::Violation(
+            "no mutant outcomes present, refusing an empty run".to_string(),
+        ));
+    }
     if missed_seen != missed_counter {
         return Err(GateError::Violation(format!(
             "missed counter mismatch: outcomes count {missed_seen} != file counter {missed_counter}"
@@ -119,6 +136,16 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
     if timeout_seen != timeout_counter {
         return Err(GateError::Violation(format!(
             "timeout counter mismatch: outcomes count {timeout_seen} != file counter {timeout_counter}"
+        )));
+    }
+    if caught_seen != caught_counter {
+        return Err(GateError::Violation(format!(
+            "caught counter mismatch: outcomes count {caught_seen} != file counter {caught_counter}"
+        )));
+    }
+    if unviable_seen != unviable_counter {
+        return Err(GateError::Violation(format!(
+            "unviable counter mismatch: outcomes count {unviable_seen} != file counter {unviable_counter}"
         )));
     }
     Ok(survivors)
@@ -269,6 +296,17 @@ mod tests {
 
     const NULL_FUNCTION_MISSED: &str = r#"{"total_mutants":1,"caught":0,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
     {"scenario":{"Mutant":{"name":"src/a.rs:7:5: delete -","package":"bt-x","file":"src/a.rs","function":null,"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"","genre":"UnaryOperator"}},"summary":"MissedMutant"}]}"#;
+
+    const FAILED_BASELINE: &str = r#"{"total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Failure"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
+
+    const BASELINE_ONLY: &str = r#"{"total_mutants":0,"caught":0,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"}]}"#;
+
+    const CAUGHT_COUNTER_LIE: &str = r#"{"total_mutants":1,"caught":0,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
 
     const COMMENTED_ALLOWLIST: &str =
         "# columns: file\tfunction\tgenre\treplacement\tcount\tjustification\n";
@@ -458,6 +496,37 @@ mod tests {
         assert!(msg.contains("not in allowlist"), "got: {msg}");
         assert!(
             msg.contains("file=src/a.rs function= genre=UnaryOperator"),
+            "got: {msg}"
+        );
+    }
+
+    #[test]
+    fn failed_baseline_fails_even_with_every_mutant_caught() {
+        let err = gate(FAILED_BASELINE, COMMENTED_ALLOWLIST).unwrap_err();
+        assert!(matches!(err, GateError::Violation(_)));
+        let msg = err.to_string();
+        assert!(
+            msg.contains("baseline summary is 'Failure', not Success"),
+            "got: {msg}"
+        );
+    }
+
+    #[test]
+    fn outcomes_without_any_mutant_fail() {
+        let err = gate(BASELINE_ONLY, COMMENTED_ALLOWLIST).unwrap_err();
+        assert!(matches!(err, GateError::Violation(_)));
+        let msg = err.to_string();
+        assert!(msg.contains("no mutant outcomes"), "got: {msg}");
+    }
+
+    #[test]
+    fn caught_counter_mismatch_fails() {
+        let msg = gate(CAUGHT_COUNTER_LIE, COMMENTED_ALLOWLIST)
+            .unwrap_err()
+            .to_string();
+        assert!(msg.contains("caught counter mismatch"), "got: {msg}");
+        assert!(
+            msg.contains("outcomes count 1 != file counter 0"),
             "got: {msg}"
         );
     }
