@@ -1,5 +1,5 @@
 {
-  "app": {"window": {"width": 1280, "height": 800, "title": "blind trainer"}, "memo": {"cadence_ms": 800, "mode": "per-orbit"}, "drill": {"reps": 6}, "smoke_seed": 20261012},
+  "app": {"window": {"width": 1280, "height": 800, "title": "blind trainer"}, "memo": {"cadence_ms": 800, "mode": "per-orbit"}, "drill": {"reps": 6}, "smoke_seed": 20261012, "replay": {"secs_per_move": 0.5, "yaw_deg": 45.0, "pitch_deg": 30.0, "distance": 6.0, "zoom_min": 3.5, "zoom_max": 12.0, "pitch_clamp_deg": [-80.0, 80.0]}},
   "ga": {"seed": 20261012, "population": 200, "generations": 500, "elite": 2, "tournament": 2, "pool_top_k": 1600, "weights": {"confusion": 1.0, "flow": 0.5, "complexity": 0.1}, "mutation": {"swap": 0.15, "replace": 0.05}},
   "memofreq": {"samples": 200000, "seed": 20261012},
   "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}},
