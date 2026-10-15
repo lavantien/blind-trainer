@@ -190,8 +190,8 @@ foreach ($ext in $externals) {
     if (-not (Remove-Tree $ext)) { exit 1 }
 }
 if ($Deep) {
-    foreach ($deep in $deepDirs) {
-        if (-not (Remove-Tree $deep)) { exit 1 }
+    foreach ($dir in $deepDirs) {
+        if (-not (Remove-Tree $dir)) { exit 1 }
     }
 }
 
