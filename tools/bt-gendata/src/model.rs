@@ -267,7 +267,7 @@ mod tests {
 
     #[test]
     fn manifest_without_synth_params_hash_is_rejected() {
-        let value = serde_json::to_value(&manifest_fixture()).unwrap();
+        let value = serde_json::to_value(manifest_fixture()).unwrap();
         let stripped = {
             let mut object = value.as_object().unwrap().clone();
             object.remove("synth_params_sha256");

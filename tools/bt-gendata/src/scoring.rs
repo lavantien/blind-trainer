@@ -610,7 +610,7 @@ mod tests {
                 if ab != Ordering::Greater && bc != Ordering::Greater {
                     prop_assert_ne!(ac, Ordering::Greater);
                 }
-                let mut batch = vec![first.clone(), second.clone(), third.clone()];
+                let mut batch = [first.clone(), second.clone(), third.clone()];
                 batch.sort_by(|left, right| rank_cmp(left, right, orbit, &cfg));
                 for pair in batch.windows(2) {
                     prop_assert!(rank_cmp(&pair[0], &pair[1], orbit, &cfg) != Ordering::Greater);
