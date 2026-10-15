@@ -85,7 +85,7 @@ fuzz:
 	cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done
 
 mutation:
-	CARGO_TARGET_DIR=$(MUTATION_TARGET) cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
+	cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
 
 e2e: build
 	cargo test --release -p bt-app --test e2e
