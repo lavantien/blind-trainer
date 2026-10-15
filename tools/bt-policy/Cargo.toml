@@ -1,0 +1,6 @@
+[package]
+name = "bt-policy"
+edition.workspace = true
+
+[dependencies]
+serde_json.workspace = true
