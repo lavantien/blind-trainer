@@ -53,6 +53,19 @@ The bld files keep cubing-trainer's method and stage bindings: bld_3style_specia
 
 bld_3style_specials.tsv derives from the two blddb workbooks already committed under ref_ground/ per the GPL carve-out in DATA_PROVENANCE.md, so its license posture follows that section. Every other pack transcribes public web pages with per-row source URLs and no explicit license, same posture as the speedsolving wiki snapshots in ref_doc.
 
+## data defects (recorded 2026-10-16, rows stay verbatim)
+
+Nine sq1_cubeshape.tsv rows fail mechanical execution under the wave A square-1 engine. The pack files stay byte-verbatim per the a3 ruling, the seed loader in crates/bt-data/src/seedpack.rs carries this exact list through `expected_failure`, and bt-verify treats exactly these rows as expected failures with the recorded reason. Every other row of every pack stays fail-closed.
+
+| row | defect |
+| --- | --- |
+| cs.119 | unexecutable slash sequence, hand traced: cs.122 differs from it by one twist sign and executes, so the row is held as a source typo |
+| cs.075, cs.078, cs.084, cs.089, cs.097, cs.109, cs.118, cs.129 | source follows a flipped layer convention for these shapes, hand verified against the engine, recorded as a convention mismatch rather than a typo |
+
+## recorded loader normalizations
+
+The seed loader normalizes alg text before storage and hashing, and records every non-syntax transformation in a front_json `loader_notes` array so the source text stays recoverable. Transformations that change meaning-carrying text beyond spacing and grouping: bigcube_parity.oll4 writes the whole-cube rotation as literal `X`, the loader maps exactly that token to `x` (the nxn grammar token) and notes it. sq1_ep rows carry leading AUF groups, forms (U), (U'), (U2), (D), (D'), (D2), (U D), (U' D), (U D2), (U' D2), (U2 D), (U2 D'), and 37 rows end with a standalone `*` equator marker, both stripped into loader_notes verbatim because the engine grammar models only (x,y) twists and the slash, and converting them to twists would rest on an unpinned sign convention. bld_oldpoch op.09 and op.32 hold prose in the alg column, `apply swap directly, no setup`, moved verbatim into loader_notes with an empty stored alg. Syntax-only steps that no row can observe as text change: commas to spaces outside sq1 tuples, whitespace collapsing, grouping paren stripping, (g)2, (g)3, and bracket star repeat expansion, sq1 bare tuple wrapping, and the `->` chain suffix of skewb_sarah rows, kept as a chain note.
+
 ## verification
 
 Row counts of the 15 imported files were checked against the origin files at import time: 42, 15, 35, 39, 169, 7, 7, 16, 99, 5, 12, 36, 85, 40, 24, total 631 rows. Every copy matched its origin by sha-256 before commit. The token inventory in token_inventory.md enumerates the distinct alg tokens per file and feeds the engine grammar pinning.
