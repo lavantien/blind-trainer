@@ -98,22 +98,10 @@ const fn sticker_id(face: usize, r: usize, c: usize) -> usize {
     if r == 1 && c == 1 {
         48 + face
     } else if r.is_multiple_of(2) && c.is_multiple_of(2) {
-        let pos = match (r, c) {
-            (0, 0) => 0,
-            (0, 2) => 1,
-            (2, 2) => 2,
-            (2, 0) => 3,
-            _ => 0,
-        };
+        let pos = if r == 0 { c / 2 } else { 3 - c / 2 };
         face * 4 + pos
     } else {
-        let pos = match (r, c) {
-            (0, 1) => 0,
-            (1, 2) => 1,
-            (2, 1) => 2,
-            (1, 0) => 3,
-            _ => 0,
-        };
+        let pos = if r == 1 { 3 - c } else { r };
         24 + face * 4 + pos
     }
 }
