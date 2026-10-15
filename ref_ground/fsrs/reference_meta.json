@@ -1,0 +1,284 @@
+{
+  "generator": "py-fsrs fsrs.Scheduler.review_card",
+  "package": "fsrs 5.1.3 (PyPI)",
+  "source_tag": "github.com/open-spaced-repetition/py-fsrs v5.1.3, fsrs/fsrs.py sha256 9f9d6eeb7fd6ccfd3c644991b7e304553fbec51fd5f42421c328b706c32d0620",
+  "scheduler": {
+    "parameters": [
+      0.40255,
+      1.18385,
+      3.173,
+      15.69105,
+      7.1949,
+      0.5345,
+      1.4604,
+      0.0046,
+      1.54575,
+      0.1192,
+      1.01925,
+      1.9395,
+      0.11,
+      0.29605,
+      2.2698,
+      0.2315,
+      2.9898,
+      0.51655,
+      0.6621
+    ],
+    "desired_retention": 0.9,
+    "learning_steps": [],
+    "relearning_steps": [],
+    "maximum_interval": 36500,
+    "enable_fuzzing": false
+  },
+  "base_datetime": "2026-01-01T00:00:00+00:00",
+  "cases": {
+    "first_again": [
+      [
+        1,
+        null
+      ]
+    ],
+    "first_hard": [
+      [
+        2,
+        null
+      ]
+    ],
+    "first_good": [
+      [
+        3,
+        null
+      ]
+    ],
+    "first_easy": [
+      [
+        4,
+        null
+      ]
+    ],
+    "good_ladder": [
+      [
+        3,
+        null
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        16
+      ],
+      [
+        3,
+        35
+      ]
+    ],
+    "hard_ladder": [
+      [
+        2,
+        null
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "easy_ladder": [
+      [
+        4,
+        null
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        4,
+        10
+      ],
+      [
+        4,
+        30
+      ]
+    ],
+    "lapse_streak": [
+      [
+        3,
+        null
+      ],
+      [
+        1,
+        30
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "long_gap": [
+      [
+        3,
+        null
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        3,
+        100
+      ],
+      [
+        3,
+        365
+      ]
+    ],
+    "same_day_mix": [
+      [
+        3,
+        null
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        3,
+        1
+      ]
+    ],
+    "same_day_from_again": [
+      [
+        1,
+        null
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "reversion_alternating": [
+      [
+        2,
+        null
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "mixed_walk": [
+      [
+        3,
+        null
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        3,
+        20
+      ]
+    ],
+    "huge_gap_after_easy": [
+      [
+        4,
+        null
+      ],
+      [
+        3,
+        10000
+      ]
+    ]
+  }
+}

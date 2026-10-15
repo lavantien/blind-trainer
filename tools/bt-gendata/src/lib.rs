@@ -3,6 +3,7 @@ pub mod build;
 pub mod hash;
 pub mod model;
 pub mod out;
+pub mod scoring;
 pub mod synth;
 pub mod when;
 

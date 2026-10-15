@@ -9,3 +9,6 @@ bt-scheme = { path = "../../crates/bt-scheme" }
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "0.11"
+
+[dev-dependencies]
+proptest.workspace = true
