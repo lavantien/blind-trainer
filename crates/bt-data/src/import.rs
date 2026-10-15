@@ -69,7 +69,10 @@ fn err_at(root: &Path) -> impl Fn(crate::db::DbError) -> String + '_ {
 
 fn read_text(path: &Path) -> Result<Option<String>, String> {
     match std::fs::read_to_string(path) {
-        Ok(text) => Ok(Some(text)),
+        Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+            Ok(_) => Ok(Some(text)),
+            Err(err) => Err(format!("{}: {err}", path.display())),
+        },
         Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(None),
         Err(err) => Err(format!("read {}: {err}", path.display())),
     }
@@ -257,6 +260,16 @@ mod tests {
         let mut db = open(&root);
         let err = run(&mut db, &root).expect_err("must fail");
         assert!(err.contains("srs.json"), "err: {err}");
+    }
+
+    #[test]
+    fn corrupt_legacy_settings_fails_closed_naming_the_file() {
+        let root = temp_root("corrupt-settings");
+        write(&settings_path_at(&root), "{not json");
+        let mut db = open(&root);
+        let err = run(&mut db, &root).expect_err("must fail");
+        assert!(err.contains("settings.json"), "err: {err}");
+        assert!(db.is_fresh().expect("fresh"));
     }
 
     #[test]
