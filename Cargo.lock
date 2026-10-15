@@ -2042,6 +2042,7 @@ name = "bt-puzzles"
 version = "0.0.0"
 dependencies = [
  "bt-core",
+ "proptest",
 ]
 
 [[package]]

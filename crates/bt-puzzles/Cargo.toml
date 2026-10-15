@@ -4,3 +4,4 @@ edition.workspace = true
 
 [dev-dependencies]
 bt-core = { path = "../bt-core" }
+proptest = { workspace = true }
