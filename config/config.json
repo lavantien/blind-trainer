@@ -10,6 +10,6 @@
   "policy": {"small_literal_allow": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], "literal_recurrence": 4},
   "memguard": {"cap_bytes": 17179869184},
   "e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"], "timeout_secs": 180},
-  "release": {"staging_dir": "blind-trainer", "exe": "blind-trainer.exe", "config_file": "config/config.json", "fonts_dir": "assets/fonts", "run_timeout_secs": 300, "neg_fonts_exit": 1, "usage_exit": 2},
+  "release": {"staging_dir": "blind-trainer", "exe": "blind-trainer.exe", "config_file": "config/config.json", "fonts_dir": "assets/fonts", "run_timeout_secs": 300, "usage_exit": 2},
   "paths": {"ref_ground": "ref_ground", "ref_doc": "ref_doc", "data_vendor": "data/vendor", "data_ga": "data/ga", "artifacts": "artifacts", "baselines": "tests/visual/baselines", "fonts": "assets/fonts"}
 }

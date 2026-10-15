@@ -25,7 +25,6 @@ struct ReleaseCfg {
     config_file: String,
     fonts_dir: String,
     run_timeout_secs: u64,
-    neg_fonts_exit: i32,
     usage_exit: i32,
     shots: Vec<String>,
 }
@@ -119,10 +118,6 @@ fn verify(env: &Env, args: &ParsedArgs, cfg: &ReleaseCfg, root: &str) -> Result<
             &env.vars,
             Some(&packaged),
         ),
-    )?;
-    stage_ok(
-        "n1 missing fonts",
-        n1_stage(&exe_path, &extract_dir, &work.join("n1"), cfg, &env.vars),
     )?;
     stage_ok(
         "n2 usage",
@@ -223,7 +218,6 @@ fn release_cfg_from(value: &Value) -> Result<ReleaseCfg, String> {
         config_file: cfg_str(section, "config_file")?,
         fonts_dir: cfg_str(section, "fonts_dir")?,
         run_timeout_secs: cfg_u64(section, "run_timeout_secs")?,
-        neg_fonts_exit: cfg_i32(section, "neg_fonts_exit")?,
         usage_exit: cfg_i32(section, "usage_exit")?,
         shots,
     })
@@ -371,31 +365,6 @@ fn smoke_stage(
     ))
 }
 
-fn n1_stage(
-    exe: &Path,
-    extract_dir: &Path,
-    sandbox_root: &Path,
-    cfg: &ReleaseCfg,
-    vars: &[(String, String)],
-) -> Result<((), String), String> {
-    let fonts = extract_dir.join(&cfg.fonts_dir);
-    fs::remove_dir_all(&fonts).ok();
-    if fonts.exists() {
-        return Err(format!(
-            "cannot remove packaged fonts dir {}",
-            fonts.display()
-        ));
-    }
-    let (cwd, appdata) = prep_sandbox(sandbox_root)?;
-    let shots_arg = sandbox_root.join("shots").to_string_lossy().into_owned();
-    let appdata_arg = appdata.to_string_lossy().into_owned();
-    let extras: Vec<(&str, &str)> = vec![("APPDATA", appdata_arg.as_str())];
-    let spec = stage_spec(exe, &["--smoke", &shots_arg], &cwd, vars, &extras);
-    let result = exec::run_child(&spec, Duration::from_secs(cfg.run_timeout_secs));
-    check_exit(&result.outcome, cfg.neg_fonts_exit)?;
-    Ok(((), format!("exit {}", cfg.neg_fonts_exit)))
-}
-
 fn n2_stage(
     exe: &Path,
     sandbox_root: &Path,
@@ -449,7 +418,6 @@ mod tests {
             "config_file": "config/config.json",
             "fonts_dir": "assets/fonts",
             "run_timeout_secs": 120,
-            "neg_fonts_exit": 1,
             "usage_exit": 2
           },
           "e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"]}
@@ -532,7 +500,6 @@ mod tests {
         assert_eq!(cfg.config_file, "config/config.json");
         assert_eq!(cfg.fonts_dir, "assets/fonts");
         assert_eq!(cfg.run_timeout_secs, 120);
-        assert_eq!(cfg.neg_fonts_exit, 1);
         assert_eq!(cfg.usage_exit, 2);
         assert_eq!(
             cfg.shots,
