@@ -9,7 +9,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
+.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt fmt-write lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -39,6 +39,9 @@ ga:
 
 fmt:
 	cargo fmt --all -- --check
+
+fmt-write:
+	cargo fmt --all
 
 lint:
 	cargo clippy --workspace --all-targets -- -D warnings
