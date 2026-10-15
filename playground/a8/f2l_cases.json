@@ -1,0 +1,1930 @@
+[
+ {
+  "page": 2,
+  "y": 394.7,
+  "col": "left",
+  "order": [
+   2,
+   394.7,
+   0
+  ],
+  "algs": [
+   "U2 (R U R') U (R U' R')",
+   "y F R U2 R' F'"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 394.7,
+  "col": "right",
+  "order": [
+   2,
+   394.7,
+   1
+  ],
+  "algs": [
+   "y U2 (L' U' L) U' (L' U L)",
+   "F' L' U2 L F"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 457.4,
+  "col": "left",
+  "order": [
+   2,
+   457.4,
+   0
+  ],
+  "algs": [
+   "U (R U2 R') U (R U' R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 457.4,
+  "col": "right",
+  "order": [
+   2,
+   457.4,
+   1
+  ],
+  "algs": [
+   "y U' (L' U2 L) U' (L' U L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 520.2,
+  "col": "left",
+  "order": [
+   2,
+   520.2,
+   0
+  ],
+  "algs": [
+   "U (R U' R') U' (R U' R' U R U' R')",
+   "U (F R' F' R) U (R U R')",
+   "U2 (L F' L' F) (R U R')",
+   "y U L' U' (L2 F' L' F) (L' U L)",
+   "y F' (U' L' U L) F (L' U L)",
+   "y' U2 R U' R' U' S R' S'"
+  ],
+  "multi": [
+   false,
+   false,
+   true,
+   true,
+   false,
+   true
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 520.2,
+  "col": "right",
+  "order": [
+   2,
+   520.2,
+   1
+  ],
+  "algs": [
+   "y U' (L' U L) U (L' U L U' L' U L)",
+   "y U' (F' L F L') U' (L' U' L)",
+   "y U2 (R F' R' F) (L' U' L)",
+   "U' R U (R2' F R F') (R U' R')",
+   "F (U R U' R') F' (R U' R')",
+   "y2 U2 L' U L U S' L S"
+  ],
+  "multi": [
+   false,
+   false,
+   true,
+   true,
+   false,
+   true
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 623.5,
+  "col": "left",
+  "order": [
+   2,
+   623.5,
+   0
+  ],
+  "algs": [
+   "(R U2 R') U' (R U R')"
+  ],
+  "multi": [
+   true
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 2,
+  "y": 623.5,
+  "col": "right",
+  "order": [
+   2,
+   623.5,
+   1
+  ],
+  "algs": [
+   "y (L' U2 L) U (L' U' L)"
+  ],
+  "multi": [
+   true
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 3,
+  "y": 100.4,
+  "col": "left",
+  "order": [
+   3,
+   100.4,
+   0
+  ],
+  "algs": [
+   "(R U R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 100.4,
+  "col": "right",
+  "order": [
+   3,
+   100.4,
+   1
+  ],
+  "algs": [
+   "y (L' U' L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 163.1,
+  "col": "left",
+  "order": [
+   3,
+   163.1,
+   0
+  ],
+  "algs": [
+   "U' (R U R') U (R U R')",
+   "U2 (R U' R') U' (R U R')",
+   "R' U R2 U R'"
+  ],
+  "multi": [
+   false,
+   false,
+   true
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 163.1,
+  "col": "right",
+  "order": [
+   3,
+   163.1,
+   1
+  ],
+  "algs": [
+   "y U (L' U' L) U' (L' U' L)",
+   "y U2 (L' U L) U (L' U' L)",
+   "y L U' L2' U' L"
+  ],
+  "multi": [
+   false,
+   false,
+   true
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 225.9,
+  "col": "left",
+  "order": [
+   3,
+   225.9,
+   0
+  ],
+  "algs": [
+   "R' U2 R2 U R2' U R",
+   "(R U' R') U (R U' R') U2 (R U' R')",
+   "R' U2 R2 U R'",
+   "y U L' U2 L U' y' R U R'"
+  ],
+  "multi": [
+   false,
+   false,
+   true,
+   true
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 225.9,
+  "col": "right",
+  "order": [
+   3,
+   225.9,
+   1
+  ],
+  "algs": [
+   "y L U2 L2' U' L2 U' L'",
+   "y (L' U L) U' (L' U L) U2 (L' U L)",
+   "y L U2 L2' U' L",
+   "U' (R U2 R') U y (L' U' L)"
+  ],
+  "multi": [
+   false,
+   false,
+   true,
+   true
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 295.0,
+  "col": "left",
+  "order": [
+   3,
+   295.0,
+   0
+  ],
+  "algs": [
+   "U' (R U' R') U (R U R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 295.0,
+  "col": "right",
+  "order": [
+   3,
+   295.0,
+   1
+  ],
+  "algs": [
+   "y U (L' U L) U' (L' U' L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 461.5,
+  "col": "left",
+  "order": [
+   3,
+   461.5,
+   0
+  ],
+  "algs": [
+   "y U' (L' U L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 461.5,
+  "col": "right",
+  "order": [
+   3,
+   461.5,
+   1
+  ],
+  "algs": [
+   "U (R U' R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 524.3,
+  "col": "left",
+  "order": [
+   3,
+   524.3,
+   0
+  ],
+  "algs": [
+   "y U (L' U2 L) U2 (L' U L)",
+   "r' U2 R2 U R2' U r"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 524.3,
+  "col": "right",
+  "order": [
+   3,
+   524.3,
+   1
+  ],
+  "algs": [
+   "U' (R U2 R') U2 (R U' R')",
+   "y l U2 L2' U' L2 U' l'"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 587.0,
+  "col": "left",
+  "order": [
+   3,
+   587.0,
+   0
+  ],
+  "algs": [
+   "U' (R U R') U2 (R U' R')",
+   "y U l' U L U' L' U' l"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 587.0,
+  "col": "right",
+  "order": [
+   3,
+   587.0,
+   1
+  ],
+  "algs": [
+   "y U (L' U' L) U2 (L' U L)",
+   "U' r U' R' U R U r'"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 649.8,
+  "col": "left",
+  "order": [
+   3,
+   649.8,
+   0
+  ],
+  "algs": [
+   "M U (L F' L') U' M'",
+   "U' (R' U R) U' (R U R')",
+   "y (L' U L) y' U2 (R U R')",
+   "y' (R2' F R F' R) U2 (R' U R)",
+   "y2 (f' L f) U2 (L U L')"
+  ],
+  "multi": [
+   false,
+   true,
+   true,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 3,
+  "y": 649.8,
+  "col": "right",
+  "order": [
+   3,
+   649.8,
+   1
+  ],
+  "algs": [
+   "y M U' (R' F R) U M'",
+   "y U (L U' L') U (L' U' L)",
+   "(R U' R') y U2 (L' U' L)",
+   "y2 (L2 F' L' F L') U2 (L U' L')",
+   "y' (f R' f') U2 R' U' R"
+  ],
+  "multi": [
+   false,
+   true,
+   true,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 4,
+  "y": 180.8,
+  "col": "left",
+  "order": [
+   4,
+   180.8,
+   0
+  ],
+  "algs": [
+   "U (R U R') U2 (R U R')",
+   "U' (R U2 R') U (R U R')",
+   "y U (L' U L) U2 (L' U L)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 180.8,
+  "col": "right",
+  "order": [
+   4,
+   180.8,
+   1
+  ],
+  "algs": [
+   "y U' (L' U' L) U2 (L' U' L)",
+   "y U (L' U2 L) U' (L' U' L)",
+   "U' R U' R' U2 R U' R'"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 245.1,
+  "col": "left",
+  "order": [
+   4,
+   245.1,
+   0
+  ],
+  "algs": [
+   "U (F' U' F) U' (R U R')",
+   "y U2 (L' U' L) (F' L F L')",
+   "y U' M' (U' L' U l) (L' U L)",
+   "y U' (L U F' L' F) (L' U L)",
+   "y' U2 (R' U' R) y U (R U' R')",
+   "y' U2 R' U' M U' R U M'",
+   "y2 U (f' L' f) U' (L U L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   true,
+   true,
+   false,
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 245.1,
+  "col": "right",
+  "order": [
+   4,
+   245.1,
+   1
+  ],
+  "algs": [
+   "y U' (F U F') U (L' U' L)",
+   "U2 (R U R') (F R' F' R)",
+   "U M' (U R U' r') (R U' R')",
+   "U (R' U' F R F') (R U' R')",
+   "y2 U2 (L U L') y' U' (L' U L)",
+   "y2 U2 L U M U L' U' M'",
+   "y' U' (f R f') U (R' U' R)"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   true,
+   true,
+   false,
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 365.4,
+  "col": "left",
+  "order": [
+   4,
+   365.4,
+   0
+  ],
+  "algs": [
+   "(U R U' R')3"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 365.4,
+  "col": "right",
+  "order": [
+   4,
+   365.4,
+   1
+  ],
+  "algs": [
+   "U' (R' F R F') (R U' R')",
+   "(R U' R') (F' U2 F)",
+   "y' R' U R' F R F' R",
+   "y' U' (R' U2 R) (f R f')"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Edge in the slot"
+ },
+ {
+  "page": 4,
+  "y": 504.0,
+  "col": "left",
+  "order": [
+   4,
+   504.0,
+   0
+  ],
+  "algs": [
+   "(R U R') U' (R U R')",
+   "y M' (U' L' U L) (U' L' U l)",
+   "y (L F' L' F)2"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 4,
+  "y": 504.0,
+  "col": "right",
+  "order": [
+   4,
+   504.0,
+   1
+  ],
+  "algs": [
+   "y (L' U' L) U (L' U' L)",
+   "M' (U R U' R') (U R U' r')",
+   "(R' F R F')2"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 4,
+  "y": 568.2,
+  "col": "left",
+  "order": [
+   4,
+   568.2,
+   0
+  ],
+  "algs": [
+   "(R U' R') U (R U' R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 4,
+  "y": 568.2,
+  "col": "right",
+  "order": [
+   4,
+   568.2,
+   1
+  ],
+  "algs": [
+   "y (L' U L) U' (L' U L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 4,
+  "y": 632.5,
+  "col": "left",
+  "order": [
+   4,
+   632.5,
+   0
+  ],
+  "algs": [
+   "U' (R' F R F') (R U R')",
+   "(R' F' R) (U R U' R') F",
+   "U' F' (R U R' U') (R' F R)",
+   "y U' (L' U L) (F' L F L')",
+   "y2 U' M U L U' M' U L'",
+   "y' U' R' U M U' R U M'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 4,
+  "y": 632.5,
+  "col": "right",
+  "order": [
+   4,
+   632.5,
+   1
+  ],
+  "algs": [
+   "y U (L F' L' F) (L' U' L)",
+   "y (L F L') (U' L' U L) F'",
+   "y U F (L' U' L U) (L F' L')",
+   "U (R U' R') (F R' F' R)",
+   "y' U M U' R' U M' U' R",
+   "y2 U L U' M U L' U' M'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner in the slot"
+ },
+ {
+  "page": 5,
+  "y": 215.2,
+  "col": "left",
+  "order": [
+   5,
+   215.2,
+   0
+  ],
+  "algs": [
+   "(R U' R') U (R U2 R' U R U' R')",
+   "y' (L' U L) U (L' U' L U2' L' U L)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Both pieces are in the correct slot."
+ },
+ {
+  "page": 5,
+  "y": 215.2,
+  "col": "right",
+  "order": [
+   5,
+   215.2,
+   1
+  ],
+  "algs": [
+   "y' (L' U L) U' (L' U2' L U' L' U L)",
+   "(R U' R') U' (R U R' U2 R U' R')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Both pieces are in the correct slot."
+ },
+ {
+  "page": 5,
+  "y": 279.4,
+  "col": "left",
+  "order": [
+   5,
+   279.4,
+   0
+  ],
+  "algs": [
+   "(R U' R') (F' L' U2 L F)",
+   "y (F R U2' R' F') (L' U' L)",
+   "y2 L2 F U F' U' L' U L'",
+   "y' R' U R' U' F' U F R2"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Both pieces are in the correct slot."
+ },
+ {
+  "page": 5,
+  "y": 279.4,
+  "col": "right",
+  "order": [
+   5,
+   279.4,
+   1
+  ],
+  "algs": [
+   "y (L' U L) (F R U2' R' F')",
+   "(F' L' U2 L F) (R U R')",
+   "y' R2' F' U' F U R U' R",
+   "y2 L U' L U F U' F' L2'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Both pieces are in the correct slot."
+ },
+ {
+  "page": 5,
+  "y": 348.5,
+  "col": "left",
+  "order": [
+   5,
+   348.5,
+   0
+  ],
+  "algs": [
+   "R2' U2' F R2 F' U2' R' U R'",
+   "y L2 U2 F' L2' F U2 L U' L",
+   "y' (f R' f') U (R' U2' R) U (R' U2' R)",
+   "y2 (f' L f) U' (L U2 L') U' (L U2 L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Both pieces are in the correct slot."
+ },
+ {
+  "page": 6,
+  "y": 403.8,
+  "col": "left",
+  "order": [
+   6,
+   403.8,
+   0
+  ],
+  "algs": [
+   "U' R' U R2 U' R'"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 6,
+  "y": 403.8,
+  "col": "right",
+  "order": [
+   6,
+   403.8,
+   1
+  ],
+  "algs": [
+   "y U L U' L2' U L"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 6,
+  "y": 468.1,
+  "col": "left",
+  "order": [
+   6,
+   468.1,
+   0
+  ],
+  "algs": [
+   "U2 (R' U R) U' (S R S')",
+   "y R' F R2 U' R' U2 F'",
+   "y2 U2 (L F' L' F) (L U L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 6,
+  "y": 468.1,
+  "col": "right",
+  "order": [
+   6,
+   468.1,
+   1
+  ],
+  "algs": [
+   "y U2 (L U' L') U (S' L' S)",
+   "L F' L2' U L U2' F",
+   "y' U2 (R' F R F') (R' U' R)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 6,
+  "y": 532.3,
+  "col": "left",
+  "order": [
+   6,
+   532.3,
+   0
+  ],
+  "algs": [
+   "U2 L2' u L2 u' L2'",
+   "y U2 R2 u' R2' u R2",
+   "y' U2 L2' u' L2 u L2'",
+   "y2 U2 R2 u R2' u' R2"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 6,
+  "y": 532.3,
+  "col": "right",
+  "order": [
+   6,
+   532.3,
+   1
+  ],
+  "algs": [
+   "L F' U F L'",
+   "y R' F U' F' R",
+   "y' (L' u' L) U' (L' u L)",
+   "y2 (R u R') U (R u' R')"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Up"
+ },
+ {
+  "page": 7,
+  "y": 106.9,
+  "col": "left",
+  "order": [
+   7,
+   106.9,
+   0
+  ],
+  "algs": [
+   "R' U' R2 U R'"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 106.9,
+  "col": "right",
+  "order": [
+   7,
+   106.9,
+   1
+  ],
+  "algs": [
+   "y L U L2' U' L"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 171.2,
+  "col": "left",
+  "order": [
+   7,
+   171.2,
+   0
+  ],
+  "algs": [
+   "F D R D' F'",
+   "y R (F U F') R'",
+   "y2 F (L U L') F'",
+   "y' R u R u' R'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 171.2,
+  "col": "right",
+  "order": [
+   7,
+   171.2,
+   1
+  ],
+  "algs": [
+   "y F' D' L' D F",
+   "L' (F' U' F) L",
+   "y' F' (R' U' R) F",
+   "y2 L' u' L' u L"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 240.3,
+  "col": "left",
+  "order": [
+   7,
+   240.3,
+   0
+  ],
+  "algs": [
+   "U' (L' U' L) (R U' R')",
+   "y U2 L' U' L2 U L2' U' L"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 240.3,
+  "col": "right",
+  "order": [
+   7,
+   240.3,
+   1
+  ],
+  "algs": [
+   "U (R U R') (L' U L)",
+   "y' U2' R U R2' U' R2 U R'"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 304.6,
+  "col": "left",
+  "order": [
+   7,
+   304.6,
+   0
+  ],
+  "algs": [
+   "(F U2 F') (R U R')",
+   "y L U2 L' F U F'",
+   "y' R U2 R' f R f'"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 304.6,
+  "col": "right",
+  "order": [
+   7,
+   304.6,
+   1
+  ],
+  "algs": [
+   "y (F' U2 F) (L' U' L)",
+   "R' U2 R F' U' F",
+   "y2 L' U2 L f' L' f"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 367.3,
+  "col": "left",
+  "order": [
+   7,
+   367.3,
+   0
+  ],
+  "algs": [
+   "U (R U R') (L U L')",
+   "U' (R U2 R') U' (L U L')",
+   "y U (L' U L) (R' U R)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 367.3,
+  "col": "right",
+  "order": [
+   7,
+   367.3,
+   1
+  ],
+  "algs": [
+   "y U' (L' U' L) (R' U' R)",
+   "y U (L' U2 L) U (R' U' R)",
+   "U' (R U' R') (L U' L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 431.6,
+  "col": "left",
+  "order": [
+   7,
+   431.6,
+   0
+  ],
+  "algs": [
+   "U2 F' (L U L') F",
+   "y U2 L' (B U B') L",
+   "y' U2 R' (F U F') R",
+   "y2 f' U L U' f"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 7,
+  "y": 431.6,
+  "col": "right",
+  "order": [
+   7,
+   431.6,
+   1
+  ],
+  "algs": [
+   "y U2' F (R' U' R) F'",
+   "U2' R (B' U' B) R'",
+   "y2 U2' L (F' U' F) L'",
+   "y' f U' R' U f'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Side/Front"
+ },
+ {
+  "page": 8,
+  "y": 215.2,
+  "col": "left",
+  "order": [
+   8,
+   215.2,
+   0
+  ],
+  "algs": [
+   "U (R U' R') (L' U L)"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 215.2,
+  "col": "right",
+  "order": [
+   8,
+   215.2,
+   1
+  ],
+  "algs": [
+   "y (L' U2 L) U' (L U L')",
+   "y U2 (L' U L) U' (L U2 L')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 279.4,
+  "col": "left",
+  "order": [
+   8,
+   279.4,
+   0
+  ],
+  "algs": [
+   "U2 (R U' R') U (L' U' L)",
+   "y (F' L F L') U' (L U2 L')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 279.4,
+  "col": "right",
+  "order": [
+   8,
+   279.4,
+   1
+  ],
+  "algs": [
+   "y U' L' U' L2 U2 L'"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 343.7,
+  "col": "left",
+  "order": [
+   8,
+   343.7,
+   0
+  ],
+  "algs": [
+   "(R U R') U' (L' U L)",
+   "y (S' L S)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 343.7,
+  "col": "right",
+  "order": [
+   8,
+   343.7,
+   1
+  ],
+  "algs": [
+   "U' (R U R') (F U F')",
+   "y U (L' U L) U (L U L')",
+   "y U' (F U F') (L U L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Right Slot"
+ },
+ {
+  "page": 8,
+  "y": 477.4,
+  "col": "left",
+  "order": [
+   8,
+   477.4,
+   0
+  ],
+  "algs": [
+   "y U' (L' U L) (R U' R')"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 8,
+  "y": 477.4,
+  "col": "right",
+  "order": [
+   8,
+   477.4,
+   1
+  ],
+  "algs": [
+   "(R U2 R') U (R' U' R)",
+   "U2 (R U' R') U (R' U2 R)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 8,
+  "y": 541.6,
+  "col": "left",
+  "order": [
+   8,
+   541.6,
+   0
+  ],
+  "algs": [
+   "(F R' F' R) U (R' U2 R)",
+   "y U2 (L' U L) U' (R U R')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 8,
+  "y": 541.6,
+  "col": "right",
+  "order": [
+   8,
+   541.6,
+   1
+  ],
+  "algs": [
+   "U R U R2' U2 R"
+  ],
+  "multi": [
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 8,
+  "y": 605.9,
+  "col": "left",
+  "order": [
+   8,
+   605.9,
+   0
+  ],
+  "algs": [
+   "(S R' S')",
+   "y (L' U' L) U (R U' R')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 8,
+  "y": 605.9,
+  "col": "right",
+  "order": [
+   8,
+   605.9,
+   1
+  ],
+  "algs": [
+   "U (F U' F') (R' U' R)",
+   "U' (R U' R') U' (R' U R)",
+   "y U (L' U' L) (F' U' F)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Left Slot"
+ },
+ {
+  "page": 9,
+  "y": 106.9,
+  "col": "left",
+  "order": [
+   9,
+   106.9,
+   0
+  ],
+  "algs": [
+   "U' (F' U F) (L U2 L')",
+   "y U' (L' U L) U' (f R' f')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 9,
+  "y": 106.9,
+  "col": "right",
+  "order": [
+   9,
+   106.9,
+   1
+  ],
+  "algs": [
+   "U (R U' R') U (f' L f)",
+   "y U (F U' F') (R' U2 R)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 9,
+  "y": 171.2,
+  "col": "left",
+  "order": [
+   9,
+   171.2,
+   0
+  ],
+  "algs": [
+   "(R U' R') (L U2 L')",
+   "y (L' U' L) (f R' f')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 9,
+  "y": 171.2,
+  "col": "right",
+  "order": [
+   9,
+   171.2,
+   1
+  ],
+  "algs": [
+   "(R U R') (f' L f)",
+   "y (L' U L) (R' U2 R)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 9,
+  "y": 235.4,
+  "col": "left",
+  "order": [
+   9,
+   235.4,
+   0
+  ],
+  "algs": [
+   "(R U' R') U (L U L')",
+   "y (L F' L' F) (R' U2 R)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 9,
+  "y": 235.4,
+  "col": "right",
+  "order": [
+   9,
+   235.4,
+   1
+  ],
+  "algs": [
+   "(R' F R F') (L U2 L')",
+   "y (L' U' L) U' (R' U' R)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Opposite Slot"
+ },
+ {
+  "page": 10,
+  "y": 219.1,
+  "col": "left",
+  "order": [
+   10,
+   219.1,
+   0
+  ],
+  "algs": [
+   "R2 U' R2' U R2",
+   "y2 L2' U' L2 U L2'",
+   "y F' R' F2 R F"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 219.1,
+  "col": "right",
+  "order": [
+   10,
+   219.1,
+   1
+  ],
+  "algs": [
+   "f' R' U R f",
+   "y R' u' R u R",
+   "y' L' u' L u L",
+   "y2 f' D' L D f"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 288.2,
+  "col": "left",
+  "order": [
+   10,
+   288.2,
+   0
+  ],
+  "algs": [
+   "y L2' U L2 U' L2'",
+   "y' R2 U R2' U' R2",
+   "F L F2' L' F'"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 288.2,
+  "col": "right",
+  "order": [
+   10,
+   288.2,
+   1
+  ],
+  "algs": [
+   "y f L U' L' f'",
+   "L u L' u' L'",
+   "y2 R u R' u' R'",
+   "y' f D R' D' f'"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 357.3,
+  "col": "left",
+  "order": [
+   10,
+   357.3,
+   0
+  ],
+  "algs": [
+   "L2' u' L2 u L2'",
+   "y' R2 u R2' u' R2",
+   "y L2' u L2 u' L2'",
+   "y2 R2 u' R2' u R2"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 357.3,
+  "col": "right",
+  "order": [
+   10,
+   357.3,
+   1
+  ],
+  "algs": [
+   "(L' u' L) U (L' u L)",
+   "y' (R u R') U' (R u' R')",
+   "y (L u L') U' (L u' L')",
+   "y2 (R' u' R) U (R' u R)"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Corner Is Solved"
+ },
+ {
+  "page": 10,
+  "y": 530.2,
+  "col": "left",
+  "order": [
+   10,
+   530.2,
+   0
+  ],
+  "algs": [
+   "R' F R2 U' R2' F' R",
+   "L F' L2' U' L2 F L'",
+   "y (f' L' f) U' (L' U L)",
+   "y' (R U R') U' (f R' f')",
+   "y2 (f R f') (L U2 L')"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Pair In The Wrong Slot"
+ },
+ {
+  "page": 10,
+  "y": 530.2,
+  "col": "right",
+  "order": [
+   10,
+   530.2,
+   1
+  ],
+  "algs": [
+   "y L F' L2' U L2 F L'",
+   "y R' F R2 U R2' F' R",
+   "(f R f') U (R U' R')",
+   "y2 (L' U' L) U (f' L f)",
+   "y' (f' L' f) (R' U2' R)"
+  ],
+  "multi": [
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "section": "Pair In The Wrong Slot"
+ },
+ {
+  "page": 10,
+  "y": 616.4,
+  "col": "left",
+  "order": [
+   10,
+   616.4,
+   0
+  ],
+  "algs": [
+   "R (L U2 L') R'",
+   "y L' (R' U2 R) L"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Pair In The Wrong Slot"
+ },
+ {
+  "page": 11,
+  "y": 106.9,
+  "col": "left",
+  "order": [
+   11,
+   106.9,
+   0
+  ],
+  "algs": [
+   "L F2' L' F U' F",
+   "(L F' L' U' F) U' (R U R')",
+   "y (L U' F' L' F) (L' U L)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 106.9,
+  "col": "right",
+  "order": [
+   11,
+   106.9,
+   1
+  ],
+  "algs": [
+   "y R' F2 R F' U F'",
+   "y (R' F R U F') U (L' U' L)",
+   "(R' U F R F') (R U' R')"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 172.2,
+  "col": "left",
+  "order": [
+   11,
+   172.2,
+   0
+  ],
+  "algs": [
+   "(R' F R U' F') (R U' R')",
+   "y (L' U' L) U (S' L' S)"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 172.2,
+  "col": "right",
+  "order": [
+   11,
+   172.2,
+   1
+  ],
+  "algs": [
+   "y (L F' L' U F) (L' U L)",
+   "(R U R') U' (S R S')"
+  ],
+  "multi": [
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 234.9,
+  "col": "left",
+  "order": [
+   11,
+   234.9,
+   0
+  ],
+  "algs": [
+   "(L' U L) (M' U R U' r') (R U' R')",
+   "y (L U F' L' F) U2 (L' U' L)",
+   "y (L U L') (F U F') U' (L' U L)"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 234.9,
+  "col": "right",
+  "order": [
+   11,
+   234.9,
+   1
+  ],
+  "algs": [
+   "y (R U' R') (M' U' L' U l) (L' U L)",
+   "(R' U' F R F') U2 (R U R')",
+   "(R' U' R) (F' U' F) U (R U' R')"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Flipped Edge & Corner In Adjacent Slot"
+ },
+ {
+  "page": 11,
+  "y": 367.1,
+  "col": "left",
+  "order": [
+   11,
+   367.1,
+   0
+  ],
+  "algs": [
+   "(R' F R U' F') U (R U' R')",
+   "R U' R2' u' R' u R",
+   "y2 L U' L2' u' L' u L"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Other Easy Cases"
+ },
+ {
+  "page": 11,
+  "y": 367.1,
+  "col": "right",
+  "order": [
+   11,
+   367.1,
+   1
+  ],
+  "algs": [
+   "y (L F' L' U F) U' (L' U L)",
+   "y L' U L2 u L u' L'",
+   "y' R' U R2 u R u' R'"
+  ],
+  "multi": [
+   false,
+   false,
+   false
+  ],
+  "section": "Other Easy Cases"
+ }
+]
