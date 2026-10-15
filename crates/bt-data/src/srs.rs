@@ -154,3 +154,45 @@ fn ease_delta(quality: u32) -> f32 {
     let gap = 5f32 - quality.min(5) as f32;
     EASE_DELTA_BASE - gap * (EASE_DELTA_LINEAR + gap * EASE_DELTA_QUADRATIC)
 }
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum ReplayError {
+    UnknownQuality(u32),
+}
+
+impl fmt::Display for ReplayError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ReplayError::UnknownQuality(quality) => {
+                write!(f, "review quality {quality} has no sm-2 grade mapping")
+            }
+        }
+    }
+}
+
+impl std::error::Error for ReplayError {}
+
+pub fn grade_from_quality(quality: u32) -> Result<crate::fsrs::Grade, ReplayError> {
+    match quality {
+        2 => Ok(crate::fsrs::Grade::Again),
+        3 => Ok(crate::fsrs::Grade::Hard),
+        4 => Ok(crate::fsrs::Grade::Good),
+        5 => Ok(crate::fsrs::Grade::Easy),
+        other => Err(ReplayError::UnknownQuality(other)),
+    }
+}
+
+pub fn replay_sm2(
+    reviews: &[ReviewLogEntry],
+    cfg: &crate::fsrs::FsrsConfig,
+) -> Result<Option<crate::fsrs::MemoryState>, ReplayError> {
+    let Some(first) = reviews.first() else {
+        return Ok(None);
+    };
+    let mut memory = crate::fsrs::MemoryState::initial(grade_from_quality(first.quality)?, cfg);
+    for entry in reviews.iter().skip(1) {
+        let grade = grade_from_quality(entry.quality)?;
+        memory = memory.review(grade, entry.elapsed_days as f64, cfg);
+    }
+    Ok(Some(memory))
+}

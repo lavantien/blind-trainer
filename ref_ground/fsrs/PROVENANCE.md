@@ -32,6 +32,10 @@ columns of reference_vectors.tsv: case, step, rating (1 again, 2 hard, 3 good, 4
 
 elapsed semantics: the corpus uses whole days. the reference consumes elapsed as python timedelta.days, which floors: any fractional elapsed floors to whole days before the branch choice and the retrievability input, and negative elapsed floors below zero then clamps to 0, which routes it to the same-day branch. probed against the pinned venv 2026-10-15: gaps 0.5 and -0.5 reproduce the gap 0 outcome exactly, 1.5 reproduces 1.0, 2.9 equals a 2-day gap. the rust port floors identically and pins these probes as tests.
 
+## sm-2 history migration goldens
+
+sm2_migration.tsv and sm2_migration_meta.json (generator gen_migration_goldens.py, same venv, same day) pin the deterministic sm-2 to fsrs conversion: legacy review qualities 2 again, 3 hard, 4 good, 5 easy map to grades 1 to 4, each entry's stored elapsed_days feeds the reference, and rows record stability, difficulty, and interval after every step so the rust replay is checkable at every history prefix. histories cover first review per grade, ladders, lapse and recover, hard and easy chains, mixed walks, a same-day pair, the shape of the repo round-trip fixture, and a long gap.
+
 ## cross-check notes, ts-fsrs v5.4.2 vs py-fsrs v5.1.3
 
 both agree on: weights count and defaults, DECAY -0.5 and FACTOR 0.9**(1/DECAY)-1, initial stability max(w[g-1], 0.1), initial and next difficulty with linear damping and mean reversion to D0(4) clamped to [1, 10], stability updates consuming the pre-update difficulty, post-lapse stability capped by S / e**(w17*w18), interval round then clamp.

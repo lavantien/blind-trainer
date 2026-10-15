@@ -27,6 +27,10 @@ pub enum Grade {
 
 impl Grade {
     pub const ALL: [Grade; 4] = [Grade::Again, Grade::Hard, Grade::Good, Grade::Easy];
+
+    pub fn to_code(self) -> i32 {
+        self as i32
+    }
 }
 
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
