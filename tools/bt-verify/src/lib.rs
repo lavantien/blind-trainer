@@ -1,3 +1,4 @@
+pub mod packs;
 pub mod report;
 
 use bt_data::corpus::{SheetClass, Solver};

@@ -3,11 +3,13 @@ name = "bt-verify"
 edition.workspace = true
 
 [dependencies]
+bt-core = { path = "../../crates/bt-core" }
 bt-data = { path = "../../crates/bt-data" }
 bt-gendata = { path = "../bt-gendata" }
+bt-puzzles = { path = "../../crates/bt-puzzles" }
 bt-scheme = { path = "../../crates/bt-scheme" }
 serde.workspace = true
 serde_json.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
-bt-core = { path = "../../crates/bt-core" }

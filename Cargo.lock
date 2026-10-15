@@ -2075,9 +2075,11 @@ dependencies = [
  "bt-core",
  "bt-data",
  "bt-gendata",
+ "bt-puzzles",
  "bt-scheme",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
