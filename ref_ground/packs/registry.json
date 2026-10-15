@@ -13,5 +13,11 @@
   {"file": "fto_l4t_redux.tsv", "event": "fto", "method": "l4t_redux", "stage": "l4t", "n": null, "expected_rows": 36},
   {"file": "bld_3style_specials.tsv", "event": "3bld", "method": "3style", "stage": "parity", "n": null, "expected_rows": 85},
   {"file": "bld_oldpoch.tsv", "event": "3bld", "method": "old_pochmann", "stage": "concept", "n": null, "expected_rows": 40},
-  {"file": "bld_m2.tsv", "event": "3bld", "method": "m2", "stage": "concept", "n": null, "expected_rows": 24}
+  {"file": "bld_m2.tsv", "event": "3bld", "method": "m2", "stage": "concept", "n": null, "expected_rows": 24},
+  {"file": "cfop_pll.tsv", "event": "3x3", "method": "cfop", "stage": "pll", "n": 3, "expected_rows": 21},
+  {"file": "cfop_oll.tsv", "event": "3x3", "method": "cfop", "stage": "oll", "n": 3, "expected_rows": 57},
+  {"file": "cfop_f2l.tsv", "event": "3x3", "method": "cfop", "stage": "f2l", "n": 3, "expected_rows": 164},
+  {"file": "cfop_pll.tsv", "event": "oh", "method": "cfop", "stage": "pll", "n": 3, "expected_rows": 21},
+  {"file": "cfop_oll.tsv", "event": "oh", "method": "cfop", "stage": "oll", "n": 3, "expected_rows": 57},
+  {"file": "cfop_f2l.tsv", "event": "oh", "method": "cfop", "stage": "f2l", "n": 3, "expected_rows": 164}
 ]
