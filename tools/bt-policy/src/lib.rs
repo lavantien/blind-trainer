@@ -143,6 +143,12 @@ pub fn run_checks(
         let allowlist = parse_allowlist(&allow_text, allowlist_path)?;
         let mut covered_pairs: Vec<(String, String)> = Vec::new();
         for path in &files {
+            if !path
+                .components()
+                .any(|component| component.as_os_str() == "src")
+            {
+                continue;
+            }
             let text = read_source(path)?;
             let masked = lexer::mask_source(&text);
             let rel = rel_path(path, root);
@@ -182,10 +188,30 @@ pub fn run_checks(
 pub fn selftest(workdir: &Path) -> Result<bool, String> {
     let config_path = workdir.join("config.json");
     let allow_path = workdir.join("allow.txt");
-    write_file(&workdir.join("crates").join("dirty.rs"), DIRTY_FIXTURE)?;
-    write_file(&workdir.join("crates").join("clean.rs"), CLEAN_FIXTURE)?;
+    let dirty_rel = "crates/bt-x/src/dirty.rs";
     write_file(
-        &workdir.join("clean_only").join("crates").join("clean.rs"),
+        &workdir
+            .join("crates")
+            .join("bt-x")
+            .join("src")
+            .join("dirty.rs"),
+        DIRTY_FIXTURE,
+    )?;
+    write_file(
+        &workdir
+            .join("crates")
+            .join("bt-x")
+            .join("src")
+            .join("clean.rs"),
+        CLEAN_FIXTURE,
+    )?;
+    write_file(
+        &workdir
+            .join("clean_only")
+            .join("crates")
+            .join("bt-x")
+            .join("src")
+            .join("clean.rs"),
         CLEAN_FIXTURE,
     )?;
     write_file(&config_path, SELFTEST_CONFIG)?;
@@ -196,7 +222,7 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
     let dirty_findings: Vec<&Finding> = dirty_run
         .findings
         .iter()
-        .filter(|finding| finding.path == "crates/dirty.rs")
+        .filter(|finding| finding.path == dirty_rel)
         .collect();
     let line_hits = dirty_findings
         .iter()
@@ -213,7 +239,7 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
     let clean_silent = dirty_run
         .findings
         .iter()
-        .all(|finding| finding.path == "crates/dirty.rs");
+        .all(|finding| finding.path == dirty_rel);
     let clean_run = run_checks(
         &workdir.join("clean_only"),
         CheckMode::Both,
@@ -444,15 +470,29 @@ mod tests {
     #[test]
     fn run_checks_reports_relative_paths_and_both_kinds() {
         let root = temp_root("run-basic");
-        write(&root.join("crates").join("dirty.rs"), DIRTY);
-        write(&root.join("crates").join("clean.rs"), CLEAN);
+        write(
+            &root
+                .join("crates")
+                .join("bt-x")
+                .join("src")
+                .join("dirty.rs"),
+            DIRTY,
+        );
+        write(
+            &root
+                .join("crates")
+                .join("bt-x")
+                .join("src")
+                .join("clean.rs"),
+            CLEAN,
+        );
         write(&root.join("allow.txt"), "# allow\n");
         let config: serde_json::Value = serde_json::from_str(CONFIG).expect("config json");
         let outcome = run_checks(&root, CheckMode::Both, &config, &root.join("allow.txt"))
             .expect("checks run");
         assert_eq!(outcome.stale_allowlist, Vec::<String>::new());
         assert_eq!(outcome.findings.len(), 3);
-        assert_eq!(outcome.findings[0].path, "crates/dirty.rs");
+        assert_eq!(outcome.findings[0].path, "crates/bt-x/src/dirty.rs");
         assert_eq!(outcome.findings[0].detail, "line comment");
         assert_eq!(outcome.findings[1].detail, "block comment");
         assert_eq!(outcome.findings[2].detail, "literal 7 x2");
@@ -461,18 +501,49 @@ mod tests {
             outcome
                 .findings
                 .iter()
-                .all(|finding| finding.path == "crates/dirty.rs"),
+                .all(|finding| finding.path == "crates/bt-x/src/dirty.rs"),
             "clean.rs must stay silent"
         );
     }
 
     #[test]
+    fn constants_scope_is_src_only() {
+        let root = temp_root("run-scope");
+        write(
+            &root.join("crates").join("bt-x").join("src").join("a.rs"),
+            DIRTY,
+        );
+        write(
+            &root.join("crates").join("bt-x").join("tests").join("b.rs"),
+            DIRTY,
+        );
+        write(&root.join("allow.txt"), "# allow\n");
+        let config: serde_json::Value = serde_json::from_str(CONFIG).expect("config json");
+        let outcome = run_checks(
+            &root,
+            CheckMode::Constants,
+            &config,
+            &root.join("allow.txt"),
+        )
+        .expect("checks run");
+        assert_eq!(outcome.findings.len(), 1, "{:?}", outcome.findings);
+        assert_eq!(outcome.findings[0].path, "crates/bt-x/src/a.rs");
+    }
+
+    #[test]
     fn allowlist_covers_recurring_pairs_and_flags_stale_entries() {
         let root = temp_root("run-allow");
-        write(&root.join("crates").join("dirty.rs"), DIRTY);
+        write(
+            &root
+                .join("crates")
+                .join("bt-x")
+                .join("src")
+                .join("dirty.rs"),
+            DIRTY,
+        );
         write(
             &root.join("allow.txt"),
-            "crates/dirty.rs\t7\tlegacy\nsrc/gone.rs\t9\tnone\n",
+            "crates/bt-x/src/dirty.rs\t7\tlegacy\nsrc/gone.rs\t9\tnone\n",
         );
         let config: serde_json::Value = serde_json::from_str(CONFIG).expect("config json");
         let outcome = run_checks(
@@ -492,7 +563,14 @@ mod tests {
     #[test]
     fn small_literal_allow_silences_a_core_everywhere() {
         let root = temp_root("run-small");
-        write(&root.join("crates").join("dirty.rs"), DIRTY);
+        write(
+            &root
+                .join("crates")
+                .join("bt-x")
+                .join("src")
+                .join("dirty.rs"),
+            DIRTY,
+        );
         write(&root.join("allow.txt"), "# allow\n");
         let config: serde_json::Value = serde_json::from_str(
             "{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[\"7\"]}}",
@@ -571,7 +649,11 @@ mod tests {
     fn selftest_proves_both_detection_directions() {
         let workdir = temp_root("selftest");
         assert!(selftest(&workdir).expect("selftest runs"));
-        let probe = workdir.join("crates").join("dirty.rs");
+        let probe = workdir
+            .join("crates")
+            .join("bt-x")
+            .join("src")
+            .join("dirty.rs");
         assert!(probe.is_file(), "selftest must plant the dirty fixture");
     }
 }

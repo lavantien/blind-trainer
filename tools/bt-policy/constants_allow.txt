@@ -1,4 +1,115 @@
-# bt-policy recurring-literal allowlist
-# format: relative-path TAB literal-core TAB justification
-# one entry per exempted (file, literal) pair, matched exactly on both fields
-# an entry matching no current violation is reported as stale on stderr
+# path TAB literal-core TAB justification
+# constants check scope: src only, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
+crates/bt-app/src/logic.rs	100	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/logic.rs	365	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/logic.rs	640	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/logic.rs	800	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/net.rs	0.08	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	0.96	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	1280.0	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/net.rs	16.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	2.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	4.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	54	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/net.rs	563.2	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	690.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/net.rs	800.0	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+crates/bt-app/src/net.rs	96.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/present.rs	100.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/present.rs	2.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/smoke.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/smoke.rs	0.1	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.20	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.35	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.75	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.95	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/usage.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/usage.rs	0.1	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/usage.rs	0.8	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/usage.rs	1e-6	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/algs.rs	10	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/algs.rs	818	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/drill.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/memo.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/settings.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/solve.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/solve.rs	1000.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/stats.rs	15000.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/views/stats.rs	25000.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-core/src/analysis.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/analysis.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/analysis.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/cube.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/cube.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/cube.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/moves.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/moves.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-core/src/moves.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-data/src/verify.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-data/src/verify.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-ga/src/features.rs	0.20	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/features.rs	0.25	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/features.rs	0.40	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/features.rs	1.0	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	0.0	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	0.1	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	0.25	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	0.5	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	1.0	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	10	recurring structural or scale constant accepted at calibration 2026-10-15
+crates/bt-ga/src/ga.rs	1e-6	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	1e-9	GA numeric constant pinned by GA golden tests
+crates/bt-ga/src/ga.rs	21	recurring structural or scale constant accepted at calibration 2026-10-15
+crates/bt-ga/src/ga.rs	30	recurring structural or scale constant accepted at calibration 2026-10-15
+crates/bt-ga/src/hash.rs	64	bit width, hash lane, or pinned vendor corpus size
+crates/bt-scheme/src/classifier.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/classifier.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/classifier.rs	25	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/classifier.rs	26	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	13	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	16	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	17	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	25	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	26	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	27	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	28	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	32	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	33	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	36	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	40	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/memo.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scheme.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scheme.rs	26	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scheme.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scramble.rs	11	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scramble.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-scheme/src/scramble.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+tools/bt-ga-run/src/lib.rs	0.0	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	0.1	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	0.2	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	0.3	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	0.5	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	10	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	100	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	15	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-ga-run/src/lib.rs	64	bit width, hash lane, or pinned vendor corpus size
+tools/bt-gendata/src/build.rs	64	bit width, hash lane, or pinned vendor corpus size
+tools/bt-gendata/src/model.rs	32	bit width, hash lane, or pinned vendor corpus size
+tools/bt-gendata/src/synth.rs	54	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+tools/bt-gendata/src/when.rs	365	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+tools/bt-gendata/src/when.rs	86400	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+tools/bt-memofreq/src/lib.rs	10	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-memofreq/src/lib.rs	128	bit width, hash lane, or pinned vendor corpus size
+tools/bt-memofreq/src/lib.rs	20	recurring structural or scale constant accepted at calibration 2026-10-15
+tools/bt-memofreq/src/lib.rs	20261012	default seed mirroring hub app.smoke_seed, pinned by determinism tests
+tools/bt-memofreq/src/lib.rs	48	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
+tools/bt-release-verify/src/lib.rs	10	packaged window fixture mirroring hub app.window
+tools/bt-release-verify/src/lib.rs	1280	packaged window fixture mirroring hub app.window
+tools/bt-release-verify/src/lib.rs	800	packaged window fixture mirroring hub app.window
+tools/bt-verify/src/report.rs	64	bit width, hash lane, or pinned vendor corpus size
+tools/bt-visual-diff/src/lib.rs	10	tolerance boundary fixture mirroring hub visual.tolerance
+tools/bt-visual-diff/src/lib.rs	255	RGBA channel maximum
+tools/bt-visual-diff/src/lib.rs	48	tolerance boundary fixture mirroring hub visual.tolerance
+tools/bt-visual-diff/src/selftest.rs	255	RGBA channel maximum
