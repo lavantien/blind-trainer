@@ -1,0 +1,3 @@
+[package]
+name = "bt-sleeper"
+edition.workspace = true
