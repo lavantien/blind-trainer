@@ -265,3 +265,112 @@ pub fn commutator_once(data: &[u8]) {
         }
     }
 }
+
+const DB_STAGES: [&str; 6] = ["edge", "corner", "flips", "twists", "parity", "ltct"];
+const DB_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'!/\\\"#$%&()[]{}<>?,.;:=+*~^@|_";
+
+fn db_string(rng: &mut Rng) -> String {
+    let len = rng.below(24) as usize;
+    (0..len)
+        .map(|_| DB_ALPHABET[rng.below(DB_ALPHABET.len() as u64) as usize] as char)
+        .collect()
+}
+
+fn db_i64(rng: &mut Rng) -> i64 {
+    (rng.below(1u64 << 62)) as i64 - (1i64 << 61)
+}
+
+pub fn db_once(data: &[u8]) {
+    use bt_data::db::Db;
+    use bt_data::paths::{UserAlg, UserAlgs};
+    use bt_data::repo_algs;
+    use bt_data::repo_settings;
+    use bt_data::repo_solves;
+    use bt_data::repo_solves::{SolveLog, SolveRecord};
+    use bt_data::repo_srs;
+    use bt_data::repo_srs::SrsStore;
+    use bt_data::srs::{Card, ReviewLogEntry};
+    use std::collections::BTreeMap;
+
+    let mut rng = Rng::new(seed_from(data));
+    let mut db = Db::open_in_memory().expect("open");
+    assert_eq!(
+        db.user_version().expect("version"),
+        bt_data::db::LATEST_USER_VERSION
+    );
+
+    let mut algs = UserAlgs::new();
+    let mut cards = BTreeMap::new();
+    for _ in 0..rng.below(32) {
+        let stage = DB_STAGES[rng.below(DB_STAGES.len() as u64) as usize];
+        let case_key = db_string(&mut rng);
+        if case_key.is_empty() {
+            continue;
+        }
+        let key = format!("{stage}/{case_key}");
+        algs.entries.insert(
+            key.clone(),
+            UserAlg {
+                alg: db_string(&mut rng),
+            },
+        );
+        let reviews = (0..rng.below(20))
+            .map(|_| ReviewLogEntry {
+                ts_days: db_i64(&mut rng),
+                quality: rng.below(6) as u32,
+                elapsed_days: db_i64(&mut rng),
+                scheduled_days: db_i64(&mut rng),
+            })
+            .collect::<Vec<_>>();
+        cards.insert(
+            key,
+            Card {
+                ease: 1.0 + rng.below(400) as f32 / 100.0,
+                interval_days: db_i64(&mut rng),
+                due_day: db_i64(&mut rng),
+                reps: rng.below(1u64 << 30) as u32,
+                lapses: rng.below(1u64 << 30) as u32,
+                reviews,
+            },
+        );
+    }
+    let store = SrsStore { cards };
+    let log = SolveLog {
+        solves: (0..rng.below(32))
+            .map(|_| SolveRecord {
+                started_ms: db_i64(&mut rng),
+                memo_ms: db_i64(&mut rng),
+                exec_ms: db_i64(&mut rng),
+                success: rng.below(2) == 1,
+            })
+            .collect(),
+    };
+    let settings_text = db_string(&mut rng);
+
+    repo_algs::save(&mut db, &algs).expect("save algs");
+    repo_srs::save(&mut db, &store).expect("save srs");
+    repo_solves::save(&mut db, &log).expect("save solves");
+    repo_settings::save(&mut db, repo_settings::APP_KEY, &settings_text).expect("save settings");
+
+    assert_eq!(repo_algs::load(&db).expect("load algs"), algs);
+    assert_eq!(repo_srs::load(&db).expect("load srs"), store);
+    assert_eq!(repo_solves::load(&db).expect("load solves"), log);
+    assert_eq!(
+        repo_settings::load_text(&db, repo_settings::APP_KEY).expect("load settings"),
+        Some(settings_text)
+    );
+
+    repo_algs::save(&mut db, &UserAlgs::new()).expect("clear algs");
+    repo_srs::save(&mut db, &SrsStore::default()).expect("clear srs");
+    repo_solves::save(&mut db, &SolveLog::default()).expect("clear solves");
+    assert_eq!(repo_algs::load(&db).expect("reload algs"), UserAlgs::new());
+    assert_eq!(
+        repo_srs::load(&db).expect("reload srs"),
+        SrsStore::default()
+    );
+    assert_eq!(
+        repo_solves::load(&db).expect("reload solves"),
+        SolveLog::default()
+    );
+    assert_eq!(db.is_fresh().expect("fresh"), false);
+}

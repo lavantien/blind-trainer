@@ -4,7 +4,7 @@ ARTIFACTS := artifacts
 BIN := target/release/blind-trainer.exe
 E2E_BIN := tests/e2e/target/release/bt-e2e.exe
 MEMGUARD := scripts/memguard.ps1
-FUZZ_TARGETS := notation classify memo commutator
+FUZZ_TARGETS := notation classify memo commutator db
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga
 
 export BT_REF_GROUND := $(REF_GROUND)
