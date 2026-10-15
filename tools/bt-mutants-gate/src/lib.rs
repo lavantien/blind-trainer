@@ -126,11 +126,11 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
 
 fn parse_key(mutant: &serde_json::Map<String, Value>) -> Result<GateKey, GateError> {
     let file = string_field(mutant, "file")?;
-    let function = mutant
-        .get("function")
-        .and_then(Value::as_object)
-        .ok_or_else(|| malformed_outcome("mutant without function object"))?;
-    let function_name = string_field(function, "function_name")?;
+    let function_name = match mutant.get("function") {
+        Some(Value::Object(function)) => string_field(function, "function_name")?,
+        Some(Value::Null) => String::new(),
+        _ => return Err(malformed_outcome("mutant without function object")),
+    };
     let genre = string_field(mutant, "genre")?;
     let replacement = string_field(mutant, "replacement")?;
     Ok(GateKey {
@@ -263,6 +263,12 @@ mod tests {
     {"scenario":{"Mutant":{"name":"src/c.rs:3:1: replace g with ()","package":"bt-x","file":"src/c.rs","function":{"function_name":"g","return_type":"","span":{"start":{"line":1,"column":1},"end":{"line":5,"column":2}}},"span":{"start":{"line":3,"column":1},"end":{"line":3,"column":2}},"replacement":"()","genre":"FnValue"}},"summary":"Unviable"}]}"#;
 
     const INVALID_JSON: &str = "{ not json";
+
+    const NULL_FUNCTION_CAUGHT: &str = r#"{"total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: delete -","package":"bt-x","file":"src/a.rs","function":null,"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"","genre":"UnaryOperator"}},"summary":"CaughtMutant"}]}"#;
+
+    const NULL_FUNCTION_MISSED: &str = r#"{"total_mutants":1,"caught":0,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: delete -","package":"bt-x","file":"src/a.rs","function":null,"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"","genre":"UnaryOperator"}},"summary":"MissedMutant"}]}"#;
 
     const COMMENTED_ALLOWLIST: &str =
         "# columns: file\tfunction\tgenre\treplacement\tcount\tjustification\n";
@@ -436,6 +442,24 @@ mod tests {
     fn invalid_json_is_usage_error() {
         let err = gate(INVALID_JSON, COMMENTED_ALLOWLIST).unwrap_err();
         assert!(matches!(err, GateError::Usage(_)));
+    }
+
+    #[test]
+    fn module_level_mutants_without_a_function_pass_when_caught() {
+        let got = gate(NULL_FUNCTION_CAUGHT, COMMENTED_ALLOWLIST);
+        assert_eq!(got.unwrap(), "survivors gated: 0, all covered");
+    }
+
+    #[test]
+    fn module_level_mutant_surviving_fails_because_rows_need_a_function() {
+        let err = gate(NULL_FUNCTION_MISSED, COMMENTED_ALLOWLIST).unwrap_err();
+        assert!(matches!(err, GateError::Violation(_)));
+        let msg = err.to_string();
+        assert!(msg.contains("not in allowlist"), "got: {msg}");
+        assert!(
+            msg.contains("file=src/a.rs function= genre=UnaryOperator"),
+            "got: {msg}"
+        );
     }
 
     const REAL_ALLOWLIST: &str = "crates/bt-scheme/src/scramble.rs\tbuild_occ\tBinaryOperator\t%->+\t1\tthe offset only feeds a modulo 3 before use so every occupancy byte is unchanged\n\
