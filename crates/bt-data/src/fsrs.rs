@@ -40,25 +40,6 @@ pub struct FsrsConfig {
     pub interval_clamp_days: [i64; 2],
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum FsrsConfigError {
-    Missing,
-    Malformed,
-    Invalid(&'static str),
-}
-
-impl std::fmt::Display for FsrsConfigError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            FsrsConfigError::Missing => write!(f, "config section missing: srs.fsrs"),
-            FsrsConfigError::Malformed => write!(f, "config section malformed: srs.fsrs"),
-            FsrsConfigError::Invalid(why) => write!(f, "config section invalid: {why}"),
-        }
-    }
-}
-
-impl std::error::Error for FsrsConfigError {}
-
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub struct MemoryState {
     pub stability: f64,
@@ -81,27 +62,27 @@ impl FsrsConfig {
         }
     }
 
-    pub fn from_value(config: &serde_json::Value) -> Result<FsrsConfig, FsrsConfigError> {
+    pub fn from_value(config: &serde_json::Value) -> Result<FsrsConfig, crate::srs::ConfigError> {
         let section = config
             .pointer("/srs/fsrs")
-            .ok_or(FsrsConfigError::Missing)?;
+            .ok_or(crate::srs::ConfigError::Missing("srs.fsrs"))?;
         let parsed: FsrsSection =
-            serde_json::from_value(section.clone()).map_err(|_| FsrsConfigError::Malformed)?;
+            serde_json::from_value(section.clone()).map_err(crate::srs::ConfigError::Malformed)?;
         if parsed.weights.iter().any(|weight| !weight.is_finite()) {
-            return Err(FsrsConfigError::Invalid("weights must be finite"));
+            return Err(crate::srs::ConfigError::Invalid("weights must be finite"));
         }
         if !parsed.request_retention.is_finite()
             || parsed.request_retention <= 0.0
             || parsed.request_retention > 1.0
         {
-            return Err(FsrsConfigError::Invalid(
+            return Err(crate::srs::ConfigError::Invalid(
                 "request_retention must be finite and in (0, 1]",
             ));
         }
         if parsed.interval_clamp_days[0] < 1
             || parsed.interval_clamp_days[1] < parsed.interval_clamp_days[0]
         {
-            return Err(FsrsConfigError::Invalid(
+            return Err(crate::srs::ConfigError::Invalid(
                 "interval_clamp_days must be [at least 1, at least the floor]",
             ));
         }

@@ -1,14 +1,60 @@
 use crate::db::{Db, DbError, EVENT_3BLD, METHOD_3STYLE, now_ms};
+use crate::fsrs::{FsrsConfig, MemoryState};
 use crate::repo_algs::{join_key, split_key};
-use crate::srs::{Card, ReviewLogEntry};
+use crate::srs::{Card, ReplayError, ReviewLogEntry, replay_sm2};
 use rusqlite::Transaction;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fmt;
 
 #[derive(Clone, PartialEq, Debug, Default, Serialize, Deserialize)]
 pub struct SrsStore {
     pub cards: BTreeMap<String, Card>,
+}
+
+#[derive(Debug)]
+pub enum LoadError {
+    Db(DbError),
+    UnknownQuality {
+        key: String,
+        quality: u32,
+    },
+    InvalidMemory {
+        key: String,
+        stability: Option<f64>,
+        difficulty: Option<f64>,
+    },
+}
+
+impl fmt::Display for LoadError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            LoadError::Db(source) => write!(f, "{source}"),
+            LoadError::UnknownQuality { key, quality } => {
+                write!(
+                    f,
+                    "card {key} holds review quality {quality} with no sm-2 grade mapping"
+                )
+            }
+            LoadError::InvalidMemory {
+                key,
+                stability,
+                difficulty,
+            } => write!(
+                f,
+                "card {key} holds an invalid fsrs memory state (stability {stability:?}, difficulty {difficulty:?})"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for LoadError {}
+
+impl From<DbError> for LoadError {
+    fn from(source: DbError) -> Self {
+        LoadError::Db(source)
+    }
 }
 
 pub fn save_tx(tx: &Transaction<'_>, store: &SrsStore) -> Result<(), DbError> {
@@ -31,16 +77,17 @@ pub fn save_tx(tx: &Transaction<'_>, store: &SrsStore) -> Result<(), DbError> {
         })?;
         let card_id = tx.last_insert_rowid();
         tx.execute(
-            "INSERT INTO srs_state(card_id, due_day, interval_days, ease, reps, lapses, last_review_day)
-             VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, last_review_day, stability, difficulty)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             params![
                 card_id,
                 card.due_day,
                 card.interval_days,
-                f64::from(card.ease),
                 card.reps,
                 card.lapses,
-                card.last_review_day()
+                card.last_review_day(),
+                card.memory.map(|memory| memory.stability),
+                card.memory.map(|memory| memory.difficulty),
             ],
         )
         .map_err(|source| DbError::Exec {
@@ -84,12 +131,50 @@ fn map_query(step: &'static str) -> impl Fn(rusqlite::Error) -> DbError {
     move |source| DbError::Query { step, source }
 }
 
-pub fn load(db: &Db) -> Result<SrsStore, DbError> {
+fn memory_from_row(
+    key: String,
+    stability: Option<f64>,
+    difficulty: Option<f64>,
+    entries: &[ReviewLogEntry],
+    cfg: &FsrsConfig,
+) -> Result<Option<MemoryState>, LoadError> {
+    let memory = match (stability, difficulty) {
+        (None, None) => replay_sm2(entries, cfg).map_err(|source| match source {
+            ReplayError::UnknownQuality(quality) => LoadError::UnknownQuality {
+                key: key.clone(),
+                quality,
+            },
+        })?,
+        (Some(stability), Some(difficulty)) => Some(MemoryState {
+            stability,
+            difficulty,
+        }),
+        _ => {
+            return Err(LoadError::InvalidMemory {
+                key,
+                stability,
+                difficulty,
+            });
+        }
+    };
+    if let Some(memory) = memory
+        && !memory.is_valid()
+    {
+        return Err(LoadError::InvalidMemory {
+            key,
+            stability: Some(memory.stability),
+            difficulty: Some(memory.difficulty),
+        });
+    }
+    Ok(memory)
+}
+
+pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
     let step = "select card";
     let mut cards = db
         .conn()
         .prepare(
-            "SELECT c.id, c.stage, c.case_key, s.due_day, s.interval_days, s.ease, s.reps, s.lapses
+            "SELECT c.id, c.stage, c.case_key, s.due_day, s.interval_days, s.reps, s.lapses, s.stability, s.difficulty
              FROM card c JOIN srs_state s ON s.card_id = c.id",
         )
         .map_err(map_query(step))?;
@@ -101,9 +186,10 @@ pub fn load(db: &Db) -> Result<SrsStore, DbError> {
                 row.get::<_, String>(2)?,
                 row.get::<_, i64>(3)?,
                 row.get::<_, i64>(4)?,
-                row.get::<_, f64>(5)?,
+                row.get::<_, u32>(5)?,
                 row.get::<_, u32>(6)?,
-                row.get::<_, u32>(7)?,
+                row.get::<_, Option<f64>>(7)?,
+                row.get::<_, Option<f64>>(8)?,
             ))
         })
         .map_err(map_query(step))?
@@ -117,7 +203,9 @@ pub fn load(db: &Db) -> Result<SrsStore, DbError> {
         )
         .map_err(map_query(step))?;
     let mut store = SrsStore::default();
-    for (id, stage, case_key, due_day, interval_days, ease, reps, lapses) in card_rows {
+    for (id, stage, case_key, due_day, interval_days, reps, lapses, stability, difficulty) in
+        card_rows
+    {
         let entries = reviews
             .query_map(params![id], |row| {
                 Ok(ReviewLogEntry {
@@ -130,10 +218,12 @@ pub fn load(db: &Db) -> Result<SrsStore, DbError> {
             .map_err(map_query(step))?
             .collect::<Result<Vec<_>, _>>()
             .map_err(map_query(step))?;
+        let key = join_key(&stage, &case_key);
+        let memory = memory_from_row(key.clone(), stability, difficulty, &entries, cfg)?;
         store.cards.insert(
-            join_key(&stage, &case_key),
+            key,
             Card {
-                ease: ease as f32,
+                memory,
                 interval_days,
                 due_day,
                 reps,
@@ -149,13 +239,17 @@ pub fn load(db: &Db) -> Result<SrsStore, DbError> {
 mod tests {
     use super::*;
 
+    fn cfg() -> FsrsConfig {
+        FsrsConfig::defaults()
+    }
+
     fn db() -> Db {
         Db::open_in_memory().expect("db")
     }
 
-    fn card(ease: f32, reviews: Vec<ReviewLogEntry>) -> Card {
+    fn card(memory: Option<MemoryState>, reviews: Vec<ReviewLogEntry>) -> Card {
         Card {
-            ease,
+            memory,
             interval_days: 6,
             due_day: -3,
             reps: 4,
@@ -176,22 +270,19 @@ mod tests {
     #[test]
     fn save_and_load_round_trips_cards_with_review_history() {
         let mut db = db();
+        let graded = {
+            let mut graded = Card::new(0);
+            graded.review(crate::srs::Rating::Good, 0, &cfg());
+            graded.review(crate::srs::Rating::Good, 1, &cfg());
+            graded.review(crate::srs::Rating::Easy, 7, &cfg());
+            graded
+        };
         let mut store = SrsStore::default();
-        store.cards.insert(
-            "edge/UF".to_string(),
-            card(
-                2.500_000_2,
-                vec![
-                    review(10, 4, 0, 1),
-                    review(16, 3, 6, 6),
-                    review(22, 5, 6, 15),
-                ],
-            ),
-        );
+        store.cards.insert("edge/UF".to_string(), graded.clone());
         store.cards.insert(
             "corner/URB".to_string(),
             Card {
-                ease: 1.3,
+                memory: None,
                 interval_days: 0,
                 due_day: i64::MAX / 4,
                 reps: 0,
@@ -200,22 +291,41 @@ mod tests {
             },
         );
         save(&mut db, &store).expect("save");
-        assert_eq!(load(&db).expect("load"), store);
+        assert_eq!(load(&db, &cfg()).expect("load"), store);
+        let stored: (Option<f64>, Option<f64>) = db
+            .conn()
+            .query_row(
+                "SELECT stability, difficulty FROM srs_state JOIN card ON card.id = srs_state.card_id WHERE card.case_key = 'UF'",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
+            .expect("state row");
+        let graded_memory = graded.memory.expect("graded card holds memory");
+        assert_eq!(
+            stored,
+            (
+                Some(graded_memory.stability),
+                Some(graded_memory.difficulty)
+            )
+        );
     }
 
     #[test]
     fn review_order_survives_identical_entries() {
         let mut db = db();
         let mut store = SrsStore::default();
+        let memory = replay_sm2(&[review(5, 4, 0, 1), review(6, 4, 1, 1)], &cfg())
+            .expect("replay")
+            .expect("state");
         store.cards.insert(
             "edge/UB".to_string(),
             card(
-                2.5,
+                Some(memory),
                 vec![review(5, 4, 0, 1), review(6, 4, 1, 1), review(5, 4, 0, 1)],
             ),
         );
         save(&mut db, &store).expect("save");
-        assert_eq!(load(&db).expect("load"), store);
+        assert_eq!(load(&db, &cfg()).expect("load"), store);
     }
 
     #[test]
@@ -224,14 +334,14 @@ mod tests {
         let mut first = SrsStore::default();
         first
             .cards
-            .insert("edge/UF".to_string(), card(2.5, Vec::new()));
+            .insert("edge/UF".to_string(), card(None, Vec::new()));
         save(&mut db, &first).expect("first");
         let mut second = SrsStore::default();
         second
             .cards
-            .insert("corner/URB".to_string(), card(1.9, Vec::new()));
+            .insert("corner/URB".to_string(), card(None, Vec::new()));
         save(&mut db, &second).expect("second");
-        assert_eq!(load(&db).expect("load"), second);
+        assert_eq!(load(&db, &cfg()).expect("load"), second);
     }
 
     #[test]
@@ -240,10 +350,10 @@ mod tests {
         let mut store = SrsStore::default();
         store
             .cards
-            .insert("edge/UF".to_string(), card(2.5, vec![review(1, 4, 0, 1)]));
+            .insert("edge/UF".to_string(), card(None, vec![review(1, 4, 0, 1)]));
         save(&mut db, &store).expect("seed");
         save(&mut db, &SrsStore::default()).expect("clear");
-        assert_eq!(load(&db).expect("load"), SrsStore::default());
+        assert_eq!(load(&db, &cfg()).expect("load"), SrsStore::default());
         let reviews: i64 = db
             .conn()
             .query_row("SELECT COUNT(*) FROM review_log", [], |row| row.get(0))
@@ -258,7 +368,7 @@ mod tests {
         store.cards.insert(
             "edge/UF".to_string(),
             card(
-                2.5,
+                None,
                 vec![
                     review(10, 4, 0, 1),
                     review(16, 4, 6, 6),
@@ -277,5 +387,152 @@ mod tests {
             .map(|row| row.expect("row"))
             .collect();
         assert_eq!(intervals, [0, 1, 6]);
+    }
+
+    #[test]
+    fn legacy_null_state_rows_derive_memory_from_the_review_log() {
+        let mut db = db();
+        let history = vec![review(0, 4, 0, 3), review(1, 4, 1, 6), review(7, 4, 6, 20)];
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, history.clone()));
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute(
+                "UPDATE srs_state SET stability = NULL, difficulty = NULL",
+                [],
+            )
+            .expect("strip state");
+        let loaded = load(&db, &cfg()).expect("load");
+        let expected = replay_sm2(&history, &cfg())
+            .expect("replay")
+            .expect("state");
+        assert_eq!(loaded.cards["edge/UF"].memory, Some(expected));
+    }
+
+    #[test]
+    fn a_card_without_reviews_or_state_loads_with_no_memory() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, Vec::new()));
+        save(&mut db, &store).expect("seed");
+        assert_eq!(load(&db, &cfg()).expect("load"), store);
+    }
+
+    #[test]
+    fn corrupt_state_columns_fail_the_load_naming_the_card() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        let memory = replay_sm2(&[review(0, 4, 0, 3)], &cfg())
+            .expect("replay")
+            .expect("state");
+        store.cards.insert(
+            "edge/UF".to_string(),
+            card(Some(memory), vec![review(0, 4, 0, 3)]),
+        );
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute("UPDATE srs_state SET stability = -1.0", [])
+            .expect("corrupt stability");
+        let err = load(&db, &cfg()).expect_err("negative stability must fail");
+        let LoadError::InvalidMemory {
+            key,
+            stability,
+            difficulty,
+        } = err
+        else {
+            panic!("expected InvalidMemory, got {err}")
+        };
+        assert_eq!(key, "edge/UF");
+        assert_eq!(stability, Some(-1.0));
+        assert!(difficulty.is_some());
+    }
+
+    #[test]
+    fn half_present_state_columns_fail_the_load() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, vec![review(0, 4, 0, 3)]));
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute(
+                "UPDATE srs_state SET stability = 3.173, difficulty = NULL",
+                [],
+            )
+            .expect("half state");
+        let err = load(&db, &cfg()).expect_err("half state must fail");
+        assert!(err.to_string().contains("edge/UF"), "err: {err}");
+    }
+
+    #[test]
+    fn an_unknown_legacy_quality_fails_the_load() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, vec![review(0, 7, 0, 3)]));
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute(
+                "UPDATE srs_state SET stability = NULL, difficulty = NULL",
+                [],
+            )
+            .expect("strip state");
+        let err = load(&db, &cfg()).expect_err("quality 7 has no grade");
+        let LoadError::UnknownQuality { key, quality } = err else {
+            panic!("expected UnknownQuality, got {err}")
+        };
+        assert_eq!(key, "edge/UF");
+        assert_eq!(quality, 7);
+    }
+
+    #[test]
+    fn legacy_derivation_uses_the_loaded_config_not_the_defaults() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, vec![review(0, 2, 0, 1)]));
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute(
+                "UPDATE srs_state SET stability = NULL, difficulty = NULL",
+                [],
+            )
+            .expect("strip state");
+        let mut perturbed = FsrsConfig::defaults();
+        perturbed.weights[0] = 5.0;
+        let loaded = load(&db, &perturbed).expect("load");
+        let memory = loaded.cards["edge/UF"].memory.expect("derived memory");
+        assert_eq!(memory.stability, 5.0);
+    }
+
+    #[test]
+    fn an_invalid_replayed_state_fails_the_load_naming_the_card() {
+        let mut db = db();
+        let mut store = SrsStore::default();
+        store.cards.insert(
+            "edge/UF".to_string(),
+            card(
+                None,
+                vec![review(0, 4, 0, 3), review(1, 4, 1, 6), review(7, 2, 6, 2)],
+            ),
+        );
+        save(&mut db, &store).expect("seed");
+        db.conn()
+            .execute(
+                "UPDATE srs_state SET stability = NULL, difficulty = NULL",
+                [],
+            )
+            .expect("strip state");
+        let mut degenerate = FsrsConfig::defaults();
+        degenerate.weights[11] = 0.0;
+        let err = load(&db, &degenerate).expect_err("zero forget weight must invalidate");
+        assert!(err.to_string().contains("edge/UF"), "err: {err}");
     }
 }

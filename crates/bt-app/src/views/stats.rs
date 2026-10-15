@@ -149,7 +149,7 @@ mod tests {
 
     fn card_with_reviews(qualities: &[u32]) -> Card {
         Card {
-            ease: 2.5,
+            memory: None,
             interval_days: 1,
             due_day: 0,
             reps: qualities.len() as u32,

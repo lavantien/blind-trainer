@@ -1,6 +1,5 @@
-use bt_data::fsrs::{
-    DEFAULT_WEIGHTS, FsrsConfig, FsrsConfigError, Grade, MemoryState, next_interval_days,
-};
+use bt_data::fsrs::{DEFAULT_WEIGHTS, FsrsConfig, Grade, MemoryState, next_interval_days};
+use bt_data::srs::ConfigError;
 use proptest::prelude::*;
 
 fn golden_config() -> FsrsConfig {
@@ -39,7 +38,7 @@ fn approved_json() -> String {
     )
 }
 
-fn config_from_text(text: &str) -> Result<FsrsConfig, FsrsConfigError> {
+fn config_from_text(text: &str) -> Result<FsrsConfig, ConfigError> {
     let value: serde_json::Value = serde_json::from_str(text).unwrap_or(serde_json::Value::Null);
     FsrsConfig::from_value(&value)
 }
@@ -54,33 +53,33 @@ fn from_value_parses_the_approved_hub_section() {
 
 #[test]
 fn from_value_rejects_missing_or_malformed_sections() {
-    assert_eq!(
+    assert!(matches!(
         FsrsConfig::from_value(&serde_json::json!({})),
-        Err(FsrsConfigError::Missing)
-    );
-    assert_eq!(
+        Err(ConfigError::Missing("srs.fsrs"))
+    ));
+    assert!(matches!(
         FsrsConfig::from_value(&serde_json::json!({"srs": {}})),
-        Err(FsrsConfigError::Missing)
-    );
+        Err(ConfigError::Missing("srs.fsrs"))
+    ));
     let short_weights = hub_section_text("[0.40255]", "0.9", "[1, 365]");
-    assert_eq!(
+    assert!(matches!(
         config_from_text(&short_weights),
-        Err(FsrsConfigError::Malformed)
-    );
+        Err(ConfigError::Malformed(_))
+    ));
     let one_clamp = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", "[1]");
-    assert_eq!(
+    assert!(matches!(
         config_from_text(&one_clamp),
-        Err(FsrsConfigError::Malformed)
-    );
+        Err(ConfigError::Malformed(_))
+    ));
     let text_weights = hub_section_text(
         "[\"x\", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0]",
         "0.9",
         "[1, 365]",
     );
-    assert_eq!(
+    assert!(matches!(
         config_from_text(&text_weights),
-        Err(FsrsConfigError::Malformed)
-    );
+        Err(ConfigError::Malformed(_))
+    ));
 }
 
 #[test]
@@ -112,13 +111,23 @@ fn from_value_rejects_bad_interval_clamps() {
         let text = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", clamps);
         let outcome = config_from_text(&text);
         assert!(
-            matches!(outcome, Err(FsrsConfigError::Invalid(_))),
+            matches!(outcome, Err(ConfigError::Invalid(_))),
             "clamps {clamps} must be Invalid, got {outcome:?}"
         );
     }
     let wide = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", "[365, 3650]");
     let cfg = config_from_text(&wide).expect("raised floor with wide cap parses");
     assert_eq!(cfg.interval_clamp_days, [365, 3650]);
+}
+
+#[test]
+fn from_value_accepts_retention_one_and_equal_clamp_bounds() {
+    let retention_one = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "1.0", "[1, 365]");
+    let cfg = config_from_text(&retention_one).expect("retention 1.0 is inside (0, 1]");
+    assert_eq!(cfg.request_retention, 1.0);
+    let equal_clamps = hub_section_text(&format!("{:?}", DEFAULT_WEIGHTS), "0.9", "[7, 7]");
+    let cfg = config_from_text(&equal_clamps).expect("equal bounds satisfy cap at least floor");
+    assert_eq!(cfg.interval_clamp_days, [7, 7]);
 }
 
 #[test]
@@ -154,15 +163,19 @@ fn state_validity_rejects_non_finite_and_out_of_domain_values() {
 #[test]
 fn config_error_messages_are_distinct() {
     assert_eq!(
-        FsrsConfigError::Missing.to_string(),
+        ConfigError::Missing("srs.fsrs").to_string(),
         "config section missing: srs.fsrs"
     );
-    assert_eq!(
-        FsrsConfigError::Malformed.to_string(),
-        "config section malformed: srs.fsrs"
+    let malformed = config_from_text(&hub_section_text("[0.40255]", "0.9", "[1, 365]"))
+        .expect_err("short weights are malformed");
+    assert!(
+        malformed
+            .to_string()
+            .starts_with("config section malformed: "),
+        "err: {malformed}"
     );
     assert_eq!(
-        FsrsConfigError::Invalid("weights must be finite").to_string(),
+        ConfigError::Invalid("weights must be finite").to_string(),
         "config section invalid: weights must be finite"
     );
 }

@@ -10,13 +10,22 @@ pub struct Migration {
     pub sql: &'static str,
 }
 
-pub const MIGRATIONS: &[Migration] = &[Migration {
-    name: "001_init",
-    sql: include_str!(concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/../../db/migrations/001_init.sql"
-    )),
-}];
+pub const MIGRATIONS: &[Migration] = &[
+    Migration {
+        name: "001_init",
+        sql: include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../db/migrations/001_init.sql"
+        )),
+    },
+    Migration {
+        name: "002_drop_srs_ease",
+        sql: include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../db/migrations/002_drop_srs_ease.sql"
+        )),
+    },
+];
 
 pub const LATEST_USER_VERSION: i64 = MIGRATIONS.len() as i64;
 
@@ -191,8 +200,9 @@ impl Db {
                 latest: LATEST_USER_VERSION,
             });
         }
-        for (index, migration) in MIGRATIONS.iter().enumerate().skip(current.max(0) as usize) {
-            if self.has_any_table()? {
+        let first_index = current.max(0) as usize;
+        for (index, migration) in MIGRATIONS.iter().enumerate().skip(first_index) {
+            if index == first_index && self.has_any_table()? {
                 self.backup_file()?;
             }
             let target = index as i64 + 1;
@@ -303,6 +313,39 @@ mod tests {
         crate::paths::db_file_name()
     }
 
+    fn seed_user_alg(db: &Db) {
+        db.conn()
+            .execute(
+                "INSERT INTO user_alg(stage, case_key, alg, created_at, updated_at) VALUES ('s', 'c', 'a', 0, 0)",
+                [],
+            )
+            .expect("seed user_alg");
+    }
+
+    fn seed_card(db: &Db) {
+        db.conn()
+            .execute(
+                "INSERT INTO card(stage, case_key, created_at, updated_at) VALUES ('s', 'c', 0, 0)",
+                [],
+            )
+            .expect("seed card");
+    }
+
+    fn seed_solves(db: &Db) {
+        db.conn()
+            .execute(
+                "INSERT INTO solves(started_ms, memo_ms, exec_ms, success) VALUES (0, 0, 0, 1)",
+                [],
+            )
+            .expect("seed solves");
+    }
+
+    fn seed_settings(db: &Db) {
+        db.conn()
+            .execute("INSERT INTO settings(key, value) VALUES ('k', 'v')", [])
+            .expect("seed settings");
+    }
+
     #[test]
     fn schema_holds_every_mandated_table_and_column() {
         let db = Db::open_in_memory().expect("open");
@@ -336,7 +379,6 @@ mod tests {
                 "card_id",
                 "due_day",
                 "interval_days",
-                "ease",
                 "reps",
                 "lapses",
                 "last_review_day",
@@ -365,16 +407,65 @@ mod tests {
 
     #[test]
     fn migrations_embed_the_committed_sql_files() {
-        assert_eq!(MIGRATIONS.len(), 1);
-        assert_eq!(MIGRATIONS[0].name, "001_init");
-        let committed = std::fs::read_to_string(
-            crate::paths::workspace_root()
-                .join("db")
-                .join("migrations")
-                .join("001_init.sql"),
+        assert_eq!(MIGRATIONS.len(), 2);
+        for migration in MIGRATIONS {
+            let committed = std::fs::read_to_string(
+                crate::paths::workspace_root()
+                    .join("db")
+                    .join("migrations")
+                    .join(format!("{}.sql", migration.name)),
+            )
+            .expect("committed migration");
+            assert_eq!(migration.sql, committed);
+        }
+    }
+
+    #[test]
+    fn ease_column_drops_under_002_and_keeps_the_remaining_rows() {
+        let dir = temp_dir("ease-drop");
+        let db_path = dir.join(paths_db_file());
+        let conn = Connection::open(&db_path).expect("raw open");
+        conn.execute_batch(MIGRATIONS[0].sql).expect("v1 schema");
+        conn.pragma_update(None, "user_version", 1)
+            .expect("v1 mark");
+        conn.execute(
+            "INSERT INTO card(event, method, stage, case_key, created_at, updated_at)
+             VALUES ('3bld', '3style', 'edge', 'UF', 1, 1)",
+            [],
         )
-        .expect("committed migration");
-        assert_eq!(MIGRATIONS[0].sql, committed);
+        .expect("card row");
+        let card_id = conn.last_insert_rowid();
+        conn.execute(
+            "INSERT INTO srs_state(card_id, due_day, interval_days, ease, reps, lapses, last_review_day)
+             VALUES (?, 10, 6, 2.5, 2, 0, 4)",
+            [card_id],
+        )
+        .expect("v1 state row");
+        conn.execute(
+            "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, interval_after, elapsed_days)
+             VALUES (?, 4, 4, 0, 6, 3)",
+            [card_id],
+        )
+        .expect("v1 review row");
+        drop(conn);
+        let db = Db::open_at(&db_path).expect("open migrates");
+        assert_eq!(db.user_version().expect("version"), LATEST_USER_VERSION);
+        assert!(!table_columns(&db, "srs_state").contains(&"ease".to_string()));
+        let state: (i64, i64, i64) = db
+            .conn()
+            .query_row(
+                "SELECT due_day, interval_days, reps FROM srs_state",
+                [],
+                |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
+            )
+            .expect("state row");
+        assert_eq!(state, (10, 6, 2));
+        let reviews: i64 = db
+            .conn()
+            .query_row("SELECT COUNT(*) FROM review_log", [], |row| row.get(0))
+            .expect("review rows");
+        assert_eq!(reviews, 1);
+        assert!(backup_path(&db_path).is_file());
     }
 
     #[test]
@@ -439,17 +530,76 @@ mod tests {
     fn fresh_db_reports_empty_and_fills_after_a_row() {
         let db = Db::open_in_memory().expect("open");
         assert!(db.is_fresh().expect("fresh"));
-        db.conn()
-            .execute("INSERT INTO settings(key, value) VALUES ('k', 'v')", [])
-            .expect("insert");
+        seed_settings(&db);
         assert!(!db.is_fresh().expect("filled"));
     }
 
     #[test]
-    fn now_ms_is_monotonic_positive() {
+    fn is_fresh_is_false_for_each_single_nonempty_table() {
+        for seed in [
+            seed_user_alg as fn(&Db),
+            seed_card,
+            seed_solves,
+            seed_settings,
+        ] {
+            let db = Db::open_in_memory().expect("open");
+            seed(&db);
+            assert!(!db.is_fresh().expect("filled"));
+        }
+    }
+
+    #[test]
+    fn is_fresh_is_false_when_two_equal_counts_could_cancel() {
+        for partner in [seed_card as fn(&Db), seed_solves, seed_settings] {
+            let db = Db::open_in_memory().expect("open");
+            seed_user_alg(&db);
+            partner(&db);
+            assert!(!db.is_fresh().expect("filled"));
+        }
+    }
+
+    #[test]
+    fn reopening_a_fully_migrated_db_succeeds() {
+        let dir = temp_dir("reopen");
+        let db_path = dir.join(paths_db_file());
+        {
+            let db = Db::open_at(&db_path).expect("first open");
+            assert_eq!(db.user_version().expect("version"), LATEST_USER_VERSION);
+        }
+        let reopened = Db::open_at(&db_path).expect("reopen migrated db");
+        assert_eq!(
+            reopened.user_version().expect("version"),
+            LATEST_USER_VERSION
+        );
+    }
+
+    #[test]
+    fn open_at_creates_missing_parent_directories() {
+        let dir = temp_dir("nested");
+        let db_path = dir.join("deep/nested/blind-trainer.db");
+        let db = Db::open_at(&db_path).expect("open nested path");
+        drop(db);
+        assert!(db_path.is_file());
+    }
+
+    #[test]
+    fn path_reports_the_file_for_disk_and_none_for_memory() {
+        let dir = temp_dir("path");
+        let db_path = dir.join(paths_db_file());
+        let db = Db::open_at(&db_path).expect("open");
+        assert_eq!(db.path(), Some(db_path.as_path()));
+        let memory = Db::open_in_memory().expect("memory");
+        assert_eq!(memory.path(), None);
+    }
+
+    #[test]
+    fn now_ms_is_epoch_millis_and_monotonic() {
         let first = now_ms();
         let second = now_ms();
-        assert!(first > 0);
+        assert!(
+            first > 1_700_000_000_000,
+            "now_ms must report unix epoch millis"
+        );
         assert!(second >= first);
     }
 }

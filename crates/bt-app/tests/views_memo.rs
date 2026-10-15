@@ -208,7 +208,7 @@ fn config_per_orbit_mode_and_default_reps_seed_the_settings() {
                 "memo": {"cadence_ms": 800, "mode": "per-orbit"},
                 "drill": {"reps": 6}
             },
-            "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}},
+            "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}},
             "paths": {"data_ga": data_ga.to_string_lossy()}
         })
         .to_string(),

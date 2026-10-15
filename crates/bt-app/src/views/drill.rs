@@ -2,7 +2,7 @@ use super::drill_view::{
     CardPanel, DrillCardRoot, RatePrompt, RepsField, RepsTimer, refresh, spawn_card,
     spawn_rate_panel, spawn_reps_panel,
 };
-use crate::logic::{NetState, SaveStores, Sm2, VendorCorpus};
+use crate::logic::{Fsrs, NetState, SaveStores, VendorCorpus};
 use crate::persist::Stores;
 use crate::present::FontBook;
 use crate::states::DrillPhase;
@@ -205,7 +205,7 @@ pub fn pick_pair(corpus: &Corpus, stores: &Stores, now_day: i64, rng: &mut Rng) 
 
 pub fn write_review(
     stores: &mut Stores,
-    sm2: &bt_data::srs::Sm2Config,
+    fsrs: &bt_data::fsrs::FsrsConfig,
     sheet: SheetClass,
     position: &str,
     rating: Rating,
@@ -217,7 +217,7 @@ pub fn write_review(
         .cards
         .entry(key)
         .or_insert_with(|| Card::new(now_day));
-    card.review(rating, now_day, sm2);
+    card.review(rating, now_day, fsrs);
 }
 
 pub fn rating_of(key: KeyCode) -> Option<Rating> {
@@ -398,7 +398,7 @@ pub fn rate_keys(
     mut session: ResMut<DrillSession>,
     corpus: Res<VendorCorpus>,
     mut stores: ResMut<Stores>,
-    sm2: Res<Sm2>,
+    fsrs: Res<Fsrs>,
     mut seed: ResMut<DrillSeed>,
     mut next: ResMut<NextState<DrillPhase>>,
 ) {
@@ -421,7 +421,7 @@ pub fn rate_keys(
         } else {
             &position_b
         };
-        write_review(&mut stores, &sm2.0, sheet_of(orbit), position, rating, day);
+        write_review(&mut stores, &fsrs.0, sheet_of(orbit), position, rating, day);
         commands.write_message(SaveStores);
         session.rate_step += 1;
         if session.rate_step > 1 {

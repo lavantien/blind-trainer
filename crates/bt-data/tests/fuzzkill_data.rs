@@ -8,7 +8,7 @@ use bt_data::paths::{
     user_algs_path, user_algs_path_at, user_dir_path, user_dir_path_at, user_root, user_root_from,
     vendor_root, vendor_root_from, write_json_atomic,
 };
-use bt_data::srs::{Card, ConfigError, Rating, Sm2Config};
+use bt_data::srs::{Card, ConfigError, Rating};
 use bt_data::tsv::{TsvError, parse_sheet};
 use bt_data::verify::{Problem, Verdict, verify};
 
@@ -142,21 +142,23 @@ fn corpus_is_empty_tracks_rows() {
 #[test]
 fn srs_accessors_are_pinned() {
     let config = serde_json::json!({
-        "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [7, 200]}}
+        "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [7, 200]}}
     });
-    let cfg = Sm2Config::from_value(&config).unwrap();
-    assert_eq!(cfg.interval_min_days(), 7);
-    assert_eq!(cfg.interval_max_days(), 200);
-    assert_eq!(cfg.quality(Rating::Again), 2);
-    assert_eq!(cfg.quality(Rating::Hard), 3);
-    assert_eq!(cfg.quality(Rating::Good), 4);
-    assert_eq!(cfg.quality(Rating::Easy), 5);
+    let cfg = bt_data::fsrs::FsrsConfig::from_value(&config).unwrap();
+    assert_eq!(cfg.interval_clamp_days, [7, 200]);
+    assert_eq!(Rating::Again.to_code(), 1);
+    assert_eq!(Rating::Hard.to_code(), 2);
+    assert_eq!(Rating::Good.to_code(), 3);
+    assert_eq!(Rating::Easy.to_code(), 4);
 
     let card = Card::new(10);
     assert_eq!(card.last_review_day(), None);
+    assert_eq!(card.memory, None);
     let mut reviewed = Card::new(10);
     reviewed.review(Rating::Good, 42, &cfg);
     assert_eq!(reviewed.last_review_day(), Some(42));
+    assert!(reviewed.memory.expect("memory").is_valid());
+    assert_eq!(reviewed.reviews[0].quality, 4);
 }
 
 #[test]

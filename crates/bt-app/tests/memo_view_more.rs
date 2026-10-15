@@ -12,8 +12,9 @@ use bt_app::views::memo::{
     MemoSeed, MemoSession, StreamToken, build_tokens, orbit_name, rate_pairs, rebuild,
     residue_lines, token_text, view_rows,
 };
+use bt_data::fsrs::FsrsConfig;
 use bt_data::paths::UserAlgs;
-use bt_data::srs::{Rating, Sm2Config};
+use bt_data::srs::Rating;
 use bt_scheme::memo::memo as memo_of;
 use bt_scheme::{CaseId, Memo, Orbit, Parity, Residue, Twist, random_state};
 use views_common::*;
@@ -87,19 +88,8 @@ fn stores_with(cadence: u32, mode: MemoMode) -> Stores {
     }
 }
 
-fn sm2() -> Sm2Config {
-    Sm2Config::from_value(&serde_json::json!({
-        "srs": {
-            "sm2": {
-                "again": 2,
-                "hard": 3,
-                "good": 4,
-                "easy": 5,
-                "interval_clamp_days": [1, 365]
-            }
-        }
-    }))
-    .expect("sm2 config")
+fn fsrs() -> FsrsConfig {
+    FsrsConfig::defaults()
 }
 
 fn memo_of_shape(pairs: (Vec<CaseId>, Vec<CaseId>), residue: Residue) -> Memo {
@@ -306,7 +296,7 @@ fn rate_pairs_write_one_review_per_pair_under_sheet_positions() {
         )),
         ..Default::default()
     };
-    rate_pairs(&mut stores, &sm2(), &session, Rating::Good, 1_000);
+    rate_pairs(&mut stores, &fsrs(), &session, Rating::Good, 1_000);
     assert_eq!(stores.srs.cards.len(), 2);
     let edge = &stores.srs.cards["edge/UF-UB-UR"];
     assert_eq!(edge.reviews.len(), 1);
@@ -316,7 +306,7 @@ fn rate_pairs_write_one_review_per_pair_under_sheet_positions() {
     let corner = &stores.srs.cards["corner/UFR-UBL-UBR"];
     assert_eq!(corner.reviews.len(), 1);
     assert_eq!(corner.reviews[0].quality, 4);
-    assert_eq!(corner.reviews[0].scheduled_days, 1);
+    assert_eq!(corner.reviews[0].scheduled_days, 3);
 }
 
 #[test]
@@ -324,7 +314,7 @@ fn rate_pairs_without_memo_write_nothing() {
     let mut stores = stores_with(800, MemoMode::PerOrbit);
     rate_pairs(
         &mut stores,
-        &sm2(),
+        &fsrs(),
         &MemoSession::default(),
         Rating::Easy,
         1_000,
@@ -531,7 +521,7 @@ fn rating_again_lapses_every_pair_and_space_draws_the_next_seed() {
     for card in stores.srs.cards.values() {
         assert_eq!(card.reviews.len(), 1);
         assert_eq!(card.reviews[0].quality, 2);
-        assert_eq!(card.reps, 0);
+        assert_eq!(card.reps, 1);
         assert_eq!(card.lapses, 1);
     }
     press(&mut app, KeyCode::Space);

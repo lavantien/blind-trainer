@@ -82,7 +82,11 @@ fn db_shown(root: &Path) -> String {
 }
 
 impl Stores {
-    pub fn load(root: &Path, default_settings: Settings) -> Result<Stores, String> {
+    pub fn load(
+        root: &Path,
+        default_settings: Settings,
+        fsrs: &bt_data::fsrs::FsrsConfig,
+    ) -> Result<Stores, String> {
         let mut db = open(root)?;
         bt_data::import::run(&mut db, root)?;
         let settings = match repo_settings::load_text(&db, repo_settings::APP_KEY)
@@ -92,7 +96,7 @@ impl Stores {
                 .map_err(|err| format!("{} settings: {err}", db_shown(root)))?,
             None => default_settings,
         };
-        let srs = repo_srs::load(&db).map_err(|err| format!("{}: {err}", db_shown(root)))?;
+        let srs = repo_srs::load(&db, fsrs).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         let solves = repo_solves::load(&db).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         let user_algs = repo_algs::load(&db).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         Ok(Stores {
@@ -138,9 +142,14 @@ pub struct SaveOutcome {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bt_data::fsrs::FsrsConfig;
     use bt_data::paths::UserAlg;
     use bt_data::srs::Card;
     use std::sync::atomic::{AtomicU64, Ordering};
+
+    fn cfg() -> FsrsConfig {
+        FsrsConfig::defaults()
+    }
 
     static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
 
@@ -174,7 +183,7 @@ mod tests {
     fn missing_files_fall_back_to_defaults() {
         let root = temp_root("defaults");
         let default = sample_settings();
-        let stores = Stores::load(&root, default).expect("load");
+        let stores = Stores::load(&root, default, &cfg()).expect("load");
         assert_eq!(stores.settings, default);
         assert!(stores.srs.cards.is_empty());
         assert!(stores.solves.solves.is_empty());
@@ -184,7 +193,7 @@ mod tests {
     #[test]
     fn settings_round_trip() {
         let root = temp_root("settings");
-        let stores = Stores::load(&root, sample_settings()).expect("load");
+        let stores = Stores::load(&root, sample_settings(), &cfg()).expect("load");
         save_settings(&root, &stores.settings).expect("save");
         let reloaded = Stores::load(
             &root,
@@ -193,6 +202,7 @@ mod tests {
                 memo_mode: MemoMode::Syllables,
                 drill_reps: 1,
             },
+            &cfg(),
         )
         .expect("reload");
         assert_eq!(reloaded.settings, sample_settings());
@@ -241,7 +251,7 @@ mod tests {
             },
         )
         .expect("save");
-        let stores = Stores::load(&root, sample_settings()).expect("load");
+        let stores = Stores::load(&root, sample_settings(), &cfg()).expect("load");
         assert_eq!(stores.settings.memo_mode, MemoMode::PerOrbit);
         assert_eq!(stores.settings.memo_cadence_ms, 640);
         assert_eq!(stores.settings.drill_reps, 6);
@@ -250,11 +260,11 @@ mod tests {
     #[test]
     fn srs_and_solves_round_trip() {
         let root = temp_root("srs");
-        let mut stores = Stores::load(&root, sample_settings()).expect("load");
+        let mut stores = Stores::load(&root, sample_settings(), &cfg()).expect("load");
         stores.srs.cards.insert(
             "edge/UF".to_string(),
             Card {
-                ease: 2.5,
+                memory: None,
                 interval_days: 6,
                 due_day: 10,
                 reps: 2,
@@ -270,7 +280,7 @@ mod tests {
         });
         save_srs(&root, &stores.srs).expect("save srs");
         save_solves(&root, &stores.solves).expect("save solves");
-        let reloaded = Stores::load(&root, sample_settings()).expect("reload");
+        let reloaded = Stores::load(&root, sample_settings(), &cfg()).expect("reload");
         assert_eq!(reloaded.srs.cards.len(), 1);
         assert_eq!(
             reloaded
@@ -293,7 +303,7 @@ mod tests {
             b"definitely not a sqlite database",
         )
         .expect("corrupt write");
-        let err = Stores::load(&root, sample_settings()).expect_err("must fail");
+        let err = Stores::load(&root, sample_settings(), &cfg()).expect_err("must fail");
         assert!(err.contains("user_version"), "unexpected error: {err}");
     }
 
@@ -303,7 +313,7 @@ mod tests {
         let mut db = Db::open_root(&root).expect("db");
         repo_settings::save(&mut db, repo_settings::APP_KEY, "{not json").expect("seed row");
         drop(db);
-        let err = Stores::load(&root, sample_settings()).expect_err("must fail");
+        let err = Stores::load(&root, sample_settings(), &cfg()).expect_err("must fail");
         assert!(err.contains("settings"), "unexpected error: {err}");
         assert!(err.contains("blind-trainer.db"), "unexpected error: {err}");
     }
@@ -312,7 +322,7 @@ mod tests {
     fn corrupt_legacy_json_fails_closed_naming_the_file() {
         let root = temp_root("corrupt-legacy");
         write_legacy(&root, "settings/settings.json", "{not json");
-        let err = Stores::load(&root, sample_settings()).expect_err("must fail");
+        let err = Stores::load(&root, sample_settings(), &cfg()).expect_err("must fail");
         assert!(err.contains("settings.json"), "unexpected error: {err}");
     }
 
@@ -350,7 +360,7 @@ mod tests {
             },
         );
         save_user_algs(&root, &algs).expect("save");
-        let stores = Stores::load(&root, sample_settings()).expect("load");
+        let stores = Stores::load(&root, sample_settings(), &cfg()).expect("load");
         assert_eq!(stores.user_algs.entries.len(), 1);
         assert_eq!(
             stores
@@ -375,7 +385,7 @@ mod tests {
             "algs/user-algs.json",
             r#"{"entries":{"corner/URB":{"alg":"R U' R'"}}}"#,
         );
-        let stores = Stores::load(&root, sample_settings()).expect("import load");
+        let stores = Stores::load(&root, sample_settings(), &cfg()).expect("import load");
         assert_eq!(stores.settings.memo_cadence_ms, 640);
         assert_eq!(stores.user_algs.entries.len(), 1);
         assert!(
@@ -389,10 +399,10 @@ mod tests {
             "settings/settings.json",
             r#"{"memo_cadence_ms":1,"memo_mode":"images","drill_reps":1}"#,
         );
-        let again = Stores::load(&root, sample_settings()).expect("second load");
+        let again = Stores::load(&root, sample_settings(), &cfg()).expect("second load");
         assert_eq!(again.settings.memo_cadence_ms, 640);
         save_settings(&root, &sample_settings()).expect("save");
-        let third = Stores::load(&root, sample_settings()).expect("third load");
+        let third = Stores::load(&root, sample_settings(), &cfg()).expect("third load");
         assert_eq!(third.settings, sample_settings());
     }
 

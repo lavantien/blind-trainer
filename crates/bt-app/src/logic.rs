@@ -6,8 +6,8 @@ use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use bt_core::Cube;
 use bt_data::corpus::Corpus;
+use bt_data::fsrs::FsrsConfig;
 use bt_data::paths;
-use bt_data::srs::Sm2Config;
 use bt_scheme::EDGE_BUFFER_STICKER;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
@@ -165,7 +165,7 @@ pub struct FatalReason(pub String);
 pub struct BootWarnings(pub Vec<String>);
 
 #[derive(Clone, Debug, Resource)]
-pub struct Sm2(pub Sm2Config);
+pub struct Fsrs(pub FsrsConfig);
 
 #[derive(Debug, Resource)]
 pub struct VendorCorpus(pub Corpus);
@@ -234,7 +234,7 @@ impl LastSave {
 #[derive(Debug)]
 struct Booted {
     config: AppConfig,
-    sm2: Sm2Config,
+    fsrs: FsrsConfig,
     corpus: Corpus,
     stores: Stores,
     warnings: Vec<String>,
@@ -253,8 +253,9 @@ fn default_settings(config: &AppConfig) -> Result<Settings, String> {
 fn boot(paths: &RuntimePaths) -> Result<Booted, String> {
     let value = load_config_value(&paths.config_path)?;
     let config = app_config_from(&value)?;
-    let sm2 = Sm2Config::from_value(&value).map_err(|err| format!("config srs section: {err}"))?;
-    let stores = Stores::load(&paths.user_root, default_settings(&config)?)?;
+    let fsrs =
+        FsrsConfig::from_value(&value).map_err(|err| format!("config srs section: {err}"))?;
+    let stores = Stores::load(&paths.user_root, default_settings(&config)?, &fsrs)?;
     let (corpus, warnings) = if paths.vendor_root.is_dir() {
         let loaded = Corpus::load(&paths.vendor_root)
             .map_err(|err| format!("vendor corpus at {}: {err}", paths.vendor_root.display()))?;
@@ -273,7 +274,7 @@ fn boot(paths: &RuntimePaths) -> Result<Booted, String> {
     };
     Ok(Booted {
         config,
-        sm2,
+        fsrs,
         corpus,
         stores,
         warnings,
@@ -285,7 +286,7 @@ fn bootstrap_load(world: &mut World) {
     match boot(&paths) {
         Ok(booted) => {
             world.insert_resource(booted.config);
-            world.insert_resource(Sm2(booted.sm2));
+            world.insert_resource(Fsrs(booted.fsrs));
             world.insert_resource(VendorCorpus(booted.corpus));
             world.insert_resource(PersistenceRoot(paths.user_root.clone()));
             world.insert_resource(booted.stores);
@@ -478,7 +479,7 @@ mod tests {
                     "memo": {"cadence_ms": 500, "mode": "images"},
                     "drill": {"reps": 3}
                 },
-                "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}}
+                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
             })
             .to_string(),
         )
@@ -590,7 +591,7 @@ mod tests {
         let paths = temp_paths("noapp");
         std::fs::write(
             &paths.config_path,
-            serde_json::json!({"srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}}}).to_string(),
+            serde_json::json!({"srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}}).to_string(),
         )
         .expect("rewrite config");
         let err = boot(&paths).expect_err("must fatal");
@@ -608,7 +609,7 @@ mod tests {
                     "memo": {"cadence_ms": 500, "mode": " Morse "},
                     "drill": {"reps": 3}
                 },
-                "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}}
+                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
             })
             .to_string(),
         )
@@ -746,7 +747,7 @@ mod tests {
                     "memo": {"cadence_ms": cadence_ms, "mode": "images"},
                     "drill": {"reps": reps}
                 },
-                "srs": {"sm2": {"again": 2, "hard": 3, "good": 4, "easy": 5, "interval_clamp_days": [1, 365]}}
+                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
             })
             .to_string(),
         )
@@ -946,7 +947,12 @@ mod tests {
         system_schedule(apply_settings_change).run(&mut world);
         assert_eq!(world.resource::<Stores>().settings, expected);
         assert!(world.resource::<LastSave>().settings_ok);
-        let reloaded = Stores::load(&paths.user_root, sample_settings_default()).expect("reload");
+        let reloaded = Stores::load(
+            &paths.user_root,
+            sample_settings_default(),
+            &FsrsConfig::defaults(),
+        )
+        .expect("reload");
         assert_eq!(reloaded.settings, expected);
     }
     fn sample_settings_default() -> Settings {
@@ -963,7 +969,7 @@ mod tests {
         stores.srs.cards.insert(
             "edge/UF".to_string(),
             Card {
-                ease: 2.5,
+                memory: None,
                 interval_days: 3,
                 due_day: 4,
                 reps: 1,
@@ -991,7 +997,12 @@ mod tests {
         schedule.run(&mut world);
         let last = *world.resource::<LastSave>();
         assert!(last.all_ok());
-        let reloaded = Stores::load(&paths.user_root, sample_settings_default()).expect("reload");
+        let reloaded = Stores::load(
+            &paths.user_root,
+            sample_settings_default(),
+            &FsrsConfig::defaults(),
+        )
+        .expect("reload");
         assert_eq!(reloaded.srs.cards.len(), 1);
         assert_eq!(reloaded.solves.solves.len(), 1);
         assert_eq!(reloaded.settings.drill_reps, 5);

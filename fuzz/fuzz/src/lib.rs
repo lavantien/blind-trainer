@@ -317,7 +317,7 @@ pub fn db_once(data: &[u8]) {
         let reviews = (0..rng.below(20))
             .map(|_| ReviewLogEntry {
                 ts_days: db_i64(&mut rng),
-                quality: rng.below(6) as u32,
+                quality: 2 + rng.below(4) as u32,
                 elapsed_days: db_i64(&mut rng),
                 scheduled_days: db_i64(&mut rng),
             })
@@ -325,7 +325,7 @@ pub fn db_once(data: &[u8]) {
         cards.insert(
             key,
             Card {
-                ease: 1.0 + rng.below(400) as f32 / 100.0,
+                memory: None,
                 interval_days: db_i64(&mut rng),
                 due_day: db_i64(&mut rng),
                 reps: rng.below(1u64 << 30) as u32,
@@ -352,8 +352,13 @@ pub fn db_once(data: &[u8]) {
     repo_solves::save(&mut db, &log).expect("save solves");
     repo_settings::save(&mut db, repo_settings::APP_KEY, &settings_text).expect("save settings");
 
+    let fsrs_cfg = bt_data::fsrs::FsrsConfig::defaults();
+    let mut expected = store.clone();
+    for card in expected.cards.values_mut() {
+        card.memory = bt_data::srs::replay_sm2(&card.reviews, &fsrs_cfg).expect("replay");
+    }
     assert_eq!(repo_algs::load(&db).expect("load algs"), algs);
-    assert_eq!(repo_srs::load(&db).expect("load srs"), store);
+    assert_eq!(repo_srs::load(&db, &fsrs_cfg).expect("load srs"), expected);
     assert_eq!(repo_solves::load(&db).expect("load solves"), log);
     assert_eq!(
         repo_settings::load_text(&db, repo_settings::APP_KEY).expect("load settings"),
@@ -365,7 +370,7 @@ pub fn db_once(data: &[u8]) {
     repo_solves::save(&mut db, &SolveLog::default()).expect("clear solves");
     assert_eq!(repo_algs::load(&db).expect("reload algs"), UserAlgs::new());
     assert_eq!(
-        repo_srs::load(&db).expect("reload srs"),
+        repo_srs::load(&db, &fsrs_cfg).expect("reload srs"),
         SrsStore::default()
     );
     assert_eq!(
@@ -461,7 +466,11 @@ fn fsrs_replay_walk(seed: u64) {
     let mut rng = Rng::new(seed ^ 0x5f5f_5245_5041_5931);
     let mut history: Vec<ReviewLogEntry> = Vec::new();
     for _ in 0..rng.below(64) {
-        let quality = rng.below(8) as u32;
+        let quality = if rng.below(4) == 0 {
+            rng.below(8) as u32
+        } else {
+            2 + rng.below(4) as u32
+        };
         history.push(ReviewLogEntry {
             ts_days: history.len() as i64,
             quality,

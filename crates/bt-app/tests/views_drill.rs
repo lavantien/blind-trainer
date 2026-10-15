@@ -370,7 +370,7 @@ fn stores_with_reps(reps: u32) -> bt_app::persist::Stores {
 
 fn seen_card() -> Card {
     Card {
-        ease: 2.5,
+        memory: None,
         interval_days: 6,
         due_day: 10,
         reps: 2,

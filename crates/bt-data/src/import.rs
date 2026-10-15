@@ -125,7 +125,7 @@ mod tests {
         cards.insert(
             "edge/UF".to_string(),
             Card {
-                ease: 2.5,
+                memory: None,
                 interval_days: 6,
                 due_day: 10,
                 reps: 2,
@@ -139,6 +139,17 @@ mod tests {
             },
         );
         SrsStore { cards }
+    }
+
+    fn loaded_srs() -> SrsStore {
+        let mut store = sample_srs();
+        let card = store.cards.get_mut("edge/UF").expect("card");
+        card.memory = Some(
+            crate::srs::replay_sm2(&card.reviews, &crate::fsrs::FsrsConfig::defaults())
+                .expect("replay")
+                .expect("derived memory"),
+        );
+        store
     }
 
     fn sample_solves() -> SolveLog {
@@ -192,7 +203,10 @@ mod tests {
             crate::repo_settings::load_text(&db, repo_settings::APP_KEY).expect("settings"),
             Some(r#"{"memo_cadence_ms":640,"memo_mode":"per-orbit","drill_reps":6}"#.to_string())
         );
-        assert_eq!(crate::repo_srs::load(&db).expect("srs"), sample_srs());
+        assert_eq!(
+            crate::repo_srs::load(&db, &crate::fsrs::FsrsConfig::defaults()).expect("srs"),
+            loaded_srs()
+        );
         assert_eq!(
             crate::repo_solves::load(&db).expect("solves"),
             sample_solves()
@@ -214,6 +228,26 @@ mod tests {
     }
 
     #[test]
+    fn legacy_ease_json_imports_and_memory_derives_from_reviews() {
+        let root = temp_root("legacy-ease");
+        write(
+            &srs_path_at(&root),
+            r#"{"cards":{"edge/UF":{"ease":2.5,"interval_days":6,"due_day":10,"reps":2,"lapses":1,"reviews":[{"ts_days":4,"quality":4,"elapsed_days":0,"scheduled_days":6}]}}}"#,
+        );
+        let mut db = open(&root);
+        run(&mut db, &root).expect("import");
+        let store =
+            crate::repo_srs::load(&db, &crate::fsrs::FsrsConfig::defaults()).expect("load srs");
+        let card = store.cards.get("edge/UF").expect("card");
+        let expected = crate::srs::replay_sm2(&card.reviews, &crate::fsrs::FsrsConfig::defaults())
+            .expect("replay")
+            .expect("derived memory");
+        assert_eq!(card.memory, Some(expected));
+        assert_eq!(card.interval_days, 6);
+        assert_eq!(card.due_day, 10);
+    }
+
+    #[test]
     fn partial_legacy_only_imports_what_exists() {
         let root = temp_root("partial");
         write(
@@ -224,7 +258,7 @@ mod tests {
         run(&mut db, &root).expect("import");
         assert_eq!(crate::repo_algs::load(&db).expect("algs"), sample_algs());
         assert_eq!(
-            crate::repo_srs::load(&db).expect("srs"),
+            crate::repo_srs::load(&db, &crate::fsrs::FsrsConfig::defaults()).expect("srs"),
             SrsStore::default()
         );
         assert_eq!(
@@ -246,7 +280,7 @@ mod tests {
             Some("existing".to_string())
         );
         assert_eq!(
-            crate::repo_srs::load(&db).expect("srs"),
+            crate::repo_srs::load(&db, &crate::fsrs::FsrsConfig::defaults()).expect("srs"),
             SrsStore::default()
         );
         assert!(settings_path_at(&root).is_file());
@@ -320,5 +354,12 @@ mod tests {
         let mut db = open(&root);
         run(&mut db, &root).expect("import");
         assert_eq!(crate::repo_solves::load(&db).expect("solves"), log);
+    }
+
+    #[test]
+    fn read_failures_other_than_missing_are_reported() {
+        let dir = temp_root("dir-read");
+        assert!(read_text(&dir).is_err());
+        assert!(parse_json::<serde_json::Value>(&dir).is_err());
     }
 }

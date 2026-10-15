@@ -20,7 +20,7 @@ Digits 1 to 6 open the views. Every row shows the view name with a one-line desc
 
 ### drill
 
-Physical 3-style pair drilling with SM-2 scheduling, no typed input anywhere: every alg shown is verified against the emulated cube at corpus build time. The net sits on the left with the buffer and both target stickers highlighted, the card on the right.
+Physical 3-style pair drilling with FSRS-5 scheduling, no typed input anywhere: every alg shown is verified against the emulated cube at corpus build time. The net sits on the left with the buffer and both target stickers highlighted, the card on the right.
 
 The card shows the pair letters, orbit and position, the memo token (edges use the Vietnamese syllable, corners the image word, bare letters when uncovered), the side A alg colored by mechanic with setup muted, insertion teal, interchange orange, falling back to the raw commutator when it does not decompose, the prepare line holding side B, the vendor alg of the flipped case or the derived inverse labeled inverse, plus qtm and htm lengths, solver, verified badge, SRS due for both sides, and muted alternative vendor rows.
 
@@ -30,7 +30,7 @@ Apply prepare to your solved cube, space starts the rep phase. The net mirrors t
 
 ![drill reps](docs/screenshots/drill-reps.png)
 
-Rate AB then BA with 1 to 4 (again, hard, good, easy), each rating writes SM-2 for its own position and the next covered pair loads automatically, due or new pairs first. esc aborts to the menu writing nothing.
+Rate AB then BA with 1 to 4 (again, hard, good, easy), each rating writes FSRS for its own position and the next covered pair loads automatically, due or new pairs first. esc aborts to the menu writing nothing.
 
 ![drill rate a](docs/screenshots/drill-rate-a.png)
 
@@ -40,7 +40,7 @@ The second prompt:
 
 ### memo training
 
-Streaming memo on seeded scrambles with per-orbit tokens by default: edges stream Vietnamese syllables, corners stream image words, both fall back to the bare letters. Intro shows the seed, pair count, mode, and cadence, space starts the stream. The current token renders focal with the 4 previous tokens muted below it and a stream counter. When the stream ends the app asks you to recall with no tokens shown, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into SM-2, space moves to the next scramble.
+Streaming memo on seeded scrambles with per-orbit tokens by default: edges stream Vietnamese syllables, corners stream image words, both fall back to the bare letters. Intro shows the seed, pair count, mode, and cadence, space starts the stream. The current token renders focal with the 4 previous tokens muted below it and a stream counter. When the stream ends the app asks you to recall with no tokens shown, space reveals the full memo with its residue lines (parity, flips, twists). r replays the stream, 1 to 4 rate every streamed pair into FSRS, space moves to the next scramble.
 
 ![memo intro](docs/screenshots/memo-intro.png)
 
@@ -133,7 +133,7 @@ Edge pairs memo as single Vietnamese syllables from data/ga/syllables.json, one 
 
 ### scheduling
 
-SM-2 spaced repetition schedules every drilled position separately. Ratings 1 to 4 map to again, hard, good, easy, intervals clamp to 1..365 days from the config hub.
+FSRS-5 spaced repetition schedules every drilled position separately. Ratings 1 to 4 map to again, hard, good, easy, stability and difficulty follow the pinned py-fsrs 5.1.3 reference math, intervals clamp to 1..365 days from the config hub.
 
 ## cube model
 
@@ -171,7 +171,7 @@ bt-ga also builds on bt-data, bt-verify also on bt-scheme and bt-gendata, bt-ga-
 
   ![scheme pipeline](docs/diagrams/scheme.png)
 
-- bt-data: TSV corpus loader, alg verification verdicts, SM-2 spaced repetition, user-dir overlay.
+- bt-data: TSV corpus loader, alg verification verdicts, FSRS-5 spaced repetition, user-dir overlay.
 
   ![data pipeline](docs/diagrams/data.png)
 

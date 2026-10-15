@@ -334,7 +334,7 @@ mod tests {
 
     fn seen_card(due_day: i64) -> Card {
         Card {
-            ease: 2.5,
+            memory: None,
             interval_days: 6,
             due_day,
             reps: 2,

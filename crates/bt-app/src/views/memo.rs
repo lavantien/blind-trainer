@@ -1,4 +1,4 @@
-use crate::logic::{SaveStores, Sm2};
+use crate::logic::{Fsrs, SaveStores};
 use crate::persist::{MemoMode, Stores};
 use crate::states::{AppState, MemoPhase};
 use crate::views::SyllableBook;
@@ -196,7 +196,7 @@ pub fn review_keys(
     mut inputs: MessageReader<KeyboardInput>,
     session: Res<MemoSession>,
     mut stores: ResMut<Stores>,
-    sm2: Res<Sm2>,
+    fsrs: Res<Fsrs>,
     mut next: ResMut<NextState<MemoPhase>>,
 ) {
     for input in inputs.read() {
@@ -218,7 +218,7 @@ pub fn review_keys(
                 };
                 rate_pairs(
                     &mut stores,
-                    &sm2.0,
+                    &fsrs.0,
                     &session,
                     rating,
                     crate::views::now_day(),
@@ -233,7 +233,7 @@ pub fn review_keys(
 
 pub fn rate_pairs(
     stores: &mut Stores,
-    sm2: &bt_data::srs::Sm2Config,
+    fsrs: &bt_data::fsrs::FsrsConfig,
     session: &MemoSession,
     rating: Rating,
     now_day: i64,
@@ -245,7 +245,7 @@ pub fn rate_pairs(
         let position = case_position(case);
         write_review(
             stores,
-            sm2,
+            fsrs,
             sheet_of(case.orbit),
             &position,
             rating,
