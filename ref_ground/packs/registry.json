@@ -1,0 +1,17 @@
+[
+  {"file": "twoby2_cll.tsv", "event": "2x2", "method": "cll", "stage": "cll", "n": null, "expected_rows": 42},
+  {"file": "skewb_sarah.tsv", "event": "skewb", "method": "sarah_intermediate", "stage": "sarah", "n": null, "expected_rows": 15},
+  {"file": "pyraminx_l4e.tsv", "event": "pyraminx", "method": "l4e", "stage": "l4e", "n": null, "expected_rows": 35},
+  {"file": "megaminx_4lll.tsv", "event": "megaminx", "method": "4lll", "stage": "4lll", "n": null, "expected_rows": 39},
+  {"file": "sq1_cubeshape.tsv", "event": "sq1", "method": "lbl", "stage": "cubeshape", "n": null, "expected_rows": 169},
+  {"file": "sq1_co.tsv", "event": "sq1", "method": "lbl", "stage": "co", "n": null, "expected_rows": 7},
+  {"file": "sq1_eo.tsv", "event": "sq1", "method": "lbl", "stage": "eo", "n": null, "expected_rows": 7},
+  {"file": "sq1_cp.tsv", "event": "sq1", "method": "lbl", "stage": "cp", "n": null, "expected_rows": 16},
+  {"file": "sq1_ep.tsv", "event": "sq1", "method": "lbl", "stage": "ep", "n": null, "expected_rows": 99},
+  {"file": "bigcube_parity.tsv", "event": "bigcube", "method": "yau", "stage": "parity", "n": [4, 5, 6, 7], "expected_rows": 5},
+  {"file": "bigcube_l2e.tsv", "event": "bigcube", "method": "reduction", "stage": "parity", "n": [5, 6, 7], "expected_rows": 12},
+  {"file": "fto_l4t_redux.tsv", "event": "fto", "method": "l4t_redux", "stage": "l4t", "n": null, "expected_rows": 36},
+  {"file": "bld_3style_specials.tsv", "event": "3bld", "method": "3style", "stage": "parity", "n": null, "expected_rows": 85},
+  {"file": "bld_oldpoch.tsv", "event": "3bld", "method": "old_pochmann", "stage": "concept", "n": null, "expected_rows": 40},
+  {"file": "bld_m2.tsv", "event": "3bld", "method": "m2", "stage": "concept", "n": null, "expected_rows": 24}
+]
