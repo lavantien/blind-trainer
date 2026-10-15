@@ -2,6 +2,7 @@ param(
     [int]$StaleHours = -1,
     [switch]$Apply,
     [switch]$Deep,
+    [switch]$OrphanScratch,
     [switch]$SelfTest,
     [string]$WorkDir = "",
     [string]$RepoRoot = "",
@@ -66,6 +67,16 @@ function Get-StaleScratches([string]$temp, [int]$staleHours) {
     $cutoff = (Get-Date).AddHours(-$staleHours)
     @(Get-ChildItem -LiteralPath $temp -Directory -Filter 'cargo-mutants*' -ErrorAction SilentlyContinue |
         Where-Object { $_.LastWriteTime -lt $cutoff } |
+        ForEach-Object { $_.FullName })
+}
+
+function Get-OrphanScratches([string]$temp) {
+    $live = @(Get-Process -Name 'cargo-mutants' -ErrorAction SilentlyContinue)
+    $all = @(Get-ChildItem -LiteralPath $temp -Directory -Filter 'cargo-mutants*' -ErrorAction SilentlyContinue)
+    if ($live.Count -eq 0) { return @($all | ForEach-Object { $_.FullName }) }
+    $oldestStart = ($live | Measure-Object StartTime -Minimum).Minimum
+    @($all |
+        Where-Object { $_.CreationTime -lt $oldestStart.AddSeconds(-5) } |
         ForEach-Object { $_.FullName })
 }
 
@@ -150,6 +161,9 @@ $freeBefore = [double]$drive.Free
 $incrementals = @((Join-Path $repo 'target/debug/incremental'), (Join-Path $repo 'target/release/incremental')) |
     Where-Object { Test-Path -LiteralPath $_ }
 $scratches = @(Get-StaleScratches $temp $settings.StaleHours)
+if ($OrphanScratch) {
+    $scratches = @($scratches + @(Get-OrphanScratches $temp) | Select-Object -Unique)
+}
 $externals = @($cov, $mut) | Where-Object { Test-Path -LiteralPath $_ }
 $deepDirs = @((Join-Path $repo 'tests/e2e/target'), (Join-Path $repo 'fuzz/target')) |
     Where-Object { Test-Path -LiteralPath $_ }
@@ -161,7 +175,7 @@ $deepBytes = ($deepDirs | ForEach-Object { Get-DirBytes $_ } | Measure-Object -S
 
 Write-Output ("clean-rust: free {0} GB floor {1} GB" -f (Format-GigaBytes $freeBefore), $settings.FloorGb)
 Write-Output ("incremental: {0} dirs {1} GB" -f $incrementals.Count, (Format-GigaBytes $incBytes))
-Write-Output ("scratch: {0} dirs {1} GB (cargo-mutants under TEMP older than {2} h)" -f $scratches.Count, (Format-GigaBytes $scratchBytes), $settings.StaleHours)
+Write-Output ("scratch: {0} dirs {1} GB (cargo-mutants under TEMP older than {2} h{3})" -f $scratches.Count, (Format-GigaBytes $scratchBytes), $settings.StaleHours, $(if ($OrphanScratch) { ", orphans with no live owner included" } else { "" }))
 Write-Output ("external: {0} dirs {1} GB (coverage and mutation targets)" -f $externals.Count, (Format-GigaBytes $extBytes))
 Write-Output ("deep: {0} dirs {1} GB (e2e and fuzz targets, needs -Deep and no live cargo or rustc)" -f $deepDirs.Count, (Format-GigaBytes $deepBytes))
 
