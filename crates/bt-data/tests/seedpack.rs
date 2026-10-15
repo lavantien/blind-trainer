@@ -1,7 +1,8 @@
 use bt_data::paths::packs_root_from;
+use bt_data::repo_seeds::{seed_all, seed_pack};
 use bt_data::seedpack::{
     NSpec, PackEntry, expected_failure, load_pack, load_registry, normalize_alg, parse_pack,
-    parse_registry, seed_all, seed_pack,
+    parse_registry,
 };
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -565,9 +566,9 @@ fn seed_all_loads_every_real_row_and_a_rerun_verifies_without_duplicates() {
     let second = seed_all(&mut db, &real_packs()).expect("reseed");
     let verified: usize = second.iter().map(|report| report.verified).sum();
     assert_eq!(verified, 1115);
-    let count = bt_data::seedpack::seed_row_count(&db).expect("count");
+    let count = bt_data::repo_seeds::seed_row_count(&db).expect("count");
     assert_eq!(count, 1115);
-    let rows = bt_data::seedpack::load_seed_rows(&db).expect("rows");
+    let rows = bt_data::repo_seeds::load_seed_rows(&db).expect("rows");
     assert_eq!(rows.len(), 1115);
     let cs002 = rows
         .iter()

@@ -5,6 +5,7 @@ pub mod fsrs;
 pub mod import;
 pub mod paths;
 pub mod repo_algs;
+pub mod repo_seeds;
 pub mod repo_settings;
 pub mod repo_solves;
 pub mod repo_srs;
