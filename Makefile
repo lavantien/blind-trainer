@@ -2,6 +2,8 @@ REF_GROUND := ref_ground
 CONFIG := config/config.json
 ARTIFACTS := artifacts
 BIN := target/release/blind-trainer.exe
+E2E_BIN := tests/e2e/target/release/bt-e2e.exe
+MEMGUARD := scripts/memguard.ps1
 FUZZ_TARGETS := notation classify memo commutator
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga
 
@@ -9,7 +11,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt fmt-write lint check build test test-crate mutants-gate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
+.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -31,6 +33,9 @@ gen-data:
 verify-algs:
 	cargo run --release -p bt-verify
 
+verify-algs-selftest:
+	cargo test -p bt-verify
+
 synth-simcheck:
 	python -I scripts/synth_simcheck.py
 
@@ -43,11 +48,18 @@ ga:
 fmt:
 	cargo fmt --all -- --check
 
-fmt-write:
+fmt-fix:
 	cargo fmt --all
 
 lint:
 	cargo clippy --workspace --all-targets -- -D warnings
+
+policy:
+	$(MAKE) policy-selftest
+	cargo run --release -p bt-policy
+
+policy-selftest:
+	cargo run --release -p bt-policy -- selftest $(ARTIFACTS)/policy-selftest
 
 check:
 	cargo check --workspace
@@ -64,7 +76,10 @@ test-crate:
 	cargo test -p $(p)
 
 mutants-gate:
-	cargo run -p bt-mutants-gate -- $(OUTCOMES) $(ALLOWLIST)
+	cargo run --release -p bt-mutants-gate -- $(OUTCOMES) $(ALLOWLIST)
+
+mutants-gate-selftest:
+	cargo test -p bt-mutants-gate
 
 fuzz:
 	cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done
@@ -72,13 +87,29 @@ fuzz:
 mutation:
 	CARGO_TARGET_DIR=$(MUTATION_TARGET) cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
 
-e2e:
+e2e: build
 	cargo test --release -p bt-app --test e2e
-	mkdir -p $(ARTIFACTS)/e2e
-	$(BIN) --smoke $(ARTIFACTS)/e2e
+	$(MAKE) e2e-smoke
 
-visual:
+e2e-smoke: build
+	cargo build --release --manifest-path tests/e2e/Cargo.toml
+	mkdir -p $(ARTIFACTS)/e2e $(ARTIFACTS)/e2e-user
+	APPDATA=$(ARTIFACTS)/e2e-user $(E2E_BIN) $(BIN) $(ARTIFACTS)/e2e
+
+visual: visual-selftest
+	@if $(MAKE) visual-diff; then exit 0; fi; \
+	 echo 'visual: mismatch, re-rendering and re-diffing once'; \
+	 if $(MAKE) e2e-smoke && $(MAKE) visual-diff; then \
+	   printf '\nverdict: infra flake, second run passed\n' >> $(ARTIFACTS)/visual/report.md; exit 3; \
+	 else \
+	   printf '\nverdict: regression, both runs mismatched\n' >> $(ARTIFACTS)/visual/report.md; exit 2; \
+	 fi
+
+visual-diff:
 	cargo run --release -p bt-visual-diff -- $(ARTIFACTS)/e2e tests/visual/baselines
+
+visual-selftest:
+	cargo run --release -p bt-visual-diff -- --selftest $(ARTIFACTS)/visual-selftest
 
 baselines:
 	mkdir -p tests/visual/baselines
@@ -91,6 +122,13 @@ screenshots: build
 	APPDATA=$(ARTIFACTS)/usage-user $(BIN) --usage docs/screenshots
 	BT_CONFIG=$(ARTIFACTS)/usage-absent-config.json $(BIN) --fatal-shot docs/screenshots
 
+memguard:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD)
+
+memguard-selftest:
+	cargo build --release -p bt-sleeper
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -SelfTest -SleeperPath target/release/bt-sleeper.exe
+
 run:
 	cargo run --release -p bt-app
 
@@ -98,10 +136,12 @@ chain:
 	$(MAKE) test
 	$(MAKE) fmt
 	$(MAKE) lint
+	$(MAKE) policy
 	$(MAKE) check
 	$(MAKE) build
 	$(MAKE) fuzz
 	$(MAKE) mutation
+	$(MAKE) mutants-gate
 	$(MAKE) e2e
 	$(MAKE) baselines
 	$(MAKE) visual
@@ -116,9 +156,17 @@ alg-coverage:
 diagrams:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/diagrams.ps1
 
+release-verify:
+	@test -n "$(v)" || { echo 'usage: make release-verify v=<tag>'; exit 2; }
+	cargo run --release -p bt-release-verify -- $(ARTIFACTS)/dist/blind-trainer $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip --run
+
+release-verify-selftest:
+	cargo test -p bt-release-verify
+
 dist: build
 	@test -n "$(v)" || { echo 'usage: make dist v=<tag>'; exit 2; }
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dist.ps1 -Version $(v)
+	$(MAKE) release-verify v=$(v)
 
 release:
 	@test -n "$(v)" || { echo 'usage: make release v=<tag>'; exit 2; }
@@ -127,3 +175,8 @@ release:
 	git push origin main
 	git push origin $(v)
 	gh release create $(v) $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip --title "blind trainer $(v)" --notes-file docs/releases/$(v).md
+
+clean:
+	rm -rf $(ARTIFACTS) tests/e2e/target
+	mkdir -p $(ARTIFACTS)
+	touch $(ARTIFACTS)/.gitkeep
