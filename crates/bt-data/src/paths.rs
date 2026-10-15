@@ -116,6 +116,33 @@ pub fn vendor_root() -> Result<PathBuf, PathsError> {
     )
 }
 
+pub fn packs_root_from(
+    env: Option<&str>,
+    config: &serde_json::Value,
+) -> Result<PathBuf, PathsError> {
+    if let Some(raw) = env.filter(|value| !value.is_empty()) {
+        let path = PathBuf::from(raw);
+        let base = if path.is_absolute() {
+            path
+        } else {
+            workspace_root().join(path)
+        };
+        return Ok(base.join("packs"));
+    }
+    let relative = config
+        .pointer("/paths/packs")
+        .and_then(|value| value.as_str())
+        .ok_or(PathsError::Missing("paths.packs"))?;
+    Ok(workspace_root().join(relative))
+}
+
+pub fn packs_root() -> Result<PathBuf, PathsError> {
+    packs_root_from(
+        std::env::var("BT_REF_GROUND").ok().as_deref(),
+        &load_config()?,
+    )
+}
+
 pub fn user_root_from(
     env_appdata: Option<&str>,
     env_xdg: Option<&str>,
