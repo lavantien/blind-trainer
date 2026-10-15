@@ -25,6 +25,13 @@ pub const MIGRATIONS: &[Migration] = &[
             "/../../db/migrations/002_drop_srs_ease.sql"
         )),
     },
+    Migration {
+        name: "003_seed_alg",
+        sql: include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../../db/migrations/003_seed_alg.sql"
+        )),
+    },
 ];
 
 pub const LATEST_USER_VERSION: i64 = MIGRATIONS.len() as i64;
@@ -351,6 +358,20 @@ mod tests {
     fn schema_holds_every_mandated_table_and_column() {
         let db = Db::open_in_memory().expect("open");
         assert_eq!(
+            table_columns(&db, "seed_alg"),
+            [
+                "event",
+                "method",
+                "stage",
+                "case_key",
+                "alg",
+                "front_json",
+                "source_url",
+                "source_at",
+                "content_hash"
+            ]
+        );
+        assert_eq!(
             table_columns(&db, "user_alg"),
             [
                 "event",
@@ -408,7 +429,7 @@ mod tests {
 
     #[test]
     fn migrations_embed_the_committed_sql_files() {
-        assert_eq!(MIGRATIONS.len(), 2);
+        assert_eq!(MIGRATIONS.len(), 3);
         for migration in MIGRATIONS {
             let committed = std::fs::read_to_string(
                 crate::paths::workspace_root()

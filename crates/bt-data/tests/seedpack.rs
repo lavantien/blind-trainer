@@ -1,7 +1,7 @@
 use bt_data::paths::packs_root_from;
 use bt_data::seedpack::{
     NSpec, PackEntry, expected_failure, load_pack, load_registry, normalize_alg, parse_pack,
-    parse_registry,
+    parse_registry, seed_all, seed_pack,
 };
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -551,6 +551,91 @@ fn expected_failure_marks_exactly_the_nine_ruled_rows() {
         })
         .count();
     assert_eq!(marked, 9);
+}
+
+#[test]
+fn seed_all_loads_every_real_row_and_a_rerun_verifies_without_duplicates() {
+    let mut db = bt_data::db::Db::open_in_memory().expect("db");
+    let reports = seed_all(&mut db, &real_packs()).expect("seed");
+    assert_eq!(reports.len(), 21);
+    let inserted: usize = reports.iter().map(|report| report.inserted).sum();
+    assert_eq!(inserted, 1115);
+    let second = seed_all(&mut db, &real_packs()).expect("reseed");
+    let verified: usize = second.iter().map(|report| report.verified).sum();
+    assert_eq!(verified, 1115);
+    let count = bt_data::seedpack::seed_row_count(&db).expect("count");
+    assert_eq!(count, 1115);
+    let rows = bt_data::seedpack::load_seed_rows(&db).expect("rows");
+    assert_eq!(rows.len(), 1115);
+    let cs002 = rows
+        .iter()
+        .find(|row| row.case_key == "cs.002")
+        .expect("cs.002");
+    assert_eq!(cs002.alg, "/ (3,3) /");
+    assert_eq!(cs002.event, "sq1");
+    assert_eq!(cs002.method, "lbl");
+    assert_eq!(cs002.stage, "cubeshape");
+    assert_eq!(
+        cs002.source_url,
+        "https://cubingapp.com/algorithms/SQ1-Cube-Shape"
+    );
+    assert_eq!(cs002.source_at, "2026-10-10");
+    assert_eq!(
+        cs002.content_hash,
+        "e43d1ec256ede1a9fe0878cf40fd4fd9f022a11f154addf3c5297af5ad4fa805"
+    );
+}
+
+#[test]
+fn a_rerun_of_an_unchanged_pack_reports_only_verifies() {
+    let dir = temp_packs("noop");
+    write_pack(
+        &dir,
+        &mini_registry(1),
+        "mini.tsv",
+        &mini_tsv(&[("a1", "R U")]),
+    );
+    let mut db = bt_data::db::Db::open_in_memory().expect("db");
+    let first = seed_pack(&mut db, &dir, &mini_entry()).expect("seed");
+    assert_eq!((first.inserted, first.verified), (1, 0));
+    let second = seed_pack(&mut db, &dir, &mini_entry()).expect("reseed");
+    assert_eq!((second.inserted, second.verified), (0, 1));
+}
+
+#[test]
+fn a_drifted_rerun_fails_hard_naming_the_file_and_row() {
+    let dir = temp_packs("drift");
+    write_pack(
+        &dir,
+        &mini_registry(2),
+        "mini.tsv",
+        &mini_tsv(&[("a1", "R U"), ("a2", "R U'")]),
+    );
+    let entry = parse_registry(&mini_registry(2))
+        .expect("registry")
+        .pop()
+        .expect("entry");
+    let mut db = bt_data::db::Db::open_in_memory().expect("db");
+    seed_pack(&mut db, &dir, &entry).expect("seed");
+    write_pack(
+        &dir,
+        &mini_registry(2),
+        "mini.tsv",
+        &mini_tsv(&[("a1", "R U"), ("a2", "R U2")]),
+    );
+    let err = seed_pack(&mut db, &dir, &entry).expect_err("drift must fail");
+    let shown = err.to_string();
+    assert!(shown.contains("mini.tsv"), "err: {shown}");
+    assert!(shown.contains("a2"), "err: {shown}");
+    let stored: String = db
+        .conn()
+        .query_row(
+            "SELECT alg FROM seed_alg WHERE case_key = 'a2'",
+            [],
+            |row| row.get(0),
+        )
+        .expect("stored row");
+    assert_eq!(stored, "R U'");
 }
 
 #[test]
