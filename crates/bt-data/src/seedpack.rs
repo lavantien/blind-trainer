@@ -10,6 +10,8 @@ pub const NOTES_KEY: &str = "loader_notes";
 const PACK_HEADER: &str = "case_key\talg\tfront_json\tsource_url\tsource_at";
 const REPEAT_LIMIT: usize = 99;
 const EXPAND_LIMIT: usize = 100_000;
+const TURN_MIN: i64 = -5;
+const HALF_RING: i64 = 6;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum NSpec {
@@ -852,11 +854,29 @@ fn valid_int(text: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || *byte == b'-')
 }
 
-fn valid_tuple_ints(inner: &str) -> bool {
-    match inner.split_once(',') {
-        Some((top, bottom)) => valid_int(top) && valid_int(bottom),
-        None => false,
+fn canonical_tuple(inner: &str) -> Option<(String, bool)> {
+    let (top, bottom) = inner.split_once(',')?;
+    if !valid_int(top) || !valid_int(bottom) {
+        return None;
     }
+    let mut cells = Vec::with_capacity(2);
+    let mut wrapped = false;
+    for cell in [top, bottom] {
+        let value: i64 = cell.parse().ok()?;
+        let mapped = if value == -HALF_RING {
+            HALF_RING
+        } else if (TURN_MIN..=HALF_RING).contains(&value) {
+            value
+        } else {
+            return None;
+        };
+        wrapped |= mapped != value;
+        cells.push(mapped.to_string());
+    }
+    if cells.iter().all(|cell| cell == "0") {
+        return None;
+    }
+    Some((format!("({},{})", cells[0], cells[1]), wrapped))
 }
 
 fn normalize_sq1(raw: &str) -> Result<Normalized, NormalizeError> {
@@ -910,13 +930,16 @@ fn normalize_sq1(raw: &str) -> Result<Normalized, NormalizeError> {
             };
             let close = index + 1 + rel;
             let inner = &text[index + 1..close];
-            if !valid_tuple_ints(inner) {
+            let Some((tuple, wrapped)) = canonical_tuple(inner) else {
                 return Err(NormalizeError::UnknownToken {
                     alg: trimmed.into(),
                     token: text[index..=close].to_string(),
                 });
+            };
+            if wrapped {
+                notes.push(format!("wraparound: ({inner}) -> {tuple}"));
             }
-            parts.push(format!("({inner})"));
+            parts.push(tuple);
             index = close + 1;
         } else if byte == b'-' || byte.is_ascii_digit() {
             let start = index;
@@ -926,13 +949,16 @@ fn normalize_sq1(raw: &str) -> Result<Normalized, NormalizeError> {
                 index += 1;
             }
             let token = &text[start..index];
-            if !valid_tuple_ints(token) {
+            let Some((tuple, wrapped)) = canonical_tuple(token) else {
                 return Err(NormalizeError::UnknownToken {
                     alg: trimmed.into(),
                     token: token.to_string(),
                 });
+            };
+            if wrapped {
+                notes.push(format!("wraparound: ({token}) -> {tuple}"));
             }
-            parts.push(format!("({token})"));
+            parts.push(tuple);
         } else {
             let end = bytes[index..]
                 .iter()

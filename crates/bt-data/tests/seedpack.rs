@@ -480,6 +480,94 @@ fn sq1_hazard_tails_stay_verbatim_in_loader_notes() {
     );
 }
 
+const SQ1_TURN_MIN: i64 = -5;
+const SQ1_TURN_MAX: i64 = 6;
+
+fn sq1_engine_token(token: &str) -> bool {
+    if token == "/" {
+        return true;
+    }
+    let Some(inner) = token
+        .strip_prefix('(')
+        .and_then(|rest| rest.strip_suffix(')'))
+    else {
+        return false;
+    };
+    let Some((top, bottom)) = inner.split_once(',') else {
+        return false;
+    };
+    let (Ok(top), Ok(bottom)) = (top.parse::<i64>(), bottom.parse::<i64>()) else {
+        return false;
+    };
+    let in_range = |turn: i64| (SQ1_TURN_MIN..=SQ1_TURN_MAX).contains(&turn);
+    in_range(top) && in_range(bottom) && (top != 0 || bottom != 0)
+}
+
+#[test]
+fn sq1_pack_rows_stay_inside_the_engine_twist_domain() {
+    for file in [
+        "sq1_cubeshape.tsv",
+        "sq1_co.tsv",
+        "sq1_eo.tsv",
+        "sq1_cp.tsv",
+        "sq1_ep.tsv",
+    ] {
+        for row in pack_rows(file) {
+            assert!(!row.alg.is_empty(), "{} holds a twist core", row.case_key);
+            assert!(
+                !row.alg.contains(['*', 'U', 'D']),
+                "{} leaks a pack hazard into the stored alg: {}",
+                row.case_key,
+                row.alg
+            );
+            for token in row.alg.split_whitespace() {
+                assert!(
+                    sq1_engine_token(token),
+                    "{} token {} leaves the engine twist domain",
+                    row.case_key,
+                    token
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn sq1_minus_six_turns_wrap_to_six_with_a_verbatim_note() {
+    let out = normalize_alg("sq1", "(1,0) / (0,-6)").expect("wrap");
+    assert_eq!(out.alg, "(1,0) / (0,6)");
+    assert_eq!(out.notes, vec!["wraparound: (0,-6) -> (0,6)".to_string()]);
+    let bare = normalize_alg("sq1", "/ -6,0 /").expect("bare wrap");
+    assert_eq!(bare.alg, "/ (6,0) /");
+    assert_eq!(bare.notes, vec!["wraparound: (-6,0) -> (6,0)".to_string()]);
+    let ep96 = pack_rows("sq1_ep.tsv")
+        .into_iter()
+        .find(|row| row.case_key == "ep.96")
+        .expect("ep.96");
+    assert_eq!(
+        ep96.alg,
+        "/ (0,-3) / (3,0) / (0,-3) / (0,-3) / (1,-2) / (-2,0) / (-4,2) / (4,-2) / (0,-2) / (-2,1) / (3,3) / (0,6)"
+    );
+    assert_eq!(
+        ep96.front_json,
+        "{\"case\":\"H-W\",\"loader_notes\":[\"auf prefix stripped: (D2)\",\"wraparound: (0,-6) -> (0,6)\"],\"parity\":true}"
+    );
+}
+
+#[test]
+fn sq1_rejects_turns_the_engine_can_never_parse() {
+    for text in [
+        "(0,0)", "(7,0)", "(0,7)", "(1,-7)", "(-7,0)", "(6,7)", "(0,-7)", "(8,1)", "0,0", "7,-5",
+    ] {
+        assert!(
+            normalize_alg("sq1", text).is_err(),
+            "{text} must fail the loader"
+        );
+    }
+    assert!(normalize_alg("sq1", "(6,6)").is_ok());
+    assert!(normalize_alg("sq1", "(-5,-5)").is_ok());
+}
+
 #[test]
 fn megaminx_4lll_33_bracket_repeat_expands_into_the_pinned_engine_tokens() {
     let raw = raw_alg("megaminx_4lll.tsv", "4lll.33");
