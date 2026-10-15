@@ -19,6 +19,12 @@ Distinct move tokens per pack file, extracted from the alg column of each TSV: e
 | bld_3style_specials.tsv | 3bld | 85 | 31 | none |
 | bld_oldpoch.tsv | 3bld | 40 | 42 | directly, |
 | bld_m2.tsv | 3bld | 24 | 21 | none |
+| cfop_pll.tsv | 3x3 | 21 | 28 | none |
+| cfop_oll.tsv | 3x3 | 57 | 31 | none |
+| cfop_f2l.tsv | 3x3 | 164 | 56 | none |
+| cfop_pll.tsv | oh | 21 | 28 | none |
+| cfop_oll.tsv | oh | 57 | 31 | none |
+| cfop_f2l.tsv | oh | 164 | 56 | none |
 
 ## twoby2_cll.tsv
 
@@ -343,14 +349,51 @@ Event 3bld, 24 rows, 21 distinct tokens.
 B B' D D' F2 L L' L2 L2' M M' M2 M2' R R' R2 U U' U2 x x'
 
 No token holds a character outside the allowed charset.
-## manual notes
 
-Facts behind the flags, for engine grammar pinning. This section is hand written, the sections above regenerate via playground/a0/token_scan.py.
+## cfop_pll.tsv
 
-- bigcube_parity.tsv separates tokens with commas, row parity.oll4 prints the spacing quirk `Rw U2 ,` and uses the literal token `X` as a rotation, which the adopt plan maps to x in the normalizer.
-- megaminx_4lll.tsv row 4lll.33 is the only row using a square bracket group plus the repeat marker `*2`, written `[(R U R' U) (R' U' R2 U') (R' U R' U R) U] *2`.
-- sq1_cubeshape.tsv writes twists as bare `x,y` tuples without parentheses. sq1_co, sq1_eo, sq1_cp, sq1_ep write parenthesized `(x,y)` tuples with spaced slashes, except co.01 and co.03 which fuse the whole chain without spaces, and ep.90 which fuses one `(1,0)/`.
-- sq1_ep.tsv rows carry AUF prefixes `(U)`, `(D)`, `(U2)`, `(U D)`, `(U' D)`, `(D')`, and 37 of 99 rows end with the standalone `*` equator flip marker.
-- bld_oldpoch.tsv rows op.09 and op.32 store prose, `apply swap directly, no setup`, in the alg column.
-- bld_3style_specials.tsv holds square brackets only in the front_json commutator column, 59 rows, the alg column is clean.
-- twoby2_cll, skewb_sarah, pyraminx_l4e, bigcube_l2e, fto_l4t_redux, bld_m2 need only whitespace splitting, plus `->` chain stripping for skewb_sarah, to reach the allowed charset.
+Event 3x3, 21 rows, 28 distinct tokens.
+
+(R (U (U' D D' D') D) D2 F F' L L' L2 M M' M2 R R' R') R2 U U' U2 r r' x x' y
+
+No token holds a character outside the allowed charset.
+
+## cfop_oll.tsv
+
+Event 3x3, 57 rows, 31 distinct tokens.
+
+(R (R2 (r (r' B B' D D' F F' F2 L L' M M' M2 R R' R') R2 R2) U U' U') U2 l l' r r' r) r2
+
+No token holds a character outside the allowed charset.
+
+## cfop_f2l.tsv
+
+Event 3x3, 164 rows, 56 distinct tokens.
+
+(B (B' (F (F' (L (L' (R (R' (U B B' B') B')3 B) B2 F F' F') F')3 F) F2 L L' L') L')3 L) L2 L2' M M' R R' R') R')3 R) R2 R2' S S' U U' U2 U2' b b' b') f f' f') l l' l') r r' r') y
+
+No token holds a character outside the allowed charset.
+
+## cfop_pll.tsv
+
+Event oh, 21 rows, 28 distinct tokens.
+
+(R (U (U' D D' D') D) D2 F F' L L' L2 M M' M2 R R' R') R2 U U' U2 r r' x x' y
+
+No token holds a character outside the allowed charset.
+
+## cfop_oll.tsv
+
+Event oh, 57 rows, 31 distinct tokens.
+
+(R (R2 (r (r' B B' D D' F F' F2 L L' M M' M2 R R' R') R2 R2) U U' U') U2 l l' r r' r) r2
+
+No token holds a character outside the allowed charset.
+
+## cfop_f2l.tsv
+
+Event oh, 164 rows, 56 distinct tokens.
+
+(B (B' (F (F' (L (L' (R (R' (U B B' B') B')3 B) B2 F F' F') F')3 F) F2 L L' L') L')3 L) L2 L2' M M' R R' R') R')3 R) R2 R2' S S' U U' U2 U2' b b' b') f f' f') l l' l') r r' r') y
+
+No token holds a character outside the allowed charset.
