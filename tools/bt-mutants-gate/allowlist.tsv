@@ -1,0 +1,7 @@
+# bt-mutants-gate allowlist: cargo-mutants survivors consciously accepted by the gate
+# columns, tab separated: file, function, genre, replacement, count, justification
+# replacement may be written orig->new or as the bare new token that outcomes.json carries
+# a row must match a surviving outcome (MissedMutant or Timeout) exactly, in count too, or the gate fails
+crates/bt-scheme/src/scramble.rs	build_occ	BinaryOperator	%->+	1	The offset only feeds (j + w) % 3, and adding 3 before that modulo leaves the result the same for every twist value, so the occupancy bytes are identical on clean and mutant code.
+crates/bt-scheme/src/scramble.rs	random_occ	BinaryOperator	%->+	1	twists[7] only reaches build_occ, which reduces it modulo 3 before use, and the mutant values 6, 5, 4 carry the same residues as the clean values 0, 2, 1, so every generated scramble is byte for byte unchanged.
+crates/bt-scheme/src/memo.rs	OrbitWalk<'a>::run	BinaryOperator	+=->*=	2	spins and budget only feed panic guards that already have should_panic tests, and once a guard goes quiet the walk loops forever instead of returning or failing, so the mutant can only show up as a hang and no terminating test can catch it.

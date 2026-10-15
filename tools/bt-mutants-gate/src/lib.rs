@@ -427,4 +427,206 @@ mod tests {
         let err = gate(INVALID_JSON, COMMENTED_ALLOWLIST).unwrap_err();
         assert!(matches!(err, GateError::Usage(_)));
     }
+
+    const REAL_SHAPE: &str = r#"{
+  "cargo_mutants_version": "27.1.0",
+  "start_time": "2026-10-14T10:00:00Z",
+  "end_time": "2026-10-14T10:30:00Z",
+  "total_mutants": 6,
+  "caught": 2,
+  "missed": 2,
+  "timeout": 2,
+  "unviable": 0,
+  "success": 0,
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 3.0,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/classifier.rs:151:57: replace && with || in Report::position",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/classifier.rs",
+          "function": {
+            "function_name": "Report::position",
+            "return_type": "-> Option<String>",
+            "span": { "start": { "line": 127, "column": 5 }, "end": { "line": 181, "column": 6 } }
+          },
+          "span": { "start": { "line": 151, "column": 57 }, "end": { "line": 151, "column": 59 } },
+          "replacement": "||",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__bt-scheme__src__classifier.rs_line_151_col_57.log",
+      "diff_path": "diff/crates__bt-scheme__src__classifier.rs_line_151_col_57.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.1,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/memo.rs:347:42: replace || with && in OrbitWalk<'a>::main_scan",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/memo.rs",
+          "function": {
+            "function_name": "OrbitWalk<'a>::main_scan",
+            "return_type": "-> Option<u8>",
+            "span": { "start": { "line": 345, "column": 5 }, "end": { "line": 357, "column": 6 } }
+          },
+          "span": { "start": { "line": 347, "column": 42 }, "end": { "line": 347, "column": 44 } },
+          "replacement": "&&",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__bt-scheme__src__memo.rs_line_347_col_42.log",
+      "diff_path": "diff/crates__bt-scheme__src__memo.rs_line_347_col_42.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.2,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/scramble.rs:74:39: replace % with + in build_occ",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/scramble.rs",
+          "function": {
+            "function_name": "build_occ",
+            "return_type": "",
+            "span": { "start": { "line": 59, "column": 1 }, "end": { "line": 79, "column": 2 } }
+          },
+          "span": { "start": { "line": 74, "column": 39 }, "end": { "line": 74, "column": 41 } },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__bt-scheme__src__scramble.rs_line_74_col_39.log",
+      "diff_path": "diff/crates__bt-scheme__src__scramble.rs_line_74_col_39.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.3,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/scramble.rs:91:36: replace % with + in random_occ",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/scramble.rs",
+          "function": {
+            "function_name": "random_occ",
+            "return_type": "-> [u8; 54]",
+            "span": { "start": { "line": 81, "column": 1 }, "end": { "line": 113, "column": 2 } }
+          },
+          "span": { "start": { "line": 91, "column": 36 }, "end": { "line": 91, "column": 38 } },
+          "replacement": "+",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__bt-scheme__src__scramble.rs_line_91_col_36.log",
+      "diff_path": "diff/crates__bt-scheme__src__scramble.rs_line_91_col_36.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.4,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/memo.rs:384:19: replace += with *= in OrbitWalk<'a>::run",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/memo.rs",
+          "function": {
+            "function_name": "OrbitWalk<'a>::run",
+            "return_type": "-> WalkOutcome",
+            "span": { "start": { "line": 379, "column": 5 }, "end": { "line": 449, "column": 6 } }
+          },
+          "span": { "start": { "line": 384, "column": 19 }, "end": { "line": 384, "column": 21 } },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/crates__bt-scheme__src__memo.rs_line_384_col_19.log",
+      "diff_path": "diff/crates__bt-scheme__src__memo.rs_line_384_col_19.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.5,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/bt-scheme/src/memo.rs:423:24: replace += with *= in OrbitWalk<'a>::run",
+          "package": "bt-scheme",
+          "file": "crates/bt-scheme/src/memo.rs",
+          "function": {
+            "function_name": "OrbitWalk<'a>::run",
+            "return_type": "-> WalkOutcome",
+            "span": { "start": { "line": 379, "column": 5 }, "end": { "line": 449, "column": 6 } }
+          },
+          "span": { "start": { "line": 423, "column": 24 }, "end": { "line": 423, "column": 26 } },
+          "replacement": "*=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "Timeout",
+      "log_path": "log/crates__bt-scheme__src__memo.rs_line_423_col_24.log",
+      "diff_path": "diff/crates__bt-scheme__src__memo.rs_line_423_col_24.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 2.6,
+          "process_status": "Success",
+          "argv": ["cargo", "test", "--no-run", "--verbose", "--package=bt-scheme@0.0.0"]
+        }
+      ]
+    }
+  ]
+}"#;
+
+    #[test]
+    fn real_shape_with_seeded_allowlist_passes() {
+        let got = gate(REAL_SHAPE, include_str!("../allowlist.tsv"));
+        assert_eq!(got.unwrap(), "survivors gated: 4, all covered");
+    }
 }
