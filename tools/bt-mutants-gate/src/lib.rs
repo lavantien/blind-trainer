@@ -95,7 +95,7 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
             .ok_or_else(|| malformed_outcome("scenario object without Mutant"))?;
         let key = parse_key(mutant)?;
         match summary {
-            "CaughtMutant" => {}
+            "CaughtMutant" | "Unviable" => {}
             "MissedMutant" => {
                 *survivors.entry(key).or_insert(0) += 1;
                 missed_seen += 1;
@@ -106,7 +106,7 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
             }
             other => {
                 return Err(GateError::Violation(format!(
-                    "unknown summary '{other}' for {key} (allowed: CaughtMutant, MissedMutant, Timeout)"
+                    "unknown summary '{other}' for {key} (allowed: CaughtMutant, MissedMutant, Timeout, Unviable)"
                 )));
             }
         }
@@ -257,6 +257,10 @@ mod tests {
 
     const MISSING_COUNTER: &str = r#"{"total_mutants":1,"caught":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
     {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
+
+    const UNVIABLE_PRESENT: &str = r#"{"total_mutants":2,"caught":1,"missed":0,"timeout":0,"unviable":1,"success":0,"outcomes":[
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"},
+    {"scenario":{"Mutant":{"name":"src/c.rs:3:1: replace g with ()","package":"bt-x","file":"src/c.rs","function":{"function_name":"g","return_type":"","span":{"start":{"line":1,"column":1},"end":{"line":5,"column":2}}},"span":{"start":{"line":3,"column":1},"end":{"line":3,"column":2}},"replacement":"()","genre":"FnValue"}},"summary":"Unviable"}]}"#;
 
     const INVALID_JSON: &str = "{ not json";
 
@@ -420,6 +424,12 @@ mod tests {
             .unwrap_err()
             .to_string();
         assert!(msg.contains("counter 'missed'"), "got: {msg}");
+    }
+
+    #[test]
+    fn unviable_summary_is_ignored() {
+        let got = gate(UNVIABLE_PRESENT, COMMENTED_ALLOWLIST);
+        assert_eq!(got.unwrap(), "survivors gated: 0, all covered");
     }
 
     #[test]
