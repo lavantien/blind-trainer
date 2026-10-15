@@ -438,6 +438,10 @@ mod tests {
         assert!(matches!(err, GateError::Usage(_)));
     }
 
+    const REAL_ALLOWLIST: &str = "crates/bt-scheme/src/scramble.rs\tbuild_occ\tBinaryOperator\t%->+\t1\tthe offset only feeds a modulo 3 before use so every occupancy byte is unchanged\n\
+crates/bt-scheme/src/scramble.rs\trandom_occ\tBinaryOperator\t%->+\t1\tmutant twist values carry the same residues modulo 3 so every generated scramble is unchanged\n\
+crates/bt-scheme/src/memo.rs\tOrbitWalk<'a>::run\tBinaryOperator\t+=->*=\t2\tthe counters only feed panic guards and a quiet guard loops forever so only a hang can reveal it\n";
+
     const REAL_SHAPE: &str = r#"{
   "cargo_mutants_version": "27.1.0",
   "start_time": "2026-10-14T10:00:00Z",
@@ -635,8 +639,8 @@ mod tests {
 }"#;
 
     #[test]
-    fn real_shape_with_seeded_allowlist_passes() {
-        let got = gate(REAL_SHAPE, include_str!("../allowlist.tsv"));
+    fn real_shape_with_fixture_allowlist_passes() {
+        let got = gate(REAL_SHAPE, REAL_ALLOWLIST);
         assert_eq!(got.unwrap(), "survivors gated: 4, all covered");
     }
 }
