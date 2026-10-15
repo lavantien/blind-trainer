@@ -1,3 +1,5 @@
+mod selftest;
+
 use image::RgbaImage;
 use serde_json::Value;
 use std::collections::BTreeSet;
@@ -6,7 +8,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 pub const EXIT_USAGE: u8 = 2;
-const EXIT_DIFF: u8 = 1;
+pub(crate) const EXIT_DIFF: u8 = 1;
+const USAGE: &str =
+    "usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>";
 
 #[derive(Debug, PartialEq, Eq)]
 struct Args {
@@ -40,6 +44,24 @@ fn parse_args(argv: &[String]) -> Result<Args, ArgsError> {
         baselines,
         update,
     })
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum Cli {
+    Compare(Args),
+    Selftest { workdir: PathBuf },
+}
+
+fn parse_cli(argv: &[String]) -> Result<Cli, ArgsError> {
+    if argv.iter().any(|arg| arg == "--selftest") {
+        if argv.len() != 2 || argv[0] != "--selftest" {
+            return Err(ArgsError::Usage);
+        }
+        return Ok(Cli::Selftest {
+            workdir: PathBuf::from(argv[1].clone()),
+        });
+    }
+    parse_args(argv).map(Cli::Compare)
 }
 
 fn workspace_root() -> PathBuf {
@@ -390,9 +412,11 @@ impl Env {
 }
 
 pub fn run(env: &Env) -> Result<u8, String> {
-    let args = parse_args(&env.argv).map_err(|ArgsError::Usage| {
-        "usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update]".to_string()
-    })?;
+    let cli = parse_cli(&env.argv).map_err(|ArgsError::Usage| USAGE.to_string())?;
+    let args = match cli {
+        Cli::Selftest { workdir } => return selftest::run_selftest(&workdir),
+        Cli::Compare(args) => args,
+    };
     let config = read_config(&config_path_from(env.config.as_deref(), &env.root))?;
     let cfg = visual_cfg_from(&config)?;
     if args.update {
@@ -826,8 +850,50 @@ mod tests {
         let env = env_for(&PathBuf::from("/repo"), None, &["only"]);
         assert_eq!(
             run(&env),
-            Err("usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update]".to_string())
+            Err(
+                "usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>"
+                    .to_string()
+            )
         );
+    }
+
+    #[test]
+    fn parse_cli_routes_selftest_mode() {
+        let cli = parse_cli(&argv(&["--selftest", "wd"])).expect("cli");
+        assert_eq!(
+            cli,
+            Cli::Selftest {
+                workdir: PathBuf::from("wd")
+            }
+        );
+    }
+
+    #[test]
+    fn parse_cli_rejects_selftest_without_single_workdir() {
+        assert_eq!(parse_cli(&argv(&["--selftest"])), Err(ArgsError::Usage));
+        assert_eq!(
+            parse_cli(&argv(&["--selftest", "wd", "extra"])),
+            Err(ArgsError::Usage)
+        );
+        assert_eq!(
+            parse_cli(&argv(&["--update", "--selftest", "wd"])),
+            Err(ArgsError::Usage)
+        );
+    }
+
+    #[test]
+    fn run_selftest_mode_ignores_env_config_and_passes() {
+        let root = temp_dir("run-selftest");
+        let workdir = root.to_string_lossy().into_owned();
+        let env = env_for(
+            &root,
+            Some(root.join("absent.json").to_string_lossy().into_owned()),
+            &["--selftest", &workdir],
+        );
+        assert_eq!(run(&env), Ok(0));
+        assert!(root.join("config.json").is_file());
+        assert!(root.join("screenshots").join("missing.png").is_file());
+        assert!(!root.join("baselines").join("missing.png").exists());
     }
 
     #[test]
