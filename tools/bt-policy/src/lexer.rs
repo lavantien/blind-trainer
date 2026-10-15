@@ -415,4 +415,22 @@ mod tests {
         assert_eq!(line_of(text, 3), 2);
         assert_eq!(line_of(text, 6), 3);
     }
+
+    #[test]
+    fn pseudo_fuzz_over_adversarial_alphabet_never_panics() {
+        let alphabet: Vec<char> = "\"'\\/br#xu{}0189abz \n\t$.*".chars().collect();
+        let mut state: u64 = 0x2545_F491_4F6C_DD1D;
+        for _ in 0..2000 {
+            let len = (state % 160) as usize;
+            let mut text = String::new();
+            for _ in 0..len {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                text.push(alphabet[(state % alphabet.len() as u64) as usize]);
+            }
+            let masked = mask_source(&text);
+            assert_eq!(masked.text.len(), text.len());
+        }
+    }
 }

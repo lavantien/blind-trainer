@@ -351,7 +351,7 @@ mod tests {
             config_path_from(Some("other/conf.json")),
             workspace_root().join("other").join("conf.json")
         );
-        let absolute = PathBuf::from("C:/somewhere/x.json");
+        let absolute = std::env::temp_dir().join("x.json");
         assert_eq!(config_path_from(Some(absolute.to_str().unwrap())), absolute);
     }
 
