@@ -1,7 +1,6 @@
 # path TAB literal-core TAB justification
 # constants check scope: src only, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
 crates/bt-app/src/logic.rs	100	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
-crates/bt-app/src/logic.rs	365	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 crates/bt-app/src/logic.rs	640	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 crates/bt-app/src/logic.rs	800	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 crates/bt-app/src/net.rs	0.08	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
@@ -17,6 +16,23 @@ crates/bt-app/src/net.rs	800.0	hub mirror: default, clamp, or geometry value dup
 crates/bt-app/src/net.rs	96.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/present.rs	100.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/present.rs	2.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/replay_scene.rs	0.0	replay scene zero initializer and origin anchor, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	0.25	replay scene test fixture and midpoint boundary probe, expected values pinned by scene tests
+crates/bt-app/src/replay_scene.rs	0.5	replay turn progress half constant and hub app.replay secs_per_move mirror, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	1.0	replay orbit and turn progress unit constant intrinsic to the scene model, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	1e-5	replay scene float comparison tolerance in assertion checks
+crates/bt-app/src/replay_scene.rs	100.0	replay scene test probe value for clamp saturation and scale bounds
+crates/bt-app/src/replay_scene.rs	12.0	replay cubie layout extent in scene units, cube edge geometry pinned by scene tests
+crates/bt-app/src/replay_scene.rs	180.0	replay orbit degree to radian conversion intrinsic to the scene model, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	24	cube sticker geometry constant intrinsic to the 3x3 model, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	30.0	replay default pitch mirror of hub app.replay pitch_deg, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	45.0	replay default yaw mirror of hub app.replay yaw_deg, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	48	cube sticker geometry constant intrinsic to the 3x3 model, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	54	cube sticker geometry constant intrinsic to the 3x3 model, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	6.0	replay cubie spacing scale in scene units, cube geometry pinned by scene tests
+crates/bt-app/src/replay_scene.rs	70.0	replay scene test fixture mirroring hub app.replay pitch_clamp_deg boundaries
+crates/bt-app/src/replay_scene.rs	80.0	replay pitch clamp boundary mirror of hub app.replay pitch_clamp_deg, pinned by scene tests
+crates/bt-app/src/replay_scene.rs	90.0	replay quarter turn angle in degrees intrinsic to the layer turn model, pinned by scene tests
 crates/bt-app/src/smoke.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/smoke.rs	0.1	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/theme.rs	0.20	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
@@ -45,6 +61,7 @@ crates/bt-core/src/cube.rs	54	cube or Speffz geometry constant intrinsic to the 
 crates/bt-core/src/moves.rs	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 crates/bt-core/src/moves.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 crates/bt-core/src/moves.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+crates/bt-data/src/fsrs.rs	1.0	FSRS-5 formula constant pinned by the py-fsrs 5.1.3 golden vectors
 crates/bt-data/src/verify.rs	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 crates/bt-data/src/verify.rs	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 crates/bt-ga/src/features.rs	0.20	GA numeric constant pinned by GA golden tests
@@ -97,6 +114,16 @@ tools/bt-ga-run/src/lib.rs	15	recurring structural or scale constant accepted at
 tools/bt-ga-run/src/lib.rs	64	bit width, hash lane, or pinned vendor corpus size
 tools/bt-gendata/src/build.rs	64	bit width, hash lane, or pinned vendor corpus size
 tools/bt-gendata/src/model.rs	32	bit width, hash lane, or pinned vendor corpus size
+tools/bt-gendata/src/scoring.rs	0.0	scoring numeric constant, f32 accumulator zero and zero-cost expected values pinned by scoring tests
+tools/bt-gendata/src/scoring.rs	0.2	scoring test fixture mirroring hub synth.scoring finger_cost, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	0.4	scoring test fixture mirroring hub synth.scoring finger_cost, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	0.5	scoring test fixture mirroring hub synth.scoring weights, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	0.8	scoring test fixture mirroring hub synth.scoring finger_cost, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	1.0	scoring test fixture mirroring hub synth.scoring weight_len, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	1.5	scoring test fixture mirroring hub synth.scoring weight_regrip, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	2.0	scoring test fixture mirroring hub synth.scoring penalty_other and weight_subset, expected values independent of the live hub
+tools/bt-gendata/src/scoring.rs	3.0	assertion arithmetic deriving expected totals from the scoring formula spec
+tools/bt-gendata/src/scoring.rs	4.0	assertion arithmetic deriving expected totals from the scoring formula spec
 tools/bt-gendata/src/synth.rs	54	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 tools/bt-gendata/src/when.rs	365	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 tools/bt-gendata/src/when.rs	86400	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests

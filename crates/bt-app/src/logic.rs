@@ -468,20 +468,30 @@ mod tests {
         }
     }
 
+    fn srs_fsrs_section() -> serde_json::Value {
+        serde_json::json!({"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}})
+    }
+
+    fn with_srs(mut value: serde_json::Value) -> String {
+        value
+            .as_object_mut()
+            .expect("config object")
+            .insert("srs".to_string(), srs_fsrs_section());
+        value.to_string()
+    }
+
     fn write_config(base: &Path) {
         let dir = base.join("config");
         std::fs::create_dir_all(&dir).expect("config dir");
         std::fs::write(
             dir.join("config.json"),
-            serde_json::json!({
+            with_srs(serde_json::json!({
                 "app": {
                     "window": {"width": 640, "height": 480, "title": "t"},
                     "memo": {"cadence_ms": 500, "mode": "images"},
                     "drill": {"reps": 3}
-                },
-                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
-            })
-            .to_string(),
+                }
+            })),
         )
         .expect("write config");
     }
@@ -589,11 +599,8 @@ mod tests {
     #[test]
     fn boot_fatals_on_missing_app_section() {
         let paths = temp_paths("noapp");
-        std::fs::write(
-            &paths.config_path,
-            serde_json::json!({"srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}}).to_string(),
-        )
-        .expect("rewrite config");
+        std::fs::write(&paths.config_path, with_srs(serde_json::json!({})))
+            .expect("rewrite config");
         let err = boot(&paths).expect_err("must fatal");
         assert_eq!(err, "config app section missing");
     }
@@ -603,15 +610,13 @@ mod tests {
         let paths = temp_paths("badmode");
         std::fs::write(
             &paths.config_path,
-            serde_json::json!({
+            with_srs(serde_json::json!({
                 "app": {
                     "window": {"width": 640, "height": 480, "title": "t"},
                     "memo": {"cadence_ms": 500, "mode": " Morse "},
                     "drill": {"reps": 3}
-                },
-                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
-            })
-            .to_string(),
+                }
+            })),
         )
         .expect("rewrite config");
         let err = boot(&paths).expect_err("must fatal");
@@ -741,15 +746,13 @@ mod tests {
     fn rewrite_config(paths: &RuntimePaths, cadence_ms: u32, reps: u32) {
         std::fs::write(
             &paths.config_path,
-            serde_json::json!({
+            with_srs(serde_json::json!({
                 "app": {
                     "window": {"width": 640, "height": 480, "title": "t"},
                     "memo": {"cadence_ms": cadence_ms, "mode": "images"},
                     "drill": {"reps": reps}
-                },
-                "srs": {"fsrs": {"weights": [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621], "request_retention": 0.9, "interval_clamp_days": [1, 365]}}
-            })
-            .to_string(),
+                }
+            })),
         )
         .expect("rewrite config");
     }

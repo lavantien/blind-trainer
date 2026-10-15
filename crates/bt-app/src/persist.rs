@@ -165,6 +165,8 @@ mod tests {
         dir
     }
 
+    const SENTINEL_CADENCE_MS: u32 = 640;
+
     fn sample_settings() -> Settings {
         Settings {
             memo_cadence_ms: 900,
@@ -213,7 +215,7 @@ mod tests {
         assert_eq!(MemoMode::default(), MemoMode::PerOrbit);
         assert_eq!(MemoMode::PerOrbit.label(), "per-orbit");
         let json = serde_json::to_string(&Settings {
-            memo_cadence_ms: 640,
+            memo_cadence_ms: SENTINEL_CADENCE_MS,
             memo_mode: MemoMode::PerOrbit,
             drill_reps: 6,
         })
@@ -245,7 +247,7 @@ mod tests {
         save_settings(
             &root,
             &Settings {
-                memo_cadence_ms: 640,
+                memo_cadence_ms: SENTINEL_CADENCE_MS,
                 memo_mode: MemoMode::PerOrbit,
                 drill_reps: 6,
             },
@@ -253,7 +255,7 @@ mod tests {
         .expect("save");
         let stores = Stores::load(&root, sample_settings(), &cfg()).expect("load");
         assert_eq!(stores.settings.memo_mode, MemoMode::PerOrbit);
-        assert_eq!(stores.settings.memo_cadence_ms, 640);
+        assert_eq!(stores.settings.memo_cadence_ms, SENTINEL_CADENCE_MS);
         assert_eq!(stores.settings.drill_reps, 6);
     }
 
@@ -386,7 +388,7 @@ mod tests {
             r#"{"entries":{"corner/URB":{"alg":"R U' R'"}}}"#,
         );
         let stores = Stores::load(&root, sample_settings(), &cfg()).expect("import load");
-        assert_eq!(stores.settings.memo_cadence_ms, 640);
+        assert_eq!(stores.settings.memo_cadence_ms, SENTINEL_CADENCE_MS);
         assert_eq!(stores.user_algs.entries.len(), 1);
         assert!(
             root.join("settings")
@@ -400,7 +402,7 @@ mod tests {
             r#"{"memo_cadence_ms":1,"memo_mode":"images","drill_reps":1}"#,
         );
         let again = Stores::load(&root, sample_settings(), &cfg()).expect("second load");
-        assert_eq!(again.settings.memo_cadence_ms, 640);
+        assert_eq!(again.settings.memo_cadence_ms, SENTINEL_CADENCE_MS);
         save_settings(&root, &sample_settings()).expect("save");
         let third = Stores::load(&root, sample_settings(), &cfg()).expect("third load");
         assert_eq!(third.settings, sample_settings());
