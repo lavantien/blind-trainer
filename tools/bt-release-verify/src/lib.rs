@@ -24,6 +24,7 @@ struct ReleaseCfg {
     exe: String,
     config_file: String,
     fonts_dir: String,
+    db_file: String,
     run_timeout_secs: u64,
     usage_exit: i32,
     shots: Vec<String>,
@@ -107,6 +108,7 @@ fn verify(env: &Env, args: &ParsedArgs, cfg: &ReleaseCfg, root: &str) -> Result<
         "p1 smoke",
         smoke_stage(&exe_path, &work.join("p1"), cfg, dims, &env.vars, None),
     )?;
+    stage_ok("p1 db", db_stage(&work.join("p1"), cfg))?;
     let packaged = extract_dir.join(&cfg.config_file);
     stage_ok(
         "p2 smoke",
@@ -212,11 +214,18 @@ fn release_cfg_from(value: &Value) -> Result<ReleaseCfg, String> {
                 .ok_or_else(|| "config e2e.shots must hold names".to_string())
         })
         .collect::<Result<Vec<String>, String>>()?;
+    let db_file = value
+        .pointer("/paths/db_file")
+        .and_then(Value::as_str)
+        .filter(|name| !name.is_empty())
+        .unwrap_or(bt_data::paths::DB_FILE)
+        .to_string();
     Ok(ReleaseCfg {
         staging_dir: PathBuf::from(cfg_str(section, "staging_dir")?),
         exe: cfg_str(section, "exe")?,
         config_file: cfg_str(section, "config_file")?,
         fonts_dir: cfg_str(section, "fonts_dir")?,
+        db_file,
         run_timeout_secs: cfg_u64(section, "run_timeout_secs")?,
         usage_exit: cfg_i32(section, "usage_exit")?,
         shots,
@@ -365,6 +374,37 @@ fn smoke_stage(
     ))
 }
 
+const SQLITE_MAGIC: &[u8; 16] = b"SQLite format 3\0";
+const USER_VERSION_OFFSET: usize = 60;
+
+fn read_db_user_version(bytes: &[u8]) -> Result<u32, String> {
+    if bytes.len() < USER_VERSION_OFFSET + 4 || &bytes[..SQLITE_MAGIC.len()] != SQLITE_MAGIC {
+        return Err("db file is not a sqlite database".to_string());
+    }
+    let raw = [
+        bytes[USER_VERSION_OFFSET],
+        bytes[USER_VERSION_OFFSET + 1],
+        bytes[USER_VERSION_OFFSET + 2],
+        bytes[USER_VERSION_OFFSET + 3],
+    ];
+    Ok(u32::from_be_bytes(raw))
+}
+
+fn db_stage(sandbox_root: &Path, cfg: &ReleaseCfg) -> Result<((), String), String> {
+    let appdata = prep_sandbox(sandbox_root)?.1;
+    let db = appdata
+        .join(bt_data::paths::APP_DIR_NAME)
+        .join(&cfg.db_file);
+    let bytes =
+        fs::read(&db).map_err(|err| format!("cannot read migrated db {}: {err}", db.display()))?;
+    let expected = u32::try_from(bt_data::db::LATEST_USER_VERSION).expect("user_version fits u32");
+    let version = read_db_user_version(&bytes)?;
+    if version != expected {
+        return Err(format!("db user_version {version}, expected {expected}"));
+    }
+    Ok(((), format!("{} at user_version {expected}", cfg.db_file)))
+}
+
 fn n2_stage(
     exe: &Path,
     sandbox_root: &Path,
@@ -499,6 +539,7 @@ mod tests {
         assert_eq!(cfg.exe, "blind-trainer.exe");
         assert_eq!(cfg.config_file, "config/config.json");
         assert_eq!(cfg.fonts_dir, "assets/fonts");
+        assert_eq!(cfg.db_file, bt_data::paths::DB_FILE);
         assert_eq!(cfg.run_timeout_secs, 120);
         assert_eq!(cfg.usage_exit, 2);
         assert_eq!(
@@ -511,6 +552,52 @@ mod tests {
             cfg.staging_dir,
             PathBuf::from("artifacts/dist/blind-trainer")
         );
+    }
+
+    #[test]
+    fn release_cfg_honors_an_explicit_db_file() {
+        let text = full_config_json().replace(
+            "{\n          \"release\"",
+            "{\"paths\": {\"db_file\": \"custom.db\"},\n          \"release\"",
+        );
+        let cfg = parse_cfg(&text);
+        assert_eq!(cfg.db_file, "custom.db");
+    }
+
+    #[test]
+    fn read_db_user_version_reads_the_sqlite_header() {
+        let mut bytes = [0u8; 100];
+        bytes[..SQLITE_MAGIC.len()].copy_from_slice(SQLITE_MAGIC);
+        bytes[USER_VERSION_OFFSET..USER_VERSION_OFFSET + 4].copy_from_slice(&7u32.to_be_bytes());
+        assert_eq!(read_db_user_version(&bytes), Ok(7));
+        bytes[USER_VERSION_OFFSET..USER_VERSION_OFFSET + 4]
+            .copy_from_slice(&u32::MAX.to_be_bytes());
+        assert_eq!(read_db_user_version(&bytes), Ok(u32::MAX));
+        bytes[0] = b'X';
+        let err = read_db_user_version(&bytes).expect_err("bad magic");
+        assert!(err.contains("not a sqlite database"), "err: {err}");
+        bytes[0] = SQLITE_MAGIC[0];
+        let err = read_db_user_version(&bytes[..61]).expect_err("short file");
+        assert!(err.contains("not a sqlite database"), "err: {err}");
+    }
+
+    #[test]
+    fn db_stage_accepts_a_fully_migrated_db_and_rejects_a_stale_one() {
+        let sandbox = temp_dir("db-stage");
+        let appdata = sandbox.join("appdata").join(bt_data::paths::APP_DIR_NAME);
+        fs::create_dir_all(&appdata).expect("dirs");
+        let db_path = appdata.join(bt_data::paths::DB_FILE);
+        drop(bt_data::db::Db::open_at(&db_path).expect("migrated db"));
+        let cfg = parse_cfg(&full_config_json());
+        assert!(db_stage(&sandbox, &cfg).is_ok());
+        let mut bytes = fs::read(&db_path).expect("db bytes");
+        bytes[USER_VERSION_OFFSET..USER_VERSION_OFFSET + 4].copy_from_slice(&0u32.to_be_bytes());
+        fs::write(&db_path, bytes).expect("stale db");
+        let err = db_stage(&sandbox, &cfg).expect_err("stale version");
+        assert!(err.contains("expected"), "err: {err}");
+        fs::remove_file(&db_path).expect("remove db");
+        let err = db_stage(&sandbox, &cfg).expect_err("missing db");
+        assert!(err.contains("cannot read"), "err: {err}");
     }
 
     #[test]

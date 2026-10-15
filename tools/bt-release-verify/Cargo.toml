@@ -3,6 +3,7 @@ name = "bt-release-verify"
 edition.workspace = true
 
 [dependencies]
+bt-data = { path = "../../crates/bt-data" }
 image = "0.25.10"
 serde_json.workspace = true
 zip = { version = "2.4.2", default-features = false, features = ["deflate"] }
