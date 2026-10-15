@@ -16,6 +16,7 @@ fn temp_root(label: &str) -> PathBuf {
         std::process::id(),
         line!()
     ));
+    let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     dir
 }
