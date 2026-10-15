@@ -9,7 +9,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams
+.PHONY: setup docs-fetch gen-data verify-algs synth-simcheck memofreq ga fmt lint check build test test-crate fuzz mutation e2e visual baselines screenshots run chain coverage alg-coverage diagrams dist release
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -106,3 +106,15 @@ alg-coverage:
 
 diagrams:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/diagrams.ps1
+
+dist: build
+	@test -n "$(v)" || { echo 'usage: make dist v=<tag>'; exit 2; }
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dist.ps1 -Version $(v)
+
+release:
+	@test -n "$(v)" || { echo 'usage: make release v=<tag>'; exit 2; }
+	@test -f docs/releases/$(v).md || { echo missing docs/releases/$(v).md; exit 2; }
+	@test -f $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip || { echo run make dist v=$(v) first; exit 2; }
+	git push origin main
+	git push origin $(v)
+	gh release create $(v) $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip --title "blind trainer $(v)" --notes-file docs/releases/$(v).md
