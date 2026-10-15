@@ -205,16 +205,16 @@ fn release_cfg_from(value: &Value) -> Result<ReleaseCfg, String> {
     let section = value
         .pointer("/release")
         .ok_or("config release section missing")?;
-    let shots = section
+    let shots = value
         .pointer("/e2e/shots")
-        .ok_or("config release.e2e.shots missing")?
+        .ok_or("config e2e.shots missing")?
         .as_array()
-        .ok_or("config release.e2e.shots must be a list")?
+        .ok_or("config e2e.shots must be a list")?
         .iter()
         .map(|shot| {
             shot.as_str()
                 .map(str::to_string)
-                .ok_or_else(|| "config release.e2e.shots must hold names".to_string())
+                .ok_or_else(|| "config e2e.shots must hold names".to_string())
         })
         .collect::<Result<Vec<String>, String>>()?;
     Ok(ReleaseCfg {
@@ -457,9 +457,9 @@ mod tests {
             "fonts_dir": "assets/fonts",
             "run_timeout_secs": 120,
             "neg_config_exit": 1,
-            "usage_exit": 2,
-            "e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"]}
-          }
+            "usage_exit": 2
+          },
+          "e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"]}
         }"#
         .to_string()
     }
@@ -565,12 +565,12 @@ mod tests {
         let err = release_cfg_from(&missing_exe).expect_err("no exe");
         assert_eq!(err, "config release.exe missing");
         let missing_shots: Value = serde_json::from_str(&full_config_json().replace(
-            ",\n            \"e2e\": {\"shots\": [\"menu\", \"drill\", \"memo\", \"solve\", \"algs\", \"stats\", \"settings\", \"fatal\"]}",
+            ",\n          \"e2e\": {\"shots\": [\"menu\", \"drill\", \"memo\", \"solve\", \"algs\", \"stats\", \"settings\", \"fatal\"]}",
             "",
         ))
         .expect("json");
         let err = release_cfg_from(&missing_shots).expect_err("no shots");
-        assert_eq!(err, "config release.e2e.shots missing");
+        assert_eq!(err, "config e2e.shots missing");
     }
 
     #[test]
