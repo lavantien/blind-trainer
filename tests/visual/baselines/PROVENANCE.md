@@ -9,13 +9,11 @@ tests/visual/baselines/ holds the 8 reference PNGs for visual regression: menu.p
 From a clean workspace:
 
 ```sh
-make build
-# run the release exe through the smoke tour into the e2e artifacts dir
-./target/release/blind-trainer.exe --smoke artifacts/e2e
+make e2e
 make baselines
 ```
 
-`make build` produces target/release/blind-trainer.exe. The `--smoke artifacts/e2e` run writes the 8 fresh PNGs. `make baselines` copies artifacts/e2e/*.png over the files in this directory. The bt-e2e harness (tests/e2e) drives the same flow with its own timeout and shot checks.
+`make e2e` builds the release exe, runs the headless flow suite, then e2e-smoke drives the exe through the `--smoke` tour via bt-e2e with APPDATA sandboxed to artifacts/e2e-user, writing the 8 fresh PNGs into artifacts/e2e. `make baselines` copies artifacts/e2e/*.png over the files in this directory. The shot list and window size come from the `e2e` and `app.window` config sections.
 
 ## determinism inputs
 
@@ -32,10 +30,10 @@ Change any of these, or the rendering they feed, and the baselines must be recap
 
 ## comparison contract
 
-`make visual` runs bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance.
+`make visual` runs its own selftest first, then bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance; on a mismatch it re-renders via e2e-smoke and re-diffs once, exiting 3 for an infra flake that passed the second run and 2 for a regression that failed both, with the verdict appended to artifacts/visual/report.md.
 
 ## capture log
 
 | commit | date | seed | window | notes |
 | --- | --- | --- | --- | --- |
-| pending first refresh | | | | placeholder row, the first wiring task regenerates the baselines and records the real capture |
+| 303dec0 | 2026-10-15 | 20261012 | 1280x800 | first capture under the stage 1 wiring: sandboxed e2e-smoke via bt-e2e, shot list from the e2e config section |
