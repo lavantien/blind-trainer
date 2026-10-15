@@ -1,8 +1,8 @@
 use bt_data::paths::{
-    PathsError, UserAlgs, config_path_from, read_json, user_root_from, vendor_root_from,
-    write_json_atomic,
+    PathsError, UserAlgs, config_path_from, db_file_name, db_path_at, read_json, user_root_from,
+    vendor_root_from, workspace_root, write_json_atomic,
 };
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 fn absolute_env_value() -> String {
     if cfg!(windows) {
@@ -163,4 +163,35 @@ fn sequential_atomic_writes_leave_no_temp_files_behind() {
         .collect();
     assert_eq!(names, vec!["one.json".to_string(), "two.json".to_string()]);
     std::fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn db_paths_follow_the_configured_db_file_and_join_the_root() {
+    let stash = std::env::var("BT_CONFIG").ok();
+    let temp = std::env::temp_dir().join(format!("bt-paths-db-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&temp);
+    std::fs::create_dir_all(&temp).unwrap();
+    let mut config: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(workspace_root().join("config").join("config.json"))
+            .expect("repo config"),
+    )
+    .expect("repo config json");
+    config["paths"]["db_file"] = serde_json::json!("custom.db");
+    let fixture = temp.join("config.json");
+    std::fs::write(&fixture, config.to_string()).expect("fixture");
+    unsafe {
+        std::env::set_var("BT_CONFIG", &fixture);
+    }
+    assert_eq!(db_file_name(), "custom.db");
+    assert_eq!(
+        db_path_at(Path::new("root-dir")),
+        PathBuf::from("root-dir").join("custom.db")
+    );
+    unsafe {
+        match stash {
+            Some(value) => std::env::set_var("BT_CONFIG", value),
+            None => std::env::remove_var("BT_CONFIG"),
+        }
+    }
+    let _ = std::fs::remove_dir_all(&temp);
 }

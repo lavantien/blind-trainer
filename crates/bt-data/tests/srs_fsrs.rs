@@ -32,6 +32,15 @@ fn assert_close(actual: f64, expected: f64, what: &str, case: &str, step: usize)
 }
 
 #[test]
+fn unknown_quality_reports_the_offending_quality_in_its_message() {
+    let err = grade_from_quality(9).expect_err("unmapped quality");
+    assert_eq!(
+        err.to_string(),
+        "review quality 9 has no sm-2 grade mapping"
+    );
+}
+
+#[test]
 fn graded_walks_match_the_pinned_reference_conversions() {
     let cfg = golden_config();
     let text = std::fs::read_to_string(ref_ground().join("fsrs/sm2_migration.tsv"))
