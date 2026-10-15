@@ -6,6 +6,13 @@ use bt_ga::inventory::{Coda, Nucleus, Onset, Tone, build_inventory, load_wordlis
 use bt_scheme::Rng;
 use std::collections::HashSet;
 
+mod common;
+
+#[test]
+fn hang_watchdog_arms_for_this_binary() {
+    common::arm_hang_watchdog();
+}
+
 fn feat(tone: Tone, onset: Option<OnsetFeatures>, nucleus: Nucleus, coda: Coda) -> Features {
     Features {
         tone,

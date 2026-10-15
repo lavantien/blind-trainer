@@ -282,6 +282,14 @@ mod tests {
     use crate::features::parse;
     use crate::inventory::CASE_COUNT;
 
+    #[test]
+    fn hang_watchdog_arms_for_this_binary() {
+        std::thread::spawn(|| {
+            std::thread::sleep(std::time::Duration::from_secs(120));
+            std::process::exit(101);
+        });
+    }
+
     fn env_fixture(case_count: usize, pool_texts: &[&str]) -> GaEnv {
         let feats: Vec<Features> = pool_texts.iter().map(|t| parse(t).unwrap()).collect();
         let lengths: Vec<f32> = pool_texts

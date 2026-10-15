@@ -7,6 +7,8 @@ use bt_ga::hash::sha256_hex;
 use bt_scheme::Rng;
 use std::collections::HashSet;
 
+mod common;
+
 const POOL: [&str; 14] = [
     "không", "lông", "tía", "mút", "đặt", "trăng", "của", "anh", "ón", "gì", "xinh", "vững",
     "được", "ngăn",
@@ -64,6 +66,19 @@ fn ox_pins_hold_through_the_public_api() {
         ox(&[5, 4, 3, 2, 1], &[2, 1, 4, 3, 5], 1, 4),
         vec![5, 4, 3, 2, 1]
     );
+    assert_eq!(
+        ox(&[10, 11, 12, 13, 14, 15], &[12, 14, 15, 10, 11, 13], 1, 3),
+        vec![13, 11, 12, 14, 15, 10]
+    );
+    assert_eq!(
+        ox(&[0, 1, 1, 0, 2, 2], &[3, 4, 5, 6, 7, 1], 1, 3),
+        vec![6, 1, 1, 3, 4, 5]
+    );
+}
+
+#[test]
+fn hang_watchdog_arms_for_this_binary() {
+    common::arm_hang_watchdog();
 }
 
 #[test]
