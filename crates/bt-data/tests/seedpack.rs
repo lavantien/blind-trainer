@@ -1,8 +1,8 @@
 use bt_data::paths::packs_root_from;
 use bt_data::repo_seeds::{seed_all, seed_pack};
 use bt_data::seedpack::{
-    NSpec, PackEntry, expected_failure, load_pack, load_registry, normalize_alg, parse_pack,
-    parse_registry,
+    NSpec, PackEntry, SeedRow, expected_failure, load_pack, load_registry, normalize_alg,
+    parse_pack, parse_registry,
 };
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -377,6 +377,208 @@ fn normalize_rejects_unknown_tokens_and_broken_structure() {
     assert!(normalize_alg("sq1", "(x,y)").is_err());
     assert!(normalize_alg("sq1", "(0,1,2)").is_err());
     assert!(normalize_alg("sq1", "(01,0)").is_err());
+}
+
+const MEGA_PINNED_TOKENS: [&str; 16] = [
+    "U", "U'", "U2", "U2'", "R", "R'", "R2", "R2'", "L", "L'", "F", "F'", "BR", "BR'", "y", "y'",
+];
+
+fn pack_rows(file: &str) -> Vec<SeedRow> {
+    let root = real_packs();
+    let entry = load_registry(&root)
+        .expect("registry")
+        .into_iter()
+        .find(|entry| entry.file == file)
+        .unwrap_or_else(|| panic!("registry holds {file}"));
+    load_pack(&root, &entry).expect("pack loads")
+}
+
+fn raw_alg(file: &str, key: &str) -> String {
+    let text = std::fs::read_to_string(real_packs().join(file)).expect("pack file");
+    for line in text.lines().skip(1) {
+        let cols: Vec<&str> = line.trim_end_matches('\r').split('\t').collect();
+        if cols.first() == Some(&key) {
+            return cols[1].to_string();
+        }
+    }
+    panic!("{key} not found in {file}");
+}
+
+fn nxn_engine_token(token: &str) -> bool {
+    let bytes = token.as_bytes();
+    let mut index = 0;
+    let digit_prefixed = bytes.len() > 1 && (b'2'..=b'7').contains(&bytes[0]);
+    if digit_prefixed {
+        index = 1;
+    }
+    let Some(&head) = bytes.get(index) else {
+        return false;
+    };
+    index += 1;
+    let upper_face = b"UDLFRB".contains(&head);
+    let lower_face = b"udfrlb".contains(&head);
+    if upper_face && bytes.get(index) == Some(&b'w') {
+        index += 1;
+    }
+    let bare_head = matches!(head, b'M' | b'E' | b'S' | b'x' | b'y' | b'z');
+    if !upper_face && !lower_face && !bare_head {
+        return false;
+    }
+    if bare_head && digit_prefixed {
+        return false;
+    }
+    let (mut prime, mut two) = (false, false);
+    while index < bytes.len() {
+        match bytes[index] {
+            b'\'' if !prime => prime = true,
+            b'2' if !two => two = true,
+            _ => return false,
+        }
+        index += 1;
+    }
+    true
+}
+
+#[test]
+fn sq1_fused_chains_normalize_to_the_engine_canonical_spacing() {
+    for (key, file, expected) in [
+        ("co.01", "sq1_co.tsv", "(1,0) / (3,0) / (-1,0)"),
+        ("co.03", "sq1_co.tsv", "(1,0) / (-1,0)"),
+        (
+            "ep.90",
+            "sq1_ep.tsv",
+            "/ (0,3) / (1,0) / (2,-2) / (4,0) / (4,0) / (-3,2) / (-1,0) / (0,-3) / (4,0) / (-1,2) / (3,-2)",
+        ),
+    ] {
+        let raw = raw_alg(file, key);
+        assert!(
+            raw.contains(")/"),
+            "{key} keeps a fused slash in the source"
+        );
+        let out = normalize_alg("sq1", &raw).expect("normalize");
+        assert_eq!(out.alg, expected, "{key}");
+        let fixpoint = normalize_alg("sq1", &out.alg).expect("refixpoint");
+        assert_eq!(fixpoint.alg, expected, "{key} normalizes to a fixpoint");
+        assert!(fixpoint.notes.is_empty(), "{key} fixpoint adds no notes");
+        let stored = pack_rows(file)
+            .into_iter()
+            .find(|row| row.case_key == key)
+            .expect("row");
+        assert_eq!(stored.alg, expected, "{key} stored alg");
+    }
+}
+
+#[test]
+fn sq1_hazard_tails_stay_verbatim_in_loader_notes() {
+    let ep90 = pack_rows("sq1_ep.tsv")
+        .into_iter()
+        .find(|row| row.case_key == "ep.90")
+        .expect("ep.90");
+    assert_eq!(
+        ep90.front_json,
+        "{\"case\":\"W on D\",\"loader_notes\":[\"equator marker stripped: *\",\"auf prefix stripped: (D')\"],\"parity\":true}"
+    );
+}
+
+#[test]
+fn megaminx_4lll_33_bracket_repeat_expands_into_the_pinned_engine_tokens() {
+    let raw = raw_alg("megaminx_4lll.tsv", "4lll.33");
+    assert!(
+        raw.contains('[') && raw.contains("*2"),
+        "source holds the bracket form"
+    );
+    let row = pack_rows("megaminx_4lll.tsv")
+        .into_iter()
+        .find(|row| row.case_key == "4lll.33")
+        .expect("4lll.33");
+    assert_eq!(
+        row.alg,
+        "R U R' U R' U' R2 U' R' U R' U R U R U R' U R' U' R2 U' R' U R' U R U"
+    );
+    for token in row.alg.split_whitespace() {
+        assert!(
+            MEGA_PINNED_TOKENS.contains(&token),
+            "4lll.33 token {token} leaves the pinned mega grammar"
+        );
+    }
+    assert!(!row.front_json.contains("loader_notes"));
+    let fixpoint = normalize_alg("megaminx", &row.alg).expect("refixpoint");
+    assert_eq!(fixpoint.alg, row.alg);
+}
+
+#[test]
+fn megaminx_pack_normalizes_inside_the_pinned_engine_grammar() {
+    let rows = pack_rows("megaminx_4lll.tsv");
+    assert_eq!(rows.len(), 39);
+    for row in &rows {
+        for token in row.alg.split_whitespace() {
+            assert!(
+                MEGA_PINNED_TOKENS.contains(&token),
+                "{} token {} leaves the pinned mega grammar",
+                row.case_key,
+                token
+            );
+        }
+    }
+}
+
+#[test]
+fn bigcube_parity_oll4_maps_the_literal_x_rotation_into_the_nxn_grammar() {
+    assert!(raw_alg("bigcube_parity.tsv", "parity.oll4").contains('X'));
+    let row = pack_rows("bigcube_parity.tsv")
+        .into_iter()
+        .find(|row| row.case_key == "parity.oll4")
+        .expect("parity.oll4");
+    assert_eq!(
+        row.alg,
+        "Rw U2 x Rw U2 Rw U2 Rw' U2 Lw U2 Rw' U2 Rw U2 Rw' U2 Rw'"
+    );
+    assert!(!row.alg.contains('X'));
+    assert!(row.front_json.contains("mapped X to x"));
+}
+
+#[test]
+fn bigcube_packs_normalize_inside_the_nxn_engine_grammar() {
+    assert!(!nxn_engine_token("X"));
+    assert!(!nxn_engine_token("wR"));
+    assert!(!nxn_engine_token("rw"));
+    assert!(!nxn_engine_token("2M"));
+    assert!(nxn_engine_token("3Rw'"));
+    assert!(nxn_engine_token("Rw2'"));
+    assert!(nxn_engine_token("u2"));
+    for file in ["bigcube_parity.tsv", "bigcube_l2e.tsv"] {
+        for row in pack_rows(file) {
+            for token in row.alg.split_whitespace() {
+                assert!(
+                    nxn_engine_token(token),
+                    "{} token {} leaves the nxn grammar",
+                    row.case_key,
+                    token
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn group_repeat_rows_expand_from_the_real_packs() {
+    let f2l = pack_rows("cfop_f2l.tsv");
+    for (slot, face) in [("fr", "R"), ("fl", "F"), ("br", "B"), ("bl", "L")] {
+        let key = format!("f2l.{slot}.29");
+        assert!(
+            raw_alg("cfop_f2l.tsv", &key).contains(")3"),
+            "{key} source form"
+        );
+        let row = f2l.iter().find(|row| row.case_key == key).expect(&key);
+        let group = format!("U {face} U' {face}'");
+        assert_eq!(row.alg, format!("{group} {group} {group}"), "{key}");
+        assert!(!row.front_json.contains("loader_notes"), "{key}");
+    }
+    let sarah = pack_rows("skewb_sarah.tsv")
+        .into_iter()
+        .find(|row| row.case_key == "sarah.05")
+        .expect("sarah.05");
+    assert_eq!(sarah.alg, "y2 F' L F L' F' L F L'");
 }
 
 #[test]
