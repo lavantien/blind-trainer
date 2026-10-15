@@ -30,6 +30,8 @@ it writes reference_vectors.tsv and reference_meta.json. scheduler settings are 
 
 columns of reference_vectors.tsv: case, step, rating (1 again, 2 hard, 3 good, 4 easy), elapsed_days since the previous review (empty for the first review of a case), retrievability before the review (empty for the first review), stability after, difficulty after, interval_days from due date minus review date.
 
+elapsed semantics: the corpus uses whole days. the reference consumes elapsed as python timedelta.days, which floors: any fractional elapsed floors to whole days before the branch choice and the retrievability input, and negative elapsed floors below zero then clamps to 0, which routes it to the same-day branch. probed against the pinned venv 2026-10-15: gaps 0.5 and -0.5 reproduce the gap 0 outcome exactly, 1.5 reproduces 1.0, 2.9 equals a 2-day gap. the rust port floors identically and pins these probes as tests.
+
 ## cross-check notes, ts-fsrs v5.4.2 vs py-fsrs v5.1.3
 
 both agree on: weights count and defaults, DECAY -0.5 and FACTOR 0.9**(1/DECAY)-1, initial stability max(w[g-1], 0.1), initial and next difficulty with linear damping and mean reversion to D0(4) clamped to [1, 10], stability updates consuming the pre-update difficulty, post-lapse stability capped by S / e**(w17*w18), interval round then clamp.

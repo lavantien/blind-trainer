@@ -31,12 +31,35 @@ fn golden_config() -> FsrsConfig {
 }
 
 fn grade_from_code(code: u8) -> Grade {
+    assert!((1..=4).contains(&code), "rating {code} outside 1 to 4");
     match code {
         1 => Grade::Again,
         2 => Grade::Hard,
         3 => Grade::Good,
         _ => Grade::Easy,
     }
+}
+
+fn expected_walk() -> std::collections::HashMap<String, Vec<(u8, Option<f64>)>> {
+    let text = std::fs::read_to_string(ref_ground().join("fsrs/reference_meta.json"))
+        .expect("reference meta file");
+    let meta: Value = serde_json::from_str(&text).expect("reference meta json");
+    let cases = meta["cases"].as_object().expect("cases object");
+    let mut walk = std::collections::HashMap::new();
+    for (case, steps) in cases {
+        let sequence: Vec<(u8, Option<f64>)> = steps
+            .as_array()
+            .expect("case steps")
+            .iter()
+            .map(|entry| {
+                let pair = entry.as_array().expect("rating gap pair");
+                let rating = pair[0].as_u64().expect("rating code") as u8;
+                (rating, pair[1].as_f64())
+            })
+            .collect();
+        walk.insert(case.clone(), sequence);
+    }
+    walk
 }
 
 fn assert_close(actual: f64, expected: f64, what: &str, case: &str, step: usize) {
@@ -73,6 +96,9 @@ fn reference_vectors_replay_exactly() {
         difficulty: 0.0,
     };
     let mut step_index = 0usize;
+    let expected_walk = expected_walk();
+    let mut seen_cases: Vec<&str> = Vec::new();
+    let mut covered_rows = 0usize;
     for line in lines {
         let cols: Vec<&str> = line.split('\t').collect();
         assert_eq!(cols.len(), 8, "row columns in {line}");
@@ -80,14 +106,35 @@ fn reference_vectors_replay_exactly() {
         let step: usize = cols[1].parse().expect("step");
         let rating: u8 = cols[2].parse().expect("rating");
         let grade = grade_from_code(rating);
+        let sequence = expected_walk
+            .get(case)
+            .unwrap_or_else(|| panic!("tsv case {case} missing from the meta corpus"));
         if case != current_case {
             assert_eq!(step, 0, "first row of case {case} must be step 0");
             current_case = case;
+            seen_cases.push(case);
             step_index = 0;
             state = MemoryState::initial(grade, &cfg);
         } else {
             step_index += 1;
             assert_eq!(step, step_index, "steps must be contiguous in {case}");
+        }
+        covered_rows += 1;
+        let (expected_rating, expected_elapsed) = sequence
+            .get(step)
+            .unwrap_or_else(|| panic!("case {case} has no meta step {step}"));
+        assert_eq!(rating, *expected_rating, "rating matches the meta corpus");
+        match (cols[3].is_empty(), expected_elapsed) {
+            (true, None) => {}
+            (false, Some(days)) => {
+                let elapsed: f64 = cols[3].parse().expect("elapsed days");
+                assert_eq!(elapsed, *days, "elapsed matches the meta corpus");
+            }
+            (tsv_first, meta_first) => panic!(
+                "elapsed cell mismatch in {case} step {step}: tsv empty {tsv_first}, meta null {meta_first:?}"
+            ),
+        }
+        if step > 0 {
             let elapsed: f64 = cols[3].parse().expect("elapsed days");
             if !cols[4].is_empty() {
                 let expected_r: f64 = cols[4].parse().expect("retrievability");
@@ -114,4 +161,14 @@ fn reference_vectors_replay_exactly() {
     }
     assert_eq!(current_case, "huge_gap_after_easy", "last case reached");
     assert!(step_index >= 1, "at least one non-first step ran");
+    assert_eq!(
+        covered_rows,
+        expected_walk.values().map(Vec::len).sum::<usize>(),
+        "tsv row count matches the meta corpus"
+    );
+    assert_eq!(
+        seen_cases.len(),
+        expected_walk.len(),
+        "every meta corpus case appears in the tsv"
+    );
 }

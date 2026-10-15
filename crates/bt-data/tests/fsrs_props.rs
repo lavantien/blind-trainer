@@ -69,8 +69,12 @@ fn retrievability_is_one_at_zero_elapsed_and_decays_with_time() {
     let cfg = golden_config();
     let state = MemoryState::initial(Grade::Good, &cfg);
     assert_eq!(state.retrievability(0.0), 1.0);
-    let at_stability = state.retrievability(state.stability);
-    assert!((at_stability - 0.9).abs() < 1e-12, "R(S, S) is 0.9");
+    let integer_stability = MemoryState {
+        stability: 3.0,
+        difficulty: state.difficulty,
+    };
+    let at_stability = integer_stability.retrievability(3.0);
+    assert!((at_stability - 0.9).abs() < 1e-12, "R(3, 3) is 0.9");
     assert!(state.retrievability(100.0) < at_stability);
     assert!(state.retrievability(100.0) > 0.0);
     assert!(state.retrievability(1_000_000.0) > 0.0);
@@ -145,6 +149,53 @@ fn interval_clamps_at_both_bounds() {
     assert_eq!(next_interval_days(120.4, &cfg), 120);
     let wide = golden_config();
     assert_eq!(next_interval_days(1_000_000.0, &wide), 36500);
+}
+
+#[test]
+fn interval_respects_a_raised_floor_and_lets_the_cap_win_last() {
+    let cfg = FsrsConfig {
+        weights: DEFAULT_WEIGHTS,
+        request_retention: 0.9,
+        interval_clamp_days: [7, 365],
+    };
+    assert_eq!(next_interval_days(0.01, &cfg), 7);
+    assert_eq!(next_interval_days(3.0, &cfg), 7);
+    assert_eq!(next_interval_days(10.0, &cfg), 10);
+    let inverted = FsrsConfig {
+        weights: DEFAULT_WEIGHTS,
+        request_retention: 0.9,
+        interval_clamp_days: [10, 5],
+    };
+    assert_eq!(next_interval_days(3.0, &inverted), 5);
+    assert_eq!(next_interval_days(400.0, &inverted), 5);
+}
+
+#[test]
+fn interval_rounds_ties_to_even_like_the_reference() {
+    let cfg = golden_config();
+    assert_eq!(next_interval_days(2.5, &cfg), 2);
+    assert_eq!(next_interval_days(3.5, &cfg), 4);
+    assert_eq!(next_interval_days(8.5, &cfg), 8);
+    assert_eq!(next_interval_days(9.5, &cfg), 10);
+}
+
+#[test]
+fn fractional_elapsed_floors_to_whole_days_like_the_reference() {
+    let cfg = golden_config();
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    let same_day = state.review(Grade::Good, 0.0, &cfg);
+    for elapsed in [0.0, 0.5, -0.5] {
+        let next = state.review(Grade::Good, elapsed, &cfg);
+        assert_eq!(next, same_day, "elapsed {elapsed} must act as same-day");
+        assert_eq!(state.retrievability(elapsed), 1.0);
+    }
+    let one_day = state.review(Grade::Good, 1.0, &cfg);
+    let one_and_half = state.review(Grade::Good, 1.5, &cfg);
+    assert_eq!(one_and_half, one_day);
+    assert!((one_day.stability - 5.869141822641378).abs() < 1e-12);
+    let nearly_three = state.review(Grade::Good, 2.9, &cfg);
+    assert!((nearly_three.stability - 8.384375357393525).abs() < 1e-12);
+    assert_eq!(next_interval_days(nearly_three.stability, &cfg), 8);
 }
 
 #[test]

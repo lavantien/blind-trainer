@@ -107,7 +107,7 @@ impl MemoryState {
     }
 
     pub fn retrievability(&self, elapsed_days: f64) -> f64 {
-        let elapsed = elapsed_days.max(0.0);
+        let elapsed = elapsed_days.floor().max(0.0);
         (1.0 + factor() * elapsed / self.stability).powf(DECAY)
     }
 
