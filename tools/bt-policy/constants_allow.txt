@@ -1,0 +1,4 @@
+# bt-policy recurring-literal allowlist
+# format: relative-path TAB literal-core TAB justification
+# one entry per exempted (file, literal) pair, matched exactly on both fields
+# an entry matching no current violation is reported as stale on stderr
