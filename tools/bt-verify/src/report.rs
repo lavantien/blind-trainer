@@ -268,6 +268,7 @@ mod tests {
     use crate::SimRow;
     use bt_core::Alg;
     use bt_data::corpus::Row;
+    use bt_gendata::scoring::{ScoringCfg, scoring_from_config};
     use bt_gendata::synth::{SynthLimits, synth_case};
     use bt_scheme::{CORNER_BUFFER_STICKER, EDGE_BUFFER_STICKER, Orbit, enumerate_cases, name_of};
     use std::collections::HashMap;
@@ -294,9 +295,15 @@ mod tests {
         }
     }
 
+    fn scoring() -> ScoringCfg {
+        let config = bt_data::paths::load_config().expect("hub config loads");
+        scoring_from_config(&config).expect("synth.scoring parses")
+    }
+
     fn three_style(orbit: Orbit) -> (String, String) {
         let case = enumerate_cases(orbit)[0];
-        let hit = synth_case(orbit, case.t1, case.t2, &limits()).expect("case AB synthesizes");
+        let hit = synth_case(orbit, case.t1, case.t2, &limits(), &scoring())
+            .expect("case AB synthesizes");
         let buffer = match orbit {
             Orbit::Edge => EDGE_BUFFER_STICKER,
             Orbit::Corner => CORNER_BUFFER_STICKER,

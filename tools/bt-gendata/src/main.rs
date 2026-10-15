@@ -4,6 +4,7 @@ use bt_gendata::audit::audit;
 use bt_gendata::build::{build, manifest};
 use bt_gendata::hash::{digest_corpus, sha256_hex};
 use bt_gendata::out::write_atomic;
+use bt_gendata::scoring::scoring_from_config;
 use bt_gendata::synth::{SynthLimits, synthesize};
 use bt_gendata::when::now_iso8601;
 use std::path::PathBuf;
@@ -28,7 +29,8 @@ fn run() -> Result<(), Vec<String>> {
     }
     let config = load_config().map_err(|e| vec![e.to_string()])?;
     let limits = synth_limits(&config).map_err(|e| vec![e])?;
-    let (edge_added, corner_added) = synthesize(&mut built.cases, &limits);
+    let scoring = scoring_from_config(&config).map_err(|e| vec![e])?;
+    let (edge_added, corner_added) = synthesize(&mut built.cases, &limits, &scoring);
     let out = data_vendor_path(&config).map_err(|e| vec![e])?;
     let cases_bytes = serde_json::to_vec_pretty(&built.cases).map_err(|e| vec![e.to_string()])?;
     let specials_bytes =

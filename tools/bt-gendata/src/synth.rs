@@ -4,8 +4,10 @@ use bt_scheme::{
     CORNER_BUFFER_STICKER, EDGE_BUFFER_STICKER, Orbit, apply_sticker_cycles, ideal_cycle_at,
     name_of, same_piece,
 };
+use std::cmp::Ordering;
 
 use crate::model::{CasesFile, VendorAlg};
+use crate::scoring::{ScoringCfg, rank_cmp};
 
 pub struct SynthLimits {
     pub max_setup: usize,
@@ -13,6 +15,7 @@ pub struct SynthLimits {
     pub node_budget: usize,
 }
 
+#[derive(Clone)]
 pub struct SynthHit {
     pub alg: Alg,
     pub commutator: String,
@@ -240,21 +243,18 @@ fn probe_moves(
     moves
 }
 
-fn search_with(
-    target: &[u8; 54],
-    buffer: u8,
-    limits: &SynthLimits,
-    wide: bool,
-) -> Option<SynthHit> {
+fn search_with(target: &[u8; 54], buffer: u8, limits: &SynthLimits, wide: bool) -> Vec<SynthHit> {
     let setup_alphabet = if wide { single_turns() } else { face_turns() };
     let insert_alphabet = if wide { single_turns() } else { face_turns() };
     let interchanges = single_turns();
     let mut budget = Budget {
         left: limits.node_budget,
     };
+    let mut hits: Vec<SynthHit> = Vec::new();
+    let mut plateau: Option<u32> = None;
     for setup in setups_by_depth(&setup_alphabet, limits.max_setup) {
         if budget.left == 0 {
-            return None;
+            break;
         }
         let mut cube_s = solved_occ();
         apply_seq_occ(&mut cube_s, &setup);
@@ -313,28 +313,61 @@ fn search_with(
                             } else {
                                 commutator_of(&setup, &first_alg, &second_alg)
                             };
-                            return Some(SynthHit {
+                            let hit = SynthHit {
                                 alg,
                                 commutator: text,
-                            });
+                            };
+                            match plateau {
+                                None => plateau = Some(hit.alg.qtm()),
+                                Some(q0) => {
+                                    if hit.alg.qtm() > q0 {
+                                        continue;
+                                    }
+                                }
+                            }
+                            hits.push(hit);
                         }
                     }
                 }
             }
         }
+        if plateau.is_some() {
+            break;
+        }
     }
-    None
+    hits
 }
 
-pub fn synth_case(orbit: Orbit, t1: u8, t2: u8, limits: &SynthLimits) -> Option<SynthHit> {
+pub fn synth_candidates(orbit: Orbit, t1: u8, t2: u8, limits: &SynthLimits) -> Vec<SynthHit> {
     let buffer = match orbit {
         Orbit::Edge => EDGE_BUFFER_STICKER,
         Orbit::Corner => CORNER_BUFFER_STICKER,
     };
     let mut target = solved_occ();
     apply_sticker_cycles(&mut target, &ideal_cycle_at(orbit, buffer, t1, t2));
-    search_with(&target, buffer, limits, false)
-        .or_else(|| search_with(&target, buffer, limits, true))
+    let hits = search_with(&target, buffer, limits, false);
+    if hits.is_empty() {
+        return search_with(&target, buffer, limits, true);
+    }
+    hits
+}
+
+pub fn synth_case(
+    orbit: Orbit,
+    t1: u8,
+    t2: u8,
+    limits: &SynthLimits,
+    scoring: &ScoringCfg,
+) -> Option<SynthHit> {
+    synth_candidates(orbit, t1, t2, limits)
+        .into_iter()
+        .reduce(|kept, next| {
+            if rank_cmp(next.alg.moves(), kept.alg.moves(), orbit, scoring) == Ordering::Less {
+                next
+            } else {
+                kept
+            }
+        })
 }
 
 fn note_text(note: &bt_data::verify::Note) -> String {
@@ -344,7 +377,11 @@ fn note_text(note: &bt_data::verify::Note) -> String {
     }
 }
 
-pub fn synthesize(cases: &mut CasesFile, limits: &SynthLimits) -> (usize, usize) {
+pub fn synthesize(
+    cases: &mut CasesFile,
+    limits: &SynthLimits,
+    scoring: &ScoringCfg,
+) -> (usize, usize) {
     let mut added = (0, 0);
     for entry in cases.cases.iter_mut() {
         if !entry.vendor_algs.is_empty() {
@@ -355,7 +392,7 @@ pub fn synthesize(cases: &mut CasesFile, limits: &SynthLimits) -> (usize, usize)
         } else {
             Orbit::Corner
         };
-        let Some(hit) = synth_case(orbit, entry.t1, entry.t2, limits) else {
+        let Some(hit) = synth_case(orbit, entry.t1, entry.t2, limits, scoring) else {
             continue;
         };
         let buffer = match orbit {
@@ -402,6 +439,7 @@ mod tests {
     use bt_core::Cube;
     use bt_data::commutator::decompose_verified;
     use bt_scheme::{enumerate_cases, letter_of};
+    use std::cmp::Ordering;
 
     fn limits() -> SynthLimits {
         SynthLimits {
@@ -409,6 +447,10 @@ mod tests {
             max_insert: 4,
             node_budget: 100_000_000,
         }
+    }
+
+    fn test_scoring() -> crate::scoring::ScoringCfg {
+        crate::scoring::reference_scoring()
     }
 
     fn case_of(orbit: Orbit, first: char, second: char) -> (u8, u8) {
@@ -449,38 +491,101 @@ mod tests {
     #[test]
     fn edge_head_pair_gets_a_verified_commutator() {
         let (t1, t2) = case_of(Orbit::Edge, 'A', 'B');
-        let hit = synth_case(Orbit::Edge, t1, t2, &limits()).expect("edge AB synthesizes");
+        let hit = synth_case(Orbit::Edge, t1, t2, &limits(), &test_scoring())
+            .expect("edge AB synthesizes");
         assert_hit_matches_the_ideal_cycle(Orbit::Edge, t1, t2, &hit);
     }
 
     #[test]
     fn corner_head_pair_gets_a_verified_commutator() {
         let (t1, t2) = case_of(Orbit::Corner, 'A', 'B');
-        let hit = synth_case(Orbit::Corner, t1, t2, &limits()).expect("corner AB synthesizes");
+        let hit = synth_case(Orbit::Corner, t1, t2, &limits(), &test_scoring())
+            .expect("corner AB synthesizes");
         assert_hit_matches_the_ideal_cycle(Orbit::Corner, t1, t2, &hit);
     }
 
     #[test]
     fn edge_tail_pair_gets_a_verified_commutator() {
         let (t1, t2) = case_of(Orbit::Edge, 'E', 'B');
-        let hit = synth_case(Orbit::Edge, t1, t2, &limits()).expect("edge EB synthesizes");
+        let hit = synth_case(Orbit::Edge, t1, t2, &limits(), &test_scoring())
+            .expect("edge EB synthesizes");
         assert_hit_matches_the_ideal_cycle(Orbit::Edge, t1, t2, &hit);
     }
 
     #[test]
     fn corner_tail_pair_gets_a_verified_commutator() {
         let (t1, t2) = case_of(Orbit::Corner, 'E', 'B');
-        let hit = synth_case(Orbit::Corner, t1, t2, &limits()).expect("corner EB synthesizes");
+        let hit = synth_case(Orbit::Corner, t1, t2, &limits(), &test_scoring())
+            .expect("corner EB synthesizes");
         assert_hit_matches_the_ideal_cycle(Orbit::Corner, t1, t2, &hit);
     }
 
     #[test]
     fn synthesis_is_deterministic() {
         let (t1, t2) = case_of(Orbit::Edge, 'A', 'B');
-        let once = synth_case(Orbit::Edge, t1, t2, &limits()).unwrap();
-        let twice = synth_case(Orbit::Edge, t1, t2, &limits()).unwrap();
+        let once = synth_case(Orbit::Edge, t1, t2, &limits(), &test_scoring()).unwrap();
+        let twice = synth_case(Orbit::Edge, t1, t2, &limits(), &test_scoring()).unwrap();
         assert_eq!(once.alg.format(), twice.alg.format());
         assert_eq!(once.commutator, twice.commutator);
+    }
+
+    #[test]
+    fn best_plateau_selection_picks_the_rank_minimum() {
+        let (t1, t2) = case_of(Orbit::Corner, 'A', 'B');
+        let cfg = test_scoring();
+        let candidates = synth_candidates(Orbit::Corner, t1, t2, &limits());
+        assert!(!candidates.is_empty());
+        let hit =
+            synth_case(Orbit::Corner, t1, t2, &limits(), &cfg).expect("corner AB synthesizes");
+        let mut expected = &candidates[0];
+        for candidate in &candidates[1..] {
+            if rank_cmp(
+                candidate.alg.moves(),
+                expected.alg.moves(),
+                Orbit::Corner,
+                &cfg,
+            ) == Ordering::Less
+            {
+                expected = candidate;
+            }
+        }
+        assert_eq!(hit.alg.format(), expected.alg.format());
+        assert_eq!(hit.commutator, expected.commutator);
+    }
+
+    #[test]
+    fn scoring_flips_the_selected_alg_for_the_pinned_case() {
+        let (t1, t2) = case_of(Orbit::Corner, 'A', 'K');
+        let mut inverted = test_scoring();
+        inverted.preferred = [false; 9];
+        for lane in [Face::L.index(), Face::F.index(), Face::B.index()] {
+            inverted.preferred[lane] = true;
+        }
+        inverted.preferred_edge = inverted.preferred;
+        let cfg = test_scoring();
+        let candidates = synth_candidates(Orbit::Corner, t1, t2, &limits());
+        assert!(candidates.len() >= 2);
+        let pick = |scoring: &crate::scoring::ScoringCfg| {
+            candidates
+                .clone()
+                .into_iter()
+                .reduce(|kept, next| {
+                    if rank_cmp(next.alg.moves(), kept.alg.moves(), Orbit::Corner, scoring)
+                        == Ordering::Less
+                    {
+                        next
+                    } else {
+                        kept
+                    }
+                })
+                .expect("candidates select")
+        };
+        let base = pick(&cfg);
+        let alt = pick(&inverted);
+        assert_ne!(base.alg.format(), alt.alg.format());
+        for hit in [base, alt] {
+            assert_hit_matches_the_ideal_cycle(Orbit::Corner, t1, t2, &hit);
+        }
     }
 
     #[test]
@@ -524,7 +629,7 @@ mod tests {
                 },
             ],
         };
-        let (edge, corner) = synthesize(&mut cases, &limits());
+        let (edge, corner) = synthesize(&mut cases, &limits(), &test_scoring());
         assert_eq!(edge, 1);
         assert_eq!(corner, 0);
         assert_eq!(cases.cases[0].vendor_algs.len(), 1);

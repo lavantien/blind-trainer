@@ -285,6 +285,7 @@ pub fn manifest(
 mod tests {
     use super::*;
     use crate::model::CorpusFileEntry;
+    use crate::scoring::reference_scoring;
     use crate::synth::{SynthLimits, synth_case};
     use bt_core::Alg;
     use bt_data::corpus::{Row, Solver};
@@ -371,8 +372,14 @@ mod tests {
     #[test]
     fn build_attaches_a_verified_edge_three_style_to_its_case() {
         let case = enumerate_cases(Orbit::Edge)[0];
-        let hit =
-            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let hit = synth_case(
+            Orbit::Edge,
+            case.t1,
+            case.t2,
+            &limits(),
+            &reference_scoring(),
+        )
+        .expect("edge AB synthesizes");
         let corpus = Corpus::from_rows(vec![row(
             Solver::Cherry,
             SheetClass::Edge,
@@ -416,8 +423,14 @@ mod tests {
     #[test]
     fn build_attaches_a_verified_corner_three_style_to_its_case() {
         let case = enumerate_cases(Orbit::Corner)[0];
-        let hit =
-            synth_case(Orbit::Corner, case.t1, case.t2, &limits()).expect("corner AB synthesizes");
+        let hit = synth_case(
+            Orbit::Corner,
+            case.t1,
+            case.t2,
+            &limits(),
+            &reference_scoring(),
+        )
+        .expect("corner AB synthesizes");
         let corpus = Corpus::from_rows(vec![row(
             Solver::Eggins,
             SheetClass::Corner,
@@ -488,8 +501,14 @@ mod tests {
     fn build_flags_non_three_style_and_wrong_orbit_rows() {
         let plain = Alg::parse("R").unwrap();
         let corner_case = enumerate_cases(Orbit::Corner)[0];
-        let corner_hit = synth_case(Orbit::Corner, corner_case.t1, corner_case.t2, &limits())
-            .expect("corner AB synthesizes");
+        let corner_hit = synth_case(
+            Orbit::Corner,
+            corner_case.t1,
+            corner_case.t2,
+            &limits(),
+            &reference_scoring(),
+        )
+        .expect("corner AB synthesizes");
         let corpus = Corpus::from_rows(vec![
             row(Solver::Cherry, SheetClass::Edge, 1, "UF-UB-UR", &plain),
             row(
@@ -533,8 +552,14 @@ mod tests {
     #[test]
     fn build_counts_other_buffer_walks_without_covering() {
         let case = enumerate_cases(Orbit::Edge)[0];
-        let hit =
-            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let hit = synth_case(
+            Orbit::Edge,
+            case.t1,
+            case.t2,
+            &limits(),
+            &reference_scoring(),
+        )
+        .expect("edge AB synthesizes");
         let conjugated =
             Alg::parse(&format!("U {} U'", hit.alg.format())).expect("conjugated alg parses");
         let position = classify_alg(&conjugated)
@@ -558,8 +583,14 @@ mod tests {
     #[test]
     fn manifest_counts_orbits_and_special_classes() {
         let case = enumerate_cases(Orbit::Edge)[0];
-        let hit =
-            synth_case(Orbit::Edge, case.t1, case.t2, &limits()).expect("edge AB synthesizes");
+        let hit = synth_case(
+            Orbit::Edge,
+            case.t1,
+            case.t2,
+            &limits(),
+            &reference_scoring(),
+        )
+        .expect("edge AB synthesizes");
         let plain = Alg::parse("").unwrap();
         let corpus = Corpus::from_rows(vec![
             row(
