@@ -1,0 +1,217 @@
+#[path = "../src/fsrs.rs"]
+mod fsrs;
+
+use fsrs::{DEFAULT_WEIGHTS, FsrsConfig, Grade, MemoryState, next_interval_days};
+use proptest::prelude::*;
+
+fn golden_config() -> FsrsConfig {
+    FsrsConfig {
+        weights: DEFAULT_WEIGHTS,
+        request_retention: 0.9,
+        interval_clamp_days: [1, 36500],
+    }
+}
+
+fn app_config() -> FsrsConfig {
+    FsrsConfig {
+        weights: DEFAULT_WEIGHTS,
+        request_retention: 0.9,
+        interval_clamp_days: [1, 365],
+    }
+}
+
+#[test]
+fn weight_count_is_nineteen() {
+    assert_eq!(DEFAULT_WEIGHTS.len(), 19);
+}
+
+#[test]
+fn defaults_expose_the_reference_settings() {
+    let cfg = FsrsConfig::defaults();
+    assert_eq!(cfg.weights, DEFAULT_WEIGHTS);
+    assert_eq!(cfg.request_retention, 0.9);
+    assert_eq!(cfg.interval_clamp_days, [1, 36500]);
+    assert_eq!(cfg, golden_config());
+}
+
+#[test]
+fn initial_state_uses_the_grade_weight_and_clamps_difficulty() {
+    let cfg = golden_config();
+    let cases = [
+        (Grade::Again, 0.40255, 7.1949),
+        (Grade::Hard, 1.18385, 6.488305268471453),
+        (Grade::Good, 3.173, 5.282434422319005),
+        (Grade::Easy, 15.69105, 3.2245015893713678),
+    ];
+    for (grade, stability, difficulty) in cases {
+        let state = MemoryState::initial(grade, &cfg);
+        assert!((state.stability - stability).abs() < 1e-12, "{grade:?}");
+        assert!((state.difficulty - difficulty).abs() < 1e-12, "{grade:?}");
+    }
+}
+
+#[test]
+fn initial_state_floors_stability_and_clamps_difficulty_bounds() {
+    let mut cfg = golden_config();
+    cfg.weights[0] = 0.01;
+    cfg.weights[4] = 99.0;
+    let low = MemoryState::initial(Grade::Again, &cfg);
+    assert_eq!(low.stability, 0.1);
+    assert_eq!(low.difficulty, 10.0);
+    cfg.weights[4] = -99.0;
+    cfg.weights[5] = 0.0;
+    let high = MemoryState::initial(Grade::Easy, &cfg);
+    assert_eq!(high.difficulty, 1.0);
+}
+
+#[test]
+fn retrievability_is_one_at_zero_elapsed_and_decays_with_time() {
+    let cfg = golden_config();
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    assert_eq!(state.retrievability(0.0), 1.0);
+    let at_stability = state.retrievability(state.stability);
+    assert!((at_stability - 0.9).abs() < 1e-12, "R(S, S) is 0.9");
+    assert!(state.retrievability(100.0) < at_stability);
+    assert!(state.retrievability(100.0) > 0.0);
+    assert!(state.retrievability(1_000_000.0) > 0.0);
+}
+
+#[test]
+fn negative_elapsed_clamps_to_full_retrievability() {
+    let cfg = golden_config();
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    assert_eq!(state.retrievability(-5.0), 1.0);
+}
+
+#[test]
+fn same_day_reviews_scale_stability_without_retrievability_input() {
+    let cfg = golden_config();
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    let again = state.review(Grade::Again, 0.0, &cfg);
+    let hard = state.review(Grade::Hard, 0.0, &cfg);
+    let good = state.review(Grade::Good, 0.0, &cfg);
+    let easy = state.review(Grade::Easy, 0.0, &cfg);
+    let scale =
+        |grade: Grade| (cfg.weights[17] * ((grade as i32 as f64) - 3.0 + cfg.weights[18])).exp();
+    assert!((again.stability - state.stability * scale(Grade::Again)).abs() < 1e-9);
+    assert!((hard.stability - state.stability * scale(Grade::Hard)).abs() < 1e-9);
+    assert!((good.stability - state.stability * scale(Grade::Good)).abs() < 1e-9);
+    assert!((easy.stability - state.stability * scale(Grade::Easy)).abs() < 1e-9);
+}
+
+#[test]
+fn long_gap_good_raises_stability_and_forget_lapses_drop_it() {
+    let cfg = golden_config();
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    let reviewed = state.review(Grade::Good, 7.0, &cfg);
+    assert!(reviewed.stability > state.stability);
+    let lapsed = reviewed.review(Grade::Again, 30.0, &cfg);
+    assert!(lapsed.stability < reviewed.stability);
+    assert!(lapsed.stability > 0.0);
+}
+
+#[test]
+fn post_lapse_stability_never_exceeds_the_short_term_ceiling() {
+    let cfg = golden_config();
+    let state = MemoryState {
+        stability: 400.0,
+        difficulty: 1.0,
+    };
+    let lapsed = state.review(Grade::Again, 1000.0, &cfg);
+    let ceiling = 400.0 / (cfg.weights[17] * cfg.weights[18]).exp();
+    assert!(lapsed.stability <= ceiling + 1e-9);
+}
+
+#[test]
+fn difficulty_stays_inside_bounds_under_extreme_walks() {
+    let cfg = golden_config();
+    let mut state = MemoryState::initial(Grade::Again, &cfg);
+    for _ in 0..50 {
+        state = state.review(Grade::Again, 1.0, &cfg);
+        assert!((1.0..=10.0).contains(&state.difficulty));
+    }
+    let mut easy = MemoryState::initial(Grade::Easy, &cfg);
+    for _ in 0..50 {
+        easy = easy.review(Grade::Easy, 1.0, &cfg);
+        assert!((1.0..=10.0).contains(&easy.difficulty));
+    }
+}
+
+#[test]
+fn interval_clamps_at_both_bounds() {
+    let cfg = app_config();
+    assert_eq!(next_interval_days(0.01, &cfg), 1);
+    assert_eq!(next_interval_days(1_000_000.0, &cfg), 365);
+    assert_eq!(next_interval_days(120.4, &cfg), 120);
+    let wide = golden_config();
+    assert_eq!(next_interval_days(1_000_000.0, &wide), 36500);
+}
+
+#[test]
+fn config_and_state_round_trip_through_serde_json() {
+    let cfg = golden_config();
+    let text = serde_json::to_string_pretty(&cfg).unwrap();
+    let back: FsrsConfig = serde_json::from_str(&text).unwrap();
+    assert_eq!(back, cfg);
+    assert!(text.contains("\"request_retention\""));
+    let state = MemoryState::initial(Grade::Good, &cfg);
+    let state_text = serde_json::to_string(&state).unwrap();
+    let state_back: MemoryState = serde_json::from_str(&state_text).unwrap();
+    assert_eq!(state_back, state);
+    let weights_text = serde_json::to_string(&DEFAULT_WEIGHTS).unwrap();
+    let weights_back: [f64; 19] = serde_json::from_str(&weights_text).unwrap();
+    assert_eq!(weights_back, DEFAULT_WEIGHTS);
+}
+
+proptest! {
+    #[test]
+    fn good_reviews_grow_stability_monotonically(
+        first in 1u8..=4,
+        elapsed in 1f64..3650.0,
+        rounds in 1usize..10,
+    ) {
+        let cfg = golden_config();
+        let grade = match first { 1 => Grade::Again, 2 => Grade::Hard, 3 => Grade::Good, _ => Grade::Easy };
+        let mut state = MemoryState::initial(grade, &cfg);
+        for _ in 0..rounds {
+            let next = state.review(Grade::Good, elapsed, &cfg);
+            prop_assert!(next.stability > state.stability);
+            state = next;
+        }
+    }
+
+    #[test]
+    fn intervals_respect_clamps_and_grow_with_stability(
+        stability_a in 0.1f64..100.0,
+        growth in 1.0f64..10.0,
+        retention in 0.7f64..0.99,
+        hi in 30i64..36500,
+    ) {
+        let cfg = FsrsConfig { weights: DEFAULT_WEIGHTS, request_retention: retention, interval_clamp_days: [1, hi] };
+        let stability_b = stability_a * growth;
+        let ivl_a = next_interval_days(stability_a, &cfg);
+        let ivl_b = next_interval_days(stability_b, &cfg);
+        prop_assert!(ivl_a >= 1);
+        prop_assert!(ivl_a <= hi);
+        prop_assert!(ivl_b >= ivl_a);
+        prop_assert!(ivl_b <= hi);
+    }
+
+    #[test]
+    fn random_walks_keep_state_finite_and_in_bounds(
+        seed_grade in 1u8..=4,
+        ratings in prop::collection::vec(1u8..=4, 1..40),
+        gaps in prop::collection::vec(0f64..3650.0, 1..40),
+    ) {
+        let cfg = golden_config();
+        let to_grade = |code: u8| match code { 1 => Grade::Again, 2 => Grade::Hard, 3 => Grade::Good, _ => Grade::Easy };
+        let mut state = MemoryState::initial(to_grade(seed_grade), &cfg);
+        for (i, &code) in ratings.iter().enumerate() {
+            state = state.review(to_grade(code), gaps[i % gaps.len()], &cfg);
+            prop_assert!(state.stability.is_finite());
+            prop_assert!(state.stability > 0.0);
+            prop_assert!((1.0..=10.0).contains(&state.difficulty));
+            prop_assert!(state.retrievability(gaps[i % gaps.len()]) <= 1.0);
+        }
+    }
+}
