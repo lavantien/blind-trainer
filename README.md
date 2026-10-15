@@ -200,7 +200,7 @@ Bevy with bevy_feathers. The bevy facade needs the custom_cursor feature enabled
 
 ## host tooling
 
-cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). Two PATH requirements when a standalone stable Rust install exists on the machine: the rustup proxy dir (~/.cargo/bin) must precede the standalone bin dir or every toolchain pin (fuzz/rust-toolchain.toml, RUSTUP_TOOLCHAIN) is bypassed and the build rejects -Z flags, and the MSVC ASan runtime dir (VC\Tools\MSVC\<ver>\bin\Hostx64\x64 holding clang_rt.asan_dynamic-x86_64.dll) must be on PATH or the built fuzz binaries die with STATUS_DLL_NOT_FOUND. cargo-mutants, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths, run with scratch-local targets (no CARGO_TARGET_DIR) which need roughly 10 GB of free disk. Both tools compile nothing from bt-app.
+cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, commutator under fuzz/fuzz/ (nested project layout, nearest-ancestor Cargo.toml resolution). Two PATH requirements when a standalone stable Rust install exists on the machine: the rustup proxy dir (~/.cargo/bin) must precede the standalone bin dir or every toolchain pin (fuzz/rust-toolchain.toml, RUSTUP_TOOLCHAIN) is bypassed and the build rejects -Z flags, and the MSVC ASan runtime dir (VC\Tools\MSVC\<ver>\bin\Hostx64\x64 holding clang_rt.asan_dynamic-x86_64.dll) must be on PATH or the built fuzz binaries die with STATUS_DLL_NOT_FOUND. cargo-mutants, configured in .cargo/mutants.toml with gitignore=false so scratch copies keep ref_ground reachable through relative env paths, runs through make mutation with jobs 1 and an external CARGO_TARGET_DIR (MUTATION_TARGET) because a shared or in-repo target dir corrupts verdicts. Both tools compile nothing from bt-app.
 
 ## make targets
 
@@ -214,26 +214,41 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo und
 - alg-coverage: regenerate docs/badges/alg-coverage.svg from data/vendor/manifest.json via scripts/alg-coverage-badge.ps1.
 - diagrams: render every docs/diagrams png from scripts/diagrams.typ via scripts/diagrams.ps1.
 - fmt: cargo fmt --all -- --check.
+- fmt-fix: cargo fmt --all in place.
 - lint: cargo clippy --workspace --all-targets -- -D warnings.
+- policy: run policy-selftest, then bt-policy over every source: zero comments everywhere, recurring numeric literals outside the config hub only when allowlisted in tools/bt-policy/constants_allow.txt with a justification.
+- policy-selftest: planted fixtures prove bt-policy detects comments and recurring constants in both directions.
 - check: cargo check --workspace.
 - test: cargo test --workspace.
 - build: release build of bt-app, asserts target/release/blind-trainer.exe exists.
-- fuzz: cargo fuzz run over the notation, classify, memo targets in fuzz/.
-- mutation: cargo mutants over bt-core, bt-scheme, bt-data, bt-ga.
-- e2e: headless flow suite (cargo test --release -p bt-app --test e2e) plus windowed blind-trainer.exe --smoke writing screenshots to artifacts/e2e.
+- fuzz: cargo fuzz run over the notation, classify, memo, commutator targets in fuzz/.
+- mutation: cargo mutants with jobs 1 and an external target dir over bt-core, bt-scheme, bt-data, bt-ga.
+- mutants-gate: every Missed or Timeout mutant in mutants.out/outcomes.json must match a justified row in tools/bt-mutants-gate/allowlist.tsv, stale rows also fail. mutants-gate-selftest runs its unit suite.
+- verify-algs-selftest: the bt-verify unit suite including the planted-offender detection test.
+- e2e: headless flow suite (cargo test --release -p bt-app --test e2e) then e2e-smoke.
+- e2e-smoke: bt-e2e drives the release exe through --smoke with APPDATA sandboxed to artifacts/e2e-user, asserting the shot list and window dims from the e2e config section, so the real user profile is never touched.
 - baselines: copy the artifacts/e2e pngs into tests/visual/baselines.
-- visual: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
+- visual-selftest: synthetic pairs prove bt-visual-diff passes identical images and catches a one-pixel-over-tolerance drift.
+- visual-diff: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
+- visual: visual-selftest, then the diff; on a mismatch it re-renders and re-diffs once, exit 2 regression versus exit 3 infra flake, verdict appended to artifacts/visual/report.md.
+- memguard: report the combined working set of every process whose executable lives under the repo against the memguard.cap_bytes hub cap, -Kill takes down the largest offender tree. memguard-selftest proves the matcher with a repo sleeper and a command-line decoy.
+- release-verify: byte-verify the dist zip against staging, then run the packaged exe hermetically (BT_* scrubbed, fresh APPDATA, foreign cwd) through the smoke plus negative paths. release-verify-selftest runs its unit suite.
 - screenshots: drive the windowed app through every usage state into docs/screenshots, 17 usage shots plus the fatal screen.
 - run: cargo run --release -p bt-app.
-- chain: test, fmt, lint, check, build, fuzz, mutation, e2e, baselines, visual, verify-algs, each as a separate make invocation so a failure names its step.
+- clean: remove artifacts and tests/e2e/target, recreate artifacts.
+- chain: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, baselines, visual, verify-algs, each as a separate make invocation so a failure names its step.
+
+## exit codes
+
+blind-trainer.exe in smoke mode: 0 tour complete with all shots written, 1 verification failure or boot stuck past the limit, 2 CLI usage error, 3 a tour state never arrived. make visual: 0 clean, 2 regression on both diffs, 3 infra flake that passed the re-render. bt-visual-diff: 0 match, 1 mismatch or missing baseline, 2 usage. bt-e2e: 0 all shots verified, 1 shot failures, 2 harness error. memguard: 0 within cap, 2 usage or config error, 3 cap breach, 4 selftest fixture missing, 5 kill or assertion failure. bt-policy, bt-mutants-gate, bt-release-verify: 0 pass, 1 findings, 2 usage or harness error.
 
 ## config hub
 
-config/config.json is the single centralized hub for every tunable: app window and memo cadence, ga seed and weights, memofreq sampling, srs intervals, verify limits, fuzz budgets, and all paths. No constant lives anywhere else. The Makefile exports the path roots as BT_REF_GROUND, BT_CONFIG, and BT_ARTIFACTS so binaries resolve ref_ground/, config/config.json, and artifacts/ from the environment.
+config/config.json is the single centralized hub for every tunable: app window and memo cadence, ga seed and weights, memofreq sampling, srs intervals, verify limits, fuzz budgets, policy scanner settings, the memguard cap, the e2e shot list and timeout, the release verifier contract, and all paths. No constant lives anywhere else, and make policy enforces it: numeric literals recurring in src outside the hub must carry a justified row in tools/bt-policy/constants_allow.txt. The Makefile exports the path roots as BT_REF_GROUND, BT_CONFIG, and BT_ARTIFACTS so binaries resolve ref_ground/, config/config.json, and artifacts/ from the environment.
 
 ## development
 
-Verification chain, run through make chain and committed at each green step: test, fmt, lint, check, build, fuzz, mutation, e2e, visual, verify-algs. Baseline-first TDD per milestone, property-based invariants where they pay off, adversarial review by two independent agents before any task closes. Conventional commits, zero code comments, max 1000 SLOC per file. CI on every main push runs fmt, clippy, check, the release build, and a self-contained test subset on GitHub Actions, the full oracle suite runs on the make chain.
+Verification chain, run through make chain and committed at each green step: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, visual, verify-algs. Every custom verifier ships a selftest target that proves it detects what it claims (policy-selftest, visual-selftest, mutants-gate-selftest, verify-algs-selftest, memguard-selftest, release-verify-selftest). Surviving mutants are never ignored: mutants-gate fails unless each one matches a justified allowlist row. Baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by two independent agents before any task closes, records land in docs/reviews/ from the template there. Baseline-first TDD per milestone, property-based invariants where they pay off. Conventional commits, zero code comments, max 1000 SLOC per file. CI on every main push runs fmt, clippy, policy, check, the release build, and a self-contained test subset on GitHub Actions, the full oracle suite runs on the make chain.
 
 ![verification chain](docs/diagrams/verification-chain.png)
 

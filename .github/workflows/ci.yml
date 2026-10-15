@@ -21,6 +21,8 @@ jobs:
         run: cargo fmt --all -- --check
       - name: clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: policy
+        run: cargo run --locked -p bt-policy
       - name: check
         run: cargo check --workspace
       - name: build
