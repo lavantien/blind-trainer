@@ -64,8 +64,8 @@ fn current_state(app: &App) -> AppState {
     *app.world().resource::<State<AppState>>().get()
 }
 
-fn settings_file(root: &Path) -> PathBuf {
-    root.join("settings").join("settings.json")
+fn db_file(root: &Path) -> PathBuf {
+    bt_data::paths::db_path_at(root)
 }
 
 #[test]
@@ -100,9 +100,7 @@ fn settings_mutation_persists_across_reload() {
     pump(&mut first, 2);
     assert!(first.world().resource::<LastSave>().settings_ok);
     assert_eq!(first.world().resource::<Stores>().settings, mutated);
-    let saved = std::fs::read_to_string(settings_file(&paths.user_root)).expect("settings file");
-    assert!(saved.contains("1234"));
-    assert!(saved.contains("images"));
+    assert!(db_file(&paths.user_root).is_file());
 
     let mut second = headless_app(paths);
     pump(&mut second, 6);
@@ -132,8 +130,7 @@ fn per_orbit_mode_survives_reload() {
     pump(&mut first, 2);
     assert!(first.world().resource::<LastSave>().settings_ok);
     assert_eq!(first.world().resource::<Stores>().settings, mutated);
-    let saved = std::fs::read_to_string(settings_file(&paths.user_root)).expect("settings file");
-    assert!(saved.contains("\"per-orbit\""), "saved: {saved}");
+    assert!(db_file(&paths.user_root).is_file());
 
     let mut second = headless_app(paths);
     pump(&mut second, 6);
@@ -142,7 +139,7 @@ fn per_orbit_mode_survives_reload() {
 }
 
 #[test]
-fn save_stores_writes_all_files() {
+fn save_stores_persists_into_the_db() {
     let _guard = lock().lock().expect("test lock");
     let paths = temp_paths("savestores");
     let mut app = headless_app(temp_paths_clone(&paths));
@@ -153,16 +150,18 @@ fn save_stores_writes_all_files() {
     pump(&mut app, 2);
     let last = *app.world().resource::<LastSave>();
     assert!(last.all_ok(), "save outcome: {last:?}");
-    assert!(settings_file(&paths.user_root).is_file());
-    assert!(paths.user_root.join("srs").join("srs.json").is_file());
-    assert!(paths.user_root.join("solves").join("solves.json").is_file());
-    assert!(
-        paths
-            .user_root
-            .join("algs")
-            .join("user-algs.json")
-            .is_file()
-    );
+    assert!(db_file(&paths.user_root).is_file());
+    let reloaded = Stores::load(
+        &paths.user_root,
+        Settings {
+            memo_cadence_ms: 1,
+            memo_mode: MemoMode::Images,
+            drill_reps: 1,
+        },
+    )
+    .expect("reload");
+    assert_eq!(reloaded.settings.memo_cadence_ms, 700);
+    assert_eq!(reloaded.settings.drill_reps, 4);
 }
 
 #[test]
