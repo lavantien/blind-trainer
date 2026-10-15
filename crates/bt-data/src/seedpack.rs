@@ -10,6 +10,7 @@ pub const SQ1_EVENT: &str = "sq1";
 pub const NOTES_KEY: &str = "loader_notes";
 const PACK_HEADER: &str = "case_key\talg\tfront_json\tsource_url\tsource_at";
 const REPEAT_LIMIT: usize = 99;
+const EXPAND_LIMIT: usize = 100_000;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum NSpec {
@@ -157,6 +158,10 @@ pub enum SeedError {
         stored: String,
         packed: String,
     },
+    Stale {
+        file: String,
+        case_key: String,
+    },
     Db(DbError),
 }
 
@@ -234,6 +239,9 @@ impl fmt::Display for SeedError {
                 f,
                 "seed drift in pack {file} row {case_key}: stored hash {stored}, pack hash {packed}"
             ),
+            SeedError::Stale { file, case_key } => {
+                write!(f, "seed row {case_key} no longer exists in pack {file}")
+            }
             SeedError::Db(source) => write!(f, "{source}"),
         }
     }
@@ -434,6 +442,9 @@ pub fn seed_pack_tx(
         verified: 0,
     };
     let step = "select seed_alg";
+    let Some(first) = rows.first() else {
+        return Ok(report);
+    };
     let mut check = tx
         .prepare(
             "SELECT content_hash FROM seed_alg
@@ -484,6 +495,27 @@ pub fn seed_pack_tx(
                     .map_err(map_db("insert seed_alg"))?;
                 report.inserted += 1;
             }
+        }
+    }
+    let mut stale = tx
+        .prepare(
+            "SELECT case_key FROM seed_alg
+             WHERE event = ? AND method = ? AND stage = ?",
+        )
+        .map_err(map_db(step))?;
+    let stored_keys = stale
+        .query_map(params![first.event, first.method, first.stage], |hit| {
+            hit.get::<_, String>(0)
+        })
+        .map_err(map_db(step))?
+        .collect::<Result<Vec<String>, _>>()
+        .map_err(map_db(step))?;
+    for key in stored_keys {
+        if !rows.iter().any(|row| row.case_key == key) {
+            return Err(SeedError::Stale {
+                file: file.to_string(),
+                case_key: key,
+            });
         }
     }
     Ok(report)
@@ -742,12 +774,13 @@ fn normalize_cube(raw: &str) -> Result<Normalized, NormalizeError> {
     }
     if let Some((left, right)) = text.split_once("->") {
         let alg_part = left.trim();
-        if alg_part.is_empty() {
+        let note_part = right.trim();
+        if alg_part.is_empty() || note_part.is_empty() {
             return Err(NormalizeError::BadChain {
                 alg: trimmed.into(),
             });
         }
-        notes.push(format!("chain note: -> {}", right.trim()));
+        notes.push(format!("chain note: -> {note_part}"));
         text = alg_part.to_string();
     }
     text = expand_bracket_repeats(&text)?;
@@ -801,6 +834,9 @@ fn valid_cube_token(token: &str) -> bool {
     if index >= bytes.len() || !bytes[index].is_ascii_alphabetic() {
         return false;
     }
+    if bytes[index] == b'w' || bytes[index] == b'W' {
+        return false;
+    }
     index += 1;
     if index < bytes.len()
         && (bytes[index] == b'w'
@@ -851,6 +887,9 @@ fn expand_bracket_repeats(text: &str) -> Result<String, NormalizeError> {
             return Err(NormalizeError::BadRepeat { alg: text.into() });
         }
         let repeated = vec![content.trim(); count].join(" ");
+        if repeated.len() > EXPAND_LIMIT {
+            return Err(NormalizeError::BadRepeat { alg: text.into() });
+        }
         current = format!("{} {} {}", &current[..open], repeated, after)
             .trim()
             .to_string();
@@ -920,6 +959,9 @@ fn expand_group_repeats(text: &str) -> Result<String, NormalizeError> {
     while let Some(hit) = find_group_repeat(&current)? {
         let content = current[hit.open + 1..hit.close].trim();
         let repeated = vec![content; hit.count].join(" ");
+        if repeated.len() > EXPAND_LIMIT {
+            return Err(NormalizeError::BadRepeat { alg: text.into() });
+        }
         let tail = current[hit.close + 1 + hit.digits..].trim();
         current = format!("{} {} {}", &current[..hit.open], repeated, tail)
             .trim()

@@ -366,10 +366,12 @@ fn normalize_rejects_unknown_tokens_and_broken_structure() {
     let err = normalize_alg("3x3", "R U swap").expect_err("mixed prose must fail");
     assert!(err.to_string().contains("swap"), "err: {err}");
     assert!(normalize_alg("3x3", "R U ?").is_err());
+    assert!(normalize_alg("3x3", "R w").is_err());
+    assert!(normalize_alg("3x3", "R U ->").is_err());
     assert!(normalize_alg("3x3", "(R U").is_err());
     assert!(normalize_alg("3x3", "R U)").is_err());
     assert!(normalize_alg("3x3", "(R U)x").is_err());
-    assert!(normalize_alg("3x3", "(R U)x").is_err());
+    assert!(normalize_alg("3x3", "(((R)99)99)99").is_err());
     assert!(normalize_alg("sq1", "(1,0) (U D) /").is_err());
     assert!(normalize_alg("sq1", "(x,y)").is_err());
     assert!(normalize_alg("sq1", "(0,1,2)").is_err());
@@ -636,6 +638,37 @@ fn a_drifted_rerun_fails_hard_naming_the_file_and_row() {
         )
         .expect("stored row");
     assert_eq!(stored, "R U'");
+}
+
+#[test]
+fn a_row_dropped_from_a_pack_fails_hard_naming_the_orphan() {
+    let dir = temp_packs("orphan");
+    write_pack(
+        &dir,
+        &mini_registry(2),
+        "mini.tsv",
+        &mini_tsv(&[("a1", "R U"), ("a2", "R U'")]),
+    );
+    let entry = parse_registry(&mini_registry(2))
+        .expect("registry")
+        .pop()
+        .expect("entry");
+    let mut db = bt_data::db::Db::open_in_memory().expect("db");
+    seed_pack(&mut db, &dir, &entry).expect("seed");
+    write_pack(
+        &dir,
+        &mini_registry(1),
+        "mini.tsv",
+        &mini_tsv(&[("a1", "R U")]),
+    );
+    let shrunk = parse_registry(&mini_registry(1))
+        .expect("registry")
+        .pop()
+        .expect("entry");
+    let err = seed_pack(&mut db, &dir, &shrunk).expect_err("dropped row must fail");
+    let shown = err.to_string();
+    assert!(shown.contains("a2"), "err: {shown}");
+    assert!(shown.contains("mini.tsv"), "err: {shown}");
 }
 
 #[test]
