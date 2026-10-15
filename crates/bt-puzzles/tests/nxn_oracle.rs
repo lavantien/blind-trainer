@@ -480,7 +480,8 @@ fn bigcube_pack_tokens_parse_at_their_registered_n() {
         }
     }
     let l2e_tokens = [
-        "3Lw", "3Lw'", "3Rw'", "B2", "F", "F'", "F2", "Lw'", "Rw2", "Rw2'", "U2'", "x'",
+        "3Lw", "3Lw'", "3Rw'", "B2", "F", "F'", "F2", "Lw", "Lw'", "R", "R'", "Rw", "Rw'", "Rw2",
+        "Rw2'", "U", "U'", "U2", "U2'", "x", "x'",
     ];
     for n in 5..=7usize {
         let engine = Nxn::new(n).unwrap();
