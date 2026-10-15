@@ -604,6 +604,47 @@ mod tests {
     }
 
     #[test]
+    fn audit_names_a_planted_wrong_alg_row() {
+        let (edge_alg, edge_pos) = three_style(Orbit::Edge);
+        let planted = "R U R' U'";
+        let planted_qtm = Alg::parse(planted).unwrap().qtm();
+        let mut sim: SimMap = HashMap::new();
+        sim.insert(
+            (Solver::Cherry, SheetClass::Edge, 1),
+            SimRow {
+                position: edge_pos.clone(),
+                qtm: Alg::parse(&edge_alg).unwrap().qtm(),
+            },
+        );
+        sim.insert(
+            (Solver::Cherry, SheetClass::Edge, 2),
+            SimRow {
+                position: edge_pos.clone(),
+                qtm: planted_qtm,
+            },
+        );
+        let corpus = Corpus::from_rows(vec![
+            row(Solver::Cherry, SheetClass::Edge, 1, &edge_pos, &edge_alg),
+            row(Solver::Cherry, SheetClass::Edge, 2, &edge_pos, planted),
+        ]);
+        let report = build_report(&corpus, &sim, "t".to_string(), "0".repeat(64));
+        assert_eq!(report.failures.len(), 1);
+        let offender = &report.failures[0];
+        assert_eq!(offender.rowid, 2);
+        assert_eq!(offender.alg, planted);
+        assert!(!offender.verify_ok);
+        assert!(!offender.problems.is_empty());
+        assert!(offender.problems.iter().all(|problem| !problem.is_empty()));
+        assert!(offender.qtm_match);
+        assert!(offender.position_match);
+        assert_eq!(offender.reasons(), offender.problems);
+        let offenders = audit(&report, 2);
+        let prefix = format!("cherry/edge/2 {edge_pos}: ");
+        assert!(offenders[0].starts_with(&prefix));
+        assert!(offenders[0].len() > prefix.len());
+    }
+
+    #[test]
     fn audit_accepts_a_fully_consistent_report() {
         let sheets: Vec<SheetSummary> = crate::SHEET_EXPECTED_ROWS
             .iter()
