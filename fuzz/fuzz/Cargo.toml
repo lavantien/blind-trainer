@@ -54,6 +54,13 @@ doc = false
 bench = false
 
 [[bin]]
+name = "fsrs"
+path = "fuzz_targets/fsrs.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "standalone"
 path = "src/bin/standalone.rs"
 test = false

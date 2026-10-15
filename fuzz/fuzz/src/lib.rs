@@ -374,3 +374,147 @@ pub fn db_once(data: &[u8]) {
     );
     assert_eq!(db.is_fresh().expect("fresh"), false);
 }
+
+fn fsrs_grade(rng: &mut Rng) -> bt_data::fsrs::Grade {
+    bt_data::fsrs::Grade::ALL[rng.below(4) as usize]
+}
+
+fn fsrs_bounded_elapsed(rng: &mut Rng) -> f64 {
+    match rng.below(4) {
+        0 => rng.below(10) as f64 / 10.0,
+        1 => rng.below(3660) as f64,
+        2 => rng.below(365_000) as f64,
+        _ => rng.below(1_000_000_000) as f64,
+    }
+}
+
+pub fn fsrs_once(data: &[u8]) {
+    fsrs_default_walk(seed_from(data));
+    fsrs_hostile_walk(seed_from(data));
+    fsrs_replay_walk(seed_from(data));
+    fsrs_config_parse(seed_from(data));
+}
+
+fn fsrs_default_walk(seed: u64) {
+    use bt_data::fsrs::{FsrsConfig, MemoryState, next_interval_days};
+
+    let cfg = FsrsConfig::defaults();
+    let mut rng = Rng::new(seed ^ 0x5f5f_4445_4641_5531);
+    let mut memory = MemoryState::initial(fsrs_grade(&mut rng), &cfg);
+    assert!(memory.is_valid());
+    for _ in 0..rng.below(600) {
+        let grade = fsrs_grade(&mut rng);
+        let elapsed = fsrs_bounded_elapsed(&mut rng);
+        memory = memory.review(grade, elapsed, &cfg);
+        assert!(
+            memory.is_valid(),
+            "default weights must keep the state valid, elapsed {elapsed}"
+        );
+        let interval = next_interval_days(memory.stability, &cfg);
+        assert!(
+            (1..=36500).contains(&interval),
+            "interval {interval} left the clamps"
+        );
+        let retrievability = memory.retrievability(elapsed);
+        assert!(
+            retrievability.is_finite() && retrievability > 0.0 && retrievability <= 1.0,
+            "retrievability {retrievability} left (0, 1]"
+        );
+    }
+}
+
+fn fsrs_hostile_walk(seed: u64) {
+    use bt_data::fsrs::{FsrsConfig, MemoryState, next_interval_days};
+
+    let mut rng = Rng::new(seed ^ 0x5f5f_484f_5354_4931);
+    let mut cfg = FsrsConfig::defaults();
+    for weight in &mut cfg.weights {
+        match rng.below(3) {
+            0 => {}
+            1 => *weight = rng.below(10_000) as f64 / 7.0,
+            _ => *weight = f64::from_bits(rng.below(u64::MAX)),
+        }
+    }
+    cfg.request_retention = match rng.below(3) {
+        0 => 0.9,
+        1 => rng.below(1500) as f64 / 1000.0,
+        _ => f64::from_bits(rng.below(u64::MAX)),
+    };
+    cfg.interval_clamp_days = [rng.below(100) as i64 - 50, rng.below(100) as i64 - 50];
+    let mut memory = MemoryState::initial(fsrs_grade(&mut rng), &cfg);
+    for _ in 0..rng.below(300) {
+        let elapsed = match rng.below(3) {
+            0 => fsrs_bounded_elapsed(&mut rng),
+            _ => f64::from_bits(rng.below(u64::MAX)),
+        };
+        memory = memory.review(fsrs_grade(&mut rng), elapsed, &cfg);
+        let _ = next_interval_days(memory.stability, &cfg);
+        let _ = memory.retrievability(elapsed);
+    }
+}
+
+fn fsrs_replay_walk(seed: u64) {
+    use bt_data::fsrs::FsrsConfig;
+    use bt_data::srs::{ReplayError, ReviewLogEntry, replay_sm2};
+
+    let cfg = FsrsConfig::defaults();
+    let mut rng = Rng::new(seed ^ 0x5f5f_5245_5041_5931);
+    let mut history: Vec<ReviewLogEntry> = Vec::new();
+    for _ in 0..rng.below(64) {
+        let quality = rng.below(8) as u32;
+        history.push(ReviewLogEntry {
+            ts_days: history.len() as i64,
+            quality,
+            elapsed_days: rng.below(4000) as i64 - 100,
+            scheduled_days: 0,
+        });
+        match replay_sm2(&history, &cfg) {
+            Ok(Some(state)) => assert!(
+                state.is_valid(),
+                "qualities 2..=5 must replay to a valid state, history {history:?}"
+            ),
+            Ok(None) => assert!(history.is_empty(), "nonempty history replayed to none"),
+            Err(ReplayError::UnknownQuality(found)) => {
+                assert!(found < 2 || found > 5, "quality {found} rejected");
+            }
+        }
+    }
+}
+
+fn fsrs_config_parse(seed: u64) {
+    use bt_data::fsrs::FsrsConfig;
+
+    let mut rng = Rng::new(seed ^ 0x5f5f_4346_4746_5a31);
+    for _ in 0..rng.below(32) {
+        let weights: Vec<f64> = (0..bt_data::fsrs::WEIGHT_COUNT)
+            .map(|_| match rng.below(3) {
+                0 => 0.5,
+                1 => rng.below(2000) as f64,
+                _ => f64::from_bits(rng.below(u64::MAX)),
+            })
+            .collect();
+        let retention = match rng.below(3) {
+            0 => 0.9,
+            1 => rng.below(1500) as f64 / 1000.0,
+            _ => f64::from_bits(rng.below(u64::MAX)),
+        };
+        let lo = rng.below(10) as i64 - 3;
+        let hi = rng.below(40_000) as i64;
+        let value = serde_json::json!({
+            "srs": {"fsrs": {"weights": weights, "request_retention": retention, "interval_clamp_days": [lo, hi]}}
+        });
+        if let Ok(cfg) = FsrsConfig::from_value(&value) {
+            assert!(cfg.weights.iter().all(|weight| weight.is_finite()));
+            assert!(
+                cfg.request_retention > 0.0 && cfg.request_retention <= 1.0,
+                "retention {retention} accepted"
+            );
+            assert!(
+                cfg.interval_clamp_days[0] >= 1
+                    && cfg.interval_clamp_days[1] >= cfg.interval_clamp_days[0],
+                "clamps {:?} accepted",
+                cfg.interval_clamp_days
+            );
+        }
+    }
+}
