@@ -5,7 +5,7 @@ BIN := target/release/blind-trainer.exe
 E2E_BIN := tests/e2e/target/release/bt-e2e.exe
 MEMGUARD := scripts/memguard.ps1
 FUZZ_TARGETS := notation classify memo commutator db fsrs
-MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga
+MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga bt-puzzles
 
 export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
