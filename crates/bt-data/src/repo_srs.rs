@@ -59,61 +59,77 @@ impl From<DbError> for LoadError {
 
 pub fn save_tx(tx: &Transaction<'_>, store: &SrsStore) -> Result<(), DbError> {
     let now = now_ms();
-    tx.execute("DELETE FROM card", [])
-        .map_err(|source| DbError::Exec {
-            step: "clear card",
-            source,
-        })?;
+    tx.execute(
+        "DELETE FROM card WHERE event = ? AND method = ?",
+        params![EVENT_3BLD, METHOD_3STYLE],
+    )
+    .map_err(|source| DbError::Exec {
+        step: "clear card",
+        source,
+    })?;
     for (key, card) in &store.cards {
         let (stage, case_key) = split_key(key);
+        insert_card(tx, EVENT_3BLD, METHOD_3STYLE, stage, case_key, card, now)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn insert_card(
+    tx: &Transaction<'_>,
+    event: &str,
+    method: &str,
+    stage: &str,
+    case_key: &str,
+    card: &Card,
+    now: i64,
+) -> Result<(), DbError> {
+    tx.execute(
+        "INSERT INTO card(event, method, stage, case_key, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)",
+        params![event, method, stage, case_key, now, now],
+    )
+    .map_err(|source| DbError::Exec {
+        step: "insert card",
+        source,
+    })?;
+    let card_id = tx.last_insert_rowid();
+    tx.execute(
+        "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, last_review_day, stability, difficulty)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        params![
+            card_id,
+            card.due_day,
+            card.interval_days,
+            card.reps,
+            card.lapses,
+            card.last_review_day(),
+            card.memory.map(|memory| memory.stability),
+            card.memory.map(|memory| memory.difficulty),
+        ],
+    )
+    .map_err(|source| DbError::Exec {
+        step: "insert srs_state",
+        source,
+    })?;
+    let mut interval_before = 0i64;
+    for entry in &card.reviews {
         tx.execute(
-            "INSERT INTO card(event, method, stage, case_key, created_at, updated_at)
+            "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, interval_after, elapsed_days)
              VALUES (?, ?, ?, ?, ?, ?)",
-            params![EVENT_3BLD, METHOD_3STYLE, stage, case_key, now, now],
-        )
-        .map_err(|source| DbError::Exec {
-            step: "insert card",
-            source,
-        })?;
-        let card_id = tx.last_insert_rowid();
-        tx.execute(
-            "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, last_review_day, stability, difficulty)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             params![
                 card_id,
-                card.due_day,
-                card.interval_days,
-                card.reps,
-                card.lapses,
-                card.last_review_day(),
-                card.memory.map(|memory| memory.stability),
-                card.memory.map(|memory| memory.difficulty),
+                entry.quality,
+                entry.ts_days,
+                interval_before,
+                entry.scheduled_days,
+                entry.elapsed_days
             ],
         )
         .map_err(|source| DbError::Exec {
-            step: "insert srs_state",
+            step: "insert review_log",
             source,
         })?;
-        let mut interval_before = 0i64;
-        for entry in &card.reviews {
-            tx.execute(
-                "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, interval_after, elapsed_days)
-                 VALUES (?, ?, ?, ?, ?, ?)",
-                params![
-                    card_id,
-                    entry.quality,
-                    entry.ts_days,
-                    interval_before,
-                    entry.scheduled_days,
-                    entry.elapsed_days
-                ],
-            )
-            .map_err(|source| DbError::Exec {
-                step: "insert review_log",
-                source,
-            })?;
-            interval_before = entry.scheduled_days;
-        }
+        interval_before = entry.scheduled_days;
     }
     Ok(())
 }
@@ -169,27 +185,40 @@ fn memory_from_row(
     Ok(memory)
 }
 
-pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
+pub(crate) struct CardRow {
+    pub event: String,
+    pub method: String,
+    pub stage: String,
+    pub case_key: String,
+    pub card: Card,
+}
+
+pub(crate) fn load_card_rows(
+    db: &Db,
+    cfg: &FsrsConfig,
+    filter: &str,
+    filter_params: &[&dyn rusqlite::ToSql],
+) -> Result<Vec<CardRow>, LoadError> {
     let step = "select card";
-    let mut cards = db
-        .conn()
-        .prepare(
-            "SELECT c.id, c.stage, c.case_key, s.due_day, s.interval_days, s.reps, s.lapses, s.stability, s.difficulty
-             FROM card c JOIN srs_state s ON s.card_id = c.id",
-        )
-        .map_err(map_query(step))?;
+    let sql = format!(
+        "SELECT c.id, c.event, c.method, c.stage, c.case_key, s.due_day, s.interval_days, s.reps, s.lapses, s.stability, s.difficulty
+         FROM card c JOIN srs_state s ON s.card_id = c.id WHERE {filter}"
+    );
+    let mut cards = db.conn().prepare(&sql).map_err(map_query(step))?;
     let card_rows = cards
-        .query_map([], |row| {
+        .query_map(filter_params, |row| {
             Ok((
                 row.get::<_, i64>(0)?,
                 row.get::<_, String>(1)?,
                 row.get::<_, String>(2)?,
-                row.get::<_, i64>(3)?,
-                row.get::<_, i64>(4)?,
-                row.get::<_, u32>(5)?,
-                row.get::<_, u32>(6)?,
-                row.get::<_, Option<f64>>(7)?,
-                row.get::<_, Option<f64>>(8)?,
+                row.get::<_, String>(3)?,
+                row.get::<_, String>(4)?,
+                row.get::<_, i64>(5)?,
+                row.get::<_, i64>(6)?,
+                row.get::<_, u32>(7)?,
+                row.get::<_, u32>(8)?,
+                row.get::<_, Option<f64>>(9)?,
+                row.get::<_, Option<f64>>(10)?,
             ))
         })
         .map_err(map_query(step))?
@@ -202,9 +231,20 @@ pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
              FROM review_log WHERE card_id = ? ORDER BY id",
         )
         .map_err(map_query(step))?;
-    let mut store = SrsStore::default();
-    for (id, stage, case_key, due_day, interval_days, reps, lapses, stability, difficulty) in
-        card_rows
+    let mut rows = Vec::new();
+    for (
+        id,
+        event,
+        method,
+        stage,
+        case_key,
+        due_day,
+        interval_days,
+        reps,
+        lapses,
+        stability,
+        difficulty,
+    ) in card_rows
     {
         let entries = reviews
             .query_map(params![id], |row| {
@@ -219,10 +259,13 @@ pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
             .collect::<Result<Vec<_>, _>>()
             .map_err(map_query(step))?;
         let key = join_key(&stage, &case_key);
-        let memory = memory_from_row(key.clone(), stability, difficulty, &entries, cfg)?;
-        store.cards.insert(
-            key,
-            Card {
+        let memory = memory_from_row(key, stability, difficulty, &entries, cfg)?;
+        rows.push(CardRow {
+            event,
+            method,
+            stage,
+            case_key,
+            card: Card {
                 memory,
                 interval_days,
                 due_day,
@@ -230,7 +273,23 @@ pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
                 lapses,
                 reviews: entries,
             },
-        );
+        });
+    }
+    Ok(rows)
+}
+
+pub fn load(db: &Db, cfg: &FsrsConfig) -> Result<SrsStore, LoadError> {
+    let rows = load_card_rows(
+        db,
+        cfg,
+        "c.event = ? AND c.method = ?",
+        &[&EVENT_3BLD, &METHOD_3STYLE],
+    )?;
+    let mut store = SrsStore::default();
+    for row in rows {
+        store
+            .cards
+            .insert(join_key(&row.stage, &row.case_key), row.card);
     }
     Ok(store)
 }
@@ -534,5 +593,48 @@ mod tests {
         degenerate.weights[11] = 0.0;
         let err = load(&db, &degenerate).expect_err("zero forget weight must invalidate");
         assert!(err.to_string().contains("edge/UF"), "err: {err}");
+    }
+
+    #[test]
+    fn saving_the_3bld_store_spares_foreign_event_cards() {
+        let mut db = db();
+        let foreign = crate::repo_user::CaseRef {
+            event: "2x2".to_string(),
+            method: "cll".to_string(),
+            stage: "cll".to_string(),
+            case_key: "cll.1".to_string(),
+        };
+        let mut graded = Card::new(0);
+        graded.review(crate::srs::Rating::Good, 0, &cfg());
+        crate::repo_cards::save_card(&mut db, &foreign, &graded).expect("seed foreign");
+        let mut store = SrsStore::default();
+        store
+            .cards
+            .insert("edge/UF".to_string(), card(None, Vec::new()));
+        save(&mut db, &store).expect("3bld save");
+        let survived = crate::repo_cards::load(&db, &cfg()).expect("cards");
+        assert_eq!(
+            survived.get(&foreign).map(|card| card.reps),
+            Some(1),
+            "a 3bld store save must not wipe case cards"
+        );
+        assert_eq!(
+            load(&db, &cfg()).expect("3bld load").cards.len(),
+            1,
+            "the 3bld store still loads its own rows"
+        );
+    }
+
+    #[test]
+    fn load_ignores_foreign_event_rows() {
+        let mut db = db();
+        let foreign = crate::repo_user::CaseRef {
+            event: "skewb".to_string(),
+            method: "sarah".to_string(),
+            stage: "sarah".to_string(),
+            case_key: "s.1".to_string(),
+        };
+        crate::repo_cards::save_card(&mut db, &foreign, &Card::new(0)).expect("seed");
+        assert_eq!(load(&db, &cfg()).expect("load"), SrsStore::default());
     }
 }
