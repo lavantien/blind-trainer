@@ -55,12 +55,14 @@ bld_3style_specials.tsv derives from the two blddb workbooks already committed u
 
 ## data defects (recorded 2026-10-16, rows stay verbatim)
 
-Nine sq1_cubeshape.tsv rows fail mechanical execution under the wave A square-1 engine. The pack files stay byte-verbatim per the a3 ruling, the seed loader in crates/bt-data/src/seedpack.rs carries this exact list through `expected_failure`, and bt-verify treats exactly these rows as expected failures with the recorded reason. Every other row of every pack stays fail-closed.
+Eighteen sq1 rows fail mechanical execution under the wave A square-1 engine. The pack files stay byte-verbatim per the a3 ruling, the seed loader in crates/bt-data/src/seedpack.rs carries this exact list through `expected_failure`, and bt-verify treats exactly these rows as expected failures with the recorded reason. Every other row of every pack stays fail-closed.
 
 | row | defect |
 | --- | --- |
 | cs.119 | unexecutable slash sequence, hand traced: cs.122 differs from it by one twist sign and executes, so the row is held as a source typo |
 | cs.075, cs.078, cs.084, cs.089, cs.097, cs.109, cs.118, cs.129 | source follows a flipped layer convention for these shapes, hand verified against the engine, recorded as a convention mismatch rather than a typo |
+| eo.01, eo.04, eo.06, ep.40, ep.66, ep.80 | unexecutable slash sequence, hand traced by b2-verify: no state maps to solved through the stored alg, slash legality is state-based so the reverse trajectory failing proves no forward trajectory exists |
+| ep.05, ep.18, ep.50 | AUF-dependent executability: the stripped (U)/(D) prefix plausibly restores legality, but an in-engine conversion rests on a sign convention no pinned source defines, so expected-fail is the honest outcome rather than a data verdict |
 
 ## recorded loader normalizations
 
