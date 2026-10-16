@@ -11,13 +11,15 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
+.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation mutation-pkg mutation-merge e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
 
 OUTCOMES ?= mutants.out/outcomes.json
 ALLOWLIST ?= tools/bt-mutants-gate/allowlist.tsv
+MUTATION_PKG_DIR ?= mutants.out/pkg
+MUTATION_PKG_OUTS := $(foreach pkg,$(MUTATION_PACKAGES),$(MUTATION_PKG_DIR)/$(pkg)/outcomes.json)
 
 setup:
 	rustup component add rustfmt clippy
@@ -86,6 +88,13 @@ fuzz:
 
 mutation:
 	cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
+
+mutation-pkg:
+	@test -n "$(p)" || { echo 'usage: make mutation-pkg p=<crate>'; exit 2; }
+	cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)
+
+mutation-merge:
+	cargo run --release -p bt-mutants-gate -- merge $(OUTCOMES) $(MUTATION_PKG_OUTS)
 
 e2e: build
 	cargo test --release -p bt-app --test e2e

@@ -239,6 +239,190 @@ fn row_error(row: usize, detail: impl Into<String>) -> GateError {
     GateError::Violation(format!("allowlist row {row}: {}", detail.into()))
 }
 
+#[derive(Debug)]
+pub struct MergedOutcome {
+    pub json: String,
+    pub total_mutants: u64,
+    pub inputs: usize,
+}
+
+pub fn merge_outcomes(inputs: &[&str]) -> Result<MergedOutcome, GateError> {
+    if inputs.len() < 2 {
+        return Err(GateError::Usage(
+            "merge needs at least two input files".to_owned(),
+        ));
+    }
+    let mut roots = Vec::with_capacity(inputs.len());
+    for (idx, text) in inputs.iter().enumerate() {
+        let root: Value = serde_json::from_str(text).map_err(|e| {
+            GateError::Usage(format!("invalid outcomes JSON in input {}: {e}", idx + 1))
+        })?;
+        check_complete_run(&root, idx + 1)?;
+        roots.push(root);
+    }
+    let versions: Vec<&str> = roots
+        .iter()
+        .filter_map(|root| root.get("cargo_mutants_version").and_then(Value::as_str))
+        .collect();
+    if let Some(first) = versions.first()
+        && versions.iter().any(|version| version != first)
+    {
+        return Err(GateError::Violation(format!(
+            "cargo_mutants_version disagreement across inputs: {versions:?}"
+        )));
+    }
+    let sums = [
+        "total_mutants",
+        "caught",
+        "missed",
+        "timeout",
+        "unviable",
+        "success",
+    ];
+    let mut merged = serde_json::Map::new();
+    for name in sums {
+        let total: u64 = roots
+            .iter()
+            .map(|root| {
+                root.get(name)
+                    .and_then(Value::as_u64)
+                    .ok_or_else(|| malformed_file(format!("missing integer counter '{name}'")))
+            })
+            .collect::<Result<Vec<u64>, GateError>>()?
+            .into_iter()
+            .sum();
+        merged.insert(name.to_owned(), Value::from(total));
+    }
+    if let Some(first) = versions.first() {
+        merged.insert(
+            "cargo_mutants_version".to_owned(),
+            Value::String((*first).to_owned()),
+        );
+    }
+    if let Some(earliest) = roots
+        .iter()
+        .filter_map(|root| root.get("start_time").and_then(Value::as_str))
+        .min()
+    {
+        merged.insert("start_time".to_owned(), Value::String(earliest.to_owned()));
+    }
+    if let Some(latest) = roots
+        .iter()
+        .filter_map(|root| root.get("end_time").and_then(Value::as_str))
+        .max()
+    {
+        merged.insert("end_time".to_owned(), Value::String(latest.to_owned()));
+    }
+    let mut outcomes = Vec::new();
+    for root in &roots {
+        outcomes.extend(
+            root.get("outcomes")
+                .and_then(Value::as_array)
+                .ok_or_else(|| malformed_file("missing outcomes array"))?
+                .iter()
+                .cloned(),
+        );
+    }
+    merged.insert("outcomes".to_owned(), Value::Array(outcomes));
+    let total_mutants = merged
+        .get("total_mutants")
+        .and_then(Value::as_u64)
+        .unwrap_or(0);
+    let json = serde_json::to_string_pretty(&Value::Object(merged))
+        .map_err(|e| GateError::Usage(format!("cannot serialize merged outcomes: {e}")))?;
+    Ok(MergedOutcome {
+        json,
+        total_mutants,
+        inputs: inputs.len(),
+    })
+}
+
+fn check_complete_run(root: &Value, input: usize) -> Result<(), GateError> {
+    let end_time = root
+        .get("end_time")
+        .and_then(Value::as_str)
+        .ok_or_else(|| {
+            GateError::Violation(format!(
+                "input {input} has no end_time string, refusing a killed or partial run"
+            ))
+        })?;
+    if end_time.is_empty() {
+        return Err(GateError::Violation(format!(
+            "input {input} has an empty end_time, refusing a killed or partial run"
+        )));
+    }
+    let outcomes = root
+        .get("outcomes")
+        .and_then(Value::as_array)
+        .ok_or_else(|| malformed_file(format!("input {input} is missing the outcomes array")))?;
+    let mut counts = [
+        ("CaughtMutant", "caught", 0u64),
+        ("Unviable", "unviable", 0u64),
+        ("MissedMutant", "missed", 0u64),
+        ("Timeout", "timeout", 0u64),
+    ];
+    let mut mutants = 0u64;
+    for outcome in outcomes {
+        let summary = outcome
+            .get("summary")
+            .and_then(Value::as_str)
+            .ok_or_else(|| malformed_outcome("missing summary string"))?;
+        if outcome.get("scenario").and_then(Value::as_str) == Some("Baseline") {
+            if summary != "Success" {
+                return Err(GateError::Violation(format!(
+                    "input {input} baseline summary is '{summary}', not Success"
+                )));
+            }
+            continue;
+        }
+        if !outcome
+            .get("scenario")
+            .and_then(Value::as_object)
+            .is_some_and(|scenario| scenario.contains_key("Mutant"))
+        {
+            return Err(malformed_outcome("scenario object without Mutant"));
+        }
+        mutants += 1;
+        match counts
+            .iter_mut()
+            .find(|(summary_name, _, _)| *summary_name == summary)
+        {
+            Some((_, _, seen)) => *seen += 1,
+            None => {
+                return Err(GateError::Violation(format!(
+                    "unknown summary '{summary}' in input {input}"
+                )));
+            }
+        }
+    }
+    if mutants == 0 {
+        return Err(GateError::Violation(format!(
+            "input {input} has no mutant outcomes, refusing an empty run"
+        )));
+    }
+    for (summary_name, counter, seen) in counts {
+        let declared = root
+            .get(counter)
+            .and_then(Value::as_u64)
+            .ok_or_else(|| malformed_file(format!("missing integer counter '{counter}'")))?;
+        if seen != declared {
+            return Err(GateError::Violation(format!(
+                "input {input} counter mismatch for {summary_name}: outcomes count {seen} != file counter {declared}"
+            )));
+        }
+    }
+    let declared_total = root
+        .get("total_mutants")
+        .and_then(Value::as_u64)
+        .ok_or_else(|| malformed_file("missing integer counter 'total_mutants'"))?;
+    if mutants != declared_total {
+        return Err(GateError::Violation(format!(
+            "input {input} total_mutants mismatch: outcomes count {mutants} != file counter {declared_total}"
+        )));
+    }
+    Ok(())
+}
+
 fn malformed_outcome(detail: impl Into<String>) -> GateError {
     GateError::Violation(format!("malformed outcome: {}", detail.into()))
 }
@@ -249,7 +433,7 @@ fn malformed_file(detail: impl Into<String>) -> GateError {
 
 #[cfg(test)]
 mod tests {
-    use crate::{GateError, gate};
+    use crate::{GateError, Value, gate, merge_outcomes};
 
     const CAUGHT_ONLY: &str = r#"{"total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
     {"scenario":"Baseline","summary":"Success"},
@@ -735,5 +919,107 @@ crates/bt-scheme/src/memo.rs\tOrbitWalk<'a>::run\tBinaryOperator\t+=->*=\t2\tthe
     fn real_shape_with_fixture_allowlist_passes() {
         let got = gate(REAL_SHAPE, REAL_ALLOWLIST);
         assert_eq!(got.unwrap(), "survivors gated: 4, all covered");
+    }
+
+    const PKG_A: &str = r#"{"cargo_mutants_version":"27.1.0","start_time":"2026-10-16T09:40:00Z","end_time":"2026-10-16T10:10:00Z","total_mutants":2,"caught":1,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:12:5: replace x with z in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":10,"column":1},"end":{"line":14,"column":2}}},"span":{"start":{"line":12,"column":5},"end":{"line":12,"column":6}},"replacement":"z","genre":"FnValue"}},"summary":"MissedMutant"}]}"#;
+
+    const PKG_B: &str = r#"{"cargo_mutants_version":"27.1.0","start_time":"2026-10-16T10:20:00Z","end_time":"2026-10-16T10:50:00Z","total_mutants":2,"caught":0,"missed":0,"timeout":1,"unviable":1,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/b.rs:7:5: replace += with *= in g","package":"pkg-b","file":"src/b.rs","function":{"function_name":"g","return_type":"","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":7}},"replacement":"*=","genre":"BinaryOperator"}},"summary":"Timeout"},
+    {"scenario":{"Mutant":{"name":"src/c.rs:3:1: replace g with ()","package":"pkg-b","file":"src/c.rs","function":{"function_name":"g","return_type":"","span":{"start":{"line":1,"column":1},"end":{"line":5,"column":2}}},"span":{"start":{"line":3,"column":1},"end":{"line":3,"column":2}},"replacement":"()","genre":"FnValue"}},"summary":"Unviable"}]}"#;
+
+    const KILLED_RUN: &str = r#"{"cargo_mutants_version":"27.1.0","start_time":"2026-10-16T09:40:00Z","end_time":"","total_mutants":2,"caught":1,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:12:5: replace x with z in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":10,"column":1},"end":{"line":14,"column":2}}},"span":{"start":{"line":12,"column":5},"end":{"line":12,"column":6}},"replacement":"z","genre":"FnValue"}},"summary":"MissedMutant"}]}"#;
+
+    const COUNTER_LIE: &str = r#"{"cargo_mutants_version":"27.1.0","start_time":"2026-10-16T09:40:00Z","end_time":"2026-10-16T10:10:00Z","total_mutants":2,"caught":0,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:12:5: replace x with z in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":10,"column":1},"end":{"line":14,"column":2}}},"span":{"start":{"line":12,"column":5},"end":{"line":12,"column":6}},"replacement":"z","genre":"FnValue"}},"summary":"MissedMutant"}]}"#;
+
+    const MERGE_FAILED_BASELINE: &str = r#"{"cargo_mutants_version":"27.1.0","start_time":"2026-10-16T09:40:00Z","end_time":"2026-10-16T10:10:00Z","total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Failure"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"pkg-a","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
+
+    const OTHER_VERSION: &str = r#"{"cargo_mutants_version":"27.0.0","start_time":"2026-10-16T10:20:00Z","end_time":"2026-10-16T10:50:00Z","total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/b.rs:7:5: replace += with *= in g","package":"pkg-b","file":"src/b.rs","function":{"function_name":"g","return_type":"","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":7}},"replacement":"*=","genre":"BinaryOperator"}},"summary":"CaughtMutant"}]}"#;
+
+    #[test]
+    fn merge_sums_counters_concatenates_outcomes_and_extends_times() {
+        let merged = merge_outcomes(&[PKG_A, PKG_B]).unwrap();
+        let root: Value = serde_json::from_str(&merged.json).unwrap();
+        assert_eq!(root["total_mutants"], 4);
+        assert_eq!(root["caught"], 1);
+        assert_eq!(root["missed"], 1);
+        assert_eq!(root["timeout"], 1);
+        assert_eq!(root["unviable"], 1);
+        assert_eq!(root["outcomes"].as_array().unwrap().len(), 6);
+        assert_eq!(root["start_time"], "2026-10-16T09:40:00Z");
+        assert_eq!(root["end_time"], "2026-10-16T10:50:00Z");
+        assert_eq!(root["cargo_mutants_version"], "27.1.0");
+        let names: Vec<&str> = root["outcomes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|o| o["scenario"]["Mutant"]["package"].as_str())
+            .collect();
+        assert_eq!(names, ["pkg-a", "pkg-a", "pkg-b", "pkg-b"]);
+        assert_eq!(merged.total_mutants, 4);
+        assert_eq!(merged.inputs, 2);
+    }
+
+    #[test]
+    fn merged_output_feeds_the_gate() {
+        let merged = merge_outcomes(&[PKG_A, PKG_B]).unwrap();
+        let allowlist =
+            "src/a.rs\tf\tFnValue\tz\t1\taccepted\nsrc/b.rs\tg\tBinaryOperator\t*=\t1\taccepted";
+        assert_eq!(
+            gate(&merged.json, allowlist).unwrap(),
+            "survivors gated: 2, all covered"
+        );
+    }
+
+    #[test]
+    fn merge_refuses_a_killed_run_without_end_time() {
+        let err = merge_outcomes(&[PKG_A, KILLED_RUN])
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("end_time"), "got: {err}");
+        assert!(err.contains("input 2"), "got: {err}");
+    }
+
+    #[test]
+    fn merge_refuses_a_counter_mismatch_input() {
+        let err = merge_outcomes(&[PKG_A, COUNTER_LIE])
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("counter"), "got: {err}");
+    }
+
+    #[test]
+    fn merge_refuses_a_failed_baseline_input() {
+        let err = merge_outcomes(&[PKG_A, MERGE_FAILED_BASELINE])
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("baseline"), "got: {err}");
+    }
+
+    #[test]
+    fn merge_refuses_version_disagreement() {
+        let err = merge_outcomes(&[PKG_A, OTHER_VERSION])
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("version"), "got: {err}");
+    }
+
+    #[test]
+    fn merge_refuses_a_single_input() {
+        let err = merge_outcomes(&[PKG_A]).unwrap_err().to_string();
+        assert!(err.contains("two"), "got: {err}");
     }
 }
