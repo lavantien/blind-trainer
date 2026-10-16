@@ -19,7 +19,7 @@ MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
 OUTCOMES ?= mutants.out/outcomes.json
 ALLOWLIST ?= tools/bt-mutants-gate/allowlist.tsv
 MUTATION_PKG_DIR ?= mutants.out/pkg
-MUTATION_PKG_OUTS := $(foreach pkg,$(MUTATION_PACKAGES),$(MUTATION_PKG_DIR)/$(pkg)/outcomes.json)
+MUTATION_PKG_OUTS := $(foreach pkg,$(MUTATION_PACKAGES),$(MUTATION_PKG_DIR)/$(pkg)/mutants.out/outcomes.json)
 
 setup:
 	rustup component add rustfmt clippy
@@ -91,6 +91,7 @@ mutation:
 
 mutation-pkg:
 	@test -n "$(p)" || { echo 'usage: make mutation-pkg p=<crate>'; exit 2; }
+	mkdir -p $(MUTATION_PKG_DIR)/$(p)
 	cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)
 
 mutation-merge:
