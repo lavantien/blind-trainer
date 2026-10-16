@@ -241,13 +241,13 @@ mod tests {
     #[test]
     fn tier2_failures_carry_their_message() {
         let row = outcome(
-            "l4e.07",
+            "l4e.99",
             Ok(()),
             Tier2Outcome::Fail("five edges displaced".to_string()),
         );
         assert_eq!(
             row_offender("pyraminx", "l4e", "l4e", &row),
-            Some("pyraminx/l4e/l4e/l4e.07: tier2: five edges displaced".to_string())
+            Some("pyraminx/l4e/l4e/l4e.99: tier2: five edges displaced".to_string())
         );
     }
 

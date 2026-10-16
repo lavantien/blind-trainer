@@ -418,39 +418,17 @@ fn cfop_rows_hold_their_step_start_states() {
 }
 
 #[test]
-fn the_live_pack_audit_names_exactly_the_open_findings() {
+fn the_live_pack_audit_is_fail_closed_clean() {
     let audit = audit_packs(&packs());
     assert!(audit.drift.is_empty(), "{}", audit.drift.join("\n"));
-    let mut expected = Vec::new();
-    for key in PYRA_OPEN {
-        expected.push(format!("pyraminx/l4e/l4e/{key}: "));
-    }
-    for key in MEGA_OPEN {
-        expected.push(format!("megaminx/4lll/4lll/{key}: "));
-    }
-    for key in BIGCUBE_YAU_OPEN {
-        expected.push(format!("bigcube/yau/parity/{key}: "));
-    }
-    for key in BIGCUBE_REDUCTION_OPEN {
-        expected.push(format!("bigcube/reduction/parity/{key}: "));
-    }
-    for key in M2_OPEN {
-        expected.push(format!("3bld/m2/concept/{key}: "));
-    }
-    let mut covered = vec![false; expected.len()];
-    for offender in &audit.offenders {
-        let position = expected
-            .iter()
-            .position(|prefix| offender.starts_with(prefix))
-            .unwrap_or_else(|| panic!("unexpected offender: {offender}"));
-        assert!(!covered[position], "duplicate offender: {offender}");
-        covered[position] = true;
-    }
-    for (flag, prefix) in covered.iter().zip(expected.iter()) {
-        assert!(flag, "missing offender with prefix {prefix}");
-    }
-    assert_eq!(audit.offenders.len(), expected.len());
+    assert!(
+        audit.offenders.is_empty(),
+        "offenders beyond the ruled table:\n{}",
+        audit.offenders.join("\n")
+    );
     assert_eq!(audit.sections.len(), PACK_EXPECTED_ROWS.len());
+    let ruled: usize = audit.sections.iter().map(|s| s.ruled).sum();
+    assert_eq!(ruled, 52, "18 sq1 plus the 4 ruled families");
     for summary in &audit.sections {
         assert_eq!(
             summary.rows,
@@ -459,6 +437,102 @@ fn the_live_pack_audit_names_exactly_the_open_findings() {
             summary.event,
             summary.method,
             summary.stage
+        );
+    }
+    let ruled_keys = [
+        ("megaminx", "4lll", "4lll", MEGA_OPEN),
+        ("pyraminx", "l4e", "l4e", PYRA_OPEN),
+        ("bigcube", "yau", "parity", BIGCUBE_YAU_OPEN),
+        ("bigcube", "reduction", "parity", BIGCUBE_REDUCTION_OPEN),
+        ("3bld", "m2", "concept", M2_OPEN),
+    ];
+    for (event, method, stage, keys) in ruled_keys {
+        let summary = audit
+            .sections
+            .iter()
+            .find(|s| s.event == event && s.method == method && s.stage == stage)
+            .unwrap_or_else(|| panic!("{event}/{method}/{stage} summary exists"));
+        assert_eq!(summary.ruled, keys.len(), "{event}/{method}/{stage}");
+        assert_eq!(summary.failed, keys.len(), "{event}/{method}/{stage}");
+    }
+}
+
+fn suffix_flips(token: &str) -> Vec<String> {
+    let letter: String = token
+        .chars()
+        .take_while(|ch| ch.is_ascii_alphabetic() || *ch == 'w')
+        .collect();
+    if letter.is_empty() {
+        return Vec::new();
+    }
+    ["", "'", "2", "2'"]
+        .iter()
+        .map(|suffix| format!("{letter}{suffix}"))
+        .filter(|candidate| candidate != token)
+        .collect()
+}
+
+#[test]
+fn no_single_token_flip_reconciles_the_ruled_mega_rows() {
+    let entry = entry_of("megaminx", "4lll", "4lll");
+    let rows = load_pack(&packs(), &entry).expect("mega pack loads");
+    for key in ["4lll.20", "4lll.21", "4lll.22", "4lll.24"] {
+        let row = row_of(&rows, key);
+        let tokens: Vec<String> = row.alg.split_whitespace().map(String::from).collect();
+        let mut reconciled = 0;
+        for index in 0..tokens.len() {
+            for flip in suffix_flips(&tokens[index]) {
+                let mut variant = tokens.clone();
+                variant[index] = flip.clone();
+                let mut probe_row = row.clone();
+                probe_row.alg = variant.join(" ");
+                let result = verify_rows(&entry, &[probe_row]);
+                let outcome = &result.rows[0];
+                if outcome.tier1.is_ok() && matches!(outcome.tier2, Tier2Outcome::Pass) {
+                    reconciled += 1;
+                }
+            }
+        }
+        assert_eq!(
+            reconciled, 0,
+            "{key}: a single token flip reconciles, ruling stale"
+        );
+    }
+}
+
+#[test]
+fn no_global_conjugation_reconciles_the_ruled_bigcube_rows() {
+    let mut all_rows = Vec::new();
+    let mut entries = Vec::new();
+    for method in ["yau", "reduction"] {
+        let entry = entry_of("bigcube", method, "parity");
+        let rows = load_pack(&packs(), &entry).expect("bigcube pack loads");
+        entries.push(entry);
+        all_rows.push(rows);
+    }
+    for (rotation, inverse) in [
+        ("x", "x'"),
+        ("x'", "x"),
+        ("x2", "x2"),
+        ("y", "y'"),
+        ("y2", "y2"),
+        ("z", "z'"),
+    ] {
+        let mut reconciled = 0;
+        for (rows, entry) in all_rows.iter().zip(entries.iter()) {
+            for row in rows {
+                let mut probe_row = row.clone();
+                probe_row.alg = format!("{rotation} {} {inverse}", row.alg);
+                let result = verify_rows(entry, &[probe_row]);
+                let outcome = &result.rows[0];
+                if outcome.tier1.is_ok() && matches!(outcome.tier2, Tier2Outcome::Pass) {
+                    reconciled += 1;
+                }
+            }
+        }
+        assert_eq!(
+            reconciled, 0,
+            "conjugation {rotation} reconciles rows, ruling stale"
         );
     }
 }
