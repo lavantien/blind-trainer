@@ -61,6 +61,7 @@
 #diagram((
   ("bt-core", "bt-scheme", "bt-data", ("bt-app", "bt-gendata", "bt-verify")),
   ("bt-scheme", "bt-ga", ("bt-ga-run", "bt-memofreq")),
+  ("bt-puzzles", ("bt-app", "bt-verify")),
   ("bt-visual-diff",),
 ))
 #pagebreak()
