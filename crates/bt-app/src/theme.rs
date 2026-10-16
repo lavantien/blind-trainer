@@ -67,18 +67,30 @@ pub fn hairline() -> Color {
 }
 
 pub const FACE_COUNT: usize = 6;
+pub const PALETTE_COUNT: usize = 12;
+
+const FACE_SHADES: [(f32, f32, f32); PALETTE_COUNT] = [
+    (0.95, 0.95, 0.95),
+    (0.95, 0.60, 0.15),
+    (0.20, 0.75, 0.35),
+    (0.85, 0.20, 0.20),
+    (0.20, 0.45, 0.90),
+    (0.95, 0.85, 0.15),
+    (0.15, 0.85, 0.90),
+    (0.90, 0.35, 0.80),
+    (0.55, 0.30, 0.85),
+    (0.60, 0.40, 0.20),
+    (0.55, 0.58, 0.62),
+    (0.10, 0.55, 0.55),
+];
+
+pub fn palette_color(index: usize) -> Color {
+    let (r, g, b) = FACE_SHADES[index % PALETTE_COUNT];
+    Color::srgb(r, g, b)
+}
 
 pub fn face_color(face: usize) -> Color {
-    let shades: [(f32, f32, f32); FACE_COUNT] = [
-        (0.95, 0.95, 0.95),
-        (0.95, 0.60, 0.15),
-        (0.20, 0.75, 0.35),
-        (0.85, 0.20, 0.20),
-        (0.20, 0.45, 0.90),
-        (0.95, 0.85, 0.15),
-    ];
-    let (r, g, b) = shades[face % FACE_COUNT];
-    Color::srgb(r, g, b)
+    palette_color(face)
 }
 
 pub fn face_name(face: usize) -> &'static str {
@@ -121,6 +133,57 @@ mod tests {
             for right in colors.iter().skip(i + 1) {
                 assert_ne!(left.to_linear(), right.to_linear());
             }
+        }
+    }
+
+    #[test]
+    fn palette_pins_twelve_shades() {
+        let pinned: [(f32, f32, f32); PALETTE_COUNT] = [
+            (0.95, 0.95, 0.95),
+            (0.95, 0.60, 0.15),
+            (0.20, 0.75, 0.35),
+            (0.85, 0.20, 0.20),
+            (0.20, 0.45, 0.90),
+            (0.95, 0.85, 0.15),
+            (0.15, 0.85, 0.90),
+            (0.90, 0.35, 0.80),
+            (0.55, 0.30, 0.85),
+            (0.60, 0.40, 0.20),
+            (0.55, 0.58, 0.62),
+            (0.10, 0.55, 0.55),
+        ];
+        for (index, shade) in pinned.iter().enumerate() {
+            assert_eq!(
+                palette_color(index),
+                Color::srgb(shade.0, shade.1, shade.2),
+                "palette slot {index}"
+            );
+        }
+        assert_eq!(palette_color(PALETTE_COUNT), palette_color(0));
+    }
+
+    #[test]
+    fn palette_is_pairwise_distinct() {
+        for left in 0..PALETTE_COUNT {
+            for right in (left + 1)..PALETTE_COUNT {
+                let a = palette_color(left).to_linear();
+                let b = palette_color(right).to_linear();
+                let distance = ((a.red - b.red).powi(2)
+                    + (a.green - b.green).powi(2)
+                    + (a.blue - b.blue).powi(2))
+                .sqrt();
+                assert!(
+                    distance >= 0.2,
+                    "palette {left} vs {right} distance {distance}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn palette_front_six_match_the_cube_faces() {
+        for face in 0..FACE_COUNT {
+            assert_eq!(palette_color(face), face_color(face), "face {face}");
         }
     }
 }

@@ -1953,6 +1953,7 @@ dependencies = [
  "bevy",
  "bt-core",
  "bt-data",
+ "bt-puzzles",
  "bt-scheme",
  "serde",
  "serde_json",

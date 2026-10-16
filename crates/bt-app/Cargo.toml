@@ -21,6 +21,7 @@ bevy = { version = "0.20.0", default-features = false, features = [
 ] }
 bt-core = { path = "../bt-core" }
 bt-data = { path = "../bt-data" }
+bt-puzzles = { path = "../bt-puzzles" }
 bt-scheme = { path = "../bt-scheme" }
 serde.workspace = true
 serde_json.workspace = true
