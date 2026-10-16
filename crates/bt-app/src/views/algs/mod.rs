@@ -14,6 +14,7 @@ use bt_scheme::{CaseId, Orbit, enumerate_cases};
 
 pub mod browse;
 pub mod detail;
+pub mod display;
 
 #[derive(Clone, Debug, Default, Resource)]
 pub struct AlgsQuery(pub String);
@@ -372,7 +373,7 @@ pub fn spawn(
         fonts,
         AppState::Algs,
         "algs",
-        "type letters to search, slash focuses it, arrows select, left right browse packs, d drills, esc menu",
+        "type letters to search, arrows select, left right browse packs, o edits a case, enter saves, tab cancels, x deletes the override, d drills, esc menu",
     );
     commands.entity(content).insert(Node {
         width: Val::Percent(100.0),
@@ -580,13 +581,15 @@ pub fn bind_detail(
     mut commands: Commands,
     corpus: Res<VendorCorpus>,
     repo: Res<browse::RepoBrowser>,
+    store: Res<detail::OverrideStore>,
+    draft: Res<detail::OverrideDraft>,
     browser: Res<AlgsBrowser>,
     config: Res<AppConfig>,
     fonts: Res<crate::present::FontBook>,
     rails: Query<(Entity, Option<&Children>), With<AlgsDetail>>,
     mut rows: Query<(&mut Text, &mut TextColor, &AlgsListRow)>,
 ) {
-    if !browser.is_changed() && !repo.is_changed() {
+    if !browser.is_changed() && !repo.is_changed() && !store.is_changed() && !draft.is_changed() {
         return;
     }
     let rendered = if repo.repo_focused {
@@ -615,7 +618,7 @@ pub fn bind_detail(
         }
         commands.entity(rail).with_children(|parent| {
             if repo.repo_focused {
-                detail::spawn_seed_detail(parent, &fonts, &repo);
+                detail::spawn_seed_detail(parent, &fonts, &repo, &store, &draft);
             } else {
                 spawn_detail(parent, &fonts, &corpus.0, &browser);
             }

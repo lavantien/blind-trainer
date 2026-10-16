@@ -13,8 +13,11 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
 
+#[allow(dead_code)]
 pub const COVERED_ALG: &str = "R2 U' S R2 S' R2 U R2";
+#[allow(dead_code)]
 pub const COVERED_POSITION: &str = "UF-UB-UR";
+#[allow(dead_code)]
 pub const COVERED_COMMUTATOR: &str = "R2 U':[S,R2]";
 
 static DIR_COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -37,6 +40,7 @@ impl Fixture {
     }
 }
 
+#[allow(dead_code)]
 pub fn fixture(tag: &str) -> Fixture {
     let built = bare_fixture(tag);
     add_edge_row(
@@ -112,6 +116,7 @@ fn sheet_header() -> String {
     "Position\tAlg\tCommutator\tReconstruction Link\tYoutube Link\n".to_string()
 }
 
+#[allow(dead_code)]
 pub fn add_edge_row(base: &Path, position: &str, alg: &str, commutator: &str) {
     let path = base.join("vendor").join("cherry").join("edge.tsv");
     let mut text = std::fs::read_to_string(&path).expect("edge sheet");
