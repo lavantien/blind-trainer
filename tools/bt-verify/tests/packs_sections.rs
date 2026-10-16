@@ -373,3 +373,30 @@ fn style_specials_hold_their_declared_shapes() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+#[test]
+fn cfop_rows_hold_their_step_start_states() {
+    for (event, stage, count) in [
+        ("3x3", "pll", 21),
+        ("3x3", "oll", 57),
+        ("3x3", "f2l", 164),
+        ("oh", "pll", 21),
+        ("oh", "oll", 57),
+        ("oh", "f2l", 164),
+    ] {
+        let entry = entry_of(event, "cfop", stage);
+        let rows = load_pack(&packs(), &entry).expect("cfop pack loads");
+        let result = verify_rows(&entry, &rows);
+        assert_eq!(result.rows.len(), count, "{event}/{stage} row count");
+        let mut failing = Vec::new();
+        for row in &result.rows {
+            if row.tier1.is_err() || !matches!(row.tier2, Tier2Outcome::Pass) {
+                failing.push(format!(
+                    "{event}/{stage}/{}: {:?} {:?}",
+                    row.case_key, row.tier1, row.tier2
+                ));
+            }
+        }
+        assert!(failing.is_empty(), "{}", failing.join("\n"));
+    }
+}

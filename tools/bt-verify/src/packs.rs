@@ -1,5 +1,6 @@
 use crate::ev_bigcube;
 use crate::ev_bld;
+use crate::ev_cfop;
 use crate::ev_fto;
 use crate::ev_mega;
 use crate::ev_nxn;
@@ -95,6 +96,9 @@ pub fn verify_rows(entry: &PackEntry, rows: &[SeedRow]) -> SectionResult {
         ("3bld", "old_pochmann", "concept") => ev_bld::verify_oldpoch(rows),
         ("3bld", "m2", "concept") => ev_bld::verify_m2(rows),
         ("3bld", "3style", "parity") => ev_bld::verify_3style(rows),
+        ("3x3", "cfop", "pll") | ("oh", "cfop", "pll") => ev_cfop::verify_pll(rows),
+        ("3x3", "cfop", "oll") | ("oh", "cfop", "oll") => ev_cfop::verify_oll(rows),
+        ("3x3", "cfop", "f2l") | ("oh", "cfop", "f2l") => ev_cfop::verify_f2l(rows),
         (event, method, stage) => SectionResult::unimplemented(event, method, stage, rows),
     }
 }

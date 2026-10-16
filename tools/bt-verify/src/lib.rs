@@ -1,5 +1,6 @@
 mod ev_bigcube;
 mod ev_bld;
+mod ev_cfop;
 mod ev_fto;
 mod ev_mega;
 mod ev_nxn;

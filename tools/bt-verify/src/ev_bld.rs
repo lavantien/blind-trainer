@@ -112,6 +112,18 @@ impl Layout {
         self.band(2)
     }
 
+    pub fn piece_count(&self) -> usize {
+        self.pieces.len()
+    }
+
+    pub fn mask_of(&self, index: usize) -> u8 {
+        self.masks[index]
+    }
+
+    pub fn slot_of_index(&self, index: usize) -> &[u8] {
+        &self.pieces[index]
+    }
+
     fn band(&self, layers: u32) -> Vec<usize> {
         self.masks
             .iter()
