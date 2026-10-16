@@ -5,7 +5,9 @@ use bt_data::repo_algs;
 use bt_data::repo_settings;
 use bt_data::repo_solves;
 use bt_data::repo_srs;
+use bt_data::seedpack::{PackEntry, SeedRow};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 pub use bt_data::repo_solves::{SolveLog, SolveRecord};
@@ -65,12 +67,21 @@ pub struct Settings {
 #[derive(Clone, Debug, Resource)]
 pub struct PersistenceRoot(pub PathBuf);
 
+#[derive(Clone, Debug, Default, Resource)]
+pub struct SeedRepo {
+    pub rows: Vec<SeedRow>,
+    pub packs: Vec<PackEntry>,
+    pub hidden: BTreeSet<String>,
+    pub warnings: Vec<String>,
+}
+
 #[derive(Clone, Debug, Resource)]
 pub struct Stores {
     pub settings: Settings,
     pub srs: SrsStore,
     pub solves: SolveLog,
     pub user_algs: UserAlgs,
+    pub seeds: SeedRepo,
 }
 
 fn open(root: &Path) -> Result<Db, String> {
@@ -87,6 +98,15 @@ impl Stores {
         default_settings: Settings,
         fsrs: &bt_data::fsrs::FsrsConfig,
     ) -> Result<Stores, String> {
+        Stores::load_with_packs(root, default_settings, fsrs, None)
+    }
+
+    pub fn load_with_packs(
+        root: &Path,
+        default_settings: Settings,
+        fsrs: &bt_data::fsrs::FsrsConfig,
+        packs: Option<&Path>,
+    ) -> Result<Stores, String> {
         let mut db = open(root)?;
         bt_data::import::run(&mut db, root)?;
         let settings = match repo_settings::load_text(&db, repo_settings::APP_KEY)
@@ -99,13 +119,48 @@ impl Stores {
         let srs = repo_srs::load(&db, fsrs).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         let solves = repo_solves::load(&db).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         let user_algs = repo_algs::load(&db).map_err(|err| format!("{}: {err}", db_shown(root)))?;
+        let seeds =
+            load_seeds(&mut db, packs).map_err(|err| format!("{}: {err}", db_shown(root)))?;
         Ok(Stores {
             settings,
             srs,
             solves,
             user_algs,
+            seeds,
         })
     }
+}
+
+fn load_seeds(db: &mut Db, packs: Option<&Path>) -> Result<SeedRepo, String> {
+    let mut repo = SeedRepo::default();
+    let mut registry_failed = false;
+    if let Some(packs) = packs {
+        match bt_data::seedpack::load_registry(packs) {
+            Ok(entries) => {
+                for entry in entries {
+                    match bt_data::repo_seeds::seed_pack(db, packs, &entry) {
+                        Ok(_) => repo.packs.push(entry),
+                        Err(err) => {
+                            repo.hidden.insert(entry.event.clone());
+                            repo.warnings.push(format!("pack {}: {err}", entry.file));
+                        }
+                    }
+                }
+            }
+            Err(err) => {
+                registry_failed = true;
+                repo.warnings
+                    .push(format!("seed registry at {}: {err}", packs.display()));
+            }
+        }
+    }
+    repo.rows = bt_data::repo_seeds::load_seed_rows(db).map_err(|err| err.to_string())?;
+    if registry_failed {
+        for row in &repo.rows {
+            repo.hidden.insert(row.event.clone());
+        }
+    }
+    Ok(repo)
 }
 
 pub fn save_settings(root: &Path, settings: &Settings) -> Result<(), String> {
@@ -429,5 +484,196 @@ mod tests {
                 "drill_reps": 7
             })
         );
+    }
+
+    const PACK_SOURCE_URL: &str = "https://example.test/pack";
+    const PACK_SOURCE_AT: &str = "2026-10-16";
+    const PACK_FRONT_JSON: &str = "{\"case\":\"x\"}";
+
+    fn registry_text(entries: &[(&str, &str, &str, &str, usize)]) -> String {
+        let body: Vec<String> = entries
+            .iter()
+            .map(|(file, event, method, stage, rows)| {
+                format!(
+                    "{{\"file\":\"{file}\",\"event\":\"{event}\",\"method\":\"{method}\",\"stage\":\"{stage}\",\"n\":null,\"expected_rows\":{rows}}}"
+                )
+            })
+            .collect();
+        format!("[{}]", body.join(","))
+    }
+
+    fn pack_text(rows: &[(&str, &str)]) -> String {
+        let mut text = String::from("case_key\talg\tfront_json\tsource_url\tsource_at\n");
+        for (key, alg) in rows {
+            text.push_str(&format!(
+                "{key}\t{alg}\t{PACK_FRONT_JSON}\t{PACK_SOURCE_URL}\t{PACK_SOURCE_AT}\n"
+            ));
+        }
+        text
+    }
+
+    fn hidden_set(keys: &[&str]) -> std::collections::BTreeSet<String> {
+        keys.iter().map(|key| key.to_string()).collect()
+    }
+
+    fn write_packs(root: &Path, registry: &str, files: &[(&str, String)]) -> PathBuf {
+        let packs = root.join("packs");
+        std::fs::create_dir_all(&packs).expect("packs dir");
+        std::fs::write(packs.join("registry.json"), registry).expect("registry");
+        for (file, text) in files {
+            std::fs::write(packs.join(file), text).expect("pack file");
+        }
+        packs
+    }
+
+    #[test]
+    fn seed_repository_seeds_rows_and_verifies_on_reload() {
+        let root = temp_root("seed-ok");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "2x2", "cll", "cll", 2)]),
+            &[(
+                "good.tsv",
+                pack_text(&[("cll.1", "R U R'"), ("cll.2", "F R F'")]),
+            )],
+        );
+        let stores =
+            Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("load");
+        assert_eq!(stores.seeds.rows.len(), 2);
+        assert_eq!(stores.seeds.rows[0].case_key, "cll.1");
+        assert_eq!(stores.seeds.packs.len(), 1);
+        assert!(stores.seeds.hidden.is_empty());
+        assert!(stores.seeds.warnings.is_empty());
+        let again = Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs))
+            .expect("reload");
+        assert_eq!(again.seeds.rows.len(), 2);
+        assert_eq!(again.seeds.packs.len(), 1);
+        assert!(again.seeds.warnings.is_empty());
+    }
+
+    #[test]
+    fn bad_pack_hides_its_event_and_warns() {
+        let root = temp_root("seed-bad");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[
+                ("good.tsv", "2x2", "cll", "cll", 1),
+                ("bad.tsv", "skewb", "sarah", "sarah", 1),
+            ]),
+            &[
+                ("good.tsv", pack_text(&[("cll.1", "R U R'")])),
+                ("bad.tsv", "wrong\theader\n".to_string()),
+            ],
+        );
+        let stores =
+            Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("load");
+        assert_eq!(stores.seeds.rows.len(), 1);
+        assert_eq!(stores.seeds.rows[0].event, "2x2");
+        assert_eq!(stores.seeds.packs.len(), 1);
+        assert_eq!(stores.seeds.hidden, hidden_set(&["skewb"]));
+        assert_eq!(stores.seeds.warnings.len(), 1);
+        assert!(
+            stores.seeds.warnings[0].contains("bad.tsv"),
+            "{}",
+            stores.seeds.warnings[0]
+        );
+        assert!(
+            stores.seeds.warnings[0].contains("header"),
+            "{}",
+            stores.seeds.warnings[0]
+        );
+    }
+
+    #[test]
+    fn seed_drift_hides_the_event_and_warns() {
+        let root = temp_root("seed-drift");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "fto", "l4t", "l4t", 1)]),
+            &[("good.tsv", pack_text(&[("l4t.1", "R U R'")]))],
+        );
+        Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("seed");
+        write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "fto", "l4t", "l4t", 1)]),
+            &[("good.tsv", pack_text(&[("l4t.1", "F R F'")]))],
+        );
+        let drifted =
+            Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("load");
+        assert_eq!(drifted.seeds.hidden, hidden_set(&["fto"]));
+        assert_eq!(drifted.seeds.warnings.len(), 1);
+        assert!(
+            drifted.seeds.warnings[0].contains("drift"),
+            "{}",
+            drifted.seeds.warnings[0]
+        );
+        assert_eq!(drifted.seeds.rows[0].alg, "R U R'");
+    }
+
+    #[test]
+    fn stale_pack_row_hides_the_event_and_warns() {
+        let root = temp_root("seed-stale");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "pyraminx", "l4e", "l4e", 2)]),
+            &[(
+                "good.tsv",
+                pack_text(&[("l4e.1", "R U R'"), ("l4e.2", "F R F'")]),
+            )],
+        );
+        Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("seed");
+        write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "pyraminx", "l4e", "l4e", 1)]),
+            &[("good.tsv", pack_text(&[("l4e.1", "R U R'")]))],
+        );
+        let stale =
+            Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("load");
+        assert_eq!(stale.seeds.hidden, hidden_set(&["pyraminx"]));
+        assert_eq!(stale.seeds.warnings.len(), 1);
+        assert!(
+            stale.seeds.warnings[0].contains("l4e.2"),
+            "{}",
+            stale.seeds.warnings[0]
+        );
+    }
+
+    #[test]
+    fn broken_registry_hides_every_seed_event() {
+        let root = temp_root("seed-registry");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "2x2", "cll", "cll", 1)]),
+            &[("good.tsv", pack_text(&[("cll.1", "R U R'")]))],
+        );
+        Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("seed");
+        std::fs::write(packs.join("registry.json"), "{not json").expect("break registry");
+        let broken =
+            Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("load");
+        assert_eq!(broken.seeds.rows.len(), 1);
+        assert_eq!(broken.seeds.packs.len(), 0);
+        assert_eq!(broken.seeds.hidden, hidden_set(&["2x2"]));
+        assert_eq!(broken.seeds.warnings.len(), 1);
+        assert!(
+            broken.seeds.warnings[0].contains("seed registry"),
+            "{}",
+            broken.seeds.warnings[0]
+        );
+    }
+
+    #[test]
+    fn missing_packs_root_keeps_stored_rows_quiet() {
+        let root = temp_root("seed-none");
+        let packs = write_packs(
+            &root,
+            &registry_text(&[("good.tsv", "2x2", "cll", "cll", 1)]),
+            &[("good.tsv", pack_text(&[("cll.1", "R U R'")]))],
+        );
+        Stores::load_with_packs(&root, sample_settings(), &cfg(), Some(&packs)).expect("seed");
+        let quiet = Stores::load(&root, sample_settings(), &cfg()).expect("load");
+        assert_eq!(quiet.seeds.rows.len(), 1);
+        assert!(quiet.seeds.packs.is_empty());
+        assert!(quiet.seeds.hidden.is_empty());
+        assert!(quiet.seeds.warnings.is_empty());
     }
 }

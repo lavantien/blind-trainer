@@ -9,16 +9,12 @@ use bt_data::corpus::Corpus;
 use bt_data::fsrs::FsrsConfig;
 use bt_data::paths;
 use bt_scheme::EDGE_BUFFER_STICKER;
-use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
-const DEFAULT_WINDOW_WIDTH: u32 = 1280;
-const DEFAULT_WINDOW_HEIGHT: u32 = 800;
-const DEFAULT_WINDOW_TITLE: &str = "blind trainer";
-const DEFAULT_MEMO_CADENCE_MS: u32 = 800;
-const DEFAULT_MEMO_MODE: &str = "per-orbit";
-const DEFAULT_DRILL_REPS: u32 = 6;
-const DEFAULT_SMOKE_SEED: u64 = 20261012;
+pub use crate::config::{
+    AppConfig, DrillCfg, MemoCfg, WindowCfg, app_config_from, display_path, load_config_value,
+};
+
 const DEFAULT_REF_GROUND: &str = "ref_ground";
 const DEFAULT_ASSETS_ROOT: &str = "assets";
 
@@ -26,6 +22,7 @@ const DEFAULT_ASSETS_ROOT: &str = "assets";
 pub struct RuntimePaths {
     pub config_path: PathBuf,
     pub vendor_root: PathBuf,
+    pub packs_root: PathBuf,
     pub user_root: PathBuf,
     pub assets_root: PathBuf,
 }
@@ -44,6 +41,9 @@ impl RuntimePaths {
         let vendor_root =
             paths::vendor_root_from(std::env::var("BT_REF_GROUND").ok().as_deref(), &config)
                 .unwrap_or_else(|_| paths::workspace_root().join(DEFAULT_REF_GROUND));
+        let packs_root =
+            paths::packs_root_from(std::env::var("BT_REF_GROUND").ok().as_deref(), &config)
+                .unwrap_or_else(|_| vendor_root.join("packs"));
         let assets_root = config
             .pointer("/paths/fonts")
             .and_then(|value| value.as_str())
@@ -53,6 +53,7 @@ impl RuntimePaths {
         RuntimePaths {
             config_path,
             vendor_root,
+            packs_root,
             user_root: paths::user_root(),
             assets_root,
         }
@@ -68,41 +69,14 @@ impl RuntimePaths {
                 &[dir.join("config").join("config.json")],
             ),
             vendor_root: resolve_root(primary.vendor_root, &[dir.join(DEFAULT_REF_GROUND)]),
+            packs_root: resolve_root(
+                primary.packs_root,
+                &[dir.join(DEFAULT_REF_GROUND).join("packs")],
+            ),
             assets_root: resolve_root(primary.assets_root, &[dir.join(DEFAULT_ASSETS_ROOT)]),
             user_root: primary.user_root,
         }
     }
-}
-
-#[derive(Clone, PartialEq, Eq, Debug, Deserialize)]
-pub struct WindowCfg {
-    pub width: u32,
-    pub height: u32,
-    pub title: String,
-}
-
-#[derive(Clone, PartialEq, Eq, Debug, Deserialize)]
-pub struct MemoCfg {
-    pub cadence_ms: u32,
-    pub mode: String,
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Deserialize)]
-pub struct DrillCfg {
-    pub reps: u32,
-}
-
-#[derive(Clone, PartialEq, Eq, Debug, Resource, Deserialize)]
-pub struct AppConfig {
-    pub window: WindowCfg,
-    pub memo: MemoCfg,
-    pub drill: DrillCfg,
-    #[serde(default = "default_smoke_seed")]
-    pub smoke_seed: u64,
-}
-
-fn default_smoke_seed() -> u64 {
-    DEFAULT_SMOKE_SEED
 }
 
 fn resolve_root(primary: PathBuf, candidates: &[PathBuf]) -> PathBuf {
@@ -114,48 +88,6 @@ fn resolve_root(primary: PathBuf, candidates: &[PathBuf]) -> PathBuf {
         .find(|candidate| candidate.exists())
         .cloned()
         .unwrap_or(primary)
-}
-
-impl Default for AppConfig {
-    fn default() -> AppConfig {
-        AppConfig {
-            window: WindowCfg {
-                width: DEFAULT_WINDOW_WIDTH,
-                height: DEFAULT_WINDOW_HEIGHT,
-                title: DEFAULT_WINDOW_TITLE.to_string(),
-            },
-            memo: MemoCfg {
-                cadence_ms: DEFAULT_MEMO_CADENCE_MS,
-                mode: DEFAULT_MEMO_MODE.to_string(),
-            },
-            drill: DrillCfg {
-                reps: DEFAULT_DRILL_REPS,
-            },
-            smoke_seed: DEFAULT_SMOKE_SEED,
-        }
-    }
-}
-
-pub fn display_path(path: &Path) -> String {
-    match path.strip_prefix(paths::workspace_root()) {
-        Ok(relative) => relative.display().to_string(),
-        Err(_) => path.display().to_string(),
-    }
-}
-
-pub fn load_config_value(path: &Path) -> Result<serde_json::Value, String> {
-    let shown = display_path(path);
-    let text = std::fs::read_to_string(path)
-        .map_err(|err| format!("cannot read config {shown}: {err}"))?;
-    serde_json::from_str(&text).map_err(|err| format!("cannot parse config {shown}: {err}"))
-}
-
-pub fn app_config_from(value: &serde_json::Value) -> Result<AppConfig, String> {
-    match value.pointer("/app") {
-        Some(section) => serde_json::from_value(section.clone())
-            .map_err(|err| format!("config app section malformed: {err}")),
-        None => Err("config app section missing".to_string()),
-    }
 }
 
 #[derive(Clone, Debug, Resource, Default)]
@@ -255,23 +187,32 @@ fn boot(paths: &RuntimePaths) -> Result<Booted, String> {
     let config = app_config_from(&value)?;
     let fsrs =
         FsrsConfig::from_value(&value).map_err(|err| format!("config srs section: {err}"))?;
-    let stores = Stores::load(&paths.user_root, default_settings(&config)?, &fsrs)?;
-    let (corpus, warnings) = if paths.vendor_root.is_dir() {
+    let packs = paths
+        .packs_root
+        .is_dir()
+        .then_some(paths.packs_root.as_path());
+    let stores =
+        Stores::load_with_packs(&paths.user_root, default_settings(&config)?, &fsrs, packs)?;
+    let mut warnings = stores.seeds.warnings.clone();
+    let corpus = if paths.vendor_root.is_dir() {
         let loaded = Corpus::load(&paths.vendor_root)
             .map_err(|err| format!("vendor corpus at {}: {err}", paths.vendor_root.display()))?;
-        let merged = loaded
+        loaded
             .with_overlay(&stores.user_algs)
-            .map_err(|err| format!("user algs overlay: {err}"))?;
-        (merged, Vec::new())
+            .map_err(|err| format!("user algs overlay: {err}"))?
     } else {
-        (
-            Corpus::from_rows(Vec::new()),
-            vec![format!(
-                "vendor data missing at {}, running on user data only",
-                paths.vendor_root.display()
-            )],
-        )
+        warnings.push(format!(
+            "vendor data missing at {}, running on user data only",
+            paths.vendor_root.display()
+        ));
+        Corpus::from_rows(Vec::new())
     };
+    if paths.vendor_root.is_dir() && packs.is_none() {
+        warnings.push(format!(
+            "seed packs missing at {}, repository browser limited to 3bld",
+            paths.packs_root.display()
+        ));
+    }
     Ok(Booted {
         config,
         fsrs,
@@ -463,6 +404,7 @@ mod tests {
         RuntimePaths {
             config_path: base.join("config").join("config.json"),
             vendor_root: base.join("vendor"),
+            packs_root: base.join("vendor").join("packs"),
             user_root: base.join("user"),
             assets_root: base.join("assets"),
         }
@@ -503,7 +445,8 @@ mod tests {
             .join("bt-app-logic-tests")
             .join(format!("resolve-install-{}", std::process::id()));
         std::fs::create_dir_all(install.join("config")).expect("install config dir");
-        std::fs::create_dir_all(install.join("ref_ground")).expect("install vendor dir");
+        std::fs::create_dir_all(install.join("ref_ground").join("packs"))
+            .expect("install packs dir");
         std::fs::create_dir_all(install.join("assets")).expect("install assets dir");
         std::fs::write(
             install.join("config").join("config.json"),
@@ -514,6 +457,7 @@ mod tests {
             RuntimePaths {
                 config_path: primary.config_path.with_extension("absent"),
                 vendor_root: primary.vendor_root.join("absent"),
+                packs_root: primary.packs_root.join("absent"),
                 user_root: primary.user_root.clone(),
                 assets_root: primary.assets_root.join("absent"),
             },
@@ -524,6 +468,10 @@ mod tests {
             install.join("config").join("config.json")
         );
         assert_eq!(resolved.vendor_root, install.join("ref_ground"));
+        assert_eq!(
+            resolved.packs_root,
+            install.join("ref_ground").join("packs")
+        );
         assert_eq!(resolved.assets_root, install.join("assets"));
         assert_eq!(resolved.user_root, primary.user_root);
     }
@@ -532,9 +480,11 @@ mod tests {
     fn resolve_keeps_existing_workspace_roots() {
         let primary = temp_paths("resolve-keeps");
         std::fs::create_dir_all(&primary.vendor_root).expect("vendor exists");
+        std::fs::create_dir_all(&primary.packs_root).expect("packs exist");
         let resolved = RuntimePaths::resolve(primary.clone(), Some(&std::env::temp_dir()));
         assert_eq!(resolved.config_path, primary.config_path);
         assert_eq!(resolved.vendor_root, primary.vendor_root);
+        assert_eq!(resolved.packs_root, primary.packs_root);
         assert_eq!(resolved.assets_root, primary.assets_root);
     }
 
@@ -545,6 +495,7 @@ mod tests {
             RuntimePaths {
                 config_path: primary.config_path.with_extension("absent"),
                 vendor_root: primary.vendor_root.join("absent"),
+                packs_root: primary.packs_root.join("absent"),
                 user_root: primary.user_root.clone(),
                 assets_root: primary.assets_root.join("absent"),
             },
@@ -698,7 +649,7 @@ mod tests {
         assert_eq!(config.memo.cadence_ms, 250);
         assert_eq!(config.memo.mode, "syllables");
         assert_eq!(config.drill.reps, 2);
-        assert_eq!(config.smoke_seed, DEFAULT_SMOKE_SEED);
+        assert_eq!(config.smoke_seed, crate::config::DEFAULT_SMOKE_SEED);
         let pinned = serde_json::json!({
             "app": {
                 "window": {"width": 1, "height": 2, "title": "w"},
@@ -928,6 +879,7 @@ mod tests {
             srs: persist::SrsStore::default(),
             solves: persist::SolveLog::default(),
             user_algs: paths::UserAlgs::new(),
+            seeds: Default::default(),
         }
     }
 

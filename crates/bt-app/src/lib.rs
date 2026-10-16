@@ -1,3 +1,4 @@
+pub mod config;
 pub mod logic;
 pub mod net;
 pub mod persist;

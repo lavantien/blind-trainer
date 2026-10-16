@@ -298,6 +298,7 @@ mod tests {
             srs: crate::persist::SrsStore::default(),
             solves: crate::persist::SolveLog::default(),
             user_algs: bt_data::paths::UserAlgs::default(),
+            seeds: Default::default(),
         }
     }
 

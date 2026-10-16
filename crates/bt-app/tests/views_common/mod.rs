@@ -71,10 +71,17 @@ pub fn bare_fixture(tag: &str) -> Fixture {
             std::fs::write(&path, sheet_header()).expect("sheet file");
         }
     }
+    std::fs::create_dir_all(base.join("vendor").join("packs")).expect("packs dir");
+    std::fs::write(
+        base.join("vendor").join("packs").join("registry.json"),
+        "[]",
+    )
+    .expect("registry file");
     Fixture {
         paths: RuntimePaths {
             config_path: base.join("config").join("config.json"),
             vendor_root: base.join("vendor"),
+            packs_root: base.join("vendor").join("packs"),
             user_root: base.join("user"),
             assets_root: base.join("assets"),
         },

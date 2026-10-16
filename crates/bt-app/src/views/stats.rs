@@ -183,6 +183,7 @@ mod tests {
             srs,
             solves: crate::persist::SolveLog { solves },
             user_algs: Default::default(),
+            seeds: Default::default(),
         }
     }
 

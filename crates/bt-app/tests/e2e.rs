@@ -42,6 +42,7 @@ fn temp_paths(tag: &str) -> RuntimePaths {
     RuntimePaths {
         config_path: config_dir.join("config.json"),
         vendor_root: base.join("vendor"),
+        packs_root: base.join("vendor").join("packs"),
         user_root: base.join("user"),
         assets_root: base.join("assets"),
     }
@@ -209,6 +210,7 @@ fn temp_paths_clone(paths: &RuntimePaths) -> RuntimePaths {
     RuntimePaths {
         config_path: paths.config_path.clone(),
         vendor_root: paths.vendor_root.clone(),
+        packs_root: paths.packs_root.clone(),
         user_root: paths.user_root.clone(),
         assets_root: paths.assets_root.clone(),
     }

@@ -40,6 +40,7 @@ fn temp_paths(fixture: &Fixture) -> RuntimePaths {
     RuntimePaths {
         config_path: fixture.paths.config_path.clone(),
         vendor_root: fixture.paths.vendor_root.clone(),
+        packs_root: fixture.paths.packs_root.clone(),
         user_root: fixture.paths.user_root.clone(),
         assets_root: fixture.paths.assets_root.clone(),
     }
@@ -365,6 +366,7 @@ fn stores_with_reps(reps: u32) -> bt_app::persist::Stores {
         srs: bt_app::persist::SrsStore::default(),
         solves: bt_app::persist::SolveLog::default(),
         user_algs: bt_data::paths::UserAlgs::default(),
+        seeds: Default::default(),
     }
 }
 

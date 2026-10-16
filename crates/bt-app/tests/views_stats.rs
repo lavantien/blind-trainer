@@ -11,6 +11,7 @@ fn clone_paths(fixture: &Fixture) -> RuntimePaths {
     RuntimePaths {
         config_path: fixture.paths.config_path.clone(),
         vendor_root: fixture.paths.vendor_root.clone(),
+        packs_root: fixture.paths.packs_root.clone(),
         user_root: fixture.paths.user_root.clone(),
         assets_root: fixture.paths.assets_root.clone(),
     }
