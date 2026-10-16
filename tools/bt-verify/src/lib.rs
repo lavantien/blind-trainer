@@ -9,6 +9,7 @@ mod ev_skewb;
 mod ev_sq1;
 
 pub mod packs;
+pub mod packs_report;
 pub mod report;
 
 use bt_data::corpus::{SheetClass, Solver};

@@ -2,7 +2,25 @@ mod common;
 
 use bt_data::seedpack::{PackEntry, load_pack, load_registry, parse_pack};
 use bt_verify::packs::{PACK_EXPECTED_ROWS, Tier2Outcome, pinned_vs_registry, verify_rows};
+use bt_verify::packs_report::audit_packs;
 use common::ref_ground;
+
+const PYRA_OPEN: &[&str] = &[
+    "l4e.07", "l4e.08", "l4e.09", "l4e.11", "l4e.16", "l4e.21", "l4e.24", "l4e.25", "l4e.28",
+];
+const MEGA_OPEN: &[&str] = &["4lll.20", "4lll.21", "4lll.22", "4lll.24"];
+const BIGCUBE_YAU_OPEN: &[&str] = &[
+    "parity.oll4",
+    "parity.oll4flip",
+    "parity.pll4",
+    "parity.pll4adj",
+    "parity.wing5",
+];
+const BIGCUBE_REDUCTION_OPEN: &[&str] = &[
+    "l2e.01", "l2e.02", "l2e.03", "l2e.04", "l2e.05", "l2e.06", "l2e.07", "l2e.08", "l2e.09",
+    "l2e.10", "l2e.11", "l2e.12",
+];
+const M2_OPEN: &[&str] = &["m2.18", "m2.19", "m2.20", "m2.22"];
 
 fn packs() -> std::path::PathBuf {
     ref_ground().join("packs")
@@ -174,9 +192,7 @@ fn skewb_sarah_rows_pass_tier1_with_tier2_declared_skipped() {
 
 #[test]
 fn pyraminx_l4e_rows_hold_the_four_edge_case_shape() {
-    let open_findings = [
-        "l4e.07", "l4e.08", "l4e.09", "l4e.11", "l4e.16", "l4e.21", "l4e.24", "l4e.25", "l4e.28",
-    ];
+    let open_findings = PYRA_OPEN;
     let entry = entry_of("pyraminx", "l4e", "l4e");
     let rows = load_pack(&packs(), &entry).expect("pyra pack loads");
     let result = verify_rows(&entry, &rows);
@@ -201,7 +217,7 @@ fn pyraminx_l4e_rows_hold_the_four_edge_case_shape() {
 
 #[test]
 fn megaminx_4lll_rows_hold_their_stage_start_state() {
-    let open_findings = ["4lll.20", "4lll.21", "4lll.22", "4lll.24"];
+    let open_findings = MEGA_OPEN;
     let entry = entry_of("megaminx", "4lll", "4lll");
     let rows = load_pack(&packs(), &entry).expect("mega pack loads");
     let result = verify_rows(&entry, &rows);
@@ -241,46 +257,46 @@ fn fto_l4t_rows_pass_tier1_with_tier2_declared_skipped() {
 }
 
 #[test]
-fn bigcube_rows_hold_the_reduction_invariants() {
-    let open_findings = [
-        "parity.oll4",
-        "parity.oll4flip",
-        "parity.pll4",
-        "parity.pll4adj",
-        "parity.wing5",
-        "l2e.01",
-        "l2e.02",
-        "l2e.03",
-        "l2e.04",
-        "l2e.05",
-        "l2e.06",
-        "l2e.07",
-        "l2e.08",
-        "l2e.09",
-        "l2e.10",
-        "l2e.11",
-        "l2e.12",
-    ];
+fn yau_parity_rows_hold_the_reduction_invariants() {
+    let open_findings = BIGCUBE_YAU_OPEN;
+    let entry = entry_of("bigcube", "yau", "parity");
+    let rows = load_pack(&packs(), &entry).expect("bigcube pack loads");
+    let result = verify_rows(&entry, &rows);
     let mut failing = Vec::new();
-    for (event, method) in [("bigcube", "yau"), ("bigcube", "reduction")] {
-        let entry = entry_of(event, method, "parity");
-        let rows = load_pack(&packs(), &entry).expect("bigcube pack loads");
-        let result = verify_rows(&entry, &rows);
-        for row in &result.rows {
-            let passing = row.tier1.is_ok() && matches!(row.tier2, Tier2Outcome::Pass);
-            if open_findings.contains(&row.case_key.as_str()) {
-                assert!(
-                    !passing,
-                    "{} is an open finding and must stay red",
-                    row.case_key
-                );
-                failing.push(row.case_key.clone());
-            } else {
-                assert!(passing, "{}: {:?} {:?}", row.case_key, row.tier1, row.tier2);
-            }
+    for row in &result.rows {
+        let passing = row.tier1.is_ok() && matches!(row.tier2, Tier2Outcome::Pass);
+        if open_findings.contains(&row.case_key.as_str()) {
+            assert!(
+                !passing,
+                "{} is an open finding and must stay red",
+                row.case_key
+            );
+            failing.push(row.case_key.clone());
+        } else {
+            assert!(passing, "{}: {:?} {:?}", row.case_key, row.tier1, row.tier2);
         }
     }
     assert_eq!(failing.len(), open_findings.len());
+}
+
+#[test]
+fn reduction_l2e_rows_hold_the_reduction_invariants() {
+    let open_findings = BIGCUBE_REDUCTION_OPEN;
+    let entry = entry_of("bigcube", "reduction", "parity");
+    let rows = load_pack(&packs(), &entry).expect("bigcube pack loads");
+    let result = verify_rows(&entry, &rows);
+    for row in &result.rows {
+        let passing = row.tier1.is_ok() && matches!(row.tier2, Tier2Outcome::Pass);
+        if open_findings.contains(&row.case_key.as_str()) {
+            assert!(
+                !passing,
+                "{} is an open finding and must stay red",
+                row.case_key
+            );
+        } else {
+            assert!(passing, "{}: {:?} {:?}", row.case_key, row.tier1, row.tier2);
+        }
+    }
 }
 
 #[test]
@@ -337,7 +353,7 @@ fn row_of<'a>(rows: &'a [bt_data::seedpack::SeedRow], key: &str) -> &'a bt_data:
 
 #[test]
 fn m2_rows_deliver_their_targets_into_the_buffer() {
-    let open_findings = ["m2.18", "m2.19", "m2.20", "m2.22"];
+    let open_findings = M2_OPEN;
     let entry = entry_of("3bld", "m2", "concept");
     let rows = load_pack(&packs(), &entry).expect("m2 pack loads");
     let result = verify_rows(&entry, &rows);
@@ -398,5 +414,51 @@ fn cfop_rows_hold_their_step_start_states() {
             }
         }
         assert!(failing.is_empty(), "{}", failing.join("\n"));
+    }
+}
+
+#[test]
+fn the_live_pack_audit_names_exactly_the_open_findings() {
+    let audit = audit_packs(&packs());
+    assert!(audit.drift.is_empty(), "{}", audit.drift.join("\n"));
+    let mut expected = Vec::new();
+    for key in PYRA_OPEN {
+        expected.push(format!("pyraminx/l4e/l4e/{key}: "));
+    }
+    for key in MEGA_OPEN {
+        expected.push(format!("megaminx/4lll/4lll/{key}: "));
+    }
+    for key in BIGCUBE_YAU_OPEN {
+        expected.push(format!("bigcube/yau/parity/{key}: "));
+    }
+    for key in BIGCUBE_REDUCTION_OPEN {
+        expected.push(format!("bigcube/reduction/parity/{key}: "));
+    }
+    for key in M2_OPEN {
+        expected.push(format!("3bld/m2/concept/{key}: "));
+    }
+    let mut covered = vec![false; expected.len()];
+    for offender in &audit.offenders {
+        let position = expected
+            .iter()
+            .position(|prefix| offender.starts_with(prefix))
+            .unwrap_or_else(|| panic!("unexpected offender: {offender}"));
+        assert!(!covered[position], "duplicate offender: {offender}");
+        covered[position] = true;
+    }
+    for (flag, prefix) in covered.iter().zip(expected.iter()) {
+        assert!(flag, "missing offender with prefix {prefix}");
+    }
+    assert_eq!(audit.offenders.len(), expected.len());
+    assert_eq!(audit.sections.len(), PACK_EXPECTED_ROWS.len());
+    for summary in &audit.sections {
+        assert_eq!(
+            summary.rows,
+            summary.passed + summary.failed + summary.skipped + summary.excused,
+            "{}/{}/{} tallies",
+            summary.event,
+            summary.method,
+            summary.stage
+        );
     }
 }

@@ -1,9 +1,10 @@
 use bt_data::corpus::Corpus;
-use bt_data::paths::{load_config, vendor_root, workspace_root};
+use bt_data::paths::{load_config, packs_root, vendor_root, workspace_root};
 use bt_gendata::hash::digest_corpus;
 use bt_gendata::out::write_atomic;
 use bt_gendata::when::now_iso8601;
 use bt_verify::load_simcheck;
+use bt_verify::packs_report::{audit_packs, render_packs_markdown};
 use bt_verify::report::{audit, build_report, render_markdown};
 use std::path::PathBuf;
 
@@ -22,11 +23,21 @@ fn run() -> Result<(), Vec<String>> {
     let sim = load_simcheck(&root).map_err(|e| vec![e])?;
     let digest = digest_corpus(&root).map_err(|e| vec![e])?;
     let report = build_report(&corpus, &sim, now_iso8601(), digest.sha256.clone());
-    let offenders = audit(&report, sim.len());
+    let mut offenders = audit(&report, sim.len());
+    let dir = artifacts_verify_dir().map_err(|e| vec![e])?;
+    let packs = packs_root().map_err(|e| vec![e.to_string()])?;
+    let pack_audit = audit_packs(&packs);
+    write_atomic(
+        &dir.join("packs.md"),
+        render_packs_markdown(&pack_audit).as_bytes(),
+    )
+    .map_err(|e| vec![e])?;
+    let pack_rows: usize = pack_audit.sections.iter().map(|s| s.rows).sum();
+    let pack_clean: usize = pack_audit.sections.iter().map(|s| s.passed + s.ruled).sum();
+    offenders.extend(pack_audit.offenders);
     if !offenders.is_empty() {
         return Err(offenders);
     }
-    let dir = artifacts_verify_dir().map_err(|e| vec![e])?;
     let json = serde_json::to_vec_pretty(&report).map_err(|e| vec![e.to_string()])?;
     let markdown = render_markdown(&report);
     write_atomic(&dir.join("report.json"), &json).map_err(|e| vec![e])?;
@@ -36,6 +47,10 @@ fn run() -> Result<(), Vec<String>> {
         report.rows.len() - report.failures.len(),
         report.rows.len(),
         dir.join("report.md").display()
+    );
+    println!(
+        "packs: {pack_clean}/{pack_rows} rows pass or ruled, report at {}",
+        dir.join("packs.md").display()
     );
     Ok(())
 }

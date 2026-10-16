@@ -304,7 +304,7 @@ pub fn verify_oldpoch(rows: &[SeedRow]) -> SectionResult {
                 "{} holds a prose alg, no mechanical verification exists",
                 row.case_key
             ));
-            Err("prose row holds no mechanical alg".to_string())
+            Err(crate::packs_report::PROSE_ALG.to_string())
         } else {
             Alg::parse(&map_wide_suffix(&row.alg))
                 .map_err(|err| err.to_string())
