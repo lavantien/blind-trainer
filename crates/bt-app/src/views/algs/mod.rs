@@ -12,6 +12,9 @@ use bt_data::commutator::{Expanded, decompose_verified};
 use bt_data::corpus::{Corpus, Row, SheetClass};
 use bt_scheme::{CaseId, Orbit, enumerate_cases};
 
+pub mod browse;
+pub mod detail;
+
 #[derive(Clone, Debug, Default, Resource)]
 pub struct AlgsQuery(pub String);
 
@@ -139,6 +142,7 @@ pub fn list_keys(
     mut inputs: MessageReader<KeyboardInput>,
     focus: Option<Res<bevy::input_focus::InputFocus>>,
     editables: Query<&bevy::text::EditableText>,
+    repo: Res<browse::RepoBrowser>,
     mut browser: ResMut<AlgsBrowser>,
     mut net: ResMut<NetState>,
 ) {
@@ -160,6 +164,9 @@ pub fn list_keys(
             KeyCode::Enter | KeyCode::KeyD if !typing => drill = true,
             _ => {}
         }
+    }
+    if !repo.letters_focused() {
+        return;
     }
     if step != 0 && !browser.filtered.is_empty() {
         let len = browser.filtered.len() as i32;
@@ -365,7 +372,7 @@ pub fn spawn(
         fonts,
         AppState::Algs,
         "algs",
-        "type letters to search, slash focuses it, up down select, d drills, esc menu",
+        "type letters to search, slash focuses it, arrows select, left right browse packs, d drills, esc menu",
     );
     commands.entity(content).insert(Node {
         width: Val::Percent(100.0),
@@ -568,19 +575,25 @@ pub fn read_query(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn bind_detail(
     mut commands: Commands,
     corpus: Res<VendorCorpus>,
+    repo: Res<browse::RepoBrowser>,
     browser: Res<AlgsBrowser>,
     config: Res<AppConfig>,
     fonts: Res<crate::present::FontBook>,
     rails: Query<(Entity, Option<&Children>), With<AlgsDetail>>,
     mut rows: Query<(&mut Text, &mut TextColor, &AlgsListRow)>,
 ) {
-    if !browser.is_changed() {
+    if !browser.is_changed() && !repo.is_changed() {
         return;
     }
-    let rendered = list_rows(&browser, list_capacity(&config));
+    let rendered = if repo.repo_focused {
+        browse::repo_list_rows(&repo, list_capacity(&config))
+    } else {
+        list_rows(&browser, list_capacity(&config))
+    };
     for (mut text, mut color, row) in &mut rows {
         match rendered.get(row.0) {
             Some((label, selected)) => {
@@ -601,7 +614,11 @@ pub fn bind_detail(
             }
         }
         commands.entity(rail).with_children(|parent| {
-            spawn_detail(parent, &fonts, &corpus.0, &browser);
+            if repo.repo_focused {
+                detail::spawn_seed_detail(parent, &fonts, &repo);
+            } else {
+                spawn_detail(parent, &fonts, &corpus.0, &browser);
+            }
         });
     }
 }

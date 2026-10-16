@@ -141,6 +141,7 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(drill::DrillSession::default())
             .insert_resource(algs::AlgsQuery::default())
             .insert_resource(algs::AlgsBrowser::default())
+            .insert_resource(algs::browse::RepoBrowser::default())
             .insert_resource(settings::SettingsDraft::default())
             .insert_resource(replay::ReplayScene::default())
             .configure_sets(Update, ViewsLogic.run_if(resource_exists::<Stores>))
@@ -183,6 +184,7 @@ impl Plugin for ViewsLogicPlugin {
                     IntoScheduleConfigs::run_if(algs::refresh_list, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::focus_query_keys, in_state(AppState::Algs)),
                     IntoScheduleConfigs::run_if(algs::list_keys, in_state(AppState::Algs)),
+                    IntoScheduleConfigs::run_if(algs::browse::repo_keys, in_state(AppState::Algs)),
                     (
                         IntoScheduleConfigs::run_if(
                             settings::mode_keys,
@@ -215,7 +217,10 @@ impl Plugin for ViewsLogicPlugin {
             .add_systems(OnEnter(SolvePhase::Exec), solve::enter_exec)
             .add_systems(OnEnter(SolvePhase::Review), solve::enter_review)
             .add_systems(OnEnter(AppState::Replay), replay::enter)
-            .add_systems(OnEnter(AppState::Algs), algs::enter)
+            .add_systems(
+                OnEnter(AppState::Algs),
+                (algs::enter, algs::browse::repo_enter).chain(),
+            )
             .add_systems(OnEnter(AppState::Stats), stats::enter)
             .add_systems(OnEnter(AppState::Settings), settings::enter);
     }
