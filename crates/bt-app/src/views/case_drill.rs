@@ -16,7 +16,7 @@ const CUBE_FACES: [&str; 6] = ["U", "L", "F", "R", "B", "D"];
 const SKEWB_FACES: [&str; 6] = ["U", "F", "R", "L", "B", "D"];
 const FTO_FACES: [&str; 8] = ["U", "F", "R", "BR", "B", "BL", "L", "D"];
 const FTO_DISPLAY: [&str; 8] = ["U", "L", "F", "R", "B", "BR", "BL", "D"];
-const PYRA_FACES: [&str; 4] = ["U", "L", "R", "B"];
+const PYRA_FACES: [&str; 4] = ["F", "L", "R", "D"];
 const MEGA_FACES: [&str; 12] = [
     "U", "F", "R", "BR", "BL", "L", "D", "B", "UR", "DR", "DL", "UL",
 ];
@@ -100,6 +100,9 @@ pub fn face_permutation(event: &str) -> Option<Vec<usize>> {
 }
 
 pub fn color_remap(event: &str) -> Option<Vec<usize>> {
+    if event == "sq1" {
+        return Some([0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5].to_vec());
+    }
     let engine = engine_faces(event)?;
     Some(engine.iter().map(|name| face_color_index(name)).collect())
 }
@@ -330,6 +333,7 @@ pub fn case_site_line(case: &DrillCase) -> String {
 pub fn enter(
     mut commands: Commands,
     mut pending: ResMut<PendingCaseDrill>,
+    cards: Res<CaseCardStore>,
     mut session: ResMut<CaseDrillSession>,
     mut next: ResMut<NextState<CaseDrillPhase>>,
 ) {
@@ -339,6 +343,9 @@ pub fn enter(
         return;
     }
     install(&mut session, queue);
+    if let Some(reason) = &cards.1 {
+        session.save_error = Some(reason.clone());
+    }
     next.set(CaseDrillPhase::Show);
 }
 
@@ -517,13 +524,44 @@ mod tests {
         assert_eq!(color_remap("3x3"), Some(vec![0, 1, 2, 3, 4, 5]));
         assert_eq!(color_remap("skewb"), Some(vec![0, 2, 3, 1, 4, 5]));
         assert_eq!(color_remap("fto"), Some(vec![0, 2, 3, 6, 4, 7, 1, 5]));
-        assert_eq!(color_remap("pyraminx"), Some(vec![0, 1, 3, 4]));
+        assert_eq!(color_remap("pyraminx"), Some(vec![2, 1, 3, 5]));
         assert_eq!(
             color_remap("megaminx"),
             Some(vec![0, 2, 3, 6, 7, 1, 5, 4, 8, 9, 10, 11])
         );
-        assert_eq!(color_remap("sq1"), Some(vec![0, 5]));
+        assert_eq!(
+            color_remap("sq1"),
+            Some(vec![0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5])
+        );
         assert_eq!(color_remap("clock"), None);
+    }
+
+    #[test]
+    fn pyraminx_faces_are_opposite_their_vertices() {
+        assert_eq!(PYRA_FACES, ["F", "L", "R", "D"]);
+    }
+
+    #[test]
+    fn sq1_piece_ids_render_in_layer_face_colors() {
+        let solved = case_facelets("sq1", None, "(6,0)").expect("grid");
+        assert!(
+            solved.faces[0].rows[0].iter().all(|&color| color == 0),
+            "a layer-bound twist keeps the U color: {:?}",
+            solved.faces[0].rows[0]
+        );
+        assert!(
+            solved.faces[1].rows[0].iter().all(|&color| color == 5),
+            "the untouched bottom layer keeps the D color: {:?}",
+            solved.faces[1].rows[0]
+        );
+        let scrambled = case_facelets("sq1", None, "(1,0)/").expect("grid");
+        for face in &scrambled.faces {
+            assert!(
+                face.rows[0].iter().all(|&color| color == 0 || color == 5),
+                "piece ids never leak as palette slots: {:?}",
+                face.rows[0]
+            );
+        }
     }
 
     #[test]

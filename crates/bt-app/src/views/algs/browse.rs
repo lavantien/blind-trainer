@@ -395,6 +395,7 @@ pub fn repo_keys(
         repo_shallower(&mut browser);
     }
     if drill
+        && browser.repo_focused
         && let Some(queue) =
             case_drill::drill_request(&browser, &overrides, &cards, crate::views::now_day())
     {

@@ -334,3 +334,123 @@ fn escape_from_the_case_drill_returns_to_the_menu() {
     pump(&mut app, 3);
     assert_eq!(current_state(&app), AppState::Menu);
 }
+
+#[test]
+fn d_on_the_letters_list_after_leaving_the_repo_never_opens_a_case_drill() {
+    let _guard = guard();
+    let fixture = drill_fixture("letterslist");
+    let mut app = headless_app(temp_paths(&fixture));
+    boot_to_menu(&mut app);
+    open(&mut app, AppState::Algs);
+    enter_repo(&mut app);
+    press(&mut app, KeyCode::ArrowDown);
+    pump(&mut app, 2);
+    assert_eq!(repo(&app).arms[repo(&app).arm].label, "2x2");
+    press(&mut app, KeyCode::ArrowLeft);
+    pump(&mut app, 2);
+    assert!(!repo(&app).repo_focused, "back on the letters list");
+    assert_eq!(repo(&app).arm, 1, "the stale arm lingers off letters");
+    press(&mut app, KeyCode::KeyD);
+    pump(&mut app, 4);
+    assert_eq!(
+        current_state(&app),
+        AppState::Drill,
+        "letters focus routes to the 3bld drill even with a stale arm"
+    );
+    assert!(
+        app.world().resource::<PendingCaseDrill>().0.is_empty(),
+        "no case drill queue may be armed from the letters list"
+    );
+}
+
+#[test]
+fn a_failed_cards_load_reports_on_entry_and_blocks_grading() {
+    let _guard = guard();
+    let fixture = drill_fixture("loadfail");
+    let mut app = headless_app(temp_paths(&fixture));
+    boot_to_menu(&mut app);
+    {
+        let mut db = Db::open_root(&fixture.paths.user_root).expect("user db");
+        let card = bt_data::srs::Card::new(0);
+        repo_cards::save_card(&mut db, &case_key("2x2", "cll", "cll", "cll.2"), &card)
+            .expect("seed case card");
+        db.conn()
+            .execute("UPDATE srs_state SET stability = -1.0", [])
+            .expect("corrupt state");
+    }
+    open(&mut app, AppState::Algs);
+    assert!(
+        app.world().resource::<CaseCardStore>().1.is_some(),
+        "the corrupt card row fails the load"
+    );
+    walk_to_case(&mut app, "cll.1");
+    press(&mut app, KeyCode::KeyD);
+    pump(&mut app, 4);
+    assert_eq!(current_state(&app), AppState::CaseDrill);
+    assert!(
+        session(&app).save_error.is_some(),
+        "the load failure is visible from the first show panel"
+    );
+    press(&mut app, KeyCode::Space);
+    pump(&mut app, 2);
+    press(&mut app, KeyCode::Digit3);
+    pump(&mut app, 3);
+    assert_eq!(session(&app).done, 0, "grading stays blocked");
+    assert_eq!(
+        session(&app)
+            .current
+            .as_ref()
+            .expect("current")
+            .case
+            .case_key,
+        "cll.1",
+        "the queue does not advance without a review"
+    );
+}
+
+#[test]
+fn phase_panels_spawn_and_despawn_per_phase() {
+    let _guard = guard();
+    let fixture = drill_fixture("panels");
+    let mut app = headless_app(temp_paths(&fixture));
+    app.insert_resource(bt_app::present::FontBook {
+        regular: Handle::default(),
+        bold: Handle::default(),
+    });
+    boot_to_menu(&mut app);
+    open(&mut app, AppState::Algs);
+    walk_to_case(&mut app, "cll.1");
+    press(&mut app, KeyCode::KeyD);
+    pump(&mut app, 4);
+    assert_eq!(
+        count::<bt_app::views::case_drill_view::ShowPanel>(&mut app),
+        1
+    );
+    assert_eq!(
+        count::<bt_app::views::case_drill_view::GradePanel>(&mut app),
+        0
+    );
+    press(&mut app, KeyCode::Space);
+    pump(&mut app, 3);
+    assert_eq!(
+        count::<bt_app::views::case_drill_view::ShowPanel>(&mut app),
+        0,
+        "the show panel despawns on phase exit"
+    );
+    assert_eq!(
+        count::<bt_app::views::case_drill_view::GradePanel>(&mut app),
+        1
+    );
+    press(&mut app, KeyCode::Escape);
+    pump(&mut app, 3);
+    assert_eq!(current_state(&app), AppState::Menu);
+    assert_eq!(
+        count::<bt_app::views::case_drill_view::GradePanel>(&mut app),
+        0
+    );
+}
+
+fn count<T: Component>(app: &mut App) -> usize {
+    let mut query = app.world_mut().query::<&T>();
+    query.iter(app.world()).count()
+}
