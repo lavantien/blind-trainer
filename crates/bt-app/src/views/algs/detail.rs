@@ -573,9 +573,11 @@ mod tests {
         let lines = repo_detail_lines(&browser, &store, &OverrideDraft::default());
         assert!(matches!(lines[4], DetailLine::Warn(_)));
 
-        let mut draft = OverrideDraft::default();
-        draft.case = case_site_of(&browser);
-        draft.text = "F R F'".to_string();
+        let draft = OverrideDraft {
+            case: case_site_of(&browser),
+            text: "F R F'".to_string(),
+            ..OverrideDraft::default()
+        };
         let lines = repo_detail_lines(&browser, &OverrideStore::default(), &draft);
         assert!(lines.contains(&DetailLine::Meta("editing".to_string())));
         assert!(lines.contains(&DetailLine::Alg("F R F'".to_string())));

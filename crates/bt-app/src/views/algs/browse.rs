@@ -464,9 +464,10 @@ pub(crate) mod testkit {
     }
 
     pub fn armed_browser() -> RepoBrowser {
-        let mut browser = RepoBrowser::default();
-        browser.arms = repo_arms(&fixture_packs(), &hidden(&["sq1"]), &fixture_rows());
-        browser
+        RepoBrowser {
+            arms: repo_arms(&fixture_packs(), &hidden(&["sq1"]), &fixture_rows()),
+            ..RepoBrowser::default()
+        }
     }
 }
 
