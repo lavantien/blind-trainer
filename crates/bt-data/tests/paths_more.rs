@@ -3,6 +3,9 @@ use bt_data::paths::{
     user_root_from, vendor_root_from, workspace_root, write_json_atomic,
 };
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+
+static ENV_LOCK: Mutex<()> = Mutex::new(());
 
 fn absolute_env_value() -> String {
     if cfg!(windows) {
@@ -167,6 +170,7 @@ fn sequential_atomic_writes_leave_no_temp_files_behind() {
 
 #[test]
 fn db_paths_follow_the_configured_db_file_and_join_the_root() {
+    let _env = ENV_LOCK.lock().unwrap();
     let stash = std::env::var("BT_CONFIG").ok();
     let temp = std::env::temp_dir().join(format!("bt-paths-db-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&temp);
@@ -198,6 +202,7 @@ fn db_paths_follow_the_configured_db_file_and_join_the_root() {
 
 #[test]
 fn packs_root_env_override_joins_packs_on_the_absolute_base() {
+    let _env = ENV_LOCK.lock().unwrap();
     let stash_config = std::env::var("BT_CONFIG").ok();
     let stash_ground = std::env::var("BT_REF_GROUND").ok();
     let temp = std::env::temp_dir().join(format!("bt-paths-packs-{}", std::process::id()));
