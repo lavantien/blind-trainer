@@ -22,7 +22,7 @@ pub fn state_description(state: AppState) -> &'static str {
         AppState::Memo => "streaming memo on seeded scrambles",
         AppState::Solve => "the timed full cycle",
         AppState::Replay => "orbit the 3d solve replay",
-        AppState::Algs => "browse and filter all 818 cases",
+        AppState::Algs => "browse 818 cases and the event repos",
         AppState::Stats => "solve history and review load",
         AppState::Settings => "cadence, memo mode, reps",
         AppState::Bootstrap | AppState::Fatal | AppState::Menu | AppState::CaseDrill => "",
@@ -118,7 +118,7 @@ mod tests {
         );
         assert_eq!(rows[1].description, "streaming memo on seeded scrambles");
         assert_eq!(rows[2].description, "the timed full cycle");
-        assert_eq!(rows[3].description, "browse and filter all 818 cases");
+        assert_eq!(rows[3].description, "browse 818 cases and the event repos");
         assert_eq!(rows[4].description, "solve history and review load");
         assert_eq!(rows[5].description, "cadence, memo mode, reps");
     }
