@@ -1,6 +1,7 @@
 use crate::logic::{NavIntent, VendorCorpus};
 use crate::smoke::{self, SmokeFonts, exit_with, shoot, track_fonts};
-use crate::states::{AppState, DrillPhase, MemoPhase, SolvePhase};
+use crate::states::{AppState, CaseDrillPhase, DrillPhase, MemoPhase, SolvePhase};
+use crate::usage_script::{Action, fatal_script, script};
 use crate::views::PendingDrill;
 use crate::views::drill::{case_position, sheet_of};
 use crate::views::solve::{self, SolveSeed};
@@ -16,23 +17,6 @@ use std::path::PathBuf;
 const DWELL_SECS: f32 = 0.4;
 const STUCK_LIMIT_SECS: f32 = 30.0;
 const SOLVE_SEED_ATTEMPTS: u64 = 400;
-
-#[derive(Clone, Copy, Debug)]
-enum Action {
-    Press(KeyCode),
-    PressChar { key: KeyCode, ch: char },
-    NavOpen(AppState),
-    NavMenu,
-    PinDrill,
-    PickSolveSeed,
-    WaitApp(AppState),
-    WaitFonts,
-    WaitDrill(DrillPhase),
-    WaitMemo(MemoPhase),
-    WaitSolve(SolvePhase),
-    Elapse(f32),
-    Shot(&'static str),
-}
 
 fn pinned_case() -> CaseId {
     CaseId {
@@ -58,107 +42,6 @@ pub fn covered_seed(corpus: &Corpus, base: u64, attempts: u64) -> Option<u64> {
     (base..base.saturating_add(attempts)).find(|&seed| fully_covered(corpus, &random_state(seed)))
 }
 
-fn script(cadence_secs: f32) -> Vec<Action> {
-    let partial = cadence_secs * 3.25;
-    vec![
-        Action::WaitApp(AppState::Menu),
-        Action::WaitFonts,
-        Action::Shot("menu"),
-        Action::PinDrill,
-        Action::NavOpen(AppState::Drill),
-        Action::WaitDrill(DrillPhase::Card),
-        Action::Shot("drill-card"),
-        Action::Press(KeyCode::Space),
-        Action::WaitDrill(DrillPhase::Reps),
-        Action::Shot("drill-reps"),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::Space),
-        Action::Elapse(0.1),
-        Action::WaitDrill(DrillPhase::Rate),
-        Action::Shot("drill-rate-a"),
-        Action::Press(KeyCode::Digit3),
-        Action::Elapse(0.1),
-        Action::Shot("drill-rate-b"),
-        Action::Press(KeyCode::Digit3),
-        Action::WaitDrill(DrillPhase::Card),
-        Action::NavMenu,
-        Action::WaitApp(AppState::Menu),
-        Action::NavOpen(AppState::Memo),
-        Action::WaitMemo(MemoPhase::Intro),
-        Action::Shot("memo-intro"),
-        Action::Press(KeyCode::Space),
-        Action::WaitMemo(MemoPhase::Stream),
-        Action::Elapse(partial),
-        Action::Shot("memo-stream"),
-        Action::WaitMemo(MemoPhase::Recall),
-        Action::Shot("memo-recall"),
-        Action::Press(KeyCode::Space),
-        Action::WaitMemo(MemoPhase::Review),
-        Action::Shot("memo-review"),
-        Action::NavMenu,
-        Action::WaitApp(AppState::Menu),
-        Action::PickSolveSeed,
-        Action::NavOpen(AppState::Solve),
-        Action::WaitSolve(SolvePhase::Ready),
-        Action::Shot("solve-ready"),
-        Action::Press(KeyCode::Space),
-        Action::WaitSolve(SolvePhase::Memo),
-        Action::Elapse(partial),
-        Action::Shot("solve-memo"),
-        Action::Press(KeyCode::Space),
-        Action::WaitSolve(SolvePhase::Exec),
-        Action::Elapse(1.6),
-        Action::Shot("solve-exec"),
-        Action::Press(KeyCode::Space),
-        Action::WaitSolve(SolvePhase::Review),
-        Action::Shot("solve-review"),
-        Action::NavMenu,
-        Action::WaitApp(AppState::Menu),
-        Action::NavOpen(AppState::Algs),
-        Action::WaitApp(AppState::Algs),
-        Action::Shot("algs"),
-        Action::Press(KeyCode::Slash),
-        Action::Elapse(0.1),
-        Action::PressChar {
-            key: KeyCode::KeyB,
-            ch: 'b',
-        },
-        Action::Elapse(0.3),
-        Action::Press(KeyCode::ArrowDown),
-        Action::Elapse(0.1),
-        Action::Press(KeyCode::ArrowDown),
-        Action::Elapse(0.3),
-        Action::Shot("algs-search"),
-        Action::NavMenu,
-        Action::WaitApp(AppState::Menu),
-        Action::NavOpen(AppState::Stats),
-        Action::WaitApp(AppState::Stats),
-        Action::Shot("stats"),
-        Action::NavMenu,
-        Action::WaitApp(AppState::Menu),
-        Action::NavOpen(AppState::Settings),
-        Action::WaitApp(AppState::Settings),
-        Action::Shot("settings"),
-    ]
-}
-
-fn fatal_script() -> Vec<Action> {
-    vec![
-        Action::WaitApp(AppState::Fatal),
-        Action::WaitFonts,
-        Action::Shot("fatal"),
-    ]
-}
-
 #[derive(Debug)]
 enum Wait {
     App(AppState),
@@ -166,6 +49,7 @@ enum Wait {
     Drill(DrillPhase),
     Memo(MemoPhase),
     Solve(SolvePhase),
+    CaseDrill(CaseDrillPhase),
 }
 
 #[derive(Debug)]
@@ -314,6 +198,7 @@ fn run_usage(
     drill_phase: Option<Res<State<DrillPhase>>>,
     memo_phase: Option<Res<State<MemoPhase>>>,
     solve_phase: Option<Res<State<SolvePhase>>>,
+    case_phase: Option<Res<State<CaseDrillPhase>>>,
     time: Res<Time<Virtual>>,
     fonts: Res<SmokeFonts>,
     corpus: Option<Res<VendorCorpus>>,
@@ -403,6 +288,12 @@ fn run_usage(
                         waited: 0.0,
                     };
                 }
+                Action::WaitCaseDrill(expected) => {
+                    tour.mode = Mode::WaitUntil {
+                        until: Wait::CaseDrill(expected),
+                        waited: 0.0,
+                    };
+                }
                 Action::Elapse(secs) => {
                     tour.mode = Mode::Elapse { left: secs };
                 }
@@ -423,6 +314,7 @@ fn run_usage(
                 Wait::Drill(expected) => phase_matches(drill_phase.as_deref(), &expected),
                 Wait::Memo(expected) => phase_matches(memo_phase.as_deref(), &expected),
                 Wait::Solve(expected) => phase_matches(solve_phase.as_deref(), &expected),
+                Wait::CaseDrill(expected) => phase_matches(case_phase.as_deref(), &expected),
             };
             if matched {
                 tour.index += 1;
@@ -513,93 +405,6 @@ mod tests {
                 std::process::id(),
                 DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
             ))
-    }
-
-    fn shot_names(actions: &[Action]) -> Vec<&'static str> {
-        actions
-            .iter()
-            .filter_map(|action| match action {
-                Action::Shot(name) => Some(*name),
-                _ => None,
-            })
-            .collect()
-    }
-
-    #[test]
-    fn script_shots_are_unique_and_complete() {
-        let actions = script(0.8);
-        let names = shot_names(&actions);
-        let mut sorted = names.clone();
-        sorted.sort_unstable();
-        sorted.dedup();
-        assert_eq!(sorted.len(), names.len(), "shot names must be unique");
-        assert_eq!(names.first(), Some(&"menu"));
-        assert_eq!(names.last(), Some(&"settings"));
-        let mut expected = [
-            "menu",
-            "drill-card",
-            "drill-reps",
-            "drill-rate-a",
-            "drill-rate-b",
-            "memo-intro",
-            "memo-stream",
-            "memo-recall",
-            "memo-review",
-            "solve-ready",
-            "solve-memo",
-            "solve-exec",
-            "solve-review",
-            "algs",
-            "algs-search",
-            "stats",
-            "settings",
-        ];
-        expected.sort_unstable();
-        assert_eq!(sorted, expected);
-    }
-
-    #[test]
-    fn script_never_issues_two_presses_back_to_back() {
-        let actions = script(0.8);
-        let is_press =
-            |action: &Action| matches!(action, Action::Press(_) | Action::PressChar { .. });
-        for pair in actions.windows(2) {
-            assert!(
-                !(is_press(&pair[0]) && is_press(&pair[1])),
-                "adjacent presses can be eaten by phase entry message drains: {pair:?}"
-            );
-        }
-    }
-
-    #[test]
-    fn script_sequences_each_phase_before_its_shot() {
-        let actions = script(0.8);
-        fn position(actions: &[Action], pred: &dyn Fn(&Action) -> bool) -> usize {
-            actions
-                .iter()
-                .position(pred)
-                .unwrap_or_else(|| panic!("action missing"))
-        }
-        assert!(
-            position(&actions, &|a| matches!(
-                a,
-                Action::WaitDrill(DrillPhase::Rate)
-            )) < position(&actions, &|a| matches!(a, Action::Shot("drill-rate-a")))
-        );
-        assert!(
-            position(&actions, &|a| matches!(
-                a,
-                Action::WaitMemo(MemoPhase::Review)
-            )) < position(&actions, &|a| matches!(a, Action::Shot("memo-review")))
-        );
-        assert!(
-            position(&actions, &|a| matches!(a, Action::PickSolveSeed))
-                < position(&actions, &|a| matches!(a, Action::NavOpen(AppState::Solve)))
-        );
-        assert!(
-            position(&actions, &|a| matches!(a, Action::NavOpen(AppState::Stats)))
-                > position(&actions, &|a| matches!(a, Action::Shot("solve-review")))
-        );
     }
 
     #[test]
@@ -812,13 +617,15 @@ mod tests {
                 Action::WaitDrill(DrillPhase::Card),
                 Action::WaitMemo(MemoPhase::Intro),
                 Action::WaitSolve(SolvePhase::Ready),
+                Action::WaitCaseDrill(CaseDrillPhase::Show),
             ],
             0,
         );
         world.insert_resource(State::<DrillPhase>::new(DrillPhase::Card));
         world.insert_resource(State::<MemoPhase>::new(MemoPhase::Intro));
         world.insert_resource(State::<SolvePhase>::new(SolvePhase::Ready));
-        for expected in 1..=5 {
+        world.insert_resource(State::<CaseDrillPhase>::new(CaseDrillPhase::Show));
+        for expected in 1..=6 {
             step(&mut world);
             assert!(
                 matches!(world.resource::<UsageTour>().mode, Mode::WaitUntil { .. }),
@@ -931,44 +738,6 @@ mod tests {
     }
 
     #[test]
-    fn fatal_script_shoots_only_the_fatal_screen() {
-        let actions = fatal_script();
-        assert_eq!(shot_names(&actions), vec!["fatal"]);
-        assert!(matches!(
-            actions.first(),
-            Some(Action::WaitApp(AppState::Fatal))
-        ));
-    }
-
-    #[test]
-    fn script_elapsed_times_are_frame_dwells_or_cadence_scaled() {
-        let actions = script(0.8);
-        let partial = 0.8f32 * 3.25;
-        let mut stream_waits = 0;
-        let mut frame_dwells = 0;
-        for action in &actions {
-            if let Action::Elapse(secs) = action {
-                let near = |a: f32, b: f32| (a - b).abs() < 1e-6;
-                assert!(
-                    near(*secs, 0.1)
-                        || near(*secs, 0.3)
-                        || near(*secs, 1.6)
-                        || near(*secs, partial),
-                    "unexpected elapse duration {secs}"
-                );
-                if near(*secs, partial) {
-                    stream_waits += 1;
-                }
-                if near(*secs, 0.1) {
-                    frame_dwells += 1;
-                }
-            }
-        }
-        assert_eq!(stream_waits, 2, "memo stream and solve memo waits");
-        assert!(frame_dwells > 0);
-    }
-
-    #[test]
     fn plugin_build_wires_the_tour_and_the_seeds() {
         let dir = usage_dir("plugin-tour");
         let mut app = App::new();
@@ -985,7 +754,7 @@ mod tests {
             7
         );
         let tour = app.world().resource::<UsageTour>();
-        assert_eq!(tour.expected_shots, 17);
+        assert_eq!(tour.expected_shots, 19);
         assert_eq!(tour.index, 0);
         assert!(matches!(tour.mode, Mode::Act));
         assert!(tour.shots.is_empty());

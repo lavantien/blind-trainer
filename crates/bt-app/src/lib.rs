@@ -8,4 +8,5 @@ pub mod smoke;
 pub mod states;
 pub mod theme;
 pub mod usage;
+pub mod usage_script;
 pub mod views;

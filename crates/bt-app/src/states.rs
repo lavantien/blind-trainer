@@ -17,13 +17,14 @@ pub enum AppState {
 }
 
 impl AppState {
-    pub const TOUR: [AppState; 9] = [
+    pub const TOUR: [AppState; 10] = [
         AppState::Menu,
         AppState::Drill,
         AppState::Memo,
         AppState::Solve,
         AppState::Replay,
         AppState::Algs,
+        AppState::CaseDrill,
         AppState::Stats,
         AppState::Settings,
         AppState::Fatal,

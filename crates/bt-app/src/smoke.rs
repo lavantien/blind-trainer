@@ -1,8 +1,10 @@
 use crate::logic::FatalReason;
 use crate::present::FontBook;
 use crate::states::AppState;
+use crate::views::case_drill::{DrillCase, PendingCaseDrill};
 use bevy::prelude::*;
 use bevy::render::view::screenshot::{Screenshot, save_to_disk};
+use bt_data::repo_user::CaseRef;
 use std::num::NonZero;
 use std::path::PathBuf;
 
@@ -13,6 +15,20 @@ const SMOKE_FATAL_REASON: &str = "smoke tour complete";
 pub struct SmokePlugin {
     pub dir: PathBuf,
     pub seed: u64,
+}
+
+fn tour_case() -> DrillCase {
+    DrillCase {
+        case: CaseRef {
+            event: "3x3".to_string(),
+            method: "cfop".to_string(),
+            stage: "pll".to_string(),
+            case_key: "smoke".to_string(),
+        },
+        size: None,
+        seed_alg: "R U R'".to_string(),
+        alg: "R U R'".to_string(),
+    }
 }
 
 pub fn smoke_seeds(seed: u64) -> (u64, u64, u64) {
@@ -64,6 +80,7 @@ impl Plugin for SmokePlugin {
         .insert_resource(crate::views::memo::MemoSeed(memo_seed))
         .insert_resource(crate::views::solve::SolveSeed(solve_seed))
         .insert_resource(crate::views::drill::DrillSeed(drill_seed))
+        .insert_resource(PendingCaseDrill(vec![tour_case()]))
         .init_resource::<SmokeFonts>()
         .add_systems(Update, (track_fonts, run_smoke).chain());
     }
@@ -293,9 +310,11 @@ mod tests {
             assert!(!seen.contains(&state), "state {state:?} repeated in tour");
             seen.push(state);
         }
-        assert_eq!(seen.len(), 9);
+        assert_eq!(seen.len(), 10);
         assert_eq!(seen.first(), Some(&AppState::Menu));
         assert_eq!(seen.last(), Some(&AppState::Fatal));
+        assert_eq!(seen[5], AppState::Algs);
+        assert_eq!(seen[6], AppState::CaseDrill);
     }
 
     #[test]
@@ -479,7 +498,7 @@ mod tests {
                 state: AppState::Settings,
                 path: dir.join("settings.png"),
             },
-            AppState::TOUR[..8].to_vec(),
+            AppState::TOUR[..9].to_vec(),
             AppState::Settings,
             0.1,
         );
@@ -687,5 +706,13 @@ mod tests {
         ));
         assert!(tour.entered.is_empty());
         assert!(tour.shots.is_empty());
+        let pending = app.world().resource::<PendingCaseDrill>();
+        assert_eq!(pending.0.len(), 1, "the tour arms exactly one case drill");
+        let case = &pending.0[0];
+        assert_eq!(case.case.event, "3x3");
+        assert!(
+            crate::views::case_drill::case_facelets(&case.case.event, case.size, &case.alg).is_ok(),
+            "the smoke case must render a net"
+        );
     }
 }
