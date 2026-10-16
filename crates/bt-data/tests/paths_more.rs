@@ -1,6 +1,6 @@
 use bt_data::paths::{
-    PathsError, UserAlgs, config_path_from, db_file_name, db_path_at, read_json, user_root_from,
-    vendor_root_from, workspace_root, write_json_atomic,
+    PathsError, UserAlgs, config_path_from, db_file_name, db_path_at, packs_root, read_json,
+    user_root_from, vendor_root_from, workspace_root, write_json_atomic,
 };
 use std::path::{Path, PathBuf};
 
@@ -193,5 +193,33 @@ fn db_paths_follow_the_configured_db_file_and_join_the_root() {
             None => std::env::remove_var("BT_CONFIG"),
         }
     }
+    let _ = std::fs::remove_dir_all(&temp);
+}
+
+#[test]
+fn packs_root_env_override_joins_packs_on_the_absolute_base() {
+    let stash_config = std::env::var("BT_CONFIG").ok();
+    let stash_ground = std::env::var("BT_REF_GROUND").ok();
+    let temp = std::env::temp_dir().join(format!("bt-paths-packs-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&temp);
+    std::fs::create_dir_all(&temp).unwrap();
+    let fixture = temp.join("config.json");
+    std::fs::write(&fixture, serde_json::json!({"paths": {}}).to_string()).unwrap();
+    unsafe {
+        std::env::set_var("BT_CONFIG", &fixture);
+        std::env::set_var("BT_REF_GROUND", &temp);
+    }
+    let resolved = packs_root().unwrap();
+    unsafe {
+        match stash_ground {
+            Some(value) => std::env::set_var("BT_REF_GROUND", value),
+            None => std::env::remove_var("BT_REF_GROUND"),
+        }
+        match stash_config {
+            Some(value) => std::env::set_var("BT_CONFIG", value),
+            None => std::env::remove_var("BT_CONFIG"),
+        }
+    }
+    assert_eq!(resolved, temp.join("packs"));
     let _ = std::fs::remove_dir_all(&temp);
 }
