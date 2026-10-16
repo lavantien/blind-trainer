@@ -1,5 +1,103 @@
-use bt_data::seedpack::{NSpec, PackEntry, load_registry};
+use crate::ev_bigcube;
+use crate::ev_bld;
+use crate::ev_fto;
+use crate::ev_mega;
+use crate::ev_nxn;
+use crate::ev_pyra;
+use crate::ev_skewb;
+use crate::ev_sq1;
+use bt_data::seedpack::{NSpec, PackEntry, SeedRow, load_registry};
 use std::path::Path;
+
+pub enum Puzzle {
+    Core,
+    Nxn(usize),
+    Sq1,
+    Pyra,
+    Skewb,
+    Mega,
+    Fto,
+}
+
+impl Puzzle {
+    pub fn for_event(event: &str) -> Result<Puzzle, String> {
+        match event {
+            "3x3" | "oh" | "3bld" => Ok(Puzzle::Core),
+            "2x2" => Ok(Puzzle::Nxn(2)),
+            "sq1" => Ok(Puzzle::Sq1),
+            "pyraminx" => Ok(Puzzle::Pyra),
+            "skewb" => Ok(Puzzle::Skewb),
+            "megaminx" => Ok(Puzzle::Mega),
+            "fto" => Ok(Puzzle::Fto),
+            "bigcube" => Err("bigcube rows resolve their own n".to_string()),
+            other => Err(format!("unknown event {other}")),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum Tier2Outcome {
+    Pass,
+    Fail(String),
+    Skipped(&'static str),
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct RowOutcome {
+    pub case_key: String,
+    pub tier1: Result<(), String>,
+    pub tier2: Tier2Outcome,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug, Default)]
+pub struct SectionResult {
+    pub rows: Vec<RowOutcome>,
+    pub honesty: Vec<String>,
+}
+
+impl SectionResult {
+    fn unimplemented(event: &str, method: &str, stage: &str, rows: &[SeedRow]) -> SectionResult {
+        SectionResult {
+            rows: rows
+                .iter()
+                .map(|row| RowOutcome {
+                    case_key: row.case_key.clone(),
+                    tier1: Err(format!(
+                        "section {event}/{method}/{stage} is not implemented"
+                    )),
+                    tier2: Tier2Outcome::Skipped("section not implemented"),
+                })
+                .collect(),
+            honesty: Vec::new(),
+        }
+    }
+}
+
+pub fn verify_rows(entry: &PackEntry, rows: &[SeedRow]) -> SectionResult {
+    match (
+        entry.event.as_str(),
+        entry.method.as_str(),
+        entry.stage.as_str(),
+    ) {
+        ("2x2", "cll", "cll") => ev_nxn::verify_twoby2(rows),
+        ("sq1", "lbl", "cubeshape") => ev_sq1::verify_cubeshape(rows),
+        ("sq1", "lbl", "co") => ev_sq1::verify_co(rows),
+        ("sq1", "lbl", "eo") => ev_sq1::verify_eo(rows),
+        ("sq1", "lbl", "cp") => ev_sq1::verify_cp(rows),
+        ("sq1", "lbl", "ep") => ev_sq1::verify_ep(rows),
+        ("skewb", "sarah_intermediate", "sarah") => ev_skewb::verify_sarah(rows),
+        ("pyraminx", "l4e", "l4e") => ev_pyra::verify_l4e(rows),
+        ("megaminx", "4lll", "4lll") => ev_mega::verify_4lll(rows),
+        ("fto", "l4t_redux", "l4t") => ev_fto::verify_l4t(rows),
+        ("bigcube", "yau", "parity") | ("bigcube", "reduction", "parity") => {
+            ev_bigcube::verify_parity(entry, rows)
+        }
+        ("3bld", "old_pochmann", "concept") => ev_bld::verify_oldpoch(rows),
+        ("3bld", "m2", "concept") => ev_bld::verify_m2(rows),
+        ("3bld", "3style", "parity") => ev_bld::verify_3style(rows),
+        (event, method, stage) => SectionResult::unimplemented(event, method, stage, rows),
+    }
+}
 
 pub struct PackPin {
     pub file: &'static str,

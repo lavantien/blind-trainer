@@ -1,3 +1,12 @@
+mod ev_bigcube;
+mod ev_bld;
+mod ev_fto;
+mod ev_mega;
+mod ev_nxn;
+mod ev_pyra;
+mod ev_skewb;
+mod ev_sq1;
+
 pub mod packs;
 pub mod report;
 
