@@ -1,4 +1,8 @@
+use crate::logic::NavIntent;
 use crate::persist::Stores;
+use crate::states::AppState;
+use crate::views::algs::detail::OverrideStore;
+use crate::views::case_drill::{self, CaseCardStore};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
@@ -350,9 +354,12 @@ pub fn repo_enter(stores: Res<Stores>, mut browser: ResMut<RepoBrowser>) {
 }
 
 pub fn repo_keys(
+    mut commands: Commands,
     mut inputs: MessageReader<KeyboardInput>,
     focus: Option<Res<bevy::input_focus::InputFocus>>,
     editables: Query<&bevy::text::EditableText>,
+    overrides: Res<OverrideStore>,
+    cards: Res<CaseCardStore>,
     mut browser: ResMut<RepoBrowser>,
 ) {
     let typing = focus
@@ -362,6 +369,7 @@ pub fn repo_keys(
     let mut step = 0i32;
     let mut deeper = false;
     let mut shallower = false;
+    let mut drill = false;
     for input in inputs.read() {
         if input.state != ButtonState::Pressed {
             continue;
@@ -373,6 +381,7 @@ pub fn repo_keys(
             KeyCode::KeyP if !typing => step -= 1,
             KeyCode::ArrowRight => deeper = true,
             KeyCode::ArrowLeft => shallower = true,
+            KeyCode::KeyD if !typing => drill = true,
             _ => {}
         }
     }
@@ -384,6 +393,15 @@ pub fn repo_keys(
     }
     if shallower {
         repo_shallower(&mut browser);
+    }
+    if drill
+        && let Some(queue) =
+            case_drill::drill_request(&browser, &overrides, &cards, crate::views::now_day())
+    {
+        commands.write_message(NavIntent::Open(AppState::CaseDrill));
+        commands.queue(move |world: &mut World| {
+            world.resource_mut::<case_drill::PendingCaseDrill>().0 = queue;
+        });
     }
 }
 
