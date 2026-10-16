@@ -975,3 +975,84 @@ fn packs_root_resolves_from_the_hub_and_the_env_override() {
     let err = packs_root_from(None, &missing).expect_err("missing key must fail");
     assert!(err.to_string().contains("paths.packs"), "err: {err}");
 }
+
+#[test]
+fn registry_rejects_the_dotdot_file_name() {
+    let text = "[{\"file\":\"..\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":null,\"expected_rows\":1}]";
+    let err = parse_registry(text).expect_err("dotdot file name must fail");
+    assert!(err.to_string().contains("bare name"), "err: {err}");
+}
+
+#[test]
+fn registry_rejects_an_empty_event_or_method_field() {
+    let empty_event = "[{\"file\":\"a.tsv\",\"event\":\"\",\"method\":\"m\",\"stage\":\"s\",\"n\":null,\"expected_rows\":1}]";
+    let err = parse_registry(empty_event).expect_err("empty event must fail");
+    assert!(
+        err.to_string().contains("empty event, method, or stage"),
+        "err: {err}"
+    );
+    let empty_method = "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"\",\"stage\":\"s\",\"n\":null,\"expected_rows\":1}]";
+    let err = parse_registry(empty_method).expect_err("empty method must fail");
+    assert!(
+        err.to_string().contains("empty event, method, or stage"),
+        "err: {err}"
+    );
+}
+
+#[test]
+fn tsv_pins_the_physical_line_number_of_a_ragged_row() {
+    let dir = temp_packs("ragged-line");
+    write_pack(
+        &dir,
+        &mini_registry(1),
+        "mini.tsv",
+        &format!("{HEADER}\n\na1\tR U\t{{\"case\":\"x\"}}\thttps://example.test/a"),
+    );
+    let err = load_pack(&dir, &mini_entry()).expect_err("ragged row must fail");
+    let shown = err.to_string();
+    assert!(shown.contains("line 3"), "err: {shown}");
+}
+
+#[test]
+fn tsv_rejects_a_short_source_date() {
+    let dir = temp_packs("short-date");
+    write_pack(
+        &dir,
+        &mini_registry(1),
+        "mini.tsv",
+        &format!("{HEADER}\na1\tR U\t{{\"case\":\"x\"}}\thttps://example.test/a\t1234-56-7"),
+    );
+    let err = load_pack(&dir, &mini_entry()).expect_err("nine character date must fail");
+    assert!(err.to_string().contains("source_at"), "err: {err}");
+}
+
+#[test]
+fn normalize_rejects_doubled_suffixes_and_mixed_case_letter_pairs() {
+    for alg in ["R U Ru", "R U aU", "R U R''", "R U R22"] {
+        let err = normalize_alg("3x3", alg).expect_err("token shape must fail");
+        assert!(err.to_string().contains("unknown token"), "err: {err}");
+    }
+}
+
+#[test]
+fn normalize_expands_a_bracket_repeat_at_exactly_the_limit() {
+    let out = normalize_alg("3x3", "[R]*99").expect("repeat at the limit must pass");
+    assert_eq!(out.alg, vec!["R"; 99].join(" "));
+}
+
+#[test]
+fn normalize_pins_the_bracket_expand_length_boundary_as_a_token_error() {
+    let content = "R".repeat(9090);
+    let alg = format!("[{content}]*11");
+    let err =
+        normalize_alg("3x3", &alg).expect_err("boundary expansion must fail as a token error");
+    assert!(err.to_string().contains("unknown token"), "err: {err}");
+}
+
+#[test]
+fn normalize_rejects_a_repeat_digit_on_a_nested_group() {
+    let err = normalize_alg("3x3", "(R U (R2))2").expect_err("nested group repeat must fail");
+    let shown = err.to_string();
+    assert!(shown.contains("unknown token"), "err: {shown}");
+    assert!(shown.contains("R22"), "err: {shown}");
+}
