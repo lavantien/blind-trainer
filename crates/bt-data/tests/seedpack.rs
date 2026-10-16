@@ -1056,3 +1056,58 @@ fn normalize_rejects_a_repeat_digit_on_a_nested_group() {
     assert!(shown.contains("unknown token"), "err: {shown}");
     assert!(shown.contains("R22"), "err: {shown}");
 }
+
+#[test]
+fn normalize_rejects_a_zero_bracket_repeat() {
+    let err = normalize_alg("3x3", "U [R]*0").expect_err("zero bracket repeat must fail");
+    assert!(err.to_string().contains("malformed repeat"), "err: {err}");
+}
+
+#[test]
+fn normalize_rejects_a_zero_group_repeat() {
+    let err = normalize_alg("3x3", "(R U)0").expect_err("zero group repeat must fail");
+    assert!(err.to_string().contains("malformed repeat"), "err: {err}");
+}
+
+#[test]
+fn normalize_expands_a_group_repeat_at_exactly_the_limit() {
+    let out = normalize_alg("3x3", "(R U)99").expect("group repeat at the limit must pass");
+    assert_eq!(out.alg, vec!["R U"; 99].join(" "));
+}
+
+#[test]
+fn normalize_rejects_a_suffix_glued_to_a_group_repeat() {
+    for alg in ["(R U)2x", "(R U)2'", "(R U)'"] {
+        let err = normalize_alg("3x3", alg).expect_err("glued suffix must fail");
+        assert!(err.to_string().contains("malformed repeat"), "err: {err}");
+    }
+}
+
+#[test]
+fn normalize_pins_the_group_expand_length_boundary_as_a_token_error() {
+    let content = "R".repeat(9090);
+    let alg = format!("({content})11");
+    let err = normalize_alg("3x3", &alg).expect_err("boundary group must fail as a token error");
+    assert!(err.to_string().contains("unknown token"), "err: {err}");
+}
+
+#[test]
+fn normalize_strips_nested_grouping_parens() {
+    let out = normalize_alg("3x3", "(R U (R' F))").expect("nested groups strip");
+    assert_eq!(out.alg, "R U R' F");
+}
+
+#[test]
+fn sq1_rejects_a_three_token_auf_shaped_prefix() {
+    let err = normalize_alg("sq1", "(U D U) / (3,3)").expect_err("three token auf shape must fail");
+    assert!(err.to_string().contains("unknown token"), "err: {err}");
+}
+
+#[test]
+fn sq1_pins_the_reported_span_of_an_unknown_token() {
+    for alg in ["x/(3,3)", "x / (3,3)"] {
+        let err = normalize_alg("sq1", alg).expect_err("stray letter must fail");
+        let shown = err.to_string();
+        assert!(shown.contains("unknown token 'x'"), "err: {shown}");
+    }
+}
