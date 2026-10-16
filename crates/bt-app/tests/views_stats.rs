@@ -61,7 +61,7 @@ fn stats_aggregate_seeded_solve_and_srs_fixtures() {
     boot_to_menu(&mut app);
     open(&mut app, AppState::Stats);
     pump(&mut app, 2);
-    let snap = *app.world().resource::<StatsSnapshot>();
+    let snap = app.world().resource::<StatsSnapshot>().clone();
     assert_eq!(snap.solves, 2);
     assert_eq!(snap.memo_mean_ms, 25000.0);
     assert_eq!(snap.memo_median_ms, 25000.0);
@@ -76,10 +76,43 @@ fn stats_aggregate_seeded_solve_and_srs_fixtures() {
         values,
         vec!["2", "2", "25.0s", "25.0s", "15.0s", "15.0s", "1", "0"]
     );
-    let labels: Vec<&str> = blocks.iter().map(|block| block.label).collect();
+    let labels: Vec<&str> = blocks.iter().map(|block| block.label.as_str()).collect();
     assert!(labels.contains(&"verified drill streak"));
     assert!(labels.contains(&"due edge"));
     assert!(labels.contains(&"due corner"));
+}
+
+#[test]
+fn stats_due_events_read_the_case_card_repo() {
+    let _guard = guard();
+    let fixture = fixture("stats-due");
+    let mut app = headless_app(clone_paths(&fixture));
+    boot_to_menu(&mut app);
+    let mut db = bt_data::db::Db::open_root(fixture.user_root()).expect("fixture db");
+    let fresh = bt_data::srs::Card::new(0);
+    let mut scheduled = bt_data::srs::Card::new(0);
+    scheduled.due_day = 999_999;
+    for (case_key, card) in [("cll.1", fresh), ("cll.2", scheduled)] {
+        bt_data::repo_cards::save_card(
+            &mut db,
+            &bt_data::repo_user::CaseRef {
+                event: "2x2".to_string(),
+                method: "cll".to_string(),
+                stage: "cll".to_string(),
+                case_key: case_key.to_string(),
+            },
+            &card,
+        )
+        .expect("seed card");
+    }
+    drop(db);
+    open(&mut app, AppState::Stats);
+    pump(&mut app, 2);
+    let snap = app.world().resource::<StatsSnapshot>().clone();
+    assert_eq!(snap.due_events, vec![("2x2".to_string(), 1)]);
+    let blocks = bt_app::views::stats::blocks(&snap);
+    let labels: Vec<&str> = blocks.iter().map(|block| block.label.as_str()).collect();
+    assert!(labels.contains(&"due 2x2"), "labels: {labels:?}");
 }
 
 #[test]
