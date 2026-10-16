@@ -9,6 +9,7 @@ pub mod repo_seeds;
 pub mod repo_settings;
 pub mod repo_solves;
 pub mod repo_srs;
+pub mod repo_user;
 pub mod seedpack;
 pub mod srs;
 pub mod tsv;

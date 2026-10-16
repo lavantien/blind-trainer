@@ -20,11 +20,14 @@ pub fn join_key(stage: &str, case_key: &str) -> String {
 
 pub fn save_tx(tx: &Transaction<'_>, algs: &UserAlgs) -> Result<(), DbError> {
     let now = now_ms();
-    tx.execute("DELETE FROM user_alg", [])
-        .map_err(|source| DbError::Exec {
-            step: "clear user_alg",
-            source,
-        })?;
+    tx.execute(
+        "DELETE FROM user_alg WHERE event = ? AND method = ?",
+        params![EVENT_3BLD, METHOD_3STYLE],
+    )
+    .map_err(|source| DbError::Exec {
+        step: "clear user_alg",
+        source,
+    })?;
     for (key, entry) in &algs.entries {
         let (stage, case_key) = split_key(key);
         tx.execute(
@@ -61,10 +64,10 @@ pub fn load(db: &Db) -> Result<UserAlgs, DbError> {
     let step = "select user_alg";
     let mut stmt = db
         .conn()
-        .prepare("SELECT stage, case_key, alg FROM user_alg")
+        .prepare("SELECT stage, case_key, alg FROM user_alg WHERE event = ? AND method = ?")
         .map_err(map_query(step))?;
     let rows = stmt
-        .query_map([], |row| {
+        .query_map(params![EVENT_3BLD, METHOD_3STYLE], |row| {
             Ok((
                 row.get::<_, String>(0)?,
                 row.get::<_, String>(1)?,
