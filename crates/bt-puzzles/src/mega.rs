@@ -3,7 +3,7 @@ use crate::geometry::{ApplyError, FaceletFace, FaceletGrid, Geometry, ParseError
 pub const FACES: usize = 12;
 pub const FACELETS: usize = 132;
 const PER_FACE: usize = FACELETS / FACES;
-const RING: usize = (PER_FACE - 1) / 2;
+const RING: usize = 5;
 const TOKEN_COUNT: usize = 16;
 
 pub const U: u8 = 0;
