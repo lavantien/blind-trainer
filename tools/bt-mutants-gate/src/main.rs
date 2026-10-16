@@ -3,7 +3,7 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();
-    if args.first().map(String::as_str) == Some("merge") {
+    if args.get(1).map(String::as_str) == Some("merge") {
         return run_merge(&args);
     }
     if args.len() != 3 {
