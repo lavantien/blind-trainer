@@ -471,3 +471,38 @@ proptest! {
         prop_assert!(skewb.invert_alg(&inverse) == alg);
     }
 }
+
+const DIRECTION_WITNESSES: [(&str, usize, u8); 4] =
+    [("F", 2, 1), ("L", 0, 3), ("R", 0, 2), ("B", 8, 3)];
+
+#[test]
+fn quarter_one_direction_is_pinned_per_vertex() {
+    let skewb = Skewb::new();
+    for (index, (name, position, value)) in DIRECTION_WITNESSES.iter().enumerate() {
+        let mut state = skewb.solved_state();
+        let alg = skewb.parse_alg(name).expect("canonical vertex turn");
+        skewb.apply_alg(&mut state, &alg).expect("apply");
+        assert_eq!(state.facelets[*position], *value, "{name} quarter one");
+        let table = skewb.turn_table(index as u8, 1);
+        let source = table
+            .iter()
+            .position(|&target| target as usize == *position)
+            .expect("witness position is a turn image");
+        assert_eq!(source / 9, *value as usize, "{name} quarter one table");
+    }
+}
+
+#[test]
+fn apply_rejects_hand_built_illegal_quarters() {
+    let skewb = Skewb::new();
+    for quarter in [0u8, 3u8] {
+        let alg = Alg {
+            moves: vec![Move { vertex: 0, quarter }],
+        };
+        let mut state = skewb.solved_state();
+        let err = skewb
+            .apply_alg(&mut state, &alg)
+            .expect_err("illegal quarter");
+        assert!(err.to_string().contains("illegal"), "err: {err}");
+    }
+}

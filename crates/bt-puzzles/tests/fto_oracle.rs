@@ -274,3 +274,45 @@ proptest! {
         prop_assert!(fto.invert_alg(&inverse) == alg);
     }
 }
+
+const DIRECTION_WITNESSES: [(&str, usize, u8); 8] = [
+    ("U", 9, 3),
+    ("F", 0, 6),
+    ("R", 1, 6),
+    ("BR", 1, 2),
+    ("B", 18, 6),
+    ("BL", 0, 4),
+    ("L", 0, 4),
+    ("D", 11, 5),
+];
+
+#[test]
+fn quarter_one_direction_is_pinned_per_face() {
+    let fto = Fto::new();
+    for (index, (name, position, value)) in DIRECTION_WITNESSES.iter().enumerate() {
+        let mut state = fto.solved_state();
+        let alg = fto.parse_alg(name).expect("canonical face turn");
+        fto.apply_alg(&mut state, &alg).expect("apply");
+        assert_eq!(state.facelets[*position], *value, "{name} quarter one");
+        assert_eq!(
+            fto.turn_table(index as u8, 1)[*position] as usize / 9,
+            *value as usize,
+            "{name} quarter one table"
+        );
+    }
+}
+
+#[test]
+fn apply_rejects_hand_built_illegal_quarters() {
+    let fto = Fto::new();
+    for quarter in [0u8, 3u8] {
+        let alg = Alg {
+            moves: vec![Move { face: 0, quarter }],
+        };
+        let mut state = fto.solved_state();
+        let err = fto
+            .apply_alg(&mut state, &alg)
+            .expect_err("illegal quarter");
+        assert!(err.to_string().contains("illegal"), "err: {err}");
+    }
+}

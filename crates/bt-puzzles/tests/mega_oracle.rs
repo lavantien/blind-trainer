@@ -691,3 +691,32 @@ fn only_pinned_moves_are_legal_constructions() {
         assert!(!mega::is_pinned_move(mv), "{:?}", mv);
     }
 }
+
+#[test]
+fn quarter_one_direction_is_pinned_by_neighbor_colors() {
+    let engine = Mega;
+    let mut state = engine.solved_state();
+    let alg = engine.parse_alg("U").expect("canonical turn");
+    engine.apply_alg(&mut state, &alg).expect("apply");
+    for (face, value) in [(1u8, 2u8), (2, 3), (3, 4), (4, 5)] {
+        assert_eq!(state.color(face, 1), value, "face {face} corner slot");
+        assert_eq!(state.color(face, 5), value, "face {face} edge slot");
+    }
+}
+
+#[test]
+fn is_empty_reflects_the_parsed_move_count() {
+    let engine = Mega;
+    assert!(!engine.parse_alg("U").expect("parse").is_empty());
+    assert!(engine.parse_alg("").expect("parse empty").is_empty());
+}
+#[test]
+fn quarter_one_own_ring_cycle_is_pinned_after_a_neighbor_turn() {
+    let engine = Mega;
+    let mut state = engine.solved_state();
+    let alg = engine.parse_alg("F U").expect("canonical pair");
+    engine.apply_alg(&mut state, &alg).expect("apply");
+    for (slot, value) in [(2u8, 5u8), (5, 0), (6, 5), (10, 0)] {
+        assert_eq!(state.color(0, slot), value, "face 0 slot {slot}");
+    }
+}

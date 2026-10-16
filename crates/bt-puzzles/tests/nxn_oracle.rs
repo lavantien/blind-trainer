@@ -519,3 +519,36 @@ proptest! {
         prop_assert_eq!(engine.facelets(&state), cube_facelets(&cube), "{}", text);
     }
 }
+#[test]
+fn quarter_one_direction_is_pinned_by_the_side_top_rows() {
+    let engine = Nxn::new(3).expect("engine");
+    let mut state = engine.solved_state();
+    let alg = engine.parse_alg("U").expect("canonical turn");
+    engine.apply_alg(&mut state, &alg).expect("apply");
+    let grid = engine.facelets(&state);
+    for (face, value) in [(1usize, 2u8), (2, 3), (3, 4), (4, 1)] {
+        assert_eq!(
+            grid.faces[face].rows[0],
+            vec![value; 3],
+            "face {face} top row"
+        );
+    }
+}
+
+#[test]
+fn is_solved_detects_a_turned_state() {
+    let engine = Nxn::new(3).expect("engine");
+    let solved = engine.solved_state();
+    assert!(engine.is_solved(&solved));
+    let mut turned = engine.solved_state();
+    let alg = engine.parse_alg("U").expect("canonical turn");
+    engine.apply_alg(&mut turned, &alg).expect("apply");
+    assert!(!engine.is_solved(&turned));
+}
+
+#[test]
+fn is_empty_reflects_the_parsed_move_count() {
+    let engine = Nxn::new(3).expect("engine");
+    assert!(!engine.parse_alg("U").expect("parse").is_empty());
+    assert!(engine.parse_alg("").expect("parse empty").is_empty());
+}

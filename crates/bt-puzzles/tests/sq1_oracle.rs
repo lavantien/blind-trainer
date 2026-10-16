@@ -537,3 +537,28 @@ fn inversion_stays_inside_the_parse_domain() {
         }
     }
 }
+#[test]
+fn canonical_shape_merges_the_wrapped_run_and_pins_the_minimum_rotation() {
+    let mut state = sq1::solved_state();
+    state.units[..12].copy_from_slice(&[1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1]);
+    assert_eq!(
+        sq1::canonical_shape(&state, 0),
+        vec![1, 1, 1, 1, 1, 1, 1, 1, 1, 3]
+    );
+}
+
+#[test]
+fn canonical_shape_keeps_a_single_run_unmerged() {
+    let mut state = sq1::solved_state();
+    state.units[..12].copy_from_slice(&[1; 12]);
+    assert_eq!(sq1::canonical_shape(&state, 0), vec![12]);
+}
+
+#[test]
+fn parse_rejects_a_two_digit_turn_out_of_the_engine_domain() {
+    let engine = Sq1;
+    let err = engine
+        .parse_alg("(12,3)")
+        .expect_err("two digit top must fail");
+    assert!(err.to_string().contains("unknown token"), "err: {err}");
+}
