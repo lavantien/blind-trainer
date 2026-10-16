@@ -1104,6 +1104,19 @@ fn sq1_rejects_a_three_token_auf_shaped_prefix() {
 }
 
 #[test]
+fn sq1_keeps_a_non_auf_prefix_group_and_rejects_its_token() {
+    for alg in ["(R2) / (3,3)", "(x') (0,1)", "(F) / (0,1)"] {
+        let err = normalize_alg("sq1", alg).expect_err("non auf prefix must not be stripped");
+        let shown = err.to_string();
+        assert!(shown.contains("unknown token"), "err: {shown}");
+        assert!(
+            shown.contains(alg.split_whitespace().next().unwrap_or_default()),
+            "err: {shown}"
+        );
+    }
+}
+
+#[test]
 fn sq1_pins_the_reported_span_of_an_unknown_token() {
     for alg in ["x/(3,3)", "x / (3,3)"] {
         let err = normalize_alg("sq1", alg).expect_err("stray letter must fail");
