@@ -207,7 +207,7 @@ mod tests {
             legacy.entries.is_empty(),
             "seed overrides must not leak into the 3bld overlay"
         );
-        let mut legacy_db = Db::open_in_memory().expect("db");
+        let legacy_db = Db::open_in_memory().expect("db");
         legacy_db
             .conn()
             .execute(
