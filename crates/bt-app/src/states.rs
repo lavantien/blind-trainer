@@ -11,6 +11,7 @@ pub enum AppState {
     Solve,
     Replay,
     Algs,
+    CaseDrill,
     Stats,
     Settings,
 }
@@ -47,6 +48,7 @@ impl AppState {
             AppState::Solve => "solve",
             AppState::Replay => "replay",
             AppState::Algs => "algs",
+            AppState::CaseDrill => "case-drill",
             AppState::Stats => "stats",
             AppState::Settings => "settings",
         }
@@ -62,6 +64,7 @@ impl AppState {
             AppState::Solve => "solve",
             AppState::Replay => "3d replay",
             AppState::Algs => "algs",
+            AppState::CaseDrill => "case drill",
             AppState::Stats => "stats",
             AppState::Settings => "settings",
         }
@@ -75,6 +78,14 @@ pub enum DrillPhase {
     Card,
     Reps,
     Rate,
+}
+
+#[derive(SubStates, Clone, Copy, PartialEq, Eq, Hash, Debug, Default)]
+#[source(AppState = AppState::CaseDrill)]
+pub enum CaseDrillPhase {
+    #[default]
+    Show,
+    Grade,
 }
 
 #[derive(SubStates, Clone, Copy, PartialEq, Eq, Hash, Debug, Default)]

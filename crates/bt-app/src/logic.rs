@@ -1,5 +1,5 @@
 use crate::persist::{self, MemoMode, PersistenceRoot, Settings, Stores};
-use crate::states::{AppState, DrillPhase, MemoPhase, SolvePhase};
+use crate::states::{AppState, CaseDrillPhase, DrillPhase, MemoPhase, SolvePhase};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
@@ -357,6 +357,7 @@ impl Plugin for AppLogicPlugin {
         app.insert_resource(paths)
             .init_state::<AppState>()
             .add_sub_state::<DrillPhase>()
+            .add_sub_state::<CaseDrillPhase>()
             .add_sub_state::<SolvePhase>()
             .add_sub_state::<MemoPhase>()
             .init_resource::<FatalReason>()

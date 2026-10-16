@@ -1,4 +1,6 @@
 pub mod algs;
+pub mod case_drill;
+pub mod case_drill_view;
 pub mod drill;
 pub mod drill_card;
 pub mod drill_view;
@@ -12,7 +14,7 @@ pub mod stats;
 
 use crate::logic::RuntimePaths;
 use crate::persist::Stores;
-use crate::states::{AppState, DrillPhase, MemoPhase, SolvePhase};
+use crate::states::{AppState, CaseDrillPhase, DrillPhase, MemoPhase, SolvePhase};
 use bevy::prelude::*;
 use bt_scheme::CaseId;
 use serde::Deserialize;
@@ -144,6 +146,9 @@ impl Plugin for ViewsLogicPlugin {
             .insert_resource(algs::browse::RepoBrowser::default())
             .insert_resource(algs::detail::OverrideStore::default())
             .insert_resource(algs::detail::OverrideDraft::default())
+            .insert_resource(case_drill::PendingCaseDrill::default())
+            .insert_resource(case_drill::CaseCardStore::default())
+            .insert_resource(case_drill::CaseDrillSession::default())
             .insert_resource(settings::SettingsDraft::default())
             .insert_resource(replay::ReplayScene::default())
             .configure_sets(Update, ViewsLogic.run_if(resource_exists::<Stores>))
@@ -195,7 +200,18 @@ impl Plugin for ViewsLogicPlugin {
                             algs::detail::override_keys,
                             in_state(AppState::Algs),
                         ),
-                    ),
+                        (
+                            IntoScheduleConfigs::run_if(
+                                case_drill::show_keys,
+                                in_state(CaseDrillPhase::Show),
+                            ),
+                            IntoScheduleConfigs::run_if(
+                                case_drill::grade_keys,
+                                in_state(CaseDrillPhase::Grade),
+                            ),
+                        ),
+                    )
+                        .chain(),
                     (
                         IntoScheduleConfigs::run_if(
                             settings::mode_keys,
@@ -234,9 +250,16 @@ impl Plugin for ViewsLogicPlugin {
                     algs::enter,
                     algs::browse::repo_enter,
                     algs::detail::override_enter,
+                    case_drill::cards_enter,
                 )
                     .chain(),
             )
+            .add_systems(
+                OnEnter(AppState::CaseDrill),
+                (case_drill::enter, case_drill_view::spawn_ui).chain(),
+            )
+            .add_systems(OnEnter(CaseDrillPhase::Show), case_drill_view::enter_show)
+            .add_systems(OnEnter(CaseDrillPhase::Grade), case_drill_view::enter_grade)
             .add_systems(OnEnter(AppState::Stats), stats::enter)
             .add_systems(OnEnter(AppState::Settings), settings::enter);
     }

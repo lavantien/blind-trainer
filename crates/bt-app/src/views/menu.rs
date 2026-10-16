@@ -25,7 +25,7 @@ pub fn state_description(state: AppState) -> &'static str {
         AppState::Algs => "browse and filter all 818 cases",
         AppState::Stats => "solve history and review load",
         AppState::Settings => "cadence, memo mode, reps",
-        AppState::Bootstrap | AppState::Fatal | AppState::Menu => "",
+        AppState::Bootstrap | AppState::Fatal | AppState::Menu | AppState::CaseDrill => "",
     }
 }
 
