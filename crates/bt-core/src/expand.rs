@@ -536,7 +536,7 @@ mod tests {
             expand(&over).is_none(),
             "two moves past the cap is rejected"
         );
-        let unit: String = vec!["R U F D L B"; 4].join(" ");
+        let unit: String = ["R U F D L B"; 4].join(" ");
         let unit = format!("{unit} R");
         assert_eq!(Alg::parse(&unit).unwrap().len(), 25);
         let mid = format!("({unit})50");
