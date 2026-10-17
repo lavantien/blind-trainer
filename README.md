@@ -263,7 +263,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 - baselines: copy the artifacts/e2e pngs into tests/visual/baselines, a deliberate out-of-chain refresh step, never run before visual since that would diff the run against itself.
 - visual-selftest: synthetic pairs prove bt-visual-diff passes identical images and catches a one-pixel-over-tolerance drift.
 - visual-diff: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
-- visual: visual-selftest, then the diff; on a mismatch it re-renders and re-diffs once, exit 2 regression versus exit 3 infra flake, verdict appended to artifacts/visual/report.md.
+- visual: visual-selftest, then the diff; on a mismatch it re-renders and re-diffs once, exit 2 regression, exit 3 infra flake that passed the second diff, exit 4 infra error where the re-render itself failed, verdict appended to artifacts/visual/report.md.
 - memguard: report the combined working set of every process whose executable lives under the repo against the memguard.cap_bytes hub cap, -Kill takes down the largest offender tree. memguard-selftest proves the matcher with a repo sleeper and a command-line decoy.
 - clean-rust: size the regenerable rust caches against the disk.free_floor_gb hub floor: incremental caches, cargo-mutants TEMP scratch dirs older than disk.scratch_stale_hours, external coverage and mutation targets, and the detached e2e and fuzz targets. clean-rust-apply deletes them in that order, deep clean of e2e and fuzz targets only when no cargo or rustc process is live (exit 3 refusal). clean-rust-selftest proves stale scratch selection and that a fresh active scratch survives.
 - release-verify: byte-verify the dist zip against staging, then run the packaged exe hermetically (BT_* scrubbed, fresh APPDATA, foreign cwd) through the smoke plus negative paths. release-verify-selftest runs its unit suite.
@@ -276,7 +276,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 
 ## exit codes
 
-blind-trainer.exe in smoke mode: 0 tour complete with all shots written, 1 verification failure or boot stuck past the limit, 2 CLI usage error, 3 a tour state never arrived. make visual: 0 clean, 2 regression on both diffs, 3 infra flake that passed the re-render. bt-visual-diff: 0 match, 1 mismatch or missing baseline, 2 usage. bt-e2e: 0 all shots verified, 1 shot failures, 2 harness error. memguard: 0 within cap, 2 usage or config error, 3 cap breach, 4 selftest fixture missing, 5 kill or assertion failure. bt-policy, bt-mutants-gate, bt-release-verify: 0 pass, 1 findings, 2 usage or harness error.
+blind-trainer.exe in smoke mode: 0 tour complete with all shots written, 1 verification failure or boot stuck past the limit, 2 CLI usage error, 3 a tour state never arrived. make visual: 0 clean, 2 regression on both diffs, 3 infra flake that passed the re-render, 4 infra error where the re-render itself failed. bt-visual-diff: 0 match, 1 mismatch or missing baseline, 2 usage. bt-e2e: 0 all shots verified, 1 shot failures, 2 harness error. memguard: 0 within cap, 2 usage or config error, 3 cap breach, 4 selftest fixture missing, 5 kill or assertion failure. bt-policy, bt-mutants-gate, bt-release-verify: 0 pass, 1 findings, 2 usage or harness error.
 
 ## config hub
 

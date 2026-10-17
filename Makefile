@@ -126,7 +126,7 @@ e2e-smoke: build
 	$$env:APPDATA = '$(ARTIFACTS)/e2e-user'; $(E2E_BIN) $(BIN) $(ARTIFACTS)/e2e
 
 visual: visual-selftest
-	@$(MAKE) visual-diff; if ($$LASTEXITCODE -eq 0) { exit 0 }; Write-Output 'visual: mismatch, re-rendering and re-diffing once'; $(MAKE) e2e-smoke; $$r1 = $$LASTEXITCODE; if ($$r1 -eq 0) { $(MAKE) visual-diff }; if ($$r1 -eq 0 -and $$LASTEXITCODE -eq 0) { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: infra flake, second run passed"; exit 3 } else { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: regression, both runs mismatched"; exit 2 }
+	@$(MAKE) visual-diff; if ($$LASTEXITCODE -eq 0) { exit 0 }; Write-Output 'visual: mismatch, re-rendering and re-diffing once'; $(MAKE) e2e-smoke; if ($$LASTEXITCODE -ne 0) { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: infra error, re-render failed"; exit 4 }; $(MAKE) visual-diff; if ($$LASTEXITCODE -eq 0) { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: infra flake, second run passed"; exit 3 } else { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: regression, both runs mismatched"; exit 2 }
 
 visual-diff:
 	cargo run --release -p bt-visual-diff -- $(ARTIFACTS)/e2e tests/visual/baselines
