@@ -80,7 +80,7 @@ impl Alg {
     }
 }
 
-fn parse_token(token: &str) -> Result<Move, ParseError> {
+pub(crate) fn parse_token(token: &str) -> Result<Move, ParseError> {
     let chars: Vec<char> = token.chars().collect();
     let mut idx = 0;
     let inner = if chars.first() == Some(&'2') {

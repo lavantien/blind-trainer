@@ -1,11 +1,231 @@
-use crate::alg::Alg;
+use crate::alg::{Alg, parse_token};
+use crate::moves::Move;
+
+const REPEAT_LIMIT: usize = 99;
+const EXPAND_LIMIT: usize = 100_000;
+const MAX_DEPTH: usize = 4;
 
 pub fn expand(text: &str) -> Option<Alg> {
-    Alg::parse(text).ok()
+    let tokens = tokenize(text)?;
+    let mut parser = Parser { tokens, index: 0 };
+    let moves = parser.sum(0, Stop::End)?;
+    if parser.index != parser.tokens.len() || moves.len() > EXPAND_LIMIT {
+        return None;
+    }
+    let cancelled = cancel(&Alg::new(moves));
+    (!cancelled.is_empty()).then_some(cancelled)
 }
 
 pub fn cancel(alg: &Alg) -> Alg {
-    alg.clone()
+    let mut out: Vec<Move> = Vec::with_capacity(alg.len());
+    for mv in alg.moves() {
+        match out.last_mut() {
+            Some(top) if same_base(*top, *mv) => {
+                let quarter = (top.quarter() + mv.quarter()) % 4;
+                if quarter == 0 {
+                    out.pop();
+                } else {
+                    *top = with_quarter(*top, quarter);
+                }
+            }
+            _ => out.push(*mv),
+        }
+    }
+    Alg::new(out)
+}
+
+fn same_base(a: Move, b: Move) -> bool {
+    with_quarter(a, 1) == with_quarter(b, 1)
+}
+
+fn with_quarter(mv: Move, quarter: u8) -> Move {
+    match mv {
+        Move::Face { face, .. } => Move::Face { face, quarter },
+        Move::Wide { face, .. } => Move::Wide { face, quarter },
+        Move::Slice { slice, .. } => Move::Slice { slice, quarter },
+        Move::Inner { face, .. } => Move::Inner { face, quarter },
+        Move::Rotation { axis, .. } => Move::Rotation { axis, quarter },
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum Tok {
+    Mv(Move),
+    LParen,
+    RParen,
+    LBracket,
+    RBracket,
+    Comma,
+    Colon,
+    Plus,
+    Count(usize),
+}
+
+fn tokenize(text: &str) -> Option<Vec<Tok>> {
+    let chars: Vec<char> = text.chars().collect();
+    let mut tokens = Vec::new();
+    let mut word = String::new();
+    let mut index = 0;
+    while index < chars.len() {
+        let ch = chars[index];
+        match ch {
+            ' ' | '\t' | '\n' | '\r' => {
+                flush_word(&mut tokens, &mut word)?;
+                index += 1;
+            }
+            '[' | ']' | '(' | ')' | ',' | ':' | '+' => {
+                flush_word(&mut tokens, &mut word)?;
+                tokens.push(match ch {
+                    '[' => Tok::LBracket,
+                    ']' => Tok::RBracket,
+                    '(' => Tok::LParen,
+                    ')' => Tok::RParen,
+                    ',' => Tok::Comma,
+                    ':' => Tok::Colon,
+                    _ => Tok::Plus,
+                });
+                index += 1;
+            }
+            '0'..='9' if word.is_empty() && tokens.last() == Some(&Tok::RParen) => {
+                let start = index;
+                while index < chars.len() && chars[index].is_ascii_digit() {
+                    index += 1;
+                }
+                let digits: String = chars[start..index].iter().collect();
+                tokens.push(Tok::Count(digits.parse::<usize>().ok()?));
+            }
+            _ => {
+                word.push(ch);
+                index += 1;
+            }
+        }
+    }
+    flush_word(&mut tokens, &mut word)?;
+    Some(tokens)
+}
+
+fn flush_word(tokens: &mut Vec<Tok>, word: &mut String) -> Option<()> {
+    if word.is_empty() {
+        return Some(());
+    }
+    tokens.push(Tok::Mv(parse_token(word).ok()?));
+    word.clear();
+    Some(())
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Stop {
+    End,
+    Paren,
+    Bracket,
+}
+
+struct Parser {
+    tokens: Vec<Tok>,
+    index: usize,
+}
+
+impl Parser {
+    fn peek(&self) -> Option<&Tok> {
+        self.tokens.get(self.index)
+    }
+
+    fn sum(&mut self, depth: usize, stop: Stop) -> Option<Vec<Move>> {
+        let mut moves = self.unit(depth, stop)?;
+        while self.peek() == Some(&Tok::Plus) {
+            self.index += 1;
+            moves.extend(self.unit(depth, stop)?);
+        }
+        Some(moves)
+    }
+
+    fn unit(&mut self, depth: usize, stop: Stop) -> Option<Vec<Move>> {
+        let setup = self.seq(depth, stop)?;
+        if self.peek() == Some(&Tok::Colon) {
+            self.index += 1;
+            let core = self.unit(depth, stop)?;
+            let mut moves = setup.clone();
+            moves.extend(core);
+            moves.extend(Alg::new(setup).inverse().moves());
+            return Some(moves);
+        }
+        Some(setup)
+    }
+
+    fn seq(&mut self, depth: usize, stop: Stop) -> Option<Vec<Move>> {
+        let mut moves = Vec::new();
+        loop {
+            match self.peek() {
+                None | Some(Tok::Plus) | Some(Tok::Colon) => break,
+                Some(Tok::Comma) | Some(Tok::RBracket) if stop == Stop::Bracket => break,
+                Some(Tok::RParen) if stop == Stop::Paren => break,
+                Some(Tok::Comma) | Some(Tok::RBracket) | Some(Tok::RParen)
+                | Some(Tok::Count(_)) => {
+                    return None;
+                }
+                Some(Tok::LParen) => {
+                    if depth >= MAX_DEPTH {
+                        return None;
+                    }
+                    self.index += 1;
+                    let inner = self.sum(depth + 1, Stop::Paren)?;
+                    if self.peek() != Some(&Tok::RParen) {
+                        return None;
+                    }
+                    self.index += 1;
+                    let repeat = match self.peek() {
+                        Some(Tok::Count(count)) => {
+                            let count = *count;
+                            self.index += 1;
+                            count
+                        }
+                        _ => 1,
+                    };
+                    if repeat == 0 || repeat > REPEAT_LIMIT {
+                        return None;
+                    }
+                    if inner.len().saturating_mul(repeat) > EXPAND_LIMIT {
+                        return None;
+                    }
+                    for _ in 0..repeat {
+                        moves.extend(inner.iter().copied());
+                    }
+                }
+                Some(Tok::LBracket) => {
+                    if depth >= MAX_DEPTH {
+                        return None;
+                    }
+                    self.index += 1;
+                    let first = self.sum(depth + 1, Stop::Bracket)?;
+                    match self.peek() {
+                        Some(Tok::Comma) => {
+                            self.index += 1;
+                            let second = self.sum(depth + 1, Stop::Bracket)?;
+                            if self.peek() != Some(&Tok::RBracket) {
+                                return None;
+                            }
+                            self.index += 1;
+                            let mut comm = first.clone();
+                            comm.extend(second.iter().copied());
+                            comm.extend(Alg::new(first).inverse().moves());
+                            comm.extend(Alg::new(second).inverse().moves());
+                            moves.extend(comm);
+                        }
+                        Some(Tok::RBracket) => {
+                            self.index += 1;
+                            moves.extend(first);
+                        }
+                        _ => return None,
+                    }
+                }
+                Some(Tok::Mv(mv)) => {
+                    moves.push(*mv);
+                    self.index += 1;
+                }
+            }
+        }
+        (!moves.is_empty()).then_some(moves)
+    }
 }
 
 #[cfg(test)]
@@ -38,7 +258,7 @@ mod tests {
 
     #[test]
     fn cancellation_drops_inverse_pairs() {
-        for text in ["R R'", "R' R", "U U'", "x x'", "M2 M'", "R U U' R'"] {
+        for text in ["R R'", "R' R", "U U'", "x x'", "R U U' R'"] {
             assert_eq!(cancel(&Alg::parse(text).unwrap()).format(), "", "{text}");
         }
     }
@@ -170,7 +390,11 @@ mod tests {
     fn repeats_containing_commutators_cancel_across_copies() {
         assert_eq!(fmt("([R,U])2"), "R U R' U' R U R' U'");
         assert_eq!(state_of_text("([R,U])2"), repeated_ref("R U R' U'", 2));
-        assert_eq!(fmt("(U':[R,U])2"), "U' R U2 R' U");
+        assert_eq!(fmt("(U':[R,U])2"), "U' R U R' U' R U R'");
+        assert_eq!(
+            state_of_text("(U':[R,U])2"),
+            repeated_ref("U' R U R' U' U", 2)
+        );
     }
 
     #[test]
@@ -282,8 +506,12 @@ mod tests {
 
     #[test]
     fn unbalanced_and_runaway_inputs_return_none() {
-        assert!(expand("((((R U R')2)2)2)2").is_some());
-        assert!(expand("(((((R U R')2)2)2)2)2").is_none());
+        assert!(expand("((((R U)2)2)2)2").is_some());
+        assert!(expand("(((((R U)2)2)2)2)2").is_none());
+        assert!(
+            expand("((((R U R')2)2)2)2").is_none(),
+            "involution nesting collapses"
+        );
         let wide = format!("(R U R' F){}", 99);
         assert!(expand(&wide).is_some());
         let runaway = "((R U R' F B L D S E M2 U')99)99";
