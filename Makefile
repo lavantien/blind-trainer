@@ -11,7 +11,7 @@ JOBWRAP := target/release/bt-jobwrap.exe
 MAKE_CMD := $(MAKE)
 FUZZ_TARGETS := notation classify memo commutator expand db fsrs
 CARGO_PROXY ?= C:/Users/lavantien/.cargo/bin/cargo.exe
-FUZZ_SAN ?= none
+ASAN_RT_GLOB ?= C:/Program Files/Microsoft Visual Studio/*/Community/VC/Tools/MSVC/*/bin/Hostx64/x64
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga bt-puzzles
 
 export BT_REF_GROUND := $(REF_GROUND)
@@ -100,7 +100,7 @@ mutants-gate-selftest:
 
 fuzz:
 	$(MAKE_CMD) jobwrap
-	$$cp = Split-Path -Parent '$(CARGO_PROXY)'; $$env:PATH = "$$cp;" + $$env:PATH; Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run -s $(FUZZ_SAN) $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
+	$$cp = Split-Path -Parent '$(CARGO_PROXY)'; $$asan = (Get-ChildItem '$(ASAN_RT_GLOB)' -Directory | Where-Object { Test-Path (Join-Path $$_.FullName 'clang_rt.asan_dynamic-x86_64.dll') } | Sort-Object FullName -Descending | Select-Object -First 1).FullName; $$env:PATH = "$$cp;$$asan;" + $$env:PATH; Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
 
 mutation:
 	$(MAKE_CMD) jobwrap
