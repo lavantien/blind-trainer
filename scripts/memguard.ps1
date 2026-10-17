@@ -102,16 +102,28 @@ function Resolve-PidDir {
     return (Join-Path $repo $pidDir)
 }
 
+function Get-PidStamp([int]$id) {
+    $proc = Get-Process -Id $id -ErrorAction SilentlyContinue
+    if ($null -eq $proc -or $null -eq $proc.StartTime) { return $null }
+    return "$id $($proc.StartTime.ToUniversalTime().Ticks)"
+}
+
 function Get-PidFileRoots([string]$pidDir) {
     $roots = @()
     if (-not (Test-Path -LiteralPath $pidDir)) { return $roots }
     foreach ($file in @(Get-ChildItem -LiteralPath $pidDir -Filter '*.pid' -File -ErrorAction SilentlyContinue)) {
         try { $raw = Get-Content -LiteralPath $file.FullName -Raw } catch { continue }
         if ($null -eq $raw) { continue }
+        $parts = $raw.Trim() -split '\s+'
+        if ($parts.Count -ne 2) { continue }
         $value = 0L
-        if (-not [long]::TryParse($raw.Trim(), [ref]$value) -or $value -le 0 -or $value -gt [int]::MaxValue) { continue }
+        $stamp = 0L
+        if (-not [long]::TryParse($parts[0], [ref]$value) -or $value -le 0 -or $value -gt [int]::MaxValue) { continue }
+        if (-not [long]::TryParse($parts[1], [ref]$stamp)) { continue }
         if ($value -eq $PID) { continue }
-        if ($null -eq (Get-Process -Id $value -ErrorAction SilentlyContinue)) { continue }
+        $live = Get-Process -Id $value -ErrorAction SilentlyContinue
+        if ($null -eq $live -or $null -eq $live.StartTime) { continue }
+        if ($live.StartTime.ToUniversalTime().Ticks -ne $stamp) { continue }
         $roots += [int]$value
     }
     return $roots
@@ -255,7 +267,6 @@ function Invoke-MemguardSelfTest {
             return 5
         }
         Write-Host "memguard selftest ok: memguard.pid_dir resolved from config, $resolvedPidDir"
-        $wrapPidFile = Join-Path $resolvedPidDir 'selftest-wrap.pid'
         $outsideDir = Join-Path ([System.IO.Path]::GetTempPath()) ('bt-memguard-selftest-' + [guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Path $outsideDir | Out-Null
         $outsideExe = Join-Path $outsideDir 'bt-sleeper.exe'
@@ -267,8 +278,14 @@ function Invoke-MemguardSelfTest {
             Write-Fail "selftest stale pid $($deadProc.Id) still alive"
             return 5
         }
-        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-stale.pid') -Value $deadProc.Id
-        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-sleeper.pid') -Value $treeSleeper.Id
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-stale.pid') -Value "$($deadProc.Id) 0"
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-garbage.pid') -Value 'abc'
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-negative.pid') -Value '-5 0'
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-zero.pid') -Value '0 0'
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-overflow.pid') -Value '99999999999999999999 0'
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-unstamped.pid') -Value $decoy.Id
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-dup.pid') -Value (Get-PidStamp $sleeper.Id)
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-sleeper.pid') -Value (Get-PidStamp $treeSleeper.Id)
         $treeChildSeen = $false
         for ($i = 0; $i -lt 40; $i++) {
             $child = Get-CimInstance Win32_Process -Filter "ParentProcessId = $($treeRoot.Id)" | Where-Object { $_.Name -like 'bt-sleeper*' } | Select-Object -First 1
@@ -279,7 +296,7 @@ function Invoke-MemguardSelfTest {
             Write-Fail "selftest tree root pid $($treeRoot.Id) never spawned the child sleeper"
             return 5
         }
-        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-tree.pid') -Value $treeRoot.Id
+        Set-Content -LiteralPath (Join-Path $pidDir 'selftest-tree.pid') -Value (Get-PidStamp $treeRoot.Id)
         Start-Sleep -Milliseconds 500
         $rows = @(Get-TrackedProcess $pidDir)
         foreach ($expected in @($treeSleeper.Id, $treeRoot.Id, $treeChildId)) {
@@ -296,10 +313,16 @@ function Invoke-MemguardSelfTest {
         Write-Host "memguard selftest ok: stale pidfile with dead pid $($deadProc.Id) ignored"
         $decoyCounted = $null -ne ($rows | Where-Object { $_.Id -eq $decoy.Id })
         if ($decoyCounted) {
-            Write-Fail "selftest decoy pid $($decoy.Id) matched, command line matching leaked into the pidtree matcher"
+            Write-Fail "selftest decoy pid $($decoy.Id) matched, command line matching or unstamped pidfiles leaked into the matcher"
             return 5
         }
-        Write-Host "memguard selftest ok: decoy pid $($decoy.Id) not matched by pidtree"
+        Write-Host "memguard selftest ok: decoy pid $($decoy.Id) not matched by pidtree, malformed and unstamped pidfiles ignored"
+        $dupCount = @($rows | Where-Object { $_.Id -eq $sleeper.Id }).Count
+        if ($dupCount -ne 1) {
+            Write-Fail "selftest repo sleeper pid $($sleeper.Id) counted $dupCount times, dedupe broken"
+            return 5
+        }
+        Write-Host "memguard selftest ok: pid $($sleeper.Id) counted once across exe path and pidfile tree"
         $live = Get-Process -Id $treeSleeper.Id -ErrorAction SilentlyContinue
         if ($null -eq $live) {
             Write-Fail "selftest pidfile sleeper pid $($treeSleeper.Id) died before the kill fixture"
@@ -329,6 +352,7 @@ function Invoke-MemguardSelfTest {
         $wrapErrFile = Join-Path $tempDir 'wrap-stderr.txt'
         $wrapArgs = '-NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '" -Wrap selftest-wrap -WrapCommand "' + $outsideExe2.Replace('\', '/') + ' 8"'
         $wrapProc = Start-Process -FilePath $pwshExe -ArgumentList $wrapArgs -PassThru -WindowStyle Hidden -RedirectStandardError $wrapErrFile
+        $wrapPidFile = Join-Path $resolvedPidDir ('selftest-wrap-' + $wrapProc.Id + '.pid')
         $wrapSeen = $false
         for ($i = 0; $i -lt 40; $i++) {
             if (Test-Path -LiteralPath $wrapPidFile) { $wrapSeen = $true; break }
@@ -340,7 +364,11 @@ function Invoke-MemguardSelfTest {
             Write-Fail "selftest wrap mode never wrote $wrapPidFile, wrapper stderr: $wrapErr"
             return 5
         }
-        $wrapPid = [int](Get-Content -LiteralPath $wrapPidFile -Raw).Trim()
+        $wrapPid = 0
+        try {
+            $wrapParts = (Get-Content -LiteralPath $wrapPidFile -Raw).Trim() -split '\s+'
+            $wrapPid = [int]$wrapParts[0]
+        } catch { }
         if ($wrapPid -ne $wrapProc.Id) {
             Write-Fail "selftest wrap pidfile holds pid $wrapPid, expected wrapper pid $($wrapProc.Id)"
             return 5
@@ -429,14 +457,23 @@ if ($SelfTest) {
 }
 
 if ($Wrap -ne '') {
+    if ($Wrap -notmatch '^[A-Za-z0-9._-]+$') {
+        Write-Fail "-Wrap must be a plain name part: $Wrap"
+        exit 2
+    }
     if ($WrapCommand.Trim().Length -eq 0) {
         Write-Fail "-WrapCommand must not be empty"
         exit 2
     }
     $wrapPidDir = Resolve-PidDir
     New-Item -ItemType Directory -Path $wrapPidDir -Force | Out-Null
-    $wrapPidFile = Join-Path $wrapPidDir ($Wrap + '.pid')
-    Set-Content -LiteralPath $wrapPidFile -Value $PID
+    $wrapStamp = Get-PidStamp $PID
+    if ($null -eq $wrapStamp) {
+        Write-Fail "cannot stamp wrapper pid $PID for wrap $Wrap"
+        exit 2
+    }
+    $wrapPidFile = Join-Path $wrapPidDir ($Wrap + '-' + $PID + '.pid')
+    Set-Content -LiteralPath $wrapPidFile -Value $wrapStamp
     try {
         & sh -c $WrapCommand
         exit ([int]$LASTEXITCODE)
