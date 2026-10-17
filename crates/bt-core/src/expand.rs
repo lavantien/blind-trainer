@@ -557,6 +557,14 @@ mod tests {
             expand("[[[[[R,U],S],D],F],E]").is_none(),
             "five levels are rejected"
         );
+        assert!(
+            expand("[R,[R,[R,[R,U]]]]").is_some(),
+            "four right nested levels parse"
+        );
+        assert!(
+            expand("[R,[R,[R,[R,[R,U]]]]]").is_none(),
+            "five right nested levels are rejected"
+        );
     }
 
     #[test]
