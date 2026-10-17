@@ -117,7 +117,8 @@ pub fn has_commutator(text: &str) -> bool {
 }
 
 pub fn expand_flat_line(alg_text: &str) -> Option<String> {
-    None
+    let expanded = bt_core::expand(alg_text)?.format();
+    (expanded != alg_text).then(|| format!("expand {expanded}"))
 }
 
 pub fn expand_alg_line(
@@ -126,7 +127,17 @@ pub fn expand_alg_line(
     alg_text: &str,
     displayed: &str,
 ) -> Option<String> {
-    None
+    let expanded = if has_commutator(commutator) {
+        let units = bt_data::commutator::decompose_verified(commutator, alg)?;
+        let mut moves = Vec::new();
+        for unit in &units {
+            moves.extend_from_slice(unit.expansion().moves());
+        }
+        bt_core::cancel(&Alg::new(moves)).format()
+    } else {
+        bt_core::expand(alg_text)?.format()
+    };
+    (expanded != displayed).then(|| format!("expand {expanded}"))
 }
 
 fn reset_counters(session: &mut DrillSession) {
