@@ -11,7 +11,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation mutation-pkg mutation-merge e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
+.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation mutation-pkg mutation-merge e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-deep-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -144,6 +144,9 @@ clean-rust:
 
 clean-rust-apply:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+
+clean-rust-deep-apply:
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -Deep -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
 
 clean-rust-selftest:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -SelfTest -WorkDir $(ARTIFACTS)/clean-rust-selftest
