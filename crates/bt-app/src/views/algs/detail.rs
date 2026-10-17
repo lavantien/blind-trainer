@@ -102,6 +102,19 @@ fn nxn_check(n: usize, text: &str) -> Result<(), String> {
     verify_tier1(&geometry, text).map_err(|err| err.to_string())
 }
 
+fn btcore_cube_check(text: &str) -> Result<(), String> {
+    if text.trim().is_empty() {
+        return Err("alg is empty".to_string());
+    }
+    match bt_core::expand(text) {
+        Some(expanded) => nxn_check(3, &expanded.format()),
+        None => match bt_core::Alg::parse(text) {
+            Ok(_) => nxn_check(3, text),
+            Err(_) => Err("alg does not parse in the bt-core notation".to_string()),
+        },
+    }
+}
+
 fn skewb_stripped(alg: &str) -> Result<String, String> {
     let stripped = bt_data::notation::strip_rotations(alg);
     if stripped.is_empty() {
@@ -114,8 +127,11 @@ fn skewb_stripped(alg: &str) -> Result<String, String> {
 fn geometry_check(event: &str, size: Option<i64>, text: &str) -> Result<(), String> {
     match event {
         "2x2" => nxn_check(2, text),
-        "3x3" | "oh" | "3bld" => nxn_check(3, text),
-        "bigcube" => nxn_check(size.unwrap_or(7).clamp(2, 7) as usize, text),
+        "3x3" | "oh" | "3bld" => btcore_cube_check(text),
+        "bigcube" => match size {
+            Some(n) => nxn_check(n.clamp(2, 7) as usize, text),
+            None => Err("no cube size in the browser path for a bigcube case".to_string()),
+        },
         "skewb" => skewb_stripped(text).and_then(|stripped| {
             verify_tier1(&bt_puzzles::skewb::Skewb::new(), &stripped).map_err(|err| err.to_string())
         }),
@@ -546,10 +562,29 @@ mod tests {
         assert_eq!(geometry_check("2x2", None, "R U R'"), Ok(()));
         assert_eq!(geometry_check("bigcube", Some(5), "Rw U Rw'"), Ok(()));
         assert!(geometry_check("3x3", None, "QQ").is_err());
-        assert!(geometry_check("bigcube", None, "R U R'").is_ok());
+        assert_eq!(
+            geometry_check("bigcube", None, "R U R'"),
+            Err("no cube size in the browser path for a bigcube case".to_string())
+        );
         assert_eq!(
             geometry_check("clock", None, "R U R'"),
             Err("no tier 1 geometry for event clock".to_string())
+        );
+    }
+
+    #[test]
+    fn cube_override_gate_accepts_the_bt_core_notation() {
+        assert_eq!(geometry_check("3x3", None, "[R U R', M]"), Ok(()));
+        assert_eq!(geometry_check("3bld", None, "(R U R')2"), Ok(()));
+        assert_eq!(geometry_check("oh", None, "R U R'"), Ok(()));
+        assert_eq!(geometry_check("3x3", None, "R R'"), Ok(()));
+        assert_eq!(
+            geometry_check("3x3", None, "[R U"),
+            Err("alg does not parse in the bt-core notation".to_string())
+        );
+        assert_eq!(
+            geometry_check("3bld", None, "  "),
+            Err("alg is empty".to_string())
         );
     }
 
