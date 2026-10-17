@@ -99,7 +99,7 @@ mutants-gate-selftest:
 
 fuzz:
 	$(MAKE_CMD) jobwrap
-	Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- $(CARGO_PROXY) fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
+	$$cp = Split-Path -Parent '$(CARGO_PROXY)'; $$env:PATH = "$$cp;" + $$env:PATH; Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
 
 mutation:
 	$(MAKE_CMD) jobwrap
