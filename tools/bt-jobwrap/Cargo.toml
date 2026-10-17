@@ -1,0 +1,6 @@
+[package]
+name = "bt-jobwrap"
+edition.workspace = true
+
+[dependencies]
+serde_json.workspace = true
