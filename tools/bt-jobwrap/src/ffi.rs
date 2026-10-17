@@ -1,8 +1,8 @@
 use std::ffi::c_void;
 
-type Handle = *mut c_void;
+type Handle = isize;
 
-const NULL_HANDLE: Handle = std::ptr::null_mut();
+const NULL_HANDLE: Handle = 0;
 const JOB_CLASS_EXTENDED_LIMITS: i32 = 9;
 const CREATE_SUSPENDED: u32 = 4;
 const LIMIT_PROCESS_MEMORY: u32 = 0x100;

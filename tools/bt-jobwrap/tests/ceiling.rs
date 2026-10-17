@@ -207,7 +207,7 @@ fn anchor_pidfile_carries_dotnet_start_ticks_and_clears_on_exit() {
         pidfile.display()
     );
     let raw = std::fs::read_to_string(&pidfile).expect("pidfile read");
-    let parts: Vec<&str> = raw.trim().split_whitespace().collect();
+    let parts: Vec<&str> = raw.split_whitespace().collect();
     assert_eq!(parts.len(), 2, "pidfile must hold pid then ticks: {raw}");
     assert_eq!(parts[0].parse::<u32>().expect("pid number"), child.id());
     let live = pwsh_text(&format!(
