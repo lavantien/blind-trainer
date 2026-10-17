@@ -1,3 +1,6 @@
+SHELL := pwsh.exe
+.SHELLFLAGS := -NoProfile -ExecutionPolicy Bypass -Command
+
 REF_GROUND := ref_ground
 CONFIG := config/config.json
 ARTIFACTS := artifacts
@@ -25,8 +28,8 @@ MUTATION_PKG_OUTS := $(foreach pkg,$(MUTATION_PACKAGES),$(MUTATION_PKG_DIR)/$(pk
 
 setup:
 	rustup component add rustfmt clippy
-	@command -v cargo-fuzz >/dev/null 2>&1 && echo cargo-fuzz present || echo cargo-fuzz missing
-	@command -v cargo-mutants >/dev/null 2>&1 && echo cargo-mutants present || echo cargo-mutants missing
+	@if (Get-Command cargo-fuzz -ErrorAction SilentlyContinue) { Write-Output 'cargo-fuzz present' } else { Write-Output 'cargo-fuzz missing' }
+	@if (Get-Command cargo-mutants -ErrorAction SilentlyContinue) { Write-Output 'cargo-mutants present' } else { Write-Output 'cargo-mutants missing' }
 
 docs-fetch:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/fetch_docs.ps1
@@ -72,18 +75,18 @@ check:
 
 build:
 	cargo build --release -p bt-app
-	test -f $(BIN) || { echo missing $(BIN); exit 1; }
+	if (-not (Test-Path '$(BIN)')) { Write-Output 'missing $(BIN)'; exit 1 }
 
 jobwrap:
 	cargo build --release -p bt-jobwrap
-	test -f $(JOBWRAP) || { echo missing $(JOBWRAP); exit 1; }
+	if (-not (Test-Path '$(JOBWRAP)')) { Write-Output 'missing $(JOBWRAP)'; exit 1 }
 
 test:
 	$(MAKE_CMD) jobwrap
 	$(JOBWRAP) --anchor test -- cargo test --workspace
 
 test-crate:
-	@test -n "$(p)" || { echo 'usage: make test-crate p=<crate>'; exit 2; }
+	@if ([string]::IsNullOrEmpty('$(p)')) { Write-Output 'usage: make test-crate p=<crate>'; exit 2 }
 	$(MAKE_CMD) jobwrap
 	$(JOBWRAP) --anchor test-$(p) -- cargo test -p $(p)
 
@@ -95,16 +98,16 @@ mutants-gate-selftest:
 
 fuzz:
 	$(MAKE_CMD) jobwrap
-	cd fuzz && for t in $(FUZZ_TARGETS); do $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t || exit 1; done
+	Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
 
 mutation:
 	$(MAKE_CMD) jobwrap
 	$(JOBWRAP) --anchor mutation -- cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
 
 mutation-pkg:
-	@test -n "$(p)" || { echo 'usage: make mutation-pkg p=<crate>'; exit 2; }
+	@if ([string]::IsNullOrEmpty('$(p)')) { Write-Output 'usage: make mutation-pkg p=<crate>'; exit 2 }
 	$(MAKE_CMD) jobwrap
-	mkdir -p $(MUTATION_PKG_DIR)/$(p)
+	New-Item -Path '$(MUTATION_PKG_DIR)/$(p)' -ItemType Directory -Force | Out-Null
 	$(JOBWRAP) --anchor mutation-pkg-$(p) -- cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)
 
 mutation-merge:
@@ -117,17 +120,11 @@ e2e: build
 
 e2e-smoke: build
 	cargo build --release --manifest-path tests/e2e/Cargo.toml
-	mkdir -p $(ARTIFACTS)/e2e $(ARTIFACTS)/e2e-user
-	APPDATA=$(ARTIFACTS)/e2e-user $(E2E_BIN) $(BIN) $(ARTIFACTS)/e2e
+	New-Item -Path '$(ARTIFACTS)/e2e', '$(ARTIFACTS)/e2e-user' -ItemType Directory -Force | Out-Null
+	$$env:APPDATA = '$(ARTIFACTS)/e2e-user'; $(E2E_BIN) $(BIN) $(ARTIFACTS)/e2e
 
 visual: visual-selftest
-	@if $(MAKE) visual-diff; then exit 0; fi; \
-	 echo 'visual: mismatch, re-rendering and re-diffing once'; \
-	 if $(MAKE) e2e-smoke && $(MAKE) visual-diff; then \
-	   printf '\nverdict: infra flake, second run passed\n' >> $(ARTIFACTS)/visual/report.md; exit 3; \
-	 else \
-	   printf '\nverdict: regression, both runs mismatched\n' >> $(ARTIFACTS)/visual/report.md; exit 2; \
-	 fi
+	@$(MAKE) visual-diff; if ($$LASTEXITCODE -eq 0) { exit 0 }; Write-Output 'visual: mismatch, re-rendering and re-diffing once'; $(MAKE) e2e-smoke; $$r1 = $$LASTEXITCODE; if ($$r1 -eq 0) { $(MAKE) visual-diff }; if ($$r1 -eq 0 -and $$LASTEXITCODE -eq 0) { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: infra flake, second run passed"; exit 3 } else { Add-Content -Path '$(ARTIFACTS)/visual/report.md' -Value "`nverdict: regression, both runs mismatched"; exit 2 }
 
 visual-diff:
 	cargo run --release -p bt-visual-diff -- $(ARTIFACTS)/e2e tests/visual/baselines
@@ -136,15 +133,15 @@ visual-selftest:
 	cargo run --release -p bt-visual-diff -- --selftest $(ARTIFACTS)/visual-selftest
 
 baselines:
-	mkdir -p tests/visual/baselines
-	cp $(ARTIFACTS)/e2e/*.png tests/visual/baselines/
+	New-Item -Path tests/visual/baselines -ItemType Directory -Force | Out-Null
+	Copy-Item -Path '$(ARTIFACTS)/e2e/*.png' -Destination tests/visual/baselines/ -ErrorAction Stop
 
 screenshots: build
-	rm -rf $(ARTIFACTS)/usage-user
-	rm -f docs/screenshots/*.png
-	mkdir -p docs/screenshots
-	APPDATA=$(ARTIFACTS)/usage-user $(BIN) --usage docs/screenshots
-	BT_CONFIG=$(ARTIFACTS)/usage-absent-config.json $(BIN) --fatal-shot docs/screenshots
+	if (Test-Path '$(ARTIFACTS)/usage-user') { Remove-Item -Path '$(ARTIFACTS)/usage-user' -Recurse -Force }
+	Remove-Item -Path docs/screenshots/*.png -Force -ErrorAction SilentlyContinue
+	New-Item -Path docs/screenshots -ItemType Directory -Force | Out-Null
+	$$env:APPDATA = '$(ARTIFACTS)/usage-user'; $(BIN) --usage docs/screenshots
+	$$env:BT_CONFIG = '$(ARTIFACTS)/usage-absent-config.json'; $(BIN) --fatal-shot docs/screenshots
 
 memguard:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD)
@@ -173,7 +170,7 @@ chain:
 	$(JOBWRAP) --anchor chain -- $(MAKE_CMD) test fmt lint policy check build fuzz mutation mutants-gate e2e baselines visual verify-algs
 
 coverage:
-	CARGO_TARGET_DIR=$(COVERAGE_TARGET) pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
+	$$env:CARGO_TARGET_DIR = '$(COVERAGE_TARGET)'; pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
 
 alg-coverage:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/alg-coverage-badge.ps1
@@ -182,26 +179,26 @@ diagrams:
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/diagrams.ps1
 
 release-verify:
-	@test -n "$(v)" || { echo 'usage: make release-verify v=<tag>'; exit 2; }
+	@if ([string]::IsNullOrEmpty('$(v)')) { Write-Output 'usage: make release-verify v=<tag>'; exit 2 }
 	cargo run --release -p bt-release-verify -- $(ARTIFACTS)/dist/blind-trainer $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip --run
 
 release-verify-selftest:
 	cargo test -p bt-release-verify
 
 dist: build
-	@test -n "$(v)" || { echo 'usage: make dist v=<tag>'; exit 2; }
+	@if ([string]::IsNullOrEmpty('$(v)')) { Write-Output 'usage: make dist v=<tag>'; exit 2 }
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/dist.ps1 -Version $(v)
 	$(MAKE) release-verify v=$(v)
 
 release:
-	@test -n "$(v)" || { echo 'usage: make release v=<tag>'; exit 2; }
-	@test -f docs/releases/$(v).md || { echo missing docs/releases/$(v).md; exit 2; }
-	@test -f $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip || { echo run make dist v=$(v) first; exit 2; }
+	@if ([string]::IsNullOrEmpty('$(v)')) { Write-Output 'usage: make release v=<tag>'; exit 2 }
+	@if (-not (Test-Path 'docs/releases/$(v).md')) { Write-Output 'missing docs/releases/$(v).md'; exit 2 }
+	@if (-not (Test-Path '$(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip')) { Write-Output 'run make dist v=$(v) first'; exit 2 }
 	git push origin main
 	git push origin $(v)
 	gh release create $(v) $(ARTIFACTS)/dist/blind-trainer-$(v)-windows-x64.zip --title "blind trainer $(v)" --notes-file docs/releases/$(v).md
 
 clean:
-	rm -rf $(ARTIFACTS) tests/e2e/target
-	mkdir -p $(ARTIFACTS)
-	touch $(ARTIFACTS)/.gitkeep
+	Remove-Item -Path '$(ARTIFACTS)', tests/e2e/target -Recurse -Force -ErrorAction SilentlyContinue
+	New-Item -Path '$(ARTIFACTS)' -ItemType Directory -Force | Out-Null
+	if (-not (Test-Path '$(ARTIFACTS)/.gitkeep')) { New-Item -Path '$(ARTIFACTS)/.gitkeep' -ItemType File | Out-Null }
