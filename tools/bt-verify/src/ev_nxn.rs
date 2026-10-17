@@ -65,6 +65,15 @@ fn tier2_cll(engine: &Nxn, rotations: &[NxnAlg], alg_text: &str) -> Tier2Outcome
         if let Err(err) = engine.apply_alg(&mut turned, rotation) {
             return Tier2Outcome::Fail(err.to_string());
         }
+        if engine.is_solved(&turned) {
+            return Tier2Outcome::Fail("start state is already solved".to_string());
+        }
+    }
+    for rotation in rotations {
+        let mut turned = case.clone();
+        if let Err(err) = engine.apply_alg(&mut turned, rotation) {
+            return Tier2Outcome::Fail(err.to_string());
+        }
         if d_layer_solved(engine, &turned) {
             return Tier2Outcome::Pass;
         }
@@ -127,6 +136,19 @@ mod tests {
         let rotations = nxn_rotations(&engine);
         let outcome = tier2_cll(&engine, &rotations, "R U R'");
         assert!(matches!(outcome, Tier2Outcome::Fail(_)));
+    }
+
+    #[test]
+    fn a_rotation_only_row_is_rejected_as_already_solved() {
+        let engine = engine();
+        let rotations = nxn_rotations(&engine);
+        for alg in ["x", "z'", "x y2"] {
+            assert_eq!(
+                tier2_cll(&engine, &rotations, alg),
+                Tier2Outcome::Fail("start state is already solved".to_string()),
+                "{alg}"
+            );
+        }
     }
 
     #[test]
