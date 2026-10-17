@@ -331,7 +331,7 @@ mod tests {
         assert!(migrated_path(&solves_path_at(&root)).is_file());
         assert!(migrated_path(&user_algs_path_at(&root)).is_file());
         let restored = migrated_path(&user_algs_path_at(&root));
-        std::fs::rename(restored, &user_algs_path_at(&root)).expect("restore one file");
+        std::fs::rename(restored.clone(), user_algs_path_at(&root)).expect("restore one file");
         std::fs::create_dir_all(&restored).expect("blocker dir");
         let err = run(&mut db, &root).expect_err("blocked residue rename must fail");
         assert!(err.contains("user-algs.json"), "err: {err}");
