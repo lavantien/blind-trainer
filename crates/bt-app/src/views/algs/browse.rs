@@ -409,6 +409,8 @@ pub fn repo_keys(
 #[cfg(test)]
 pub(crate) mod testkit {
     use super::*;
+    use bt_data::paths::packs_root;
+    use bt_data::seedpack::load_pack;
     use std::collections::BTreeSet;
 
     pub fn pack(event: &str, method: &str, stage: &str, n: NSpec) -> PackEntry {
@@ -468,6 +470,18 @@ pub(crate) mod testkit {
             arms: repo_arms(&fixture_packs(), &hidden(&["sq1"]), &fixture_rows()),
             ..RepoBrowser::default()
         }
+    }
+
+    pub fn skewb_sarah_rows() -> Vec<SeedRow> {
+        let entry = PackEntry {
+            file: "skewb_sarah.tsv".to_string(),
+            event: "skewb".to_string(),
+            method: "sarah_intermediate".to_string(),
+            stage: "sarah".to_string(),
+            n: NSpec::Unset,
+            expected_rows: 15,
+        };
+        load_pack(&packs_root().expect("packs root"), &entry).expect("skewb sarah pack")
     }
 }
 

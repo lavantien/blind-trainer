@@ -160,7 +160,13 @@ pub fn case_facelets(event: &str, size: Option<i64>, alg: &str) -> Result<Facele
             geometry_grid(&geometry, alg, event)
         }
         "bigcube" => nxn_grid(size.unwrap_or(7).clamp(2, 7) as usize, alg),
-        "skewb" => geometry_grid(&bt_puzzles::skewb::Skewb::new(), alg, event),
+        "skewb" => {
+            let stripped = bt_data::notation::strip_rotations(alg);
+            if stripped.is_empty() {
+                return Err("alg is empty after rotation stripping".to_string());
+            }
+            geometry_grid(&bt_puzzles::skewb::Skewb::new(), &stripped, event)
+        }
         "pyraminx" => geometry_grid(&bt_puzzles::pyra::Pyraminx, alg, event),
         "megaminx" => geometry_grid(&bt_puzzles::mega::Mega, alg, event),
         "fto" => geometry_grid(&bt_puzzles::fto::Fto::new(), alg, event),
@@ -601,6 +607,26 @@ mod tests {
             skewb.faces[2].rows[0],
             vec![0, 2, 3],
             "the engine F face lands in the F slot recolored"
+        );
+    }
+
+    #[test]
+    fn every_skewb_sarah_seed_row_renders_its_case_net() {
+        let rows = crate::views::algs::browse::testkit::skewb_sarah_rows();
+        assert_eq!(rows.len(), 15);
+        for row in &rows {
+            let grid = case_facelets("skewb", None, &row.alg).unwrap_or_else(|err| {
+                panic!("{} holds {} and must render: {err}", row.case_key, row.alg)
+            });
+            assert_eq!(grid.faces.len(), SKEWB_FACES.len(), "{}", row.case_key);
+        }
+    }
+
+    #[test]
+    fn a_skewb_case_of_only_rotations_reports_the_stripped_alg_as_empty() {
+        assert_eq!(
+            case_facelets("skewb", None, "y2 z x'"),
+            Err("alg is empty after rotation stripping".to_string())
         );
     }
 

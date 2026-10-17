@@ -102,14 +102,23 @@ fn nxn_check(n: usize, text: &str) -> Result<(), String> {
     verify_tier1(&geometry, text).map_err(|err| err.to_string())
 }
 
+fn skewb_stripped(alg: &str) -> Result<String, String> {
+    let stripped = bt_data::notation::strip_rotations(alg);
+    if stripped.is_empty() {
+        Err("alg is empty after rotation stripping".to_string())
+    } else {
+        Ok(stripped)
+    }
+}
+
 fn geometry_check(event: &str, size: Option<i64>, text: &str) -> Result<(), String> {
     match event {
         "2x2" => nxn_check(2, text),
         "3x3" | "oh" | "3bld" => nxn_check(3, text),
         "bigcube" => nxn_check(size.unwrap_or(7).clamp(2, 7) as usize, text),
-        "skewb" => {
-            verify_tier1(&bt_puzzles::skewb::Skewb::new(), text).map_err(|err| err.to_string())
-        }
+        "skewb" => skewb_stripped(text).and_then(|stripped| {
+            verify_tier1(&bt_puzzles::skewb::Skewb::new(), &stripped).map_err(|err| err.to_string())
+        }),
         "pyraminx" => {
             verify_tier1(&bt_puzzles::pyra::Pyraminx, text).map_err(|err| err.to_string())
         }
@@ -356,7 +365,7 @@ pub fn spawn_seed_detail(
 mod tests {
     use super::*;
     use crate::views::algs::browse::RepoBrowser;
-    use crate::views::algs::browse::testkit::armed_browser;
+    use crate::views::algs::browse::testkit::{armed_browser, skewb_sarah_rows};
     use crate::views::algs::browse::{repo_deeper, repo_move};
 
     fn lines_of(browser: &RepoBrowser) -> Vec<String> {
@@ -541,6 +550,29 @@ mod tests {
         assert_eq!(
             geometry_check("clock", None, "R U R'"),
             Err("no tier 1 geometry for event clock".to_string())
+        );
+    }
+
+    #[test]
+    fn every_skewb_sarah_seed_row_passes_the_tier1_gate() {
+        let rows = skewb_sarah_rows();
+        assert_eq!(rows.len(), 15);
+        for row in &rows {
+            assert_eq!(
+                geometry_check("skewb", None, &row.alg),
+                Ok(()),
+                "{} holds {}",
+                row.case_key,
+                row.alg
+            );
+        }
+    }
+
+    #[test]
+    fn a_skewb_override_with_only_rotations_is_rejected_as_empty() {
+        assert_eq!(
+            geometry_check("skewb", None, "y2 z x'"),
+            Err("alg is empty after rotation stripping".to_string())
         );
     }
 

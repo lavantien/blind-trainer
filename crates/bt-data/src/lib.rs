@@ -3,6 +3,7 @@ pub mod corpus;
 pub mod db;
 pub mod fsrs;
 pub mod import;
+pub mod notation;
 pub mod paths;
 pub mod repo_algs;
 pub mod repo_cards;
