@@ -72,6 +72,7 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
     let timeout_counter = uint_counter(&root, "timeout")?;
     let caught_counter = uint_counter(&root, "caught")?;
     let unviable_counter = uint_counter(&root, "unviable")?;
+    let total_counter = uint_counter(&root, "total_mutants")?;
     let mut survivors = BTreeMap::new();
     let mut missed_seen = 0u64;
     let mut timeout_seen = 0u64;
@@ -146,6 +147,11 @@ fn survivor_multiset(json: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
     if unviable_seen != unviable_counter {
         return Err(GateError::Violation(format!(
             "unviable counter mismatch: outcomes count {unviable_seen} != file counter {unviable_counter}"
+        )));
+    }
+    if mutant_seen != total_counter {
+        return Err(GateError::Violation(format!(
+            "total_mutants counter mismatch: outcomes count {mutant_seen} != file counter {total_counter}"
         )));
     }
     Ok(survivors)
@@ -492,6 +498,10 @@ mod tests {
     {"scenario":"Baseline","summary":"Success"},
     {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
 
+    const TOTAL_COUNTER_LIE: &str = r#"{"total_mutants":2,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":"Baseline","summary":"Success"},
+    {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
+
     const COMMENTED_ALLOWLIST: &str =
         "# columns: file\tfunction\tgenre\treplacement\tcount\tjustification\n";
 
@@ -711,6 +721,18 @@ mod tests {
         assert!(msg.contains("caught counter mismatch"), "got: {msg}");
         assert!(
             msg.contains("outcomes count 1 != file counter 0"),
+            "got: {msg}"
+        );
+    }
+
+    #[test]
+    fn total_mutants_counter_mismatch_fails() {
+        let msg = gate(TOTAL_COUNTER_LIE, COMMENTED_ALLOWLIST)
+            .unwrap_err()
+            .to_string();
+        assert!(msg.contains("total_mutants counter mismatch"), "got: {msg}");
+        assert!(
+            msg.contains("outcomes count 1 != file counter 2"),
             "got: {msg}"
         );
     }
