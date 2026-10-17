@@ -1,6 +1,7 @@
 mod alg;
 mod analysis;
 mod cube;
+mod expand;
 mod moves;
 
 pub use alg::{Alg, ParseError};
@@ -9,4 +10,5 @@ pub use analysis::{
     edge_stickers, head_sticker, piece_of, sticker_cycles, summarize,
 };
 pub use cube::{Cube, Face, center_id, corner_id, edge_id};
+pub use expand::{cancel, expand};
 pub use moves::{Axis, Move, Slice};
