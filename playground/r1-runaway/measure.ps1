@@ -19,7 +19,7 @@ $stopFile = Join-Path $root 'artifacts/progress/r1-runaway-stop'
 
 function Log($message) {
     Add-Content -Path $report -Value "$message"
-    Write-Output $message
+    Write-Host $message
 }
 
 function Snapshot-Kb {
@@ -46,6 +46,9 @@ function Set-HubCeiling {
     return $original
 }
 
+if (Test-Path $report) {
+    Clear-Content -Path $report
+}
 try {
     Log "ceiling measure start $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     Log "payload attempt ${AttemptMb} MiB, ceiling $CeilingBytes bytes, sample period ${SamplePeriodMs} ms"
@@ -121,6 +124,12 @@ try {
         Log "verdict: FAIL, commit charge did not return after the kill"
         exit 8
     }
+    $configDirty = git -C $root status --porcelain -- config/config.json
+    if ($configDirty) {
+        Log "verdict: FAIL, config/config.json left dirty after the run: $configDirty"
+        exit 11
+    }
+    Log "config/config.json clean in git after the run"
     Log "verdict: PASS, payload died at the ceiling with exit $payloadExit in $wall s, peak $peakMiB MiB, box stayed healthy"
     Log "ceiling measure end $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     exit 0
