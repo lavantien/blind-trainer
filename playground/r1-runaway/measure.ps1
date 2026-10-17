@@ -1,7 +1,10 @@
+param(
+    [long]$MinFreeCommitKb = 9437184
+)
+
 $ErrorActionPreference = 'Stop'
 
 $AttemptMb = 6144
-$MinFreeCommitKb = 9437184
 $SamplePeriodMs = 150
 $SampleMaxIterations = 400
 $CeilingBytes = 4294967296
