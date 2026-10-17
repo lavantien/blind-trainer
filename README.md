@@ -260,7 +260,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 - verify-algs-selftest: the bt-verify unit suite including the planted-offender detection test.
 - e2e: headless flow suite (cargo test --release -p bt-app --test e2e) then e2e-smoke.
 - e2e-smoke: bt-e2e drives the release exe through --smoke with APPDATA sandboxed to artifacts/e2e-user, asserting the shot list and window dims from the e2e config section, so the real user profile is never touched.
-- baselines: copy the artifacts/e2e pngs into tests/visual/baselines.
+- baselines: copy the artifacts/e2e pngs into tests/visual/baselines, a deliberate out-of-chain refresh step, never run before visual since that would diff the run against itself.
 - visual-selftest: synthetic pairs prove bt-visual-diff passes identical images and catches a one-pixel-over-tolerance drift.
 - visual-diff: bt-visual-diff over artifacts/e2e versus tests/visual/baselines.
 - visual: visual-selftest, then the diff; on a mismatch it re-renders and re-diffs once, exit 2 regression versus exit 3 infra flake, verdict appended to artifacts/visual/report.md.
@@ -272,7 +272,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 - screenshots: drive the windowed app through every usage state into docs/screenshots, 19 usage shots plus the fatal screen.
 - run: cargo run --release -p bt-app.
 - clean: remove artifacts and tests/e2e/target, recreate artifacts.
-- chain: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, baselines, visual, verify-algs, each as a separate make invocation so a failure names its step.
+- chain: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, visual, verify-algs, each as a separate make invocation so a failure names its step. visual always diffs fresh e2e renders against the committed baselines, baselines is never a chain leg.
 
 ## exit codes
 

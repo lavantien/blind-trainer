@@ -169,7 +169,7 @@ run:
 
 chain:
 	$(MAKE_CMD) jobwrap
-	$(JOBWRAP) --anchor chain -- $(MAKE_CMD) test fmt lint policy check build fuzz mutation mutants-gate e2e baselines visual verify-algs
+	$(JOBWRAP) --anchor chain -- $(MAKE_CMD) test fmt lint policy check build fuzz mutation mutants-gate e2e visual verify-algs
 
 coverage:
 	$$env:CARGO_TARGET_DIR = '$(COVERAGE_TARGET)'; pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
