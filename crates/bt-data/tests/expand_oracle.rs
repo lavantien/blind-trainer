@@ -13,10 +13,6 @@ fn state_of(alg: &Alg) -> Cube {
     cube
 }
 
-fn state_of_flat(text: &str) -> Cube {
-    state_of(&Alg::parse(text).expect("flat alg parses"))
-}
-
 fn assert_state_true(text: &str, expanded: &Alg, reference: &Alg) {
     assert_eq!(
         state_of(expanded),
