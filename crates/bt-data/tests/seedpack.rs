@@ -1058,6 +1058,38 @@ fn normalize_rejects_a_repeat_digit_on_a_nested_group() {
 }
 
 #[test]
+fn normalize_rejects_a_bare_digit_token() {
+    for (alg, token) in [("R 2", "2"), ("R 7", "7"), ("R 8", "8"), ("2R 2", "2")] {
+        let err = normalize_alg("3x3", alg).expect_err("a bare digit is not a turn");
+        let shown = err.to_string();
+        assert!(
+            shown.contains(&format!("unknown token '{token}'")),
+            "err: {shown}"
+        );
+    }
+    let out = normalize_alg("3x3", "2R").expect("an inner slice digit prefix stays a turn");
+    assert_eq!(out.alg, "2R");
+}
+
+#[test]
+fn normalize_rejects_a_nested_bracket_repeat() {
+    for alg in ["[[R U]*2]*2", "[[R]*2", "[[R U]*2]"] {
+        let err =
+            normalize_alg("3x3", alg).expect_err("a bracket inside bracket content is malformed");
+        let shown = err.to_string();
+        assert!(shown.contains("malformed repeat marker"), "err: {shown}");
+        assert!(shown.contains(alg), "err: {shown}");
+    }
+}
+
+#[test]
+fn normalize_expands_nested_group_repeats_innermost_first() {
+    let out = normalize_alg("3x3", "((R U)2)2").expect("the inner group binds its digit first");
+    assert_eq!(out.alg, "R U R U R U R U");
+    assert!(out.notes.is_empty());
+}
+
+#[test]
 fn normalize_rejects_a_zero_bracket_repeat() {
     let err = normalize_alg("3x3", "U [R]*0").expect_err("zero bracket repeat must fail");
     assert!(err.to_string().contains("malformed repeat"), "err: {err}");
