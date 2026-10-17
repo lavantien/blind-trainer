@@ -10,6 +10,7 @@ MEMGUARD := scripts/memguard.ps1
 JOBWRAP := target/release/bt-jobwrap.exe
 MAKE_CMD := $(MAKE)
 FUZZ_TARGETS := notation classify memo commutator expand db fsrs
+CARGO_PROXY ?= C:/Users/lavantien/.cargo/bin/cargo.exe
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga bt-puzzles
 
 export BT_REF_GROUND := $(REF_GROUND)
@@ -98,7 +99,7 @@ mutants-gate-selftest:
 
 fuzz:
 	$(MAKE_CMD) jobwrap
-	Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
+	Set-Location fuzz; foreach ($$t in '$(FUZZ_TARGETS)'.Split(' ')) { $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- $(CARGO_PROXY) fuzz run $$t; if ($$LASTEXITCODE -ne 0) { exit 1 } }
 
 mutation:
 	$(MAKE_CMD) jobwrap
