@@ -2,6 +2,8 @@ use serde_json::Value;
 use std::collections::BTreeMap;
 use std::fmt;
 
+pub const EMPTY_SENTINEL: &str = "(empty)";
+
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct GateKey {
     pub file: String,
@@ -201,10 +203,23 @@ fn parse_allowlist(text: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
                 format!("expected 6 tab-separated columns, found {}", cols.len()),
             ));
         }
-        if cols[0].is_empty() || cols[1].is_empty() || cols[2].is_empty() {
-            return Err(row_error(row, "file, function and genre must be non-empty"));
+        if cols[0].is_empty() || cols[2].is_empty() {
+            return Err(row_error(row, "file and genre must be non-empty"));
         }
-        let replacement = if cols[3].contains("->") {
+        if cols[1].is_empty() {
+            return Err(row_error(
+                row,
+                "function must be non-empty, write (empty) for a module-level mutant",
+            ));
+        }
+        let function = if cols[1] == EMPTY_SENTINEL {
+            String::new()
+        } else {
+            cols[1].to_owned()
+        };
+        let replacement = if cols[3] == EMPTY_SENTINEL {
+            String::new()
+        } else if cols[3].contains("->") {
             cols[3]
                 .rsplit("->")
                 .next()
@@ -212,10 +227,14 @@ fn parse_allowlist(text: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
                 .ok_or_else(|| {
                     row_error(row, "replacement must have a non-empty token after '->'")
                 })?
+                .to_owned()
         } else if cols[3].is_empty() {
-            return Err(row_error(row, "replacement must be non-empty"));
+            return Err(row_error(
+                row,
+                "replacement must be non-empty, write (empty) for a deleted token",
+            ));
         } else {
-            cols[3]
+            cols[3].to_owned()
         };
         let count: u64 = cols[4]
             .trim()
@@ -229,9 +248,9 @@ fn parse_allowlist(text: &str) -> Result<BTreeMap<GateKey, u64>, GateError> {
         }
         let key = GateKey {
             file: cols[0].to_owned(),
-            function: cols[1].to_owned(),
+            function,
             genre: cols[2].to_owned(),
-            replacement: replacement.to_owned(),
+            replacement,
         };
         if entries.contains_key(&key) {
             return Err(row_error(row, format!("duplicate entry for {key}")));
@@ -487,6 +506,9 @@ mod tests {
     const NULL_FUNCTION_MISSED: &str = r#"{"total_mutants":1,"caught":0,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
     {"scenario":{"Mutant":{"name":"src/a.rs:7:5: delete -","package":"bt-x","file":"src/a.rs","function":null,"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"","genre":"UnaryOperator"}},"summary":"MissedMutant"}]}"#;
 
+    const NULL_FUNCTION_MISSED_BINOP: &str = r#"{"total_mutants":1,"caught":0,"missed":1,"timeout":0,"unviable":0,"success":0,"outcomes":[
+    {"scenario":{"Mutant":{"name":"crates/bt-core/src/moves.rs:40:9: replace > with <= in -","package":"bt-core","file":"crates/bt-core/src/moves.rs","function":null,"span":{"start":{"line":40,"column":9},"end":{"line":40,"column":10}},"replacement":"<=","genre":"BinaryOperator"}},"summary":"MissedMutant"}]}"#;
+
     const FAILED_BASELINE: &str = r#"{"total_mutants":1,"caught":1,"missed":0,"timeout":0,"unviable":0,"success":0,"outcomes":[
     {"scenario":"Baseline","summary":"Failure"},
     {"scenario":{"Mutant":{"name":"src/a.rs:7:5: replace x with y in f","package":"bt-x","file":"src/a.rs","function":{"function_name":"f","return_type":"-> u8","span":{"start":{"line":5,"column":1},"end":{"line":9,"column":2}}},"span":{"start":{"line":7,"column":5},"end":{"line":7,"column":6}},"replacement":"y","genre":"FnValue"}},"summary":"CaughtMutant"}]}"#;
@@ -683,7 +705,7 @@ mod tests {
     }
 
     #[test]
-    fn module_level_mutant_surviving_fails_because_rows_need_a_function() {
+    fn module_level_mutant_surviving_without_an_allowlist_row_fails() {
         let err = gate(NULL_FUNCTION_MISSED, COMMENTED_ALLOWLIST).unwrap_err();
         assert!(matches!(err, GateError::Violation(_)));
         let msg = err.to_string();
@@ -692,6 +714,49 @@ mod tests {
             msg.contains("file=src/a.rs function= genre=UnaryOperator"),
             "got: {msg}"
         );
+    }
+
+    #[test]
+    fn module_level_survivor_is_allowlistable_through_the_sentinel() {
+        let allowlist = "src/a.rs\t(empty)\tUnaryOperator\t(empty)\t1\taccepted";
+        let got = gate(NULL_FUNCTION_MISSED, allowlist);
+        assert_eq!(got.unwrap(), "survivors gated: 1, all covered");
+    }
+
+    #[test]
+    fn module_level_binop_survivor_with_a_real_token_matches_the_sentinel_row() {
+        let allowlist = "crates/bt-core/src/moves.rs\t(empty)\tBinaryOperator\t<=\t1\taccepted";
+        let got = gate(NULL_FUNCTION_MISSED_BINOP, allowlist);
+        assert_eq!(got.unwrap(), "survivors gated: 1, all covered");
+    }
+
+    #[test]
+    fn duplicate_sentinel_rows_still_collide() {
+        let row = "src/a.rs\t(empty)\tUnaryOperator\t(empty)\t1\taccepted";
+        let allowlist = format!("{row}\n{row}");
+        let msg = gate(NULL_FUNCTION_MISSED, &allowlist)
+            .unwrap_err()
+            .to_string();
+        assert!(msg.contains("allowlist row 2"), "got: {msg}");
+        assert!(msg.contains("duplicate"), "got: {msg}");
+    }
+
+    #[test]
+    fn sentinel_row_without_a_surviving_outcome_is_stale() {
+        let allowlist = "src/a.rs\t(empty)\tUnaryOperator\t(empty)\t1\taccepted";
+        let msg = gate(CAUGHT_ONLY, allowlist).unwrap_err().to_string();
+        assert!(msg.contains("stale allowlist entry"), "got: {msg}");
+        assert!(msg.contains("function= "), "got: {msg}");
+    }
+
+    #[test]
+    fn an_empty_function_column_is_rejected_naming_the_sentinel() {
+        let allowlist = "src/a.rs\t\tUnaryOperator\t(empty)\t1\taccepted";
+        let msg = gate(NULL_FUNCTION_MISSED, allowlist)
+            .unwrap_err()
+            .to_string();
+        assert!(msg.contains("allowlist row 1"), "got: {msg}");
+        assert!(msg.contains("(empty)"), "got: {msg}");
     }
 
     #[test]
