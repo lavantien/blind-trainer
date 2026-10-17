@@ -88,11 +88,32 @@ pub fn quote_argument(raw: &str) -> String {
     if raw.is_empty() {
         return "\"\"".to_string();
     }
-    if raw.chars().any(|ch| ch.is_whitespace()) {
-        format!("\"{raw}\"")
-    } else {
-        raw.to_string()
+    if !raw.chars().any(|ch| ch.is_whitespace() || ch == '"') {
+        return raw.to_string();
     }
+    let mut quoted = String::with_capacity(raw.len() + 2);
+    quoted.push('"');
+    let mut backslashes = 0usize;
+    for ch in raw.chars() {
+        match ch {
+            '\\' => backslashes += 1,
+            '"' => {
+                quoted.push_str(&"\\".repeat(backslashes * 2 + 1));
+                quoted.push('"');
+                backslashes = 0;
+            }
+            _ => {
+                if backslashes > 0 {
+                    quoted.push_str(&"\\".repeat(backslashes));
+                    backslashes = 0;
+                }
+                quoted.push(ch);
+            }
+        }
+    }
+    quoted.push_str(&"\\".repeat(backslashes * 2));
+    quoted.push('"');
+    quoted
 }
 
 pub fn command_line(payload: &[String]) -> String {
@@ -314,11 +335,26 @@ mod tests {
     }
 
     #[test]
-    fn quotes_only_arguments_with_whitespace() {
+    fn quotes_plain_and_whitespace_arguments() {
         assert_eq!(quote_argument("cargo"), "cargo");
         assert_eq!(quote_argument("a b"), "\"a b\"");
         assert_eq!(quote_argument(""), "\"\"");
         assert_eq!(command_line(&args(&["a b", "c"])), "\"a b\" c".to_string());
+    }
+
+    #[test]
+    fn doubles_trailing_backslashes_inside_quotes() {
+        assert_eq!(quote_argument("C:\\work dir\\"), "\"C:\\work dir\\\\\"");
+        assert_eq!(
+            command_line(&args(&["C:\\work dir\\", "plain"])),
+            "\"C:\\work dir\\\\\" plain".to_string()
+        );
+    }
+
+    #[test]
+    fn escapes_embedded_quotes_even_without_whitespace() {
+        assert_eq!(quote_argument("he said \"hi\""), "\"he said \\\"hi\\\"\"");
+        assert_eq!(quote_argument("a\\\"b"), "\"a\\\\\\\"b\"");
     }
 
     #[test]
