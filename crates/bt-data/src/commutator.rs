@@ -1,6 +1,5 @@
 use bt_core::{Alg, Cube, Move};
 
-const NOT_FOUND: &str = "Not found.";
 const MAX_DEPTH: u32 = 1;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -71,9 +70,6 @@ impl Unit {
 
 pub fn decompose(text: &str) -> Option<Vec<Expanded>> {
     let trimmed = text.trim();
-    if trimmed.is_empty() || trimmed == NOT_FOUND {
-        return None;
-    }
     let units = parse_expr(trimmed, 0)?;
     let mut expanded = Vec::new();
     flatten(&units, None, &mut expanded);
