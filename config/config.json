@@ -153,6 +153,9 @@
     ],
     "literal_recurrence": 4
   },
+  "job": {
+    "per_process_bytes": 4294967296
+  },
   "memguard": {
     "cap_bytes": 8589934592,
     "pid_dir": "artifacts/progress/pids"

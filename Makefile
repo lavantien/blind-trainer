@@ -4,6 +4,8 @@ ARTIFACTS := artifacts
 BIN := target/release/blind-trainer.exe
 E2E_BIN := tests/e2e/target/release/bt-e2e.exe
 MEMGUARD := scripts/memguard.ps1
+JOBWRAP := target/release/bt-jobwrap.exe
+MAKE_CMD := $(MAKE)
 FUZZ_TARGETS := notation classify memo commutator expand db fsrs
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga bt-puzzles
 
@@ -11,7 +13,7 @@ export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
 export BT_ARTIFACTS := $(ARTIFACTS)
 
-.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation mutation-pkg mutation-merge e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-deep-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
+.PHONY: setup docs-fetch gen-data verify-algs verify-algs-selftest synth-simcheck memofreq ga fmt fmt-fix lint check build jobwrap test test-crate policy policy-selftest mutants-gate mutants-gate-selftest fuzz mutation mutation-pkg mutation-merge e2e e2e-smoke visual visual-diff visual-selftest baselines screenshots memguard memguard-selftest clean-rust clean-rust-apply clean-rust-deep-apply clean-rust-selftest run chain coverage alg-coverage diagrams dist release-verify release-verify-selftest release clean
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
@@ -54,7 +56,8 @@ fmt-fix:
 	cargo fmt --all
 
 lint:
-	cargo clippy --workspace --all-targets -- -D warnings
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor lint -- cargo clippy --workspace --all-targets -- -D warnings
 
 policy:
 	$(MAKE) policy-selftest
@@ -64,18 +67,25 @@ policy-selftest:
 	cargo run --release -p bt-policy -- selftest $(ARTIFACTS)/policy-selftest
 
 check:
-	cargo check --workspace
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor check -- cargo check --workspace
 
 build:
 	cargo build --release -p bt-app
 	test -f $(BIN) || { echo missing $(BIN); exit 1; }
 
+jobwrap:
+	cargo build --release -p bt-jobwrap
+	test -f $(JOBWRAP) || { echo missing $(JOBWRAP); exit 1; }
+
 test:
-	cargo test --workspace
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor test -- cargo test --workspace
 
 test-crate:
 	@test -n "$(p)" || { echo 'usage: make test-crate p=<crate>'; exit 2; }
-	cargo test -p $(p)
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor test-$(p) -- cargo test -p $(p)
 
 mutants-gate:
 	cargo run --release -p bt-mutants-gate -- $(OUTCOMES) $(ALLOWLIST)
@@ -84,21 +94,26 @@ mutants-gate-selftest:
 	cargo test -p bt-mutants-gate
 
 fuzz:
-	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap fuzz -WrapCommand 'cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done'
+	$(MAKE_CMD) jobwrap
+	cd fuzz && for t in $(FUZZ_TARGETS); do $(CURDIR)/$(JOBWRAP) --anchor fuzz-$$t -- cargo fuzz run $$t || exit 1; done
 
 mutation:
-	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap mutation -WrapCommand 'cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))'
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor mutation -- cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
 
 mutation-pkg:
 	@test -n "$(p)" || { echo 'usage: make mutation-pkg p=<crate>'; exit 2; }
-	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap mutation-pkg-$(p) -WrapCommand 'mkdir -p $(MUTATION_PKG_DIR)/$(p) && cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)'
+	$(MAKE_CMD) jobwrap
+	mkdir -p $(MUTATION_PKG_DIR)/$(p)
+	$(JOBWRAP) --anchor mutation-pkg-$(p) -- cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)
 
 mutation-merge:
 	cargo run --release -p bt-mutants-gate -- merge $(OUTCOMES) $(MUTATION_PKG_OUTS)
 
 e2e: build
-	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap e2e -WrapCommand 'cargo test --release -p bt-app --test e2e'
-	$(MAKE) e2e-smoke
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor e2e -- cargo test --release -p bt-app --test e2e
+	$(MAKE_CMD) e2e-smoke
 
 e2e-smoke: build
 	cargo build --release --manifest-path tests/e2e/Cargo.toml
@@ -154,7 +169,8 @@ run:
 	cargo run --release -p bt-app
 
 chain:
-	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap chain -WrapCommand '$(MAKE) test && $(MAKE) fmt && $(MAKE) lint && $(MAKE) policy && $(MAKE) check && $(MAKE) build && $(MAKE) fuzz && $(MAKE) mutation && $(MAKE) mutants-gate && $(MAKE) e2e && $(MAKE) baselines && $(MAKE) visual && $(MAKE) verify-algs'
+	$(MAKE_CMD) jobwrap
+	$(JOBWRAP) --anchor chain -- $(MAKE_CMD) test fmt lint policy check build fuzz mutation mutants-gate e2e baselines visual verify-algs
 
 coverage:
 	CARGO_TARGET_DIR=$(COVERAGE_TARGET) pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
