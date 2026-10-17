@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+pub mod ffi;
+
 pub const USAGE: &str = "usage: bt-jobwrap [--anchor NAME] -- <command> <args...>\n       bt-jobwrap --selftest-alloc-mb <N>\n       bt-jobwrap --selftest-hold-secs <N>";
 
 pub const DOTNET_TICKS_AT_FILETIME_ZERO: u64 = 504911232000000000;
@@ -159,8 +161,91 @@ pub fn pid_dir_from(config: &serde_json::Value) -> Result<PathBuf, String> {
     }
 }
 
-pub fn run(_invocation: Invocation) -> Result<u32, WrapError> {
-    Err(WrapError::Failure("job wrap not implemented".to_string()))
+pub fn run(invocation: Invocation) -> Result<u32, WrapError> {
+    let Invocation::Wrap { anchor, payload } = invocation else {
+        return Err(WrapError::Usage("run needs a wrap invocation".to_string()));
+    };
+    let config = load_config().map_err(WrapError::Failure)?;
+    let ceiling = per_process_bytes(&config).map_err(WrapError::Failure)?;
+    let guard = match &anchor {
+        Some(name) => Some(
+            write_pid_file(&config, name)
+                .map_err(|source| WrapError::Failure(format!("anchor {name}: {source}")))?,
+        ),
+        None => None,
+    };
+    let line = command_line(&payload);
+    let program = payload.first().cloned().unwrap_or_default();
+    eprintln!(
+        "bt-jobwrap: anchor={} ceiling={ceiling} payload={program}",
+        anchor.as_deref().unwrap_or("none")
+    );
+    let started = std::time::Instant::now();
+    let outcome = execute(&line, ceiling);
+    drop(guard);
+    match outcome {
+        Ok(code) => {
+            eprintln!(
+                "bt-jobwrap: payload {program} exited {code} after {:.2}s",
+                started.elapsed().as_secs_f64()
+            );
+            Ok(code)
+        }
+        Err(message) => {
+            eprintln!("bt-jobwrap: {message}");
+            Err(WrapError::Failure(message))
+        }
+    }
+}
+
+fn execute(line: &str, ceiling: u64) -> Result<u32, String> {
+    let job = ffi::create_ceiling_job(ceiling as usize)
+        .map_err(|code| format!("job create failed: win32 error {code}"))?;
+    let spawned =
+        ffi::spawn_suspended(line).map_err(|code| format!("spawn failed: win32 error {code}"))?;
+    let pid = spawned.process_id;
+    if let Err(code) = ffi::assign_and_resume(job, &spawned) {
+        ffi::close(spawned.process);
+        ffi::close(spawned.thread);
+        ffi::close(job);
+        return Err(format!(
+            "assign or resume failed for pid {pid}: win32 error {code}"
+        ));
+    }
+    ffi::close(spawned.thread);
+    eprintln!("bt-jobwrap: spawned pid {pid} resumed under the job ceiling");
+    let waited = ffi::wait_exit_code(spawned.process)
+        .map_err(|code| format!("wait failed for pid {pid}: win32 error {code}"));
+    ffi::close(spawned.process);
+    ffi::close(job);
+    waited
+}
+
+struct PidFileGuard {
+    path: PathBuf,
+}
+
+impl Drop for PidFileGuard {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.path);
+    }
+}
+
+fn write_pid_file(config: &serde_json::Value, anchor: &str) -> Result<PidFileGuard, String> {
+    let dir = pid_dir_from(config)?;
+    std::fs::create_dir_all(&dir)
+        .map_err(|source| format!("create {}: {source}", dir.display()))?;
+    let ticks = ffi::dotnet_start_ticks()
+        .map_err(|code| format!("read own start time: win32 error {code}"))?;
+    let pid = std::process::id();
+    let path = dir.join(format!("{anchor}-{pid}.pid"));
+    std::fs::write(&path, format!("{pid} {ticks}"))
+        .map_err(|source| format!("write {}: {source}", path.display()))?;
+    eprintln!(
+        "bt-jobwrap: anchor pidfile {} holds pid {pid}",
+        path.display()
+    );
+    Ok(PidFileGuard { path })
 }
 
 #[cfg(test)]
