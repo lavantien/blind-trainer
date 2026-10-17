@@ -174,6 +174,14 @@ function Get-TrackedProcess([string]$pidDir) {
     return @($rows | Sort-Object Id -Unique)
 }
 
+function Split-WrapCommand([string]$command) {
+    $tokens = [System.Collections.Generic.List[string]]::new()
+    foreach ($piece in [regex]::Matches($command.Trim(), '"([^"]*)"|(\S+)')) {
+        if ($piece.Groups[1].Success) { $tokens.Add($piece.Groups[1].Value) } else { $tokens.Add($piece.Groups[2].Value) }
+    }
+    return , @($tokens)
+}
+
 function Invoke-Monitor([object[]]$rows, [long]$cap, [bool]$kill) {
     $total = [long](($rows | Measure-Object -Property WS -Sum).Sum)
     if ($total -le $cap) {
@@ -472,11 +480,21 @@ if ($Wrap -ne '') {
         Write-Fail "cannot stamp wrapper pid $PID for wrap $Wrap"
         exit 2
     }
+    $wrapPayload = Split-WrapCommand $WrapCommand
+    if ($wrapPayload.Count -eq 0 -or $wrapPayload[0].Trim().Length -eq 0) {
+        Write-Fail "-WrapCommand must name an executable: $WrapCommand"
+        exit 2
+    }
+    $wrapExe = $wrapPayload[0]
+    $wrapArgs = @($wrapPayload | Select-Object -Skip 1)
     $wrapPidFile = Join-Path $wrapPidDir ($Wrap + '-' + $PID + '.pid')
     Set-Content -LiteralPath $wrapPidFile -Value $wrapStamp
     try {
-        & sh -c $WrapCommand
+        & $wrapExe @wrapArgs
         exit ([int]$LASTEXITCODE)
+    } catch {
+        Write-Fail "wrap payload failed to launch: $wrapExe : $_"
+        exit 2
     } finally {
         Remove-Item -LiteralPath $wrapPidFile -Force -ErrorAction SilentlyContinue
     }
