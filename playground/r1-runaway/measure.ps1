@@ -1,16 +1,17 @@
 param(
-    [long]$MinFreeCommitKb = 9437184
+    [long]$MinFreeCommitKb = 9437184,
+    [long]$AttemptMb = 6144,
+    [long]$CeilingBytes = 4294967296
 )
 
 $ErrorActionPreference = 'Stop'
 
-$AttemptMb = 6144
 $SamplePeriodMs = 150
 $SampleMaxIterations = 400
-$CeilingBytes = 4294967296
 
 $root = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $wrap = Join-Path $root 'target/release/bt-jobwrap.exe'
+$configPath = Join-Path $root 'config/config.json'
 $report = Join-Path $root 'artifacts/jobwrap-ceiling-measure.txt'
 $samplesPath = Join-Path $root 'artifacts/progress/r1-runaway-samples.csv'
 $runLog = Join-Path $root 'artifacts/progress/r1-runaway-run.log'
@@ -24,6 +25,25 @@ function Log($message) {
 function Snapshot-Kb {
     $os = Get-CimInstance Win32_OperatingSystem
     [pscustomobject]@{ FreePhysKb = $os.FreePhysicalMemory; FreeCommitKb = $os.FreeVirtualMemory }
+}
+
+function Set-HubCeiling {
+    param([long]$Target)
+    $original = Get-Content -Path $configPath -Raw
+    $current = [long]((Get-Content -Path $configPath -Raw | ConvertFrom-Json).job.per_process_bytes)
+    if ($current -eq $Target) {
+        Log "hub per_process_bytes already $Target, no swap needed"
+        return $original
+    }
+    $swapped = $original -replace '"per_process_bytes"\s*:\s*\d+', ('"per_process_bytes": ' + $Target)
+    $check = [long](($swapped | ConvertFrom-Json).job.per_process_bytes)
+    if ($check -ne $Target) {
+        Log "fail: hub swap to $Target did not parse back, refusing to run"
+        exit 10
+    }
+    Set-Content -Path $configPath -Value $swapped -NoNewline
+    Log "hub per_process_bytes temporarily set from $current to $Target for the run"
+    return $original
 }
 
 try {
@@ -40,6 +60,7 @@ try {
         Log "abort: free commit kb $($pre.FreeCommitKb) below gate $MinFreeCommitKb, refusing to stress the box"
         exit 4
     }
+    $hubOriginal = Set-HubCeiling -Target $CeilingBytes
     $sampler = Start-Job -ScriptBlock {
         param($Path, $PeriodMs, $MaxIterations, $StopFile)
         for ($i = 0; $i -lt $MaxIterations; $i++) {
@@ -56,6 +77,12 @@ try {
     & $wrap --anchor runaway -- $wrap --selftest-alloc-mb $AttemptMb *> $runLog
     $payloadExit = $LASTEXITCODE
     $clock.Stop()
+    if ($hubOriginal) {
+        Set-Content -Path $configPath -Value $hubOriginal -NoNewline
+        $restored = [long]((Get-Content -Path $configPath -Raw | ConvertFrom-Json).job.per_process_bytes)
+        Log "hub per_process_bytes restored to $restored after the run"
+        $hubOriginal = $null
+    }
     New-Item -Path $stopFile -ItemType File -Force | Out-Null
     Wait-Job -Job $sampler -Timeout 30 | Out-Null
     Stop-Job -Job $sampler -ErrorAction SilentlyContinue
@@ -102,4 +129,11 @@ catch {
     Log "fail: $($_.Exception.Message)"
     Log "ceiling measure aborted $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     exit 9
+}
+finally {
+    if ($hubOriginal) {
+        Set-Content -Path $configPath -Value $hubOriginal -NoNewline
+        $restored = [long]((Get-Content -Path $configPath -Raw | ConvertFrom-Json).job.per_process_bytes)
+        Log "hub per_process_bytes restored to $restored by the finally guard"
+    }
 }
