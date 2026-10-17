@@ -1,5 +1,7 @@
 use super::SyllableBook;
-use super::drill::{DrillSession, card_key, case_position, flip_case, has_commutator, sheet_of};
+use super::drill::{
+    DrillSession, card_key, case_position, expand_alg_line, flip_case, has_commutator, sheet_of,
+};
 use crate::persist::Stores;
 use crate::theme;
 use crate::theme::FONT_ALG;
@@ -187,6 +189,9 @@ pub fn card_content(
     ];
     if mechanics.is_none() && has_commutator(&a.commutator) {
         rows.push((format!("commutator {}", a.commutator), RowStyle::Small));
+    }
+    if let Some(line) = expand_alg_line(&a.commutator, &a.alg, &a.alg_text, &a.alg_text) {
+        rows.push((line, RowStyle::Small));
     }
     rows.push((
         format!("prepare {} {}: {}", b.letters(), b.solver_label, b.alg_text),
@@ -475,6 +480,36 @@ mod tests {
                 .find(|(text, _)| text.starts_with("commutator "))
                 .expect("raw commutator row renders"),
             &("commutator junk text".to_string(), RowStyle::Small)
+        );
+    }
+
+    #[test]
+    fn card_adds_the_expand_row_only_when_cancellation_shortens_the_alg() {
+        let alg_text = "U' R U R' U' U S U' U R U' R' U S'";
+        let corpus = single_pair_corpus(alg_text, "[U':[R,U],S]");
+        let stores = stores_with_reps(4);
+        let mut session = DrillSession::default();
+        install_pair(&mut session, &corpus, &stores, edge_case('A', 'B'));
+        let content = card_content(&session, &corpus, &book_with(None), &stores, 0);
+        assert!(
+            content
+                .rows
+                .iter()
+                .any(|(text, style)| *style == RowStyle::Small
+                    && text == "expand U' R U R' S R U' R' U S'"),
+            "expand row must follow the cancelled commutator: {:?}",
+            content.rows
+        );
+        let plain = single_pair_corpus("R2 U' S R2 S' R2 U R2", "R2 U':[S,R2]");
+        let mut plain_session = DrillSession::default();
+        install_pair(&mut plain_session, &plain, &stores, edge_case('A', 'B'));
+        let plain_content = card_content(&plain_session, &plain, &book_with(None), &stores, 0);
+        assert!(
+            !plain_content
+                .rows
+                .iter()
+                .any(|(text, _)| text.starts_with("expand ")),
+            "expansion matching the alg row adds nothing"
         );
     }
 

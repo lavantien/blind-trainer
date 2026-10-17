@@ -10,7 +10,7 @@ use crate::views::{PendingDrill, SyllableBook};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
-use bt_core::Cube;
+use bt_core::{Alg, Cube};
 use bt_data::corpus::{Corpus, SheetClass};
 use bt_data::srs::{Card, Rating};
 use bt_scheme::{
@@ -114,6 +114,19 @@ pub fn even_reps(n: u32) -> u32 {
 
 pub fn has_commutator(text: &str) -> bool {
     !text.is_empty() && text != "Not found."
+}
+
+pub fn expand_flat_line(alg_text: &str) -> Option<String> {
+    None
+}
+
+pub fn expand_alg_line(
+    commutator: &str,
+    alg: &Alg,
+    alg_text: &str,
+    displayed: &str,
+) -> Option<String> {
+    None
 }
 
 fn reset_counters(session: &mut DrillSession) {
@@ -551,6 +564,48 @@ mod tests {
         let reps = even_reps(u32::MAX);
         assert_eq!(reps % 2, 0);
         assert!(reps >= 2);
+    }
+
+    #[test]
+    fn expand_alg_line_shows_commutator_cancellation_beyond_the_written_alg() {
+        let alg_text = "U' R U R' U' U S U' U R U' R' U S'";
+        let alg = Alg::parse(alg_text).expect("fixture parses");
+        for displayed in ["", alg_text] {
+            assert_eq!(
+                expand_alg_line("[U':[R,U],S]", &alg, alg_text, displayed).as_deref(),
+                Some("expand U' R U R' S R U' R' U S'"),
+                "displayed {displayed:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn expand_alg_line_stays_silent_when_nothing_new_is_shown() {
+        let alg_text = "R2 U' S R2 S' R2 U R2";
+        let alg = Alg::parse(alg_text).expect("fixture parses");
+        assert_eq!(
+            expand_alg_line("R2 U':[S,R2]", &alg, alg_text, alg_text),
+            None
+        );
+        assert_eq!(expand_alg_line("", &alg, alg_text, alg_text), None);
+        assert_eq!(
+            expand_alg_line("Not found.", &alg, alg_text, alg_text),
+            None
+        );
+        assert_eq!(expand_alg_line("junk text", &alg, alg_text, alg_text), None);
+        let short = Alg::parse("R U").expect("fixture parses");
+        assert_eq!(expand_alg_line("[R,U]", &short, "R U", "R U"), None);
+    }
+
+    #[test]
+    fn expand_flat_line_reports_only_real_cancellations_and_repeats() {
+        assert_eq!(expand_flat_line("R R U").as_deref(), Some("expand R2 U"));
+        assert_eq!(
+            expand_flat_line("(R U R')2").as_deref(),
+            Some("expand R U2 R'")
+        );
+        assert_eq!(expand_flat_line("R U"), None);
+        assert_eq!(expand_flat_line(""), None);
     }
 
     #[test]

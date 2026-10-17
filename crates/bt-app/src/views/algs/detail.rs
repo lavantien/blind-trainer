@@ -55,6 +55,12 @@ pub fn effective_alg(case: &CaseRef, seed_alg: &str, store: &OverrideStore) -> E
     }
 }
 
+pub fn case_expand_line(event: &str, alg: &str) -> Option<String> {
+    (event == bt_data::db::EVENT_3BLD)
+        .then(|| crate::views::drill::expand_flat_line(alg))
+        .flatten()
+}
+
 pub fn case_site_of(browser: &RepoBrowser) -> Option<CaseSite> {
     let node = browser.node()?;
     if node.kind != RepoKind::Case {
@@ -252,6 +258,9 @@ pub fn repo_detail_lines(
             } else {
                 "seed".to_string()
             }));
+            if let Some(line) = case_expand_line(&site.case.event, &effective.alg) {
+                lines.push(DetailLine::Meta(line));
+            }
             if let Err(reason) = geometry_check(&site.case.event, site.size, &effective.alg) {
                 lines.push(DetailLine::Warn(reason));
             }
@@ -510,6 +519,17 @@ mod tests {
         let mut browser = armed_browser();
         repo_deeper(&mut browser);
         assert_eq!(case_site_of(&browser), None);
+    }
+
+    #[test]
+    fn bld_case_expand_line_gates_on_event_and_cancellation() {
+        assert_eq!(
+            case_expand_line("3bld", "R R U").as_deref(),
+            Some("expand R2 U")
+        );
+        assert_eq!(case_expand_line("3bld", "R U"), None);
+        assert_eq!(case_expand_line("2x2", "R R U"), None);
+        assert_eq!(case_expand_line("3bld", "junk"), None);
     }
 
     #[test]

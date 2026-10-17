@@ -2,7 +2,7 @@ use crate::logic::{AppConfig, NavIntent, NetState, VendorCorpus};
 use crate::states::AppState;
 use crate::theme;
 use crate::views::PendingDrill;
-use crate::views::drill::{buffer_of, case_position, has_commutator};
+use crate::views::drill::{buffer_of, case_position, expand_alg_line, has_commutator};
 use bevy::feathers::controls::{FeathersTextInput, FeathersTextInputContainer};
 use bevy::input::ButtonState;
 use bevy::input::keyboard::KeyboardInput;
@@ -237,6 +237,17 @@ pub fn meta_line(row: &Row) -> String {
     )
 }
 
+pub fn pair_expand_rows(row: &Row) -> Vec<String> {
+    let displayed = if decompose_verified(&row.commutator, &row.alg).is_some() {
+        ""
+    } else {
+        row.alg_text.as_str()
+    };
+    expand_alg_line(&row.commutator, &row.alg, &row.alg_text, displayed)
+        .map(|line| vec![line])
+        .unwrap_or_default()
+}
+
 pub fn mechanic_spans(units: &[Expanded]) -> Vec<(String, Color)> {
     let mut spans = Vec::new();
     for (index, unit) in units.iter().enumerate() {
@@ -328,6 +339,40 @@ mod tests {
             list_rows(&browser, 10),
             vec![("no case matches the query".to_string(), false)]
         );
+    }
+
+    #[test]
+    fn pair_expand_rows_carry_the_cancelled_flat_form() {
+        let cancelling = Row {
+            solver: bt_data::corpus::Solver::Cherry,
+            sheet: SheetClass::Edge,
+            rowid: 1,
+            position: "UF-UB-UR".to_string(),
+            alg: bt_core::Alg::parse("U' R U R' U' U S U' U R U' R' U S'").unwrap(),
+            alg_text: "U' R U R' U' U S U' U R U' R' U S'".to_string(),
+            commutator: "[U':[R,U],S]".to_string(),
+            recon_link: String::new(),
+            youtube_link: String::new(),
+        };
+        assert_eq!(
+            pair_expand_rows(&cancelling),
+            vec!["expand U' R U R' S R U' R' U S'".to_string()]
+        );
+        let mut aligned = cancelling.clone();
+        aligned.commutator = "R2 U':[S,R2]".to_string();
+        aligned.alg = bt_core::Alg::parse("R2 U' S R2 S' R2 U R2").unwrap();
+        aligned.alg_text = "R2 U' S R2 S' R2 U R2".to_string();
+        assert_eq!(
+            pair_expand_rows(&aligned),
+            vec!["expand R2 U' S R2 S' R2 U R2".to_string()],
+            "the mechanics branch shows no other flat form"
+        );
+        let mut placeholder = aligned.clone();
+        placeholder.commutator = "Not found.".to_string();
+        assert!(pair_expand_rows(&placeholder).is_empty());
+        let mut junk = aligned.clone();
+        junk.commutator = "junk text".to_string();
+        assert!(pair_expand_rows(&junk).is_empty());
     }
 
     #[test]
@@ -508,6 +553,16 @@ fn spawn_detail(
                         .map(|(text, color)| (text.as_str(), theme::FONT_ALG, *color))
                         .collect();
                     crate::present::spawn_spans(detail, fonts, &refs);
+                    for line in pair_expand_rows(row) {
+                        crate::present::spawn_line(
+                            detail,
+                            fonts,
+                            &line,
+                            theme::FONT_SMALL,
+                            theme::text_muted(),
+                            AlgsDetailLine,
+                        );
+                    }
                 }
                 None => {
                     crate::present::spawn_line(
@@ -523,6 +578,16 @@ fn spawn_detail(
                             detail,
                             fonts,
                             &format!("commutator {}", row.commutator),
+                            theme::FONT_SMALL,
+                            theme::text_muted(),
+                            AlgsDetailLine,
+                        );
+                    }
+                    for line in pair_expand_rows(row) {
+                        crate::present::spawn_line(
+                            detail,
+                            fonts,
+                            &line,
                             theme::FONT_SMALL,
                             theme::text_muted(),
                             AlgsDetailLine,
