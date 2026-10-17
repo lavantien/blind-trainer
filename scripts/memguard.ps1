@@ -2,7 +2,9 @@ param(
     [long]$CapBytes = 0,
     [switch]$Kill,
     [switch]$SelfTest,
-    [string]$SleeperPath = ""
+    [string]$SleeperPath = "",
+    [string]$Wrap = "",
+    [string]$WrapCommand = ""
 )
 
 $ErrorActionPreference = 'Stop'
@@ -200,6 +202,9 @@ function Invoke-MemguardSelfTest {
     $treeRoot = $null
     $treeChildId = 0
     $outsideDir = ''
+    $wrapProc = $null
+    $wrapChild2Id = 0
+    $wrapPidFile = ''
     $code = 5
     try {
         $pwshExe = (Get-Command pwsh).Source
@@ -250,6 +255,7 @@ function Invoke-MemguardSelfTest {
             return 5
         }
         Write-Host "memguard selftest ok: memguard.pid_dir resolved from config, $resolvedPidDir"
+        $wrapPidFile = Join-Path $resolvedPidDir 'selftest-wrap.pid'
         $outsideDir = Join-Path ([System.IO.Path]::GetTempPath()) ('bt-memguard-selftest-' + [guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Path $outsideDir | Out-Null
         $outsideExe = Join-Path $outsideDir 'bt-sleeper.exe'
@@ -318,6 +324,55 @@ function Invoke-MemguardSelfTest {
             return 5
         }
         Write-Host "memguard selftest ok: -Kill killed pidfile pid $($treeSleeper.Id), verified gone"
+        $outsideExe2 = Join-Path $outsideDir 'bt-sleeper-2.exe'
+        Copy-Item -LiteralPath $sleeperFull -Destination $outsideExe2
+        $wrapErrFile = Join-Path $tempDir 'wrap-stderr.txt'
+        $wrapArgs = '-NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '" -Wrap selftest-wrap -WrapCommand "' + $outsideExe2.Replace('\', '/') + ' 8"'
+        $wrapProc = Start-Process -FilePath $pwshExe -ArgumentList $wrapArgs -PassThru -WindowStyle Hidden -RedirectStandardError $wrapErrFile
+        $wrapSeen = $false
+        for ($i = 0; $i -lt 40; $i++) {
+            if (Test-Path -LiteralPath $wrapPidFile) { $wrapSeen = $true; break }
+            Start-Sleep -Milliseconds 250
+        }
+        if (-not $wrapSeen) {
+            $wrapErr = ''
+            if (Test-Path -LiteralPath $wrapErrFile) { $wrapErr = (Get-Content -LiteralPath $wrapErrFile -Raw).Trim() }
+            Write-Fail "selftest wrap mode never wrote $wrapPidFile, wrapper stderr: $wrapErr"
+            return 5
+        }
+        $wrapPid = [int](Get-Content -LiteralPath $wrapPidFile -Raw).Trim()
+        if ($wrapPid -ne $wrapProc.Id) {
+            Write-Fail "selftest wrap pidfile holds pid $wrapPid, expected wrapper pid $($wrapProc.Id)"
+            return 5
+        }
+        $wrapChildSeen = $false
+        for ($i = 0; $i -lt 40; $i++) {
+            $child = Get-CimInstance Win32_Process -Filter "Name = 'bt-sleeper-2.exe'" | Select-Object -First 1
+            if ($null -ne $child) { $wrapChildSeen = $true; $wrapChild2Id = [int]$child.ProcessId; break }
+            Start-Sleep -Milliseconds 250
+        }
+        if (-not $wrapChildSeen) {
+            Write-Fail "selftest wrap command never spawned bt-sleeper-2.exe"
+            return 5
+        }
+        $rows = @(Get-TrackedProcess $resolvedPidDir)
+        if ($null -eq ($rows | Where-Object { $_.Id -eq $wrapPid }) -or $null -eq ($rows | Where-Object { $_.Id -eq $wrapChild2Id })) {
+            Write-Fail "selftest wrap tree pids $wrapPid or $wrapChild2Id not matched"
+            return 5
+        }
+        Write-Host "memguard selftest ok: wrap mode pidfile matched wrapper pid $wrapPid and sleeper pid $wrapChild2Id"
+        $null = Wait-Process -Id $wrapProc.Id -Timeout 20 -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+        $wrapProc.Refresh()
+        if (Test-Path -LiteralPath $wrapPidFile) {
+            Write-Fail "selftest wrap mode left $wrapPidFile behind"
+            return 5
+        }
+        if ($wrapProc.ExitCode -ne 0) {
+            Write-Fail "selftest wrap mode exited with $($wrapProc.ExitCode)"
+            return 5
+        }
+        Write-Host "memguard selftest ok: wrap mode removed the pidfile and exited 0"
         $code = 0
     } finally {
         $sleeperGone = $true
@@ -343,6 +398,17 @@ function Invoke-MemguardSelfTest {
             Stop-Process -Id $treeSleeper.Id -Force -ErrorAction SilentlyContinue
             $treeGone = $treeGone -and (Wait-ProcessGone $treeSleeper.Id 5)
         }
+        $wrapGone = $true
+        if ($null -ne $wrapProc) {
+            taskkill /PID $wrapProc.Id /T /F 2>$null | Out-Null
+            $wrapGone = (Wait-ProcessGone $wrapProc.Id 5)
+            if ($wrapChild2Id -gt 0) { $wrapGone = $wrapGone -and (Wait-ProcessGone $wrapChild2Id 5) }
+            if ($wrapGone) { Write-Host "memguard selftest ok: wrap wrapper pid $($wrapProc.Id) tree killed and gone" }
+        }
+        if ($wrapPidFile -ne '' -and (Test-Path -LiteralPath $wrapPidFile)) {
+            Remove-Item -LiteralPath $wrapPidFile -Force -ErrorAction SilentlyContinue
+            $wrapGone = $wrapGone -and (-not (Test-Path -LiteralPath $wrapPidFile))
+        }
         if ($outsideDir -ne '' -and (Test-Path -LiteralPath $outsideDir)) {
             Remove-Item -LiteralPath $outsideDir -Recurse -Force -ErrorAction SilentlyContinue
         }
@@ -350,7 +416,7 @@ function Invoke-MemguardSelfTest {
         $tempGone = -not (Test-Path -LiteralPath $tempDir)
         if (-not $tempGone) { Remove-Item -LiteralPath $tempDir -Recurse -Force -ErrorAction SilentlyContinue }
         $tempGone = -not (Test-Path -LiteralPath $tempDir)
-        if (-not $sleeperGone -or -not $decoyGone -or -not $treeGone -or -not $outsideGone -or -not $tempGone) {
+        if (-not $sleeperGone -or -not $decoyGone -or -not $treeGone -or -not $wrapGone -or -not $outsideGone -or -not $tempGone) {
             Write-Fail "selftest cleanup failed"
             $code = 5
         }
@@ -360,6 +426,23 @@ function Invoke-MemguardSelfTest {
 
 if ($SelfTest) {
     exit (Invoke-MemguardSelfTest)
+}
+
+if ($Wrap -ne '') {
+    if ($WrapCommand.Trim().Length -eq 0) {
+        Write-Fail "-WrapCommand must not be empty"
+        exit 2
+    }
+    $wrapPidDir = Resolve-PidDir
+    New-Item -ItemType Directory -Path $wrapPidDir -Force | Out-Null
+    $wrapPidFile = Join-Path $wrapPidDir ($Wrap + '.pid')
+    Set-Content -LiteralPath $wrapPidFile -Value $PID
+    try {
+        & sh -c $WrapCommand
+        exit ([int]$LASTEXITCODE)
+    } finally {
+        Remove-Item -LiteralPath $wrapPidFile -Force -ErrorAction SilentlyContinue
+    }
 }
 
 $cap = Resolve-CapBytes $CapBytes

@@ -6,7 +6,6 @@ E2E_BIN := tests/e2e/target/release/bt-e2e.exe
 MEMGUARD := scripts/memguard.ps1
 FUZZ_TARGETS := notation classify memo commutator expand db fsrs
 MUTATION_PACKAGES := bt-core bt-scheme bt-data bt-ga bt-puzzles
-PID_DIR = $(shell pwsh -NoProfile -Command '(Get-Content $$env:BT_CONFIG -Raw | ConvertFrom-Json).memguard.pid_dir')
 
 export BT_REF_GROUND := $(REF_GROUND)
 export BT_CONFIG := $(CONFIG)
@@ -85,20 +84,21 @@ mutants-gate-selftest:
 	cargo test -p bt-mutants-gate
 
 fuzz:
-	d="$(PID_DIR)"; test -n "$$d" || { echo 'missing memguard.pid_dir'; exit 2; }; mkdir -p "$$d"; echo $$$$ > "$$d/fuzz.pid"; trap 'rm -f "$$d/fuzz.pid"' EXIT; cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap fuzz -WrapCommand 'cd fuzz && for t in $(FUZZ_TARGETS); do cargo fuzz run $$t || exit 1; done'
 
 mutation:
-	d="$(PID_DIR)"; test -n "$$d" || { echo 'missing memguard.pid_dir'; exit 2; }; mkdir -p "$$d"; echo $$$$ > "$$d/mutation.pid"; trap 'rm -f "$$d/mutation.pid"' EXIT; cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap mutation -WrapCommand 'cargo mutants --jobs 1 $(addprefix -p ,$(MUTATION_PACKAGES))'
 
 mutation-pkg:
 	@test -n "$(p)" || { echo 'usage: make mutation-pkg p=<crate>'; exit 2; }
-	d="$(PID_DIR)"; test -n "$$d" || { echo 'missing memguard.pid_dir'; exit 2; }; mkdir -p "$$d" "$(MUTATION_PKG_DIR)/$(p)"; echo $$$$ > "$$d/mutation-pkg-$(p).pid"; trap 'rm -f "$$d/mutation-pkg-$(p).pid"' EXIT; cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap mutation-pkg-$(p) -WrapCommand 'mkdir -p $(MUTATION_PKG_DIR)/$(p) && cargo mutants --jobs 1 -p $(p) -o $(MUTATION_PKG_DIR)/$(p)'
 
 mutation-merge:
 	cargo run --release -p bt-mutants-gate -- merge $(OUTCOMES) $(MUTATION_PKG_OUTS)
 
 e2e: build
-	d="$(PID_DIR)"; test -n "$$d" || { echo 'missing memguard.pid_dir'; exit 2; }; mkdir -p "$$d"; echo $$$$ > "$$d/e2e.pid"; trap 'rm -f "$$d/e2e.pid"' EXIT; cargo test --release -p bt-app --test e2e && $(MAKE) e2e-smoke
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap e2e -WrapCommand 'cargo test --release -p bt-app --test e2e'
+	$(MAKE) e2e-smoke
 
 e2e-smoke: build
 	cargo build --release --manifest-path tests/e2e/Cargo.toml
@@ -154,8 +154,7 @@ run:
 	cargo run --release -p bt-app
 
 chain:
-	d="$(PID_DIR)"; test -n "$$d" || { echo 'missing memguard.pid_dir'; exit 2; }; mkdir -p "$$d"; echo $$$$ > "$$d/chain.pid"; trap 'rm -f "$$d/chain.pid"' EXIT; \
-	$(MAKE) test && $(MAKE) fmt && $(MAKE) lint && $(MAKE) policy && $(MAKE) check && $(MAKE) build && $(MAKE) fuzz && $(MAKE) mutation && $(MAKE) mutants-gate && $(MAKE) e2e && $(MAKE) baselines && $(MAKE) visual && $(MAKE) verify-algs
+	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -Wrap chain -WrapCommand '$(MAKE) test && $(MAKE) fmt && $(MAKE) lint && $(MAKE) policy && $(MAKE) check && $(MAKE) build && $(MAKE) fuzz && $(MAKE) mutation && $(MAKE) mutants-gate && $(MAKE) e2e && $(MAKE) baselines && $(MAKE) visual && $(MAKE) verify-algs'
 
 coverage:
 	CARGO_TARGET_DIR=$(COVERAGE_TARGET) pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/coverage-badge.ps1
