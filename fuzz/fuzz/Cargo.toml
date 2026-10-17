@@ -47,6 +47,13 @@ doc = false
 bench = false
 
 [[bin]]
+name = "expand"
+path = "fuzz_targets/expand.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "db"
 path = "fuzz_targets/db.rs"
 test = false

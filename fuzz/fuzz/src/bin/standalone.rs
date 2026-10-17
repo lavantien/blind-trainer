@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use bt_fuzz::{classify_once, fuzz_limits, memo_once, notation_once};
+use bt_fuzz::{classify_once, expand_once, fuzz_limits, memo_once, notation_once};
 use bt_scheme::Rng;
 
 fn bytes_for(rng: &mut Rng) -> Vec<u8> {
@@ -11,6 +11,15 @@ fn bytes_for(rng: &mut Rng) -> Vec<u8> {
     }
     bytes.truncate(len);
     bytes
+}
+
+const ALG_ALPHABET: &[u8] = b"RULFDBMESxyz2'()[]+:, urrmm";
+
+fn algish_bytes(rng: &mut Rng) -> Vec<u8> {
+    let len = rng.below(97) as usize;
+    (0..len)
+        .map(|_| ALG_ALPHABET[rng.below(ALG_ALPHABET.len() as u64) as usize])
+        .collect()
 }
 
 fn main() {
@@ -32,6 +41,8 @@ fn main() {
         notation_once(&bytes);
         classify_once(&bytes);
         memo_once(&bytes);
+        expand_once(&bytes);
+        expand_once(&algish_bytes(&mut rng));
         executed += 1;
     }
     println!("standalone fuzz iterations: {executed}");

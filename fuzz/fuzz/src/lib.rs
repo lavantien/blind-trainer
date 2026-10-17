@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
-use bt_core::{Alg, Cube, corner_stickers, edge_stickers};
+use bt_core::{Alg, Cube, cancel, corner_stickers, edge_stickers, expand};
 use bt_data::commutator::{decompose, decompose_verified};
 use bt_scheme::{
     Classification, Orbit, Rng, apply_memo, classify, memo_from_array, random_state, state_array,
@@ -224,6 +224,29 @@ fn unit_expansion(unit: &bt_data::commutator::Expanded) -> Alg {
         moves.extend_from_slice(setup.inverse().moves());
     }
     Alg::new(moves)
+}
+
+pub fn expand_once(data: &[u8]) {
+    let text = String::from_utf8_lossy(data);
+    let expanded = expand(&text);
+    assert_eq!(expand(&text), expanded, "expand must be deterministic");
+    let Some(alg) = expanded else {
+        return;
+    };
+    assert!(!alg.is_empty(), "expansion never collapses to identity");
+    let formatted = alg.format();
+    let again = expand(&formatted).expect("expanded form reparses as flat alg");
+    assert_eq!(again, alg, "expansion must reach a fixed point: {text:?}");
+    assert_eq!(
+        cancel(&alg).format(),
+        formatted,
+        "expanded form is already cancelled: {text:?}"
+    );
+    let mut cube = Cube::solved();
+    cube.apply_alg(&alg);
+    let mut restored = cube.clone();
+    restored.apply_alg(&alg.inverse());
+    assert!(restored.is_solved(), "expansion not invertible: {text:?}");
 }
 
 pub fn commutator_once(data: &[u8]) {
