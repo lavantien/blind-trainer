@@ -29,6 +29,7 @@ pub fn run(db: &mut Db, root: &Path) -> Result<(), String> {
         .is_fresh()
         .map_err(|err| format!("{}: {err}", paths::db_path_at(root).display()))?
     {
+        finish_renames(&files)?;
         return Ok(());
     }
     let settings_text = read_text(&files[0])?;
@@ -56,9 +57,20 @@ pub fn run(db: &mut Db, root: &Path) -> Result<(), String> {
             source,
         })
         .map_err(err_at(root))?;
+    finish_renames(&files)?;
+    Ok(())
+}
+
+fn finish_renames(files: &[PathBuf]) -> Result<(), String> {
     for path in files.iter().filter(|path| path.exists()) {
-        std::fs::rename(path, migrated_path(path))
-            .map_err(|err| format!("rename {}: {err}", path.display()))?;
+        let migrated = migrated_path(path);
+        std::fs::rename(path, &migrated).map_err(|err| {
+            format!(
+                "rename {}: {err}: the import already committed to the db, finish by renaming it to {} or removing it",
+                path.display(),
+                migrated.display()
+            )
+        })?;
     }
     Ok(())
 }
@@ -284,8 +296,47 @@ mod tests {
             crate::repo_srs::load(&db, &crate::fsrs::FsrsConfig::defaults()).expect("srs"),
             SrsStore::default()
         );
-        assert!(settings_path_at(&root).is_file());
-        assert!(!migrated_path(&settings_path_at(&root)).exists());
+        assert!(!settings_path_at(&root).exists());
+        assert!(migrated_path(&settings_path_at(&root)).is_file());
+    }
+
+    #[test]
+    fn a_mid_loop_rename_failure_names_the_file_and_says_the_import_committed() {
+        let root = temp_root("rename-lock");
+        seed_all_legacy(&root);
+        let blocked = migrated_path(&srs_path_at(&root));
+        std::fs::create_dir_all(&blocked).expect("blocker dir");
+        let mut db = open(&root);
+        let err = run(&mut db, &root).expect_err("blocked rename must fail");
+        assert!(err.contains("srs.json"), "err: {err}");
+        assert!(err.contains("already committed"), "err: {err}");
+        assert!(migrated_path(&settings_path_at(&root)).is_file());
+        assert!(solves_path_at(&root).is_file());
+        assert!(user_algs_path_at(&root).is_file());
+        assert!(!db.is_fresh().expect("fresh"));
+    }
+
+    #[test]
+    fn a_later_run_finishes_the_residue_renames_and_fails_loud_when_blocked() {
+        let root = temp_root("residue");
+        seed_all_legacy(&root);
+        let blocked = migrated_path(&srs_path_at(&root));
+        std::fs::create_dir_all(&blocked).expect("blocker dir");
+        let mut db = open(&root);
+        assert!(run(&mut db, &root).is_err());
+        std::fs::remove_dir(&blocked).expect("unblock");
+        run(&mut db, &root).expect("later run finishes the residue");
+        assert!(migrated_path(&settings_path_at(&root)).is_file());
+        assert!(migrated_path(&srs_path_at(&root)).is_file());
+        assert!(migrated_path(&solves_path_at(&root)).is_file());
+        assert!(migrated_path(&user_algs_path_at(&root)).is_file());
+        let restored = migrated_path(&user_algs_path_at(&root));
+        std::fs::rename(restored, &user_algs_path_at(&root)).expect("restore one file");
+        std::fs::create_dir_all(&restored).expect("blocker dir");
+        let err = run(&mut db, &root).expect_err("blocked residue rename must fail");
+        assert!(err.contains("user-algs.json"), "err: {err}");
+        assert!(err.contains("already committed"), "err: {err}");
+        assert!(user_algs_path_at(&root).is_file());
     }
 
     #[test]
