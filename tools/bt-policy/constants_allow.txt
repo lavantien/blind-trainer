@@ -2,7 +2,6 @@
 # constants check scope: src only, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
 crates/bt-app/src/logic.rs	100	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 crates/bt-app/src/logic.rs	640	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
-crates/bt-app/src/logic.rs	800	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
 crates/bt-app/src/net.rs	0.08	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/net.rs	0.96	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/net.rs	1280.0	hub mirror: default, clamp, or geometry value duplicating config.json or cube model semantics, pinned by tests
@@ -35,16 +34,27 @@ crates/bt-app/src/replay_scene.rs	80.0	replay pitch clamp boundary mirror of hub
 crates/bt-app/src/replay_scene.rs	90.0	replay quarter turn angle in degrees intrinsic to the layer turn model, pinned by scene tests
 crates/bt-app/src/smoke.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/smoke.rs	0.1	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.15	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/theme.rs	0.20	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/theme.rs	0.35	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.55	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.60	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.62	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/theme.rs	0.75	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.85	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/theme.rs	0.90	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/theme.rs	0.95	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/usage.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
-crates/bt-app/src/usage.rs	0.1	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
-crates/bt-app/src/usage.rs	0.8	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/usage.rs	1e-6	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
-crates/bt-app/src/views/algs.rs	10	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
-crates/bt-app/src/views/algs.rs	818	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
+crates/bt-app/src/usage_script.rs	0.1	usage replay elapse and duration fixture pinned by usage script tests
+crates/bt-app/src/usage_script.rs	0.3	usage replay elapse and duration fixture pinned by usage script tests
+crates/bt-app/src/usage_script.rs	0.8	usage replay elapse and duration fixture pinned by usage script tests
+crates/bt-app/src/views/algs/display.rs	12	net cell color tagging modulus and grid width fixture pinned by net display tests
+crates/bt-app/src/views/algs/mod.rs	10	list window probe width pinned by list view tests
+crates/bt-app/src/views/algs/mod.rs	818	bit width, hash lane, or pinned vendor corpus size
+crates/bt-app/src/views/case_drill_view.rs	1.0	drill net span unit and flex grow weight pinned by drill view tests
+crates/bt-app/src/views/case_drill_view.rs	12	drill net layout width fixture across puzzle nets pinned by drill view tests
+crates/bt-app/src/views/case_drill_view.rs	576.0	drill net pixel extent probe pinned by drill view tests
 crates/bt-app/src/views/drill.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/views/memo.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
 crates/bt-app/src/views/settings.rs	0.0	present-layer layout, palette, timer, or scale anchor intrinsic to the pinned theme
@@ -135,6 +145,11 @@ tools/bt-memofreq/src/lib.rs	48	hub mirror: default, clamp, or geometry value du
 tools/bt-release-verify/src/lib.rs	10	packaged window fixture mirroring hub app.window
 tools/bt-release-verify/src/lib.rs	1280	packaged window fixture mirroring hub app.window
 tools/bt-release-verify/src/lib.rs	800	packaged window fixture mirroring hub app.window
+tools/bt-verify/src/ev_cfop.rs	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+tools/bt-verify/src/ev_sq1.rs	11	square-1 piece slot index intrinsic to the sq1 piece model, pinned by ev selftests
+tools/bt-verify/src/ev_sq1.rs	12	square-1 layer width sum intrinsic to the sq1 piece model, pinned by ev selftests
+tools/bt-verify/src/ev_sq1.rs	13	square-1 piece slot index intrinsic to the sq1 piece model, pinned by ev selftests
+tools/bt-verify/src/ev_sq1.rs	15	square-1 piece slot index intrinsic to the sq1 piece model, pinned by ev selftests
 tools/bt-verify/src/report.rs	64	bit width, hash lane, or pinned vendor corpus size
 tools/bt-visual-diff/src/lib.rs	10	tolerance boundary fixture mirroring hub visual.tolerance
 tools/bt-visual-diff/src/lib.rs	255	RGBA channel maximum
