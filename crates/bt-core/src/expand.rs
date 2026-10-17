@@ -9,7 +9,7 @@ pub fn expand(text: &str) -> Option<Alg> {
     let tokens = tokenize(text)?;
     let mut parser = Parser { tokens, index: 0 };
     let moves = parser.sum(0, Stop::End)?;
-    if parser.index != parser.tokens.len() || moves.len() > EXPAND_LIMIT {
+    if moves.len() > EXPAND_LIMIT {
         return None;
     }
     let cancelled = cancel(&Alg::new(moves));
@@ -516,5 +516,53 @@ mod tests {
         assert!(expand(&wide).is_some());
         let runaway = "((R U R' F B L D S E M2 U')99)99";
         assert!(expand(runaway).is_none(), "projected length must cap");
+        assert!(
+            expand("(R)101").is_none(),
+            "count past the cap must not expand"
+        );
+        assert!(
+            expand("(R U)100").is_none(),
+            "projected length past the cap must not expand"
+        );
+    }
+
+    #[test]
+    fn the_move_cap_is_exclusive_at_both_levels() {
+        let exact: String = vec!["R U"; 50_000].join(" ");
+        assert_eq!(Alg::parse(&exact).unwrap().len(), 100_000);
+        assert!(expand(&exact).is_some(), "exactly the cap still expands");
+        let over = format!("{exact} U U");
+        assert!(
+            expand(&over).is_none(),
+            "two moves past the cap is rejected"
+        );
+        let unit: String = vec!["R U F D L B"; 4].join(" ");
+        let unit = format!("{unit} R");
+        assert_eq!(Alg::parse(&unit).unwrap().len(), 25);
+        let mid = format!("({unit})50");
+        assert!(expand(&mid).is_some());
+        let projected = format!("({mid})80");
+        assert!(
+            expand(&projected).is_some(),
+            "projected exactly the cap expands"
+        );
+        let projected_over = format!("({mid})81");
+        assert!(expand(&projected_over).is_none());
+    }
+
+    #[test]
+    fn bracket_nesting_is_bounded_like_parens() {
+        assert!(expand("[[[[R,U],S],D],F]").is_some(), "four levels parse");
+        assert!(
+            expand("[[[[[R,U],S],D],F],E]").is_none(),
+            "five levels are rejected"
+        );
+    }
+
+    #[test]
+    fn stray_separators_at_top_level_return_none() {
+        for text in ["R,U", "R)", "R]", "(R)2,"] {
+            assert!(expand(text).is_none(), "{text:?}");
+        }
     }
 }
