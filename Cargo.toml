@@ -13,3 +13,6 @@ proptest = "1.12.0"
 rayon = "1.12.0"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 sha2 = "0.11.0"
+
+[profile.dev]
+debug = 0
