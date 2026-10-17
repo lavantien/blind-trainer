@@ -8,7 +8,7 @@
   "visual": {"tolerance": 48},
   "fuzz": {"runs": 5000, "secs": 30},
   "policy": {"small_literal_allow": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], "literal_recurrence": 4},
-  "memguard": {"cap_bytes": 17179869184},
+  "memguard": {"cap_bytes": 17179869184, "pid_dir": "artifacts/progress/pids"},
   "disk": {"scratch_stale_hours": 6, "free_floor_gb": 20},
   "e2e": {"shots": ["menu", "drill", "memo", "solve", "replay", "algs", "case-drill", "stats", "settings", "fatal"], "timeout_secs": 180},
   "release": {"staging_dir": "blind-trainer", "exe": "blind-trainer.exe", "config_file": "config/config.json", "fonts_dir": "assets/fonts", "run_timeout_secs": 300, "usage_exit": 2},
