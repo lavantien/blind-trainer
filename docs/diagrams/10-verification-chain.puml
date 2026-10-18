@@ -1,4 +1,5 @@
 @startuml 10-verification-chain
+left to right direction
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
@@ -7,17 +8,17 @@ skinparam ArrowColor #2f3439
 skinparam rectangleBackgroundColor #2f3439
 skinparam rectangleFontColor #FFFFFF
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "1 test\nworkspace suite\n1584 tests" as s1
+rectangle "1 test\nworkspace suite" as s1
 rectangle "2 fmt\nrustfmt check" as s2
 rectangle "3 lint\nclippy -D warnings\nunder jobwrap" as s3
 rectangle "4 policy\nzero comments, constants hub\nsloc max 1000 lines" as s4
 rectangle "5 check\ncargo check workspace" as s5
 rectangle "6 build\nrelease exe artifact" as s6
 rectangle "7 fuzz\nnotation classify memo\ncommutator expand db fsrs" as s7
-rectangle "8 mutation\n5 packages, jobs 1\nscratch copies" as s8
-rectangle "9 mutants-gate\nmerge outcomes\n71 survivors adjudicated\nin the allowlist" as s9
+rectangle "8 mutation\nmutated packages\nscratch-local builds" as s8
+rectangle "9 mutants-gate\nmerge outcomes\nsurvivors adjudicated\nin the allowlist" as s9
 rectangle "10 e2e\nheadless suite plus\nsandboxed smoke and\nmissing config exit 1" as s10
-rectangle "11 visual\n10 baselines, verdict\ntaxonomy 2 3 4\nprovenance log" as s11
+rectangle "11 visual\ncommitted baselines\nverdict taxonomy\nprovenance log" as s11
 rectangle "12 verify-algs\nper event tier report\ncounts and hashes\ngate fail closed" as s12
 s1 -> s2
 s2 -> s3
@@ -34,6 +35,6 @@ note bottom of s9
   a survivor leaves only with a\ndomain equivalence argument\nor a proven hang, rows are\nreviewed on every gate run
 end note
 note bottom of s12
-  release adds dist then\nrelease-verify: zip byte\ncompare, p1 p2 packaged\nsmoke, n1 missing config\nexit 1, n2 usage exit 2
+  release adds dist then\nrelease-verify: zip byte\ncompare, packaged smoke,\nmissing config exit 1,\nusage exit 2
 end note
 @enduml

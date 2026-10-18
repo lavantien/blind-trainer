@@ -8,7 +8,7 @@ skinparam ActivityBackgroundColor #2f3439
 skinparam ActivityFontColor #FFFFFF
 skinparam NoteBackgroundColor #f4f5f6
 start
-:Speffz letter map\n24 edge slots, 24 corner slots\nbuffer UF and UFR fixed;
+:Speffz letter map\nedge and corner slots\nbuffer UF and UFR fixed;
 :pair space\nbuffer to target as\nfloating interchange slots;
 :classifier\ncommutator class per pair\ninterchange and insertion;
 if (pair has vendor alg?) then (yes)

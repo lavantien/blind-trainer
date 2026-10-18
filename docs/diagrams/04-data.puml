@@ -1,4 +1,5 @@
 @startuml 04-data
+left to right direction
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
@@ -9,13 +10,13 @@ skinparam rectangleFontColor #FFFFFF
 skinparam databaseBackgroundColor #8a9099
 skinparam NoteBackgroundColor #f4f5f6
 rectangle "ref_ground corpus tsv\ncherry eggins workbooks\nunder the gpl carve-out" as tsv
-rectangle "ref_ground packs tsv\n21 registry entries\n1115 provenance rows" as packs
+rectangle "ref_ground packs tsv\nregistry pinned\nprovenance tagged" as packs
 rectangle "seedpack loader\nnormalize commas parens\n(g)2 repeats, -> chains\ncanonical content hash" as loader
 rectangle "SQLite db\nuser_version migrations\nbackup before migrate\nlegacy json to .migrated" as db
 database "seed_alg\nuser_alg\ncard\nfsrs_state\nreview_log" as tables
 rectangle "effective alg\nuser row overrides seed\ndelete reverts to seed" as overlay
 rectangle "bt-verify tiers\ntier 1 mechanical\ntier 2 structural stage\nfail closed on drift" as verify
-rectangle "FSRS-5 scheduler\n19 spec pinned weights\nstability difficulty\ninterval clamp 1 to 365" as fsrs
+rectangle "FSRS-5 scheduler\npinned weights\nstability difficulty\ninterval clamp from config" as fsrs
 tsv -> loader
 packs -> loader
 loader -> db

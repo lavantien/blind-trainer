@@ -11,7 +11,7 @@ start
 :seeded scramble\ndeterministic from seed\nsmoke pins the stream;
 :decompose to pairs\nedges then corners\nbuffer relative order;
 :memo tokens\nedges as syllables\ncorners as image words;
-:per orbit stream\ncadence from config\nclamp 1 to 10000 ms;
+:per orbit stream\ncadence from config\nclamped bounds;
 :intro, stream, recall, review\nphases driven by keyboard;
 :recall\ntokens hidden, space reveals\nthe full memo with residue;
 :rate\nkeys 1 to 4 grade each\nstreamed pair into FSRS;

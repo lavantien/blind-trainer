@@ -13,7 +13,7 @@ start
 note right: the scanner freezes on\nmalformed input and the fuzz\ntarget pins every reject
 :parse into Move tokens\nface, quarter, depth, rotation;
 :expand word to single turns\ncommutator (g)2 groups\nand -> chains flattened;
-:apply to Cube\n48 sticker permutation\nplus centers fixed;
+:apply to Cube\nsticker permutation\nplus centers fixed;
 if (token reachable?) then (yes)
   :analysis\nedge flips per pair\ncorner twist per slot\ncenter fixed predicate;
   :predicates\nsolved, permutation equality\n3style target exchange;

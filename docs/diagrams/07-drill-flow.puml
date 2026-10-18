@@ -18,7 +18,7 @@ start
 if (again or hard?) then (lapse)
   :stability reset path\ninterval to the floor\nlapse count grows;
 else (good or easy)
-  :stability growth\ndifficulty adjusts\ninterval clamped 1 to 365;
+  :stability growth\ndifficulty adjusts\ninterval clamped by config;
 endif
 :fsrs_state write\nreview_log append\ndue_day computed;
 :next due card\nloop until session ends;
