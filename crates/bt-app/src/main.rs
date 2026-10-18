@@ -60,7 +60,10 @@ fn main() {
         }
         None => {}
     }
-    app.run();
+    match app.run() {
+        AppExit::Success => {}
+        AppExit::Error(code) => std::process::exit(i32::from(code.get())),
+    }
 }
 
 enum ShotMode {

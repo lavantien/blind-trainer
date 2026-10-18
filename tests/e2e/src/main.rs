@@ -112,6 +112,14 @@ struct WindowDims {
     height: u32,
 }
 
+fn neg_config_exit_from(value: &Value) -> Result<i32, String> {
+    value
+        .pointer("/release/neg_config_exit")
+        .and_then(Value::as_i64)
+        .and_then(|code| i32::try_from(code).ok())
+        .ok_or_else(|| "config release.neg_config_exit must be an integer".to_string())
+}
+
 fn window_dims_from(value: &Value) -> Result<WindowDims, String> {
     let section = value
         .pointer("/app/window")
@@ -220,17 +228,26 @@ struct SmokeRun {
     stderr: Vec<u8>,
 }
 
-fn spawn_smoke(binary: &Path, out_dir: &Path) -> std::io::Result<Child> {
-    Command::new(binary)
+fn spawn_smoke(binary: &Path, out_dir: &Path, envs: &[(String, String)]) -> std::io::Result<Child> {
+    let mut command = Command::new(binary);
+    command
         .arg("--smoke")
         .arg(out_dir)
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
+        .stderr(Stdio::piped());
+    for (key, value) in envs {
+        command.env(key, value);
+    }
+    command.spawn()
 }
 
-fn run_smoke(binary: &Path, out_dir: &Path, deadline: Instant) -> Result<SmokeRun, String> {
-    let mut child = spawn_smoke(binary, out_dir)
+fn run_smoke(
+    binary: &Path,
+    out_dir: &Path,
+    envs: &[(String, String)],
+    deadline: Instant,
+) -> Result<SmokeRun, String> {
+    let mut child = spawn_smoke(binary, out_dir, envs)
         .map_err(|err| format!("cannot spawn {}: {err}", binary.display()))?;
     let mut stdout_pipe = child.stdout.take();
     let mut stderr_pipe = child.stderr.take();
@@ -302,7 +319,7 @@ fn real_main() -> Result<u8, String> {
     println!("window: {}x{}", dims.width, dims.height);
     clean_pngs(&out_dir)?;
     let deadline = Instant::now() + settings.timeout;
-    let run = run_smoke(&binary, &out_dir, deadline)?;
+    let run = run_smoke(&binary, &out_dir, &[], deadline)?;
     match run.code {
         Some(0) => {}
         Some(code) => {
@@ -351,6 +368,33 @@ fn real_main() -> Result<u8, String> {
     );
     if failures > 0 {
         return Ok(1);
+    }
+    let neg_exit = neg_config_exit_from(&config)?;
+    let neg_dir = out_dir
+        .parent()
+        .unwrap_or(&out_dir)
+        .join("e2e-neg")
+        .join("shots");
+    clean_pngs(&neg_dir)?;
+    let neg_config = root.join("artifacts").join("e2e-neg-config.json");
+    let _ = fs::remove_file(&neg_config);
+    let neg_envs = vec![(
+        "BT_CONFIG".to_string(),
+        neg_config.to_string_lossy().into_owned(),
+    )];
+    let neg_run = run_smoke(&binary, &neg_dir, &neg_envs, deadline)?;
+    match neg_run.code {
+        Some(code) if code == neg_exit => println!("ok missing-config smoke exit {code}"),
+        Some(code) => {
+            return Err(format!(
+                "smoke with a missing config exited {code}, expected {neg_exit}\nstdout tail:\n{}\nstderr tail:\n{}",
+                tail(&neg_run.stdout),
+                tail(&neg_run.stderr)
+            ));
+        }
+        None => {
+            return Err("missing-config smoke terminated without an exit code".to_string());
+        }
     }
     Ok(0)
 }
@@ -410,6 +454,20 @@ mod tests {
             })
         );
         assert_eq!(parse_args(&argv(&["a", "b", "c"])), Err(ArgsError::Usage));
+    }
+
+    #[test]
+    fn neg_config_exit_from_reads_the_release_key() {
+        let ok: Value = serde_json::from_str(r#"{"release": {"neg_config_exit": 1}}"#).expect("ok");
+        assert_eq!(neg_config_exit_from(&ok), Ok(1));
+        let missing: Value = serde_json::from_str(r#"{"release": {}}"#).expect("missing");
+        assert_eq!(
+            neg_config_exit_from(&missing).expect_err("hard error"),
+            "config release.neg_config_exit must be an integer"
+        );
+        let malformed: Value =
+            serde_json::from_str(r#"{"release": {"neg_config_exit": "one"}}"#).expect("bad");
+        assert!(neg_config_exit_from(&malformed).is_err());
     }
 
     #[test]
