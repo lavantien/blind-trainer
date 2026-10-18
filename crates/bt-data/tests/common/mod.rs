@@ -39,6 +39,10 @@ pub fn ref_ground() -> PathBuf {
     }
 }
 
+pub fn packs() -> PathBuf {
+    ref_ground().join("packs")
+}
+
 pub fn config_path() -> PathBuf {
     match std::env::var("BT_CONFIG") {
         Ok(raw) if !raw.is_empty() => {
