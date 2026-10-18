@@ -185,6 +185,7 @@
     "config_file": "config/config.json",
     "fonts_dir": "assets/fonts",
     "run_timeout_secs": 300,
+    "neg_config_exit": 1,
     "usage_exit": 2
   },
   "paths": {

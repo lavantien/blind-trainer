@@ -26,6 +26,7 @@ struct ReleaseCfg {
     fonts_dir: String,
     db_file: String,
     run_timeout_secs: u64,
+    neg_config_exit: i32,
     usage_exit: i32,
     shots: Vec<String>,
 }
@@ -120,6 +121,10 @@ fn verify(env: &Env, args: &ParsedArgs, cfg: &ReleaseCfg, root: &str) -> Result<
             &env.vars,
             Some(&packaged),
         ),
+    )?;
+    stage_ok(
+        "n1 missing config",
+        n1_stage(&exe_path, &extract_dir, &work.join("n1"), cfg, &env.vars),
     )?;
     stage_ok(
         "n2 usage",
@@ -227,6 +232,7 @@ fn release_cfg_from(value: &Value) -> Result<ReleaseCfg, String> {
         fonts_dir: cfg_str(section, "fonts_dir")?,
         db_file,
         run_timeout_secs: cfg_u64(section, "run_timeout_secs")?,
+        neg_config_exit: cfg_i32(section, "neg_config_exit")?,
         usage_exit: cfg_i32(section, "usage_exit")?,
         shots,
     })
@@ -420,6 +426,36 @@ fn n2_stage(
     Ok(((), format!("exit {}", cfg.usage_exit)))
 }
 
+fn n1_stage(
+    exe: &Path,
+    extract_dir: &Path,
+    sandbox_root: &Path,
+    cfg: &ReleaseCfg,
+    vars: &[(String, String)],
+) -> Result<((), String), String> {
+    let missing = extract_dir.join(&cfg.config_file);
+    fs::remove_file(&missing).map_err(|err| {
+        format!(
+            "cannot delete extracted config {}: {err}",
+            missing.display()
+        )
+    })?;
+    let (cwd, appdata) = prep_sandbox(sandbox_root)?;
+    let appdata_arg = appdata.to_string_lossy().into_owned();
+    let config_arg = missing.to_string_lossy().into_owned();
+    let extras: Vec<(&str, &str)> = vec![
+        ("APPDATA", appdata_arg.as_str()),
+        ("BT_CONFIG", config_arg.as_str()),
+    ];
+    let spec = stage_spec(exe, &["--smoke"], &cwd, vars, &extras);
+    let result = exec::run_child(&spec, Duration::from_secs(cfg.run_timeout_secs));
+    check_exit(&result.outcome, cfg.neg_config_exit)?;
+    Ok((
+        (),
+        format!("exit {} with the config deleted", cfg.neg_config_exit),
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -458,6 +494,7 @@ mod tests {
             "config_file": "config/config.json",
             "fonts_dir": "assets/fonts",
             "run_timeout_secs": 120,
+            "neg_config_exit": 1,
             "usage_exit": 2
           },
           "e2e": {"shots": ["menu", "drill", "memo", "solve", "algs", "stats", "settings", "fatal"]}
@@ -541,6 +578,7 @@ mod tests {
         assert_eq!(cfg.fonts_dir, "assets/fonts");
         assert_eq!(cfg.db_file, bt_data::paths::DB_FILE);
         assert_eq!(cfg.run_timeout_secs, 120);
+        assert_eq!(cfg.neg_config_exit, 1);
         assert_eq!(cfg.usage_exit, 2);
         assert_eq!(
             cfg.shots,
@@ -611,6 +649,16 @@ mod tests {
         .expect("json");
         let err = release_cfg_from(&missing_exe).expect_err("no exe");
         assert_eq!(err, "config release.exe missing");
+        let missing_neg: Value = serde_json::from_str(&full_config_json().replace(
+            "\"neg_config_exit\": 1,\n            \"usage_exit\"",
+            "\"usage_exit\"",
+        ))
+        .expect("json");
+        let err = release_cfg_from(&missing_neg).expect_err("no neg exit");
+        assert_eq!(
+            err,
+            "config release.neg_config_exit must be an exit code integer"
+        );
         let missing_shots: Value = serde_json::from_str(&full_config_json().replace(
             ",\n          \"e2e\": {\"shots\": [\"menu\", \"drill\", \"memo\", \"solve\", \"algs\", \"stats\", \"settings\", \"fatal\"]}",
             "",
@@ -642,6 +690,49 @@ mod tests {
         .expect("json");
         let err = release_cfg_from(&zero_timeout).expect_err("zero timeout");
         assert!(err.contains("run_timeout_secs"), "err: {err}");
+        let bad_neg: Value = serde_json::from_str(
+            &full_config_json().replace("\"neg_config_exit\": 1", "\"neg_config_exit\": \"one\""),
+        )
+        .expect("json");
+        let err = release_cfg_from(&bad_neg).expect_err("bad neg exit");
+        assert!(err.contains("neg_config_exit"), "err: {err}");
+    }
+
+    #[test]
+    fn n1_stage_names_a_missing_extracted_config_before_spawning() {
+        let dir = temp_dir("n1-missing");
+        let extract = dir.join("extract");
+        fs::create_dir_all(&extract).expect("extract dir");
+        let err = n1_stage(
+            Path::new("nowhere.exe"),
+            &extract,
+            &dir.join("sandbox"),
+            &parse_cfg(&full_config_json()),
+            &[],
+        )
+        .expect_err("no extracted config to delete");
+        assert!(err.contains("cannot delete"), "err: {err}");
+    }
+
+    #[test]
+    fn n1_stage_deletes_the_config_then_requires_the_neg_exit() {
+        let dir = temp_dir("n1-spawn");
+        let extract = dir.join("extract");
+        fs::create_dir_all(extract.join("config")).expect("config dir");
+        fs::write(extract.join("config/config.json"), b"{}").expect("config");
+        let err = n1_stage(
+            Path::new("nowhere.exe"),
+            &extract,
+            &dir.join("sandbox"),
+            &parse_cfg(&full_config_json()),
+            &[],
+        )
+        .expect_err("exe does not run");
+        assert!(err.contains("did not run"), "err: {err}");
+        assert!(
+            !extract.join("config/config.json").exists(),
+            "the extracted config must be gone before the run"
+        );
     }
 
     #[test]
