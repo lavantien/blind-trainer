@@ -4,25 +4,26 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
-skinparam ActivityDiamondBackgroundColor #e8eaed
 skinparam NoteBackgroundColor #f4f5f6
-start
-:scramble applied\ncube state seeded;
-:memo clock\nmemorization phase timer;
-:exec clock\nexecution phase timer;
-:space stops the clocks\nmemo, exec and total splits\nheld for the log;
-:corpus replay verify\nalg sequence applied to\nthe scrambled cube;
-if (cube solved?) then (yes)
-  :solve log\nsuccess, times, piece split\nstats aggregation;
-  note right
-    3d replay renders the solve
-    on 27 cubies with animated
-    turns, drag orbits and wheel
-    zoom clamped.
-  end note
-  stop
-else (no)
-  :solve log dnf\nwith divergence context;
-  stop
-endif
+rectangle "scramble applied\ncube state seeded" as scramble
+rectangle "memo clock\nmemorization phase timer" as memo
+rectangle "exec clock\nexecution phase timer" as exec
+rectangle "space stops the clocks\nmemo, exec and total splits\nheld for the log" as stop
+rectangle "corpus replay verify\nalg sequence applied to\nthe scrambled cube" as replay
+rectangle "cube solved?" as solved
+rectangle "solve log\nsuccess, times, piece split\nstats aggregation" as success
+rectangle "solve log dnf\nwith divergence context" as dnf
+scramble -> memo
+memo -> exec
+exec -> stop
+stop -> replay
+replay -> solved
+solved -> success : yes
+solved -> dnf : no
+note bottom of success
+  3d replay renders the solve
+  on 27 cubies with animated
+  turns, drag orbits and wheel
+  zoom clamped.
+end note
 @enduml

@@ -5,19 +5,23 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-start
-:seeded scramble\ndeterministic from seed\nsmoke pins the stream;
-:decompose to pairs\nedges then corners\nbuffer relative order;
-:memo tokens\nedges as syllables\ncorners as image words;
-:per orbit stream\ncadence from config\nclamped bounds;
-:intro, stream, recall, review\nphases driven by keyboard;
-:recall\ntokens hidden, space reveals\nthe full memo with residue;
-:rate\nkeys 1 to 4 grade each\nstreamed pair into FSRS;
-note right
+rectangle "seeded scramble\ndeterministic from seed\nsmoke pins the stream" as scramble
+rectangle "decompose to pairs\nedges then corners\nbuffer relative order" as pairs
+rectangle "memo tokens\nedges as syllables\ncorners as image words" as tokens
+rectangle "per orbit stream\ncadence from config\nclamped bounds" as stream
+rectangle "intro, stream, recall, review\nphases driven by keyboard" as phases
+rectangle "recall\ntokens hidden, space reveals\nthe full memo with residue" as recall
+rectangle "rate\nkeys 1 to 4 grade each\nstreamed pair into FSRS" as rate
+scramble -> pairs
+pairs -> tokens
+tokens -> stream
+stream -> phases
+phases -> recall
+recall -> rate
+note bottom of stream
   memo mode parses from config,
   the stream is reproducible
   which keeps the memo smoke
   shot byte stable.
 end note
-stop
 @enduml

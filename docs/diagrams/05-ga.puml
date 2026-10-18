@@ -5,22 +5,25 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-start
-:letter pairs\ncorpus letters from\nbt-memofreq counts;
-:perceptual features\nfingertrick friendly shapes\nshared letter overlap;
-:seed syllable pool\ninitial words per letter pair;
-repeat
-  :fitness\nfrequency weight times\npronounceability score;
-  :crossover and mutation\nelitist retention;
-repeat while (generation budget left\nand fitness target unmet?) is (yes)
-:write syllables.json\nvendor manifest hash\nparams hash caching;
-:consumed by memo generator\nand drill card text;
-note right
+rectangle "letter pairs\ncorpus letters from\nbt-memofreq counts" as letters
+rectangle "perceptual features\nfingertrick friendly shapes\nshared letter overlap" as features
+rectangle "seed syllable pool\ninitial words per letter pair" as pool
+rectangle "fitness\nfrequency weight times\npronounceability score" as fitness
+rectangle "crossover and mutation\nelitist retention" as evolve
+rectangle "write syllables.json\nvendor manifest hash\nparams hash caching" as write
+rectangle "consumed by memo generator\nand drill card text" as consumed
+letters -> features
+features -> pool
+pool -> fitness
+fitness -> evolve
+evolve -> fitness : generation budget left\nand fitness target unmet
+evolve -> write : budget spent or target met
+write -> consumed
+note bottom of write
   fingertrick scoring ranks synth
   algs by regrip and rotation
   penalties, the params hash skips
   regeneration when the model
   and config are unchanged.
 end note
-stop
 @enduml

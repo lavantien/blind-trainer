@@ -5,23 +5,28 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-start
-:Speffz letter map\nedge and corner slots\nbuffer UF and UFR fixed;
-:pair space\nbuffer to target as\nfloating interchange slots;
-:classifier\ncommutator class per pair\ninterchange and insertion;
-if (pair has vendor alg?) then (yes)
-  :corpus row pinned\ncontent hash recorded;
-else (no)
-  :synthesis engine\ndecompose into\ninterchange + insert;
-  :verify synth result\nagainst reference simulator;
-endif
-:memo generator\nletters to syllables\nfrom syllables.json;
-:seeded scramble\nbuild_occ occupancy;
-note right
+rectangle "Speffz letter map\nedge and corner slots\nbuffer UF and UFR fixed" as map
+rectangle "pair space\nbuffer to target as\nfloating interchange slots" as pairs
+rectangle "classifier\ncommutator class per pair\ninterchange and insertion" as classifier
+rectangle "pair has vendor alg?" as has
+rectangle "corpus row pinned\ncontent hash recorded" as corpus
+rectangle "synthesis engine\ndecompose into\ninterchange + insert" as synth
+rectangle "verify synth result\nagainst reference simulator" as verifysynth
+rectangle "memo generator\nletters to syllables\nfrom syllables.json" as memo
+rectangle "seeded scramble\nbuild_occ occupancy" as scramble
+map -> pairs
+pairs -> classifier
+classifier -> has
+has -> corpus : yes
+has -> synth : no
+synth -> verifysynth
+corpus -> memo
+verifysynth -> memo
+memo -> scramble
+note bottom of scramble
   scramble generation is deterministic
   from the seed, the memo stream is
   reproducible for e2e and the
   drill and memo smoke shots.
 end note
-stop
 @enduml
