@@ -426,13 +426,13 @@ fn n2_stage(
     Ok(((), format!("exit {}", cfg.usage_exit)))
 }
 
-fn n1_stage(
+fn n1_spec(
     exe: &Path,
     extract_dir: &Path,
     sandbox_root: &Path,
     cfg: &ReleaseCfg,
     vars: &[(String, String)],
-) -> Result<((), String), String> {
+) -> Result<ChildSpec, String> {
     let missing = extract_dir.join(&cfg.config_file);
     fs::remove_file(&missing).map_err(|err| {
         format!(
@@ -441,13 +441,31 @@ fn n1_stage(
         )
     })?;
     let (cwd, appdata) = prep_sandbox(sandbox_root)?;
+    let shots = sandbox_root.join("shots");
+    let shots_arg = shots.to_string_lossy().into_owned();
     let appdata_arg = appdata.to_string_lossy().into_owned();
     let config_arg = missing.to_string_lossy().into_owned();
     let extras: Vec<(&str, &str)> = vec![
         ("APPDATA", appdata_arg.as_str()),
         ("BT_CONFIG", config_arg.as_str()),
     ];
-    let spec = stage_spec(exe, &["--smoke"], &cwd, vars, &extras);
+    Ok(stage_spec(
+        exe,
+        &["--smoke", &shots_arg],
+        &cwd,
+        vars,
+        &extras,
+    ))
+}
+
+fn n1_stage(
+    exe: &Path,
+    extract_dir: &Path,
+    sandbox_root: &Path,
+    cfg: &ReleaseCfg,
+    vars: &[(String, String)],
+) -> Result<((), String), String> {
+    let spec = n1_spec(exe, extract_dir, sandbox_root, cfg, vars)?;
     let result = exec::run_child(&spec, Duration::from_secs(cfg.run_timeout_secs));
     check_exit(&result.outcome, cfg.neg_config_exit)?;
     Ok((
@@ -696,6 +714,43 @@ mod tests {
         .expect("json");
         let err = release_cfg_from(&bad_neg).expect_err("bad neg exit");
         assert!(err.contains("neg_config_exit"), "err: {err}");
+    }
+
+    #[test]
+    fn n1_spec_passes_a_shots_dir_so_the_flag_is_not_usage_rejected() {
+        let dir = temp_dir("n1-spec");
+        let extract = dir.join("extract");
+        fs::create_dir_all(extract.join("config")).expect("config dir");
+        fs::write(extract.join("config/config.json"), b"{}").expect("config");
+        let spec = n1_spec(
+            Path::new("app.exe"),
+            &extract,
+            &dir.join("sandbox"),
+            &parse_cfg(&full_config_json()),
+            &[],
+        )
+        .expect("spec");
+        assert_eq!(spec.args.len(), 2, "args: {:?}", spec.args);
+        assert_eq!(spec.args[0], "--smoke");
+        assert!(
+            spec.args[1].ends_with("shots"),
+            "second arg must be the shots dir: {:?}",
+            spec.args[1]
+        );
+        assert_eq!(
+            spec.env.get("BT_CONFIG").map(String::as_str),
+            Some(
+                extract
+                    .join("config/config.json")
+                    .to_string_lossy()
+                    .as_ref()
+            ),
+            "BT_CONFIG must point at the deleted config"
+        );
+        assert!(
+            !extract.join("config/config.json").exists(),
+            "the extracted config must be gone before the run"
+        );
     }
 
     #[test]
