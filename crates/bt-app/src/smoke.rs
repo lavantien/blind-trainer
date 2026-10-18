@@ -168,6 +168,11 @@ fn run_smoke(
     mut tour: ResMut<SmokeTour>,
 ) {
     let dt = time.delta_secs();
+    if !fatal.0.is_empty() && fatal.0 != SMOKE_FATAL_REASON {
+        exit_with(&mut commands, false);
+        tour.phase = SmokePhase::Done;
+        return;
+    }
     match std::mem::replace(&mut tour.phase, SmokePhase::Done) {
         SmokePhase::WaitForBoot { waited } => {
             if waited >= STUCK_LIMIT_SECS {
@@ -340,6 +345,24 @@ mod tests {
     fn smoke_seeds_pin_the_tour_determinism() {
         assert_eq!(smoke_seeds(20261012), (20261012, 20261013, 20261014));
         assert_eq!(smoke_seeds(u64::MAX), (u64::MAX, 0, 1));
+    }
+
+    #[test]
+    fn a_boot_fatal_aborts_the_tour_with_error_one() {
+        let mut world = smoke_world(
+            tour_dir("boot-fatal"),
+            SmokePhase::WaitForBoot { waited: 0.0 },
+            Vec::new(),
+            AppState::Bootstrap,
+            0.1,
+        );
+        world.resource_mut::<FatalReason>().0 = "cannot read config".to_string();
+        step(&mut world);
+        assert_eq!(exit_taken(&mut world), Some(1));
+        assert!(matches!(
+            world.resource::<SmokeTour>().phase,
+            SmokePhase::Done
+        ));
     }
 
     #[test]
