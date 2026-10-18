@@ -1,0 +1,29 @@
+@startuml scheme
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam NoteBackgroundColor #f4f5f6
+start
+:Speffz letter map\n24 edge slots, 24 corner slots\nbuffer UF and UFR fixed;
+:pair space\nbuffer to target as\nfloating interchange slots;
+:classifier\ncommutator class per pair\ninterchange and insertion;
+if (pair has vendor alg?) then (yes)
+  :corpus row pinned\ncontent hash recorded;
+else (no)
+  :synthesis engine\ndecompose into\ninterchange + insert;
+  :verify synth result\nagainst reference simulator;
+endif
+:memo generator\nletters to syllables\nfrom syllables.json;
+:seeded scramble\nbuild_occ occupancy;
+note right
+  scramble generation is deterministic
+  from the seed, the memo stream is
+  reproducible for e2e and the
+  drill and memo smoke shots.
+end note
+stop
+@enduml

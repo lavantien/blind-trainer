@@ -1,0 +1,32 @@
+@startuml app-boot
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam ActivityDiamondBackgroundColor #8a9099
+skinparam NoteBackgroundColor #f4f5f6
+start
+:parse args\n--smoke --usage --fatal-shot\nusage error exits 2;
+:RuntimePaths from_env\nexe adjacent config fonts\nBT_REF_GROUND, APPDATA user root;
+:read config hub\nsingle json source\nmissing sections fatal;
+if (config readable and valid?) then (yes)
+  :Stores load_with_packs\nopen db, run migrations\nimport legacy json once;
+  :corpus load plus user overlay\nseed packs by registry;
+  :warnings for degraded packs\nevent hidden from browser;
+  :AppState machine\nBootstrap to Menu then\nDrill Memo Solve Algs Replay\nCaseDrill Stats Settings Fatal;
+  note right
+    AppExit reaches the process
+    exit code, the e2e harness
+    gates the missing config path
+    on every smoke run.
+  end note
+  stop
+else (no)
+  :FatalReason with context\nstate to Fatal;
+  :exit map\n0 ok, 1 boot stuck or verify\n2 usage, 3 state stuck;
+  stop
+endif
+@enduml

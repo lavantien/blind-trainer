@@ -244,7 +244,7 @@ cargo-fuzz with the nightly MSVC toolchain, targets notation, classify, memo, co
 - ga: run the syllable GA into data/ga/.
 - coverage: run cargo llvm-cov over the workspace into a private target dir and regenerate docs/badges/coverage.svg via scripts/coverage-badge.ps1.
 - alg-coverage: regenerate docs/badges/alg-coverage.svg from data/vendor/manifest.json via scripts/alg-coverage-badge.ps1.
-- diagrams: render every docs/diagrams png from scripts/diagrams.typ via scripts/diagrams.ps1.
+- diagrams: render every docs/diagrams png from its docs/diagrams/*.puml source via scripts/diagrams.ps1 and plantuml.
 - fmt: cargo fmt --all -- --check.
 - fmt-fix: cargo fmt --all in place.
 - lint: cargo clippy --workspace --all-targets -- -D warnings.

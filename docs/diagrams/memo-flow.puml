@@ -1,0 +1,25 @@
+@startuml memo-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam NoteBackgroundColor #f4f5f6
+start
+:seeded scramble\ndeterministic from seed\nsmoke pins the stream;
+:decompose to pairs\nedges then corners\nbuffer relative order;
+:memo words\nletters to syllables\nfrom syllables.json;
+:per orbit stream\ncadence from config\nclamp 1 to 10000 ms;
+:intro, stream, recall, review\nphases driven by keyboard;
+:recall\nretype the letter sequence;
+:rate\nwrong letters repeat the card\nsrs cards track memo drills;
+note right
+  memo mode parses from config,
+  the stream is reproducible
+  which keeps the memo smoke
+  shot byte stable.
+end note
+stop
+@enduml

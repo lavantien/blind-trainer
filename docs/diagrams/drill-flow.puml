@@ -1,0 +1,32 @@
+@startuml drill-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam ActivityDiamondBackgroundColor #8a9099
+skinparam NoteBackgroundColor #f4f5f6
+start
+:due selection\ncards with due_day <= today\nper event and method;
+:DrillPhase Card\nshow pair letters\norbit word for 3bld;
+:space reveals the answer;
+:DrillPhase Reps\nalternate A side and B side\nreps from config clamp;
+:execute alg\ncommutator spans highlighted\nin the net view;
+:DrillPhase Rate\nkeys 1 to 4 grade;
+if (again or hard?) then (lapse)
+  :stability reset path\ninterval to the floor\nlapse count grows;
+else (good or easy)
+  :stability growth\ndifficulty adjusts\ninterval clamped 1 to 365;
+endif
+:fsrs_state write\nreview_log append\ndue_day computed;
+:next due card\nloop until session ends;
+note right
+  the same loop drives CaseDrill
+  for every repository event,
+  3bld keeps its letters and
+  orbit word display.
+end note
+stop
+@enduml

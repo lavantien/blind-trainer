@@ -1,0 +1,28 @@
+@startuml ga
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam NoteBackgroundColor #f4f5f6
+start
+:letter inventory\ncorpus pair letters\nfrom bt-memofreq counts;
+:perceptual features\nfingertrick friendly shapes\nshared letter overlap;
+:seed syllable pool\ninitial words per letter pair;
+repeat
+  :fitness\nfrequency weight times\npronounceability score;
+  :crossover and mutation\nelitist retention;
+repeat while (generation budget left\nand fitness target unmet?) is (yes)
+:write syllables.json\nvendor manifest hash\nparams hash caching;
+:consumed by memo generator\nand drill card text;
+note right
+  fingertrick scoring ranks synth
+  algs by regrip and rotation
+  penalties, the params hash skips
+  regeneration when the model
+  and config are unchanged.
+end note
+stop
+@enduml

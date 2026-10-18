@@ -1,0 +1,60 @@
+@startuml workspace
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam componentStyle rectangle
+skinparam packageStyle frame
+skinparam ArrowColor #2f3439
+skinparam componentBackgroundColor #2f3439
+skinparam componentFontColor #FFFFFF
+package "crates" {
+  component "bt-core\n3x3 permutation model\n48 stickers, expand, analysis" as core
+  component "bt-scheme\nSpeffz map, classifier\nmemo generator, scrambles" as scheme
+  component "bt-data\npaths, corpus, seedpack\nSQLite repos, FSRS-5, notation" as data
+  component "bt-puzzles\nnxn sq1 pyra skewb\nmega fto, Geometry trait" as puzzles
+  component "bt-app\nbevy views, smoke tour\ncase drill, 3d replay" as app
+  component "bt-ga\nsyllable evolution" as ga
+}
+package "tools" {
+  component "bt-gendata\nvendor synth + ga output" as gendata
+  component "bt-verify\nper-event tier report\nfail closed" as verify
+  component "bt-visual-diff\npng diff + selftest" as visual
+  component "bt-policy\ncomments, constants\nsloc cap" as policy
+  component "bt-mutants-gate\noutcomes merge\nallowlist adjudication" as gate
+  component "bt-release-verify\nzip byte compare\npackaged exe stages" as relver
+  component "bt-jobwrap\njob object memory ceiling\nargv quoting" as jobwrap
+  component "bt-memofreq\nletter frequency table" as memofreq
+  component "bt-ga-run\nga batch driver" as garun
+  component "bt-sleeper\nmemguard fixture" as sleeper
+}
+component "tests/e2e\nbt-e2e process harness\nshots + missing config gate" as e2e
+data ..> core
+scheme ..> core
+app ..> data
+app ..> core
+app ..> scheme
+app ..> puzzles
+puzzles ..> core : n=3 oracle
+gendata ..> core
+gendata ..> ga
+verify ..> data
+verify ..> core
+verify ..> puzzles
+memofreq ..> data
+garun ..> ga
+e2e ..> app : runs blind-trainer.exe
+gate ..> data : allowlist.tsv
+policy ..> core : scans sources
+note bottom of puzzles
+  engines pin their grammar
+  to the pack token inventory
+  and reject drift
+end note
+note bottom of data
+  ref_ground corpus tsv
+  plus packs tsv + registry
+  feed seed_alg rows with
+  content hashes
+end note
+@enduml

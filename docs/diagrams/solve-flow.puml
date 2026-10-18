@@ -1,0 +1,30 @@
+@startuml solve-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam ActivityDiamondBackgroundColor #8a9099
+skinparam NoteBackgroundColor #f4f5f6
+start
+:scramble applied\ncube state seeded;
+:memo clock\nmemorization phase timer;
+:exec clock\nexecution phase timer;
+:alg entry\nper piece solves from\ncorpus or overrides;
+:corpus replay verify\nalg sequence applied to\nthe scrambled cube;
+if (cube solved?) then (yes)
+  :solve log\nsuccess, times, piece split\nstats aggregation;
+  note right
+    3d replay renders the solve
+    on 27 cubies with animated
+    turns, drag orbits and wheel
+    zoom clamped.
+  end note
+  stop
+else (no)
+  :solve log dnf\nwith divergence context;
+  stop
+endif
+@enduml

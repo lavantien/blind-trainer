@@ -1,0 +1,31 @@
+@startuml cube-core
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam ActivityBackgroundColor #2f3439
+skinparam ActivityFontColor #FFFFFF
+skinparam ActivityDiamondBackgroundColor #8a9099
+skinparam NoteBackgroundColor #f4f5f6
+start
+:tokenize alg text\nU D L R F B M E S x y z\nwide w, digit prefixes, 2, ';
+note right: the scanner freezes on\nmalformed input and the fuzz\ntarget pins every reject
+:parse into Move tokens\nface, quarter, depth, rotation;
+:expand word to single turns\ncommutator (g)2 groups\nand -> chains flattened;
+:apply to Cube\n48 sticker permutation\nplus centers fixed;
+if (token reachable?) then (yes)
+  :analysis\nedge flips per pair\ncorner twist per slot\ncenter fixed predicate;
+  :predicates\nsolved, permutation equality\n3style target exchange;
+  note right
+    bt-core stays the 3x3 engine for
+    3bld, cfop and oh verification.
+    bt-puzzles cross-checks n=3
+    agreement through the oracle.
+  end note
+  stop
+else (no)
+  :reject with token context;
+  stop
+endif
+@enduml
