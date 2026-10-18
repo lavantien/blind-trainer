@@ -21,7 +21,7 @@ if (token reachable?) then (yes)
     bt-core stays the 3x3 engine for
     3bld, cfop and oh verification.
     bt-puzzles cross-checks n=3
-    agreement through the oracle.
+    agreement in dev-only tests.
   end note
   stop
 else (no)

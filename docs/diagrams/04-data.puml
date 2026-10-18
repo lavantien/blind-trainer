@@ -10,7 +10,7 @@ skinparam rectangleFontColor #FFFFFF
 skinparam databaseBackgroundColor #8a9099
 skinparam NoteBackgroundColor #f4f5f6
 rectangle "ref_ground corpus tsv\ncherry eggins workbooks\nunder the gpl carve-out" as tsv
-rectangle "ref_ground packs tsv\nregistry pinned\nprovenance tagged" as packs
+rectangle "ref_ground packs tsv\nregistry pinned\nrulings recorded" as packs
 rectangle "seedpack loader\nnormalize commas parens\n(g)2 repeats, -> chains\ncanonical content hash" as loader
 rectangle "SQLite db\nuser_version migrations\nbackup before migrate\nlegacy json to .migrated" as db
 database "seed_alg\nuser_alg\ncard\nfsrs_state\nreview_log" as tables

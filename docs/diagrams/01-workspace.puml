@@ -9,11 +9,11 @@ skinparam ArrowColor #2f3439
 skinparam componentBackgroundColor #2f3439
 skinparam componentFontColor #FFFFFF
 package "crates" {
-  component "bt-core\n3x3 permutation model\nsticker permutation, analysis" as core
+  component "bt-core\n3x3 permutation model\nsticker permutation, analysis\nstd only" as core
   component "bt-scheme\nSpeffz map, classifier\nmemo generator, scrambles" as scheme
-  component "bt-data\npaths, corpus, seedpack\nSQLite repos, FSRS-5, notation" as data
-  component "bt-puzzles\nnxn sq1 pyra skewb\nmega fto, Geometry trait" as puzzles
-  component "bt-app\nbevy views, smoke tour\ncase drill, 3d replay" as app
+  component "bt-data\npaths, corpus, seedpack\nrepo per store over SQLite\nFSRS-5, notation" as data
+  component "bt-puzzles\nnxn sq1 pyra skewb mega fto\nGeometry trait, std only" as puzzles
+  component "bt-app\nAppLogicPlugin game flow\nPresentationPlugin ui\nsmoke tour, case drill, replay" as app
   component "bt-ga\nsyllable evolution" as ga
 }
 package "tools" {
@@ -34,11 +34,12 @@ data -> scheme
 scheme -> core
 ga -> data
 ga -> scheme
-puzzles ..> core : dev, n=3 oracle
+puzzles ..> core : dev, n=3 cross-check
 app -> data
 app -> core
 app -> scheme
 app -> puzzles
+app ..> ga : syllables.json
 gendata -> data
 gendata -> core
 gendata -> scheme
@@ -59,8 +60,13 @@ gate ..> data : allowlist.tsv
 policy ..> core : scans sources
 note bottom of puzzles
   engines pin their grammar
-  to the pack token inventory
+  to the pack token set
   and reject drift
+end note
+note bottom of app
+  headless e2e drives complete
+  flows on AppLogicPlugin
+  through MinimalPlugins
 end note
 note bottom of data
   ref_ground corpus tsv

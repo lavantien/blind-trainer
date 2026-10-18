@@ -18,7 +18,7 @@ rectangle "7 fuzz\nnotation classify memo\ncommutator expand db fsrs" as s7
 rectangle "8 mutation\nmutated packages\nscratch-local builds" as s8
 rectangle "9 mutants-gate\nmerge outcomes\nsurvivors adjudicated\nin the allowlist" as s9
 rectangle "10 e2e\nheadless suite plus\nsandboxed smoke and\nmissing config exit 1" as s10
-rectangle "11 visual\ncommitted baselines\nverdict taxonomy\nprovenance log" as s11
+rectangle "11 visual\ncommitted baselines\nverdict taxonomy\ncapture recipe log" as s11
 rectangle "12 verify-algs\nper event tier report\ncounts and hashes\ngate fail closed" as s12
 s1 -> s2
 s2 -> s3

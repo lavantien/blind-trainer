@@ -8,7 +8,7 @@ skinparam ActivityBackgroundColor #2f3439
 skinparam ActivityFontColor #FFFFFF
 skinparam NoteBackgroundColor #f4f5f6
 start
-:letter inventory\ncorpus pair letters\nfrom bt-memofreq counts;
+:letter pairs\ncorpus letters from\nbt-memofreq counts;
 :perceptual features\nfingertrick friendly shapes\nshared letter overlap;
 :seed syllable pool\ninitial words per letter pair;
 repeat
