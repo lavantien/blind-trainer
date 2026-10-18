@@ -65,14 +65,16 @@ function Get-DirBytes([string]$path) {
 
 function Get-StaleScratches([string]$temp, [int]$staleHours) {
     $cutoff = (Get-Date).AddHours(-$staleHours)
-    @(Get-ChildItem -LiteralPath $temp -Directory -Filter 'cargo-mutants*' -ErrorAction SilentlyContinue |
+    @(Get-ChildItem -LiteralPath $temp -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -like 'cargo-mutants*' -or $_.Name -like 'bt-*' } |
         Where-Object { $_.LastWriteTime -lt $cutoff } |
         ForEach-Object { $_.FullName })
 }
 
 function Get-OrphanScratches([string]$temp) {
     $live = @(Get-Process -Name 'cargo-mutants' -ErrorAction SilentlyContinue)
-    $all = @(Get-ChildItem -LiteralPath $temp -Directory -Filter 'cargo-mutants*' -ErrorAction SilentlyContinue)
+    $all = @(Get-ChildItem -LiteralPath $temp -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -like 'cargo-mutants*' -or $_.Name -like 'bt-*' })
     if ($live.Count -eq 0) { return @($all | ForEach-Object { $_.FullName }) }
     $oldestStart = ($live | Measure-Object StartTime -Minimum).Minimum
     @($all |
@@ -113,15 +115,23 @@ function Invoke-SelfTest {
     New-Item -ItemType Directory -Force -Path $tempFake | Out-Null
     $staleDir = Join-Path $tempFake 'cargo-mutants-stale'
     $freshDir = Join-Path $tempFake 'cargo-mutants-fresh'
-    New-Item -ItemType Directory -Force -Path $staleDir, $freshDir | Out-Null
+    $btStaleDir = Join-Path $tempFake 'bt-stale'
+    $btFreshDir = Join-Path $tempFake 'bt-fresh'
+    New-Item -ItemType Directory -Force -Path $staleDir, $freshDir, $btStaleDir, $btFreshDir | Out-Null
     Set-Content -Path (Join-Path $staleDir 'a') -Value 'x'
     Set-Content -Path (Join-Path $freshDir 'a') -Value 'x'
+    Set-Content -Path (Join-Path $btStaleDir 'a') -Value 'x'
+    Set-Content -Path (Join-Path $btFreshDir 'a') -Value 'x'
     (Get-Item -LiteralPath $staleDir).LastWriteTime = (Get-Date).AddHours(-8)
     (Get-Item -LiteralPath $freshDir).LastWriteTime = (Get-Date).AddHours(-1)
+    (Get-Item -LiteralPath $btStaleDir).LastWriteTime = (Get-Date).AddHours(-8)
+    (Get-Item -LiteralPath $btFreshDir).LastWriteTime = (Get-Date).AddHours(-1)
     $ok = $true
     $scratches = @(Get-StaleScratches $tempFake 6)
-    if ($scratches.Count -ne 1 -or $scratches[0] -ne $staleDir) {
-        Write-Fail "stale selection wrong: $($scratches.Count) picked, expected exactly cargo-mutants-stale"
+    $expected = @($staleDir, $btStaleDir)
+    $diff = Compare-Object -ReferenceObject $scratches -DifferenceObject $expected
+    if ($null -ne $diff -or $scratches.Count -ne 2) {
+        Write-Fail "stale selection wrong: $($scratches.Count) picked, expected exactly cargo-mutants-stale and bt-stale"
         $ok = $false
     }
     Remove-Incremental $inc
@@ -133,8 +143,16 @@ function Invoke-SelfTest {
         Write-Fail 'stale scratch delete failed'
         $ok = $false
     }
+    if (-not (Remove-Tree $btStaleDir)) {
+        Write-Fail 'bt scratch delete failed'
+        $ok = $false
+    }
     if (-not (Test-Path -LiteralPath $freshDir)) {
         Write-Fail 'fresh scratch was deleted, active run would be destroyed'
+        $ok = $false
+    }
+    if (-not (Test-Path -LiteralPath $btFreshDir)) {
+        Write-Fail 'fresh bt scratch was deleted, active run would be destroyed'
         $ok = $false
     }
     if ($ok) { Write-Output 'clean-rust: selftest ok' }
@@ -175,7 +193,7 @@ $deepBytes = ($deepDirs | ForEach-Object { Get-DirBytes $_ } | Measure-Object -S
 
 Write-Output ("clean-rust: free {0} GB floor {1} GB" -f (Format-GigaBytes $freeBefore), $settings.FloorGb)
 Write-Output ("incremental: {0} dirs {1} GB" -f $incrementals.Count, (Format-GigaBytes $incBytes))
-Write-Output ("scratch: {0} dirs {1} GB (cargo-mutants under TEMP older than {2} h{3})" -f $scratches.Count, (Format-GigaBytes $scratchBytes), $settings.StaleHours, $(if ($OrphanScratch) { ", orphans with no live owner included" } else { "" }))
+Write-Output ("scratch: {0} dirs {1} GB (cargo-mutants and bt scratch under TEMP older than {2} h{3})" -f $scratches.Count, (Format-GigaBytes $scratchBytes), $settings.StaleHours, $(if ($OrphanScratch) { ", orphans with no live owner included" } else { "" }))
 Write-Output ("external: {0} dirs {1} GB (coverage and mutation targets)" -f $externals.Count, (Format-GigaBytes $extBytes))
 Write-Output ("deep: {0} dirs {1} GB (e2e and fuzz targets, needs -Deep and no live cargo or rustc)" -f $deepDirs.Count, (Format-GigaBytes $deepBytes))
 
