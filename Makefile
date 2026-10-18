@@ -22,6 +22,7 @@ export BT_ARTIFACTS := $(ARTIFACTS)
 
 COVERAGE_TARGET ?= C:/Users/lavantien/dev/github/bt-coverage-target
 MUTATION_TARGET ?= C:/Users/lavantien/dev/github/bt-mutation-target
+STALE_HOURS ?= -1
 
 OUTCOMES ?= mutants.out/outcomes.json
 ALLOWLIST ?= tools/bt-mutants-gate/allowlist.tsv
@@ -155,14 +156,14 @@ memguard-selftest: ## prove the memguard matcher with a sleeper
 	cargo build --release -p bt-sleeper
 	pwsh -NoProfile -ExecutionPolicy Bypass -File $(MEMGUARD) -SelfTest -SleeperPath target/release/bt-sleeper.exe
 
-clean-rust: ## size regenerable caches against the disk floor
-	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+clean-rust: ## size regenerable caches against the disk floor, STALE_HOURS overrides the window
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -StaleHours $(STALE_HOURS) -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
 
 clean-rust-apply: ## delete the sized caches
-	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -StaleHours $(STALE_HOURS) -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
 
 clean-rust-deep-apply: ## deep clean the e2e and fuzz targets
-	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -Deep -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
+	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -Apply -Deep -StaleHours $(STALE_HOURS) -CoverageTarget $(COVERAGE_TARGET) -MutationTarget $(MUTATION_TARGET)
 
 clean-rust-selftest: ## prove stale scratch selection
 	pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/clean-rust.ps1 -SelfTest -WorkDir $(ARTIFACTS)/clean-rust-selftest
