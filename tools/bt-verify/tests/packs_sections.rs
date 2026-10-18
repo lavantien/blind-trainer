@@ -6,7 +6,7 @@ use bt_verify::packs_report::audit_packs;
 use common::ref_ground;
 
 const PYRA_OPEN: &[&str] = &[
-    "l4e.07", "l4e.08", "l4e.09", "l4e.11", "l4e.16", "l4e.21", "l4e.24", "l4e.25", "l4e.28",
+    "l4e.06", "l4e.11", "l4e.21", "l4e.22", "l4e.24", "l4e.25", "l4e.28", "l4e.35",
 ];
 const MEGA_OPEN: &[&str] = &["4lll.20", "4lll.21", "4lll.22", "4lll.24"];
 const BIGCUBE_YAU_OPEN: &[&str] = &[
@@ -428,7 +428,7 @@ fn the_live_pack_audit_is_fail_closed_clean() {
     );
     assert_eq!(audit.sections.len(), PACK_EXPECTED_ROWS.len());
     let ruled: usize = audit.sections.iter().map(|s| s.ruled).sum();
-    assert_eq!(ruled, 52, "18 sq1 plus the 4 ruled families");
+    assert_eq!(ruled, 51, "18 sq1 plus the ruled families");
     for summary in &audit.sections {
         assert_eq!(
             summary.rows,

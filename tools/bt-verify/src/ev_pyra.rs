@@ -4,8 +4,10 @@ use bt_puzzles::pyra::{PyraState, Pyraminx};
 use bt_puzzles::{FaceletGrid, Geometry, verify_tier1};
 
 const FACES: usize = 4;
+const U_FRAME_WORDS: usize = 4;
 const TIP_LOCALS: [usize; 3] = [0, 4, 8];
 const EDGE_LOCALS: [usize; 3] = [1, 3, 6];
+const CENTER_LOCALS: [usize; 3] = [2, 5, 7];
 
 fn flat(grid: &FaceletGrid, face: usize, local: usize) -> u8 {
     let (row, col) = if local == 0 {
@@ -18,75 +20,50 @@ fn flat(grid: &FaceletGrid, face: usize, local: usize) -> u8 {
     grid.faces[face].rows[row][col]
 }
 
-fn center_local_of_tip(tip: usize) -> usize {
-    match tip {
-        0 => 2,
-        4 => 5,
-        _ => 7,
-    }
-}
-
-pub fn vertex_center_specs() -> Vec<[(usize, usize); 3]> {
-    let engine = Pyraminx;
-    let solved = engine.facelets(&engine.solved_state());
-    let mut specs = Vec::new();
-    for token in ["u", "l", "r", "b"] {
-        let alg = engine.parse_alg(token).expect("tip token parses");
-        let mut state = engine.solved_state();
-        engine
-            .apply_alg(&mut state, &alg)
-            .expect("tip turn applies");
-        let grid = engine.facelets(&state);
-        let mut spec = [(0usize, 0usize); 3];
-        let mut slot = 0;
-        for face in 0..FACES {
-            for tip in TIP_LOCALS {
-                if flat(&grid, face, tip) != flat(&solved, face, tip) {
-                    spec[slot] = (face, center_local_of_tip(tip));
-                    slot += 1;
-                }
-            }
-        }
-        assert_eq!(slot, 3, "tip turn {token} moves three stickers");
-        specs.push(spec);
-    }
-    specs
-}
-
-pub fn centers_home(engine: &Pyraminx, state: &PyraState) -> bool {
-    let grid = engine.facelets(state);
-    vertex_center_specs().iter().all(|spec| {
-        let mut held: Vec<u8> = spec
+fn band_home(grid: &FaceletGrid, solved: &FaceletGrid, locals: [usize; 3]) -> bool {
+    (0..FACES).all(|face| {
+        locals
             .iter()
-            .map(|(face, local)| flat(&grid, *face, *local))
-            .collect();
-        held.sort_unstable();
-        let mut faces: Vec<u8> = spec.iter().map(|(face, _)| *face as u8).collect();
-        faces.sort_unstable();
-        held == faces
+            .all(|local| flat(grid, face, *local) == flat(solved, face, *local))
     })
 }
 
-pub fn l4e_disturbance(engine: &Pyraminx, state: &PyraState) -> Result<usize, String> {
-    let grid = engine.facelets(state);
-    let solved = engine.facelets(&engine.solved_state());
-    if !centers_home(engine, state) {
-        return Err("an axial center left its vertex".to_string());
-    }
+fn edge_facelets_moved(grid: &FaceletGrid, solved: &FaceletGrid) -> usize {
     let mut moved = 0;
     for face in 0..FACES {
         for local in EDGE_LOCALS {
-            if flat(&grid, face, local) != flat(&solved, face, local) {
+            if flat(grid, face, local) != flat(solved, face, local) {
                 moved += 1;
             }
         }
     }
-    if !(4..=8).contains(&moved) {
-        return Err(format!(
-            "{moved} edge facelets moved, a last four edges case holds 4 to 8"
-        ));
+    moved
+}
+
+pub fn l4e_disturbance(engine: &Pyraminx, state: &PyraState) -> Result<usize, String> {
+    let solved = engine.facelets(&engine.solved_state());
+    let quarter = engine.parse_alg("U").expect("the U vertex token parses");
+    for turns in 0..U_FRAME_WORDS {
+        let mut framed = state.clone();
+        for _ in 0..turns {
+            engine
+                .apply_alg(&mut framed, &quarter)
+                .expect("the U vertex turn applies");
+        }
+        let grid = engine.facelets(&framed);
+        if !band_home(&grid, &solved, TIP_LOCALS) || !band_home(&grid, &solved, CENTER_LOCALS) {
+            continue;
+        }
+        let moved = edge_facelets_moved(&grid, &solved);
+        return if (4..=8).contains(&moved) {
+            Ok(moved)
+        } else {
+            Err(format!(
+                "{moved} edge facelets moved, a last four edges case holds 4 to 8"
+            ))
+        };
     }
-    Ok(moved)
+    Err("corners and centers are not home in any U layer frame".to_string())
 }
 
 fn case_state(engine: &Pyraminx, alg_text: &str) -> Result<PyraState, String> {
@@ -127,7 +104,7 @@ pub fn verify_l4e(rows: &[SeedRow]) -> SectionResult {
     SectionResult {
         rows: outcomes,
         honesty: vec![
-            "l4e tag prefixes (DS DF US UF NP) name source page sections, their per-row edge geometry is not derivable from the engine state, only the edges-and-tips disturbance is checked with corner facelets pinned"
+            "l4e tag prefixes (DS DF US UF NP) name source page sections, their per-row edge geometry is not derivable from the engine state, tier 2 pins corner and center facelets exactly home after composing out one U layer vertex adjustment and bounds the displaced edge facelets at 4 to 8 in that frame"
                 .to_string(),
         ],
     }
@@ -136,8 +113,6 @@ pub fn verify_l4e(rows: &[SeedRow]) -> SectionResult {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    const CENTER_LOCALS: [usize; 3] = [2, 5, 7];
 
     #[test]
     fn the_solved_grid_renders_one_color_per_face() {
@@ -213,6 +188,23 @@ mod tests {
     }
 
     #[test]
+    fn a_u_framed_edge_case_reports_its_framed_edge_count() {
+        let engine = Pyraminx;
+        let state = case_state(&engine, "L' U L").expect("case state builds");
+        assert_eq!(l4e_disturbance(&engine, &state), Ok(6));
+    }
+
+    #[test]
+    fn a_tip_twisted_edge_case_is_rejected_outside_the_u_layer_frame() {
+        let engine = Pyraminx;
+        let state = case_state(&engine, "u R U' R'").expect("case state builds");
+        assert_eq!(
+            l4e_disturbance(&engine, &state),
+            Err("corners and centers are not home in any U layer frame".to_string())
+        );
+    }
+
+    #[test]
     fn a_tip_turn_case_state_is_rejected_as_outside_l4e() {
         let engine = Pyraminx;
         let state = case_state(&engine, "u").expect("case state builds");
@@ -227,20 +219,22 @@ mod tests {
     }
 
     #[test]
-    fn vertex_center_specs_pin_three_stickers_per_vertex() {
-        let specs = vertex_center_specs();
-        assert_eq!(specs.len(), 4);
-        let mut positions = std::collections::BTreeSet::new();
-        for spec in &specs {
-            let faces: Vec<usize> = spec.iter().map(|(face, _)| *face).collect();
-            assert_eq!(faces.len(), 3);
-            for (face, local) in spec {
-                assert!(CENTER_LOCALS.contains(local));
-                positions.insert(face * 9 + local);
-            }
-        }
-        assert_eq!(positions.len(), 12);
+    fn l4e_admission_is_closed_under_the_u_layer_frame() {
         let engine = Pyraminx;
-        assert!(centers_home(&engine, &engine.solved_state()));
+        let quarter = engine.parse_alg("U").expect("the U vertex token parses");
+        let state = case_state(&engine, "R U' R' U' R U' R'").expect("case state builds");
+        for turns in 0..U_FRAME_WORDS {
+            let mut framed = state.clone();
+            for _ in 0..turns {
+                engine
+                    .apply_alg(&mut framed, &quarter)
+                    .expect("the U vertex turn applies");
+            }
+            assert_eq!(
+                l4e_disturbance(&engine, &framed),
+                Ok(6),
+                "frame word {turns} deep must stay admissible"
+            );
+        }
     }
 }
