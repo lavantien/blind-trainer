@@ -380,9 +380,15 @@ fn spawn_face(
         });
 }
 
+#[derive(Resource)]
+pub struct PulseFrozen;
+
+pub const SMOKE_PULSE_FACTOR: f32 = 1.0;
+
 pub fn update_net_colors(
     net: Res<NetState>,
     time: Res<Time<Virtual>>,
+    frozen: Option<Res<PulseFrozen>>,
     mut cells: Query<(
         &NetCell,
         &mut BackgroundColor,
@@ -415,8 +421,13 @@ pub fn update_net_colors(
         let delta = (want_pulse - pulse.0)
             .clamp(-dt * theme::PULSE_LERP_PER_S, dt * theme::PULSE_LERP_PER_S);
         pulse.0 += delta;
+        let factor = if frozen.is_some() {
+            SMOKE_PULSE_FACTOR
+        } else {
+            pulse.0 * wave
+        };
         background.0 = match highlight {
-            Some(color) => base.mix(&color, pulse.0 * wave),
+            Some(color) => base.mix(&color, factor),
             None => base,
         };
         *border = BorderColor::all(ink_for(background.0));
@@ -609,6 +620,62 @@ mod tests {
         }
         seen.sort_unstable();
         assert_eq!(seen, vec![0, 1, 2, 3, 4, 5]);
+    }
+
+    fn highlight_colors(net: &NetState, elapsed: f32, frozen: bool) -> Vec<(usize, Color)> {
+        let mut world = World::new();
+        world.insert_resource(net.clone());
+        if frozen {
+            world.insert_resource(PulseFrozen);
+        }
+        let mut time = Time::<Virtual>::default();
+        time.advance_to(std::time::Duration::from_secs_f32(elapsed));
+        world.insert_resource(time);
+        let geo = NetGeometry::for_region(563.2, 690.0);
+        {
+            let mut commands = world.commands();
+            let holder = commands.spawn(()).id();
+            commands.entity(holder).with_children(|parent| {
+                spawn_net(parent, geo, Handle::default());
+            });
+        }
+        world.flush();
+        let mut schedule = Schedule::default();
+        schedule.add_systems(update_net_colors);
+        schedule.run(&mut world);
+        let mut cells = world.query::<(&NetCell, &BackgroundColor)>();
+        let mut out: Vec<(usize, Color)> = cells
+            .iter(&world)
+            .map(|(cell, background)| (cell.grid, background.0))
+            .collect();
+        out.sort_by_key(|(grid, _)| *grid);
+        out
+    }
+
+    fn targeted_net() -> NetState {
+        NetState {
+            targets: [
+                Some(sticker_at_grid(1).expect("grid 1 holds a sticker")),
+                Some(sticker_at_grid(3).expect("grid 3 holds a sticker")),
+            ],
+            ..NetState::default()
+        }
+    }
+
+    #[test]
+    fn frozen_pulse_renders_the_same_highlights_whatever_the_elapsed_time() {
+        let net = targeted_net();
+        let early = highlight_colors(&net, 0.3, true);
+        let late = highlight_colors(&net, 3.7, true);
+        assert_eq!(early, late);
+    }
+
+    #[test]
+    fn live_pulse_keeps_varying_with_the_elapsed_time() {
+        let net = targeted_net();
+        let early = highlight_colors(&net, 0.3, false);
+        let late = highlight_colors(&net, 3.7, false);
+        assert_ne!(early, late);
     }
 
     #[test]

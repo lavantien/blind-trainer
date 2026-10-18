@@ -81,6 +81,7 @@ impl Plugin for SmokePlugin {
         .insert_resource(crate::views::solve::SolveSeed(solve_seed))
         .insert_resource(crate::views::drill::DrillSeed(drill_seed))
         .insert_resource(PendingCaseDrill(vec![tour_case()]))
+        .insert_resource(crate::net::PulseFrozen)
         .init_resource::<SmokeFonts>()
         .add_systems(Update, (track_fonts, run_smoke).chain());
     }
