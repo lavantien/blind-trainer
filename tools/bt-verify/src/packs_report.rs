@@ -1,5 +1,7 @@
 use crate::packs::{RowOutcome, SectionResult, Tier2Outcome, pinned_vs_registry, verify_rows};
-use bt_data::seedpack::{PackEntry, expected_failure, load_pack, load_registry};
+use bt_data::seedpack::{
+    PackEntry, classify_failure, expected_failure, expected_failure_class, load_pack, load_registry,
+};
 use std::path::Path;
 
 pub const PROSE_ALG: &str = "prose row holds no mechanical alg";
@@ -39,23 +41,35 @@ fn failure_text(row: &RowOutcome) -> String {
 
 pub fn row_offender(event: &str, method: &str, stage: &str, row: &RowOutcome) -> Option<String> {
     let prose = matches!(&row.tier1, Err(err) if err == PROSE_ALG);
-    if prose {
-        return None;
-    }
-    let failed = row.tier1.is_err() || matches!(row.tier2, Tier2Outcome::Fail(_));
-    let ruling = expected_failure(event, method, stage, &row.case_key);
-    match (failed, ruling) {
-        (true, Some(_)) => None,
-        (true, None) => Some(format!(
-            "{event}/{method}/{stage}/{}: {}",
-            row.case_key,
-            failure_text(row)
-        )),
-        (false, Some(reason)) => Some(format!(
-            "{event}/{method}/{stage}/{}: stale ruling ({reason}), row passes",
-            row.case_key
-        )),
-        (false, None) => None,
+    let tier2_failed = matches!(row.tier2, Tier2Outcome::Fail(_));
+    let failed = row.tier1.is_err() || tier2_failed;
+    let head = format!("{event}/{method}/{stage}/{}", row.case_key);
+    match expected_failure(event, method, stage, &row.case_key) {
+        Some(reason) => {
+            let recorded = expected_failure_class(event, method, stage, &row.case_key)
+                .expect("every ruling row carries a class");
+            if !failed {
+                return Some(format!("{head}: stale ruling ({reason}), row passes"));
+            }
+            if prose {
+                return Some(format!("{head}: stale ruling ({reason}), row is prose"));
+            }
+            let live = classify_failure(row.tier1.as_ref().err().map(String::as_str), tier2_failed)
+                .expect("a failing non-prose row classifies");
+            if live != recorded {
+                return Some(format!(
+                    "{head}: stale ruling ({reason}), failure class drifted to {live}, ruling records {recorded}"
+                ));
+            }
+            None
+        }
+        None => {
+            if failed && !prose {
+                Some(format!("{head}: {}", failure_text(row)))
+            } else {
+                None
+            }
+        }
     }
 }
 
@@ -218,6 +232,60 @@ mod tests {
             row_offender("sq1", "lbl", "cubeshape", &row).expect("stale ruling surfaces");
         assert!(offender.starts_with("sq1/lbl/cubeshape/cs.075: stale ruling ("));
         assert!(offender.ends_with("), row passes"));
+    }
+
+    #[test]
+    fn a_ruled_row_drifting_to_a_parse_failure_is_stale() {
+        let row = outcome(
+            "cs.119",
+            Err("unknown token: q".to_string()),
+            Tier2Outcome::Skipped("tier 1 failed"),
+        );
+        let offender = row_offender("sq1", "lbl", "cubeshape", &row).expect("class drift surfaces");
+        assert!(offender.contains("stale ruling"), "got: {offender}");
+        assert!(offender.contains("parse"), "got: {offender}");
+    }
+
+    #[test]
+    fn a_ruled_tier2_row_drifting_to_a_tier1_failure_is_stale() {
+        let row = outcome(
+            "cs.075",
+            Err("illegal move: /".to_string()),
+            Tier2Outcome::Skipped("tier 1 failed"),
+        );
+        let offender = row_offender("sq1", "lbl", "cubeshape", &row).expect("class drift surfaces");
+        assert!(offender.contains("stale ruling"), "got: {offender}");
+        assert!(offender.contains("apply"), "got: {offender}");
+        assert!(offender.contains("tier2"), "got: {offender}");
+    }
+
+    #[test]
+    fn a_ruling_on_a_prose_row_is_stale() {
+        let row = outcome(
+            "cs.075",
+            Err(PROSE_ALG.to_string()),
+            Tier2Outcome::Skipped("tier 1 failed"),
+        );
+        let offender =
+            row_offender("sq1", "lbl", "cubeshape", &row).expect("prose ruling surfaces");
+        assert!(offender.contains("stale ruling"), "got: {offender}");
+        assert!(offender.contains("prose"), "got: {offender}");
+    }
+
+    #[test]
+    fn ruled_failures_matching_their_recorded_class_stay_excused() {
+        let apply_row = outcome(
+            "cs.119",
+            Err("illegal move: /".to_string()),
+            Tier2Outcome::Skipped("tier 1 failed"),
+        );
+        assert_eq!(row_offender("sq1", "lbl", "cubeshape", &apply_row), None);
+        let tier2_row = outcome(
+            "cs.075",
+            Ok(()),
+            Tier2Outcome::Fail("names crossed".to_string()),
+        );
+        assert_eq!(row_offender("sq1", "lbl", "cubeshape", &tier2_row), None);
     }
 
     #[test]
