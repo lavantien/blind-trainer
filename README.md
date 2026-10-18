@@ -244,7 +244,7 @@ make alg-coverage
 | BT_CONFIG | path | config hub path |
 | BT_ARTIFACTS | path | artifacts root |
 
-The Makefile exports all three to every target. Runtime roots for config, vendor data and assets resolve from the workspace layout first and fall back to an exe-relative install layout when the workspace paths are missing, assets load through an absolute AssetPlugin file_path built at startup.
+The Makefile exports them to every target. Runtime roots for config, vendor data and assets resolve from the workspace layout first and fall back to an exe-relative install layout when the workspace paths are missing, assets load through an absolute AssetPlugin file_path built at startup.
 
 ## Surfaces
 
@@ -339,7 +339,7 @@ blind-trainer.exe in smoke mode: 0 tour complete with all shots written, 1 verif
 
 ## QA harness
 
-The verification chain runs through make in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, visual, verify-algs, each as a separate make invocation under `make chain` so a failure names its step. visual always diffs fresh e2e renders against the committed baselines, baselines is never a chain leg. Every custom verifier ships a selftest target that proves it detects what it claims: policy-selftest, visual-selftest, mutants-gate-selftest, verify-algs-selftest, memguard-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each one matches a justified row in tools/bt-mutants-gate/allowlist.tsv, stale rows also fail. Baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by two independent agents before any task closes, records land in docs/reviews/ from the template there. Baseline-first TDD per milestone, property-based invariants where they pay off. Conventional commits, zero code comments, the sloc cap. CI on every main push and pull request runs fmt, clippy, policy, check, the release build, and the self-contained test subset on GitHub Actions, everything heavier runs on the make chain.
+The verification chain runs through make in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutation, mutants-gate, e2e, visual, verify-algs, each as a separate make invocation under `make chain` so a failure names its step. visual always diffs fresh e2e renders against the committed baselines, baselines is never a chain leg. Every custom verifier ships a selftest target that proves it detects what it claims: policy-selftest, visual-selftest, mutants-gate-selftest, verify-algs-selftest, memguard-selftest, clean-rust-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each one matches a justified row in tools/bt-mutants-gate/allowlist.tsv, stale rows also fail. Baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by two independent agents before any task closes, records land in docs/reviews/ from the template there. Baseline-first TDD per milestone, property-based invariants where they pay off. Conventional commits, zero code comments, the sloc cap. CI on every main push and pull request runs fmt, clippy, policy, check, the release build, and the self-contained test subset on GitHub Actions, everything heavier runs on the make chain.
 
 ## Licensing
 
