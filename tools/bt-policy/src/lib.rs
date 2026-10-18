@@ -1,6 +1,7 @@
 pub mod comments;
 pub mod constants;
 pub mod lexer;
+pub mod sloc;
 
 use std::path::{Path, PathBuf};
 
@@ -25,6 +26,7 @@ pub struct Finding {
 pub enum CheckMode {
     Comments,
     Constants,
+    Sloc,
     Both,
 }
 
@@ -182,6 +184,16 @@ pub fn run_checks(
             }
         }
     }
+    if matches!(mode, CheckMode::Sloc | CheckMode::Both) {
+        let policy = sloc::sloc_from_config(config)?;
+        for path in &files {
+            let text = read_source(path)?;
+            let rel = rel_path(path, root);
+            if let Some(finding) = sloc::cap_finding(&text, &rel, policy.max_file_lines) {
+                outcome.findings.push(finding);
+            }
+        }
+    }
     Ok(outcome)
 }
 
@@ -189,6 +201,7 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
     let config_path = workdir.join("config.json");
     let allow_path = workdir.join("allow.txt");
     let dirty_rel = "crates/bt-x/src/dirty.rs";
+    let big_rel = "crates/bt-x/src/big.rs";
     write_file(
         &workdir
             .join("crates")
@@ -204,6 +217,14 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
             .join("src")
             .join("clean.rs"),
         CLEAN_FIXTURE,
+    )?;
+    write_file(
+        &workdir
+            .join("crates")
+            .join("bt-x")
+            .join("src")
+            .join("big.rs"),
+        BIG_FIXTURE,
     )?;
     write_file(
         &workdir
@@ -236,10 +257,15 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
         .iter()
         .filter(|finding| finding.detail == "literal 7 x2")
         .count();
-    let clean_silent = dirty_run
+    let sloc_hits = dirty_run
         .findings
         .iter()
-        .all(|finding| finding.path == dirty_rel);
+        .filter(|finding| finding.path == big_rel && finding.kind == "sloc")
+        .count();
+    let others_silent = dirty_run
+        .findings
+        .iter()
+        .all(|finding| finding.path == dirty_rel || finding.path == big_rel);
     let clean_run = run_checks(
         &workdir.join("clean_only"),
         CheckMode::Both,
@@ -249,7 +275,8 @@ pub fn selftest(workdir: &Path) -> Result<bool, String> {
     Ok(line_hits == 1
         && block_hits == 1
         && literal_hits == 1
-        && clean_silent
+        && sloc_hits == 1
+        && others_silent
         && dirty_run.stale_allowlist.is_empty()
         && clean_run.findings.is_empty()
         && clean_run.stale_allowlist.is_empty())
@@ -260,7 +287,9 @@ const DIRTY_FIXTURE: &str = "fn dirty() -> u32 {\n    let host = \"https://examp
 const CLEAN_FIXTURE: &str =
     "fn clean() -> u32 {\n    let one = 1;\n    let two = 2;\n    one + two\n}\n";
 
-const SELFTEST_CONFIG: &str = "{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[]}}";
+const BIG_FIXTURE: &str = "fn big() -> u32 {\n    let a = 1;\n    let b = 2;\n    let c = 3;\n    let d = 4;\n    let e = 5;\n    let f = 6;\n    let g = 7;\n    a + b + c + d + e + f + g\n}\n";
+
+const SELFTEST_CONFIG: &str = "{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[]},\"sloc\":{\"max_file_lines\":8}}";
 
 fn write_file(path: &Path, text: &str) -> Result<(), String> {
     if let Some(parent) = path.parent() {
@@ -358,7 +387,52 @@ mod tests {
 
     const CLEAN: &str = CLEAN_FIXTURE;
 
+    const BIG: &str = BIG_FIXTURE;
+
     const CONFIG: &str = SELFTEST_CONFIG;
+
+    #[test]
+    fn oversized_files_fail_both_mode_with_a_sloc_finding() {
+        let root = temp_root("run-sloc-both");
+        write(
+            &root.join("crates").join("bt-x").join("src").join("big.rs"),
+            BIG,
+        );
+        write(&root.join("allow.txt"), "# allow\n");
+        let config: serde_json::Value = serde_json::from_str(CONFIG).expect("config json");
+        let outcome = run_checks(&root, CheckMode::Both, &config, &root.join("allow.txt"))
+            .expect("checks run");
+        assert_eq!(outcome.findings.len(), 1, "{:?}", outcome.findings);
+        assert_eq!(outcome.findings[0].kind, "sloc");
+        assert_eq!(outcome.findings[0].path, "crates/bt-x/src/big.rs");
+        assert_eq!(outcome.findings[0].line, 9);
+    }
+
+    #[test]
+    fn sloc_mode_reports_only_cap_findings_without_the_allowlist() {
+        let root = temp_root("run-sloc-only");
+        write(
+            &root.join("crates").join("bt-x").join("src").join("big.rs"),
+            BIG,
+        );
+        let config: serde_json::Value = serde_json::from_str(CONFIG).expect("config json");
+        let outcome = run_checks(&root, CheckMode::Sloc, &config, &root.join("absent.txt"))
+            .expect("checks run");
+        assert_eq!(outcome.findings.len(), 1);
+        assert_eq!(outcome.findings[0].detail, "10 non-blank lines over cap 8");
+        assert_eq!(outcome.stale_allowlist, Vec::<String>::new());
+    }
+
+    #[test]
+    fn sloc_mode_fails_closed_without_the_hub_key() {
+        let root = temp_root("run-sloc-missing");
+        write(&root.join("crates").join("clean.rs"), CLEAN);
+        let config =
+            serde_json::json!({"policy": {"literal_recurrence": 2, "small_literal_allow": []}});
+        let err =
+            run_checks(&root, CheckMode::Sloc, &config, &root.join("absent.txt")).unwrap_err();
+        assert_eq!(err, "config section missing: sloc.max_file_lines");
+    }
 
     #[test]
     fn workspace_root_is_the_repo_root() {

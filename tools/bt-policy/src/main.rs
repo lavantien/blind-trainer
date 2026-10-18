@@ -7,6 +7,7 @@ fn main() {
         [] => real(CheckMode::Both),
         [mode] if mode == "comments" => real(CheckMode::Comments),
         [mode] if mode == "constants" => real(CheckMode::Constants),
+        [mode] if mode == "sloc" => real(CheckMode::Sloc),
         [mode, workdir] if mode == "selftest" => match selftest(Path::new(workdir)) {
             Ok(true) => 0,
             Ok(false) => 1,
@@ -16,7 +17,7 @@ fn main() {
             }
         },
         _ => {
-            eprintln!("usage: bt-policy [comments|constants|selftest <workdir>]");
+            eprintln!("usage: bt-policy [comments|constants|sloc|selftest <workdir>]");
             2
         }
     });

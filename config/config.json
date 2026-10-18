@@ -153,6 +153,9 @@
     ],
     "literal_recurrence": 4
   },
+  "sloc": {
+    "max_file_lines": 1000
+  },
   "job": {
     "per_process_bytes": 4294967296
   },
