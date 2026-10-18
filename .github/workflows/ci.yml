@@ -31,5 +31,17 @@ jobs:
         run: |
           cargo test -p bt-app
           cargo test -p bt-core --lib --test fuzzkill_analysis --test geometric_oracle --test parse_roundtrip
-          cargo test -p bt-scheme --lib --test scramble_oracle
-          cargo test -p bt-data --lib --test fuzzkill_data --test srs_sm2
+          cargo test -p bt-scheme --lib --test memo_more --test scramble_oracle
+          cargo test -p bt-data
+          cargo test -p bt-puzzles
+          cargo test -p bt-ga --test fuzzkill_ga --test ga_public_surface --test inventory_more
+          cargo test -p bt-gendata --lib
+          cargo test -p bt-jobwrap
+          cargo test -p bt-memofreq
+          cargo test -p bt-mutants-gate
+          cargo test -p bt-policy
+          cargo test -p bt-release-verify
+          cargo test -p bt-sleeper
+          cargo test -p bt-visual-diff
+          cargo test -p bt-verify --lib
+          cargo test --manifest-path tests/e2e/Cargo.toml
