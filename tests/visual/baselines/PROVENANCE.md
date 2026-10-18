@@ -38,3 +38,4 @@ Change any of these, or the rendering they feed, and the baselines must be recap
 | --- | --- | --- | --- | --- |
 | 303dec0 | 2026-10-15 | 20261012 | 1280x800 | first capture under the stage 1 wiring: sandboxed e2e-smoke via bt-e2e, shot list from the e2e config section |
 | 3e8f5ce | 2026-10-16 | 20261012 | 1280x800 | stage 5 single refresh: replay shot listed in e2e.shots after solve, case drill shot from the wave c tours, menu algs row text and stats due block from the seeded event repos |
+| fb2383e | 2026-10-18 | 20261012 | 1280x800 | drill.png only: net pulse frozen at a fixed factor in smoke mode (44067cc), refresh captured after the freeze over 2 green 10/10 visual runs, other 9 shots byte-identical |
