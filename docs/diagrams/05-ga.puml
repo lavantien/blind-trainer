@@ -4,8 +4,6 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
-skinparam ActivityBackgroundColor #2f3439
-skinparam ActivityFontColor #FFFFFF
 skinparam NoteBackgroundColor #f4f5f6
 start
 :letter pairs\ncorpus letters from\nbt-memofreq counts;

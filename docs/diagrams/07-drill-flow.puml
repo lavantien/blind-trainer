@@ -4,9 +4,7 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
-skinparam ActivityBackgroundColor #2f3439
-skinparam ActivityFontColor #FFFFFF
-skinparam ActivityDiamondBackgroundColor #8a9099
+skinparam ActivityDiamondBackgroundColor #e8eaed
 skinparam NoteBackgroundColor #f4f5f6
 start
 :due selection\ncards with due_day <= today\nper event and method;

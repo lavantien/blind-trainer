@@ -6,8 +6,6 @@ skinparam roundCorner 6
 skinparam componentStyle rectangle
 skinparam packageStyle frame
 skinparam ArrowColor #2f3439
-skinparam componentBackgroundColor #2f3439
-skinparam componentFontColor #FFFFFF
 package "crates" {
   component "bt-core\n3x3 permutation model\nsticker permutation, analysis\nstd only" as core
   component "bt-scheme\nSpeffz map, classifier\nmemo generator, scrambles" as scheme

@@ -5,9 +5,6 @@ skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
-skinparam rectangleBackgroundColor #2f3439
-skinparam rectangleFontColor #FFFFFF
-skinparam databaseBackgroundColor #8a9099
 skinparam NoteBackgroundColor #f4f5f6
 rectangle "ref_ground corpus tsv\ncherry eggins workbooks\nunder the gpl carve-out" as tsv
 rectangle "ref_ground packs tsv\nregistry pinned\nrulings recorded" as packs
