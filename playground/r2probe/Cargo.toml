@@ -1,0 +1,11 @@
+[package]
+name = "r2probe"
+version = "0.0.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+bt-puzzles = { path = "../../crates/bt-puzzles" }
+
+bt-data = { path = "../../crates/bt-data" }

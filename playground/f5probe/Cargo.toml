@@ -1,0 +1,9 @@
+[package]
+name = "f5probe"
+version = "0.0.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+bt-core = { path = "../../crates/bt-core" }

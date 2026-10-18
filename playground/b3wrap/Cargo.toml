@@ -1,0 +1,10 @@
+[package]
+name = "b3wrap"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bt-data = { path = "../../crates/bt-data" }
+bt-puzzles = { path = "../../crates/bt-puzzles" }
+
+[workspace]

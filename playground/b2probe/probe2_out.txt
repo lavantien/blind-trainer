@@ -1,0 +1,190 @@
+   Compiling b2probe v0.0.0 (C:\Users\lavantien\dev\github\blind-trainer\playground\b2probe)
+warning: unused variable: `sizes`
+   --> src\main.rs:765:9
+    |
+765 |     let sizes: Vec<usize> = match &entry.n {
+    |         ^^^^^ help: if this is intentional, prefix it with an underscore: `_sizes`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `engine`
+    --> src\main.rs:1182:16
+     |
+1182 | fn state_color(engine: &mega::Mega, state: &mega::MegaState, i: usize) -> u8 {
+     |                ^^^^^^ help: if this is intentional, prefix it with an underscore: `_engine`
+
+warning: `b2probe` (bin "b2probe") generated 2 warnings (run `cargo fix --bin "b2probe" -p b2probe` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 12.63s
+     Running `target\release\b2probe.exe`
+corner cycles l2e.01 proj: [[1, 7], [2, 5, 3]]
+corner cycles oll4 proj: [[0, 1]]
+corner cycles oll4 noX: [[0, 7, 4, 6, 1, 3, 5, 2]]
+corner cycles pll4 wide: []
+corner cycles tperm: [[1, 3]]
+corner cycles l2e.02: [[0, 5, 3], [1, 7]]
+corner cycles l2e.03: [[0, 1], [3, 7]]
+corner cycles l2e.07: [[0, 3]]
+corner cycles oll4 x': [[0, 4, 1, 5], [2, 3], [6, 7]]
+corner cycles oll4flip inner: []
+norm pll.ja full +'': centers=false outside-U=32 corners=24
+norm pll.ja full +'x': centers=true outside-U=7 corners=6
+norm pll.ja full +'x'': centers=false outside-U=32 corners=24
+norm pll.ja full +'x2': centers=false outside-U=32 corners=24
+norm pll.ja full +'y': centers=false outside-U=34 corners=24
+norm pll.ja full +'y'': centers=false outside-U=34 corners=24
+norm pll.ja full +'y2': centers=false outside-U=34 corners=24
+norm pll.ja full +'z': centers=false outside-U=34 corners=24
+norm pll.ja full +'z'': centers=false outside-U=34 corners=24
+norm pll.ja full +'z2': centers=false outside-U=34 corners=24
+norm pll.aa full +'': centers=false outside-U=32 corners=24
+norm pll.aa full +'x': centers=true outside-U=6 corners=9
+norm pll.aa full +'x'': centers=false outside-U=32 corners=24
+norm pll.aa full +'x2': centers=false outside-U=32 corners=24
+norm pll.aa full +'y': centers=false outside-U=34 corners=24
+norm pll.aa full +'y'': centers=false outside-U=34 corners=24
+norm pll.aa full +'y2': centers=false outside-U=34 corners=24
+norm pll.aa full +'z': centers=false outside-U=34 corners=24
+norm pll.aa full +'z'': centers=false outside-U=34 corners=24
+norm pll.aa full +'z2': centers=false outside-U=34 corners=24
+norm pll.z full +'': centers=true outside-U=0 corners=12
+norm pll.z full +'x': centers=false outside-U=32 corners=24
+norm pll.z full +'x'': centers=false outside-U=32 corners=24
+norm pll.z full +'x2': centers=false outside-U=32 corners=24
+norm pll.z full +'y': centers=false outside-U=32 corners=12
+norm pll.z full +'y'': centers=false outside-U=32 corners=24
+norm pll.z full +'y2': centers=false outside-U=32 corners=24
+norm pll.z full +'z': centers=false outside-U=32 corners=24
+norm pll.z full +'z'': centers=false outside-U=32 corners=24
+norm pll.z full +'z2': centers=false outside-U=32 corners=24
+norm pll.ua full +'': centers=true outside-U=0 corners=0
+norm pll.ua full +'x': centers=false outside-U=32 corners=24
+norm pll.ua full +'x'': centers=false outside-U=32 corners=24
+norm pll.ua full +'x2': centers=false outside-U=32 corners=24
+norm pll.ua full +'y': centers=false outside-U=32 corners=24
+norm pll.ua full +'y'': centers=false outside-U=32 corners=24
+norm pll.ua full +'y2': centers=false outside-U=32 corners=24
+norm pll.ua full +'z': centers=false outside-U=32 corners=24
+norm pll.ua full +'z'': centers=false outside-U=32 corners=24
+norm pll.ua full +'z2': centers=false outside-U=32 corners=24
+probe R: diffs=0
+probe U': diffs=0
+probe F2: diffs=0
+probe r: diffs=0
+probe Rw: diffs=0
+probe 2R: diffs=0
+probe M: diffs=0
+probe x: diffs=0
+probe y: diffs=0
+probe z: diffs=0
+probe Rw U2 x Rw U2: diffs=0
+variant l2e.05 x->x': centers=33 corners=20 non_u=35 u_band=16
+variant l2e.05 x->noop: centers=27 corners=16 non_u=31 u_band=16
+variant pll4 inner: centers=0 corners=0 non_u=0 u_band=4
+variant oll4flip inner: centers=0 corners=0 non_u=0 u_band=4
+== twoby2_cll.tsv [2x2 / cll / cll] rows=42
+   tier2 fails=[]
+== skewb_sarah.tsv [skewb / sarah_intermediate / sarah] rows=15
+   tier1 fails=[]
+== pyraminx_l4e.tsv [pyraminx / l4e / l4e] rows=35
+   edge slots: 12 (expect 12)
+   pyra untouched slots: ["f0:0", "f0:2", "f0:4", "f0:5", "f0:7", "f0:8", "f1:0", "f1:2", "f1:4", "f1:5", "f1:6", "f1:7", "f1:8", "f2:0", "f2:2", "f2:4", "f2:5", "f2:7", "f2:8", "f3:0", "f3:2", "f3:3", "f3:4", "f3:5", "f3:7", "f3:8"]
+   tier2 fails=[]
+== megaminx_4lll.tsv [megaminx / 4lll / 4lll] rows=39
+   u layer slots 26
+   mega 4lll.04 non-U: face 1 corner slot 2 color 0
+   mega 4lll.04 non-U: face 1 edge slot 6 color 0
+   mega 4lll.04 non-U: face 2 edge slot 9 color 5
+   mega 4lll.04 non-U: face 9 corner slot 1 color 1
+   mega 4lll.04 case_nonu=4 fwd_nonu=5 mirror_nonu=4
+   mega 4lll.15 non-U: face 1 edge slot 6 color 8
+   mega 4lll.15 non-U: face 2 corner slot 3 color 0
+   mega 4lll.15 non-U: face 2 corner slot 4 color 5
+   mega 4lll.15 non-U: face 2 edge slot 7 color 1
+   mega 4lll.15 non-U: face 2 edge slot 8 color 5
+   mega 4lll.15 non-U: face 8 corner slot 5 color 3
+   mega 4lll.15 non-U: face 8 edge slot 10 color 0
+   mega 4lll.15 non-U: face 9 corner slot 1 color 0
+   mega 4lll.15 non-U: face 9 corner slot 2 color 2
+   mega 4lll.15 non-U: face 9 edge slot 6 color 0
+   mega 4lll.15 case_nonu=10 fwd_nonu=11 mirror_nonu=11
+   mega 4lll.26 non-U: face 2 corner slot 3 color 0
+   mega 4lll.26 non-U: face 2 edge slot 6 color 7
+   mega 4lll.26 non-U: face 2 edge slot 7 color 4
+   mega 4lll.26 non-U: face 3 corner slot 2 color 8
+   mega 4lll.26 non-U: face 3 corner slot 3 color 4
+   mega 4lll.26 non-U: face 3 edge slot 7 color 8
+   mega 4lll.26 non-U: face 4 corner slot 4 color 9
+   mega 4lll.26 non-U: face 4 edge slot 9 color 8
+   mega 4lll.26 non-U: face 7 corner slot 1 color 2
+   mega 4lll.26 non-U: face 7 corner slot 5 color 3
+   mega 4lll.26 non-U: face 7 edge slot 10 color 2
+   mega 4lll.26 non-U: face 8 corner slot 2 color 0
+   mega 4lll.26 non-U: face 8 corner slot 5 color 3
+   mega 4lll.26 non-U: face 8 edge slot 6 color 2
+   mega 4lll.26 non-U: face 8 edge slot 10 color 3
+   mega 4lll.26 non-U: face 9 corner slot 2 color 2
+   mega 4lll.26 case_nonu=16 fwd_nonu=15 mirror_nonu=12
+   mega 4lll.36 case_nonu=5 fwd_nonu=4 mirror_nonu=20
+   mega 4lll.38 case_nonu=6 fwd_nonu=8 mirror_nonu=13
+   mega 4lll.39 case_nonu=8 fwd_nonu=7 mirror_nonu=10
+   mega untouched slots: ["f0:0", "f1:0", "f1:3", "f1:4", "f1:7", "f1:8", "f1:9", "f2:0", "f2:2", "f3:0", "f3:4", "f3:6", "f3:8", "f3:9", "f4:0", "f4:2", "f4:3", "f4:6", "f4:7", "f4:8", "f5:0", "f5:2", "f5:3", "f5:4", "f5:6", "f5:7", "f5:8", "f5:9", "f6:0", "f6:1", "f6:2", "f6:3", "f6:4", "f6:5", "f6:6", "f6:7", "f6:8", "f6:9", "f6:10", "f7:0", "f7:2", "f7:3", "f7:4", "f7:6", "f7:7", "f7:8", "f7:9", "f8:0", "f8:1", "f8:3", "f8:4", "f8:7", "f8:8", "f8:9", "f9:0", "f9:3", "f9:4", "f9:5", "f9:7", "f9:8", "f9:9", "f9:10", "f10:0", "f10:1", "f10:2", "f10:3", "f10:4", "f10:5", "f10:6", "f10:7", "f10:8", "f10:9", "f10:10", "f11:0", "f11:1", "f11:2", "f11:3", "f11:4", "f11:5", "f11:6", "f11:7", "f11:8", "f11:9", "f11:10"]
+   tier2 fails=["4lll.04 disturbs 4 non-U slots", "4lll.15 disturbs 10 non-U slots", "4lll.26 disturbs 16 non-U slots", "4lll.36 disturbs 5 non-U slots", "4lll.38 disturbs 6 non-U slots", "4lll.39 disturbs 8 non-U slots"]
+== sq1_cubeshape.tsv [sq1 / lbl / cubeshape] rows=169
+   broken=["cs.119 illegal move: /"]
+   swapped(8 expected)=["cs.075", "cs.078", "cs.084", "cs.089", "cs.097", "cs.109", "cs.118", "cs.129"]
+   direct_fails=[]
+== sq1_co.tsv [sq1 / lbl / co] rows=7
+   tier1(start-state) fails=[]
+== sq1_eo.tsv [sq1 / lbl / eo] rows=7
+   tier1(start-state) fails=["eo.01 inverse apply illegal move: /", "eo.04 inverse apply illegal move: /", "eo.06 inverse apply illegal move: /"]
+== sq1_cp.tsv [sq1 / lbl / cp] rows=16
+   tier1(start-state) fails=[]
+== sq1_ep.tsv [sq1 / lbl / ep] rows=99
+   tier1(start-state) fails=["ep.05 inverse apply illegal move: /", "ep.18 inverse apply illegal move: /", "ep.40 inverse apply illegal move: /", "ep.50 inverse apply illegal move: /", "ep.66 inverse apply illegal move: /", "ep.80 inverse apply illegal move: /"]
+== bigcube_parity.tsv [bigcube / yau / parity] rows=5
+   parity.oll4 n=4 centers=0 corners=6(u6) non_u_band=0 u_band=8
+   parity.oll4flip n=4 centers=0 corners=6(u6) non_u_band=0 u_band=8
+   parity.pll4 n=4 centers=4 corners=0(u0) non_u_band=4 u_band=0
+   parity.pll4adj n=4 centers=4 corners=0(u0) non_u_band=4 u_band=2
+   parity.wing5 n=4 centers=8 corners=6(u6) non_u_band=4 u_band=5
+   parity.wing5 n=5 centers=0 corners=6(u6) non_u_band=0 u_band=10
+   parity.wing5 n=6 centers=16 corners=6(u6) non_u_band=4 u_band=16
+   parity.wing5 n=7 centers=40 corners=6(u6) non_u_band=8 u_band=22
+   tier2 fails=[]
+== bigcube_l2e.tsv [bigcube / reduction / parity] rows=12
+   l2e.01 n=5 centers=0 corners=13(u7) non_u_band=12 u_band=9
+   l2e.02 n=5 centers=0 corners=12(u6) non_u_band=12 u_band=7
+   l2e.03 n=5 centers=0 corners=11(u7) non_u_band=10 u_band=9
+   l2e.04 n=5 centers=0 corners=8(u8) non_u_band=6 u_band=10
+   l2e.05 n=5 centers=12 corners=12(u8) non_u_band=13 u_band=15
+   l2e.06 n=5 centers=0 corners=4(u4) non_u_band=0 u_band=10
+   l2e.07 n=5 centers=0 corners=4(u4) non_u_band=0 u_band=8
+   l2e.08 n=5 centers=0 corners=4(u4) non_u_band=0 u_band=8
+   l2e.09 n=5 centers=0 corners=10(u10) non_u_band=0 u_band=14
+   l2e.10 n=5 centers=0 corners=10(u10) non_u_band=0 u_band=14
+   l2e.11 n=5 centers=0 corners=13(u8) non_u_band=10 u_band=13
+   l2e.12 n=5 centers=0 corners=14(u8) non_u_band=10 u_band=12
+   tier2 fails=[]
+== fto_l4t_redux.tsv [fto / l4t_redux / l4t] rows=36
+   u layer slots 21
+   stage counts: {"Connected Bar": 4, "Double Ugly": 1, "Flipped Edges": 3, "Last Layer": 4, "Last Three Edges": 8, "No Bar": 5, "Polish Flip": 4, "Reduction": 1, "Separated Bar": 6}
+   fto untouched slots: ["f0:2", "f0:3", "f0:4", "f0:5", "f0:6", "f0:7", "f0:8", "f1:2", "f1:3", "f1:4", "f1:5", "f1:6", "f1:7", "f1:8", "f2:0", "f2:2", "f2:3", "f2:4", "f2:5", "f2:6", "f2:7", "f2:8", "f3:0", "f3:3", "f3:4", "f3:5", "f3:6", "f3:7", "f3:8", "f4:0", "f4:1", "f4:3", "f4:4", "f4:5", "f4:6", "f4:7", "f4:8", "f5:1", "f5:3", "f5:4", "f5:5", "f5:6", "f5:7", "f5:8", "f6:1", "f6:2", "f6:3", "f6:4", "f6:5", "f6:6", "f6:7", "f6:8", "f7:0", "f7:1", "f7:2", "f7:3", "f7:4", "f7:5", "f7:6", "f7:7", "f7:8"]
+   tier2 fails=[]
+== bld_3style_specials.tsv [3bld / 3style / parity] rows=85
+   tier1 fails=[] prose=0
+== bld_oldpoch.tsv [3bld / old_pochmann / concept] rows=40
+   tier2 fails=[]
+== bld_m2.tsv [3bld / m2 / concept] rows=24
+   tier2 fails=[]
+== cfop_pll.tsv [3x3 / cfop / pll] rows=21
+   tier2[pll] fails=[]
+== cfop_oll.tsv [3x3 / cfop / oll] rows=57
+   tier2[oll] fails=[]
+== cfop_f2l.tsv [3x3 / cfop / f2l] rows=164
+   tier2[f2l] fails=["f2l.fr.01 f2l slot fr no single-layer frame", "f2l.fl.01 f2l slot fl no single-layer frame", "f2l.br.01 f2l slot br no single-layer frame", "f2l.bl.01 f2l slot bl no single-layer frame", "f2l.fr.02 f2l slot fr no single-layer frame", "f2l.fl.02 f2l slot fl no single-layer frame", "f2l.br.02 f2l slot br no single-layer frame", "f2l.bl.02 f2l slot bl no single-layer frame", "f2l.fr.03 f2l slot fr no single-layer frame", "f2l.fl.03 f2l slot fl no single-layer frame", "f2l.br.03 f2l slot br no single-layer frame", "f2l.bl.03 f2l slot bl no single-layer frame", "f2l.fr.04 f2l slot fr no single-layer frame", "f2l.fl.04 f2l slot fl no single-layer frame", "f2l.br.04 f2l slot br no single-layer frame", "f2l.bl.04 f2l slot bl no single-layer frame", "f2l.fr.05 f2l slot fr no single-layer frame", "f2l.fl.05 f2l slot fl no single-layer frame", "f2l.br.05 f2l slot br no single-layer frame", "f2l.bl.05 f2l slot bl no single-layer frame", "f2l.fr.06 f2l slot fr no single-layer frame", "f2l.fl.06 f2l slot fl no single-layer frame", "f2l.br.06 f2l slot br no single-layer frame", "f2l.bl.06 f2l slot bl no single-layer frame", "f2l.fr.07 f2l slot fr no single-layer frame", "f2l.fl.07 f2l slot fl no single-layer frame", "f2l.br.07 f2l slot br no single-layer frame", "f2l.bl.07 f2l slot bl no single-layer frame", "f2l.fr.08 f2l slot fr no single-layer frame", "f2l.fl.08 f2l slot fl no single-layer frame", "f2l.br.08 f2l slot br no single-layer frame", "f2l.bl.08 f2l slot bl no single-layer frame", "f2l.fr.09 f2l slot fr no single-layer frame", "f2l.fl.09 f2l slot fl no single-layer frame", "f2l.br.09 f2l slot br no single-layer frame", "f2l.bl.09 f2l slot bl no single-layer frame", "f2l.fr.10 f2l slot fr no single-layer frame", "f2l.fl.10 f2l slot fl no single-layer frame", "f2l.br.10 f2l slot br no single-layer frame", "f2l.bl.10 f2l slot bl no single-layer frame", "f2l.fr.11 f2l slot fr no single-layer frame", "f2l.fl.11 f2l slot fl no single-layer frame", "f2l.br.11 f2l slot br no single-layer frame", "f2l.bl.11 f2l slot bl no single-layer frame", "f2l.fr.12 f2l slot fr no single-layer frame", "f2l.fl.12 f2l slot fl no single-layer frame", "f2l.br.12 f2l slot br no single-layer frame", "f2l.bl.12 f2l slot bl no single-layer frame", "f2l.fr.13 f2l slot fr no single-layer frame", "f2l.fl.13 f2l slot fl no single-layer frame", "f2l.br.13 f2l slot br no single-layer frame", "f2l.bl.13 f2l slot bl no single-layer frame", "f2l.fr.14 f2l slot fr no single-layer frame", "f2l.fl.14 f2l slot fl no single-layer frame", "f2l.br.14 f2l slot br no single-layer frame", "f2l.bl.14 f2l slot bl no single-layer frame", "f2l.fr.15 f2l slot fr no single-layer frame", "f2l.fl.15 f2l slot fl no single-layer frame", "f2l.br.15 f2l slot br no single-layer frame", "f2l.bl.15 f2l slot bl no single-layer frame", "f2l.fr.16 f2l slot fr no single-layer frame", "f2l.fl.16 f2l slot fl no single-layer frame", "f2l.br.16 f2l slot br no single-layer frame", "f2l.bl.16 f2l slot bl no single-layer frame", "f2l.fr.17 f2l slot fr no single-layer frame", "f2l.fl.17 f2l slot fl no single-layer frame", "f2l.br.17 f2l slot br no single-layer frame", "f2l.bl.17 f2l slot bl no single-layer frame", "f2l.fr.18 f2l slot fr no single-layer frame", "f2l.fl.18 f2l slot fl no single-layer frame", "f2l.br.18 f2l slot br no single-layer frame", "f2l.bl.18 f2l slot bl no single-layer frame", "f2l.fr.19 f2l slot fr no single-layer frame", "f2l.fl.19 f2l slot fl no single-layer frame", "f2l.br.19 f2l slot br no single-layer frame", "f2l.bl.19 f2l slot bl no single-layer frame", "f2l.fr.20 f2l slot fr no single-layer frame", "f2l.fl.20 f2l slot fl no single-layer frame", "f2l.br.20 f2l slot br no single-layer frame", "f2l.bl.20 f2l slot bl no single-layer frame", "f2l.fr.21 f2l slot fr no single-layer frame", "f2l.fl.21 f2l slot fl no single-layer frame", "f2l.br.21 f2l slot br no single-layer frame", "f2l.bl.21 f2l slot bl no single-layer frame", "f2l.fr.22 f2l slot fr no single-layer frame", "f2l.fl.22 f2l slot fl no single-layer frame", "f2l.br.22 f2l slot br no single-layer frame", "f2l.bl.22 f2l slot bl no single-layer frame", "f2l.fr.23 f2l slot fr no single-layer frame", "f2l.fl.23 f2l slot fl no single-layer frame", "f2l.br.23 f2l slot br no single-layer frame", "f2l.bl.23 f2l slot bl no single-layer frame", "f2l.fr.24 f2l slot fr no single-layer frame", "f2l.fl.24 f2l slot fl no single-layer frame", "f2l.br.24 f2l slot br no single-layer frame", "f2l.bl.24 f2l slot bl no single-layer frame", "f2l.fr.25 f2l slot fr no single-layer frame", "f2l.fl.25 f2l slot fl no single-layer frame", "f2l.br.25 f2l slot br no single-layer frame", "f2l.bl.25 f2l slot bl no single-layer frame", "f2l.fr.26 f2l slot fr no single-layer frame", "f2l.fl.26 f2l slot fl no single-layer frame", "f2l.br.26 f2l slot br no single-layer frame", "f2l.bl.26 f2l slot bl no single-layer frame", "f2l.fr.27 f2l slot fr no single-layer frame", "f2l.fl.27 f2l slot fl no single-layer frame", "f2l.br.27 f2l slot br no single-layer frame", "f2l.bl.27 f2l slot bl no single-layer frame", "f2l.fr.28 f2l slot fr no single-layer frame", "f2l.fl.28 f2l slot fl no single-layer frame", "f2l.br.28 f2l slot br no single-layer frame", "f2l.bl.28 f2l slot bl no single-layer frame", "f2l.fr.29 f2l slot fr no single-layer frame", "f2l.fl.29 f2l slot fl no single-layer frame", "f2l.br.29 f2l slot br no single-layer frame", "f2l.bl.29 f2l slot bl no single-layer frame", "f2l.fr.30 f2l slot fr no single-layer frame", "f2l.fl.30 f2l slot fl no single-layer frame", "f2l.br.30 f2l slot br no single-layer frame", "f2l.bl.30 f2l slot bl no single-layer frame", "f2l.fr.31 f2l slot fr no single-layer frame", "f2l.fl.31 f2l slot fl no single-layer frame", "f2l.br.31 f2l slot br no single-layer frame", "f2l.bl.31 f2l slot bl no single-layer frame", "f2l.fr.32 f2l slot fr no single-layer frame", "f2l.fl.32 f2l slot fl no single-layer frame", "f2l.br.32 f2l slot br no single-layer frame", "f2l.bl.32 f2l slot bl no single-layer frame", "f2l.fr.33 f2l slot fr no single-layer frame", "f2l.fl.33 f2l slot fl no single-layer frame", "f2l.br.33 f2l slot br no single-layer frame", "f2l.bl.33 f2l slot bl no single-layer frame", "f2l.fr.34 f2l slot fr no single-layer frame", "f2l.fl.34 f2l slot fl no single-layer frame", "f2l.br.34 f2l slot br no single-layer frame", "f2l.bl.34 f2l slot bl no single-layer frame", "f2l.fr.35 f2l slot fr no single-layer frame", "f2l.fl.35 f2l slot fl no single-layer frame", "f2l.br.35 f2l slot br no single-layer frame", "f2l.bl.35 f2l slot bl no single-layer frame", "f2l.fr.36 f2l slot fr no single-layer frame", "f2l.fl.36 f2l slot fl no single-layer frame", "f2l.br.36 f2l slot br no single-layer frame", "f2l.bl.36 f2l slot bl no single-layer frame", "f2l.fr.37 f2l slot fr no single-layer frame", "f2l.fl.37 f2l slot fl no single-layer frame", "f2l.br.37 f2l slot br no single-layer frame", "f2l.bl.37 f2l slot bl no single-layer frame", "f2l.fr.38 f2l slot fr no single-layer frame", "f2l.fl.38 f2l slot fl no single-layer frame", "f2l.br.38 f2l slot br no single-layer frame", "f2l.bl.38 f2l slot bl no single-layer frame", "f2l.fr.39 f2l slot fr no single-layer frame", "f2l.fl.39 f2l slot fl no single-layer frame", "f2l.br.39 f2l slot br no single-layer frame", "f2l.bl.39 f2l slot bl no single-layer frame", "f2l.fr.40 f2l slot fr no single-layer frame", "f2l.fl.40 f2l slot fl no single-layer frame", "f2l.br.40 f2l slot br no single-layer frame", "f2l.bl.40 f2l slot bl no single-layer frame", "f2l.fr.41 f2l slot fr no single-layer frame", "f2l.fl.41 f2l slot fl no single-layer frame", "f2l.br.41 f2l slot br no single-layer frame", "f2l.bl.41 f2l slot bl no single-layer frame"]
+== cfop_pll.tsv [oh / cfop / pll] rows=21
+   tier2[pll] fails=[]
+== cfop_oll.tsv [oh / cfop / oll] rows=57
+   tier2[oll] fails=[]
+== cfop_f2l.tsv [oh / cfop / f2l] rows=164
+   tier2[f2l] fails=["f2l.fr.01 f2l slot fr no single-layer frame", "f2l.fl.01 f2l slot fl no single-layer frame", "f2l.br.01 f2l slot br no single-layer frame", "f2l.bl.01 f2l slot bl no single-layer frame", "f2l.fr.02 f2l slot fr no single-layer frame", "f2l.fl.02 f2l slot fl no single-layer frame", "f2l.br.02 f2l slot br no single-layer frame", "f2l.bl.02 f2l slot bl no single-layer frame", "f2l.fr.03 f2l slot fr no single-layer frame", "f2l.fl.03 f2l slot fl no single-layer frame", "f2l.br.03 f2l slot br no single-layer frame", "f2l.bl.03 f2l slot bl no single-layer frame", "f2l.fr.04 f2l slot fr no single-layer frame", "f2l.fl.04 f2l slot fl no single-layer frame", "f2l.br.04 f2l slot br no single-layer frame", "f2l.bl.04 f2l slot bl no single-layer frame", "f2l.fr.05 f2l slot fr no single-layer frame", "f2l.fl.05 f2l slot fl no single-layer frame", "f2l.br.05 f2l slot br no single-layer frame", "f2l.bl.05 f2l slot bl no single-layer frame", "f2l.fr.06 f2l slot fr no single-layer frame", "f2l.fl.06 f2l slot fl no single-layer frame", "f2l.br.06 f2l slot br no single-layer frame", "f2l.bl.06 f2l slot bl no single-layer frame", "f2l.fr.07 f2l slot fr no single-layer frame", "f2l.fl.07 f2l slot fl no single-layer frame", "f2l.br.07 f2l slot br no single-layer frame", "f2l.bl.07 f2l slot bl no single-layer frame", "f2l.fr.08 f2l slot fr no single-layer frame", "f2l.fl.08 f2l slot fl no single-layer frame", "f2l.br.08 f2l slot br no single-layer frame", "f2l.bl.08 f2l slot bl no single-layer frame", "f2l.fr.09 f2l slot fr no single-layer frame", "f2l.fl.09 f2l slot fl no single-layer frame", "f2l.br.09 f2l slot br no single-layer frame", "f2l.bl.09 f2l slot bl no single-layer frame", "f2l.fr.10 f2l slot fr no single-layer frame", "f2l.fl.10 f2l slot fl no single-layer frame", "f2l.br.10 f2l slot br no single-layer frame", "f2l.bl.10 f2l slot bl no single-layer frame", "f2l.fr.11 f2l slot fr no single-layer frame", "f2l.fl.11 f2l slot fl no single-layer frame", "f2l.br.11 f2l slot br no single-layer frame", "f2l.bl.11 f2l slot bl no single-layer frame", "f2l.fr.12 f2l slot fr no single-layer frame", "f2l.fl.12 f2l slot fl no single-layer frame", "f2l.br.12 f2l slot br no single-layer frame", "f2l.bl.12 f2l slot bl no single-layer frame", "f2l.fr.13 f2l slot fr no single-layer frame", "f2l.fl.13 f2l slot fl no single-layer frame", "f2l.br.13 f2l slot br no single-layer frame", "f2l.bl.13 f2l slot bl no single-layer frame", "f2l.fr.14 f2l slot fr no single-layer frame", "f2l.fl.14 f2l slot fl no single-layer frame", "f2l.br.14 f2l slot br no single-layer frame", "f2l.bl.14 f2l slot bl no single-layer frame", "f2l.fr.15 f2l slot fr no single-layer frame", "f2l.fl.15 f2l slot fl no single-layer frame", "f2l.br.15 f2l slot br no single-layer frame", "f2l.bl.15 f2l slot bl no single-layer frame", "f2l.fr.16 f2l slot fr no single-layer frame", "f2l.fl.16 f2l slot fl no single-layer frame", "f2l.br.16 f2l slot br no single-layer frame", "f2l.bl.16 f2l slot bl no single-layer frame", "f2l.fr.17 f2l slot fr no single-layer frame", "f2l.fl.17 f2l slot fl no single-layer frame", "f2l.br.17 f2l slot br no single-layer frame", "f2l.bl.17 f2l slot bl no single-layer frame", "f2l.fr.18 f2l slot fr no single-layer frame", "f2l.fl.18 f2l slot fl no single-layer frame", "f2l.br.18 f2l slot br no single-layer frame", "f2l.bl.18 f2l slot bl no single-layer frame", "f2l.fr.19 f2l slot fr no single-layer frame", "f2l.fl.19 f2l slot fl no single-layer frame", "f2l.br.19 f2l slot br no single-layer frame", "f2l.bl.19 f2l slot bl no single-layer frame", "f2l.fr.20 f2l slot fr no single-layer frame", "f2l.fl.20 f2l slot fl no single-layer frame", "f2l.br.20 f2l slot br no single-layer frame", "f2l.bl.20 f2l slot bl no single-layer frame", "f2l.fr.21 f2l slot fr no single-layer frame", "f2l.fl.21 f2l slot fl no single-layer frame", "f2l.br.21 f2l slot br no single-layer frame", "f2l.bl.21 f2l slot bl no single-layer frame", "f2l.fr.22 f2l slot fr no single-layer frame", "f2l.fl.22 f2l slot fl no single-layer frame", "f2l.br.22 f2l slot br no single-layer frame", "f2l.bl.22 f2l slot bl no single-layer frame", "f2l.fr.23 f2l slot fr no single-layer frame", "f2l.fl.23 f2l slot fl no single-layer frame", "f2l.br.23 f2l slot br no single-layer frame", "f2l.bl.23 f2l slot bl no single-layer frame", "f2l.fr.24 f2l slot fr no single-layer frame", "f2l.fl.24 f2l slot fl no single-layer frame", "f2l.br.24 f2l slot br no single-layer frame", "f2l.bl.24 f2l slot bl no single-layer frame", "f2l.fr.25 f2l slot fr no single-layer frame", "f2l.fl.25 f2l slot fl no single-layer frame", "f2l.br.25 f2l slot br no single-layer frame", "f2l.bl.25 f2l slot bl no single-layer frame", "f2l.fr.26 f2l slot fr no single-layer frame", "f2l.fl.26 f2l slot fl no single-layer frame", "f2l.br.26 f2l slot br no single-layer frame", "f2l.bl.26 f2l slot bl no single-layer frame", "f2l.fr.27 f2l slot fr no single-layer frame", "f2l.fl.27 f2l slot fl no single-layer frame", "f2l.br.27 f2l slot br no single-layer frame", "f2l.bl.27 f2l slot bl no single-layer frame", "f2l.fr.28 f2l slot fr no single-layer frame", "f2l.fl.28 f2l slot fl no single-layer frame", "f2l.br.28 f2l slot br no single-layer frame", "f2l.bl.28 f2l slot bl no single-layer frame", "f2l.fr.29 f2l slot fr no single-layer frame", "f2l.fl.29 f2l slot fl no single-layer frame", "f2l.br.29 f2l slot br no single-layer frame", "f2l.bl.29 f2l slot bl no single-layer frame", "f2l.fr.30 f2l slot fr no single-layer frame", "f2l.fl.30 f2l slot fl no single-layer frame", "f2l.br.30 f2l slot br no single-layer frame", "f2l.bl.30 f2l slot bl no single-layer frame", "f2l.fr.31 f2l slot fr no single-layer frame", "f2l.fl.31 f2l slot fl no single-layer frame", "f2l.br.31 f2l slot br no single-layer frame", "f2l.bl.31 f2l slot bl no single-layer frame", "f2l.fr.32 f2l slot fr no single-layer frame", "f2l.fl.32 f2l slot fl no single-layer frame", "f2l.br.32 f2l slot br no single-layer frame", "f2l.bl.32 f2l slot bl no single-layer frame", "f2l.fr.33 f2l slot fr no single-layer frame", "f2l.fl.33 f2l slot fl no single-layer frame", "f2l.br.33 f2l slot br no single-layer frame", "f2l.bl.33 f2l slot bl no single-layer frame", "f2l.fr.34 f2l slot fr no single-layer frame", "f2l.fl.34 f2l slot fl no single-layer frame", "f2l.br.34 f2l slot br no single-layer frame", "f2l.bl.34 f2l slot bl no single-layer frame", "f2l.fr.35 f2l slot fr no single-layer frame", "f2l.fl.35 f2l slot fl no single-layer frame", "f2l.br.35 f2l slot br no single-layer frame", "f2l.bl.35 f2l slot bl no single-layer frame", "f2l.fr.36 f2l slot fr no single-layer frame", "f2l.fl.36 f2l slot fl no single-layer frame", "f2l.br.36 f2l slot br no single-layer frame", "f2l.bl.36 f2l slot bl no single-layer frame", "f2l.fr.37 f2l slot fr no single-layer frame", "f2l.fl.37 f2l slot fl no single-layer frame", "f2l.br.37 f2l slot br no single-layer frame", "f2l.bl.37 f2l slot bl no single-layer frame", "f2l.fr.38 f2l slot fr no single-layer frame", "f2l.fl.38 f2l slot fl no single-layer frame", "f2l.br.38 f2l slot br no single-layer frame", "f2l.bl.38 f2l slot bl no single-layer frame", "f2l.fr.39 f2l slot fr no single-layer frame", "f2l.fl.39 f2l slot fl no single-layer frame", "f2l.br.39 f2l slot br no single-layer frame", "f2l.bl.39 f2l slot bl no single-layer frame", "f2l.fr.40 f2l slot fr no single-layer frame", "f2l.fl.40 f2l slot fl no single-layer frame", "f2l.br.40 f2l slot br no single-layer frame", "f2l.bl.40 f2l slot bl no single-layer frame", "f2l.fr.41 f2l slot fr no single-layer frame", "f2l.fl.41 f2l slot fl no single-layer frame", "f2l.br.41 f2l slot br no single-layer frame", "f2l.bl.41 f2l slot bl no single-layer frame"]

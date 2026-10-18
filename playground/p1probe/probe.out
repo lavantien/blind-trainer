@@ -1,0 +1,27 @@
+=== all ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+curdir=[C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe]
+pscwd=[C:\Users\lavantien\dev\github\blind-trainer\playground\p1probe]
+t=a
+t=b
+guard-pass-ok
+env=[zzz]
+ParserError: 
+Line |
+   1 |  $env:WINDIR/System32/where.exe pwsh
+     |              ~
+     | You must provide a value expression following the '/' operator.
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+make: *** [makefile:22: slashpath] Error 1
+all-exit=2
+=== exit7 ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+make: *** [makefile:29: exit7] Error 7
+exit7-exit=2
+=== guardfail ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+usage: probe needs v=<x>
+make: *** [makefile:32: guardfail] Error 2
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+guardfail-exit=2

@@ -1,0 +1,10 @@
+[package]
+name = "fixr2probe"
+version = "0.0.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+bt-data = { path = "../../crates/bt-data" }
+bt-verify = { path = "../../tools/bt-verify" }

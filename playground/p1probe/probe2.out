@@ -1,0 +1,28 @@
+=== dq ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+blind trainer v1
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+dq-exit=0
+=== splitloop ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+fuzz-x
+fuzz-y
+fuzz-z
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+splitloop-exit=0
+=== abspath ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+C:\Program Files\PowerShell\7\pwsh.exe
+C:\Users\lavantien\AppData\Local\Microsoft\WindowsApps\pwsh.exe
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+abspath-exit=0
+=== relpath ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+rel-ok
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+relpath-exit=0
+=== envrel ===
+make: Entering directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+rel-ok
+make: Leaving directory 'C:/Users/lavantien/dev/github/blind-trainer/playground/p1probe'
+envrel-exit=0
