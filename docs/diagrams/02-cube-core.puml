@@ -1,4 +1,4 @@
-@startuml cube-core
+@startuml 02-cube-core
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12

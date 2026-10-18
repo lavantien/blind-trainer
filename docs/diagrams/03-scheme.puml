@@ -1,4 +1,4 @@
-@startuml scheme
+@startuml 03-scheme
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12

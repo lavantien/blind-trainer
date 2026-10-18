@@ -1,4 +1,4 @@
-@startuml verification-chain
+@startuml 10-verification-chain
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12

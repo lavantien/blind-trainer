@@ -1,4 +1,4 @@
-@startuml app-boot
+@startuml 06-app-boot
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12

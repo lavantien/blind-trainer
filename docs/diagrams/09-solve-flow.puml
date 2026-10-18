@@ -1,4 +1,4 @@
-@startuml solve-flow
+@startuml 09-solve-flow
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
@@ -12,7 +12,7 @@ start
 :scramble applied\ncube state seeded;
 :memo clock\nmemorization phase timer;
 :exec clock\nexecution phase timer;
-:alg entry\nper piece solves from\ncorpus or overrides;
+:space stops the clocks\nmemo, exec and total splits\nheld for the log;
 :corpus replay verify\nalg sequence applied to\nthe scrambled cube;
 if (cube solved?) then (yes)
   :solve log\nsuccess, times, piece split\nstats aggregation;

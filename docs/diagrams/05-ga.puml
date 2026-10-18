@@ -1,4 +1,4 @@
-@startuml ga
+@startuml 05-ga
 skinparam backgroundColor #FFFFFF
 skinparam defaultFontName Segoe UI
 skinparam defaultFontSize 12
