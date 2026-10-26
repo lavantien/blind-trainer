@@ -52,9 +52,12 @@ BT_TEST(scheme, buffers_are_uf_and_ufr_letter_c) {
 }
 
 BT_TEST(scheme, floating_orders_pinned) {
-    static const char *edge_want[12] = {"UF", "UB", "UR", "UL", "FR", "FL",
-                                        "DF", "DB", "DR", "DL", "BR", "BL"};
-    static const char *corner_want[8] = {"UFR", "UFL", "UBR", "UBL", "DFR", "DFL", "DBR", "DBL"};
+    static const char *edge_want[12] = {
+        "UF", "UB", "UR", "UL", "FR", "FL", "DF", "DB", "DR", "DL", "BR", "BL",
+    };
+    static const char *corner_want[8] = {
+        "UFR", "UFL", "UBR", "UBL", "DFR", "DFL", "DBR", "DBL",
+    };
     for (int i = 0; i < 12; i++) {
         BT_CHECK_EQ(BT_SCHEME_EDGE_FLOATING[i], edge_want[i]);
     }
@@ -119,8 +122,9 @@ BT_TEST(scheme, letter_and_sticker_round_trip) {
     }
     bt_orbit orbits[2] = {BT_ORBIT_EDGE, BT_ORBIT_CORNER};
     for (int i = 0; i < 2; i++) {
-        for (char letter = 'A'; letter <= 'X'; letter++) {
-            BT_CHECK_EQ(bt_scheme_letter_of(bt_scheme_sticker_of(orbits[i], letter)), letter);
+        for (int letter = 'A'; letter <= 'X'; letter++) {
+            BT_CHECK_EQ(bt_scheme_letter_of(bt_scheme_sticker_of(orbits[i], (char)letter)),
+                        (char)letter);
         }
     }
 }

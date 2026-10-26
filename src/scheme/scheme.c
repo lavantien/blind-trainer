@@ -98,7 +98,7 @@ bool bt_scheme_same_piece(uint8_t a, uint8_t b) {
     uint8_t key_b[3];
     face_key(bt_scheme_name_of(a), key_a);
     face_key(bt_scheme_name_of(b), key_b);
-    bool same = key_a[0] == key_b[0] && key_a[1] == key_b[1] && key_a[2] == key_b[2];
+    bool same = (key_a[0] == key_b[0] && key_a[1] == key_b[1] && key_a[2] == key_b[2]) != 0;
     BT_TRACE_EXIT("scheme.same_piece");
     return same;
 }
