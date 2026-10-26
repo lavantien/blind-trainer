@@ -11,6 +11,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 static const char *const USER_DIR_KINDS[] = {"algs", "srs", "solves", "settings"};
 
 static char *dup_str(const char *text) {
@@ -199,6 +203,18 @@ bt_json_value *bt_data_packs_root_or_null(char out[BT_PATH_MAX]) {
     return config;
 }
 
+static const char *system_temp(void) {
+#ifdef _WIN32
+    static char buffer[BT_PATH_MAX];
+    if (GetTempPathA(BT_PATH_MAX, buffer) == 0 || buffer[0] == '\0') {
+        return ".";
+    }
+    return buffer;
+#else
+    return "/tmp";
+#endif
+}
+
 void bt_data_user_root_from(const char *appdata, const char *xdg, const char *home,
                             char out[BT_PATH_MAX]) {
     BT_TRACE_ENTER("data.user_root_from");
@@ -212,8 +228,14 @@ void bt_data_user_root_from(const char *appdata, const char *xdg, const char *ho
         snprintf(joined, sizeof joined, "%s/.local/share", home);
         base = joined;
     } else {
-        const char *temp = getenv("TEMP");
-        base = temp && temp[0] != '\0' ? temp : ".";
+        const char *temp = getenv("TMP");
+        if (temp == NULL || temp[0] == '\0') {
+            temp = getenv("TEMP");
+        }
+        if (temp == NULL || temp[0] == '\0') {
+            temp = system_temp();
+        }
+        base = temp;
     }
     snprintf(out, BT_PATH_MAX, "%s/%s", base, BT_APP_DIR_NAME);
     BT_TRACE_EXIT("data.user_root_from");
@@ -233,23 +255,40 @@ static int kind_index(const char *kind) {
 }
 
 void bt_data_user_dir_path_at(const char *root, const char *kind, char out[BT_PATH_MAX]) {
-    snprintf(out, BT_PATH_MAX, "%s/%s", root, USER_DIR_KINDS[kind_index(kind)]);
+    BT_TRACE_ENTER("data.user_dir_path_at");
+    int index = kind_index(kind);
+    if (index < 0) {
+        out[0] = '\0';
+        BT_TRACE_FAIL("data.user_dir_path_at", "unknown user dir kind %s", kind);
+        BT_TRACE_EXIT("data.user_dir_path_at");
+        return;
+    }
+    snprintf(out, BT_PATH_MAX, "%s/%s", root, USER_DIR_KINDS[index]);
+    BT_TRACE_EXIT("data.user_dir_path_at");
 }
 
 void bt_data_user_algs_path_at(const char *root, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("data.user_algs_path_at");
     snprintf(out, BT_PATH_MAX, "%s/algs/%s", root, BT_DATA_USER_ALGS_FILE);
+    BT_TRACE_EXIT("data.user_algs_path_at");
 }
 
 void bt_data_settings_path_at(const char *root, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("data.settings_path_at");
     snprintf(out, BT_PATH_MAX, "%s/settings/%s", root, BT_DATA_SETTINGS_FILE);
+    BT_TRACE_EXIT("data.settings_path_at");
 }
 
 void bt_data_srs_path_at(const char *root, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("data.srs_path_at");
     snprintf(out, BT_PATH_MAX, "%s/srs/%s", root, BT_DATA_SRS_FILE);
+    BT_TRACE_EXIT("data.srs_path_at");
 }
 
 void bt_data_solves_path_at(const char *root, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("data.solves_path_at");
     snprintf(out, BT_PATH_MAX, "%s/solves/%s", root, BT_DATA_SOLVES_FILE);
+    BT_TRACE_EXIT("data.solves_path_at");
 }
 
 void bt_data_db_file_name(char out[BT_PATH_MAX]) {
@@ -269,9 +308,11 @@ void bt_data_db_file_name(char out[BT_PATH_MAX]) {
 }
 
 void bt_data_db_path_at(const char *root, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("data.db_path_at");
     char name[BT_PATH_MAX];
     bt_data_db_file_name(name);
     snprintf(out, BT_PATH_MAX, "%s/%s", root, name);
+    BT_TRACE_EXIT("data.db_path_at");
 }
 
 bt_data_read_status bt_data_read_json(const char *path, bt_json_value **out) {
@@ -468,19 +509,25 @@ int bt_user_algs_set_entry(bt_user_algs *algs, const char *key, const char *alg)
 
 const char *bt_user_algs_alg_for(const bt_user_algs *algs, const char *sheet_file,
                                  const char *position) {
+    BT_TRACE_ENTER("data.user_algs_alg_for");
     char key[BT_PATH_MAX];
     entry_key(key, sizeof key, sheet_file, position);
+    const char *alg = NULL;
     for (size_t i = 0; i < algs->count; i++) {
         if (strcmp(algs->items[i].key, key) == 0) {
-            return algs->items[i].alg;
+            alg = algs->items[i].alg;
+            break;
         }
     }
-    return NULL;
+    BT_TRACE_EXIT("data.user_algs_alg_for");
+    return alg;
 }
 
 int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file, const char *position) {
+    BT_TRACE_ENTER("data.user_algs_remove");
     char key[BT_PATH_MAX];
     entry_key(key, sizeof key, sheet_file, position);
+    int removed = 0;
     for (size_t i = 0; i < algs->count; i++) {
         if (strcmp(algs->items[i].key, key) == 0) {
             free(algs->items[i].key);
@@ -488,10 +535,12 @@ int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file, const char *
             memmove(&algs->items[i], &algs->items[i + 1],
                     (algs->count - i - 1) * sizeof *algs->items);
             algs->count--;
-            return 1;
+            removed = 1;
+            break;
         }
     }
-    return 0;
+    BT_TRACE_EXIT("data.user_algs_remove");
+    return removed;
 }
 
 size_t bt_user_algs_len(const bt_user_algs *algs) {

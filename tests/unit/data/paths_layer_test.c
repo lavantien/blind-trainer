@@ -48,6 +48,8 @@ BT_TEST(paths_layer, user_dirs_are_named_subdirectories) {
     BT_CHECK(strcmp(out, "/base/settings") == 0);
     bt_data_user_algs_path_at("/base", out);
     BT_CHECK(strcmp(out, "/base/algs/user-algs.json") == 0);
+    bt_data_user_dir_path_at("/base", "unknown", out);
+    BT_CHECK(out[0] == '\0');
 }
 
 BT_TEST(paths_layer, config_path_resolves_env_then_workspace_default) {
@@ -106,18 +108,29 @@ BT_TEST(paths_layer, failed_write_leaves_target_and_directory_untouched) {
     bt_paths_error err;
     BT_CHECK(bt_data_write_json_atomic(target, value, &err) == 0);
     bt_json_free(value);
-    char blocked[BT_TU_PATH_MAX];
-    snprintf(blocked, sizeof blocked, "%s/state.json.tmp", dir);
-    tu_mkdir_p(blocked);
-    value = bt_json_new_object();
-    bt_json_object_set(value, "next", bt_json_new_number(2));
-    BT_CHECK(bt_data_write_json_atomic(target, value, &err) != 0);
-    bt_json_free(value);
     bt_json_value *read = NULL;
     BT_CHECK(bt_data_read_json(target, &read) == BT_DATA_READ_OK);
     bt_json_value *ok = bt_json_get(read, "ok");
     BT_CHECK(ok != NULL && ok->as.number == 1);
     bt_json_free(read);
+    value = bt_json_new_object();
+    bt_json_object_set(value, "next", bt_json_new_number(2));
+    char held[BT_TU_PATH_MAX];
+    snprintf(held, sizeof held, "%s/held.json", dir);
+    tu_mkdir_p(held);
+    BT_CHECK(bt_data_write_json_atomic(held, value, &err) != 0);
+    bt_json_free(value);
+    read = NULL;
+    BT_CHECK(bt_data_read_json(target, &read) == BT_DATA_READ_OK);
+    ok = bt_json_get(read, "ok");
+    BT_CHECK(ok != NULL && ok->as.number == 1);
+    bt_json_free(read);
+    char names[8][64];
+    size_t count = 0;
+    read_dir_names(dir, names, &count);
+    BT_CHECK(count == 2);
+    BT_CHECK((strcmp(names[0], "state.json") == 0 && strcmp(names[1], "held.json") == 0) ||
+             (strcmp(names[0], "held.json") == 0 && strcmp(names[1], "state.json") == 0));
     tu_remove_tree(dir);
 }
 

@@ -1,5 +1,6 @@
 #include "common/paths.h"
 
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +13,14 @@
 #endif
 
 #include "common/bt_trace.h"
+
+static unsigned long current_pid(void) {
+#ifdef _WIN32
+    return GetCurrentProcessId();
+#else
+    return (unsigned long)getpid();
+#endif
+}
 
 static int path_exists(const char *path) {
     struct stat info;
@@ -160,8 +169,10 @@ void bt_paths_resolve_root(char out[BT_PATH_MAX], const char *primary,
 
 int bt_paths_write_atomic(const char *path, const void *data, size_t len) {
     BT_TRACE_ENTER("paths.write_atomic");
+    static atomic_size_t temp_counter = 0;
+    size_t sequence = atomic_fetch_add(&temp_counter, 1);
     char tmp[BT_PATH_MAX];
-    snprintf(tmp, sizeof tmp, "%s.tmp", path);
+    snprintf(tmp, sizeof tmp, "%s.tmp-%lu-%zu", path, current_pid(), sequence);
     FILE *file = fopen(tmp, "wb");
     if (file == NULL) {
         BT_TRACE_FAIL("paths.write_atomic", "cannot open %s", tmp);
