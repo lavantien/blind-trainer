@@ -372,6 +372,8 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     for source, _ in units:
         rel = str(source.relative_to(root)).replace("\\", "/")
         if test_area is not None:
+            if rel.startswith("tools/"):
+                continue
             if rel.startswith("tests/unit/"):
                 area_parts = rel.split("/")
                 if len(area_parts) < 3 or area_parts[2] != test_area:
