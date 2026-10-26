@@ -336,6 +336,18 @@ def needs_compile(source, obj, dep=None):
     return False
 
 
+def patch_coff_timestamp(path):
+    header = path.open("rb").read(8)
+    if len(header) < 8 or header[0] != 0x64 or header[1] != 0x86:
+        return False
+    if header[4:8] == b"\x00\x00\x00\x00":
+        return True
+    with path.open("r+b") as handle:
+        handle.seek(4)
+        handle.write(b"\x00\x00\x00\x00")
+    return True
+
+
 def compile_stage(hub, root, compiler, logger, extra=()):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
@@ -365,6 +377,11 @@ def compile_stage(hub, root, compiler, logger, extra=()):
             logger.fail(result.label, result.output[-2000:] or "no output")
         if failed:
             raise BtError(f"{len(failed)} of {len(commands)} compiles failed")
+        patched = 0
+        for _, obj in pairs:
+            if obj.is_file() and patch_coff_timestamp(obj):
+                patched += 1
+        logger.line("repro", f"{patched} object timestamps zeroed")
         logger.line(
             "compile", f"{len(commands)} compiled, {len(commands) - len(failed)} ok"
         )
@@ -388,6 +405,27 @@ def generate_stage(hub, root):
     hello_source_path.write_text(hello_source(), encoding="utf-8")
     generated.append((hello_source_path, obj_root / "gen" / "hello.obj"))
     return generated
+
+
+def link_stamp_path(hub, root):
+    return root / dirs_cfg(hub)["gen"] / "link_stamp.txt"
+
+
+def link_stamp_payload(hub):
+    return "\n".join(link_flags_of(hub))
+
+
+def link_stamp_changed(hub, root):
+    stamp = link_stamp_path(hub, root)
+    return not stamp.is_file() or stamp.read_text(
+        encoding="utf-8"
+    ) != link_stamp_payload(hub)
+
+
+def write_link_stamp(hub, root):
+    stamp = link_stamp_path(hub, root)
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.write_text(link_stamp_payload(hub), encoding="utf-8")
 
 
 def link_stage(hub, root, compiler, logger, obj_root, entries):
@@ -433,14 +471,16 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
     if hello_obj in built_objects:
         links.append((f"link {hello_exe.name}", (hello_exe, [hello_obj], ())))
     commands = []
+    stamp_changed = link_stamp_changed(hub, root)
     for label, (exe, objects, libs) in links:
-        if needs_link(objects, exe):
+        if stamp_changed or needs_link(objects, exe):
             exe.parent.mkdir(parents=True, exist_ok=True)
             commands.append(
                 (label, link_command(compiler, flags, objects, list(libs), exe))
             )
         else:
             logger.line("skip", f"{label} up to date")
+    write_link_stamp(hub, root)
     if commands:
         results = run_units(commands, jobs=jobs_of(hub))
         failed = [r for r in results if r.returncode != 0]

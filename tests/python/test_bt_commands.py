@@ -124,6 +124,32 @@ class StubCompilerTests(unittest.TestCase):
         self.assertEqual(results[0].returncode, 3)
 
 
+class ReproTests(unittest.TestCase):
+    def test_patch_coff_timestamp_zeroes_the_stamp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            obj = Path(tmp) / "a.obj"
+            obj.write_bytes(b"\x64\x86\x00\x00\xDE\xAD\xBE\xEFrest")
+            self.assertTrue(bt.patch_coff_timestamp(obj))
+            self.assertEqual(obj.read_bytes()[:8], b"\x64\x86\x00\x00\x00\x00\x00\x00")
+
+    def test_patch_coff_timestamp_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            obj = Path(tmp) / "a.obj"
+            obj.write_bytes(b"\x64\x86\x00\x00\xDE\xAD\xBE\xEFrest")
+            bt.patch_coff_timestamp(obj)
+            first = obj.read_bytes()
+            self.assertTrue(bt.patch_coff_timestamp(obj))
+            self.assertEqual(obj.read_bytes(), first)
+
+    def test_patch_coff_timestamp_leaves_non_coff_files_alone(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            obj = Path(tmp) / "a.obj"
+            payload = b"\x4D\x5A\x00\x00\xDE\xAD\xBE\xEFrest"
+            obj.write_bytes(payload)
+            self.assertFalse(bt.patch_coff_timestamp(obj))
+            self.assertEqual(obj.read_bytes(), payload)
+
+
 class AggregateTests(unittest.TestCase):
     def test_aggregate_passes_when_all_exes_pass(self):
         results = [

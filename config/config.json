@@ -221,7 +221,8 @@
       "/SUBSYSTEM:CONSOLE",
       "/OPT:REF",
       "/OPT:ICF",
-      "/DEBUG:NONE"
+      "/DEBUG:NONE",
+      "/brepro"
     ],
     "jobs": 0,
     "test_timeout_secs": 120,
@@ -249,12 +250,14 @@
     },
     "vendor": {
       "raylib": {
+        "ref": "6.2",
         "url": "https://github.com/raysan5/raylib/archive/refs/tags/6.2.zip",
         "sha256": "7a0bc2d6ad385f244fac2947f9584520b654fb4fb7d6575856247f323cecb63a",
         "archive_root": "raylib-6.2",
         "destination": "vendor/raylib"
       },
       "sqlite": {
+        "ref": "3.54.1",
         "url": "https://sqlite.org/2026/sqlite-amalgamation-3540100.zip",
         "sha3_256": "92281c86e2957f9b9305890f9ac04204caa7b677cc868dc326d942689df28e30",
         "archive_root": "",
