@@ -371,10 +371,15 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     pairs = []
     for source, _ in units:
         rel = str(source.relative_to(root)).replace("\\", "/")
-        if test_area is not None and rel.startswith("tests/unit/"):
-            area_parts = rel.split("/")
-            if len(area_parts) < 3 or area_parts[2] != test_area:
-                continue
+        if test_area is not None:
+            if rel.startswith("tests/unit/"):
+                area_parts = rel.split("/")
+                if len(area_parts) < 3 or area_parts[2] != test_area:
+                    continue
+            elif rel.startswith("src/") and not rel.startswith("src/common/"):
+                area_parts = rel.split("/")
+                if len(area_parts) < 2 or area_parts[1] != test_area:
+                    continue
         pairs.append((source, object_path(obj_root, root, source)))
     pairs += [(Path(source), Path(obj)) for source, obj in extra]
     commands = []
@@ -470,8 +475,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
     ]
     links = []
     vendor_objects = [
-        obj for source, obj in entries
-        if str(source).replace("\\", "/").startswith("vendor/")
+        obj for source, obj in entries if source.is_relative_to(root / "vendor")
     ]
     tools_dir = root / "tools"
     if tools_dir.is_dir():
