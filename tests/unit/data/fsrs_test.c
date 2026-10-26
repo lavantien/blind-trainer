@@ -105,6 +105,13 @@ BT_TEST(fsrs, next_interval_clamps_to_the_configured_bounds) {
     bt_fsrs_config_defaults(&cfg);
     cfg.interval_clamp_days[0] = 7;
     cfg.interval_clamp_days[1] = 200;
-    BT_CHECK(bt_fsrs_next_interval_days(1e9, &cfg) == 200);
-    BT_CHECK(bt_fsrs_next_interval_days(0.001, &cfg) == 7);
+    BT_CHECK(bt_fsrs_next_interval_days(1e300, &cfg) == 200);
+    BT_CHECK(bt_fsrs_next_interval_days(1e-30, &cfg) == 7);
+}
+
+BT_TEST(fsrs, next_interval_saturates_the_cast_like_rust) {
+    bt_fsrs_config cfg;
+    bt_fsrs_config_defaults(&cfg);
+    BT_CHECK(bt_fsrs_next_interval_days(1e308, &cfg) == 36500);
+    BT_CHECK(bt_fsrs_next_interval_days(-1e300, &cfg) == 1);
 }

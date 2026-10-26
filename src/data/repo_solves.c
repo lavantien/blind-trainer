@@ -159,8 +159,9 @@ int bt_solve_log_from_json(const bt_json_value *root, bt_solve_log *out) {
         bt_json_value *memo = bt_json_get(item, "memo_ms");
         bt_json_value *exec = bt_json_get(item, "exec_ms");
         bt_json_value *success = bt_json_get(item, "success");
-        if (started == NULL || started->type != BT_JSON_NUMBER || memo == NULL ||
-            memo->type != BT_JSON_NUMBER || exec == NULL || exec->type != BT_JSON_NUMBER ||
+        if (started == NULL || started->type != BT_JSON_NUMBER || !bt_json_is_integer(started) ||
+            memo == NULL || memo->type != BT_JSON_NUMBER || !bt_json_is_integer(memo) ||
+            exec == NULL || exec->type != BT_JSON_NUMBER || !bt_json_is_integer(exec) ||
             success == NULL || success->type != BT_JSON_BOOL) {
             bt_solve_log_free(out);
             BT_TRACE_FAIL("repo_solves.from_json", "bad record %zu", i);

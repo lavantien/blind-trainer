@@ -3,6 +3,7 @@
 #include "common/bt_trace.h"
 #include "common/fsrs_math.h"
 
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -76,12 +77,12 @@ int bt_fsrs_config_from_json(const bt_json_value *config, bt_fsrs_config *out, c
     }
     for (int i = 0; i < 2; i++) {
         const bt_json_value *item = bt_json_at(clamp, (size_t)i);
-        if (item == NULL || item->type != BT_JSON_NUMBER) {
+        if (item == NULL || item->type != BT_JSON_NUMBER || !bt_json_is_integer(item)) {
             snprintf(error, error_len,
-                     "config section malformed: interval_clamp_days[%d] is not a number", i);
+                     "config section malformed: interval_clamp_days[%d] is not an integer", i);
             return -1;
         }
-        parsed.interval_clamp_days[i] = (long long)item->as.number;
+        parsed.interval_clamp_days[i] = bt_json_integer_or(item, 0);
     }
     for (int i = 0; i < BT_FSRS_WEIGHT_COUNT; i++) {
         if (!isfinite(parsed.weights[i])) {
@@ -198,17 +199,30 @@ bt_fsrs_memory bt_fsrs_memory_review(bt_fsrs_memory memory, bt_grade grade, doub
     return out;
 }
 
+static long long saturating_i64_cast(double value) {
+    if (value != value) {
+        return 0;
+    }
+    if (value >= 0x1p63) {
+        return LLONG_MAX;
+    }
+    if (value <= -0x1p63) {
+        return LLONG_MIN;
+    }
+    return (long long)value;
+}
+
 long long bt_fsrs_next_interval_days(double stability, const bt_fsrs_config *cfg) {
     BT_TRACE_ENTER("fsrs.next_interval_days");
     double raw = (stability / bt_fsrs_factor()) * (pow(cfg->request_retention, 1.0 / DECAY) - 1.0);
-    long long rounded = (long long)bt_round_half_even(raw);
+    long long value = saturating_i64_cast(bt_round_half_even(raw));
     long long floor = cfg->interval_clamp_days[0] > 1 ? cfg->interval_clamp_days[0] : 1;
-    if (rounded < floor) {
-        rounded = floor;
+    if (value < floor) {
+        value = floor;
     }
-    if (rounded > cfg->interval_clamp_days[1]) {
-        rounded = cfg->interval_clamp_days[1];
+    if (value > cfg->interval_clamp_days[1]) {
+        value = cfg->interval_clamp_days[1];
     }
     BT_TRACE_EXIT("fsrs.next_interval_days");
-    return rounded;
+    return value;
 }
