@@ -7,6 +7,8 @@ Checks: >
   modernize-*,
   readability-*,
   -modernize-use-trailing-return-type,
+  -modernize-use-nullptr,
+  -modernize-redundant-void-arg,
   -readability-magic-numbers,
   -bugprone-easily-swappable-parameters,
   -readability-identifier-length

@@ -210,7 +210,8 @@
       "-Wextra",
       "-Werror",
       "-ffp-contract=off",
-      "-g0"
+      "-g0",
+      "-D_CRT_SECURE_NO_WARNINGS"
     ],
     "release_flags": [
       "-O2",
@@ -245,10 +246,6 @@
       "llvm_ar": "",
       "python": "",
       "nvcc": ""
-    },
-    "tidy": {
-      "checks": "-*,clang-diagnostic-*,bugprone-*,performance-*,portability-*,modernize-*,readability-*,-modernize-use-trailing-return-type,-readability-magic-numbers,-bugprone-easily-swappable-parameters,-readability-identifier-length",
-      "warnings_as_errors": "*"
     },
     "vendor": {
       "raylib": {

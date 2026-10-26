@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import platform
@@ -243,6 +244,11 @@ def compile_flags(hub):
     ]
 
 
+def objects_dirname(hub):
+    payload = "\n".join(compile_flags(hub))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
+
+
 def compile_command(compiler, flags, includes, source, obj, dep=None):
     argv = [*compiler, *flags]
     for include in includes:
@@ -285,9 +291,19 @@ def c_files(root):
     return sorted(set(files))
 
 
+def prune_stale_obj_roots(obj_base, current, logger):
+    if not obj_base.is_dir():
+        return
+    for child in obj_base.iterdir():
+        if child.is_dir() and child != current:
+            shutil.rmtree(child, ignore_errors=True)
+            logger.line("clean", f"removed stale objects {child.name}")
+
+
 def discover_compile_units(hub, root):
     includes = [root / d for d in INCLUDE_DIRS]
-    obj_root = root / dirs_cfg(hub)["obj"]
+    obj_base = root / dirs_cfg(hub)["obj"]
+    obj_root = obj_base / objects_dirname(hub)
     units = []
     for source in c_files(root):
         obj = object_path(obj_root, root, source)
@@ -322,6 +338,7 @@ def needs_compile(source, obj, dep=None):
 
 def compile_stage(hub, root, compiler, logger, extra=()):
     includes, obj_root, units = discover_compile_units(hub, root)
+    prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
     pairs = [(source, object_path(obj_root, root, source)) for source, _ in units]
     pairs += [(Path(source), Path(obj)) for source, obj in extra]
@@ -356,7 +373,7 @@ def compile_stage(hub, root, compiler, logger, extra=()):
 
 def generate_stage(hub, root):
     gen_dir = root / dirs_cfg(hub)["gen"]
-    obj_root = root / dirs_cfg(hub)["obj"]
+    obj_root = root / dirs_cfg(hub)["obj"] / objects_dirname(hub)
     gen_dir.mkdir(parents=True, exist_ok=True)
     generated = []
     for suite in discover_test_suites(root):
@@ -630,12 +647,8 @@ def fmt_run(write):
     if not files:
         logger.line("fmt", "no files")
         return 0
-    argv = [
-        tool,
-        "--dry-run",
-        "--Werror" if not write else "-i",
-        *[str(f) for f in files],
-    ]
+    mode = ["-i"] if write else ["--dry-run", "--Werror"]
+    argv = [tool, *mode, *[str(f) for f in files]]
     label = "fmt" if not write else "fmt-fix"
     proc = run(argv, label, check=False)
     if proc.returncode != 0:
@@ -648,7 +661,6 @@ def tgt_lint(args):
     """clang-tidy over every c file"""
     hub = load_hub()
     tool = resolve_tool("clang_tidy", hub)
-    tidy_cfg = hub["build"]["tidy"]
     flags = compile_flags(hub)
     includes = [REPO_ROOT / d for d in INCLUDE_DIRS]
     files = c_files(REPO_ROOT)
@@ -658,8 +670,7 @@ def tgt_lint(args):
     for source in files:
         argv = [
             tool,
-            f"--checks={tidy_cfg['checks']}",
-            f"--warnings-as-errors={tidy_cfg['warnings_as_errors']}",
+            "--config-file=.clang-tidy",
             str(source),
             "--",
             *flags,

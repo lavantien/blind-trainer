@@ -75,6 +75,13 @@ class ObjectPathTests(unittest.TestCase):
         suite = {"area": "common", "stem": "rng_test"}
         self.assertEqual(bt.suite_exe_name(suite), "common_rng_test")
 
+    def test_objects_dir_changes_when_flags_change(self):
+        hub = sample_hub()
+        first = bt.objects_dirname(hub)
+        self.assertEqual(first, bt.objects_dirname(hub))
+        hub["build"]["cflags"] = [*hub["build"]["cflags"], "-DEXTRA"]
+        self.assertNotEqual(first, bt.objects_dirname(hub))
+
 
 class StubCompilerTests(unittest.TestCase):
     def setUp(self):
