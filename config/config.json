@@ -138,6 +138,12 @@
     "runs": 5000,
     "secs": 30
   },
+  "mutants": {
+    "workers": 1,
+    "timeout_secs": 120,
+    "scratch_root": "",
+    "ledger": "artifacts/mutants/ledger.tsv"
+  },
   "policy": {
     "small_literal_allow": [
       "0",
