@@ -118,3 +118,33 @@ BT_TEST(alg, parse_error_carries_the_token) {
     BT_CHECK_EQ(err, "wut");
     bt_alg_free(&alg);
 }
+
+BT_TEST(alg, splits_unicode_whitespace) {
+    const char *texts[] = {
+        "U\xc2\xa0"
+        "M",
+        "U\x0bM",
+        "U\xe3\x80\x80"
+        "M",
+        "U\x0cM",
+        "U\xc2\x85"
+        "M",
+        "U\xe2\x80\xa8"
+        "M",
+    };
+    for (size_t i = 0; i < sizeof texts / sizeof texts[0]; i++) {
+        bt_alg alg;
+        bt_alg_init(&alg);
+        char err[64];
+        if (!bt_alg_parse(texts[i], &alg, err, sizeof err)) {
+            BT_ABORT("whitespace split failed for %s: %s", texts[i], err);
+        }
+        BT_CHECK_EQ(bt_alg_len(&alg), (size_t)2);
+        bt_strbuf sb;
+        bt_strbuf_init(&sb, 16);
+        bt_alg_format(&alg, &sb);
+        BT_CHECK_EQ(sb.data, "U M");
+        bt_strbuf_free(&sb);
+        bt_alg_free(&alg);
+    }
+}

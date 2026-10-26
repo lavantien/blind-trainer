@@ -58,6 +58,16 @@ bt_piece bt_piece_of(uint8_t sticker) {
 uint8_t bt_head_sticker(bt_piece piece) {
     BT_TRACE_ENTER("bt_head_sticker");
     analysis_ensure();
+    if (piece.kind == BT_PIECE_CORNER && piece.index >= 8) {
+        BT_TRACE_FAIL("bt_head_sticker", "corner %u out of range", (unsigned)piece.index);
+        BT_TRACE_EXIT("bt_head_sticker");
+        return 255;
+    }
+    if (piece.kind == BT_PIECE_EDGE && piece.index >= 12) {
+        BT_TRACE_FAIL("bt_head_sticker", "edge %u out of range", (unsigned)piece.index);
+        BT_TRACE_EXIT("bt_head_sticker");
+        return 255;
+    }
     uint8_t head;
     if (piece.kind == BT_PIECE_CORNER) {
         head = CORNER_STICKERS[piece.index][0];
@@ -193,6 +203,11 @@ static int32_t dot3(const int8_t a[3], const int8_t b[3]) {
 bool bt_edge_flip(const bt_cube *cube, uint8_t edge) {
     BT_TRACE_ENTER("bt_edge_flip");
     analysis_ensure();
+    if (edge >= 12) {
+        BT_TRACE_FAIL("bt_edge_flip", "edge %u out of range", (unsigned)edge);
+        BT_TRACE_EXIT("bt_edge_flip");
+        return false;
+    }
     uint8_t pair[2];
     memcpy(pair, EDGE_STICKERS[edge], 2);
     size_t f1 = ((size_t)pair[0] - 24U) / 4U;
@@ -211,6 +226,11 @@ bool bt_edge_flip(const bt_cube *cube, uint8_t edge) {
 int8_t bt_corner_twist(const bt_cube *cube, uint8_t corner) {
     BT_TRACE_ENTER("bt_corner_twist");
     analysis_ensure();
+    if (corner >= 8) {
+        BT_TRACE_FAIL("bt_corner_twist", "corner %u out of range", (unsigned)corner);
+        BT_TRACE_EXIT("bt_corner_twist");
+        return 0;
+    }
     uint8_t slot[3];
     memcpy(slot, CORNER_STICKERS[corner], 3);
     bool has_ud = false;

@@ -1,5 +1,6 @@
 #include "core/moves.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "common/bt_trace.h"
@@ -327,6 +328,33 @@ bool bt_move_eq(bt_move a, bt_move b) {
 void bt_move_table(bt_move mv, uint8_t out[54]) {
     BT_TRACE_ENTER("bt_move_table");
     bt_core_init();
+    bool face_used = mv.kind == BT_MOVE_FACE;
+    if (!face_used) {
+        face_used = mv.kind == BT_MOVE_WIDE;
+    }
+    if (!face_used) {
+        face_used = mv.kind == BT_MOVE_INNER;
+    }
+    if (mv.quarter < 1 || mv.quarter > 3) {
+        BT_TRACE_FAIL("bt_move_table", "quarter %u out of range", (unsigned)mv.quarter);
+        bt_trace_dump();
+        abort();
+    }
+    if (face_used && mv.face >= BT_FACE_COUNT) {
+        BT_TRACE_FAIL("bt_move_table", "face %u out of range", (unsigned)mv.face);
+        bt_trace_dump();
+        abort();
+    }
+    if (mv.kind == BT_MOVE_SLICE && mv.slice > BT_SLICE_S) {
+        BT_TRACE_FAIL("bt_move_table", "slice %u out of range", (unsigned)mv.slice);
+        bt_trace_dump();
+        abort();
+    }
+    if (mv.kind == BT_MOVE_ROTATION && mv.axis > BT_AXIS_Z) {
+        BT_TRACE_FAIL("bt_move_table", "axis %u out of range", (unsigned)mv.axis);
+        bt_trace_dump();
+        abort();
+    }
     size_t q = (size_t)mv.quarter - 1U;
     switch (mv.kind) {
     case BT_MOVE_FACE:

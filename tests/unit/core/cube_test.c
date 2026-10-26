@@ -147,3 +147,15 @@ BT_TEST(cube, from_occ_rebuilds_equivalent_state) {
     BT_CHECK(bt_cube_try_from_occ(ident, &solved));
     BT_CHECK(bt_cube_is_solved(&solved));
 }
+
+BT_TEST(cube, from_occ_rejects_out_of_range_bytes) {
+    uint8_t occ[54];
+    for (size_t i = 0; i < 54; i++) {
+        occ[i] = (uint8_t)i;
+    }
+    occ[10] = 54;
+    bt_cube out;
+    BT_CHECK(!bt_cube_try_from_occ(occ, &out));
+    occ[10] = 255;
+    BT_CHECK(!bt_cube_try_from_occ(occ, &out));
+}

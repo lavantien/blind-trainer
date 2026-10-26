@@ -111,3 +111,11 @@ BT_TEST(analysis, cycle_count_matches_nonfixed_stickers) {
         BT_CHECK_EQ(moved, cycled);
     }
 }
+
+BT_TEST(analysis, out_of_domain_pieces_fail_closed) {
+    BT_CHECK_EQ(bt_head_sticker((bt_piece){BT_PIECE_CORNER, 8}), 255);
+    BT_CHECK_EQ(bt_head_sticker((bt_piece){BT_PIECE_EDGE, 12}), 255);
+    bt_cube cube = bt_cube_solved();
+    BT_CHECK(!bt_edge_flip(&cube, 12));
+    BT_CHECK_EQ(bt_corner_twist(&cube, 8), 0);
+}

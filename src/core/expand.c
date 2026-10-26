@@ -187,10 +187,14 @@ static bool expand_unit(expand_tokens *tokens, size_t depth, expand_stop stop, b
         return false;
     }
     if (expand_peek_is(tokens, TOK_COLON)) {
+        if (depth >= BT_EXPAND_MAX_DEPTH) {
+            bt_alg_free(&setup);
+            return false;
+        }
         tokens->index += 1;
         bt_alg core;
         bt_alg_init(&core);
-        if (!expand_unit(tokens, depth, stop, &core)) {
+        if (!expand_unit(tokens, depth + 1, stop, &core)) {
             bt_alg_free(&setup);
             bt_alg_free(&core);
             return false;

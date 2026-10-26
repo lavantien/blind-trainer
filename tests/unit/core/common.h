@@ -245,7 +245,10 @@ static inline void tc_sheet_alg(const char *solver, const char *sheet, size_t ro
     char copy[TC_LINE_MAX];
     snprintf(copy, sizeof copy, "%s", cached.lines[rowid - 1]);
     char *fields[8];
-    tc_split(copy, fields, 8);
+    size_t nfields = tc_split(copy, fields, 8);
+    if (nfields < 2) {
+        BT_ABORT("%s row %zu lacks the alg column: %s", rel, rowid, cached.lines[rowid - 1]);
+    }
     snprintf(out, out_size, "%s", fields[1]);
 }
 
@@ -271,6 +274,8 @@ static inline void tc_position_names(tc_name_index *out) {
     }
     for (size_t i = 0; i < 48; i++) {
         out->piece_of_sticker[i] = 255;
+        out->name_of_sticker[i][0] = '\0';
+        out->sticker_keys[i][0] = '\0';
     }
     size_t names = 0;
     for (size_t i = 1; i < lines.count; i++) {
@@ -293,15 +298,25 @@ static inline void tc_position_names(tc_name_index *out) {
             BT_CHECK(strcmp(cols[0], "edge") == 0);
             BT_CHECK(sticker >= 24 && sticker < 48 && piece < 12);
         }
+        for (size_t k = 0; k < 48; k++) {
+            if (out->sticker_keys[k][0] != '\0' && strcmp(out->sticker_keys[k], cols[3]) == 0) {
+                BT_ABORT("duplicate name %s", cols[3]);
+            }
+        }
         snprintf(out->name_of_sticker[sticker], TC_NAME_MAX, "%s", cols[3]);
         snprintf(out->sticker_keys[sticker], TC_NAME_MAX, "%s", cols[3]);
         out->piece_of_sticker[sticker] = piece;
         names += 1;
     }
     BT_CHECK_EQ(names, (size_t)48);
+    size_t distinct = 0;
     for (size_t i = 0; i < 48; i++) {
         BT_CHECK(out->piece_of_sticker[i] != 255);
+        if (out->sticker_keys[i][0] != '\0') {
+            distinct += 1;
+        }
     }
+    BT_CHECK_EQ(distinct, (size_t)48);
     BT_TRACE_EXIT("tc_position_names");
 }
 

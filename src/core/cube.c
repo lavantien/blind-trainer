@@ -50,6 +50,12 @@ bool bt_cube_try_from_occ(const uint8_t occ[54], bt_cube *out) {
     BT_TRACE_ENTER("bt_cube_try_from_occ");
     bool seen[54] = {false};
     for (size_t i = 0; i < 54; i++) {
+        if (occ[i] >= 54) {
+            BT_TRACE_FAIL("bt_cube_try_from_occ", "sticker %u in slot %zu is out of range",
+                          (unsigned)occ[i], i);
+            BT_TRACE_EXIT("bt_cube_try_from_occ");
+            return false;
+        }
         seen[occ[i]] = true;
     }
     for (size_t i = 0; i < 54; i++) {

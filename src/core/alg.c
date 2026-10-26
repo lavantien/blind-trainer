@@ -73,16 +73,31 @@ static int face_index_of(char ch) {
 
 static char face_char(uint8_t face) {
     static const char letters[6] = {'U', 'L', 'F', 'R', 'B', 'D'};
+    if (face >= 6) {
+        BT_TRACE_FAIL("face_char", "face %u out of range", (unsigned)face);
+        bt_trace_dump();
+        abort();
+    }
     return letters[face];
 }
 
 static char slice_char(uint8_t slice) {
     static const char letters[3] = {'M', 'E', 'S'};
+    if (slice > 2) {
+        BT_TRACE_FAIL("slice_char", "slice %u out of range", (unsigned)slice);
+        bt_trace_dump();
+        abort();
+    }
     return letters[slice];
 }
 
 static char axis_char(uint8_t axis) {
     static const char letters[3] = {'x', 'y', 'z'};
+    if (axis > 2) {
+        BT_TRACE_FAIL("axis_char", "axis %u out of range", (unsigned)axis);
+        bt_trace_dump();
+        abort();
+    }
     return letters[axis];
 }
 
@@ -201,20 +216,49 @@ bool bt_alg_parse_token(const char *token, bt_move *out) {
     return false;
 }
 
+static size_t whitespace_len(const char *s) {
+    const unsigned char *p = (const unsigned char *)s;
+    if (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == 0x0BU || *p == 0x0CU) {
+        return 1;
+    }
+    if (p[0] == 0xC2U && (p[1] == 0x85U || p[1] == 0xA0U)) {
+        return 2;
+    }
+    if (p[0] == 0xE1U && p[1] == 0x9AU && p[2] == 0x80U) {
+        return 3;
+    }
+    if (p[0] == 0xE2U && p[1] == 0x80U) {
+        if (p[2] >= 0x80U && p[2] <= 0x8AU) {
+            return 3;
+        }
+        if (p[2] == 0xA8U || p[2] == 0xA9U || p[2] == 0xAFU) {
+            return 3;
+        }
+    }
+    if (p[0] == 0xE2U && p[1] == 0x81U && p[2] == 0x9FU) {
+        return 3;
+    }
+    if (p[0] == 0xE3U && p[1] == 0x80U && p[2] == 0x80U) {
+        return 3;
+    }
+    return 0;
+}
+
 bool bt_alg_parse(const char *text, bt_alg *out, char *err_token, size_t err_token_size) {
     BT_TRACE_ENTER("bt_alg_parse");
     bt_alg_free(out);
     const char *cursor = text;
     while (*cursor != '\0') {
-        while (*cursor == ' ' || *cursor == '\t' || *cursor == '\n' || *cursor == '\r') {
-            cursor++;
+        size_t ws = whitespace_len(cursor);
+        while (ws > 0) {
+            cursor += ws;
+            ws = whitespace_len(cursor);
         }
         if (*cursor == '\0') {
             break;
         }
         const char *start = cursor;
-        while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t' && *cursor != '\n' &&
-               *cursor != '\r') {
+        while (*cursor != '\0' && whitespace_len(cursor) == 0) {
             cursor++;
         }
         size_t len = (size_t)(cursor - start);

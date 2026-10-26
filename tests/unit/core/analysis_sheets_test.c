@@ -28,6 +28,16 @@ static void record_defect(const tc_name_index *names, defects_map *map, const ch
                           const char *value) {
     uint8_t sticker = tc_sticker_of_name(names, name);
     bt_piece piece = bt_piece_of(sticker);
+    bool is_flip = strcmp(value, "ok") == 0;
+    if (!is_flip) {
+        is_flip = strcmp(value, "flip") == 0;
+    }
+    if (is_flip && piece.kind != BT_PIECE_EDGE) {
+        BT_ABORT("flip defect %s names a non-edge piece", name);
+    }
+    if (!is_flip && piece.kind != BT_PIECE_CORNER) {
+        BT_ABORT("twist defect %s names a non-corner piece", name);
+    }
     if (strcmp(value, "ok") == 0) {
         map->has_flip[piece.index] = true;
         map->flipped[piece.index] = false;
@@ -172,6 +182,9 @@ static size_t parse_twists_note(const char *note, ltct_corner *out, size_t cap) 
         long value = strtol(tail, NULL, 10);
         if (count < cap) {
             out[count].moves_len = parse_bracket_pairs(inner, out[count].moves, 4);
+            if (out[count].moves_len != 3) {
+                BT_ABORT("twists cycle needs 3 pairs: %s", inner);
+            }
             out[count].dir = (int8_t)value;
             out[count].piece[0] = '\0';
             out[count].slot[0] = '\0';

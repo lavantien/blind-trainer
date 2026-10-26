@@ -540,3 +540,21 @@ BT_TEST(expand, stray_separators_at_top_level_return_none) {
         bt_alg_free(&out);
     }
 }
+
+BT_TEST(expand, colon_chains_are_depth_bounded_and_fail_closed) {
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 64);
+    fmt_of("U:U:U:U:U", &sb);
+    BT_CHECK_EQ(sb.data, "U");
+    bt_strbuf_free(&sb);
+    bt_strbuf chain;
+    bt_strbuf_init(&chain, 512);
+    for (size_t i = 0; i < 100; i++) {
+        bt_strbuf_append_str(&chain, i == 0 ? "U" : ":U");
+    }
+    bt_alg out;
+    bt_alg_init(&out);
+    BT_CHECK(!bt_expand(chain.data, &out));
+    bt_alg_free(&out);
+    bt_strbuf_free(&chain);
+}
