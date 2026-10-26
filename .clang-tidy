@@ -1,0 +1,15 @@
+Checks: >
+  -*,
+  clang-diagnostic-*,
+  bugprone-*,
+  performance-*,
+  portability-*,
+  modernize-*,
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -bugprone-easily-swappable-parameters,
+  -readability-identifier-length
+WarningsAsErrors: '*'
+FormatStyle: file
+HeaderFilterRegex: '^(src|tools|tests)/.*\.h$'

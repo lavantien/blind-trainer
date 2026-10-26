@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakAfterReturnType: None
+PointerAlignment: Right
+IncludeBlocks: Preserve
+SortIncludes: CaseSensitive
