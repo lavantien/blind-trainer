@@ -14,7 +14,8 @@ REPO_ROOT = Path(__file__).resolve().parent
 HUB_RELPATH = "config/config.json"
 TARGET_PREFIX = "tgt_"
 SOURCE_GLOBS = ("src/**/*.c", "tools/**/*.c", "tests/**/*.c")
-INCLUDE_DIRS = ("src", "tools", "tests")
+INCLUDE_DIRS = ("src", "tools", "tests", "vendor/sqlite")
+VENDOR_UNITS = (("vendor/sqlite/sqlite3.c", ("-DSQLITE_THREADSERIALIZED=1",)),)
 LLVM_MAJOR = "23"
 REQUIRED_TOOLS = ("clang", "clang_format", "clang_tidy", "llvm_cov")
 LINKER_FLAG = "-fuse-ld=lld-link"
@@ -254,14 +255,22 @@ def objects_dirname(hub):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
-def compile_command(compiler, flags, includes, source, obj, dep=None):
-    argv = [*compiler, *flags]
+def compile_command(compiler, flags, includes, source, obj, dep=None, extra_flags=()):
+    argv = [*compiler, *flags, *extra_flags]
     for include in includes:
         argv += ["-I", str(include)]
     argv += ["-c", str(source), "-o", str(obj)]
     if dep is not None:
         argv += ["-MD", "-MF", str(dep)]
     return argv
+
+
+def vendor_extra_flags(source):
+    name = str(source).replace("\\", "/")
+    for candidate, defines in VENDOR_UNITS:
+        if name == candidate or name.endswith("/" + candidate):
+            return (*defines, "-Wno-error")
+    return ()
 
 
 def link_command(compiler, flags, objects, libs, exe):
@@ -313,6 +322,8 @@ def discover_compile_units(hub, root):
     for source in c_files(root):
         obj = object_path(obj_root, root, source)
         units.append((source, obj))
+    for source, _ in VENDOR_UNITS:
+        units.append((root / source, object_path(obj_root, root, root / source)))
     return includes, obj_root, units
 
 
@@ -353,11 +364,18 @@ def patch_coff_timestamp(path):
     return True
 
 
-def compile_stage(hub, root, compiler, logger, extra=()):
+def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
-    pairs = [(source, object_path(obj_root, root, source)) for source, _ in units]
+    pairs = []
+    for source, _ in units:
+        rel = str(source.relative_to(root)).replace("\\", "/")
+        if test_area is not None and rel.startswith("tests/unit/"):
+            area_parts = rel.split("/")
+            if len(area_parts) < 3 or area_parts[2] != test_area:
+                continue
+        pairs.append((source, object_path(obj_root, root, source)))
     pairs += [(Path(source), Path(obj)) for source, obj in extra]
     commands = []
     entries = []
@@ -369,7 +387,15 @@ def compile_stage(hub, root, compiler, logger, extra=()):
             commands.append(
                 (
                     f"compile {rel}",
-                    compile_command(compiler, flags, includes, source, obj, dep),
+                    compile_command(
+                        compiler,
+                        flags,
+                        includes,
+                        source,
+                        obj,
+                        dep,
+                        vendor_extra_flags(source),
+                    ),
                 )
             )
         else:
@@ -443,6 +469,10 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         obj for source, obj in entries if source.is_relative_to(root / "src")
     ]
     links = []
+    vendor_objects = [
+        obj for source, obj in entries
+        if str(source).replace("\\", "/").startswith("vendor/")
+    ]
     tools_dir = root / "tools"
     if tools_dir.is_dir():
         for tool_dir in sorted(tools_dir.glob("*")):
@@ -450,10 +480,16 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
             if not tool_sources:
                 continue
             tool_objs = [objs_by_source[s] for s in tool_sources if s in objs_by_source]
+            if not tool_objs:
+                continue
             links.append(
                 (
                     f"link {tool_dir.name}.exe",
-                    (bin_dir / f"{tool_dir.name}.exe", [*src_objects, *tool_objs], ()),
+                    (
+                        bin_dir / f"{tool_dir.name}.exe",
+                        [*src_objects, *tool_objs, *vendor_objects],
+                        (),
+                    ),
                 )
             )
     for suite in discover_test_suites(root):
@@ -466,7 +502,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
                 f"link {suite['exe_name']}.exe",
                 (
                     bin_dir / f"{suite['exe_name']}.exe",
-                    [*src_objects, test_obj, main_obj],
+                    [*src_objects, test_obj, main_obj, *vendor_objects],
                     (),
                 ),
             )
@@ -816,7 +852,7 @@ def tgt_test_unit(args):
         compiler = [resolve_tool("clang", hub)]
         generated = generate_stage(hub, REPO_ROOT)
         obj_root, entries = compile_stage(
-            hub, REPO_ROOT, compiler, logger, extra=generated
+            hub, REPO_ROOT, compiler, logger, extra=generated, test_area=area
         )
         link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
     except (BtError, OSError, KeyError, ValueError) as e:
