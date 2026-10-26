@@ -128,14 +128,14 @@ class ReproTests(unittest.TestCase):
     def test_patch_coff_timestamp_zeroes_the_stamp(self):
         with tempfile.TemporaryDirectory() as tmp:
             obj = Path(tmp) / "a.obj"
-            obj.write_bytes(b"\x64\x86\x00\x00\xDE\xAD\xBE\xEFrest")
+            obj.write_bytes(b"\x64\x86\x00\x00\xde\xad\xbe\xefrest")
             self.assertTrue(bt.patch_coff_timestamp(obj))
             self.assertEqual(obj.read_bytes()[:8], b"\x64\x86\x00\x00\x00\x00\x00\x00")
 
     def test_patch_coff_timestamp_is_idempotent(self):
         with tempfile.TemporaryDirectory() as tmp:
             obj = Path(tmp) / "a.obj"
-            obj.write_bytes(b"\x64\x86\x00\x00\xDE\xAD\xBE\xEFrest")
+            obj.write_bytes(b"\x64\x86\x00\x00\xde\xad\xbe\xefrest")
             bt.patch_coff_timestamp(obj)
             first = obj.read_bytes()
             self.assertTrue(bt.patch_coff_timestamp(obj))
@@ -144,10 +144,33 @@ class ReproTests(unittest.TestCase):
     def test_patch_coff_timestamp_leaves_non_coff_files_alone(self):
         with tempfile.TemporaryDirectory() as tmp:
             obj = Path(tmp) / "a.obj"
-            payload = b"\x4D\x5A\x00\x00\xDE\xAD\xBE\xEFrest"
+            payload = b"\x4d\x5a\x00\x00\xde\xad\xbe\xefrest"
             obj.write_bytes(payload)
             self.assertFalse(bt.patch_coff_timestamp(obj))
             self.assertEqual(obj.read_bytes(), payload)
+
+
+class ChildEnvTests(unittest.TestCase):
+    def test_child_env_exports_the_runtime_contract(self):
+        hub = sample_hub()
+        old = {
+            name: os.environ.get(name)
+            for name in ("BT_REF_GROUND", "BT_CONFIG", "BT_ARTIFACTS")
+        }
+        for name in old:
+            os.environ.pop(name, None)
+        try:
+            env = bt.child_env(hub)
+        finally:
+            for name, value in old.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+        self.assertEqual(env["BT_REF_GROUND"], hub["paths"]["ref_ground"])
+        self.assertEqual(env["BT_CONFIG"], str(bt.REPO_ROOT / "config" / "config.json"))
+        self.assertEqual(env["BT_ARTIFACTS"], hub["paths"]["artifacts"])
+        self.assertIn("PATH", env)
 
 
 class AggregateTests(unittest.TestCase):

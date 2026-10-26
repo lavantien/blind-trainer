@@ -112,13 +112,18 @@ def run(argv, label, cwd=None, check=True, env=None, timeout=None):
     return proc
 
 
-def run_units(units, jobs=1, timeout=None):
+def run_units(units, jobs=1, timeout=None, env=None):
     def execute(unit):
         label, argv = unit
         unit_argv = [str(part) for part in argv]
         try:
             proc = subprocess.run(
-                unit_argv, capture_output=True, text=True, timeout=timeout, check=False
+                unit_argv,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False,
+                env=env,
             )
             output = ((proc.stdout or "") + (proc.stderr or "")).strip()
             return UnitResult(label, proc.returncode, output)
@@ -725,13 +730,22 @@ def tgt_lint(args):
     return 1 if failed else 0
 
 
+def child_env(hub):
+    paths = hub.get("paths", {})
+    env = os.environ.copy()
+    env["BT_REF_GROUND"] = paths.get("ref_ground", "ref_ground")
+    env["BT_CONFIG"] = str(REPO_ROOT / HUB_RELPATH)
+    env["BT_ARTIFACTS"] = paths.get("artifacts", "artifacts")
+    return env
+
+
 def run_suite_exes(hub, suites):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
     timeout = build_cfg(hub)["test_timeout_secs"]
     units = [
         (suite["exe_name"], [bin_dir / f"{suite['exe_name']}.exe"]) for suite in suites
     ]
-    results = run_units(units, jobs=jobs_of(hub), timeout=timeout)
+    results = run_units(units, jobs=jobs_of(hub), timeout=timeout, env=child_env(hub))
     for result in results:
         if result.returncode != 0:
             print(f"[fail] {result.label}", flush=True)
@@ -752,7 +766,14 @@ def run_python_suite(hub):
         "-s",
         "tests/python",
     ]
-    proc = run(argv, "python suite", check=False, cwd=REPO_ROOT, timeout=600)
+    proc = run(
+        argv,
+        "python suite",
+        check=False,
+        cwd=REPO_ROOT,
+        timeout=600,
+        env=child_env(hub),
+    )
     output = ((proc.stdout or "") + (proc.stderr or "")).strip()
     if proc.returncode != 0:
         print(output[-3000:], flush=True)
