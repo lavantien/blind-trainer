@@ -43,7 +43,10 @@ int bt_fuzz_expand_once(const uint8_t *data, size_t size) {
         BT_ABORT("expansion never collapses to identity: %s", text);
     }
     bt_strbuf formatted;
-    bt_strbuf_init(&formatted, 4096);
+    if (bt_strbuf_init(&formatted, 4096) != 0) {
+        fuzz_save_crash("expand", data, size);
+        BT_ABORT("strbuf init failed in expand body");
+    }
     bt_alg_format(&first, &formatted);
     bt_alg again;
     bt_alg_init(&again);
@@ -59,7 +62,10 @@ int bt_fuzz_expand_once(const uint8_t *data, size_t size) {
     bt_alg_init(&cancelled);
     bt_expand_cancel(&first, &cancelled);
     bt_strbuf cancelled_text;
-    bt_strbuf_init(&cancelled_text, 4096);
+    if (bt_strbuf_init(&cancelled_text, 4096) != 0) {
+        fuzz_save_crash("expand", data, size);
+        BT_ABORT("strbuf init failed in expand body");
+    }
     bt_alg_format(&cancelled, &cancelled_text);
     if (strcmp(cancelled_text.data, formatted.data) != 0) {
         fuzz_save_crash("expand", data, size);

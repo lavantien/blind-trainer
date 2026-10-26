@@ -37,7 +37,10 @@ int bt_fuzz_notation_once(const uint8_t *data, size_t size) {
         return 0;
     }
     bt_strbuf formatted;
-    bt_strbuf_init(&formatted, 4096);
+    if (bt_strbuf_init(&formatted, 4096) != 0) {
+        fuzz_save_crash("notation", data, size);
+        BT_ABORT("strbuf init failed in notation body");
+    }
     bt_alg_format(&alg, &formatted);
     bt_alg reparsed;
     bt_alg_init(&reparsed);

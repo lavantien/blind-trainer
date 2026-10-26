@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 
 #include "common/bt_harness.h"
 #include "common/bt_trace.h"
@@ -12,14 +13,6 @@
 #include "common/paths.h"
 #include "common/rng.h"
 #include "fuzz/fuzz_body.h"
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
 
 typedef struct {
     bool active;
@@ -79,7 +72,6 @@ static inline bool fuzz_replay_dir(const char *name, int (*body)(const uint8_t *
     fuzz_repo_root(root);
     char dir[BT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s\\tests\\fuzz\\corpus\\%s", root, name);
-#ifdef _WIN32
     char pattern[BT_PATH_MAX];
     snprintf(pattern, sizeof pattern, "%s\\*", dir);
     WIN32_FIND_DATAA entry;
@@ -112,35 +104,6 @@ static inline bool fuzz_replay_dir(const char *name, int (*body)(const uint8_t *
     } while (FindNextFileA(find, &entry));
     FindClose(find);
     return true;
-#else
-    DIR *handle = opendir(dir);
-    if (handle == NULL) {
-        return false;
-    }
-    struct dirent *entry;
-    while ((entry = readdir(handle)) != NULL) {
-        char path[BT_PATH_MAX];
-        snprintf(path, sizeof path, "%s/%s", dir, entry->d_name);
-        FILE *file = fopen(path, "rb");
-        if (file == NULL) {
-            continue;
-        }
-        uint8_t buffer[4096];
-        size_t size = fread(buffer, 1, sizeof buffer, file);
-        fclose(file);
-        if (size == 0) {
-            continue;
-        }
-        if (!fuzz_within_bounds(bounds)) {
-            closedir(handle);
-            return true;
-        }
-        body(buffer, size);
-        *ran += 1;
-    }
-    closedir(handle);
-    return true;
-#endif
 }
 
 static inline void fuzz_generate(int (*body)(const uint8_t *, size_t), fuzz_bounds *bounds,
@@ -149,8 +112,12 @@ static inline void fuzz_generate(int (*body)(const uint8_t *, size_t), fuzz_boun
     bt_rng rng;
     bt_rng_seed(&rng, seed);
     while (fuzz_within_bounds(bounds)) {
-        uint8_t buffer[256];
-        size_t size = (size_t)bt_rng_below(&rng, 128);
+        uint8_t buffer[4096];
+        size_t cap = 128;
+        if (bounds->done % 100U == 0U) {
+            cap = sizeof buffer;
+        }
+        size_t size = (size_t)bt_rng_below(&rng, (uint64_t)cap);
         for (size_t i = 0; i < size; i++) {
             if (alphabet_len > 0 && bt_rng_below(&rng, 4) != 0) {
                 buffer[i] = (uint8_t)alphabet[bt_rng_below(&rng, (uint64_t)alphabet_len)];

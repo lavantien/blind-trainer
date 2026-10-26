@@ -10,17 +10,20 @@
 
 int bt_strbuf_init(bt_strbuf *sb, size_t cap) {
     BT_TRACE_ENTER("strbuf.init");
+    sb->data = NULL;
+    sb->len = 0;
+    sb->cap = 0;
     if (cap < 16) {
         cap = 16;
     }
-    sb->data = malloc(cap + 1);
-    if (sb->data == NULL) {
+    char *data = malloc(cap + 1);
+    if (data == NULL) {
         BT_TRACE_FAIL("strbuf.init", "malloc of %zu failed", cap + 1);
         BT_TRACE_EXIT("strbuf.init");
         return -1;
     }
+    sb->data = data;
     sb->data[0] = '\0';
-    sb->len = 0;
     sb->cap = cap;
     BT_TRACE_EXIT("strbuf.init");
     return 0;

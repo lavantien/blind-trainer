@@ -4,12 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef _WIN32
 #include <windows.h>
-#else
-#include <sys/stat.h>
-#endif
 
 #include "common/bt_harness.h"
 #include "common/paths.h"
@@ -27,11 +22,7 @@ static inline void fuzz_crash_path(const char *name, const uint8_t *data, size_t
     }
     char dir[BT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s\\fuzz", root);
-#ifdef _WIN32
     CreateDirectoryA(dir, NULL);
-#else
-    mkdir(dir, 0755);
-#endif
     uint8_t digest[32];
     bt_sha256(data, size, digest);
     snprintf(out, out_size, "%s\\crash-%s-%02x%02x%02x%02x.bin", dir, name, digest[0], digest[1],
