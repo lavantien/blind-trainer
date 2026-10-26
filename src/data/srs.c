@@ -38,7 +38,7 @@ int bt_card_clone(const bt_card *src, bt_card *dst) {
     return 0;
 }
 
-int bt_card_eq(const bt_card *a, const bt_card *b) {
+static int card_eq_raw(const bt_card *a, const bt_card *b) {
     if (a->has_memory != b->has_memory || a->interval_days != b->interval_days ||
         a->due_day != b->due_day || a->reps != b->reps || a->lapses != b->lapses ||
         a->review_count != b->review_count) {
@@ -59,6 +59,13 @@ int bt_card_eq(const bt_card *a, const bt_card *b) {
     return 1;
 }
 
+int bt_card_eq(const bt_card *a, const bt_card *b) {
+    BT_TRACE_ENTER("srs.card_eq");
+    int equal = card_eq_raw(a, b);
+    BT_TRACE_EXIT("srs.card_eq");
+    return equal;
+}
+
 int bt_card_last_review_day(const bt_card *card, long long *out_day) {
     if (card->review_count == 0) {
         return 0;
@@ -68,7 +75,10 @@ int bt_card_last_review_day(const bt_card *card, long long *out_day) {
 }
 
 int bt_card_is_due(const bt_card *card, long long now_days) {
-    return now_days >= card->due_day;
+    BT_TRACE_ENTER("srs.card_is_due");
+    int due = now_days >= card->due_day;
+    BT_TRACE_EXIT("srs.card_is_due");
+    return due;
 }
 
 int bt_grade_from_quality(unsigned int quality, bt_grade *out) {
@@ -87,6 +97,7 @@ int bt_grade_from_quality(unsigned int quality, bt_grade *out) {
         return 0;
     default:
         BT_TRACE_FAIL("srs.grade_from_quality", "quality %u has no mapping", quality);
+        BT_TRACE_EXIT("srs.grade_from_quality");
         return -1;
     }
 }
@@ -153,6 +164,12 @@ void bt_card_review(bt_card *card, bt_grade rating, long long now_days, const bt
             memory = bt_fsrs_memory_initial(rating, cfg);
         }
     }
+    int old_has_memory = card->has_memory;
+    bt_fsrs_memory old_memory = card->memory;
+    unsigned int old_reps = card->reps;
+    unsigned int old_lapses = card->lapses;
+    long long old_interval = card->interval_days;
+    long long old_due = card->due_day;
     card->has_memory = 1;
     card->memory = memory;
     card->reps += 1;
@@ -167,6 +184,16 @@ void bt_card_review(bt_card *card, bt_grade rating, long long now_days, const bt
         elapsed_days,
         card->interval_days,
     };
-    push_review(card, entry);
+    if (push_review(card, entry) != 0) {
+        card->has_memory = old_has_memory;
+        card->memory = old_memory;
+        card->reps = old_reps;
+        card->lapses = old_lapses;
+        card->interval_days = old_interval;
+        card->due_day = old_due;
+        BT_TRACE_FAIL("srs.card_review", "push review failed");
+        BT_TRACE_EXIT("srs.card_review");
+        return;
+    }
     BT_TRACE_EXIT("srs.card_review");
 }
