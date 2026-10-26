@@ -1,6 +1,7 @@
 #include "common/bt_harness.h"
 #include "common/paths.h"
 #include "data/db.h"
+#include "data/migrations_embedded.h"
 #include "unit/data/test_util.h"
 
 #include <stdio.h>
@@ -149,25 +150,15 @@ BT_TEST(db, migrations_embed_the_committed_sql_files) {
     BT_CHECK_EQ(bt_db_migration_name(0), "001_init");
     BT_CHECK_EQ(bt_db_migration_name(1), "002_drop_srs_ease");
     BT_CHECK_EQ(bt_db_migration_name(2), "003_seed_alg");
-    char root[BT_PATH_MAX];
-    bt_paths_workspace_root(root);
+    BT_CHECK(bt_db_embedded_migration_count() == 3);
     for (int i = 0; i < 3; i++) {
         const char *sql = bt_db_migration_sql(i);
         BT_CHECK(sql != NULL);
         BT_CHECK(sql[0] != '\0');
-        char path[BT_PATH_MAX];
-        snprintf(path, sizeof path, "%s/db/migrations/%s.sql", root, bt_db_migration_name(i));
-        FILE *file = fopen(path, "rb");
-        BT_CHECK(file != NULL);
-        fseek(file, 0, SEEK_END);
-        long size = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        char *committed = malloc((size_t)size + 1);
-        BT_CHECK(fread(committed, 1, (size_t)size, file) == (size_t)size);
-        committed[size] = '\0';
-        fclose(file);
-        BT_CHECK(strcmp(sql, committed) == 0);
-        free(committed);
+        const char *embedded = bt_db_embedded_migration_sql((size_t)i);
+        BT_CHECK(embedded != NULL);
+        BT_CHECK(strcmp(sql, embedded) == 0);
+        BT_CHECK_EQ(bt_db_embedded_migration_name((size_t)i), bt_db_migration_name(i));
     }
 }
 
@@ -228,12 +219,27 @@ BT_TEST(db, ease_column_drops_under_002_and_keeps_the_remaining_rows) {
     bt_db_close(&db);
 }
 
+static char *read_all_bytes(const char *path, size_t *out_len) {
+    FILE *file = fopen(path, "rb");
+    BT_CHECK(file != NULL);
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    char *bytes = malloc((size_t)size + 1);
+    BT_CHECK(fread(bytes, 1, (size_t)size, file) == (size_t)size);
+    fclose(file);
+    *out_len = (size_t)size;
+    return bytes;
+}
+
 BT_TEST(db, backup_before_migrate_keeps_pre_migration_bytes) {
     const char *dir = temp_dir("backup");
     char db_path[BT_PATH_MAX];
     db_file_at(db_path, sizeof db_path, dir);
     raw_exec_path(db_path, "CREATE TABLE legacy_data(id INTEGER PRIMARY KEY, note TEXT);"
                            "INSERT INTO legacy_data(note) VALUES ('keep me');");
+    size_t before_len = 0;
+    char *before = read_all_bytes(db_path, &before_len);
     bt_db db;
     bt_db_error err;
     BT_CHECK(bt_db_open_at(db_path, &db, &err) == 0);
@@ -242,8 +248,12 @@ BT_TEST(db, backup_before_migrate_keeps_pre_migration_bytes) {
     BT_CHECK(version == bt_db_migration_count());
     char bak[BT_PATH_MAX];
     bt_db_backup_path(db_path, bak, sizeof bak);
-    struct stat info;
-    BT_CHECK(stat(bak, &info) == 0);
+    size_t bak_len = 0;
+    char *bak_bytes = read_all_bytes(bak, &bak_len);
+    BT_CHECK(bak_len == before_len);
+    BT_CHECK(memcmp(before, bak_bytes, before_len) == 0);
+    free(before);
+    free(bak_bytes);
     sqlite3_stmt *stmt = NULL;
     BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM legacy_data", -1, &stmt,
                                 NULL) == SQLITE_OK);

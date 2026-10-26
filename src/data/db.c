@@ -1,4 +1,5 @@
 #include "data/db.h"
+#include "data/migrations_embedded.h"
 
 #include "common/bt_trace.h"
 
@@ -87,27 +88,36 @@ const char *bt_db_migration_sql(int index) {
     char path[BT_PATH_MAX];
     snprintf(path, sizeof path, "%s/db/migrations/%s.sql", root, MIGRATION_NAMES[index]);
     FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        BT_TRACE_FAIL("db.migration_sql", "unreadable %s", path);
-        return NULL;
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
-    if (text == NULL) {
+    if (file != NULL) {
+        fseek(file, 0, SEEK_END);
+        long size = ftell(file);
+        fseek(file, 0, SEEK_SET);
+        char *text = malloc((size_t)size + 1);
+        if (text == NULL) {
+            fclose(file);
+            BT_TRACE_FAIL("db.migration_sql", "out of memory for %s", path);
+            return NULL;
+        }
+        size_t read = fread(text, 1, (size_t)size, file);
         fclose(file);
-        return NULL;
+        text[read] = '\0';
+        migration_sql_cache[index] = text;
+        return text;
     }
-    size_t read = fread(text, 1, (size_t)size, file);
-    fclose(file);
-    text[read] = '\0';
-    migration_sql_cache[index] = text;
-    return text;
+    const char *embedded = bt_db_embedded_migration_sql((size_t)index);
+    if (embedded != NULL) {
+        BT_TRACE_ENTER("db.migration_sql");
+        BT_TRACE_EXIT("db.migration_sql");
+        return embedded;
+    }
+    BT_TRACE_FAIL("db.migration_sql", "unreadable %s", path);
+    return NULL;
 }
 
 void bt_db_backup_path(const char *path, char *out, size_t out_len) {
+    BT_TRACE_ENTER("db.backup_path");
     snprintf(out, out_len, "%s.bak", path);
+    BT_TRACE_EXIT("db.backup_path");
 }
 
 long long bt_db_now_ms(void) {
@@ -207,8 +217,8 @@ static int query_user_version(sqlite3 *conn, long long *out, bt_db_error *err) {
 
 static int has_any_table(sqlite3 *conn, int *out, bt_db_error *err) {
     sqlite3_stmt *stmt = NULL;
-    const char *sql = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE "
-                      "'sqlite\\_%' ESCAPE '\\'";
+    const char *sql =
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'";
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, NULL) != SQLITE_OK) {
         db_fail(err, BT_DB_ERR_QUERY, "sqlite_master", NULL, sqlite3_errmsg(conn));
         return -1;
@@ -353,7 +363,7 @@ int bt_db_open_memory(bt_db *db, bt_db_error *err) {
     if (sqlite3_open_v2(":memory:", &conn,
                         SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX,
                         NULL) != SQLITE_OK) {
-        db_fail(err, BT_DB_ERR_OPEN, NULL, ":memory:", sqlite3_errmsg(conn));
+        db_fail(err, BT_DB_ERR_OPEN, NULL, ":memory:", conn ? sqlite3_errmsg(conn) : "cannot open");
         sqlite3_close(conn);
         BT_TRACE_FAIL("db.open_memory", "cannot open");
         return -1;
@@ -373,34 +383,45 @@ void bt_db_close(bt_db *db) {
 }
 
 sqlite3 *bt_db_conn(const bt_db *db) {
-    return db->conn;
+    BT_TRACE_ENTER("db.conn");
+    sqlite3 *conn = db->conn;
+    BT_TRACE_EXIT("db.conn");
+    return conn;
 }
 
 int bt_db_begin(bt_db *db, bt_db_error *err) {
+    BT_TRACE_ENTER("db.begin");
     char *exec_err = NULL;
     if (sqlite3_exec(db->conn, "BEGIN", NULL, NULL, &exec_err) != SQLITE_OK) {
         db_fail(err, BT_DB_ERR_EXEC, "begin", NULL, exec_err ? exec_err : sqlite3_errmsg(db->conn));
         sqlite3_free(exec_err);
+        BT_TRACE_FAIL("db.begin", "begin failed");
         return -1;
     }
     sqlite3_free(exec_err);
+    BT_TRACE_EXIT("db.begin");
     return 0;
 }
 
 int bt_db_commit(bt_db *db, bt_db_error *err) {
+    BT_TRACE_ENTER("db.commit");
     char *exec_err = NULL;
     if (sqlite3_exec(db->conn, "COMMIT", NULL, NULL, &exec_err) != SQLITE_OK) {
         db_fail(err, BT_DB_ERR_EXEC, "commit", NULL,
                 exec_err ? exec_err : sqlite3_errmsg(db->conn));
         sqlite3_free(exec_err);
+        BT_TRACE_FAIL("db.commit", "commit failed");
         return -1;
     }
     sqlite3_free(exec_err);
+    BT_TRACE_EXIT("db.commit");
     return 0;
 }
 
 int bt_db_rollback(bt_db *db) {
+    BT_TRACE_ENTER("db.rollback");
     sqlite3_exec(db->conn, "ROLLBACK", NULL, NULL, NULL);
+    BT_TRACE_EXIT("db.rollback");
     return 0;
 }
 
@@ -409,7 +430,14 @@ long long bt_db_last_insert_rowid(bt_db *db) {
 }
 
 int bt_db_user_version(bt_db *db, long long *out, bt_db_error *err) {
-    return query_user_version(db->conn, out, err);
+    BT_TRACE_ENTER("db.user_version");
+    int rc = query_user_version(db->conn, out, err);
+    if (rc != 0) {
+        BT_TRACE_FAIL("db.user_version", "query failed");
+        return -1;
+    }
+    BT_TRACE_EXIT("db.user_version");
+    return 0;
 }
 
 int bt_db_is_fresh(bt_db *db, int *fresh, bt_db_error *err) {
@@ -436,12 +464,15 @@ int bt_db_is_fresh(bt_db *db, int *fresh, bt_db_error *err) {
 }
 
 int bt_db_exec(bt_db *db, const char *sql, const char *step, bt_db_error *err) {
+    BT_TRACE_ENTER("db.exec");
     char *exec_err = NULL;
     if (sqlite3_exec(db->conn, sql, NULL, NULL, &exec_err) != SQLITE_OK) {
         db_fail(err, BT_DB_ERR_EXEC, step, NULL, exec_err ? exec_err : sqlite3_errmsg(db->conn));
         sqlite3_free(exec_err);
+        BT_TRACE_FAIL("db.exec", "%s failed", step ? step : "exec");
         return -1;
     }
     sqlite3_free(exec_err);
+    BT_TRACE_EXIT("db.exec");
     return 0;
 }
