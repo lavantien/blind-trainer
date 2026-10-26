@@ -111,7 +111,7 @@ BT_TEST(scheme_map, position_map_tsv_matches_scheme_all_48) {
 
     for (uint8_t a = 0; a < 48; a++) {
         for (uint8_t b = 0; b < 48; b++) {
-            bool grouped = (a < 24) == (b < 24) && pieces[a] == pieces[b];
+            bool grouped = ((a < 24) == (b < 24) && pieces[a] == pieces[b]) != 0;
             BT_CHECK_EQ(grouped, bt_scheme_same_piece(a, b));
         }
     }
