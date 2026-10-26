@@ -101,19 +101,31 @@ int policy_constants_from_config(const bt_json_value *config, policy_policy_conf
         BT_TRACE_EXIT("policy.constants_from_config");
         return -1;
     }
-    double value = raw->as.number;
-    if (!(value >= 0.0) || value != floor(value)) {
-        snprintf(err, err_len, "config value malformed: policy.literal_recurrence");
-        BT_TRACE_FAIL("policy.constants_from_config", "literal_recurrence is not an integer");
-        BT_TRACE_EXIT("policy.constants_from_config");
-        return -1;
-    }
-    unsigned long long recurrence = (unsigned long long)value;
-    if (recurrence < 1) {
-        snprintf(err, err_len, "policy.literal_recurrence must be >= 1");
-        BT_TRACE_FAIL("policy.constants_from_config", "literal_recurrence below 1");
-        BT_TRACE_EXIT("policy.constants_from_config");
-        return -1;
+    unsigned long long recurrence = 0;
+    if (bt_json_is_integer(raw)) {
+        long long exact = bt_json_integer_or(raw, 0);
+        if (exact < 1) {
+            snprintf(err, err_len, "policy.literal_recurrence must be >= 1");
+            BT_TRACE_FAIL("policy.constants_from_config", "literal_recurrence below 1");
+            BT_TRACE_EXIT("policy.constants_from_config");
+            return -1;
+        }
+        recurrence = (unsigned long long)exact;
+    } else {
+        double value = raw->as.number;
+        if (!(value >= 0.0) || value != floor(value)) {
+            snprintf(err, err_len, "config value malformed: policy.literal_recurrence");
+            BT_TRACE_FAIL("policy.constants_from_config", "literal_recurrence is not an integer");
+            BT_TRACE_EXIT("policy.constants_from_config");
+            return -1;
+        }
+        if (value < 1.0) {
+            snprintf(err, err_len, "policy.literal_recurrence must be >= 1");
+            BT_TRACE_FAIL("policy.constants_from_config", "literal_recurrence below 1");
+            BT_TRACE_EXIT("policy.constants_from_config");
+            return -1;
+        }
+        recurrence = (unsigned long long)value;
     }
     const bt_json_value *list = bt_json_get(section, "small_literal_allow");
     if (list == NULL) {
