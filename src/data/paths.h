@@ -75,6 +75,7 @@ int bt_user_algs_clone(const bt_user_algs *src, bt_user_algs *dst);
 int bt_user_algs_eq(const bt_user_algs *a, const bt_user_algs *b);
 void bt_user_algs_set(bt_user_algs *algs, const char *sheet_file, const char *position,
                       const char *alg);
+int bt_user_algs_set_entry(bt_user_algs *algs, const char *key, const char *alg);
 const char *bt_user_algs_alg_for(const bt_user_algs *algs, const char *sheet_file,
                                  const char *position);
 int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file, const char *position);

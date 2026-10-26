@@ -461,6 +461,17 @@ void bt_user_algs_set(bt_user_algs *algs, const char *sheet_file, const char *po
     BT_TRACE_EXIT("data.user_algs_set");
 }
 
+int bt_user_algs_set_entry(bt_user_algs *algs, const char *key, const char *alg) {
+    BT_TRACE_ENTER("data.user_algs_set_entry");
+    int rc = algs_insert_sorted(algs, key, alg);
+    if (rc != 0) {
+        BT_TRACE_FAIL("data.user_algs_set_entry", "insert failed for %s", key);
+        return -1;
+    }
+    BT_TRACE_EXIT("data.user_algs_set_entry");
+    return 0;
+}
+
 const char *bt_user_algs_alg_for(const bt_user_algs *algs, const char *sheet_file,
                                  const char *position) {
     char key[BT_PATH_MAX];
@@ -582,15 +593,7 @@ bt_data_read_status bt_user_algs_load_at(bt_user_algs *algs, const char *user_ro
             return BT_DATA_READ_ERROR;
         }
         const char *slash = strchr(key, '/');
-        if (slash == NULL) {
-            bt_json_free(root);
-            bt_user_algs_free(algs);
-            memset(err, 0, sizeof *err);
-            err->kind = BT_PATHS_ERR_DESERIALIZE;
-            snprintf(err->path, sizeof err->path, "%s", path);
-            BT_TRACE_FAIL("data.user_algs_load_at", "key without sheet %s", key);
-            return BT_DATA_READ_ERROR;
-        }
+        (void)slash;
         if (algs_insert_sorted(algs, key, alg->as.string) != 0) {
             bt_json_free(root);
             bt_user_algs_free(algs);
