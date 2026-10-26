@@ -936,6 +936,58 @@ def tgt_test_unit(args):
     return code
 
 
+def build_tool_exe(hub, logger, label):
+    compiler = [resolve_tool("clang", hub)]
+    generated = generate_stage(hub, REPO_ROOT)
+    obj_root, entries = compile_stage(hub, REPO_ROOT, compiler, logger, extra=generated)
+    link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
+    exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "policy.exe"
+    if not exe.is_file():
+        raise BtError(f"{label} exe missing after build: {exe}")
+    return exe
+
+
+def run_policy_exe(exe, argv, label, logger):
+    proc = run([exe, *argv], label, check=False, timeout=300)
+    if proc.returncode != 0:
+        tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
+        if tail:
+            print(tail, flush=True)
+    logger.exit(label, proc.returncode)
+    return proc.returncode
+
+
+def tgt_policy(args):
+    """selftest then the zero-comment, constants-hub, and sloc scans"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("policy")
+    try:
+        exe = build_tool_exe(hub, logger, "policy")
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("policy-build", f"{type(e).__name__}: {e}")
+        return 1
+    workdir = REPO_ROOT / "artifacts" / "policy-selftest"
+    code = run_policy_exe(exe, ["selftest", str(workdir)], "policy-selftest", logger)
+    if code != 0:
+        return code
+    return run_policy_exe(exe, [], "policy-scan", logger)
+
+
+def tgt_policy_selftest(args):
+    """prove bt-policy detects planted comments, literals, and cap breaches"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("policy-selftest")
+    try:
+        exe = build_tool_exe(hub, logger, "policy-selftest")
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("policy-selftest-build", f"{type(e).__name__}: {e}")
+        return 1
+    workdir = REPO_ROOT / "artifacts" / "policy-selftest"
+    return run_policy_exe(exe, ["selftest", str(workdir)], "policy-selftest", logger)
+
+
 def tgt_clean(args):
     """remove artifacts and recreate the keep file"""
     logger = Logger()
