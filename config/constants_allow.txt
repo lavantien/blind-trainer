@@ -1,0 +1,20 @@
+# path TAB literal-core TAB justification
+# constants scan scope: c and python under src, tools, tests, scripts, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
+src/core/analysis.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/core/analysis.c	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/core/analysis.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/core/cube.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/core/cube.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/core/moves.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/data/fsrs.c	1.0	FSRS-5 formula constant pinned by the py-fsrs 5.1.3 golden vectors
+src/scheme/classifier.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/classifier.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/memo.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/memo.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/memo.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/scheme.c	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/scheme.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+tools/policy/lib.c	16	dynamic array growth seed for the path, entry, and finding vectors, doubling from 16
