@@ -1,5 +1,8 @@
 /target
 /target-*/
+/build/
+/vendor/
+/tests/fuzz/corpus/
 /ref_ground/__pycache__/
 /ref_ground/*.py
 /ref_ground/*.c
