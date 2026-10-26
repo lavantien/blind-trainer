@@ -212,6 +212,18 @@ int bt_repo_user_load_all(const bt_db *db, bt_overrides *out, bt_db_error *err) 
     }
     int step = sqlite3_step(stmt);
     while (step == SQLITE_ROW) {
+        int text_ok = sqlite3_column_type(stmt, 0) != SQLITE_NULL &&
+                      sqlite3_column_type(stmt, 1) != SQLITE_NULL &&
+                      sqlite3_column_type(stmt, 2) != SQLITE_NULL &&
+                      sqlite3_column_type(stmt, 3) != SQLITE_NULL &&
+                      sqlite3_column_type(stmt, 4) != SQLITE_NULL;
+        if (!text_ok) {
+            sqlite3_finalize(stmt);
+            bt_overrides_free(out);
+            db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
+            BT_TRACE_FAIL("repo_user.load_all", "null text column");
+            return -1;
+        }
         bt_case_ref ref;
         bt_case_ref_of(&ref, (const char *)sqlite3_column_text(stmt, 0),
                        (const char *)sqlite3_column_text(stmt, 1),
