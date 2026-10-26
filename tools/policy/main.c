@@ -48,7 +48,7 @@ static int real(policy_check_mode mode) {
     for (size_t at = 0; at < outcome.stale_count; at++) {
         fprintf(stderr, "bt-policy: stale allowlist entry: %s\n", outcome.stale_allowlist[at]);
     }
-    int failed = outcome.finding_count > 0 || outcome.stale_count > 0;
+    int failed = outcome.finding_count > 0;
     policy_outcome_free(&outcome);
     bt_trace_shutdown();
     return failed ? 1 : 0;

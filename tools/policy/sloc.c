@@ -1,6 +1,5 @@
 #include "policy/sloc.h"
 
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -29,31 +28,26 @@ int policy_sloc_from_config(const bt_json_value *config, policy_sloc_config *out
         return -1;
     }
     unsigned long long cap = 0;
-    if (bt_json_is_integer(raw)) {
-        long long exact = bt_json_integer_or(raw, 0);
-        if (exact < 1) {
-            snprintf(err, err_len, "sloc.max_file_lines must be >= 1");
-            BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines below 1");
-            BT_TRACE_EXIT("policy.sloc_from_config");
-            return -1;
-        }
-        cap = (unsigned long long)exact;
-    } else {
-        double value = raw->as.number;
-        if (!(value >= 0.0) || value != floor(value)) {
-            snprintf(err, err_len, "config value malformed: sloc.max_file_lines");
-            BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines is not an integer");
-            BT_TRACE_EXIT("policy.sloc_from_config");
-            return -1;
-        }
-        if (value < 1.0) {
-            snprintf(err, err_len, "sloc.max_file_lines must be >= 1");
-            BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines below 1");
-            BT_TRACE_EXIT("policy.sloc_from_config");
-            return -1;
-        }
-        cap = (unsigned long long)value;
+    if (!bt_json_is_integer(raw)) {
+        snprintf(err, err_len, "config value malformed: sloc.max_file_lines");
+        BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines is not an integer");
+        BT_TRACE_EXIT("policy.sloc_from_config");
+        return -1;
     }
+    long long exact = bt_json_integer_or(raw, 0);
+    if (exact < 0) {
+        snprintf(err, err_len, "config value malformed: sloc.max_file_lines");
+        BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines below zero");
+        BT_TRACE_EXIT("policy.sloc_from_config");
+        return -1;
+    }
+    if (exact < 1) {
+        snprintf(err, err_len, "sloc.max_file_lines must be >= 1");
+        BT_TRACE_FAIL("policy.sloc_from_config", "max_file_lines below 1");
+        BT_TRACE_EXIT("policy.sloc_from_config");
+        return -1;
+    }
+    cap = (unsigned long long)exact;
     out->max_file_lines = cap;
     BT_TRACE_EXIT("policy.sloc_from_config");
     return 0;

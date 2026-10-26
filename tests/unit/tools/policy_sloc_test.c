@@ -42,6 +42,12 @@ BT_TEST(policy_sloc, missing_or_malformed_sections_are_errors_naming_the_key) {
     config_err_is("{\"sloc\": {}}", "config section missing: sloc.max_file_lines");
     config_err_is("{\"sloc\": {\"max_file_lines\": \"1000\"}}",
                   "config value malformed: sloc.max_file_lines");
+    config_err_is("{\"sloc\": {\"max_file_lines\": 1000.0}}",
+                  "config value malformed: sloc.max_file_lines");
+    config_err_is("{\"sloc\": {\"max_file_lines\": 1000.5}}",
+                  "config value malformed: sloc.max_file_lines");
+    config_err_is("{\"sloc\": {\"max_file_lines\": -1}}",
+                  "config value malformed: sloc.max_file_lines");
     config_err_is("{\"sloc\": {\"max_file_lines\": 0}}", "sloc.max_file_lines must be >= 1");
 }
 

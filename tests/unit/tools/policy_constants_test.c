@@ -190,6 +190,12 @@ BT_TEST(policy_constants, missing_policy_keys_are_errors_naming_the_keys) {
 BT_TEST(policy_constants, malformed_or_zero_recurrence_is_an_error) {
     config_err_is("{\"policy\": {\"literal_recurrence\": \"2\", \"small_literal_allow\": []}}",
                   "config value malformed: policy.literal_recurrence");
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2.0, \"small_literal_allow\": []}}",
+                  "config value malformed: policy.literal_recurrence");
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2.5, \"small_literal_allow\": []}}",
+                  "config value malformed: policy.literal_recurrence");
+    config_err_is("{\"policy\": {\"literal_recurrence\": -1, \"small_literal_allow\": []}}",
+                  "config value malformed: policy.literal_recurrence");
     config_err_is("{\"policy\": {\"literal_recurrence\": 0, \"small_literal_allow\": []}}",
                   "policy.literal_recurrence must be >= 1");
     config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [1]}}",
