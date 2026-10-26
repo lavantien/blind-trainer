@@ -9,8 +9,10 @@ Checks: >
   -modernize-use-trailing-return-type,
   -modernize-use-nullptr,
   -modernize-redundant-void-arg,
+  -bugprone-multi-level-implicit-pointer-conversion,
   -readability-magic-numbers,
   -readability-math-missing-parentheses,
+  -readability-function-cognitive-complexity,
   -bugprone-easily-swappable-parameters,
   -readability-identifier-length
 WarningsAsErrors: '*'
