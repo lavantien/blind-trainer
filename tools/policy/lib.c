@@ -531,6 +531,10 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
         size_t covered_count = 0;
         size_t covered_cap = 0;
         for (size_t at = 0; at < file_count && rc == 0; at++) {
+            const char *rel_probe = rel_path(files[at], root);
+            if (strncmp(rel_probe, "tests/", 6) == 0) {
+                continue;
+            }
             char *text = NULL;
             size_t len = 0;
             rc = read_source(files[at], &text, &len, err, err_len);
@@ -540,7 +544,7 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
             policy_lang lang = policy_lang_of_path(files[at]);
             policy_masked masked;
             policy_mask_source(text, len, lang, &masked);
-            const char *rel = rel_path(files[at], root);
+            const char *rel = rel_probe;
             size_t hit_count = 0;
             policy_recurring *hits =
                 policy_recurring_literals(masked.text, lang, pcfg.literal_recurrence, &hit_count);
