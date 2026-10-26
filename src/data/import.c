@@ -149,11 +149,12 @@ int bt_import_run(bt_db *db, const char *root, char *error, size_t error_len) {
         failed = 1;
     }
     if (!failed && !missing) {
-        has_srs = 1;
         if (bt_json_parse(text, text_len, &srs_root, &jerr) != 0 ||
             bt_srs_store_from_json(srs_root, &srs_store) != 0) {
             snprintf(error, error_len, "%s: srs store json invalid", files[1]);
             failed = 1;
+        } else {
+            has_srs = 1;
         }
         free(text);
         text = NULL;
@@ -162,11 +163,12 @@ int bt_import_run(bt_db *db, const char *root, char *error, size_t error_len) {
         failed = 1;
     }
     if (!failed && !missing) {
-        has_solves = 1;
         if (bt_json_parse(text, text_len, &solves_root, &jerr) != 0 ||
             bt_solve_log_from_json(solves_root, &solve_log) != 0) {
             snprintf(error, error_len, "%s: solve log json invalid", files[2]);
             failed = 1;
+        } else {
+            has_solves = 1;
         }
         free(text);
         text = NULL;
@@ -175,12 +177,13 @@ int bt_import_run(bt_db *db, const char *root, char *error, size_t error_len) {
         failed = 1;
     }
     if (!failed && !missing) {
-        has_algs = 1;
         bt_paths_error perr;
         if (bt_json_parse(text, text_len, &algs_root, &jerr) != 0 ||
             bt_user_algs_from_json(algs_root, &user_algs, &perr) != 0) {
             snprintf(error, error_len, "%s: user algs json invalid", files[3]);
             failed = 1;
+        } else {
+            has_algs = 1;
         }
         free(text);
         text = NULL;
@@ -190,6 +193,15 @@ int bt_import_run(bt_db *db, const char *root, char *error, size_t error_len) {
         bt_json_free(srs_root);
         bt_json_free(solves_root);
         bt_json_free(algs_root);
+        if (has_srs) {
+            bt_srs_store_free(&srs_store);
+        }
+        if (has_solves) {
+            bt_solve_log_free(&solve_log);
+        }
+        if (has_algs) {
+            bt_user_algs_free(&user_algs);
+        }
         BT_TRACE_FAIL("import.run", "legacy parse failed");
         return -1;
     }
