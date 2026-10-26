@@ -135,3 +135,27 @@ BT_TEST(repo_cards, the_saved_row_carries_the_full_case_reference) {
     bt_card_free(&plain);
     bt_db_close(&db);
 }
+
+BT_TEST(repo_cards, a_foreign_event_with_the_3style_method_still_loads) {
+    bt_db db;
+    open_db(&db);
+    bt_fsrs_config cfg;
+    cfg_of(&cfg);
+    bt_case_ref foreign = case_of("4bld", "3style", "edge", "4w.1");
+    bt_card plain;
+    bt_card_init(&plain, 0);
+    bt_db_error err;
+    BT_CHECK(bt_repo_cards_save_card(&db, &foreign, &plain, &err) == 0);
+    bt_case_cards cards;
+    bt_srs_load_error load_err;
+    BT_CHECK(bt_repo_cards_load(&db, &cfg, &cards, &load_err) == 0);
+    BT_CHECK(bt_case_cards_len(&cards) == 1);
+    BT_CHECK(bt_case_cards_contains(&cards, &foreign) == 1);
+    bt_case_cards_free(&cards);
+    bt_srs_store pairs;
+    BT_CHECK(bt_repo_srs_load(&db, &cfg, &pairs, &load_err) == 0);
+    BT_CHECK(bt_srs_store_len(&pairs) == 0);
+    bt_srs_store_free(&pairs);
+    bt_card_free(&plain);
+    bt_db_close(&db);
+}

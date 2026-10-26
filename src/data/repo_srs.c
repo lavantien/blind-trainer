@@ -100,16 +100,22 @@ int bt_srs_store_set(bt_srs_store *store, const char *key, const bt_card *card) 
 }
 
 const bt_card *bt_srs_store_get(const bt_srs_store *store, const char *key) {
+    BT_TRACE_ENTER("repo_srs.store_get");
     for (size_t i = 0; i < store->count; i++) {
         if (strcmp(store->items[i].key, key) == 0) {
+            BT_TRACE_EXIT("repo_srs.store_get");
             return &store->items[i].card;
         }
     }
+    BT_TRACE_FAIL("repo_srs.store_get", "no card %s", key);
     return NULL;
 }
 
 size_t bt_srs_store_len(const bt_srs_store *store) {
-    return store->count;
+    BT_TRACE_ENTER("repo_srs.store_len");
+    size_t count = store->count;
+    BT_TRACE_EXIT("repo_srs.store_len");
+    return count;
 }
 
 int bt_srs_store_clone(const bt_srs_store *src, bt_srs_store *dst) {
@@ -148,12 +154,14 @@ static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind ki
 int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, const char *stage,
                             const char *case_key, const bt_card *card, long long now,
                             bt_db_error *err) {
+    BT_TRACE_ENTER("repo_srs.insert_card");
     sqlite3_stmt *card_stmt = NULL;
     const char *card_sql =
         "INSERT INTO card(event, method, stage, case_key, created_at, updated_at) "
         "VALUES (?, ?, ?, ?, ?, ?)";
     if (sqlite3_prepare_v2(bt_db_conn(db), card_sql, -1, &card_stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert card");
+        BT_TRACE_FAIL("repo_srs.insert_card", "prepare card failed");
         return -1;
     }
     sqlite3_bind_text(card_stmt, 1, event, -1, SQLITE_TRANSIENT);
@@ -165,6 +173,7 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, co
     if (sqlite3_step(card_stmt) != SQLITE_DONE) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert card");
         sqlite3_finalize(card_stmt);
+        BT_TRACE_FAIL("repo_srs.insert_card", "card insert failed");
         return -1;
     }
     sqlite3_finalize(card_stmt);
@@ -175,6 +184,7 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, co
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     if (sqlite3_prepare_v2(bt_db_conn(db), state_sql, -1, &state_stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert srs_state");
+        BT_TRACE_FAIL("repo_srs.insert_card", "prepare srs_state failed");
         return -1;
     }
     long long last_review = 0;
@@ -199,6 +209,7 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, co
     if (sqlite3_step(state_stmt) != SQLITE_DONE) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert srs_state");
         sqlite3_finalize(state_stmt);
+        BT_TRACE_FAIL("repo_srs.insert_card", "srs_state insert failed");
         return -1;
     }
     sqlite3_finalize(state_stmt);
@@ -208,6 +219,7 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, co
                           "VALUES (?, ?, ?, ?, ?, ?)";
     if (sqlite3_prepare_v2(bt_db_conn(db), log_sql, -1, &log_stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert review_log");
+        BT_TRACE_FAIL("repo_srs.insert_card", "prepare review_log failed");
         return -1;
     }
     long long interval_before = 0;
@@ -223,11 +235,13 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, co
         if (sqlite3_step(log_stmt) != SQLITE_DONE) {
             db_step_error(db, err, BT_DB_ERR_EXEC, "insert review_log");
             sqlite3_finalize(log_stmt);
+            BT_TRACE_FAIL("repo_srs.insert_card", "review_log insert failed");
             return -1;
         }
         interval_before = entry->scheduled_days;
     }
     sqlite3_finalize(log_stmt);
+    BT_TRACE_EXIT("repo_srs.insert_card");
     return 0;
 }
 
@@ -253,7 +267,14 @@ int bt_repo_srs_save_tx(bt_db *db, const bt_srs_store *store, bt_db_error *err) 
     for (size_t i = 0; i < store->count; i++) {
         char stage[BT_PATH_MAX];
         char case_key[BT_PATH_MAX];
-        bt_repo_algs_split_key(store->items[i].key, stage, sizeof stage, case_key, sizeof case_key);
+        if (bt_repo_algs_split_key(store->items[i].key, stage, sizeof stage, case_key,
+                                   sizeof case_key) != 0) {
+            db_step_error(db, err, BT_DB_ERR_EXEC, "insert card");
+            snprintf(err->detail, sizeof err->detail, "key %s overflows the split buffers",
+                     store->items[i].key);
+            BT_TRACE_FAIL("repo_srs.save_tx", "key %s overflows", store->items[i].key);
+            return -1;
+        }
         if (bt_repo_srs_insert_card(db, BT_DB_EVENT_3BLD, BT_DB_METHOD_3STYLE, stage, case_key,
                                     &store->items[i].card, now, err) != 0) {
             BT_TRACE_FAIL("repo_srs.save_tx", "insert %s failed", store->items[i].key);
@@ -376,8 +397,8 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
     BT_TRACE_ENTER("repo_srs.load_rows");
     *out = NULL;
     *count = 0;
-    const char *condition = filter == BT_SRS_FILTER_ONLY_3BLD ? "c.event = ? AND c.method = ?"
-                                                              : "c.event <> ? AND c.method <> ?";
+    const char *condition =
+        filter == BT_SRS_FILTER_ONLY_3BLD ? "c.event = ? AND c.method = ?" : "c.event <> ?";
     char sql[512];
     snprintf(sql, sizeof sql,
              "SELECT c.id, c.event, c.method, c.stage, c.case_key, s.due_day, "
@@ -392,7 +413,9 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
         return -1;
     }
     sqlite3_bind_text(cards, 1, BT_DB_EVENT_3BLD, -1, SQLITE_STATIC);
-    sqlite3_bind_text(cards, 2, BT_DB_METHOD_3STYLE, -1, SQLITE_STATIC);
+    if (filter == BT_SRS_FILTER_ONLY_3BLD) {
+        sqlite3_bind_text(cards, 2, BT_DB_METHOD_3STYLE, -1, SQLITE_STATIC);
+    }
     sqlite3_stmt *reviews = NULL;
     const char *review_sql = "SELECT rating, reviewed_day, elapsed_days, interval_after "
                              "FROM review_log WHERE card_id = ? ORDER BY id";
@@ -411,6 +434,19 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
         long long id = sqlite3_column_int64(cards, 0);
         bt_srs_card_row row;
         memset(&row, 0, sizeof row);
+        int text_ok = sqlite3_column_type(cards, 1) != SQLITE_NULL &&
+                      sqlite3_column_type(cards, 2) != SQLITE_NULL &&
+                      sqlite3_column_type(cards, 3) != SQLITE_NULL &&
+                      sqlite3_column_type(cards, 4) != SQLITE_NULL;
+        if (!text_ok) {
+            sqlite3_finalize(reviews);
+            sqlite3_finalize(cards);
+            bt_repo_srs_free_rows(rows, rows_count);
+            err->kind = BT_SRS_LOAD_DB;
+            db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
+            BT_TRACE_FAIL("repo_srs.load_rows", "null text column on card %lld", id);
+            return -1;
+        }
         snprintf(row.event, BT_CASE_FIELD_MAX, "%s", sqlite3_column_text(cards, 1));
         snprintf(row.method, BT_CASE_FIELD_MAX, "%s", sqlite3_column_text(cards, 2));
         snprintf(row.stage, BT_CASE_FIELD_MAX, "%s", sqlite3_column_text(cards, 3));
@@ -461,7 +497,15 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             return -1;
         }
         char key[BT_REPO_ALGS_KEY_MAX];
-        bt_repo_algs_join_key(row.stage, row.case_key, key, sizeof key);
+        if (bt_repo_algs_join_key(row.stage, row.case_key, key, sizeof key) != 0) {
+            sqlite3_finalize(reviews);
+            sqlite3_finalize(cards);
+            bt_repo_srs_free_rows(rows, rows_count);
+            err->kind = BT_SRS_LOAD_DB;
+            db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
+            BT_TRACE_FAIL("repo_srs.load_rows", "joined key overflows");
+            return -1;
+        }
         int has_memory = 0;
         bt_fsrs_memory memory;
         if (memory_from_row(key, has_stability, stability, has_difficulty, difficulty,
@@ -515,7 +559,16 @@ int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg, bt_srs
     }
     for (size_t i = 0; i < count; i++) {
         char key[BT_REPO_ALGS_KEY_MAX];
-        bt_repo_algs_join_key(rows[i].stage, rows[i].case_key, key, sizeof key);
+        if (bt_repo_algs_join_key(rows[i].stage, rows[i].case_key, key, sizeof key) != 0) {
+            bt_repo_srs_free_rows(rows, count);
+            bt_srs_store_free(out);
+            err->kind = BT_SRS_LOAD_DB;
+            err->db.kind = BT_DB_ERR_QUERY;
+            snprintf(err->db.step, sizeof err->db.step, "%s", "select card");
+            snprintf(err->db.detail, sizeof err->db.detail, "%s", "joined key overflows");
+            BT_TRACE_FAIL("repo_srs.load_filtered", "joined key overflows");
+            return -1;
+        }
         if (bt_srs_store_set(out, key, &rows[i].card) != 0) {
             bt_repo_srs_free_rows(rows, count);
             bt_srs_store_free(out);
@@ -559,7 +612,8 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
         bt_json_get(node, "lapses"),
     };
     for (int i = 0; i < 4; i++) {
-        if (fields[i] == NULL || fields[i]->type != BT_JSON_NUMBER) {
+        if (fields[i] == NULL || fields[i]->type != BT_JSON_NUMBER ||
+            !bt_json_is_integer(fields[i])) {
             bt_card_free(card);
             return -1;
         }
@@ -582,7 +636,8 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
             bt_json_get(item, "scheduled_days"),
         };
         for (int p = 0; p < 4; p++) {
-            if (parts[p] == NULL || parts[p]->type != BT_JSON_NUMBER) {
+            if (parts[p] == NULL || parts[p]->type != BT_JSON_NUMBER ||
+                !bt_json_is_integer(parts[p])) {
                 bt_card_free(card);
                 return -1;
             }
