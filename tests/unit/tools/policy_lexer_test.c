@@ -1,13 +1,11 @@
 #include "common/bt_harness.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
-#include "policy/comments.c"
-#include "policy/constants.c"
-#include "policy/lexer.c"
-#include "policy/lib.c"
-#include "policy/sloc.c"
+#include "policy/lexer.h"
+#include "policy/lib.h"
 
 static void mask_c(const char *text, policy_masked *out) {
     policy_mask_source(text, strlen(text), POLICY_LANG_C, out);

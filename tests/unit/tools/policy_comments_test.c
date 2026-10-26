@@ -2,11 +2,8 @@
 
 #include <string.h>
 
-#include "policy/comments.c"
-#include "policy/constants.c"
-#include "policy/lexer.c"
-#include "policy/lib.c"
-#include "policy/sloc.c"
+#include "policy/comments.h"
+#include "policy/lib.h"
 
 BT_TEST(policy_comments, every_comment_becomes_a_finding_with_line_and_kind) {
     const char *input = "int a = 1;\n// line two\n/* block\nspanning */ int b = 2;";

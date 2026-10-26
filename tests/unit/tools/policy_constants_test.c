@@ -1,12 +1,11 @@
 #include "common/bt_harness.h"
 
+#include <stdio.h>
 #include <string.h>
 
-#include "policy/comments.c"
-#include "policy/constants.c"
-#include "policy/lexer.c"
-#include "policy/lib.c"
-#include "policy/sloc.c"
+#include "policy/constants.h"
+#include "policy/lexer.h"
+#include "policy/lib.h"
 
 static void check_cores(const char *text, policy_lang lang, const char *want) {
     size_t count = 0;

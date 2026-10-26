@@ -367,16 +367,46 @@ def patch_coff_timestamp(path):
     return True
 
 
+def matched_tool_dir(stem, tool_dirs):
+    best = None
+    best_len = -1
+    for tool_dir in tool_dirs:
+        name = tool_dir.name.replace("-", "_")
+        if stem == name or stem.startswith(name + "_"):
+            if len(name) > best_len:
+                best = tool_dir
+                best_len = len(name)
+    return best
+
+
+def tools_needed_for_suites(root, suites):
+    tool_root = root / "tools"
+    if not tool_root.is_dir():
+        return set()
+    tool_dirs = [d for d in sorted(tool_root.glob("*")) if d.is_dir()]
+    needed = set()
+    for suite in suites:
+        if suite["area"] != "tools":
+            continue
+        tool_dir = matched_tool_dir(suite["stem"], tool_dirs)
+        if tool_dir is not None:
+            needed.add(tool_dir.name)
+    return needed
+
+
 def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
+    tools_needed = tools_needed_for_suites(root, discover_test_suites(root)) if test_area == "tools" else set()
     pairs = []
     for source, _ in units:
         rel = str(source.relative_to(root)).replace("\\", "/")
         if test_area is not None:
             if rel.startswith("tools/"):
-                continue
+                parts = rel.split("/")
+                if test_area != "tools" or len(parts) < 2 or parts[1] not in tools_needed:
+                    continue
             if rel.startswith("tests/"):
                 if not rel.startswith("tests/unit/"):
                     continue
@@ -485,8 +515,9 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         obj for source, obj in entries if source.is_relative_to(root / "vendor")
     ]
     tools_dir = root / "tools"
+    tool_dirs = [d for d in sorted(tools_dir.glob("*")) if d.is_dir()]
     if tools_dir.is_dir():
-        for tool_dir in sorted(tools_dir.glob("*")):
+        for tool_dir in tool_dirs:
             tool_sources = sorted(tool_dir.glob("*.c"))
             if not tool_sources:
                 continue
@@ -508,12 +539,21 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         main_obj = obj_root / "gen" / f"{suite['exe_name']}_main.obj"
         if test_obj is None or main_obj not in built_objects:
             continue
+        suite_tool_objects = []
+        if suite["area"] == "tools" and tool_dirs:
+            tool_dir = matched_tool_dir(suite["stem"], tool_dirs)
+            if tool_dir is not None:
+                suite_tool_objects = [
+                    objs_by_source[s]
+                    for s in sorted(tool_dir.glob("*.c"))
+                    if s.name != "main.c" and s in objs_by_source
+                ]
         links.append(
             (
                 f"link {suite['exe_name']}.exe",
                 (
                     bin_dir / f"{suite['exe_name']}.exe",
-                    [*src_objects, test_obj, main_obj, *vendor_objects],
+                    [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects],
                     (),
                 ),
             )

@@ -1,12 +1,10 @@
 #include "common/bt_harness.h"
 
+#include <stdio.h>
 #include <string.h>
 
-#include "policy/comments.c"
-#include "policy/constants.c"
-#include "policy/lexer.c"
-#include "policy/lib.c"
-#include "policy/sloc.c"
+#include "policy/lib.h"
+#include "policy/sloc.h"
 
 static bt_json_value *parse_cfg(const char *text) {
     bt_json_value *config = NULL;
