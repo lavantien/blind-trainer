@@ -76,7 +76,7 @@ BT_TEST(paths_layer, atomic_write_creates_reads_and_replaces) {
     BT_CHECK(bt_data_write_json_atomic(target, first, &err) == 0);
     bt_json_value *read = NULL;
     BT_CHECK(bt_data_read_json(target, &read) == BT_DATA_READ_OK);
-    bt_json_value *mode = bt_json_get(bt_json_get(read, "mode") ? read : read, "mode");
+    bt_json_value *mode = bt_json_get(read, "mode");
     BT_CHECK(mode != NULL && strcmp(mode->as.string, "a") == 0);
     bt_json_free(read);
     bt_json_object_set(first, "mode", bt_json_new_string("b"));

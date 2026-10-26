@@ -62,6 +62,28 @@ BT_TEST(json, nested_round_trip_is_exact) {
     serialize_is("[[], {}, [null]]", "[[],{},[null]]");
 }
 
+BT_TEST(json, integer_literals_keep_exact_values) {
+    serialize_is("2305843009213693951", "2305843009213693951");
+    serialize_is("-2305843009213693951", "-2305843009213693951");
+    bt_json_value *value = NULL;
+    parse_ok("2305843009213693951", &value);
+    BT_CHECK(bt_json_is_integer(value) == 1);
+    BT_CHECK(bt_json_integer_or(value, 0) == 2305843009213693951LL);
+    bt_json_free(value);
+    parse_ok("-0", &value);
+    BT_CHECK(bt_json_is_integer(value) == 0);
+    bt_json_free(value);
+    parse_ok("1.0", &value);
+    BT_CHECK(bt_json_is_integer(value) == 0);
+    bt_json_free(value);
+    parse_ok("1e2", &value);
+    BT_CHECK(bt_json_is_integer(value) == 0);
+    bt_json_free(value);
+    parse_ok("9223372036854775808", &value);
+    BT_CHECK(bt_json_is_integer(value) == 0);
+    bt_json_free(value);
+}
+
 BT_TEST(json, duplicate_keys_rejected) {
     parse_err("{\"a\": 1, \"a\": 2}", 1, 13, "duplicate");
     parse_err("{\"x\": {\"x\": 1, \"x\": 2}}", 1, 19, "duplicate");

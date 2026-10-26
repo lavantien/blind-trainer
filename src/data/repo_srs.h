@@ -46,9 +46,9 @@ int bt_srs_store_eq(const bt_srs_store *a, const bt_srs_store *b);
 int bt_srs_store_set(bt_srs_store *store, const char *key, const bt_card *card);
 const bt_card *bt_srs_store_get(const bt_srs_store *store, const char *key);
 size_t bt_srs_store_len(const bt_srs_store *store);
-int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method,
-                            const char *stage, const char *case_key, const bt_card *card,
-                            long long now, bt_db_error *err);
+int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, const char *stage,
+                            const char *case_key, const bt_card *card, long long now,
+                            bt_db_error *err);
 int bt_repo_srs_save_tx(bt_db *db, const bt_srs_store *store, bt_db_error *err);
 int bt_repo_srs_save(bt_db *db, const bt_srs_store *store, bt_db_error *err);
 typedef enum {
@@ -67,9 +67,8 @@ typedef struct {
 int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_filter filter,
                           bt_srs_card_row **out, size_t *count, bt_srs_load_error *err);
 void bt_repo_srs_free_rows(bt_srs_card_row *rows, size_t count);
-int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg,
-                              bt_srs_filter filter, bt_srs_store *out,
-                              bt_srs_load_error *err);
+int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_filter filter,
+                              bt_srs_store *out, bt_srs_load_error *err);
 int bt_repo_srs_load(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_store *out,
                      bt_srs_load_error *err);
 int bt_srs_store_from_json(const bt_json_value *root, bt_srs_store *out);

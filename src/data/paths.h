@@ -66,8 +66,7 @@ void bt_data_solves_path_at(const char *root, char out[BT_PATH_MAX]);
 void bt_data_db_file_name(char out[BT_PATH_MAX]);
 void bt_data_db_path_at(const char *root, char out[BT_PATH_MAX]);
 bt_data_read_status bt_data_read_json(const char *path, bt_json_value **out);
-int bt_data_write_json_atomic(const char *path, const bt_json_value *value,
-                              bt_paths_error *err);
+int bt_data_write_json_atomic(const char *path, const bt_json_value *value, bt_paths_error *err);
 
 void bt_user_algs_init(bt_user_algs *algs);
 void bt_user_algs_free(bt_user_algs *algs);
@@ -81,9 +80,9 @@ const char *bt_user_algs_alg_for(const bt_user_algs *algs, const char *sheet_fil
 int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file, const char *position);
 size_t bt_user_algs_len(const bt_user_algs *algs);
 int bt_user_algs_is_empty(const bt_user_algs *algs);
-int bt_user_algs_save_at(const bt_user_algs *algs, const char *user_root,
-                         bt_paths_error *err);
+int bt_user_algs_save_at(const bt_user_algs *algs, const char *user_root, bt_paths_error *err);
 bt_data_read_status bt_user_algs_load_at(bt_user_algs *algs, const char *user_root,
                                          bt_paths_error *err);
+int bt_user_algs_from_json(const bt_json_value *root, bt_user_algs *out, bt_paths_error *err);
 
 #endif

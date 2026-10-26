@@ -14,7 +14,8 @@ REPO_ROOT = Path(__file__).resolve().parent
 HUB_RELPATH = "config/config.json"
 TARGET_PREFIX = "tgt_"
 SOURCE_GLOBS = ("src/**/*.c", "tools/**/*.c", "tests/**/*.c")
-INCLUDE_DIRS = ("src", "tools", "tests", "vendor/sqlite")
+INCLUDE_DIRS = ("src", "tools", "tests")
+SYSTEM_INCLUDE_DIRS = ("vendor/sqlite",)
 VENDOR_UNITS = (("vendor/sqlite/sqlite3.c", ("-DSQLITE_THREADSERIALIZED=1",)),)
 LLVM_MAJOR = "23"
 REQUIRED_TOOLS = ("clang", "clang_format", "clang_tidy", "llvm_cov")
@@ -259,6 +260,8 @@ def compile_command(compiler, flags, includes, source, obj, dep=None, extra_flag
     argv = [*compiler, *flags, *extra_flags]
     for include in includes:
         argv += ["-I", str(include)]
+    for include in SYSTEM_INCLUDE_DIRS:
+        argv += ["-isystem", str(REPO_ROOT / include)]
     argv += ["-c", str(source), "-o", str(obj)]
     if dep is not None:
         argv += ["-MD", "-MF", str(dep)]
@@ -746,13 +749,27 @@ def fmt_run(write):
     return proc.returncode
 
 
+def in_lint_area(file, area):
+    rel = str(file.relative_to(REPO_ROOT)).replace("\\", "/")
+    if rel.startswith("src/common/") or rel.startswith(f"src/{area}/"):
+        return True
+    if rel.startswith(f"tests/unit/{area}/"):
+        return True
+    if rel.startswith(f"tools/{area}/"):
+        return True
+    return False
+
+
 def tgt_lint(args):
-    """clang-tidy over every c file"""
+    """clang-tidy over every c file, or one area: python bt.py lint <area>"""
     hub = load_hub()
     tool = resolve_tool("clang_tidy", hub)
     flags = compile_flags(hub)
     includes = [REPO_ROOT / d for d in INCLUDE_DIRS]
     files = c_files(REPO_ROOT)
+    area = args[0] if args else None
+    if area is not None:
+        files = [f for f in files if in_lint_area(f, area)]
     if not files:
         return 0
     units = []
@@ -764,6 +781,8 @@ def tgt_lint(args):
             "--",
             *flags,
             *[part for include in includes for part in ("-I", str(include))],
+            *[part for include in SYSTEM_INCLUDE_DIRS
+              for part in ("-isystem", str(REPO_ROOT / include))],
         ]
         units.append((f"tidy {source.relative_to(REPO_ROOT)}", argv))
     results = run_units(units, jobs=jobs_of(hub))

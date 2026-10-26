@@ -28,12 +28,11 @@ void bt_card_init(bt_card *card, long long now_days);
 void bt_card_free(bt_card *card);
 int bt_card_clone(const bt_card *src, bt_card *dst);
 int bt_card_eq(const bt_card *a, const bt_card *b);
-void bt_card_review(bt_card *card, bt_grade rating, long long now_days,
-                    const bt_fsrs_config *cfg);
+void bt_card_review(bt_card *card, bt_grade rating, long long now_days, const bt_fsrs_config *cfg);
 int bt_card_last_review_day(const bt_card *card, long long *out_day);
 int bt_card_is_due(const bt_card *card, long long now_days);
 int bt_grade_from_quality(unsigned int quality, bt_grade *out);
-int bt_replay_sm2(const bt_review_entry *entries, size_t count,
-                  const bt_fsrs_config *cfg, int *has_out, bt_fsrs_memory *out);
+int bt_replay_sm2(const bt_review_entry *entries, size_t count, const bt_fsrs_config *cfg,
+                  int *has_out, bt_fsrs_memory *out);
 
 #endif

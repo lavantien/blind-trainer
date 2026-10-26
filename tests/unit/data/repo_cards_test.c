@@ -103,8 +103,8 @@ BT_TEST(repo_cards, saving_a_card_replaces_only_its_own_row) {
     BT_CHECK(retaken != NULL && bt_card_eq(retaken, &improved) == 1);
     bt_case_cards_free(&loaded);
     sqlite3_stmt *stmt = NULL;
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1,
-                                &stmt, NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1, &stmt,
+                                NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK(sqlite3_column_int64(stmt, 0) ==
              (long long)(first.review_count + improved.review_count));
@@ -124,9 +124,8 @@ BT_TEST(repo_cards, the_saved_row_carries_the_full_case_reference) {
     bt_db_error err;
     BT_CHECK(bt_repo_cards_save_card(&db, &key, &plain, &err) == 0);
     sqlite3_stmt *stmt = NULL;
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db),
-                                "SELECT event, method, stage, case_key FROM card", -1,
-                                &stmt, NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT event, method, stage, case_key FROM card",
+                                -1, &stmt, NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 0), "bigcube");
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 1), "yau");

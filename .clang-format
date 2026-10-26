@@ -6,3 +6,4 @@ AlwaysBreakAfterReturnType: None
 PointerAlignment: Right
 IncludeBlocks: Preserve
 SortIncludes: CaseSensitive
+BreakStringLiterals: false

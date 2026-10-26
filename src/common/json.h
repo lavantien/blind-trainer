@@ -20,6 +20,8 @@ typedef struct bt_json_value bt_json_value;
 
 struct bt_json_value {
     bt_json_type type;
+    int is_integer;
+    long long integer;
     union {
         int boolean;
         double number;
@@ -48,7 +50,10 @@ void bt_json_free(bt_json_value *value);
 bt_json_value *bt_json_new_null(void);
 bt_json_value *bt_json_new_bool(int value);
 bt_json_value *bt_json_new_number(double value);
+bt_json_value *bt_json_new_integer(long long value);
 bt_json_value *bt_json_new_string(const char *value);
+int bt_json_is_integer(const bt_json_value *value);
+long long bt_json_integer_or(const bt_json_value *value, long long fallback);
 bt_json_value *bt_json_new_array(void);
 bt_json_value *bt_json_new_object(void);
 int bt_json_array_push(bt_json_value *array, bt_json_value *item);

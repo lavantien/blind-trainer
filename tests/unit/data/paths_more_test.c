@@ -178,16 +178,13 @@ BT_TEST(paths_more, foreign_json_layout_loads_as_user_algs) {
     const char *dir = tu_temp_dir("bt-paths", "foreign");
     char target[BT_TU_PATH_MAX];
     snprintf(target, sizeof target, "%s/algs/user-algs.json", dir);
-    tu_write_file(target,
-                  "{\"entries\":{\"edge/UF-UB-UL\":{\"alg\":\"M2 U M U2 M' U M2\"},"
-                  "\"flips/UF & UB\":{\"alg\":\"M' U M' U M' U2 M U M U M U2\"}}}");
+    tu_write_file(target, "{\"entries\":{\"edge/UF-UB-UL\":{\"alg\":\"M2 U M U2 M' U M2\"},"
+                          "\"flips/UF & UB\":{\"alg\":\"M' U M' U M' U2 M U M U M U2\"}}}");
     bt_user_algs algs;
     bt_paths_error err;
     BT_CHECK(bt_user_algs_load_at(&algs, dir, &err) == BT_DATA_READ_OK);
-    BT_CHECK_EQ(bt_user_algs_alg_for(&algs, "edge", "UF-UB-UL"),
-                "M2 U M U2 M' U M2");
-    BT_CHECK_EQ(bt_user_algs_alg_for(&algs, "flips", "UF & UB"),
-                "M' U M' U M' U2 M U M U M U2");
+    BT_CHECK_EQ(bt_user_algs_alg_for(&algs, "edge", "UF-UB-UL"), "M2 U M U2 M' U M2");
+    BT_CHECK_EQ(bt_user_algs_alg_for(&algs, "flips", "UF & UB"), "M' U M' U M' U2 M U M U M U2");
     BT_CHECK(bt_user_algs_len(&algs) == 2);
     bt_user_algs_free(&algs);
     tu_remove_tree(dir);

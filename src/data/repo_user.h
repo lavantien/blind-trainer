@@ -26,14 +26,13 @@ typedef struct {
 } bt_overrides;
 
 int bt_case_ref_cmp(const bt_case_ref *a, const bt_case_ref *b);
-void bt_case_ref_of(bt_case_ref *out, const char *event, const char *method,
-                    const char *stage, const char *case_key);
+void bt_case_ref_of(bt_case_ref *out, const char *event, const char *method, const char *stage,
+                    const char *case_key);
 void bt_overrides_init(bt_overrides *ov);
 void bt_overrides_free(bt_overrides *ov);
 const char *bt_overrides_get(const bt_overrides *ov, const bt_case_ref *key);
 size_t bt_overrides_len(const bt_overrides *ov);
-int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg,
-                        bt_db_error *err);
+int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg, bt_db_error *err);
 int bt_repo_user_remove(bt_db *db, const bt_case_ref *key, bt_db_error *err);
 int bt_repo_user_load_all(const bt_db *db, bt_overrides *out, bt_db_error *err);
 

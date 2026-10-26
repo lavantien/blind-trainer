@@ -49,8 +49,7 @@ static void tu_remove_tree(const char *path) {
 [[maybe_unused]] static const char *tu_temp_dir(const char *prefix, const char *tag) {
     static char dir[BT_TU_PATH_MAX];
     const char *base = getenv("TEMP");
-    snprintf(dir, sizeof dir, "%s/%s/%s-%d", base ? base : ".", prefix, tag,
-             (int)_getpid());
+    snprintf(dir, sizeof dir, "%s/%s/%s-%d", base ? base : ".", prefix, tag, (int)_getpid());
     tu_remove_tree(dir);
     tu_mkdir_p(dir);
     return dir;

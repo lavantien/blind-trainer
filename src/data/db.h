@@ -46,7 +46,7 @@ long long bt_db_now_ms(void);
 int bt_db_open_at(const char *path, bt_db *db, bt_db_error *err);
 int bt_db_open_memory(bt_db *db, bt_db_error *err);
 void bt_db_close(bt_db *db);
-sqlite3 *bt_db_conn(bt_db *db);
+sqlite3 *bt_db_conn(const bt_db *db);
 int bt_db_begin(bt_db *db, bt_db_error *err);
 int bt_db_commit(bt_db *db, bt_db_error *err);
 int bt_db_rollback(bt_db *db);

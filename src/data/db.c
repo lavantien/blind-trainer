@@ -22,8 +22,8 @@ static const char *const MIGRATION_NAMES[] = {
 
 static char *migration_sql_cache[MIGRATION_COUNT];
 
-static void db_fail(bt_db_error *err, bt_db_error_kind kind, const char *step,
-                    const char *path, const char *fmt_detail) {
+static void db_fail(bt_db_error *err, bt_db_error_kind kind, const char *step, const char *path,
+                    const char *fmt_detail) {
     err->kind = kind;
     snprintf(err->step, sizeof err->step, "%s", step ? step : "");
     if (path != NULL) {
@@ -49,8 +49,8 @@ void bt_db_error_string(const bt_db_error *err, char *out, size_t out_len) {
         snprintf(out, out_len, "migration %s: %s", err->step, err->detail);
         break;
     case BT_DB_ERR_FUTURE:
-        snprintf(out, out_len, "db user_version %lld is newer than supported %lld",
-                 err->version, err->latest);
+        snprintf(out, out_len, "db user_version %lld is newer than supported %lld", err->version,
+                 err->latest);
         break;
     case BT_DB_ERR_BACKUP:
         snprintf(out, out_len, "backup %s to %s: %s", err->path, err->to_path, err->detail);
@@ -207,8 +207,8 @@ static int query_user_version(sqlite3 *conn, long long *out, bt_db_error *err) {
 
 static int has_any_table(sqlite3 *conn, int *out, bt_db_error *err) {
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite\\_%' ESCAPE '\\'";
+    const char *sql = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name NOT LIKE "
+                      "'sqlite\\_%' ESCAPE '\\'";
     if (sqlite3_prepare_v2(conn, sql, -1, &stmt, NULL) != SQLITE_OK) {
         db_fail(err, BT_DB_ERR_QUERY, "sqlite_master", NULL, sqlite3_errmsg(conn));
         return -1;
@@ -324,12 +324,11 @@ int bt_db_open_at(const char *path, bt_db *db, bt_db_error *err) {
     BT_TRACE_ENTER("db.open_at");
     memset(db, 0, sizeof *db);
     char parent[BT_PATH_MAX];
-    if (has_parent(path, parent, sizeof parent) && !path_exists(parent)) {
-        if (mkdir_parents(parent) != 0) {
-            db_fail(err, BT_DB_ERR_MKDIR, NULL, parent, strerror(errno));
-            BT_TRACE_FAIL("db.open_at", "cannot create %s", parent);
-            return -1;
-        }
+    if (has_parent(path, parent, sizeof parent) && !path_exists(parent) &&
+        mkdir_parents(parent) != 0) {
+        db_fail(err, BT_DB_ERR_MKDIR, NULL, parent, strerror(errno));
+        BT_TRACE_FAIL("db.open_at", "cannot create %s", parent);
+        return -1;
     }
     sqlite3 *conn = NULL;
     if (sqlite3_open_v2(path, &conn,
@@ -373,15 +372,14 @@ void bt_db_close(bt_db *db) {
     BT_TRACE_EXIT("db.close");
 }
 
-sqlite3 *bt_db_conn(bt_db *db) {
+sqlite3 *bt_db_conn(const bt_db *db) {
     return db->conn;
 }
 
 int bt_db_begin(bt_db *db, bt_db_error *err) {
     char *exec_err = NULL;
     if (sqlite3_exec(db->conn, "BEGIN", NULL, NULL, &exec_err) != SQLITE_OK) {
-        db_fail(err, BT_DB_ERR_EXEC, "begin", NULL,
-                exec_err ? exec_err : sqlite3_errmsg(db->conn));
+        db_fail(err, BT_DB_ERR_EXEC, "begin", NULL, exec_err ? exec_err : sqlite3_errmsg(db->conn));
         sqlite3_free(exec_err);
         return -1;
     }
@@ -440,8 +438,7 @@ int bt_db_is_fresh(bt_db *db, int *fresh, bt_db_error *err) {
 int bt_db_exec(bt_db *db, const char *sql, const char *step, bt_db_error *err) {
     char *exec_err = NULL;
     if (sqlite3_exec(db->conn, sql, NULL, NULL, &exec_err) != SQLITE_OK) {
-        db_fail(err, BT_DB_ERR_EXEC, step, NULL,
-                exec_err ? exec_err : sqlite3_errmsg(db->conn));
+        db_fail(err, BT_DB_ERR_EXEC, step, NULL, exec_err ? exec_err : sqlite3_errmsg(db->conn));
         sqlite3_free(exec_err);
         return -1;
     }

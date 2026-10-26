@@ -15,8 +15,8 @@ static unsigned dir_counter;
 static const char *temp_dir(const char *tag) {
     static char dir[BT_TU_PATH_MAX];
     const char *base = getenv("TEMP");
-    snprintf(dir, sizeof dir, "%s/bt-data-db-tests/%s-%d-%u", base ? base : ".",
-             tag, (int)_getpid(), dir_counter++);
+    snprintf(dir, sizeof dir, "%s/bt-data-db-tests/%s-%d-%u", base ? base : ".", tag, _getpid(),
+             dir_counter++);
     tu_remove_tree(dir);
     tu_mkdir_p(dir);
     return dir;
@@ -46,8 +46,8 @@ static size_t table_columns(bt_db *db, const char *table, char names[16][32]) {
 
 static void integrity_ok(bt_db *db) {
     sqlite3_stmt *stmt = NULL;
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(db), "PRAGMA integrity_check", -1, &stmt,
-                                NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(db), "PRAGMA integrity_check", -1, &stmt, NULL) ==
+             SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 0), "ok");
     sqlite3_finalize(stmt);
@@ -91,36 +91,42 @@ BT_TEST(db, schema_holds_every_mandated_table_and_column) {
     BT_CHECK(bt_db_open_memory(&db, &err) == 0);
     char names[16][32];
     size_t count = table_columns(&db, "seed_alg", names);
-    const char *seed_alg[] = {"event", "method", "stage", "case_key", "alg",
-                              "front_json", "source_url", "source_at", "content_hash"};
+    const char *seed_alg[] = {
+        "event",      "method",     "stage",     "case_key",     "alg",
+        "front_json", "source_url", "source_at", "content_hash",
+    };
     BT_CHECK(count == 9);
     for (int i = 0; i < 9; i++) {
         BT_CHECK_EQ(names[i], seed_alg[i]);
     }
     count = table_columns(&db, "user_alg", names);
-    const char *user_alg[] = {"event", "method", "stage", "case_key", "alg",
-                              "created_at", "updated_at"};
+    const char *user_alg[] = {
+        "event", "method", "stage", "case_key", "alg", "created_at", "updated_at",
+    };
     BT_CHECK(count == 7);
     for (int i = 0; i < 7; i++) {
         BT_CHECK_EQ(names[i], user_alg[i]);
     }
     count = table_columns(&db, "card", names);
-    const char *card[] = {"id", "event", "method", "stage", "case_key",
-                          "created_at", "updated_at"};
+    const char *card[] = {"id", "event", "method", "stage", "case_key", "created_at", "updated_at"};
     BT_CHECK(count == 7);
     for (int i = 0; i < 7; i++) {
         BT_CHECK_EQ(names[i], card[i]);
     }
     count = table_columns(&db, "srs_state", names);
-    const char *srs_state[] = {"card_id", "due_day", "interval_days", "reps",
-                               "lapses", "last_review_day", "stability", "difficulty"};
+    const char *srs_state[] = {
+        "card_id", "due_day",         "interval_days", "reps",
+        "lapses",  "last_review_day", "stability",     "difficulty",
+    };
     BT_CHECK(count == 8);
     for (int i = 0; i < 8; i++) {
         BT_CHECK_EQ(names[i], srs_state[i]);
     }
     count = table_columns(&db, "review_log", names);
-    const char *review_log[] = {"id", "card_id", "rating", "reviewed_day",
-                                "interval_before", "interval_after", "elapsed_days"};
+    const char *review_log[] = {
+        "id",           "card_id", "rating", "reviewed_day", "interval_before", "interval_after",
+        "elapsed_days",
+    };
     BT_CHECK(count == 7);
     for (int i = 0; i < 7; i++) {
         BT_CHECK_EQ(names[i], review_log[i]);
@@ -150,8 +156,7 @@ BT_TEST(db, migrations_embed_the_committed_sql_files) {
         BT_CHECK(sql != NULL);
         BT_CHECK(sql[0] != '\0');
         char path[BT_PATH_MAX];
-        snprintf(path, sizeof path, "%s/db/migrations/%s.sql", root,
-                 bt_db_migration_name(i));
+        snprintf(path, sizeof path, "%s/db/migrations/%s.sql", root, bt_db_migration_name(i));
         FILE *file = fopen(path, "rb");
         BT_CHECK(file != NULL);
         fseek(file, 0, SEEK_END);
@@ -177,13 +182,14 @@ BT_TEST(db, ease_column_drops_under_002_and_keeps_the_remaining_rows) {
     char pragma[48];
     snprintf(pragma, sizeof pragma, "PRAGMA user_version = 1");
     BT_CHECK(sqlite3_exec(conn, pragma, NULL, NULL, &err) == SQLITE_OK);
-    const char *seed =
-        "INSERT INTO card(event, method, stage, case_key, created_at, updated_at)"
-        " VALUES ('3bld', '3style', 'edge', 'UF', 1, 1);"
-        "INSERT INTO srs_state(card_id, due_day, interval_days, ease, reps, lapses, last_review_day)"
-        " VALUES ((SELECT MAX(id) FROM card), 10, 6, 2.5, 2, 0, 4);"
-        "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, interval_after, elapsed_days)"
-        " VALUES ((SELECT MAX(id) FROM card), 4, 4, 0, 6, 3);";
+    const char *seed = "INSERT INTO card(event, method, stage, case_key, created_at, updated_at)"
+                       " VALUES ('3bld', '3style', 'edge', 'UF', 1, 1);"
+                       "INSERT INTO srs_state(card_id, due_day, interval_days, ease, reps, lapses, "
+                       "last_review_day)"
+                       " VALUES ((SELECT MAX(id) FROM card), 10, 6, 2.5, 2, 0, 4);"
+                       "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, "
+                       "interval_after, elapsed_days)"
+                       " VALUES ((SELECT MAX(id) FROM card), 4, 4, 0, 6, 3);";
     BT_CHECK(sqlite3_exec(conn, seed, NULL, NULL, &err) == SQLITE_OK);
     sqlite3_close(conn);
     bt_db db;
@@ -196,20 +202,22 @@ BT_TEST(db, ease_column_drops_under_002_and_keeps_the_remaining_rows) {
     size_t count = table_columns(&db, "srs_state", names);
     int has_ease = 0;
     for (size_t i = 0; i < count; i++) {
-        has_ease |= strcmp(names[i], "ease") == 0;
+        if (strcmp(names[i], "ease") == 0) {
+            has_ease = 1;
+        }
     }
     BT_CHECK(has_ease == 0);
     sqlite3_stmt *stmt = NULL;
     BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db),
-                                "SELECT due_day, interval_days, reps FROM srs_state", -1,
-                                &stmt, NULL) == SQLITE_OK);
+                                "SELECT due_day, interval_days, reps FROM srs_state", -1, &stmt,
+                                NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK(sqlite3_column_int64(stmt, 0) == 10);
     BT_CHECK(sqlite3_column_int64(stmt, 1) == 6);
     BT_CHECK(sqlite3_column_int64(stmt, 2) == 2);
     sqlite3_finalize(stmt);
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1,
-                                &stmt, NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1, &stmt,
+                                NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK(sqlite3_column_int64(stmt, 0) == 1);
     sqlite3_finalize(stmt);
@@ -224,9 +232,8 @@ BT_TEST(db, backup_before_migrate_keeps_pre_migration_bytes) {
     const char *dir = temp_dir("backup");
     char db_path[BT_PATH_MAX];
     db_file_at(db_path, sizeof db_path, dir);
-    raw_exec_path(db_path,
-                  "CREATE TABLE legacy_data(id INTEGER PRIMARY KEY, note TEXT);"
-                  "INSERT INTO legacy_data(note) VALUES ('keep me');");
+    raw_exec_path(db_path, "CREATE TABLE legacy_data(id INTEGER PRIMARY KEY, note TEXT);"
+                           "INSERT INTO legacy_data(note) VALUES ('keep me');");
     bt_db db;
     bt_db_error err;
     BT_CHECK(bt_db_open_at(db_path, &db, &err) == 0);
@@ -238,8 +245,8 @@ BT_TEST(db, backup_before_migrate_keeps_pre_migration_bytes) {
     struct stat info;
     BT_CHECK(stat(bak, &info) == 0);
     sqlite3_stmt *stmt = NULL;
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM legacy_data", -1,
-                                &stmt, NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM legacy_data", -1, &stmt,
+                                NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK(sqlite3_column_int64(stmt, 0) == 1);
     sqlite3_finalize(stmt);
@@ -250,9 +257,8 @@ BT_TEST(db, failed_migration_rolls_back_version_and_schema) {
     const char *dir = temp_dir("rollback");
     char db_path[BT_PATH_MAX];
     db_file_at(db_path, sizeof db_path, dir);
-    raw_exec_path(db_path,
-                  "CREATE TABLE user_alg(event TEXT, method TEXT, stage TEXT, "
-                  "case_key TEXT, alg TEXT);");
+    raw_exec_path(db_path, "CREATE TABLE user_alg(event TEXT, method TEXT, stage TEXT, "
+                           "case_key TEXT, alg TEXT);");
     bt_db db;
     bt_db_error err;
     BT_CHECK(bt_db_open_at(db_path, &db, &err) != 0);
@@ -350,8 +356,8 @@ BT_TEST(db, is_fresh_is_false_when_two_equal_counts_could_cancel) {
         bt_db db;
         bt_db_error err;
         BT_CHECK(bt_db_open_memory(&db, &err) == 0);
-        seed_table(&db,
-                   "INSERT INTO user_alg(stage, case_key, alg, created_at, updated_at) VALUES ('s', 'c', 'a', 0, 0)");
+        seed_table(&db, "INSERT INTO user_alg(stage, case_key, alg, created_at, updated_at) VALUES "
+                        "('s', 'c', 'a', 0, 0)");
         seed_table(&db, partners[i]);
         int fresh = 1;
         BT_CHECK(bt_db_is_fresh(&db, &fresh, &err) == 0);

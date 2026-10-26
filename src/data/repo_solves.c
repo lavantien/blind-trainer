@@ -49,7 +49,7 @@ int bt_solve_log_eq(const bt_solve_log *a, const bt_solve_log *b) {
     return 1;
 }
 
-static void db_exec_step(bt_db *db, bt_db_error *err, bt_db_error_kind kind,
+static void db_exec_step(const bt_db *db, bt_db_error *err, bt_db_error_kind kind,
                          const char *step) {
     err->kind = kind;
     snprintf(err->step, sizeof err->step, "%s", step);
@@ -111,8 +111,8 @@ int bt_solve_log_load(const bt_db *db, bt_solve_log *out, bt_db_error *err) {
     bt_solve_log_init(out);
     sqlite3_stmt *stmt = NULL;
     const char *sql = "SELECT started_ms, memo_ms, exec_ms, success FROM solves ORDER BY id";
-    if (sqlite3_prepare_v2(bt_db_conn((bt_db *)db), sql, -1, &stmt, NULL) != SQLITE_OK) {
-        db_exec_step((bt_db *)db, err, BT_DB_ERR_QUERY, "select solves");
+    if (sqlite3_prepare_v2(bt_db_conn(db), sql, -1, &stmt, NULL) != SQLITE_OK) {
+        db_exec_step(db, err, BT_DB_ERR_QUERY, "select solves");
         BT_TRACE_FAIL("repo_solves.load", "prepare failed");
         return -1;
     }
@@ -127,14 +127,14 @@ int bt_solve_log_load(const bt_db *db, bt_solve_log *out, bt_db_error *err) {
         if (bt_solve_log_push(out, record) != 0) {
             sqlite3_finalize(stmt);
             bt_solve_log_free(out);
-            db_exec_step((bt_db *)db, err, BT_DB_ERR_QUERY, "select solves");
+            db_exec_step(db, err, BT_DB_ERR_QUERY, "select solves");
             BT_TRACE_FAIL("repo_solves.load", "oom");
             return -1;
         }
         step = sqlite3_step(stmt);
     }
     if (step != SQLITE_DONE) {
-        db_exec_step((bt_db *)db, err, BT_DB_ERR_QUERY, "select solves");
+        db_exec_step(db, err, BT_DB_ERR_QUERY, "select solves");
         sqlite3_finalize(stmt);
         bt_solve_log_free(out);
         BT_TRACE_FAIL("repo_solves.load", "step failed");
@@ -159,18 +159,17 @@ int bt_solve_log_from_json(const bt_json_value *root, bt_solve_log *out) {
         bt_json_value *memo = bt_json_get(item, "memo_ms");
         bt_json_value *exec = bt_json_get(item, "exec_ms");
         bt_json_value *success = bt_json_get(item, "success");
-        if (started == NULL || started->type != BT_JSON_NUMBER ||
-            memo == NULL || memo->type != BT_JSON_NUMBER ||
-            exec == NULL || exec->type != BT_JSON_NUMBER ||
+        if (started == NULL || started->type != BT_JSON_NUMBER || memo == NULL ||
+            memo->type != BT_JSON_NUMBER || exec == NULL || exec->type != BT_JSON_NUMBER ||
             success == NULL || success->type != BT_JSON_BOOL) {
             bt_solve_log_free(out);
             BT_TRACE_FAIL("repo_solves.from_json", "bad record %zu", i);
             return -1;
         }
         bt_solve_record record = {
-            (long long)started->as.number,
-            (long long)memo->as.number,
-            (long long)exec->as.number,
+            bt_json_integer_or(started, 0),
+            bt_json_integer_or(memo, 0),
+            bt_json_integer_or(exec, 0),
             success->as.boolean,
         };
         if (bt_solve_log_push(out, record) != 0) {

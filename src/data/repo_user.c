@@ -23,8 +23,8 @@ int bt_case_ref_cmp(const bt_case_ref *a, const bt_case_ref *b) {
     return strcmp(a->case_key, b->case_key);
 }
 
-void bt_case_ref_of(bt_case_ref *out, const char *event, const char *method,
-                    const char *stage, const char *case_key) {
+void bt_case_ref_of(bt_case_ref *out, const char *event, const char *method, const char *stage,
+                    const char *case_key) {
     BT_TRACE_ENTER("repo_user.case_ref_of");
     snprintf(out->event, BT_CASE_FIELD_MAX, "%s", event);
     snprintf(out->method, BT_CASE_FIELD_MAX, "%s", method);
@@ -62,15 +62,14 @@ size_t bt_overrides_len(const bt_overrides *ov) {
     return ov->count;
 }
 
-static void db_step_error(bt_db *db, bt_db_error *err, bt_db_error_kind kind,
+static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind kind,
                           const char *step) {
     err->kind = kind;
     snprintf(err->step, sizeof err->step, "%s", step);
     snprintf(err->detail, sizeof err->detail, "%s", sqlite3_errmsg(bt_db_conn(db)));
 }
 
-static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key,
-                                   const char *alg) {
+static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key, const char *alg) {
     if (ov->count == ov->cap) {
         size_t cap = ov->cap == 0 ? 8 : ov->cap * 2;
         bt_override_entry *grown = realloc(ov->items, cap * sizeof *grown);
@@ -103,25 +102,22 @@ static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key,
         return -1;
     }
     strcpy(alg_copy, alg);
-    memmove(&ov->items[at + 1], &ov->items[at],
-            (ov->count - at) * sizeof *ov->items);
+    memmove(&ov->items[at + 1], &ov->items[at], (ov->count - at) * sizeof *ov->items);
     ov->items[at].ref = *key;
     ov->items[at].alg = alg_copy;
     ov->count++;
     return 0;
 }
 
-int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg,
-                        bt_db_error *err) {
+int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg, bt_db_error *err) {
     BT_TRACE_ENTER("repo_user.upsert");
     long long now = bt_db_now_ms();
     if (bt_db_begin(db, err) != 0) {
         return -1;
     }
     sqlite3_stmt *update = NULL;
-    const char *update_sql =
-        "UPDATE user_alg SET alg = ?, updated_at = ? "
-        "WHERE event = ? AND method = ? AND stage = ? AND case_key = ?";
+    const char *update_sql = "UPDATE user_alg SET alg = ?, updated_at = ? "
+                             "WHERE event = ? AND method = ? AND stage = ? AND case_key = ?";
     if (sqlite3_prepare_v2(bt_db_conn(db), update_sql, -1, &update, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "update user_alg");
         bt_db_rollback(db);
@@ -178,9 +174,8 @@ int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg,
 int bt_repo_user_remove(bt_db *db, const bt_case_ref *key, bt_db_error *err) {
     BT_TRACE_ENTER("repo_user.remove");
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "DELETE FROM user_alg "
-        "WHERE event = ? AND method = ? AND stage = ? AND case_key = ?";
+    const char *sql = "DELETE FROM user_alg "
+                      "WHERE event = ? AND method = ? AND stage = ? AND case_key = ?";
     if (sqlite3_prepare_v2(bt_db_conn(db), sql, -1, &stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "delete user_alg");
         BT_TRACE_FAIL("repo_user.remove", "prepare failed");
@@ -210,8 +205,8 @@ int bt_repo_user_load_all(const bt_db *db, bt_overrides *out, bt_db_error *err) 
     bt_overrides_init(out);
     sqlite3_stmt *stmt = NULL;
     const char *sql = "SELECT event, method, stage, case_key, alg FROM user_alg";
-    if (sqlite3_prepare_v2(bt_db_conn((bt_db *)db), sql, -1, &stmt, NULL) != SQLITE_OK) {
-        db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
+    if (sqlite3_prepare_v2(bt_db_conn(db), sql, -1, &stmt, NULL) != SQLITE_OK) {
+        db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
         BT_TRACE_FAIL("repo_user.load_all", "prepare failed");
         return -1;
     }
@@ -226,14 +221,14 @@ int bt_repo_user_load_all(const bt_db *db, bt_overrides *out, bt_db_error *err) 
         if (overrides_insert_sorted(out, &ref, alg) != 0) {
             sqlite3_finalize(stmt);
             bt_overrides_free(out);
-            db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
+            db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
             BT_TRACE_FAIL("repo_user.load_all", "insert failed");
             return -1;
         }
         step = sqlite3_step(stmt);
     }
     if (step != SQLITE_DONE) {
-        db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
+        db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg overrides");
         sqlite3_finalize(stmt);
         bt_overrides_free(out);
         BT_TRACE_FAIL("repo_user.load_all", "step failed");

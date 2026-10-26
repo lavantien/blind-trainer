@@ -6,9 +6,8 @@
 #include <string.h>
 
 static const double PINNED_WEIGHTS[BT_FSRS_WEIGHT_COUNT] = {
-    0.40255, 1.18385, 3.173,  15.69105, 7.1949,  0.5345,  1.4604,  0.0046,
-    1.54575, 0.1192,   1.01925, 1.9395,  0.11,    0.29605, 2.2698, 0.2315,
-    2.9898,  0.51655,  0.6621,
+    0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046,  1.54575, 0.1192,
+    1.01925, 1.9395,  0.11,  0.29605,  2.2698, 0.2315, 2.9898, 0.51655, 0.6621,
 };
 
 BT_TEST(fsrs, defaults_pin_the_reference_release) {
@@ -23,11 +22,10 @@ BT_TEST(fsrs, defaults_pin_the_reference_release) {
 }
 
 BT_TEST(fsrs, from_value_accepts_the_full_section) {
-    const char *text =
-        "{\"srs\":{\"fsrs\":{\"weights\":[0.40255,1.18385,3.173,15.69105,7.1949,"
-        "0.5345,1.4604,0.0046,1.54575,0.1192,1.01925,1.9395,0.11,0.29605,2.2698,"
-        "0.2315,2.9898,0.51655,0.6621],\"request_retention\":0.9,"
-        "\"interval_clamp_days\":[7,200]}}}";
+    const char *text = "{\"srs\":{\"fsrs\":{\"weights\":[0.40255,1.18385,3.173,15.69105,7.1949,"
+                       "0.5345,1.4604,0.0046,1.54575,0.1192,1.01925,1.9395,0.11,0.29605,2.2698,"
+                       "0.2315,2.9898,0.51655,0.6621],\"request_retention\":0.9,"
+                       "\"interval_clamp_days\":[7,200]}}}";
     bt_json_error jerr;
     bt_json_value *root = NULL;
     BT_CHECK(bt_json_parse(text, strlen(text), &root, &jerr) == 0);
@@ -49,9 +47,8 @@ BT_TEST(fsrs, from_value_missing_section_is_a_missing_error) {
 }
 
 BT_TEST(fsrs, from_value_text_weights_are_malformed) {
-    const char *text =
-        "{\"srs\":{\"fsrs\":{\"weights\":[\"a\"],\"request_retention\":0.9,"
-        "\"interval_clamp_days\":[1,365]}}}";
+    const char *text = "{\"srs\":{\"fsrs\":{\"weights\":[\"a\"],\"request_retention\":0.9,"
+                       "\"interval_clamp_days\":[1,365]}}}";
     bt_json_error jerr;
     bt_json_value *root = NULL;
     bt_json_parse(text, strlen(text), &root, &jerr);
@@ -63,11 +60,10 @@ BT_TEST(fsrs, from_value_text_weights_are_malformed) {
 }
 
 BT_TEST(fsrs, from_value_rejects_out_of_range_retention) {
-    const char *text =
-        "{\"srs\":{\"fsrs\":{\"weights\":[0.40255,1.18385,3.173,15.69105,7.1949,"
-        "0.5345,1.4604,0.0046,1.54575,0.1192,1.01925,1.9395,0.11,0.29605,2.2698,"
-        "0.2315,2.9898,0.51655,0.6621],\"request_retention\":0.0,"
-        "\"interval_clamp_days\":[1,365]}}}";
+    const char *text = "{\"srs\":{\"fsrs\":{\"weights\":[0.40255,1.18385,3.173,15.69105,7.1949,"
+                       "0.5345,1.4604,0.0046,1.54575,0.1192,1.01925,1.9395,0.11,0.29605,2.2698,"
+                       "0.2315,2.9898,0.51655,0.6621],\"request_retention\":0.0,"
+                       "\"interval_clamp_days\":[1,365]}}}";
     bt_json_error jerr;
     bt_json_value *root = NULL;
     bt_json_parse(text, strlen(text), &root, &jerr);

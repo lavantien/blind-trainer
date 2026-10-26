@@ -1,5 +1,6 @@
 #include "common/json.h"
 
+#include <errno.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -101,6 +102,32 @@ bt_json_value *bt_json_new_number(double value) {
     }
     BT_TRACE_EXIT("json.new_number");
     return fresh;
+}
+
+bt_json_value *bt_json_new_integer(long long value) {
+    BT_TRACE_ENTER("json.new_integer");
+    bt_json_value *fresh = value_new(BT_JSON_NUMBER);
+    if (fresh != NULL) {
+        fresh->is_integer = 1;
+        fresh->integer = value;
+        fresh->as.number = (double)value;
+    }
+    BT_TRACE_EXIT("json.new_integer");
+    return fresh;
+}
+
+int bt_json_is_integer(const bt_json_value *value) {
+    return value != NULL && value->type == BT_JSON_NUMBER && value->is_integer;
+}
+
+long long bt_json_integer_or(const bt_json_value *value, long long fallback) {
+    if (bt_json_is_integer(value)) {
+        return value->integer;
+    }
+    if (value != NULL && value->type == BT_JSON_NUMBER) {
+        return (long long)value->as.number;
+    }
+    return fallback;
 }
 
 bt_json_value *bt_json_new_string(const char *value) {
@@ -464,7 +491,7 @@ static int parse_exponent(bt_json_reader *reader, bt_strbuf *sb) {
     return 0;
 }
 
-static int parse_number(bt_json_reader *reader, double *out) {
+static int parse_number(bt_json_reader *reader, double *out, int *is_integer, long long *integer) {
     size_t line = reader->line;
     size_t column = reader->column;
     bt_strbuf sb;
@@ -484,12 +511,24 @@ static int parse_number(bt_json_reader *reader, double *out) {
     }
     char *end_ptr = NULL;
     double value = strtod(sb.data, &end_ptr);
+    int exact = 0;
+    long long exact_value = 0;
+    if (strpbrk(sb.data, ".eE") == NULL && strcmp(sb.data, "-0") != 0) {
+        errno = 0;
+        long long parsed = strtoll(sb.data, &end_ptr, 10);
+        if (errno == 0 && end_ptr && *end_ptr == '\0') {
+            exact = 1;
+            exact_value = parsed;
+        }
+    }
     bt_strbuf_free(&sb);
     if (!isfinite(value)) {
         fail_here(reader, "number out of range");
         return -1;
     }
     *out = value;
+    *is_integer = exact;
+    *integer = exact_value;
     return 0;
 }
 
@@ -691,7 +730,12 @@ static bt_json_value *parse_value(bt_json_reader *reader, int depth) {
         return NULL;
     }
     double number = 0;
-    if (parse_number(reader, &number) == 0) {
+    int is_integer = 0;
+    long long integer = 0;
+    if (parse_number(reader, &number, &is_integer, &integer) == 0) {
+        if (is_integer) {
+            return bt_json_new_integer(integer);
+        }
         return bt_json_new_number(number);
     }
     if (!reader->failed) {
@@ -914,6 +958,11 @@ static int serialize_value(const bt_json_value *value, bt_strbuf *out) {
     case BT_JSON_BOOL:
         return bt_strbuf_append_str(out, value->as.boolean ? "true" : "false");
     case BT_JSON_NUMBER:
+        if (value->is_integer) {
+            char buffer[32];
+            snprintf(buffer, sizeof buffer, "%lld", value->integer);
+            return bt_strbuf_append_str(out, buffer);
+        }
         return serialize_number(value->as.number, out);
     case BT_JSON_STRING:
         return serialize_string(value->as.string, out);

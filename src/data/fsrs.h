@@ -29,14 +29,14 @@ typedef struct {
 } bt_fsrs_memory;
 
 void bt_fsrs_config_defaults(bt_fsrs_config *cfg);
-int bt_fsrs_config_from_json(const bt_json_value *config, bt_fsrs_config *out,
-                             char *error, size_t error_len);
+int bt_fsrs_config_from_json(const bt_json_value *config, bt_fsrs_config *out, char *error,
+                             size_t error_len);
 double bt_fsrs_factor(void);
 int bt_fsrs_memory_is_valid(bt_fsrs_memory memory);
 bt_fsrs_memory bt_fsrs_memory_initial(bt_grade grade, const bt_fsrs_config *cfg);
 double bt_fsrs_memory_retrievability(bt_fsrs_memory memory, double elapsed_days);
-bt_fsrs_memory bt_fsrs_memory_review(bt_fsrs_memory memory, bt_grade grade,
-                                     double elapsed_days, const bt_fsrs_config *cfg);
+bt_fsrs_memory bt_fsrs_memory_review(bt_fsrs_memory memory, bt_grade grade, double elapsed_days,
+                                     const bt_fsrs_config *cfg);
 long long bt_fsrs_next_interval_days(double stability, const bt_fsrs_config *cfg);
 
 #endif

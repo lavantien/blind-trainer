@@ -7,8 +7,8 @@
 
 #include "sqlite3.h"
 
-void bt_repo_algs_split_key(const char *key, char *stage, size_t stage_len,
-                            char *case_key, size_t case_key_len) {
+void bt_repo_algs_split_key(const char *key, char *stage, size_t stage_len, char *case_key,
+                            size_t case_key_len) {
     BT_TRACE_ENTER("repo_algs.split_key");
     const char *slash = strchr(key, '/');
     if (slash == NULL) {
@@ -27,8 +27,7 @@ void bt_repo_algs_split_key(const char *key, char *stage, size_t stage_len,
     BT_TRACE_EXIT("repo_algs.split_key");
 }
 
-void bt_repo_algs_join_key(const char *stage, const char *case_key, char *out,
-                           size_t out_len) {
+void bt_repo_algs_join_key(const char *stage, const char *case_key, char *out, size_t out_len) {
     BT_TRACE_ENTER("repo_algs.join_key");
     if (case_key[0] == '\0') {
         snprintf(out, out_len, "%s", stage);
@@ -38,7 +37,7 @@ void bt_repo_algs_join_key(const char *stage, const char *case_key, char *out,
     BT_TRACE_EXIT("repo_algs.join_key");
 }
 
-static void db_step_error(bt_db *db, bt_db_error *err, bt_db_error_kind kind,
+static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind kind,
                           const char *step) {
     err->kind = kind;
     snprintf(err->step, sizeof err->step, "%s", step);
@@ -76,8 +75,7 @@ int bt_repo_algs_save_tx(bt_db *db, const bt_user_algs *algs, bt_db_error *err) 
     for (size_t i = 0; i < algs->count; i++) {
         char stage[BT_PATH_MAX];
         char case_key[BT_PATH_MAX];
-        bt_repo_algs_split_key(algs->items[i].key, stage, sizeof stage, case_key,
-                               sizeof case_key);
+        bt_repo_algs_split_key(algs->items[i].key, stage, sizeof stage, case_key, sizeof case_key);
         sqlite3_reset(insert);
         sqlite3_bind_text(insert, 1, BT_DB_EVENT_3BLD, -1, SQLITE_STATIC);
         sqlite3_bind_text(insert, 2, BT_DB_METHOD_3STYLE, -1, SQLITE_STATIC);
@@ -120,10 +118,9 @@ int bt_repo_algs_load(const bt_db *db, bt_user_algs *out, bt_db_error *err) {
     BT_TRACE_ENTER("repo_algs.load");
     bt_user_algs_init(out);
     sqlite3_stmt *stmt = NULL;
-    const char *sql =
-        "SELECT stage, case_key, alg FROM user_alg WHERE event = ? AND method = ?";
-    if (sqlite3_prepare_v2(bt_db_conn((bt_db *)db), sql, -1, &stmt, NULL) != SQLITE_OK) {
-        db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg");
+    const char *sql = "SELECT stage, case_key, alg FROM user_alg WHERE event = ? AND method = ?";
+    if (sqlite3_prepare_v2(bt_db_conn(db), sql, -1, &stmt, NULL) != SQLITE_OK) {
+        db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg");
         BT_TRACE_FAIL("repo_algs.load", "prepare failed");
         return -1;
     }
@@ -141,14 +138,14 @@ int bt_repo_algs_load(const bt_db *db, bt_user_algs *out, bt_db_error *err) {
         if (bt_user_algs_set_entry(out, key, (const char *)alg) != 0) {
             sqlite3_finalize(stmt);
             bt_user_algs_free(out);
-            db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg");
+            db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg");
             BT_TRACE_FAIL("repo_algs.load", "insert failed");
             return -1;
         }
         step = sqlite3_step(stmt);
     }
     if (step != SQLITE_DONE) {
-        db_step_error((bt_db *)db, err, BT_DB_ERR_QUERY, "select user_alg");
+        db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg");
         sqlite3_finalize(stmt);
         bt_user_algs_free(out);
         BT_TRACE_FAIL("repo_algs.load", "step failed");

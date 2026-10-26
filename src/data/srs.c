@@ -26,8 +26,7 @@ int bt_card_clone(const bt_card *src, bt_card *dst) {
     *dst = *src;
     dst->reviews = NULL;
     if (src->review_count > 0) {
-        dst->reviews =
-            malloc(src->review_count * sizeof *dst->reviews);
+        dst->reviews = malloc(src->review_count * sizeof *dst->reviews);
         if (dst->reviews == NULL) {
             BT_TRACE_FAIL("srs.card_clone", "out of memory for %zu reviews", src->review_count);
             return -1;
@@ -45,9 +44,8 @@ int bt_card_eq(const bt_card *a, const bt_card *b) {
         a->review_count != b->review_count) {
         return 0;
     }
-    if (a->has_memory &&
-        (a->memory.stability != b->memory.stability ||
-         a->memory.difficulty != b->memory.difficulty)) {
+    if (a->has_memory && (a->memory.stability != b->memory.stability ||
+                          a->memory.difficulty != b->memory.difficulty)) {
         return 0;
     }
     for (size_t i = 0; i < a->review_count; i++) {
@@ -93,8 +91,8 @@ int bt_grade_from_quality(unsigned int quality, bt_grade *out) {
     }
 }
 
-int bt_replay_sm2(const bt_review_entry *entries, size_t count,
-                  const bt_fsrs_config *cfg, int *has_out, bt_fsrs_memory *out) {
+int bt_replay_sm2(const bt_review_entry *entries, size_t count, const bt_fsrs_config *cfg,
+                  int *has_out, bt_fsrs_memory *out) {
     BT_TRACE_ENTER("srs.replay_sm2");
     *has_out = 0;
     if (count == 0) {
@@ -134,8 +132,7 @@ static int push_review(bt_card *card, bt_review_entry entry) {
     return 0;
 }
 
-void bt_card_review(bt_card *card, bt_grade rating, long long now_days,
-                    const bt_fsrs_config *cfg) {
+void bt_card_review(bt_card *card, bt_grade rating, long long now_days, const bt_fsrs_config *cfg) {
     BT_TRACE_ENTER("srs.card_review");
     long long elapsed_days = 0;
     if (card->review_count > 0) {
@@ -150,8 +147,7 @@ void bt_card_review(bt_card *card, bt_grade rating, long long now_days,
     } else {
         bt_fsrs_memory replayed;
         int has = 0;
-        if (bt_replay_sm2(card->reviews, card->review_count, cfg, &has, &replayed) == 0 &&
-            has) {
+        if (bt_replay_sm2(card->reviews, card->review_count, cfg, &has, &replayed) == 0 && has) {
             memory = bt_fsrs_memory_review(replayed, rating, (double)elapsed_days, cfg);
         } else {
             memory = bt_fsrs_memory_initial(rating, cfg);

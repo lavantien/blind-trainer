@@ -23,8 +23,7 @@ void bt_case_cards_free(bt_case_cards *cards) {
     BT_TRACE_EXIT("repo_cards.free");
 }
 
-static int cards_insert_sorted(bt_case_cards *cards, const bt_case_ref *key,
-                               const bt_card *card) {
+static int cards_insert_sorted(bt_case_cards *cards, const bt_case_ref *key, const bt_card *card) {
     if (cards->count == cards->cap) {
         size_t cap = cards->cap == 0 ? 8 : cards->cap * 2;
         bt_case_card_entry *grown = realloc(cards->items, cap * sizeof *grown);
@@ -55,8 +54,7 @@ static int cards_insert_sorted(bt_case_cards *cards, const bt_case_ref *key,
     if (bt_card_clone(card, &clone) != 0) {
         return -1;
     }
-    memmove(&cards->items[at + 1], &cards->items[at],
-            (cards->count - at) * sizeof *cards->items);
+    memmove(&cards->items[at + 1], &cards->items[at], (cards->count - at) * sizeof *cards->items);
     cards->items[at].ref = *key;
     cards->items[at].card = clone;
     cards->count++;
@@ -86,15 +84,13 @@ int bt_repo_cards_load(const bt_db *db, const bt_fsrs_config *cfg, bt_case_cards
     bt_case_cards_init(out);
     bt_srs_card_row *rows = NULL;
     size_t count = 0;
-    if (bt_repo_srs_load_rows(db, cfg, BT_SRS_FILTER_EXCLUDE_3BLD, &rows, &count, err) !=
-        0) {
+    if (bt_repo_srs_load_rows(db, cfg, BT_SRS_FILTER_EXCLUDE_3BLD, &rows, &count, err) != 0) {
         BT_TRACE_FAIL("repo_cards.load", "rows load failed");
         return -1;
     }
     for (size_t i = 0; i < count; i++) {
         bt_case_ref ref;
-        bt_case_ref_of(&ref, rows[i].event, rows[i].method, rows[i].stage,
-                       rows[i].case_key);
+        bt_case_ref_of(&ref, rows[i].event, rows[i].method, rows[i].stage, rows[i].case_key);
         if (cards_insert_sorted(out, &ref, &rows[i].card) != 0) {
             bt_repo_srs_free_rows(rows, count);
             bt_case_cards_free(out);
@@ -143,8 +139,8 @@ int bt_repo_cards_save_card(bt_db *db, const bt_case_ref *key, const bt_card *ca
         return -1;
     }
     sqlite3_finalize(clear);
-    if (bt_repo_srs_insert_card(db, key->event, key->method, key->stage, key->case_key,
-                                card, now, err) != 0) {
+    if (bt_repo_srs_insert_card(db, key->event, key->method, key->stage, key->case_key, card, now,
+                                err) != 0) {
         bt_db_rollback(db);
         BT_TRACE_FAIL("repo_cards.save_card", "insert failed");
         return -1;

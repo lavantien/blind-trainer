@@ -113,8 +113,7 @@ bt_json_value *bt_data_load_config(void) {
     return value;
 }
 
-static const bt_json_value *config_pointer(const bt_json_value *config,
-                                           const char *dotted) {
+static const bt_json_value *config_pointer(const bt_json_value *config, const char *dotted) {
     return bt_config_value(config, dotted);
 }
 
@@ -221,8 +220,7 @@ void bt_data_user_root_from(const char *appdata, const char *xdg, const char *ho
 }
 
 void bt_data_user_root(char out[BT_PATH_MAX]) {
-    bt_data_user_root_from(getenv("APPDATA"), getenv("XDG_DATA_HOME"), getenv("HOME"),
-                           out);
+    bt_data_user_root_from(getenv("APPDATA"), getenv("XDG_DATA_HOME"), getenv("HOME"), out);
 }
 
 static int kind_index(const char *kind) {
@@ -294,8 +292,7 @@ bt_data_read_status bt_data_read_json(const char *path, bt_json_value **out) {
     bt_json_error error;
     if (bt_json_parse(text, len, &value, &error) != 0) {
         free(text);
-        BT_TRACE_FAIL("data.read_json", "malformed %s at %zu:%zu", path, error.line,
-                      error.column);
+        BT_TRACE_FAIL("data.read_json", "malformed %s at %zu:%zu", path, error.line, error.column);
         return BT_DATA_READ_ERROR;
     }
     free(text);
@@ -328,8 +325,7 @@ static void mkdir_parents_of(const char *path) {
     _mkdir(buf);
 }
 
-int bt_data_write_json_atomic(const char *path, const bt_json_value *value,
-                              bt_paths_error *err) {
+int bt_data_write_json_atomic(const char *path, const bt_json_value *value, bt_paths_error *err) {
     BT_TRACE_ENTER("data.write_json_atomic");
     mkdir_parents_of(path);
     bt_strbuf sb;
@@ -364,8 +360,7 @@ int bt_data_write_json_atomic(const char *path, const bt_json_value *value,
     return 0;
 }
 
-static void entry_key(char *out, size_t out_len, const char *sheet_file,
-                      const char *position) {
+static void entry_key(char *out, size_t out_len, const char *sheet_file, const char *position) {
     snprintf(out, out_len, "%s/%s", sheet_file, position);
 }
 
@@ -403,8 +398,7 @@ static int algs_insert_sorted(bt_user_algs *algs, const char *key, const char *a
         free(alg_copy);
         return -1;
     }
-    memmove(&algs->items[at + 1], &algs->items[at],
-            (algs->count - at) * sizeof *algs->items);
+    memmove(&algs->items[at + 1], &algs->items[at], (algs->count - at) * sizeof *algs->items);
     algs->items[at].key = key_copy;
     algs->items[at].alg = alg_copy;
     algs->count++;
@@ -484,8 +478,7 @@ const char *bt_user_algs_alg_for(const bt_user_algs *algs, const char *sheet_fil
     return NULL;
 }
 
-int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file,
-                        const char *position) {
+int bt_user_algs_remove(bt_user_algs *algs, const char *sheet_file, const char *position) {
     char key[BT_PATH_MAX];
     entry_key(key, sizeof key, sheet_file, position);
     for (size_t i = 0; i < algs->count; i++) {
@@ -509,8 +502,7 @@ int bt_user_algs_is_empty(const bt_user_algs *algs) {
     return algs->count == 0;
 }
 
-int bt_user_algs_save_at(const bt_user_algs *algs, const char *user_root,
-                         bt_paths_error *err) {
+int bt_user_algs_save_at(const bt_user_algs *algs, const char *user_root, bt_paths_error *err) {
     BT_TRACE_ENTER("data.user_algs_save_at");
     char path[BT_PATH_MAX];
     bt_data_user_algs_path_at(user_root, path);
@@ -520,9 +512,8 @@ int bt_user_algs_save_at(const bt_user_algs *algs, const char *user_root,
     for (size_t i = 0; i < algs->count && failed == 0; i++) {
         bt_json_value *entry = bt_json_new_object();
         bt_json_value *alg = bt_json_new_string(algs->items[i].alg);
-        if (bt_json_object_set(entry, "alg", alg) != 0) {
-            failed = 1;
-        } else if (bt_json_object_set(entries, algs->items[i].key, entry) != 0) {
+        if (bt_json_object_set(entry, "alg", alg) != 0 ||
+            bt_json_object_set(entries, algs->items[i].key, entry) != 0) {
             failed = 1;
         }
     }
@@ -568,42 +559,48 @@ bt_data_read_status bt_user_algs_load_at(bt_user_algs *algs, const char *user_ro
         BT_TRACE_FAIL("data.user_algs_load_at", "unreadable %s", path);
         return BT_DATA_READ_ERROR;
     }
-    bt_json_value *entries = bt_json_get(root, "entries");
-    if (entries == NULL || entries->type != BT_JSON_OBJECT) {
+    if (bt_user_algs_from_json(root, algs, err) != 0) {
+        snprintf(err->path, sizeof err->path, "%s", path);
         bt_json_free(root);
         bt_user_algs_free(algs);
+        return BT_DATA_READ_ERROR;
+    }
+    bt_json_free(root);
+    BT_TRACE_EXIT("data.user_algs_load_at");
+    return BT_DATA_READ_OK;
+}
+
+int bt_user_algs_from_json(const bt_json_value *root, bt_user_algs *out, bt_paths_error *err) {
+    BT_TRACE_ENTER("data.user_algs_from_json");
+    bt_user_algs_init(out);
+    bt_json_value *entries = bt_json_get(root, "entries");
+    if (entries == NULL || entries->type != BT_JSON_OBJECT) {
         memset(err, 0, sizeof *err);
         err->kind = BT_PATHS_ERR_DESERIALIZE;
-        snprintf(err->path, sizeof err->path, "%s", path);
-        BT_TRACE_FAIL("data.user_algs_load_at", "missing entries on %s", path);
-        return BT_DATA_READ_ERROR;
+        snprintf(err->detail, sizeof err->detail, "%s", "missing entries object");
+        BT_TRACE_FAIL("data.user_algs_from_json", "missing entries");
+        return -1;
     }
     for (size_t i = 0; i < entries->as.object.count; i++) {
         const char *key = entries->as.object.keys[i];
         bt_json_value *entry = entries->as.object.values[i];
         bt_json_value *alg = bt_json_get(entry, "alg");
-        if (entry->type != BT_JSON_OBJECT || alg == NULL ||
-            alg->type != BT_JSON_STRING) {
-            bt_json_free(root);
-            bt_user_algs_free(algs);
+        if (entry->type != BT_JSON_OBJECT || alg == NULL || alg->type != BT_JSON_STRING) {
+            bt_user_algs_free(out);
             memset(err, 0, sizeof *err);
             err->kind = BT_PATHS_ERR_DESERIALIZE;
-            snprintf(err->path, sizeof err->path, "%s", path);
-            BT_TRACE_FAIL("data.user_algs_load_at", "bad entry %s", key);
-            return BT_DATA_READ_ERROR;
+            snprintf(err->detail, sizeof err->detail, "bad entry %s", key);
+            BT_TRACE_FAIL("data.user_algs_from_json", "bad entry %s", key);
+            return -1;
         }
-        const char *slash = strchr(key, '/');
-        (void)slash;
-        if (algs_insert_sorted(algs, key, alg->as.string) != 0) {
-            bt_json_free(root);
-            bt_user_algs_free(algs);
+        if (algs_insert_sorted(out, key, alg->as.string) != 0) {
+            bt_user_algs_free(out);
             memset(err, 0, sizeof *err);
             err->kind = BT_PATHS_ERR_DESERIALIZE;
-            snprintf(err->path, sizeof err->path, "%s", path);
-            return BT_DATA_READ_ERROR;
+            snprintf(err->detail, sizeof err->detail, "%s", "out of memory");
+            return -1;
         }
     }
-    bt_json_free(root);
-    BT_TRACE_EXIT("data.user_algs_load_at");
-    return BT_DATA_READ_OK;
+    BT_TRACE_EXIT("data.user_algs_from_json");
+    return 0;
 }

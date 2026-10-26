@@ -124,8 +124,8 @@ BT_TEST(repo_algs, rows_carry_the_3bld_event_and_3style_method) {
     BT_CHECK(bt_repo_algs_save(&db, &algs, &err) == 0);
     sqlite3_stmt *stmt = NULL;
     BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db),
-                                "SELECT event, method FROM user_alg WHERE case_key = 'UF'",
-                                -1, &stmt, NULL) == SQLITE_OK);
+                                "SELECT event, method FROM user_alg WHERE case_key = 'UF'", -1,
+                                &stmt, NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 0), BT_DB_EVENT_3BLD);
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 1), BT_DB_METHOD_3STYLE);

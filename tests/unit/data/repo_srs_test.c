@@ -20,11 +20,14 @@ static void review_at(bt_card *card, long long ts, unsigned quality, long long e
                       long long scheduled) {
     if (card->review_count == card->review_cap) {
         size_t cap = card->review_cap == 0 ? 4 : card->review_cap * 2;
-        card->reviews = realloc(card->reviews, cap * sizeof *card->reviews);
+        bt_review_entry *grown = realloc(card->reviews, cap * sizeof *grown);
+        if (grown == NULL) {
+            return;
+        }
+        card->reviews = grown;
         card->review_cap = cap;
     }
-    card->reviews[card->review_count++] =
-        (bt_review_entry){ts, quality, elapsed, scheduled};
+    card->reviews[card->review_count++] = (bt_review_entry){ts, quality, elapsed, scheduled};
 }
 
 static bt_card card_of(int has_memory, bt_fsrs_memory memory) {
@@ -175,8 +178,8 @@ BT_TEST(repo_srs, saving_an_empty_store_clears_every_card) {
     BT_CHECK(bt_srs_store_eq(&empty, &loaded) == 1);
     bt_srs_store_free(&loaded);
     sqlite3_stmt *stmt = NULL;
-    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1,
-                                &stmt, NULL) == SQLITE_OK);
+    BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT COUNT(*) FROM review_log", -1, &stmt,
+                                NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK(sqlite3_column_int64(stmt, 0) == 0);
     sqlite3_finalize(stmt);
@@ -200,8 +203,8 @@ BT_TEST(repo_srs, interval_before_tracks_the_previous_scheduled_interval) {
     BT_CHECK(bt_repo_srs_save(&db, &store, &db_err) == 0);
     sqlite3_stmt *stmt = NULL;
     BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db),
-                                "SELECT interval_before FROM review_log ORDER BY id", -1,
-                                &stmt, NULL) == SQLITE_OK);
+                                "SELECT interval_before FROM review_log ORDER BY id", -1, &stmt,
+                                NULL) == SQLITE_OK);
     long long want[3] = {0, 1, 6};
     for (int i = 0; i < 3; i++) {
         BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);

@@ -22,9 +22,8 @@ void bt_srs_load_error_string(const bt_srs_load_error *err, char *out, size_t ou
         bt_db_error_string(&err->db, out, out_len);
         break;
     case BT_SRS_LOAD_UNKNOWN_QUALITY:
-        snprintf(out, out_len,
-                 "card %s holds review quality %u with no sm-2 grade mapping", err->key,
-                 err->quality);
+        snprintf(out, out_len, "card %s holds review quality %u with no sm-2 grade mapping",
+                 err->key, err->quality);
         break;
     case BT_SRS_LOAD_INVALID_MEMORY: {
         char stability[40];
@@ -93,8 +92,7 @@ int bt_srs_store_set(bt_srs_store *store, const char *key, const bt_card *card) 
         free(key_copy);
         return -1;
     }
-    memmove(&store->items[at + 1], &store->items[at],
-            (store->count - at) * sizeof *store->items);
+    memmove(&store->items[at + 1], &store->items[at], (store->count - at) * sizeof *store->items);
     store->items[at].key = key_copy;
     store->items[at].card = clone;
     store->count++;
@@ -140,16 +138,16 @@ int bt_srs_store_eq(const bt_srs_store *a, const bt_srs_store *b) {
     return 1;
 }
 
-static void db_step_error(bt_db *db, bt_db_error *err, bt_db_error_kind kind,
+static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind kind,
                           const char *step) {
     err->kind = kind;
     snprintf(err->step, sizeof err->step, "%s", step);
     snprintf(err->detail, sizeof err->detail, "%s", sqlite3_errmsg(bt_db_conn(db)));
 }
 
-int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method,
-                            const char *stage, const char *case_key, const bt_card *card,
-                            long long now, bt_db_error *err) {
+int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method, const char *stage,
+                            const char *case_key, const bt_card *card, long long now,
+                            bt_db_error *err) {
     sqlite3_stmt *card_stmt = NULL;
     const char *card_sql =
         "INSERT INTO card(event, method, stage, case_key, created_at, updated_at) "
@@ -172,9 +170,9 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method,
     sqlite3_finalize(card_stmt);
     long long card_id = bt_db_last_insert_rowid(db);
     sqlite3_stmt *state_stmt = NULL;
-    const char *state_sql =
-        "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, last_review_day, stability, difficulty) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const char *state_sql = "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, "
+                            "last_review_day, stability, difficulty) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     if (sqlite3_prepare_v2(bt_db_conn(db), state_sql, -1, &state_stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert srs_state");
         return -1;
@@ -205,9 +203,9 @@ int bt_repo_srs_insert_card(bt_db *db, const char *event, const char *method,
     }
     sqlite3_finalize(state_stmt);
     sqlite3_stmt *log_stmt = NULL;
-    const char *log_sql =
-        "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, interval_after, elapsed_days) "
-        "VALUES (?, ?, ?, ?, ?, ?)";
+    const char *log_sql = "INSERT INTO review_log(card_id, rating, reviewed_day, interval_before, "
+                          "interval_after, elapsed_days) "
+                          "VALUES (?, ?, ?, ?, ?, ?)";
     if (sqlite3_prepare_v2(bt_db_conn(db), log_sql, -1, &log_stmt, NULL) != SQLITE_OK) {
         db_step_error(db, err, BT_DB_ERR_EXEC, "insert review_log");
         return -1;
@@ -255,10 +253,9 @@ int bt_repo_srs_save_tx(bt_db *db, const bt_srs_store *store, bt_db_error *err) 
     for (size_t i = 0; i < store->count; i++) {
         char stage[BT_PATH_MAX];
         char case_key[BT_PATH_MAX];
-        bt_repo_algs_split_key(store->items[i].key, stage, sizeof stage, case_key,
-                               sizeof case_key);
-        if (bt_repo_srs_insert_card(db, BT_DB_EVENT_3BLD, BT_DB_METHOD_3STYLE, stage,
-                                    case_key, &store->items[i].card, now, err) != 0) {
+        bt_repo_algs_split_key(store->items[i].key, stage, sizeof stage, case_key, sizeof case_key);
+        if (bt_repo_srs_insert_card(db, BT_DB_EVENT_3BLD, BT_DB_METHOD_3STYLE, stage, case_key,
+                                    &store->items[i].card, now, err) != 0) {
             BT_TRACE_FAIL("repo_srs.save_tx", "insert %s failed", store->items[i].key);
             return -1;
         }
@@ -285,11 +282,10 @@ int bt_repo_srs_save(bt_db *db, const bt_srs_store *store, bt_db_error *err) {
     return 0;
 }
 
-static int memory_from_row(const char *key, int has_stability, double stability,
-                           int has_difficulty, double difficulty,
-                           const bt_review_entry *entries, size_t entry_count,
-                           const bt_fsrs_config *cfg, int *has_memory,
-                           bt_fsrs_memory *memory, bt_srs_load_error *err) {
+static int memory_from_row(const char *key, int has_stability, double stability, int has_difficulty,
+                           double difficulty, const bt_review_entry *entries, size_t entry_count,
+                           const bt_fsrs_config *cfg, int *has_memory, bt_fsrs_memory *memory,
+                           bt_srs_load_error *err) {
     *has_memory = 0;
     if (!has_stability && !has_difficulty) {
         for (size_t i = 0; i < entry_count; i++) {
@@ -380,9 +376,8 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
     BT_TRACE_ENTER("repo_srs.load_rows");
     *out = NULL;
     *count = 0;
-    const char *condition =
-        filter == BT_SRS_FILTER_ONLY_3BLD ? "c.event = ? AND c.method = ?"
-                                          : "c.event <> ? AND c.method <> ?";
+    const char *condition = filter == BT_SRS_FILTER_ONLY_3BLD ? "c.event = ? AND c.method = ?"
+                                                              : "c.event <> ? AND c.method <> ?";
     char sql[512];
     snprintf(sql, sizeof sql,
              "SELECT c.id, c.event, c.method, c.stage, c.case_key, s.due_day, "
@@ -390,23 +385,21 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
              "FROM card c JOIN srs_state s ON s.card_id = c.id WHERE %s",
              condition);
     sqlite3_stmt *cards = NULL;
-    if (sqlite3_prepare_v2(bt_db_conn((bt_db *)db), sql, -1, &cards, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(bt_db_conn(db), sql, -1, &cards, NULL) != SQLITE_OK) {
         err->kind = BT_SRS_LOAD_DB;
-        db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+        db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
         BT_TRACE_FAIL("repo_srs.load_rows", "prepare failed");
         return -1;
     }
     sqlite3_bind_text(cards, 1, BT_DB_EVENT_3BLD, -1, SQLITE_STATIC);
     sqlite3_bind_text(cards, 2, BT_DB_METHOD_3STYLE, -1, SQLITE_STATIC);
     sqlite3_stmt *reviews = NULL;
-    const char *review_sql =
-        "SELECT rating, reviewed_day, elapsed_days, interval_after "
-        "FROM review_log WHERE card_id = ? ORDER BY id";
-    if (sqlite3_prepare_v2(bt_db_conn((bt_db *)db), review_sql, -1, &reviews, NULL) !=
-        SQLITE_OK) {
+    const char *review_sql = "SELECT rating, reviewed_day, elapsed_days, interval_after "
+                             "FROM review_log WHERE card_id = ? ORDER BY id";
+    if (sqlite3_prepare_v2(bt_db_conn(db), review_sql, -1, &reviews, NULL) != SQLITE_OK) {
         sqlite3_finalize(cards);
         err->kind = BT_SRS_LOAD_DB;
-        db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+        db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
         BT_TRACE_FAIL("repo_srs.load_rows", "prepare reviews failed");
         return -1;
     }
@@ -442,14 +435,13 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             };
             if (row.card.review_count == row.card.review_cap) {
                 size_t cap = row.card.review_cap == 0 ? 4 : row.card.review_cap * 2;
-                bt_review_entry *grown =
-                    realloc(row.card.reviews, cap * sizeof *grown);
+                bt_review_entry *grown = realloc(row.card.reviews, cap * sizeof *grown);
                 if (grown == NULL) {
                     sqlite3_finalize(reviews);
                     sqlite3_finalize(cards);
                     bt_repo_srs_free_rows(rows, rows_count);
                     err->kind = BT_SRS_LOAD_DB;
-                    db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+                    db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
                     BT_TRACE_FAIL("repo_srs.load_rows", "oom");
                     return -1;
                 }
@@ -464,7 +456,7 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             sqlite3_finalize(cards);
             bt_repo_srs_free_rows(rows, rows_count);
             err->kind = BT_SRS_LOAD_DB;
-            db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+            db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
             BT_TRACE_FAIL("repo_srs.load_rows", "review step failed");
             return -1;
         }
@@ -473,8 +465,8 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
         int has_memory = 0;
         bt_fsrs_memory memory;
         if (memory_from_row(key, has_stability, stability, has_difficulty, difficulty,
-                            row.card.reviews, row.card.review_count, cfg, &has_memory,
-                            &memory, err) != 0) {
+                            row.card.reviews, row.card.review_count, cfg, &has_memory, &memory,
+                            err) != 0) {
             sqlite3_finalize(reviews);
             sqlite3_finalize(cards);
             bt_repo_srs_free_rows(rows, rows_count);
@@ -488,7 +480,7 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             sqlite3_finalize(cards);
             bt_repo_srs_free_rows(rows, rows_count);
             err->kind = BT_SRS_LOAD_DB;
-            db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+            db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
             BT_TRACE_FAIL("repo_srs.load_rows", "oom");
             return -1;
         }
@@ -499,7 +491,7 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
         sqlite3_finalize(cards);
         bt_repo_srs_free_rows(rows, rows_count);
         err->kind = BT_SRS_LOAD_DB;
-        db_step_error((bt_db *)db, &err->db, BT_DB_ERR_QUERY, "select card");
+        db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
         BT_TRACE_FAIL("repo_srs.load_rows", "card step failed");
         return -1;
     }
@@ -511,9 +503,8 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
     return 0;
 }
 
-int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg,
-                              bt_srs_filter filter, bt_srs_store *out,
-                              bt_srs_load_error *err) {
+int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_filter filter,
+                              bt_srs_store *out, bt_srs_load_error *err) {
     BT_TRACE_ENTER("repo_srs.load_filtered");
     bt_srs_store_init(out);
     bt_srs_card_row *rows = NULL;
@@ -552,8 +543,8 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
     if (memory != NULL && memory->type == BT_JSON_OBJECT) {
         bt_json_value *stability = bt_json_get(memory, "stability");
         bt_json_value *difficulty = bt_json_get(memory, "difficulty");
-        if (stability == NULL || stability->type != BT_JSON_NUMBER ||
-            difficulty == NULL || difficulty->type != BT_JSON_NUMBER) {
+        if (stability == NULL || stability->type != BT_JSON_NUMBER || difficulty == NULL ||
+            difficulty->type != BT_JSON_NUMBER) {
             bt_card_free(card);
             return -1;
         }
@@ -562,8 +553,10 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
         card->memory.difficulty = difficulty->as.number;
     }
     bt_json_value *fields[] = {
-        bt_json_get(node, "interval_days"), bt_json_get(node, "due_day"),
-        bt_json_get(node, "reps"), bt_json_get(node, "lapses"),
+        bt_json_get(node, "interval_days"),
+        bt_json_get(node, "due_day"),
+        bt_json_get(node, "reps"),
+        bt_json_get(node, "lapses"),
     };
     for (int i = 0; i < 4; i++) {
         if (fields[i] == NULL || fields[i]->type != BT_JSON_NUMBER) {
@@ -571,10 +564,10 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
             return -1;
         }
     }
-    card->interval_days = (long long)fields[0]->as.number;
-    card->due_day = (long long)fields[1]->as.number;
-    card->reps = (unsigned int)fields[2]->as.number;
-    card->lapses = (unsigned int)fields[3]->as.number;
+    card->interval_days = bt_json_integer_or(fields[0], 0);
+    card->due_day = bt_json_integer_or(fields[1], 0);
+    card->reps = (unsigned int)bt_json_integer_or(fields[2], 0);
+    card->lapses = (unsigned int)bt_json_integer_or(fields[3], 0);
     bt_json_value *reviews = bt_json_get(node, "reviews");
     if (reviews == NULL || reviews->type != BT_JSON_ARRAY) {
         bt_card_free(card);
@@ -583,8 +576,10 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
     for (size_t i = 0; i < reviews->as.array.count; i++) {
         bt_json_value *item = bt_json_at(reviews, i);
         bt_json_value *parts[] = {
-            bt_json_get(item, "ts_days"), bt_json_get(item, "quality"),
-            bt_json_get(item, "elapsed_days"), bt_json_get(item, "scheduled_days"),
+            bt_json_get(item, "ts_days"),
+            bt_json_get(item, "quality"),
+            bt_json_get(item, "elapsed_days"),
+            bt_json_get(item, "scheduled_days"),
         };
         for (int p = 0; p < 4; p++) {
             if (parts[p] == NULL || parts[p]->type != BT_JSON_NUMBER) {
@@ -593,10 +588,10 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
             }
         }
         bt_review_entry entry = {
-            (long long)parts[0]->as.number,
-            (unsigned int)parts[1]->as.number,
-            (long long)parts[2]->as.number,
-            (long long)parts[3]->as.number,
+            bt_json_integer_or(parts[0], 0),
+            (unsigned int)bt_json_integer_or(parts[1], 0),
+            bt_json_integer_or(parts[2], 0),
+            bt_json_integer_or(parts[3], 0),
         };
         if (card->review_count == card->review_cap) {
             size_t cap = card->review_cap == 0 ? 4 : card->review_cap * 2;
