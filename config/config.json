@@ -232,6 +232,27 @@
     ],
     "jobs": 0,
     "test_timeout_secs": 120,
+    "src_deps": {
+      "core": [],
+      "scheme": ["core"],
+      "data": ["core", "scheme"],
+      "puzzles": ["core"],
+      "ga": ["core", "scheme", "data"],
+      "app": ["core", "scheme", "data", "puzzles", "ga"]
+    },
+    "tool_deps": {
+      "gendata": ["data", "scheme", "puzzles"],
+      "verify": ["data", "puzzles"],
+      "ga-run": ["ga"],
+      "memofreq": ["scheme", "data"],
+      "mutate": [],
+      "mutants-gate": [],
+      "policy": [],
+      "visual-diff": [],
+      "release-verify": [],
+      "jobwrap": [],
+      "sleeper": []
+    },
     "hello_exe": "bt-hello.exe",
     "dirs": {
       "root": "build",

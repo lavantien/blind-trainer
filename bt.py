@@ -394,11 +394,38 @@ def tools_needed_for_suites(root, suites):
     return needed
 
 
+def src_area_closure(hub, areas):
+    deps = build_cfg(hub).get("src_deps", {})
+    seen = set()
+    pending = list(areas)
+    while pending:
+        area = pending.pop()
+        if area in seen:
+            continue
+        seen.add(area)
+        pending.extend(deps.get(area, []))
+    return seen
+
+
+def tool_area_closure(hub, tools):
+    deps = build_cfg(hub).get("tool_deps", {})
+    areas = set()
+    for tool in tools:
+        areas.update(deps.get(tool, []))
+    return src_area_closure(hub, areas)
+
+
 def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
     tools_needed = tools_needed_for_suites(root, discover_test_suites(root)) if test_area == "tools" else set()
+    if test_area == "tools":
+        src_areas = tool_area_closure(hub, tools_needed)
+    elif test_area is not None:
+        src_areas = src_area_closure(hub, [test_area])
+    else:
+        src_areas = None
     pairs = []
     for source, _ in units:
         rel = str(source.relative_to(root)).replace("\\", "/")
@@ -415,7 +442,7 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
                     continue
             elif rel.startswith("src/") and not rel.startswith("src/common/"):
                 area_parts = rel.split("/")
-                if len(area_parts) < 2 or area_parts[1] != test_area:
+                if src_areas is None or len(area_parts) < 2 or area_parts[1] not in src_areas:
                     continue
         pairs.append((source, object_path(obj_root, root, source)))
     pairs += [(Path(source), Path(obj)) for source, obj in extra]
