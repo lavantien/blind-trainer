@@ -89,6 +89,32 @@ BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
     CloseWindow();
 }
 
+BT_TEST(drivers, escape_keeps_the_window_open_while_close_still_works) {
+    bt_app_config config;
+    config.window.width = 320;
+    config.window.height = 240;
+    config.render.capture_dwell_frames = 1;
+    snprintf(config.window.title, sizeof config.window.title, "%s", "drivers close test");
+    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                            &config.render)) {
+        return;
+    }
+    void *hwnd = GetWindowHandle();
+    BT_CHECK(bt_app_driver_key_down(hwnd, bt_app_driver_vk_of(KEY_ESCAPE)));
+    BeginDrawing();
+    EndDrawing();
+    BT_CHECK(!WindowShouldClose());
+    BT_CHECK(bt_app_driver_key_up(hwnd, bt_app_driver_vk_of(KEY_ESCAPE)));
+    BeginDrawing();
+    EndDrawing();
+    BT_CHECK(!WindowShouldClose());
+    BT_CHECK(bt_app_driver_close_request(hwnd));
+    BeginDrawing();
+    EndDrawing();
+    BT_CHECK(WindowShouldClose());
+    CloseWindow();
+}
+
 static void sandbox_appdata(const char *tag, char *saved, size_t saved_len) {
     const char *current = getenv("APPDATA");
     snprintf(saved, saved_len, "%s", current != NULL ? current : "");

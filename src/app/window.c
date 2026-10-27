@@ -26,6 +26,7 @@ int bt_app_window_open(unsigned int width, unsigned int height, const char *titl
         SetConfigFlags(FLAG_VSYNC_HINT);
     }
     InitWindow((int)width, (int)height, title);
+    SetExitKey(KEY_NULL);
     if (render != NULL && render->target_fps > 0) {
         SetTargetFPS((int)render->target_fps);
     }

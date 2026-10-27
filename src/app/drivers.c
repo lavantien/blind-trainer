@@ -332,7 +332,6 @@ static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
     }
     BT_APP_STATE_TABLE[ctx->state].enter(ctx);
     bt_app_apply_pending(ctx);
-    SetExitKey(KEY_NULL);
     int code = usage_loop(ctx, &tour);
     bt_usage_tour_free(&tour);
     driver_teardown(ctx, &book);

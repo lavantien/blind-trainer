@@ -69,3 +69,10 @@ int bt_app_driver_key_char(void *hwnd, unsigned int ch) {
     BT_TRACE_EXIT("app.driver_key_char");
     return ok;
 }
+
+int bt_app_driver_close_request(void *hwnd) {
+    BT_TRACE_ENTER("app.driver_close_request");
+    int ok = PostMessageW((HWND)hwnd, WM_CLOSE, 0, 0) != 0;
+    BT_TRACE_EXIT("app.driver_close_request");
+    return ok;
+}
