@@ -17,4 +17,3 @@ src/scheme/scheme.c	48	cube or Speffz geometry constant intrinsic to the 3x3 mod
 src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
-tools/policy/lib.c	16	dynamic array growth seed for the path, entry, and finding vectors, doubling from 16
