@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 #include "common/bt_trace.h"
 
@@ -30,6 +31,9 @@ static int classify_secs(const char *raw, double *out) {
 }
 
 static int parse_u64_strict(const char *raw, unsigned long long *out) {
+    if (raw[0] == '+') {
+        raw++;
+    }
     if (raw[0] == '\0') {
         return 0;
     }
@@ -115,5 +119,20 @@ int bt_sleeper_parse_mode(int argc, char *const argv[], int *mode, unsigned long
     *mode = kind;
     *value = parsed;
     BT_TRACE_EXIT("sleeper.parse_mode");
+    return 0;
+}
+
+int bt_sleeper_sleep_ms(unsigned long long total_ms, unsigned long long chunk_ms) {
+    BT_TRACE_ENTER("sleeper.sleep_ms");
+    if (chunk_ms == 0) {
+        chunk_ms = total_ms;
+    }
+    unsigned long long remaining = total_ms;
+    while (remaining > 0) {
+        unsigned long long take = remaining > chunk_ms ? chunk_ms : remaining;
+        Sleep((DWORD)take);
+        remaining -= take;
+    }
+    BT_TRACE_EXIT("sleeper.sleep_ms");
     return 0;
 }

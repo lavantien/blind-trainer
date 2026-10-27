@@ -14,5 +14,6 @@ enum {
 int bt_sleeper_parse_args(int argc, char *const argv[], double *secs, char *err, size_t err_cap);
 int bt_sleeper_parse_mode(int argc, char *const argv[], int *mode, unsigned long long *value,
                           char *err, size_t err_cap);
+int bt_sleeper_sleep_ms(unsigned long long total_ms, unsigned long long chunk_ms);
 
 #endif

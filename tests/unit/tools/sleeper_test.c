@@ -90,6 +90,10 @@ BT_TEST(sleeper, parses_selftest_modes) {
     BT_CHECK_EQ(mode_ok(alloc, 2, &mode, &value), 0);
     BT_CHECK_EQ(mode, BT_SLEEPER_ALLOC_MB);
     BT_CHECK_EQ(value, 640ULL);
+    char *plus[2] = {(char *)"--selftest-alloc-mb", (char *)"+640"};
+    BT_CHECK_EQ(mode_ok(plus, 2, &mode, &value), 0);
+    BT_CHECK_EQ(mode, BT_SLEEPER_ALLOC_MB);
+    BT_CHECK_EQ(value, 640ULL);
     char *hold[2] = {(char *)"--selftest-hold-secs", (char *)"0"};
     BT_CHECK_EQ(mode_ok(hold, 2, &mode, &value), 0);
     BT_CHECK_EQ(mode, BT_SLEEPER_HOLD_SECS);
@@ -108,6 +112,36 @@ BT_TEST(sleeper, rejects_bad_selftest_modes) {
     BT_CHECK(mode_err(missing, 1));
     char *extra[3] = {(char *)"--selftest-hold-secs", (char *)"3", (char *)"4"};
     BT_CHECK(mode_err(extra, 3));
+}
+
+BT_TEST(sleeper, sleep_ms_covers_the_full_total_across_chunks) {
+    ULONGLONG started = GetTickCount64();
+    int rc = bt_sleeper_sleep_ms(450, 100);
+    ULONGLONG elapsed = GetTickCount64() - started;
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK(elapsed >= 450);
+    started = GetTickCount64();
+    rc = bt_sleeper_sleep_ms(0, 100);
+    elapsed = GetTickCount64() - started;
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK(elapsed < 1000);
+}
+
+BT_TEST(sleeper, exe_hold_mode_runs_the_full_duration) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    const char *argv[] = {"--selftest-hold-secs", "2", NULL};
+    char out[512];
+    char err[2048];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    ULONGLONG started = GetTickCount64();
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    ULONGLONG elapsed = GetTickCount64() - started;
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(elapsed >= 2000);
 }
 
 BT_TEST(sleeper, exe_plain_run_exits_zero) {

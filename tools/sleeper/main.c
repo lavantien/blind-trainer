@@ -1,5 +1,6 @@
 #include "sleeper/lib.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +13,7 @@
 enum {
     BT_SLEEPER_ALLOC_CHUNK_BYTES = 1048576,
     BT_SLEEPER_TOUCH_STRIDE_BYTES = 4096,
-    BT_SLEEPER_SLEEP_MS_MAX = 4294967,
+    BT_SLEEPER_SLEEP_CHUNK_MS = 1000,
 };
 
 static void trace_from_config(void) {
@@ -35,12 +36,12 @@ static void trace_from_config(void) {
     bt_trace_install_crash_handler();
 }
 
-static void sleep_secs(double secs) {
+static unsigned long long secs_to_ms(double secs) {
     double ms = secs * 1000.0;
-    if (ms > (double)BT_SLEEPER_SLEEP_MS_MAX) {
-        ms = (double)BT_SLEEPER_SLEEP_MS_MAX;
+    if (ms >= 18446744073709551615.0) {
+        return 18446744073709551615ULL;
     }
-    Sleep((DWORD)ms);
+    return (unsigned long long)ms;
 }
 
 static int alloc_and_touch(unsigned long long mb) {
@@ -71,9 +72,8 @@ static int hold_secs(unsigned long long secs) {
     BT_TRACE_ENTER("sleeper.hold_secs");
     fprintf(stderr, "bt-sleeper: selftest hold %llus starting\n", secs);
     fflush(stderr);
-    DWORD ms = secs > (unsigned long long)BT_SLEEPER_SLEEP_MS_MAX ? (DWORD)BT_SLEEPER_SLEEP_MS_MAX
-                                                                  : (DWORD)(secs * 1000ULL);
-    Sleep(ms);
+    unsigned long long ms = secs > ULLONG_MAX / 1000ULL ? ULLONG_MAX : secs * 1000ULL;
+    bt_sleeper_sleep_ms(ms, BT_SLEEPER_SLEEP_CHUNK_MS);
     fprintf(stderr, "bt-sleeper: selftest hold %llus done\n", secs);
     fflush(stderr);
     BT_TRACE_EXIT("sleeper.hold_secs");
@@ -102,18 +102,19 @@ int main(int argc, char **argv) {
         if (bt_sleeper_parse_mode(rest, argv + 1, &mode, &value, err, sizeof err) != 0) {
             return usage_exit(err);
         }
-        int rc = mode == BT_SLEEPER_ALLOC_MB ? alloc_and_touch(value) : hold_secs(value);
-        if (rc != 0) {
-            bt_trace_dump();
+        if (mode == BT_SLEEPER_ALLOC_MB) {
+            alloc_and_touch(value);
+        } else {
+            hold_secs(value);
         }
         bt_trace_shutdown();
-        return rc;
+        return 0;
     }
     double secs = 0.0;
     if (bt_sleeper_parse_args(rest, argv + 1, &secs, err, sizeof err) != 0) {
         return usage_exit(err);
     }
-    sleep_secs(secs);
+    bt_sleeper_sleep_ms(secs_to_ms(secs), BT_SLEEPER_SLEEP_CHUNK_MS);
     bt_trace_shutdown();
     return 0;
 }
