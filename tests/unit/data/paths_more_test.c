@@ -134,6 +134,28 @@ BT_TEST(paths_more, config_path_empty_env_falls_back_to_the_workspace_default) {
     BT_CHECK(ends_with(out, "config/config.json"));
 }
 
+BT_TEST(paths_more, root_only_env_values_keep_the_workspace_drive) {
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    BT_CHECK(root[1] == ':');
+    char want[BT_PATH_MAX];
+    snprintf(want, sizeof want, "%2.2s/zz-rg", root);
+    bt_json_value *config = config_with_ref_ground("from-config");
+    char out[BT_PATH_MAX];
+    bt_paths_error err;
+    BT_CHECK(bt_data_vendor_root_from("/zz-rg", config, out, &err) == 0);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_json_free(config);
+    snprintf(want, sizeof want, "%2.2s/zz-data", root);
+    bt_data_config_path_from("/zz-data", out);
+    BT_CHECK(strcmp(out, want) == 0);
+    config = config_with_ref_ground("from-config");
+    BT_CHECK(bt_data_packs_root_from("/zz-rg", config, out, &err) == 0);
+    snprintf(want, sizeof want, "%2.2s/zz-rg/packs", root);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_json_free(config);
+}
+
 BT_TEST(paths_more, user_root_ignores_empty_env_values_in_precedence_order) {
     char out[BT_PATH_MAX];
     bt_data_user_root_from("", "/xdg/data", NULL, out);

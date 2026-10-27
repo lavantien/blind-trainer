@@ -50,10 +50,6 @@ void bt_data_workspace_root(char out[BT_PATH_MAX]) {
     bt_paths_workspace_root(out);
 }
 
-static int is_absolute_path(const char *path) {
-    return path[0] == '/' || path[0] == '\\' || (path[0] != '\0' && path[1] == ':');
-}
-
 static int read_file_text(const char *path, char **out, size_t *out_len) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
@@ -80,11 +76,7 @@ void bt_data_config_path_from(const char *env_value, char out[BT_PATH_MAX]) {
     char root[BT_PATH_MAX];
     bt_data_workspace_root(root);
     if (env_value != NULL && env_value[0] != '\0') {
-        if (is_absolute_path(env_value)) {
-            snprintf(out, BT_PATH_MAX, "%s", env_value);
-        } else {
-            snprintf(out, BT_PATH_MAX, "%s/%s", root, env_value);
-        }
+        bt_paths_join(root, env_value, out);
     } else {
         snprintf(out, BT_PATH_MAX, "%s/config/config.json", root);
     }
@@ -127,11 +119,7 @@ int bt_data_vendor_root_from(const char *env_value, const bt_json_value *config,
     char root[BT_PATH_MAX];
     bt_data_workspace_root(root);
     if (env_value != NULL && env_value[0] != '\0') {
-        if (is_absolute_path(env_value)) {
-            snprintf(out, BT_PATH_MAX, "%s", env_value);
-        } else {
-            snprintf(out, BT_PATH_MAX, "%s/%s", root, env_value);
-        }
+        bt_paths_join(root, env_value, out);
         BT_TRACE_EXIT("data.vendor_root_from");
         return 0;
     }
@@ -168,11 +156,7 @@ int bt_data_packs_root_from(const char *env_value, const bt_json_value *config,
     bt_data_workspace_root(root);
     if (env_value != NULL && env_value[0] != '\0') {
         char base[BT_PATH_MAX];
-        if (is_absolute_path(env_value)) {
-            snprintf(base, sizeof base, "%s", env_value);
-        } else {
-            snprintf(base, sizeof base, "%s/%s", root, env_value);
-        }
+        bt_paths_join(root, env_value, base);
         snprintf(out, BT_PATH_MAX, "%s/packs", base);
         BT_TRACE_EXIT("data.packs_root_from");
         return 0;
