@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/bt_harness.h"
 #include "common/bt_trace.h"
 
 enum {
@@ -454,39 +455,49 @@ void bt_pz_nxn_facelets(const bt_pz_nxn *nxn, const bt_pz_nxn_state *state, bt_p
     BT_TRACE_EXIT("bt_pz_nxn_facelets");
 }
 
+static const bt_pz_nxn *nxn_vt_self(const bt_pz_engine *eng) {
+    const bt_pz_nxn *nxn = eng->self;
+    if (nxn->n < BT_PZ_NXN_MIN_N || nxn->n > BT_PZ_NXN_MAX_N) {
+        BT_TRACE_FAIL("bt_pz_nxn_engine", "n out of range: %zu", nxn->n);
+        bt_harness_fail(__FILE__, __LINE__, "n out of range: %zu", nxn->n);
+        bt_harness_exit_failure();
+    }
+    return nxn;
+}
+
 static bool nxn_vt_parse_move(const bt_pz_engine *eng, const char *token, size_t len,
                               void *out_move, bt_pz_error *err) {
-    return bt_pz_nxn_parse_move(eng->self, token, len, out_move, err);
+    return bt_pz_nxn_parse_move(nxn_vt_self(eng), token, len, out_move, err);
 }
 
 static bool nxn_vt_parse_alg(const bt_pz_engine *eng, const char *text, size_t len, void *alg,
                              bt_pz_error *err) {
-    return bt_pz_nxn_parse_alg(eng->self, text, len, alg, err);
+    return bt_pz_nxn_parse_alg(nxn_vt_self(eng), text, len, alg, err);
 }
 
 static void nxn_vt_format_alg(const bt_pz_engine *eng, const void *alg, bt_strbuf *out) {
-    bt_pz_nxn_format_alg(eng->self, alg, out);
+    bt_pz_nxn_format_alg(nxn_vt_self(eng), alg, out);
 }
 
 static void nxn_vt_invert_alg(const bt_pz_engine *eng, const void *alg, void *out) {
-    bt_pz_nxn_invert_alg(eng->self, alg, out);
+    bt_pz_nxn_invert_alg(nxn_vt_self(eng), alg, out);
 }
 
 static bool nxn_vt_apply_alg(const bt_pz_engine *eng, void *state, const void *alg,
                              bt_pz_error *err) {
-    return bt_pz_nxn_apply_alg(eng->self, state, alg, err);
+    return bt_pz_nxn_apply_alg(nxn_vt_self(eng), state, alg, err);
 }
 
 static void nxn_vt_solved_state(const bt_pz_engine *eng, void *out_state) {
-    bt_pz_nxn_solved_state(eng->self, out_state);
+    bt_pz_nxn_solved_state(nxn_vt_self(eng), out_state);
 }
 
 static bool nxn_vt_is_solved(const bt_pz_engine *eng, const void *state) {
-    return bt_pz_nxn_is_solved(eng->self, state);
+    return bt_pz_nxn_is_solved(nxn_vt_self(eng), state);
 }
 
 static void nxn_vt_facelets(const bt_pz_engine *eng, const void *state, bt_pz_grid *out) {
-    bt_pz_nxn_facelets(eng->self, state, out);
+    bt_pz_nxn_facelets(nxn_vt_self(eng), state, out);
 }
 
 bt_pz_engine bt_pz_nxn_engine(const bt_pz_nxn *nxn) {

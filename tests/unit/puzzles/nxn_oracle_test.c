@@ -7,6 +7,7 @@
 #include "puzzles/nxn.h"
 #include "puzzles/tier1.h"
 #include "unit/core/common.h"
+#include "unit/puzzles/death_test.h"
 
 #include <string.h>
 
@@ -134,12 +135,12 @@ BT_TEST(nxn_oracle, parses_digit_prefixes_up_to_n7) {
             BT_CHECK(nxn_move_ok(&nxn, token, &mv));
         }
     }
-    bt_pz_nxn small;
-    bt_pz_nxn_init(&small, 4);
+    bt_pz_nxn capped;
+    bt_pz_nxn_init(&capped, 4);
     static const char *bad[] = {"5R", "6R", "7R", "5Rw", "6Rw", "7Rw", "8R", "8Rw"};
     for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
         bt_pz_nxn_move mv;
-        BT_CHECK(!nxn_move_ok(&small, bad[i], &mv));
+        BT_CHECK(!nxn_move_ok(&capped, bad[i], &mv));
     }
 }
 
@@ -897,6 +898,18 @@ BT_TEST(nxn_oracle, invert_replaces_a_reused_out_alg) {
     bt_pz_alg_destroy(reused);
     bt_pz_alg_destroy(want);
     bt_pz_alg_destroy(fresh);
+}
+
+static void nxn_die_on_hand_built_n(void) {
+    bt_pz_nxn bad = {100};
+    bt_pz_engine eng = bt_pz_nxn_engine(&bad);
+    bt_pz_nxn_state state;
+    eng.solved_state(&eng, &state);
+}
+
+BT_TEST(nxn_oracle, engine_rejects_a_hand_built_n) {
+    bt_death_expect("nxn_oracle.engine_rejects_a_hand_built_n", "n out of range",
+                    nxn_die_on_hand_built_n);
 }
 
 BT_TEST(nxn_oracle, is_empty_reflects_the_parsed_move_count) {
