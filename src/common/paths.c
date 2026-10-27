@@ -50,6 +50,13 @@ static int path_is_unc_lead(const char *path) {
     return path[0] != '\0' && path_is_sep(path[0]) && path[1] != '\0' && path_is_sep(path[1]);
 }
 
+static int path_has_prefix(const char *path) {
+    if (path_is_unc_lead(path)) {
+        return 1;
+    }
+    return path_is_drive_letter(path[0]) && path[1] == ':';
+}
+
 static int unc_is_absolute(const char *path) {
     size_t at = 2;
     while (path[at] != '\0' && !path_is_sep(path[at])) {
@@ -115,18 +122,17 @@ static void join_out(char out[BT_PATH_MAX], const char *fmt, ...) {
 
 void bt_paths_join(const char *base, const char *push, char out[BT_PATH_MAX]) {
     BT_TRACE_ENTER("paths.join");
-    if (push == NULL || push[0] == '\0') {
+    if (push == NULL) {
         join_out(out, "%s", base != NULL ? base : "");
         BT_TRACE_EXIT("paths.join");
         return;
     }
-    int push_prefix = path_is_unc_lead(push) || (path_is_drive_letter(push[0]) && push[1] == ':');
-    if (push_prefix) {
+    if (path_has_prefix(push)) {
         join_out(out, "%s", push);
         BT_TRACE_EXIT("paths.join");
         return;
     }
-    if (path_is_sep(push[0])) {
+    if (push[0] != '\0' && path_is_sep(push[0])) {
         size_t prefix = base != NULL ? base_prefix_len(base) : 0;
         if (prefix > 0) {
             join_out(out, "%.*s%s", (int)prefix, base, push);
@@ -137,7 +143,14 @@ void bt_paths_join(const char *base, const char *push, char out[BT_PATH_MAX]) {
         return;
     }
     if (base != NULL && base[0] != '\0') {
-        join_out(out, "%s/%s", base, push);
+        size_t base_len = strlen(base);
+        int bare_drive = path_is_drive_letter(base[0]) && base[1] == ':' && base[2] == '\0';
+        int need_sep = !path_is_sep(base[base_len - 1]) && !bare_drive;
+        if (need_sep) {
+            join_out(out, "%s/%s", base, push);
+        } else {
+            join_out(out, "%s%s", base, push);
+        }
     } else {
         join_out(out, "%s", push);
     }

@@ -165,8 +165,16 @@ BT_TEST(paths, join_follows_pathbuf_push_semantics) {
     BT_CHECK(strcmp(out, "\\\\other\\sh\\ga") == 0);
     bt_paths_join("R:/ws", "leaf/x", out);
     BT_CHECK(strcmp(out, "R:/ws/leaf/x") == 0);
+    bt_paths_join("R:/ws/", "leaf", out);
+    BT_CHECK(strcmp(out, "R:/ws/leaf") == 0);
+    bt_paths_join("C:", "x", out);
+    BT_CHECK(strcmp(out, "C:x") == 0);
     bt_paths_join("R:/ws", "", out);
-    BT_CHECK(strcmp(out, "R:/ws") == 0);
+    BT_CHECK(strcmp(out, "R:/ws/") == 0);
+    bt_paths_join("R:/ws/", "", out);
+    BT_CHECK(strcmp(out, "R:/ws/") == 0);
+    bt_paths_join("C:", "", out);
+    BT_CHECK(strcmp(out, "C:") == 0);
     bt_paths_join("", "leaf", out);
     BT_CHECK(strcmp(out, "leaf") == 0);
 }
