@@ -170,3 +170,91 @@ BT_TEST(verify_ev_bigcube, wide_and_rotation_tokens_match_canonical_decompositio
     grid_after("U2 2U2", 5, &plain);
     BT_CHECK(bt_pz_grid_eq(&wide, &plain));
 }
+
+static void bigcube_entry(const char *method, long long first, size_t size_count,
+                          bt_pack_entry *out) {
+    memset(out, 0, sizeof *out);
+    snprintf(out->file, sizeof out->file, "%s", "bigcube_parity.tsv");
+    snprintf(out->event, sizeof out->event, "%s", "bigcube");
+    snprintf(out->method, sizeof out->method, "%s", method);
+    snprintf(out->stage, sizeof out->stage, "%s", "parity");
+    out->n.kind = BT_NSPEC_SIZES;
+    out->n.size_count = size_count;
+    out->n.sizes[0] = first;
+    out->n.sizes[1] = first + 1;
+    out->n.sizes[2] = first + 2;
+    out->n.sizes[3] = first + 3;
+    out->expected_rows = 1;
+}
+
+static void bigcube_row(const char *case_key, const char *front_json, const char *alg,
+                        bt_seed_rows *out, bt_seed_row *storage) {
+    snprintf(storage->case_key, sizeof storage->case_key, "%s", case_key);
+    storage->alg = (char *)alg;
+    storage->front_json = (char *)front_json;
+    storage->source_url = (char *)"https://example.test";
+    storage->source_at = (char *)"2026-10-10";
+    out->items = storage;
+    out->count = 1;
+}
+
+BT_TEST(verify_ev_bigcube, a_row_without_a_case_tag_names_the_missing_tag) {
+    bt_pack_entry entry;
+    bigcube_entry("yau", 4, 4, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("parity.x", "{\"nope\":1}", "R", &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier1_err, "front_json holds no case tag");
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+}
+
+BT_TEST(verify_ev_bigcube, an_oversized_digit_tag_holds_no_cube_size) {
+    bt_pack_entry entry;
+    bigcube_entry("yau", 4, 4, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("parity.big", "{\"case\":\"parity99999999999999999999\"}", "R", &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier1_err, "tag parity99999999999999999999 holds no cube size");
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+}
+
+BT_TEST(verify_ev_bigcube, a_long_in_range_tag_keeps_every_digit) {
+    bt_pack_entry entry;
+    bigcube_entry("yau", 4, 4, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("parity.long", "{\"case\":\"parity11111111111111111111\"}", "R", &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK(err_contains(section.rows[0].tier1_err,
+                          "tag size 11111111111111111111 sits outside the registry sizes"));
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+}
+
+BT_TEST(verify_ev_bigcube, an_engine_init_failure_fails_the_row) {
+    bt_pack_entry entry;
+    bigcube_entry("reduction", 9996, 4, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("l2e.probe", "{\"case\":\"l2e01\"}", "R", &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK(err_contains(section.rows[0].tier1_err, "engine init failed"));
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+}

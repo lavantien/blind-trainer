@@ -34,23 +34,29 @@ size_t verify_bigcube_sizes_of(const bt_nspec *n, size_t *out, size_t cap) {
 
 int verify_bigcube_tagged_size(const char *tag, size_t *out, char *err, size_t err_len) {
     BT_TRACE_ENTER("ev_bigcube.tagged_size");
-    char digits[16];
-    size_t count = 0;
-    for (const char *cursor = tag; *cursor != '\0' && count + 1 < sizeof digits; cursor++) {
-        if (*cursor >= '0' && *cursor <= '9') {
-            digits[count++] = *cursor;
+    bool saw_digit = false;
+    bool overflow = false;
+    size_t value = 0;
+    for (const char *cursor = tag; *cursor != '\0'; cursor++) {
+        if (*cursor < '0' || *cursor > '9') {
+            continue;
         }
+        saw_digit = true;
+        if (overflow) {
+            continue;
+        }
+        size_t digit = (size_t)(*cursor - '0');
+        if (value > (SIZE_MAX - digit) / 10) {
+            overflow = true;
+            continue;
+        }
+        value = value * 10 + digit;
     }
-    digits[count] = '\0';
-    if (count == 0) {
+    if (!saw_digit || overflow) {
         snprintf(err, err_len, "tag %s holds no cube size", tag);
         BT_TRACE_FAIL("ev_bigcube.tagged_size", "tag %s", tag);
         BT_TRACE_EXIT("ev_bigcube.tagged_size");
         return 1;
-    }
-    size_t value = 0;
-    for (size_t at = 0; at < count; at++) {
-        value = value * 10 + (size_t)(digits[at] - '0');
     }
     *out = value;
     BT_TRACE_EXIT("ev_bigcube.tagged_size");
@@ -309,9 +315,16 @@ static void verify_row(const bt_pack_entry *entry, const bt_seed_row *row,
     char tag[64];
     size_t sizes[VERIFY_BIGCUBE_MAX_SIZES];
     char err[VERIFY_ERR_MAX];
-    if (verify_bigcube_tag_of(row->front_json, tag, sizeof tag) != 0 ||
-        verify_bigcube_row_sizes(entry, tag, sizes, VERIFY_BIGCUBE_MAX_SIZES, err, sizeof err) <
-            0) {
+    err[0] = '\0';
+    if (verify_bigcube_tag_of(row->front_json, tag, sizeof tag) != 0) {
+        snprintf(outcome->tier1_err, sizeof outcome->tier1_err, "%s", tag);
+        outcome->tier2 = verify_tier2_skipped("tier 1 failed");
+        BT_TRACE_FAIL("ev_bigcube.verify_row", "tag or sizes failed %s", row->case_key);
+        BT_TRACE_EXIT("ev_bigcube.verify_row");
+        return;
+    }
+    if (verify_bigcube_row_sizes(entry, tag, sizes, VERIFY_BIGCUBE_MAX_SIZES, err, sizeof err) <
+        0) {
         snprintf(outcome->tier1_err, sizeof outcome->tier1_err, "%s", err);
         outcome->tier2 = verify_tier2_skipped("tier 1 failed");
         BT_TRACE_FAIL("ev_bigcube.verify_row", "tag or sizes failed %s", row->case_key);
@@ -328,6 +341,11 @@ static void verify_row(const bt_pack_entry *entry, const bt_seed_row *row,
         size_t size = sizes[at];
         bt_pz_nxn engine;
         if (!bt_pz_nxn_init(&engine, size)) {
+            outcome->tier1_ok = false;
+            snprintf(outcome->tier1_err, sizeof outcome->tier1_err,
+                     "engine init failed at size %zu, registry sizes sit inside the engine range",
+                     size);
+            outcome->tier2 = verify_tier2_skipped("tier 1 failed");
             BT_TRACE_FAIL("ev_bigcube.verify_row", "engine init %zu failed", size);
             BT_TRACE_EXIT("ev_bigcube.verify_row");
             return;
