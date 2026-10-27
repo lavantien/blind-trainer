@@ -23,6 +23,7 @@ enum {
     POLICY_SCAN_PATTERN_COUNT = 12,
     POLICY_SKIP_DIR_COUNT = 9,
     POLICY_MAX_PATTERN_SEGS = 8,
+    POLICY_DETAIL_MAX = 64,
 };
 
 static const char *const POLICY_SCAN_PATTERNS[POLICY_SCAN_PATTERN_COUNT] = {
@@ -599,8 +600,8 @@ static int sweep_unexpected_extensions(const char *dir, const char *root, policy
                 finding.path = policy_xstrdup(rel_path(child, root));
                 finding.line = 1;
                 finding.kind = "extension";
-                finding.detail = policy_xalloc(64);
-                snprintf(finding.detail, 64, "unexpected %s file", ext);
+                finding.detail = policy_xalloc(POLICY_DETAIL_MAX);
+                snprintf(finding.detail, POLICY_DETAIL_MAX, "unexpected %s file", ext);
                 outcome_push_finding(outcome, finding);
             }
         }
@@ -745,9 +746,9 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
                     }
                 }
                 if (!seen) {
-                    char *stale = policy_xalloc(BT_PATH_MAX + 64);
-                    snprintf(stale, BT_PATH_MAX + 64, "%s TAB %s", allow.entries[at].path,
-                             allow.entries[at].core);
+                    char *stale = policy_xalloc(BT_PATH_MAX + POLICY_DETAIL_MAX);
+                    snprintf(stale, BT_PATH_MAX + POLICY_DETAIL_MAX, "%s TAB %s",
+                             allow.entries[at].path, allow.entries[at].core);
                     outcome_push_stale(outcome, stale);
                 }
             }
