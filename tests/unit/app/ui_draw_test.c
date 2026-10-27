@@ -99,7 +99,9 @@ static void draw_text_field(const bt_app_font_book *book) {
 static void draw_number_field(const bt_app_font_book *book) {
     bt_ui_rect rect = {240.0F, 200.0F, 160.0F, 60.0F};
     int edited = 0;
-    bt_ui_number_field(book->regular, &rect, 800, 1, 10000, &quiet_input, &edited);
+    bt_ui_number_state state;
+    memset(&state, 0, sizeof state);
+    bt_ui_number_field(book->regular, &rect, 800, 1, 10000, &state, &quiet_input, &edited);
 }
 
 static int with_fonts(int (*run)(const bt_app_font_book *)) {

@@ -278,8 +278,8 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
     *edited = 0;
     value = bt_ui_number_clamp(value, low, high);
     float step_width = rect->height;
-    bt_ui_rect minus = {rect->x, rect->y, step_width, rect->height,};
-    bt_ui_rect plus = {rect->x + rect->width - step_width, rect->y, step_width, rect->height,};
+    bt_ui_rect minus = {rect->x, rect->y, step_width, rect->height};
+    bt_ui_rect plus = {rect->x + rect->width - step_width, rect->y, step_width, rect->height};
     int in_minus = bt_ui_contains(&minus, input->x, input->y);
     int in_plus = bt_ui_contains(&plus, input->x, input->y);
     int inside = bt_ui_contains(rect, input->x, input->y);
@@ -336,11 +336,9 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
             state->focused = 0;
         }
         int64_t parsed_value = value;
-        if (number_text_apply(state->text, low, high, &parsed_value)) {
-            if (parsed_value != value) {
-                value = parsed_value;
-                *edited = 1;
-            }
+        if (number_text_apply(state->text, low, high, &parsed_value) && parsed_value != value) {
+            value = parsed_value;
+            *edited = 1;
         }
     }
     ui_fill(rect, state->focused ? bt_theme_panel_raised() : bt_theme_panel());
