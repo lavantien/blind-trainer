@@ -210,10 +210,9 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
         field_h,
     };
     int edited = 0;
-    long long cadence =
-        bt_ui_number_field(&regular, &cadence_rect, (long long)draft->memo_cadence_ms,
-                           BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, &widgets->cadence,
-                           input, &edited);
+    long long cadence = bt_ui_number_field(
+        &regular, &cadence_rect, (long long)draft->memo_cadence_ms, BT_SETTINGS_CADENCE_MIN,
+        BT_SETTINGS_CADENCE_MAX, &widgets->cadence, input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_cadence(cadence);
         if (clamped != draft->memo_cadence_ms) {
@@ -221,9 +220,9 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
             *changed = 1;
         }
     }
-    long long reps = bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps,
-                                        BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, &widgets->reps,
-                                        input, &edited);
+    long long reps =
+        bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps, BT_SETTINGS_REPS_MIN,
+                           BT_SETTINGS_REPS_MAX, &widgets->reps, input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_reps(reps);
         if (clamped != draft->drill_reps) {

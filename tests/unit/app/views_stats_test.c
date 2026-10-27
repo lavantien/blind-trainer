@@ -1,8 +1,8 @@
 #include "app/boot.h"
 #include "app/views/frame.h"
 #include "app/views/settings.h"
-#include "app/views/stats.h"
 #include "app/views/state.h"
+#include "app/views/stats.h"
 #include "app/window.h"
 #include "common.h"
 
@@ -54,19 +54,21 @@ BT_TEST(views_stats, stats_aggregate_seeded_solve_and_srs_fixtures) {
                   "]}");
     char srs_path[TA_PATH_MAX];
     snprintf(srs_path, sizeof srs_path, "%s/srs/srs.json", root);
-    ta_write_file(srs_path,
-                  "{\"cards\": {"
-                  "\"edge/UF-UB-UR\": {\"ease\": 2.5, \"interval_days\": 1, \"due_day\": 0, "
-                  "\"reps\": 2, \"lapses\": 0, \"reviews\": ["
-                  "{\"ts_days\": 100, \"quality\": 5, \"elapsed_days\": 0, \"scheduled_days\": 1}, "
-                  "{\"ts_days\": 101, \"quality\": 4, \"elapsed_days\": 1, \"scheduled_days\": 1}]}, "
-                  "\"corner/UFR-UBL-UBR\": {\"ease\": 2.5, \"interval_days\": 1, \"due_day\": 99999, "
-                  "\"reps\": 1, \"lapses\": 0, \"reviews\": ["
-                  "{\"ts_days\": 100, \"quality\": 2, \"elapsed_days\": 0, \"scheduled_days\": 1}]}"
-                  "}}");
+    ta_write_file(
+        srs_path,
+        "{\"cards\": {"
+        "\"edge/UF-UB-UR\": {\"ease\": 2.5, \"interval_days\": 1, \"due_day\": 0, "
+        "\"reps\": 2, \"lapses\": 0, \"reviews\": ["
+        "{\"ts_days\": 100, \"quality\": 5, \"elapsed_days\": 0, \"scheduled_days\": 1}, "
+        "{\"ts_days\": 101, \"quality\": 4, \"elapsed_days\": 1, \"scheduled_days\": 1}]}, "
+        "\"corner/UFR-UBL-UBR\": {\"ease\": 2.5, \"interval_days\": 1, \"due_day\": 99999, "
+        "\"reps\": 1, \"lapses\": 0, \"reviews\": ["
+        "{\"ts_days\": 100, \"quality\": 2, \"elapsed_days\": 0, \"scheduled_days\": 1}]}"
+        "}}");
     char error[BT_APP_ERROR_MAX];
     bt_stores_free(&ctx.stores);
-    if (bt_stores_load(root, default_settings(), &ctx.fsrs, &ctx.stores, error, sizeof error) != 0) {
+    if (bt_stores_load(root, default_settings(), &ctx.fsrs, &ctx.stores, error, sizeof error) !=
+        0) {
         BT_ABORT("reload stores: %s", error);
     }
     bt_stats_app_state *app = bt_view_stats_app();
