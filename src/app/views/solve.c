@@ -486,6 +486,11 @@ static void finish_solve(bt_app_ctx *ctx, bt_view_solve_app_state *app) {
 
 void bt_view_solve_key(bt_app_ctx *ctx, bt_view_solve_app_state *app, int key) {
     BT_TRACE_ENTER("app.solve_key");
+    if (key == KEY_V && ctx->solve_phase == BT_SOLVE_REVIEW) {
+        bt_app_request_state(ctx, BT_APP_REPLAY);
+        BT_TRACE_EXIT("app.solve_key");
+        return;
+    }
     if (key != KEY_SPACE) {
         BT_TRACE_EXIT("app.solve_key");
         return;
@@ -531,6 +536,9 @@ void bt_view_solve_update(bt_app_ctx *ctx) {
     bt_view_solve_tick(ctx, app, GetFrameTime());
     if (IsKeyPressed(KEY_SPACE)) {
         bt_view_solve_key(ctx, app, KEY_SPACE);
+    }
+    if (IsKeyPressed(KEY_V)) {
+        bt_view_solve_key(ctx, app, KEY_V);
     }
     BT_TRACE_EXIT("app.solve_update");
 }

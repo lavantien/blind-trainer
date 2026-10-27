@@ -514,6 +514,21 @@ BT_TEST(solve_more, user_overlay_alg_beats_the_vendor_row_during_the_solve_repla
     bt_app_ctx_free(&ctx);
 }
 
+BT_TEST(solve_more, review_v_opens_the_replay_state) {
+    bt_corpus_row row;
+    bt_app_ctx ctx = covered_ctx("review-v", &row);
+    enter_solve(&ctx, single_pair_scramble('A', 'B'));
+    bt_view_solve_app_state *app = bt_view_solve_app();
+    finish_fast(&ctx);
+    BT_CHECK(ctx.solve_phase == BT_SOLVE_REVIEW);
+    bt_view_solve_key(&ctx, app, 86 /* v */);
+    BT_CHECK(ctx.has_pending);
+    BT_CHECK_EQ(ctx.pending, BT_APP_REPLAY);
+    bt_app_apply_pending(&ctx);
+    BT_CHECK(ctx.state == BT_APP_REPLAY);
+    bt_app_ctx_free(&ctx);
+}
+
 BT_TEST(solve_more, escape_mid_memo_returns_to_menu_and_a_reopen_restarts_ready) {
     bt_corpus_row row;
     bt_app_ctx ctx = covered_ctx("esc", &row);
