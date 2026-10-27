@@ -60,4 +60,7 @@ int bt_memo_residue_lines(const bt_memo *memo, char out[][BT_MEMO_TEXT_MAX], siz
 void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, const bt_stores *stores,
                        bt_memo_rows *out);
 
+void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const void *font_bold,
+                       float window_w, float window_h);
+
 #endif

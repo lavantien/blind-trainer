@@ -1,5 +1,10 @@
 #include "app/views/memo.h"
 
+#include "app/views/frame.h"
+#include "app/window.h"
+
+#include "raylib.h"
+
 #include "app/views/drill.h"
 
 #include "common/bt_trace.h"
@@ -242,4 +247,41 @@ void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, cons
         review_status(out->status, sizeof out->status, session);
     }
     BT_TRACE_EXIT("app.memo_view_rows");
+}
+
+void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const void *font_bold,
+                       float window_w, float window_h) {
+    BT_TRACE_ENTER("app.view_memo_draw");
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "memo training", "");
+    float gap = theme->spacing_rem * theme->root_rem;
+    const char *lines[4] = {"esc menu", rows->focal, rows->recent, rows->status};
+    float sizes[4] = {
+        theme->font_small * theme->root_rem,
+        theme->font_focal * theme->root_rem,
+        theme->font_small * theme->root_rem,
+        theme->font_body * theme->root_rem,
+    };
+    const void *fonts[4] = {font_regular, font_bold, font_regular, font_regular};
+    bt_theme_color colors[4] = {
+        bt_theme_text_muted(),
+        bt_theme_text_primary(),
+        bt_theme_text_muted(),
+        bt_theme_text_primary(),
+    };
+    float total = 0.0F;
+    for (int i = 0; i < 4; i++) {
+        total += sizes[i];
+    }
+    total += gap * 3.0F;
+    float y = metrics.content_y + (metrics.content_h - total) / 2.0F;
+    for (int i = 0; i < 4; i++) {
+        Font font = *(const Font *)fonts[i];
+        Vector2 box = MeasureTextEx(font, lines[i], sizes[i], 1.0F);
+        bt_app_draw_text(fonts[i], lines[i], metrics.content_x + (metrics.content_w - box.x) / 2.0F,
+                         y, sizes[i], colors[i]);
+        y += sizes[i] + gap;
+    }
+    BT_TRACE_EXIT("app.view_memo_draw");
 }

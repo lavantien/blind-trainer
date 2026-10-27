@@ -26,6 +26,7 @@ typedef struct {
     float pulse[BT_NET_GRID_CELLS];
     double elapsed;
     int frozen;
+    bt_net_cell_ink ink[BT_NET_GRID_CELLS];
 } bt_views_net;
 
 typedef struct {
