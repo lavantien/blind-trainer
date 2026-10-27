@@ -9,7 +9,8 @@
 
 static const char *SOLVER_DIRS[3] = {"cherry", "eggins", "user"};
 static const char *SHEET_FILES[BT_SHEET_CLASS_COUNT] = {
-    "edge", "corner", "flips", "twists", "parity", "ltct",};
+    "edge", "corner", "flips", "twists", "parity", "ltct",
+};
 
 const char *bt_solver_dir(bt_solver solver) {
     return SOLVER_DIRS[solver];
