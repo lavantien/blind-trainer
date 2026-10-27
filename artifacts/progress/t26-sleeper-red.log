@@ -1,0 +1,4 @@
+2026-10-27T11:27:13 [fail] compile tests\unit\tools\sleeper_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\sleeper_test.c:1:10: fatal error: 'sleeper/lib.h' file not found
+    1 | #include "sleeper/lib.h"
+1 error generated.
+2026-10-27T11:27:13 [fail] test-build BtError: 1 of 80 compiles failed
