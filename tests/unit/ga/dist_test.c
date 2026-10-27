@@ -67,3 +67,42 @@ BT_TEST(dist, config_memofreq_reads_the_hub) {
     BT_CHECK_EQ((unsigned long long)samples, 200000ULL);
     BT_CHECK_EQ((unsigned long long)seed, 20261012ULL);
 }
+
+BT_TEST(dist, pair_rows_reject_values_over_u32) {
+    static const char *const over[] = {
+        "{\"cases\":[],\"adjacent\":[{\"from\":4294967296,\"to\":1,\"count\":1}],"
+        "\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[{\"from\":1,\"to\":4294967296,\"count\":1}],"
+        "\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[],\"cooccurring\":[{\"from\":4294967296,"
+        "\"to\":1,\"count\":1}],\"total_draws\":1,\"seed\":2}",
+    };
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("dist-test", dir);
+    char path[BT_PATH_MAX];
+    for (size_t i = 0; i < sizeof over / sizeof over[0]; i++) {
+        snprintf(path, BT_PATH_MAX, "%s/over-%zu.json", dir, i);
+        FILE *file = fopen(path, "wb");
+        fwrite(over[i], 1, strlen(over[i]), file);
+        fclose(file);
+        bt_ga_freq_data data;
+        char err[128];
+        BT_CHECK(!bt_ga_load_freq_data(path, &data, err));
+    }
+    const char *edge = "{\"cases\":[],\"adjacent\":[{\"from\":4294967295,"
+                       "\"to\":4294967295,\"count\":1}],\"cooccurring\":[],"
+                       "\"total_draws\":1,\"seed\":2}";
+    snprintf(path, BT_PATH_MAX, "%s/edge.json", dir);
+    FILE *file = fopen(path, "wb");
+    fwrite(edge, 1, strlen(edge), file);
+    fclose(file);
+    bt_ga_freq_data data;
+    char err[128];
+    if (!bt_ga_load_freq_data(path, &data, err)) {
+        BT_ABORT("edge load failed: %s", err);
+    }
+    BT_CHECK_EQ((unsigned long long)data.adjacent[0].from, 4294967295ULL);
+    BT_CHECK_EQ((unsigned long long)data.adjacent[0].to, 4294967295ULL);
+    bt_ga_freq_data_free(&data);
+    bt_ga_scratch_remove("dist-test");
+}

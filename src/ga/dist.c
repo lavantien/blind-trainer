@@ -75,6 +75,15 @@ static int bt_ga_dist_parse_cases(const bt_json_value *array, bt_ga_case_row **r
     return 1;
 }
 
+static int bt_ga_dist_u32(const bt_json_value *object, const char *key, uint32_t *out) {
+    uint64_t value = 0;
+    if (!bt_ga_dist_integer(object, key, &value) || value > UINT32_MAX) {
+        return 0;
+    }
+    *out = (uint32_t)value;
+    return 1;
+}
+
 static int bt_ga_dist_parse_pairs(const bt_json_value *array, bt_ga_pair_count **rows,
                                   size_t *count) {
     *rows = NULL;
@@ -87,8 +96,8 @@ static int bt_ga_dist_parse_pairs(const bt_json_value *array, bt_ga_pair_count *
     for (size_t i = 0; i < *count; i++) {
         const bt_json_value *item = bt_json_at(array, i);
         if (item == NULL || item->type != BT_JSON_OBJECT ||
-            !bt_ga_dist_integer(item, "from", (uint64_t *)&(*rows)[i].from) ||
-            !bt_ga_dist_integer(item, "to", (uint64_t *)&(*rows)[i].to) ||
+            !bt_ga_dist_u32(item, "from", &(*rows)[i].from) ||
+            !bt_ga_dist_u32(item, "to", &(*rows)[i].to) ||
             !bt_ga_dist_integer(item, "count", &(*rows)[i].count)) {
             free(*rows);
             *rows = NULL;
