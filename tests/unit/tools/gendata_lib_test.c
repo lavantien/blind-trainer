@@ -99,3 +99,14 @@ BT_TEST(gendata_lib, synth_params_hash_binds_the_generator_version) {
     BT_CHECK(strcmp(current, other) != 0);
     bt_json_free(config);
 }
+
+BT_TEST(gendata_lib, synth_params_hash_pins_the_rust_era_golden) {
+    bt_json_value *config = bt_data_load_config();
+    BT_CHECK(config != NULL);
+    char hash[65];
+    char err[96];
+    BT_CHECK_EQ(bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err), 0);
+    BT_CHECK_EQ(strcmp(hash, "dead579f6d96481fa46f82680b33d19b301de595daebb0fcae7707fe4b339106"),
+                0);
+    bt_json_free(config);
+}
