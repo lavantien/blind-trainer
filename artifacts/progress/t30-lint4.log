@@ -1,0 +1,11 @@
+2026-10-27T16:52:57 [fail] tidy tests\unit\tools\visual_diff_lib_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:242:14: error: 2nd argument 'unwritten' (passed to 'shot') looks like it might be swapped with the 3rd, 'shot' (passed to 'base') [readability-suspicious-call-argument,-warnings-as-errors]
+  242 |     report = btvd_compare_pair("shot.png", unwritten, shot, 0);
+      |              ^                             ~~~~~~~~~  ~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff/lib.h:85:18: note: in the call to 'btvd_compare_pair', declared here
+   85 | btvd_pair_report btvd_compare_pair(const char *name, const char *shot, const char *base,
+      |                  ^                                               ~~~~              ~~~~
+566 warnings generated.
+Suppressed 565 warnings (565 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+1 warning treated as error
+2026-10-27T16:52:57 [lint] 24 clean, 1 failed

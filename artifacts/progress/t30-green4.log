@@ -1,0 +1,97 @@
+2026-10-27T16:45:08 [entry] test-unit tools
+2026-10-27T16:45:08 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\config.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\json.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\paths.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\rng.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\sha256.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\space.c up to date
+2026-10-27T16:45:08 [skip] compile src\common\strbuf.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\fixtures\fx_main.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\fixtures\fx_target.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\fixtures\stub_clang.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\jobwrap_ceiling_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\jobwrap_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\mutants_gate_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\mutate_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-27T16:45:08 [skip] compile tests\unit\tools\sleeper_test.c up to date
+2026-10-27T16:45:08 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T16:45:08 [skip] compile tools\jobwrap\lib.c up to date
+2026-10-27T16:45:08 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\report.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T16:45:08 [skip] compile tools\mutate\token.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\comments.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\constants.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\lib.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T16:45:08 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T16:45:08 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T16:45:08 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T16:45:08 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T16:45:08 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T16:45:08 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T16:45:10 [repro] 168 object timestamps zeroed
+2026-10-27T16:45:10 [compile] 113 compiled, 113 ok
+[fail] tools_visual_diff_lib_test
+d successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+INFO: FILEIO: [build/test-tmp/visual-diff-run-selftest/baselines/at-tolerance.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+INFO: FILEIO: [build/test-tmp/visual-diff-run-selftest/screenshots/identical.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+INFO: FILEIO: [build/test-tmp/visual-diff-run-selftest/baselines/identical.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+INFO: FILEIO: [build/test-tmp/visual-diff-run-selftest/screenshots/over.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+INFO: FILEIO: [build/test-tmp/visual-diff-run-selftest/baselines/over.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (4x4 | R8G8B8A8 | 1 mipmaps)
+identical.png: expected ok, got ok
+over.png: expected over, got over
+missing.png: expected missing-baseline, got missing-baseline
+at-tolerance.png: expected ok, got ok
+selftest: 4/4 checks passed
+ok tools_visual_diff_lib_test visual_diff_lib.run_selftest_mode_ignores_env_config_and_passes
+INFO: FILEIO: [build/test-tmp/visual-diff-update-base/stale.png] File saved successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-update-base/stale.png] Image exported successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-update-shot/fresh.png] File saved successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-update-shot/fresh.png] Image exported successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-update-base/fresh.png] File loaded successfully
+INFO: IMAGE: Data loaded successfully (2x1 | R8G8B8A8 | 1 mipmaps)
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_mirrors_screenshots_into_baselines
+INFO: FILEIO: [build/test-tmp/visual-diff-run-update/shots/fresh.png] File saved successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-run-update/shots/fresh.png] Image exported successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-run-update/bases/stale.png] File saved successfully
+INFO: FILEIO: [build/test-tmp/visual-diff-run-update/bases/stale.png] Image exported successfully
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:649: btvd_run(&env, err, sizeof err) vs 0: got -1 want 0
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:651: check failed: vd_util_is_file(path)
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:653: check failed: !vd_util_is_file(path)
+FAIL tools_visual_diff_lib_test visual_diff_lib.run_update_mode_mirrors_and_returns_zero
+ok tools_visual_diff_lib_test visual_diff_lib.visual_cfg_from_reads_tolerance_and_rejects_bad_values
+ok tools_visual_diff_lib_test visual_diff_lib.write_report_creates_visual_dir_under_artifacts
+suite tools_visual_diff_lib_test: 23 passed, 4 failed
+2026-10-27T16:45:27 [summary] 11 passed, 1 failed
+2026-10-27T16:45:27 [exit] test-unit code=1

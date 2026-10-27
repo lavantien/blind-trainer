@@ -1,0 +1,25 @@
+2026-10-27T16:55:37 [fail] tidy tests\unit\tools\gendata_hash_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_hash_test.c:1:10: error: 'gendata/hash.h' file not found [clang-diagnostic-error]
+    1 | #include "gendata/hash.h"
+      |          ^~~~~~~~~~~~~~~~
+4569 warnings and 1 error generated.
+Error while processing C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_hash_test.c.
+Suppressed 4569 warnings (4569 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+Found compiler error(s).
+2026-10-27T16:55:37 [fail] tidy tests\unit\tools\gendata_out_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:1:10: error: 'gendata/out.h' file not found [clang-diagnostic-error]
+    1 | #include "gendata/out.h"
+      |          ^~~~~~~~~~~~~~~
+4569 warnings and 1 error generated.
+Error while processing C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c.
+Suppressed 4569 warnings (4569 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+Found compiler error(s).
+2026-10-27T16:55:37 [fail] tidy tests\unit\tools\gendata_when_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:1:10: error: 'gendata/when.h' file not found [clang-diagnostic-error]
+    1 | #include "gendata/when.h"
+      |          ^~~~~~~~~~~~~~~~
+466 warnings and 1 error generated.
+Error while processing C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c.
+Suppressed 466 warnings (466 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+Found compiler error(s).
+2026-10-27T16:55:37 [lint] 25 clean, 3 failed

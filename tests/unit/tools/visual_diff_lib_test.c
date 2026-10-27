@@ -1,4 +1,4 @@
-#include "visual_diff_test_util.h"
+#include "visual_diff_lib_test_util.h"
 
 #include "common/strbuf.h"
 
@@ -47,13 +47,13 @@ BT_TEST(visual_diff_lib, parse_args_rejects_wrong_counts) {
 
 BT_TEST(visual_diff_lib, config_path_from_honors_env_and_default) {
     char out[BT_PATH_MAX];
-    btvd_config_path_from("cfg/alt.json", "/repo", out, sizeof out);
+    btvd_config_path_from("cfg/alt.json", "/repo", out);
     BT_CHECK(strcmp(out, "/repo/cfg/alt.json") == 0);
-    btvd_config_path_from("C:/abs/config.json", "/repo", out, sizeof out);
+    btvd_config_path_from("C:/abs/config.json", "/repo", out);
     BT_CHECK(strcmp(out, "C:/abs/config.json") == 0);
-    btvd_config_path_from(NULL, "/repo", out, sizeof out);
+    btvd_config_path_from(NULL, "/repo", out);
     BT_CHECK(strcmp(out, "/repo/config/config.json") == 0);
-    btvd_config_path_from("", "/repo", out, sizeof out);
+    btvd_config_path_from("", "/repo", out);
     BT_CHECK(strcmp(out, "/repo/config/config.json") == 0);
 }
 
@@ -228,18 +228,18 @@ BT_TEST(visual_diff_lib, compare_pair_identical_images_pass) {
 BT_TEST(visual_diff_lib, compare_pair_reports_missing_sides) {
     char dir[VD_UTIL_PATH_MAX];
     vd_util_scratch("missing", dir);
-    char shot[VD_UTIL_PATH_MAX];
-    vd_util_join(shot, dir, "shot.png");
+    char written[VD_UTIL_PATH_MAX];
+    vd_util_join(written, dir, "shot.png");
     btvd_image solid;
     unsigned char solid_rgba[4] = {0, 0, 0, 255};
     vd_util_solid_image(&solid, 2, 2, solid_rgba);
-    vd_util_write_png(shot, &solid);
-    char absent[VD_UTIL_PATH_MAX];
-    vd_util_join(absent, dir, "base.png");
-    btvd_pair_report report = btvd_compare_pair("shot.png", shot, absent, 0);
+    vd_util_write_png(written, &solid);
+    char unwritten[VD_UTIL_PATH_MAX];
+    vd_util_join(unwritten, dir, "base.png");
+    btvd_pair_report report = btvd_compare_pair("shot.png", written, unwritten, 0);
     BT_CHECK_EQ(report.verdict.kind, BTVD_VERDICT_MISSING);
     BT_CHECK_EQ(report.verdict.side, BTVD_SIDE_BASE);
-    report = btvd_compare_pair("shot.png", absent, shot, 0);
+    report = btvd_compare_pair("shot.png", unwritten, written, 0);
     BT_CHECK_EQ(report.verdict.kind, BTVD_VERDICT_MISSING);
     BT_CHECK_EQ(report.verdict.side, BTVD_SIDE_SHOT);
     vd_util_free_image(&solid);
@@ -413,8 +413,8 @@ BT_TEST(visual_diff_lib, render_report_lists_pairs_and_totals) {
     reports[0].max_delta = 3;
     reports[0].pixels_over = 0;
     reports[0].pixels = 4;
-    reports[1] = plain_report(
-        "bad.png", (btvd_verdict){.kind = BTVD_VERDICT_MISSING, .side = BTVD_SIDE_BASE});
+    reports[1] = plain_report("bad.png",
+                              (btvd_verdict){.kind = BTVD_VERDICT_MISSING, .side = BTVD_SIDE_BASE});
     btvd_report_vec vec = {reports, 2, 0};
     bt_strbuf text;
     bt_strbuf_init(&text, 256);
@@ -535,31 +535,31 @@ BT_TEST(visual_diff_lib, run_returns_zero_and_writes_report_for_identical_dirs) 
     char root[VD_UTIL_PATH_MAX];
     vd_util_scratch("run-ok", root);
     char shots[VD_UTIL_PATH_MAX];
-    char bases[VD_UTIL_PATH_MAX];
-    vd_util_join(shots, root, "shots");
-    vd_util_join(bases, root, "bases");
+    char bases_dir[VD_UTIL_PATH_MAX];
+    snprintf(shots, sizeof shots, "%s/shots", root);
+    snprintf(bases_dir, sizeof bases_dir, "%s/bases", root);
     vd_util_mkdir_p(shots);
-    vd_util_mkdir_p(bases);
+    vd_util_mkdir_p(bases_dir);
     btvd_image solid;
     unsigned char solid_rgba[4] = {1, 2, 3, 255};
     vd_util_solid_image(&solid, 2, 2, solid_rgba);
     char path[VD_UTIL_PATH_MAX];
     vd_util_join(path, shots, "scene.png");
     vd_util_write_png(path, &solid);
-    vd_util_join(path, bases, "scene.png");
+    vd_util_join(path, bases_dir, "scene.png");
     vd_util_write_png(path, &solid);
     char config[VD_UTIL_PATH_MAX];
     vd_util_write_config(root, config, 0);
-    char out[VD_UTIL_PATH_MAX];
-    vd_util_join(out, root, "out");
-    char *argv[] = {shots, bases};
+    char artifacts[VD_UTIL_PATH_MAX];
+    vd_util_join(artifacts, root, "out");
+    char *argv[] = {shots, bases_dir};
     btvd_env env;
     vd_util_env_for(&env, root, config, argv, 2);
-    env.artifacts = out;
+    env.artifacts = artifacts;
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_run(&env, err, sizeof err), 0);
     char report[VD_UTIL_PATH_MAX];
-    vd_util_join(report, out, "visual/report.md");
+    vd_util_join(report, artifacts, "visual/report.md");
     FILE *file = fopen(report, "rb");
     BT_CHECK(file != NULL);
     if (file != NULL) {
@@ -577,11 +577,11 @@ BT_TEST(visual_diff_lib, run_returns_diff_code_for_over_tolerance_pair) {
     char root[VD_UTIL_PATH_MAX];
     vd_util_scratch("run-diff", root);
     char shots[VD_UTIL_PATH_MAX];
-    char bases[VD_UTIL_PATH_MAX];
-    vd_util_join(shots, root, "shots");
-    vd_util_join(bases, root, "bases");
+    char bases_dir[VD_UTIL_PATH_MAX];
+    snprintf(shots, sizeof shots, "%s/shots", root);
+    snprintf(bases_dir, sizeof bases_dir, "%s/bases", root);
     vd_util_mkdir_p(shots);
-    vd_util_mkdir_p(bases);
+    vd_util_mkdir_p(bases_dir);
     unsigned char solid_rgba[4] = {0, 0, 0, 255};
     btvd_image solid;
     vd_util_solid_image(&solid, 2, 2, solid_rgba);
@@ -592,20 +592,20 @@ BT_TEST(visual_diff_lib, run_returns_diff_code_for_over_tolerance_pair) {
     char path[VD_UTIL_PATH_MAX];
     vd_util_join(path, shots, "scene.png");
     vd_util_write_png(path, &solid);
-    vd_util_join(path, bases, "scene.png");
+    vd_util_join(path, bases_dir, "scene.png");
     vd_util_write_png(path, &dotted);
     char config[VD_UTIL_PATH_MAX];
     vd_util_write_config(root, config, 0);
-    char out[VD_UTIL_PATH_MAX];
-    vd_util_join(out, root, "out");
-    char *argv[] = {shots, bases};
+    char artifacts[VD_UTIL_PATH_MAX];
+    vd_util_join(artifacts, root, "out");
+    char *argv[] = {shots, bases_dir};
     btvd_env env;
     vd_util_env_for(&env, root, config, argv, 2);
-    env.artifacts = out;
+    env.artifacts = artifacts;
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_run(&env, err, sizeof err), BTVD_EXIT_DIFF);
     char report[VD_UTIL_PATH_MAX];
-    vd_util_join(report, out, "visual/report.md");
+    vd_util_join(report, artifacts, "visual/report.md");
     FILE *file = fopen(report, "rb");
     BT_CHECK(file != NULL);
     if (file != NULL) {
@@ -624,11 +624,11 @@ BT_TEST(visual_diff_lib, run_update_mode_mirrors_and_returns_zero) {
     char root[VD_UTIL_PATH_MAX];
     vd_util_scratch("run-update", root);
     char shots[VD_UTIL_PATH_MAX];
-    char bases[VD_UTIL_PATH_MAX];
-    vd_util_join(shots, root, "shots");
-    vd_util_join(bases, root, "bases");
+    char bases_dir[VD_UTIL_PATH_MAX];
+    snprintf(shots, sizeof shots, "%s/shots", root);
+    snprintf(bases_dir, sizeof bases_dir, "%s/bases", root);
     vd_util_mkdir_p(shots);
-    vd_util_mkdir_p(bases);
+    vd_util_mkdir_p(bases_dir);
     unsigned char solid_rgba[4] = {0, 0, 0, 255};
     btvd_image solid;
     vd_util_solid_image(&solid, 1, 1, solid_rgba);
@@ -638,18 +638,18 @@ BT_TEST(visual_diff_lib, run_update_mode_mirrors_and_returns_zero) {
     char path[VD_UTIL_PATH_MAX];
     vd_util_join(path, shots, "fresh.png");
     vd_util_write_png(path, &fresh);
-    vd_util_join(path, bases, "stale.png");
+    vd_util_join(path, bases_dir, "stale.png");
     vd_util_write_png(path, &solid);
     char config[VD_UTIL_PATH_MAX];
     vd_util_write_config(root, config, 0);
-    char *argv[] = {shots, bases, "--update"};
+    char *argv[] = {shots, bases_dir, "--update"};
     btvd_env env;
     vd_util_env_for(&env, root, config, argv, 3);
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_run(&env, err, sizeof err), 0);
-    vd_util_join(path, bases, "fresh.png");
+    vd_util_join(path, bases_dir, "fresh.png");
     BT_CHECK(vd_util_is_file(path));
-    vd_util_join(path, bases, "stale.png");
+    vd_util_join(path, bases_dir, "stale.png");
     BT_CHECK(!vd_util_is_file(path));
     vd_util_free_image(&solid);
     vd_util_free_image(&fresh);

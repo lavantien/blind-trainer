@@ -254,11 +254,12 @@ def objects_dirname(hub):
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
-def compile_command(compiler, flags, includes, source, obj, dep=None, extra_flags=()):
+def compile_command(compiler, flags, includes, source, obj, dep=None, extra_flags=(),
+                    system_dirs=None):
     argv = [*compiler, *flags, *extra_flags]
     for include in includes:
         argv += ["-I", str(include)]
-    for include in SYSTEM_INCLUDE_DIRS:
+    for include in system_dirs if system_dirs is not None else SYSTEM_INCLUDE_DIRS:
         argv += ["-isystem", str(REPO_ROOT / include)]
     argv += ["-c", str(source), "-o", str(obj)]
     if dep is not None:
@@ -413,10 +414,28 @@ def tool_area_closure(hub, tools):
     return src_area_closure(hub, areas)
 
 
+def system_include_dirs(hub=None):
+    dirs = list(SYSTEM_INCLUDE_DIRS)
+    dirs.extend(build_cfg(hub).get("raylib_build", {}).get("include_dirs", []))
+    return dirs
+
+
+def raylib_link_map(hub, root):
+    cfg = build_cfg(hub).get("raylib_build", {})
+    tools = set(cfg.get("tools", []))
+    if not tools:
+        return {}
+    lib = root / cfg["lib"]
+    if not lib.is_file():
+        raise BtError(f"raylib lib missing at {lib}: run python scripts/vendor.py")
+    return {name: (lib, list(cfg.get("system_libs", []))) for name in tools}
+
+
 def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
+    system_dirs = system_include_dirs(hub)
     tools_needed = tools_needed_for_suites(root, discover_test_suites(root)) if test_area == "tools" else set()
     if test_area == "tools":
         src_areas = tool_area_closure(hub, tools_needed)
@@ -462,6 +481,7 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
                         obj,
                         dep,
                         vendor_extra_flags(source),
+                        system_dirs,
                     ),
                 )
             )
@@ -533,6 +553,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
     src_objects = [
         obj for source, obj in entries if source.is_relative_to(root / "src")
     ]
+    raylib = raylib_link_map(hub, root)
     links = []
     vendor_objects = [
         obj for source, obj in entries if source.is_relative_to(root / "vendor")
@@ -547,11 +568,14 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
             tool_objs = [objs_by_source[s] for s in tool_sources if s in objs_by_source]
             if not tool_objs:
                 continue
+            extra_lib, libs = raylib.get(tool_dir.name, (None, ()))
+            objects = [*src_objects, *tool_objs, *vendor_objects]
+            if extra_lib is not None:
+                objects.append(extra_lib)
             links.append(
                 (
                     f"link {tool_dir.name}.exe",
-                    (bin_dir / f"{tool_dir.name}.exe",
-                     [*src_objects, *tool_objs, *vendor_objects], ()),
+                    (bin_dir / f"{tool_dir.name}.exe", objects, libs),
                 ))
     for suite in discover_test_suites(root):
         test_obj = objs_by_source.get(suite["source"])
@@ -559,6 +583,8 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         if test_obj is None or main_obj not in built_objects:
             continue
         suite_tool_objects = []
+        extra_lib = None
+        libs = ()
         if suite["area"] == "tools" and tool_dirs:
             tool_dir = matched_tool_dir(suite["stem"], tool_dirs)
             if tool_dir is not None:
@@ -567,12 +593,15 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
                     for s in sorted(tool_dir.glob("*.c"))
                     if s.name != "main.c" and s in objs_by_source
                 ]
+                if tool_dir.name in raylib:
+                    extra_lib, libs = raylib[tool_dir.name]
+        objects = [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects]
+        if extra_lib is not None:
+            objects.append(extra_lib)
         links.append(
             (
                 f"link {suite['exe_name']}.exe",
-                (bin_dir / f"{suite['exe_name']}.exe",
-                 [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects],
-                 ()),
+                (bin_dir / f"{suite['exe_name']}.exe", objects, libs),
             ))
     hello_exe = bin_dir / cfg["hello_exe"]
     hello_obj = obj_root / "gen" / "hello.obj"
@@ -814,6 +843,7 @@ def tgt_lint(args):
     tool = resolve_tool("clang_tidy", hub)
     flags = compile_flags(hub)
     includes = [REPO_ROOT / d for d in INCLUDE_DIRS]
+    system_dirs = system_include_dirs(hub)
     files = c_files(REPO_ROOT)
     area = args[0] if args else None
     if area is not None:
@@ -829,7 +859,7 @@ def tgt_lint(args):
             "--",
             *flags,
             *[part for include in includes for part in ("-I", str(include))],
-            *[part for include in SYSTEM_INCLUDE_DIRS
+            *[part for include in system_dirs
               for part in ("-isystem", str(REPO_ROOT / include))],
         ]
         units.append((f"tidy {source.relative_to(REPO_ROOT)}", argv))
@@ -1133,6 +1163,28 @@ def tgt_mutants_gate_selftest(args):
     return tool_run(
         load_hub(), "mutants-gate-selftest-build", "mutants-gate.exe", ["selftest"],
         "mutants-gate-selftest",
+    )
+
+
+def tgt_visual_diff(args):
+    """diff e2e shots against the committed baselines"""
+    hub = load_hub()
+    shots = REPO_ROOT / "artifacts" / "e2e"
+    bases = REPO_ROOT / hub.get("paths", {}).get("baselines", "tests/visual/baselines")
+    return tool_run(
+        hub, "visual-diff-build", "visual-diff.exe", [shots, bases], "visual-diff"
+    )
+
+
+def tgt_visual_selftest(args):
+    """prove the diff passes identical and catches drift"""
+    workdir = REPO_ROOT / "artifacts" / "visual-selftest"
+    return tool_run(
+        load_hub(),
+        "visual-diff-build",
+        "visual-diff.exe",
+        ["--selftest", workdir],
+        "visual-selftest",
     )
 
 

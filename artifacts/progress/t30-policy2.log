@@ -1,0 +1,11 @@
+bt-policy: stale allowlist entry: src/puzzles/geometry.c TAB 128
+bt-policy: stale allowlist entry: src/ga/features.c TAB 63
+bt-policy: src/app/theme.c:13: literal 1.0 x5
+bt-policy: src/app/theme.c:28: literal 0.15 x4
+bt-policy: src/app/theme.c:28: literal 0.20 x6
+bt-policy: src/app/theme.c:28: literal 0.35 x5
+bt-policy: src/app/theme.c:28: literal 0.85 x5
+bt-policy: src/app/theme.c:28: literal 0.95 x7
+bt-policy: src/app/theme.c:29: literal 0.90 x4
+bt-policy: src/app/theme.c:30: literal 0.55 x6
+bt-policy: src/common/space.c:15: literal 128 x5

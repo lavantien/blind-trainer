@@ -1,0 +1,137 @@
+2026-10-27T16:41:14 [entry] test-unit tools
+2026-10-27T16:41:15 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\config.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\json.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\paths.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\rng.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\sha256.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\space.c up to date
+2026-10-27T16:41:15 [skip] compile src\common\strbuf.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\fixtures\fx_main.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\fixtures\fx_target.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\fixtures\stub_clang.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\jobwrap_ceiling_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\jobwrap_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\mutants_gate_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\mutate_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-27T16:41:15 [skip] compile tests\unit\tools\sleeper_test.c up to date
+2026-10-27T16:41:15 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T16:41:15 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\main.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\report.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T16:41:15 [skip] compile tools\mutate\token.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\comments.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\constants.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\lib.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\main.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T16:41:15 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T16:41:15 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T16:41:15 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T16:41:15 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T16:41:17 [fail] compile tests\unit\tools\visual_diff_lib_test.c tion of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:1:
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1348:50: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1348 | RLAPI bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         // Check if point is inside rectangle
+      |                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:1:
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1354:7: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1354 | RLAPI Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         // Get collision rectangle for two rectangles collision
+      |       ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+2026-10-27T16:41:17 [fail] compile tests\unit\tools\visual_diff_selftest_test.c ectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1348:50: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1348 | RLAPI bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         // Check if point is inside rectangle
+      |                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1354:7: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1354 | RLAPI Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         // Get collision rectangle for two rectangles collision
+      |       ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+2026-10-27T16:41:17 [fail] compile tools\visual-diff\lib.c  collision between circle and rectangle
+      |                                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\lib.c:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1348:50: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1348 | RLAPI bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         // Check if point is inside rectangle
+      |                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\lib.c:20:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1354:7: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1354 | RLAPI Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         // Get collision rectangle for two rectangles collision
+      |       ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+2026-10-27T16:41:17 [fail] compile tools\visual-diff\selftest.c  between circle and rectangle
+      |                                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\selftest.c:17:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1348:50: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1348 | RLAPI bool CheckCollisionPointRec(Vector2 point, Rectangle rec);                                         // Check if point is inside rectangle
+      |                                                  ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\selftest.c:17:
+C:\Users\lavantien\dev\github\blind-trainer\vendor\raylib\src\raylib.h:1354:7: error: must use 'struct' tag to refer to type 'Rectangle'
+ 1354 | RLAPI Rectangle GetCollisionRec(Rectangle rec1, Rectangle rec2);                                         // Get collision rectangle for two rectangles collision
+      |       ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h:4639:24: note: struct 'Rectangle' is hidden by a non-type declaration of 'Rectangle' here
+ 4639 |  WINGDIAPI BOOL WINAPI Rectangle(_In_ HDC hdc, _In_ int left, _In_ int top, _In_ int right, _In_ int bottom);
+      |                        ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+2026-10-27T16:41:17 [fail] test-build BtError: 4 of 117 compiles failed

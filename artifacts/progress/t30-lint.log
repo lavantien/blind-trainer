@@ -1,0 +1,30 @@
+2026-10-27T16:47:06 [fail] tidy tests\unit\tools\visual_diff_lib_test.c join(bases, root, "bases");
+      |     ^            ~~~~~  ~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:48:13: note: in the call to 'vd_util_join', declared here
+   48 | static void vd_util_join(char out[VD_UTIL_PATH_MAX], const char *base, const char *leaf) {
+      |             ^                 ~~~                                ~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:608:5: error: 1st argument 'report' (passed to 'out') looks like it might be swapped with the 2nd, 'out' (passed to 'base') [readability-suspicious-call-argument,-warnings-as-errors]
+  608 |     vd_util_join(report, out, "visual/report.md");
+      |     ^            ~~~~~~  ~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:48:13: note: in the call to 'vd_util_join', declared here
+   48 | static void vd_util_join(char out[VD_UTIL_PATH_MAX], const char *base, const char *leaf) {
+      |             ^                 ~~~                                ~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:629:5: error: 1st argument 'bases' (passed to 'out') looks like it might be swapped with the 2nd, 'root' (passed to 'base') [readability-suspicious-call-argument,-warnings-as-errors]
+  629 |     vd_util_join(bases, root, "bases");
+      |     ^            ~~~~~  ~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:48:13: note: in the call to 'vd_util_join', declared here
+   48 | static void vd_util_join(char out[VD_UTIL_PATH_MAX], const char *base, const char *leaf) {
+      |             ^                 ~~~                                ~~~~
+575 warnings generated.
+Suppressed 565 warnings (565 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+10 warnings treated as errors
+2026-10-27T16:47:06 [fail] tidy tests\unit\tools\visual_diff_selftest_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:144:84: error: initializer list should have a trailing comma [readability-trailing-comma,-warnings-as-errors]
+  144 |                             "missing.png",   "at-tolerance.png", "at-tolerance.png"};
+      |                                                                                    ^
+      |                                                                                    ,
+582 warnings generated.
+Suppressed 581 warnings (581 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+1 warning treated as error
+2026-10-27T16:47:06 [lint] 23 clean, 2 failed

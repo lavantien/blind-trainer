@@ -15,10 +15,14 @@ static btvd_report_vec matching_reports(void) {
     reports[0] = plain_report("identical.png", (btvd_verdict){.kind = BTVD_VERDICT_OK});
     reports[1] =
         plain_report("over.png", (btvd_verdict){.kind = BTVD_VERDICT_OVER, .pixels_over = 1});
-    reports[2] = plain_report(
-        "missing.png", (btvd_verdict){.kind = BTVD_VERDICT_MISSING, .side = BTVD_SIDE_BASE});
+    reports[2] = plain_report("missing.png",
+                              (btvd_verdict){.kind = BTVD_VERDICT_MISSING, .side = BTVD_SIDE_BASE});
     reports[3] = plain_report("at-tolerance.png", (btvd_verdict){.kind = BTVD_VERDICT_OK});
-    return (btvd_report_vec){reports, 4, 0};
+    return (btvd_report_vec){
+        reports,
+        4,
+        0,
+    };
 }
 
 BT_TEST(visual_diff_selftest, within_pixel_lands_exactly_at_tolerance) {
@@ -34,14 +38,16 @@ BT_TEST(visual_diff_selftest, within_pixel_lands_exactly_at_tolerance) {
 }
 
 BT_TEST(visual_diff_selftest, verdict_kind_names_every_verdict) {
-    BT_CHECK(strcmp(btvd_verdict_kind_label(&(btvd_verdict){.kind = BTVD_VERDICT_OK}),
-                    "ok") == 0);
+    BT_CHECK(strcmp(btvd_verdict_kind_label(&(btvd_verdict){.kind = BTVD_VERDICT_OK}), "ok") == 0);
     BT_CHECK(strcmp(btvd_verdict_kind_label(
                         &(btvd_verdict){.kind = BTVD_VERDICT_OVER, .pixels_over = 9}),
                     "over") == 0);
     btvd_verdict dim = {
-        .kind = BTVD_VERDICT_DIM_MISMATCH, .shot_width = 1, .shot_height = 2,
-        .base_width = 2, .base_height = 1,
+        .kind = BTVD_VERDICT_DIM_MISMATCH,
+        .shot_width = 1,
+        .shot_height = 2,
+        .base_width = 2,
+        .base_height = 1,
     };
     BT_CHECK(strcmp(btvd_verdict_kind_label(&dim), "dim-mismatch") == 0);
     BT_CHECK(strcmp(btvd_verdict_kind_label(
@@ -135,14 +141,13 @@ BT_TEST(visual_diff_selftest, materialize_writes_every_scenario) {
     char shots[BT_PATH_MAX];
     char bases[BT_PATH_MAX];
     char err[BTVD_ERR_MAX];
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     char path[VD_UTIL_PATH_MAX];
     const char *sides[] = {shots, bases, shots, bases, shots, shots, bases};
-    const char *leaves[] = {"identical.png", "identical.png", "over.png",
-                            "over.png", "missing.png", "at-tolerance.png",
-                            "at-tolerance.png"};
+    const char *leaves[] = {
+        "identical.png", "identical.png",    "over.png",         "over.png",
+        "missing.png",   "at-tolerance.png", "at-tolerance.png",
+    };
     for (size_t at = 0; at < 7; at++) {
         vd_util_join(path, sides[at], leaves[at]);
         BT_CHECK(vd_util_is_file(path));
@@ -191,15 +196,11 @@ BT_TEST(visual_diff_selftest, materialize_is_idempotent_and_clears_stale_files) 
     char shots[BT_PATH_MAX];
     char bases[BT_PATH_MAX];
     char err[BTVD_ERR_MAX];
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     char stale[VD_UTIL_PATH_MAX];
     vd_util_join(stale, bases, "missing.png");
     vd_util_write(stale, "");
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     BT_CHECK(!vd_util_is_file(stale));
     char shot_missing[VD_UTIL_PATH_MAX];
     vd_util_join(shot_missing, shots, "missing.png");
@@ -213,13 +214,9 @@ BT_TEST(visual_diff_selftest, execute_detects_every_planted_scenario) {
     char shots[BT_PATH_MAX];
     char bases[BT_PATH_MAX];
     char err[BTVD_ERR_MAX];
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     btvd_selftest_checks checks;
-    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err,
-                             sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err, sizeof err), 0);
     int all_passed = 1;
     for (size_t at = 0; at < checks.count; at++) {
         all_passed = all_passed && checks.items[at].passed;
@@ -234,9 +231,7 @@ BT_TEST(visual_diff_selftest, a_broken_over_fixture_fails_the_selftest) {
     char shots[BT_PATH_MAX];
     char bases[BT_PATH_MAX];
     char err[BTVD_ERR_MAX];
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     btvd_image solid;
     unsigned char solid_rgba[4] = {0, 0, 0, 255};
     vd_util_solid_image(&solid, BTVD_SELFTEST_WIDTH, BTVD_SELFTEST_HEIGHT, solid_rgba);
@@ -244,9 +239,7 @@ BT_TEST(visual_diff_selftest, a_broken_over_fixture_fails_the_selftest) {
     vd_util_join(broken, bases, "over.png");
     vd_util_write_png(broken, &solid);
     btvd_selftest_checks checks;
-    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err,
-                             sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err, sizeof err), 0);
     BT_CHECK_EQ(checks.items[0].passed, 1);
     BT_CHECK_EQ(checks.items[1].passed, 0);
     BT_CHECK_EQ(checks.items[2].passed, 1);
@@ -263,9 +256,7 @@ BT_TEST(visual_diff_selftest, a_broken_missing_fixture_fails_the_selftest) {
     char shots[BT_PATH_MAX];
     char bases[BT_PATH_MAX];
     char err[BTVD_ERR_MAX];
-    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err,
-                                 sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
     btvd_image solid;
     unsigned char solid_rgba[4] = {0, 0, 0, 255};
     vd_util_solid_image(&solid, BTVD_SELFTEST_WIDTH, BTVD_SELFTEST_HEIGHT, solid_rgba);
@@ -273,9 +264,7 @@ BT_TEST(visual_diff_selftest, a_broken_missing_fixture_fails_the_selftest) {
     vd_util_join(broken, bases, "missing.png");
     vd_util_write_png(broken, &solid);
     btvd_selftest_checks checks;
-    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err,
-                             sizeof err),
-                0);
+    BT_CHECK_EQ(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err, sizeof err), 0);
     BT_CHECK_EQ(checks.items[0].passed, 1);
     BT_CHECK_EQ(checks.items[1].passed, 1);
     BT_CHECK_EQ(checks.items[2].passed, 0);

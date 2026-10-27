@@ -1,0 +1,66 @@
+2026-10-27T16:44:11 [entry] test-unit tools
+2026-10-27T16:44:11 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\config.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\json.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\paths.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\rng.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\sha256.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\space.c up to date
+2026-10-27T16:44:11 [skip] compile src\common\strbuf.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\fixtures\fx_main.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\fixtures\fx_target.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\fixtures\stub_clang.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\jobwrap_ceiling_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\jobwrap_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\mutants_gate_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\mutate_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-27T16:44:11 [skip] compile tests\unit\tools\sleeper_test.c up to date
+2026-10-27T16:44:11 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T16:44:11 [skip] compile tools\jobwrap\lib.c up to date
+2026-10-27T16:44:11 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\main.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\report.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T16:44:11 [skip] compile tools\mutate\token.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\comments.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\constants.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\lib.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\main.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T16:44:11 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T16:44:11 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T16:44:11 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T16:44:11 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T16:44:11 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T16:44:13 [fail] compile tests\unit\tools\visual_diff_selftest_test.c In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:143:13: error: unused function 'vd_util_put_pixel' [-Werror,-Wunused-function]
+  143 | static void vd_util_put_pixel(btvd_image *img, uint32_t x, uint32_t y,
+      |             ^~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:173:13: error: unused function 'vd_util_env_for' [-Werror,-Wunused-function]
+  173 | static void vd_util_env_for(btvd_env *env, const char *root, const char *config, char **argv,
+      |             ^~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:182:13: error: unused function 'vd_util_write_config' [-Werror,-Wunused-function]
+  182 | static void vd_util_write_config(const char *root, char out[VD_UTIL_PATH_MAX], unsigned tolerance) {
+      |             ^~~~~~~~~~~~~~~~~~~~
+3 errors generated.
+2026-10-27T16:44:13 [fail] test-build BtError: 1 of 115 compiles failed
