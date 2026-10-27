@@ -10,14 +10,8 @@ const char *const BT_FTO_FACE_NAMES[BT_FTO_FACE_COUNT] = {
 };
 
 static const int8_t FACE_SIGNS[8][3] = {
-    {1, 1, 1},
-    {1, 1, -1},
-    {-1, 1, -1},
-    {-1, 1, 1},
-    {-1, -1, 1},
-    {1, -1, 1},
-    {1, -1, -1},
-    {-1, -1, -1},
+    {1, 1, 1},   {1, 1, -1}, {-1, 1, -1}, {-1, 1, 1},
+    {-1, -1, 1}, {1, -1, 1}, {1, -1, -1}, {-1, -1, -1},
 };
 
 static const size_t EDGE_LOCALS[3][2] = {{0, 1}, {0, 2}, {1, 2}};
@@ -42,7 +36,7 @@ static uint8_t face_mask(size_t face) {
     for (size_t local = 0; local < 3; local++) {
         int8_t point[3];
         vertex(face, local, point);
-        mask |= (uint8_t)(1u << vertex_id(point));
+        mask |= (uint8_t)(1U << vertex_id(point));
     }
     return mask;
 }
@@ -145,7 +139,7 @@ bt_fto bt_fto_new(void) {
                 int8_t point[3];
                 vertex(other, local, point);
                 rotate_point(signs, quarter, point, rotated);
-                mask |= (uint8_t)(1u << vertex_id(rotated));
+                mask |= (uint8_t)(1U << vertex_id(rotated));
             }
             size_t candidate = 8;
             for (size_t scan = 0; scan < 8; scan++) {
@@ -187,7 +181,7 @@ bt_fto bt_fto_new(void) {
             rotate_point(signs, quarter, point, rotated);
             size_t away = vertex_id(rotated);
             for (size_t other = 0; other < 8; other++) {
-                if (other == face || (face_mask(other) & (1u << home)) == 0) {
+                if (other == face || (face_mask(other) & (1U << home)) == 0) {
                     continue;
                 }
                 size_t target = face_map[other];
@@ -210,8 +204,8 @@ bt_fto bt_fto_new(void) {
             size_t away[2] = {vertex_id(rotated), vertex_id(rotated_b)};
             size_t other = 8;
             for (size_t candidate = 0; candidate < 8; candidate++) {
-                if (candidate == face || (face_mask(candidate) & (1u << home[0])) == 0 ||
-                    (face_mask(candidate) & (1u << home[1])) == 0) {
+                if (candidate == face || (face_mask(candidate) & (1U << home[0])) == 0 ||
+                    (face_mask(candidate) & (1U << home[1])) == 0) {
                     continue;
                 }
                 other = candidate;
@@ -266,11 +260,13 @@ uint8_t bt_fto_opposite(const bt_fto *fto, uint8_t face) {
 }
 
 bool bt_fto_move_eq(bt_fto_move a, bt_fto_move b) {
-    return a.face == b.face && a.quarter == b.quarter;
+    bool eq = (a.face == b.face && a.quarter == b.quarter) != 0;
+    return eq;
 }
 
 bool bt_fto_state_eq(const bt_fto_state *a, const bt_fto_state *b) {
-    return memcmp(a->facelets, b->facelets, BT_FTO_FACELET_COUNT) == 0;
+    bool eq = (memcmp(a->facelets, b->facelets, BT_FTO_FACELET_COUNT) == 0) != 0;
+    return eq;
 }
 
 static bool token_rest_quarter(const char *rest, size_t rest_len, uint8_t *quarter) {
@@ -408,12 +404,14 @@ void bt_fto_solved_state(const bt_fto *fto, bt_fto_state *out) {
 bool bt_fto_is_solved(const bt_fto *fto, const bt_fto_state *state) {
     BT_TRACE_ENTER("bt_fto_is_solved");
     (void)fto;
-    bool solved = true;
     for (size_t i = 0; i < BT_FTO_FACELET_COUNT; i++) {
-        solved = solved && state->facelets[i] == (uint8_t)(i / 9);
+        if (state->facelets[i] != (uint8_t)(i / 9)) {
+            BT_TRACE_EXIT("bt_fto_is_solved");
+            return false;
+        }
     }
     BT_TRACE_EXIT("bt_fto_is_solved");
-    return solved;
+    return true;
 }
 
 void bt_fto_facelets(const bt_fto *fto, const bt_fto_state *state, bt_pz_grid *out) {

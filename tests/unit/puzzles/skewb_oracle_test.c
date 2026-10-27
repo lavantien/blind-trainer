@@ -1,6 +1,8 @@
 #include "puzzles/skewb.h"
 #include "puzzles/tier1.h"
 
+#include "common.h"
+
 #include "common/bt_harness.h"
 #include "common/rng.h"
 
@@ -48,51 +50,290 @@ static bool tier1_ok(const bt_skewb *skewb, const char *text) {
     return bt_verify_tier1(&eng, text, &err) == BT_TIER1_OK;
 }
 
-static int cmp_size(const void *a, const void *b) {
-    size_t left = *(const size_t *)a;
-    size_t right = *(const size_t *)b;
-    if (left < right) {
-        return -1;
-    }
-    return left > right ? 1 : 0;
-}
-
-static int cmp_string_p(const void *a, const void *b) {
-    return strcmp(*(const char *const *)a, *(const char *const *)b);
-}
-
 static size_t expected_layer(size_t vertex, size_t out[BT_SKEWB_FACELET_COUNT]) {
     static const size_t cells[4][6][8] = {
-        {{1, 2, 3, 4, 5, 6, 7, 8},
-         {0, 1, 2, 3, 4, 5, 7, 8},
-         {0, 1, 2, 3, 4, 5, 6, 7},
-         {2, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {2, 0, 0, 0, 0, 0, 0, 0}},
-        {{0, 1, 3, 4, 5, 6, 7, 8},
-         {0, 1, 2, 3, 4, 5, 6, 7},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 1, 2, 3, 4, 5, 7, 8},
-         {2, 0, 0, 0, 0, 0, 0, 0},
-         {0, 0, 0, 0, 0, 0, 0, 0}},
-        {{0, 1, 2, 3, 4, 5, 7, 8},
-         {2, 0, 0, 0, 0, 0, 0, 0},
-         {0, 1, 2, 3, 4, 5, 7, 8},
-         {0, 0, 0, 0, 0, 0, 0, 0},
-         {0, 1, 2, 3, 4, 5, 6, 7},
-         {8, 0, 0, 0, 0, 0, 0, 0}},
-        {{8, 0, 0, 0, 0, 0, 0, 0},
-         {1, 2, 3, 4, 5, 6, 7, 8},
-         {0, 1, 3, 4, 5, 6, 7, 8},
-         {8, 0, 0, 0, 0, 0, 0, 0},
-         {6, 0, 0, 0, 0, 0, 0, 0},
-         {0, 1, 2, 3, 4, 5, 7, 8}},
+        {
+            {
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                8,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+            },
+            {
+                2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+        },
+        {
+            {
+                0,
+                1,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+            },
+            {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                8,
+            },
+            {
+                2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+        },
+        {
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                8,
+            },
+            {
+                2,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                8,
+            },
+            {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+            },
+            {
+                8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+        },
+        {
+            {
+                8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+            },
+            {
+                0,
+                1,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+            },
+            {
+                8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                6,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            },
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                8,
+            },
+        },
     };
     static const size_t widths[4][6] = {
-        {8, 8, 8, 1, 1, 1},
-        {8, 8, 1, 8, 1, 1},
-        {8, 1, 8, 1, 8, 1},
-        {1, 8, 8, 1, 1, 8},
+        {
+            8,
+            8,
+            8,
+            1,
+            1,
+            1,
+        },
+        {
+            8,
+            8,
+            1,
+            8,
+            1,
+            1,
+        },
+        {
+            8,
+            1,
+            8,
+            1,
+            8,
+            1,
+        },
+        {
+            1,
+            8,
+            8,
+            1,
+            1,
+            8,
+        },
     };
     size_t count = 0;
     for (size_t face = 0; face < 6; face++) {
@@ -101,7 +342,7 @@ static size_t expected_layer(size_t vertex, size_t out[BT_SKEWB_FACELET_COUNT]) 
             count++;
         }
     }
-    qsort(out, count, sizeof out[0], cmp_size);
+    qsort(out, count, sizeof out[0], pz_cmp_size);
     return count;
 }
 
@@ -235,9 +476,9 @@ BT_TEST(skewb_oracle, crosses_travel_with_their_centers) {
     after_text(&skewb, "F", facelets);
     const size_t cells[5] = {1, 3, 4, 5, 7};
     for (size_t i = 0; i < 5; i++) {
-        BT_CHECK_EQ(facelets[2 * 9 + cells[i]], 0);
-        BT_CHECK_EQ(facelets[1 * 9 + cells[i]], 2);
-        BT_CHECK_EQ(facelets[0 * 9 + cells[i]], 1);
+        BT_CHECK_EQ(facelets[2 * 9ULL + cells[i]], 0);
+        BT_CHECK_EQ(facelets[1 * 9ULL + cells[i]], 2);
+        BT_CHECK_EQ(facelets[0 * 9ULL + cells[i]], 1);
     }
 }
 
@@ -249,54 +490,62 @@ BT_TEST(skewb_oracle, corner_stickers_match_derived_geometry) {
         size_t position;
         uint8_t value;
     } pins[4][12] = {
-        {{2 * 9 + 0, 0},
-         {2 * 9 + 2, 0},
-         {2 * 9 + 6, 0},
-         {1 * 9 + 0, 2},
-         {1 * 9 + 2, 2},
-         {1 * 9 + 8, 2},
-         {0 * 9 + 2, 1},
-         {0 * 9 + 6, 1},
-         {0 * 9 + 8, 1},
-         {3 * 9 + 2, 5},
-         {4 * 9 + 0, 3},
-         {5 * 9 + 2, 4}},
-        {{1 * 9 + 0, 0},
-         {1 * 9 + 6, 0},
-         {3 * 9 + 0, 1},
-         {3 * 9 + 2, 1},
-         {3 * 9 + 8, 1},
-         {0 * 9 + 0, 3},
-         {0 * 9 + 6, 3},
-         {0 * 9 + 8, 3},
-         {5 * 9 + 0, 2},
-         {4 * 9 + 2, 5},
-         {2 * 9 + 0, 4},
-         {0, 0}},
-        {{4 * 9 + 0, 0},
-         {4 * 9 + 2, 0},
-         {4 * 9 + 6, 0},
-         {2 * 9 + 0, 4},
-         {2 * 9 + 2, 4},
-         {2 * 9 + 8, 4},
-         {0 * 9 + 0, 2},
-         {0 * 9 + 2, 2},
-         {0 * 9 + 8, 2},
-         {3 * 9 + 0, 1},
-         {5 * 9 + 8, 3},
-         {1 * 9 + 2, 5}},
-        {{2 * 9 + 0, 1},
-         {2 * 9 + 6, 1},
-         {2 * 9 + 8, 1},
-         {5 * 9 + 0, 2},
-         {5 * 9 + 2, 2},
-         {5 * 9 + 8, 2},
-         {1 * 9 + 2, 5},
-         {1 * 9 + 6, 5},
-         {1 * 9 + 8, 5},
-         {4 * 9 + 6, 0},
-         {3 * 9 + 8, 4},
-         {0 * 9 + 8, 3}},
+        {
+            {2 * 9 + 0, 0},
+            {2 * 9 + 2, 0},
+            {2 * 9 + 6, 0},
+            {1 * 9 + 0, 2},
+            {1 * 9 + 2, 2},
+            {1 * 9 + 8, 2},
+            {0 * 9 + 2, 1},
+            {0 * 9 + 6, 1},
+            {0 * 9 + 8, 1},
+            {3 * 9 + 2, 5},
+            {4 * 9 + 0, 3},
+            {5 * 9 + 2, 4},
+        },
+        {
+            {1 * 9 + 0, 0},
+            {1 * 9 + 6, 0},
+            {3 * 9 + 0, 1},
+            {3 * 9 + 2, 1},
+            {3 * 9 + 8, 1},
+            {0 * 9 + 0, 3},
+            {0 * 9 + 6, 3},
+            {0 * 9 + 8, 3},
+            {5 * 9 + 0, 2},
+            {4 * 9 + 2, 5},
+            {2 * 9 + 0, 4},
+            {0, 0},
+        },
+        {
+            {4 * 9 + 0, 0},
+            {4 * 9 + 2, 0},
+            {4 * 9 + 6, 0},
+            {2 * 9 + 0, 4},
+            {2 * 9 + 2, 4},
+            {2 * 9 + 8, 4},
+            {0 * 9 + 0, 2},
+            {0 * 9 + 2, 2},
+            {0 * 9 + 8, 2},
+            {3 * 9 + 0, 1},
+            {5 * 9 + 8, 3},
+            {1 * 9 + 2, 5},
+        },
+        {
+            {2 * 9 + 0, 1},
+            {2 * 9 + 6, 1},
+            {2 * 9 + 8, 1},
+            {5 * 9 + 0, 2},
+            {5 * 9 + 2, 2},
+            {5 * 9 + 8, 2},
+            {1 * 9 + 2, 5},
+            {1 * 9 + 6, 5},
+            {1 * 9 + 8, 5},
+            {4 * 9 + 6, 0},
+            {3 * 9 + 8, 4},
+            {0 * 9 + 8, 3},
+        },
     };
     for (size_t i = 0; i < 4; i++) {
         uint8_t facelets[BT_SKEWB_FACELET_COUNT];
@@ -420,30 +669,6 @@ static void append_token(char *out, size_t out_size, size_t *at, const char *tok
     }
 }
 
-static char *split_space(char *str, char **save) {
-    char *start = str != NULL ? str : *save;
-    if (start == NULL) {
-        return NULL;
-    }
-    while (*start == ' ') {
-        start++;
-    }
-    if (*start == '\0') {
-        *save = start;
-        return NULL;
-    }
-    char *end = start;
-    while (*end != '\0' && *end != ' ') {
-        end++;
-    }
-    if (*end != '\0') {
-        *end = '\0';
-        end++;
-    }
-    *save = end;
-    return start;
-}
-
 static void normalize(const char *alg, char *out, size_t out_size) {
     char core[512];
     const char *arrow = strstr(alg, "->");
@@ -484,8 +709,8 @@ static void normalize(const char *alg, char *out, size_t out_size) {
             char *save = NULL;
             char tokens[32][32];
             size_t token_count = 0;
-            for (char *token = split_space(group, &save); token != NULL;
-                 token = split_space(NULL, &save)) {
+            for (char *token = pz_split_space(group, &save); token != NULL;
+                 token = pz_split_space(NULL, &save)) {
                 if (token_count < 32) {
                     snprintf(tokens[token_count], 32, "%s", token);
                     token_count++;
@@ -511,12 +736,10 @@ static void normalize(const char *alg, char *out, size_t out_size) {
                 depth = 1;
                 group_at = 0;
                 group[0] = '\0';
-            } else if (ch != ' ') {
-                if (plain_at + 1 < sizeof plain) {
-                    plain[plain_at] = ch;
-                    plain_at++;
-                    plain[plain_at] = '\0';
-                }
+            } else if (ch != ' ' && plain_at + 1 < sizeof plain) {
+                plain[plain_at] = ch;
+                plain_at++;
+                plain[plain_at] = '\0';
             }
         } else if (depth == 0) {
             if (ch == '(') {
@@ -529,12 +752,10 @@ static void normalize(const char *alg, char *out, size_t out_size) {
                     plain_at = 0;
                     plain[0] = '\0';
                 }
-            } else {
-                if (plain_at + 1 < sizeof plain) {
-                    plain[plain_at] = ch;
-                    plain_at++;
-                    plain[plain_at] = '\0';
-                }
+            } else if (plain_at + 1 < sizeof plain) {
+                plain[plain_at] = ch;
+                plain_at++;
+                plain[plain_at] = '\0';
             }
         } else {
             if (ch == '(') {
@@ -584,83 +805,31 @@ BT_TEST(skewb_oracle, rotation_groups_arrow_chains_and_group_repeats_strip_to_mo
     BT_CHECK_EQ(out, "R' F R F' R' F R F' R' F R F' R' F R F'");
 }
 
-static char *read_pack(void) {
-    const char *root = getenv("BT_REF_GROUND");
-    if (root == NULL || root[0] == '\0') {
-        root = "ref_ground";
-    }
-    char path[512];
-    snprintf(path, sizeof path, "%s/packs/skewb_sarah.tsv", root);
-    FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
-    if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    text[size] = '\0';
-    fclose(file);
-    return text;
-}
-
 BT_TEST(skewb_oracle, pack_rows_pass_tier1_after_stripping) {
     bt_skewb skewb = bt_skewb_new();
-    char *text = read_pack();
+    char *text = pz_read_pack("skewb_sarah.tsv");
     size_t rows = 0;
     char unique[64][16];
     size_t unique_count = 0;
-    char *cursor = text;
-    bool first = true;
-    while (*cursor != '\0') {
-        char *line_end = strchr(cursor, '\n');
-        if (line_end == NULL) {
-            line_end = cursor + strlen(cursor);
-        }
-        char *line = cursor;
-        bool last = *line_end == '\0';
-        if (line_end > line && line_end[-1] == '\r') {
-            line_end[-1] = '\0';
-        }
-        *line_end = '\0';
-        cursor = last ? line_end : line_end + 1;
-        if (line[0] == '\0') {
+    pz_pack_rows walker;
+    pz_pack_rows_init(&walker, text);
+    char *fields[8];
+    size_t field_count = 0;
+    bool is_header = false;
+    while (pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
+        if (is_header) {
             continue;
-        }
-        if (first) {
-            first = false;
-            continue;
-        }
-        char *fields[8];
-        size_t field_count = 0;
-        char *field = line;
-        for (char *scan = line;; scan++) {
-            if (*scan == '\t' || *scan == '\0') {
-                if (field_count < 8) {
-                    fields[field_count] = field;
-                }
-                field_count++;
-                bool done = *scan == '\0';
-                *scan = '\0';
-                if (done) {
-                    break;
-                }
-                field = scan + 1;
-            }
         }
         char alg[512];
         normalize(fields[1], alg, sizeof alg);
         if (!tier1_ok(&skewb, alg)) {
             BT_ABORT("tier1 failed for row %s", fields[0]);
         }
-        char walker[512];
-        snprintf(walker, sizeof walker, "%s", alg);
+        char walk_buffer[512];
+        snprintf(walk_buffer, sizeof walk_buffer, "%s", alg);
         char *save = NULL;
-        for (char *token = split_space(walker, &save); token != NULL;
-             token = split_space(NULL, &save)) {
+        for (char *token = pz_split_space(walk_buffer, &save); token != NULL;
+             token = pz_split_space(NULL, &save)) {
             bool known = false;
             for (size_t i = 0; i < unique_count; i++) {
                 if (strcmp(unique[i], token) == 0) {
@@ -680,21 +849,12 @@ BT_TEST(skewb_oracle, pack_rows_pass_tier1_after_stripping) {
     for (size_t i = 0; i < unique_count; i++) {
         pointers[i] = unique[i];
     }
-    qsort(pointers, unique_count, sizeof pointers[0], cmp_string_p);
+    qsort(pointers, unique_count, sizeof pointers[0], pz_cmp_string);
     const char *want[6] = {"F", "F'", "L", "L'", "R", "R'"};
     for (size_t i = 0; i < 6; i++) {
         BT_CHECK_EQ(pointers[i], want[i]);
     }
     free(text);
-}
-
-static uint64_t xorshift(uint64_t *seed) {
-    uint64_t x = *seed;
-    x ^= x << 13;
-    x ^= x >> 7;
-    x ^= x << 17;
-    *seed = x;
-    return x;
 }
 
 BT_TEST(skewb_oracle, inverse_round_trips_through_solved) {
@@ -707,8 +867,10 @@ BT_TEST(skewb_oracle, inverse_round_trips_through_solved) {
         size_t length = (size_t)bt_rng_below(&rng, 24);
         void *alg = bt_pz_alg_create();
         for (size_t i = 0; i < length; i++) {
-            bt_skewb_move move = {(uint8_t)bt_rng_below(&rng, 4),
-                                  (uint8_t)(bt_rng_below(&rng, 2) + 1)};
+            bt_skewb_move move = {
+                (uint8_t)bt_rng_below(&rng, 4),
+                (uint8_t)(bt_rng_below(&rng, 2) + 1),
+            };
             bt_pz_alg_push(&eng, alg, &move);
         }
         void *inverse = bt_pz_alg_create();
@@ -813,120 +975,6 @@ BT_TEST(skewb_oracle, apply_rejects_hand_built_illegal_quarters) {
         bt_pz_error_message(&err, &message);
         BT_CHECK(strstr(message.data, "illegal") != NULL);
         bt_strbuf_free(&message);
-        bt_pz_alg_destroy(alg);
-    }
-}
-
-BT_TEST(skewb_inline, solved_state_is_solved) {
-    bt_skewb skewb = bt_skewb_new();
-    bt_skewb_state state;
-    bt_skewb_solved_state(&skewb, &state);
-    BT_CHECK(bt_skewb_is_solved(&skewb, &state));
-}
-
-BT_TEST(skewb_inline, every_single_turn_breaks_and_reverts) {
-    bt_skewb skewb = bt_skewb_new();
-    bt_pz_engine eng = bt_skewb_engine(&skewb);
-    bt_pz_error err;
-    for (uint8_t vertex = 0; vertex < 4; vertex++) {
-        for (uint8_t quarter = 1; quarter <= 2; quarter++) {
-            void *alg = bt_pz_alg_create();
-            bt_skewb_move move = {vertex, quarter};
-            bt_pz_alg_push(&eng, alg, &move);
-            bt_skewb_state state;
-            bt_skewb_solved_state(&skewb, &state);
-            if (!bt_skewb_apply_alg(&skewb, &state, alg, &err)) {
-                BT_ABORT("apply failed: %s", err.token);
-            }
-            BT_CHECK(!bt_skewb_is_solved(&skewb, &state));
-            void *inverse = bt_pz_alg_create();
-            bt_skewb_invert_alg(&skewb, alg, inverse);
-            if (!bt_skewb_apply_alg(&skewb, &state, inverse, &err)) {
-                BT_ABORT("apply inverse failed: %s", err.token);
-            }
-            BT_CHECK(bt_skewb_is_solved(&skewb, &state));
-            bt_pz_alg_destroy(inverse);
-            bt_pz_alg_destroy(alg);
-        }
-    }
-}
-
-BT_TEST(skewb_inline, move_tokens_round_trip_through_format) {
-    bt_skewb skewb = bt_skewb_new();
-    bt_pz_engine eng = bt_skewb_engine(&skewb);
-    for (uint8_t vertex = 0; vertex < 4; vertex++) {
-        for (uint8_t quarter = 1; quarter <= 2; quarter++) {
-            void *alg = bt_pz_alg_create();
-            bt_skewb_move move = {vertex, quarter};
-            bt_pz_alg_push(&eng, alg, &move);
-            bt_strbuf text;
-            bt_strbuf_init(&text, 8);
-            bt_skewb_format_alg(&skewb, alg, &text);
-            bt_skewb_move parsed;
-            BT_CHECK(bt_skewb_parse_move(text.data, text.len, &parsed, NULL));
-            BT_CHECK(bt_skewb_move_eq(parsed, move));
-            bt_strbuf_free(&text);
-            bt_pz_alg_destroy(alg);
-        }
-    }
-}
-
-BT_TEST(skewb_inline, inverse_round_trips_a_deterministic_alg_sweep) {
-    bt_skewb skewb = bt_skewb_new();
-    bt_pz_engine eng = bt_skewb_engine(&skewb);
-    uint64_t seed = 0x5eed1234abcdf00dULL;
-    bt_pz_error err;
-    for (size_t iteration = 0; iteration < 4096; iteration++) {
-        size_t length = (size_t)(xorshift(&seed) % 24);
-        void *alg = bt_pz_alg_create();
-        for (size_t i = 0; i < length; i++) {
-            bt_skewb_move move = {(uint8_t)(xorshift(&seed) % 4),
-                                  (uint8_t)(xorshift(&seed) % 2 + 1)};
-            bt_pz_alg_push(&eng, alg, &move);
-        }
-        void *inverse = bt_pz_alg_create();
-        bt_skewb_invert_alg(&skewb, alg, inverse);
-        bt_skewb_state forward;
-        bt_skewb_state reverse;
-        bt_skewb_solved_state(&skewb, &forward);
-        bt_skewb_solved_state(&skewb, &reverse);
-        if (!bt_skewb_apply_alg(&skewb, &forward, alg, &err) ||
-            !bt_skewb_apply_alg(&skewb, &forward, inverse, &err) ||
-            !bt_skewb_is_solved(&skewb, &forward)) {
-            BT_ABORT("forward round trip failed");
-        }
-        if (!bt_skewb_apply_alg(&skewb, &reverse, inverse, &err) ||
-            !bt_skewb_apply_alg(&skewb, &reverse, alg, &err) ||
-            !bt_skewb_is_solved(&skewb, &reverse)) {
-            BT_ABORT("reverse round trip failed");
-        }
-        bt_strbuf text;
-        bt_strbuf_init(&text, 256);
-        bt_skewb_format_alg(&skewb, alg, &text);
-        void *reparsed = bt_pz_alg_create();
-        if (!bt_skewb_parse_alg(&skewb, text.data, text.len, reparsed, &err) ||
-            bt_pz_alg_len(reparsed) != bt_pz_alg_len(alg)) {
-            BT_ABORT("format round trip failed for %s", text.data);
-        }
-        for (size_t i = 0; i < bt_pz_alg_len(alg); i++) {
-            bt_skewb_move a = *(const bt_skewb_move *)bt_pz_alg_at(&eng, alg, i);
-            bt_skewb_move b = *(const bt_skewb_move *)bt_pz_alg_at(&eng, reparsed, i);
-            if (!bt_skewb_move_eq(a, b)) {
-                BT_ABORT("format round trip differs for %s", text.data);
-            }
-        }
-        void *twice = bt_pz_alg_create();
-        bt_skewb_invert_alg(&skewb, inverse, twice);
-        if (bt_pz_alg_len(twice) != bt_pz_alg_len(alg)) {
-            BT_ABORT("double inverse length differs");
-        }
-        if (!tier1_ok(&skewb, text.data)) {
-            BT_ABORT("tier1 failed for %s", text.data);
-        }
-        bt_pz_alg_destroy(twice);
-        bt_pz_alg_destroy(reparsed);
-        bt_strbuf_free(&text);
-        bt_pz_alg_destroy(inverse);
         bt_pz_alg_destroy(alg);
     }
 }

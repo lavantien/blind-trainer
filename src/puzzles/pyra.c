@@ -49,11 +49,13 @@ static void token_text(bt_pyra_move mv, char out[3]) {
 }
 
 bool bt_pyra_move_eq(bt_pyra_move a, bt_pyra_move b) {
-    return a.vertex == b.vertex && a.layers == b.layers && a.sense == b.sense;
+    bool eq = (a.vertex == b.vertex && a.layers == b.layers && a.sense == b.sense) != 0;
+    return eq;
 }
 
 bool bt_pyra_state_eq(const bt_pyra_state *a, const bt_pyra_state *b) {
-    return memcmp(a->facelets, b->facelets, BT_PYRA_FACELET_COUNT) == 0;
+    bool eq = (memcmp(a->facelets, b->facelets, BT_PYRA_FACELET_COUNT) == 0) != 0;
+    return eq;
 }
 
 bool bt_pyra_parse_move(const char *token, size_t len, bt_pyra_move *out, bt_pz_error *err) {
@@ -196,12 +198,14 @@ void bt_pyra_solved_state(bt_pyra_state *out) {
 
 bool bt_pyra_is_solved(const bt_pyra_state *state) {
     BT_TRACE_ENTER("bt_pyra_is_solved");
-    bool solved = true;
     for (size_t i = 0; i < BT_PYRA_FACELET_COUNT; i++) {
-        solved = solved && state->facelets[i] == (uint8_t)(i / 9);
+        if (state->facelets[i] != (uint8_t)(i / 9)) {
+            BT_TRACE_EXIT("bt_pyra_is_solved");
+            return false;
+        }
     }
     BT_TRACE_EXIT("bt_pyra_is_solved");
-    return solved;
+    return true;
 }
 
 void bt_pyra_facelets(const bt_pyra_state *state, bt_pz_grid *out) {

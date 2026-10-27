@@ -22,30 +22,21 @@ const uint8_t BT_MEGA_NEIGHBOR_CW[BT_MEGA_FACES][BT_MEGA_RING] = {
 };
 
 const uint8_t BT_MEGA_Y_PERM[BT_MEGA_FACES] = {
-    BT_MEGA_U, BT_MEGA_L, BT_MEGA_F,     BT_MEGA_R,  BT_MEGA_BR,
-    BT_MEGA_BL, BT_MEGA_D, BT_MEGA_UR, BT_MEGA_DR, BT_MEGA_DL,
-    BT_MEGA_UL, BT_MEGA_B,
+    BT_MEGA_U, BT_MEGA_L,  BT_MEGA_F,  BT_MEGA_R,  BT_MEGA_BR, BT_MEGA_BL,
+    BT_MEGA_D, BT_MEGA_UR, BT_MEGA_DR, BT_MEGA_DL, BT_MEGA_UL, BT_MEGA_B,
 };
+
+enum { BT_MEGA_PINNED_COUNT = 16, BT_MEGA_TEXT_MAX = 32 };
 
 static const struct {
     const char *text;
     bt_mega_move mv;
-} PINNED[16] = {
-    {"U", {0, BT_MEGA_U, 1}},
-    {"U2", {0, BT_MEGA_U, 2}},
-    {"U2'", {0, BT_MEGA_U, 3}},
-    {"U'", {0, BT_MEGA_U, 4}},
-    {"R", {0, BT_MEGA_R, 1}},
-    {"R2", {0, BT_MEGA_R, 2}},
-    {"R2'", {0, BT_MEGA_R, 3}},
-    {"R'", {0, BT_MEGA_R, 4}},
-    {"L", {0, BT_MEGA_L, 1}},
-    {"L'", {0, BT_MEGA_L, 4}},
-    {"F", {0, BT_MEGA_F, 1}},
-    {"F'", {0, BT_MEGA_F, 4}},
-    {"BR", {0, BT_MEGA_BR, 1}},
-    {"BR'", {0, BT_MEGA_BR, 4}},
-    {"y", {1, 0, 1}},
+} PINNED[BT_MEGA_PINNED_COUNT] = {
+    {"U", {0, BT_MEGA_U, 1}},   {"U2", {0, BT_MEGA_U, 2}},   {"U2'", {0, BT_MEGA_U, 3}},
+    {"U'", {0, BT_MEGA_U, 4}},  {"R", {0, BT_MEGA_R, 1}},    {"R2", {0, BT_MEGA_R, 2}},
+    {"R2'", {0, BT_MEGA_R, 3}}, {"R'", {0, BT_MEGA_R, 4}},   {"L", {0, BT_MEGA_L, 1}},
+    {"L'", {0, BT_MEGA_L, 4}},  {"F", {0, BT_MEGA_F, 1}},    {"F'", {0, BT_MEGA_F, 4}},
+    {"BR", {0, BT_MEGA_BR, 1}}, {"BR'", {0, BT_MEGA_BR, 4}}, {"y", {1, 0, 1}},
     {"y'", {1, 0, 4}},
 };
 
@@ -72,15 +63,17 @@ bool bt_mega_move_eq(bt_mega_move a, bt_mega_move b) {
     if (a.spin == 0 && a.face != b.face) {
         return false;
     }
-    return a.steps == b.steps;
+    bool eq = (a.steps == b.steps) != 0;
+    return eq;
 }
 
 bool bt_mega_state_eq(const bt_mega_state *a, const bt_mega_state *b) {
-    return memcmp(a->colors, b->colors, BT_MEGA_FACELETS) == 0;
+    bool eq = (memcmp(a->colors, b->colors, BT_MEGA_FACELETS) == 0) != 0;
+    return eq;
 }
 
 bool bt_mega_is_pinned_move(bt_mega_move mv) {
-    for (size_t i = 0; i < 16; i++) {
+    for (size_t i = 0; i < BT_MEGA_PINNED_COUNT; i++) {
         if (bt_mega_move_eq(PINNED[i].mv, mv)) {
             return true;
         }
@@ -129,10 +122,8 @@ static void turn_cw(uint8_t colors[BT_MEGA_FACELETS], uint8_t face) {
             src[slot(a, bt_mega_corner_slot(corner_pos(a, face, b)))];
         colors[slot(c, bt_mega_corner_slot(corner_pos(c, face, b)))] =
             src[slot(b, bt_mega_corner_slot(corner_pos(b, face, a)))];
-        colors[slot(b, bt_mega_edge_slot((ring_pos(b, face) + BT_MEGA_RING - 1) %
-                                         BT_MEGA_RING))] =
-            src[slot(a,
-                     bt_mega_edge_slot((ring_pos(a, face) + BT_MEGA_RING - 1) % BT_MEGA_RING))];
+        colors[slot(b, bt_mega_edge_slot((ring_pos(b, face) + BT_MEGA_RING - 1) % BT_MEGA_RING))] =
+            src[slot(a, bt_mega_edge_slot((ring_pos(a, face) + BT_MEGA_RING - 1) % BT_MEGA_RING))];
     }
 }
 
@@ -148,25 +139,24 @@ static void spin_cw(uint8_t colors[BT_MEGA_FACELETS]) {
             uint8_t h2 = BT_MEGA_NEIGHBOR_CW[g][(k + 1) % BT_MEGA_RING];
             colors[slot(img, bt_mega_edge_slot(ring_pos(img, BT_MEGA_Y_PERM[h])))] =
                 src[slot(face, bt_mega_edge_slot(k))];
-            colors[slot(img,
-                        bt_mega_corner_slot(corner_pos(img, BT_MEGA_Y_PERM[h],
-                                                       BT_MEGA_Y_PERM[h2])))] =
+            colors[slot(
+                img, bt_mega_corner_slot(corner_pos(img, BT_MEGA_Y_PERM[h], BT_MEGA_Y_PERM[h2])))] =
                 src[slot(face, bt_mega_corner_slot(k))];
         }
     }
 }
 
-static void describe_move(bt_mega_move mv, char out[32]) {
+static void describe_move(bt_mega_move mv, char out[BT_MEGA_TEXT_MAX]) {
     if (mv.spin == 0) {
-        snprintf(out, 32, "turn %u %u", mv.face, mv.steps);
+        snprintf(out, BT_MEGA_TEXT_MAX, "turn %u %u", mv.face, mv.steps);
     } else {
-        snprintf(out, 32, "spin %u", mv.steps);
+        snprintf(out, BT_MEGA_TEXT_MAX, "spin %u", mv.steps);
     }
 }
 
 bool bt_mega_parse_move(const char *token, size_t len, bt_mega_move *out, bt_pz_error *err) {
     BT_TRACE_ENTER("bt_mega_parse_move");
-    for (size_t i = 0; i < 16; i++) {
+    for (size_t i = 0; i < BT_MEGA_PINNED_COUNT; i++) {
         if (strlen(PINNED[i].text) == len && strncmp(PINNED[i].text, token, len) == 0) {
             *out = PINNED[i].mv;
             BT_TRACE_EXIT("bt_mega_parse_move");
@@ -200,7 +190,7 @@ void bt_mega_format_alg(const void *alg, bt_strbuf *out) {
         }
         bt_mega_move mv = *(const bt_mega_move *)bt_pz_alg_at(&eng, alg, i);
         const char *text = NULL;
-        for (size_t p = 0; p < 16; p++) {
+        for (size_t p = 0; p < BT_MEGA_PINNED_COUNT; p++) {
             if (bt_mega_move_eq(PINNED[p].mv, mv)) {
                 text = PINNED[p].text;
                 break;
@@ -237,7 +227,7 @@ bool bt_mega_apply_alg(bt_mega_state *state, const void *alg, bt_pz_error *err) 
     for (size_t i = 0; i < len; i++) {
         bt_mega_move mv = *(const bt_mega_move *)bt_pz_alg_at(&eng, alg, i);
         if (!bt_mega_is_pinned_move(mv)) {
-            char text[32];
+            char text[BT_MEGA_TEXT_MAX];
             describe_move(mv, text);
             bt_pz_error_set(err, BT_PZ_ERR_APPLY, text, strlen(text));
             BT_TRACE_FAIL("bt_mega_apply_alg", "move rejected: %s", text);
@@ -268,12 +258,14 @@ void bt_mega_solved_state(bt_mega_state *out) {
 
 bool bt_mega_is_solved(const bt_mega_state *state) {
     BT_TRACE_ENTER("bt_mega_is_solved");
-    bool solved = true;
     for (size_t i = 0; i < BT_MEGA_FACELETS; i++) {
-        solved = solved && state->colors[i] == (uint8_t)(i / BT_MEGA_PER_FACE);
+        if (state->colors[i] != (uint8_t)(i / BT_MEGA_PER_FACE)) {
+            BT_TRACE_EXIT("bt_mega_is_solved");
+            return false;
+        }
     }
     BT_TRACE_EXIT("bt_mega_is_solved");
-    return solved;
+    return true;
 }
 
 void bt_mega_facelets(const bt_mega_state *state, bt_pz_grid *out) {

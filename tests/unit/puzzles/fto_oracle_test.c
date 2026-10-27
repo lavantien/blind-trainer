@@ -1,6 +1,8 @@
 #include "puzzles/fto.h"
 #include "puzzles/tier1.h"
 
+#include "common.h"
+
 #include "common/bt_harness.h"
 #include "common/rng.h"
 
@@ -33,29 +35,6 @@ static bool tier1_ok(const bt_fto *fto, const char *text) {
     return bt_verify_tier1(&eng, text, &err) == BT_TIER1_OK;
 }
 
-static char *read_pack(void) {
-    const char *root = getenv("BT_REF_GROUND");
-    if (root == NULL || root[0] == '\0') {
-        root = "ref_ground";
-    }
-    char path[512];
-    snprintf(path, sizeof path, "%s/packs/fto_l4t_redux.tsv", root);
-    FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
-    if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    text[size] = '\0';
-    fclose(file);
-    return text;
-}
-
 BT_TEST(fto_oracle, adjacency_closes_over_the_octahedron) {
     bt_fto fto = bt_fto_new();
     const uint8_t expected[8][3] = {
@@ -72,7 +51,9 @@ BT_TEST(fto_oracle, adjacency_closes_over_the_octahedron) {
             bt_fto_neighbors(&fto, neighbors[k], back);
             bool contains = false;
             for (size_t j = 0; j < 3; j++) {
-                contains = contains || back[j] == face;
+                if (back[j] == face) {
+                    contains = true;
+                }
             }
             BT_CHECK(contains);
             BT_CHECK(bt_fto_opposite(&fto, face) != neighbors[k]);
@@ -162,7 +143,9 @@ BT_TEST(fto_oracle, turn_recolors_only_neighbor_and_opposite_neighbor_faces) {
                     changed++;
                     bool allowed = false;
                     for (size_t k = 0; k < 6; k++) {
-                        allowed = allowed || landing[k] == home;
+                        if (landing[k] == home) {
+                            allowed = true;
+                        }
                     }
                     BT_CHECK(allowed);
                 }
@@ -233,40 +216,20 @@ BT_TEST(fto_oracle, double_turn_token_equals_two_quarter_turns) {
 
 BT_TEST(fto_oracle, br_parity_row_parses_and_applies) {
     bt_fto fto = bt_fto_new();
-    char *text = read_pack();
+    char *text = pz_read_pack("fto_l4t_redux.tsv");
     bool found = false;
     char alg_text[512] = "";
-    char *cursor = text;
-    bool first = true;
-    while (*cursor != '\0' && !found) {
-        char *line_end = strchr(cursor, '\n');
-        if (line_end == NULL) {
-            line_end = cursor + strlen(cursor);
-        }
-        char *line = cursor;
-        bool last = *line_end == '\0';
-        if (line_end > line && line_end[-1] == '\r') {
-            line_end[-1] = '\0';
-        }
-        *line_end = '\0';
-        cursor = last ? line_end : line_end + 1;
-        if (line[0] == '\0' || first) {
-            first = false;
+    pz_pack_rows walker;
+    pz_pack_rows_init(&walker, text);
+    char *fields[8];
+    size_t field_count = 0;
+    bool is_header = false;
+    while (!found && pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
+        if (is_header || field_count < 2) {
             continue;
         }
-        char *key = line;
-        char *alg = strchr(line, '\t');
-        if (alg == NULL) {
-            continue;
-        }
-        *alg = '\0';
-        alg++;
-        char *rest = strchr(alg, '\t');
-        if (rest != NULL) {
-            *rest = '\0';
-        }
-        if (strcmp(key, "l4t.36") == 0) {
-            snprintf(alg_text, sizeof alg_text, "%s", alg);
+        if (strcmp(fields[0], "l4t.36") == 0) {
+            snprintf(alg_text, sizeof alg_text, "%s", fields[1]);
             found = true;
         }
     }
@@ -293,42 +256,22 @@ BT_TEST(fto_oracle, br_parity_row_parses_and_applies) {
 
 BT_TEST(fto_oracle, tier1_green_over_every_pack_row) {
     bt_fto fto = bt_fto_new();
-    char *text = read_pack();
+    char *text = pz_read_pack("fto_l4t_redux.tsv");
     size_t rows = 0;
-    char *cursor = text;
-    bool first = true;
-    while (*cursor != '\0') {
-        char *line_end = strchr(cursor, '\n');
-        if (line_end == NULL) {
-            line_end = cursor + strlen(cursor);
-        }
-        char *line = cursor;
-        bool last = *line_end == '\0';
-        if (line_end > line && line_end[-1] == '\r') {
-            line_end[-1] = '\0';
-        }
-        *line_end = '\0';
-        cursor = last ? line_end : line_end + 1;
-        if (line[0] == '\0') {
+    pz_pack_rows walker;
+    pz_pack_rows_init(&walker, text);
+    char *fields[8];
+    size_t field_count = 0;
+    bool is_header = false;
+    while (pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
+        if (is_header) {
             continue;
         }
-        if (first) {
-            first = false;
-            continue;
+        if (field_count < 2) {
+            BT_ABORT("row without alg column: %s", fields[0]);
         }
-        char *key = line;
-        char *alg = strchr(line, '\t');
-        if (alg == NULL) {
-            BT_ABORT("row without alg column: %s", key);
-        }
-        *alg = '\0';
-        alg++;
-        char *rest = strchr(alg, '\t');
-        if (rest != NULL) {
-            *rest = '\0';
-        }
-        if (!tier1_ok(&fto, alg)) {
-            BT_ABORT("tier1 failed for %s: %s", key, alg);
+        if (!tier1_ok(&fto, fields[1])) {
+            BT_ABORT("tier1 failed for %s: %s", fields[0], fields[1]);
         }
         rows++;
     }
@@ -443,8 +386,10 @@ BT_TEST(fto_oracle, inverse_round_trips_through_solved) {
         size_t length = (size_t)bt_rng_below(&rng, 24);
         void *alg = bt_pz_alg_create();
         for (size_t i = 0; i < length; i++) {
-            bt_fto_move move = {(uint8_t)bt_rng_below(&rng, 8),
-                                (uint8_t)(bt_rng_below(&rng, 2) + 1)};
+            bt_fto_move move = {
+                (uint8_t)bt_rng_below(&rng, 8),
+                (uint8_t)(bt_rng_below(&rng, 2) + 1),
+            };
             bt_pz_alg_push(&eng, alg, &move);
         }
         void *inverse = bt_pz_alg_create();
@@ -579,9 +524,9 @@ BT_TEST(fto_inline, every_single_turn_breaks_and_reverts) {
 
 static uint64_t xorshift(uint64_t *seed) {
     uint64_t x = *seed;
-    x ^= x << 13;
-    x ^= x >> 7;
-    x ^= x << 17;
+    x ^= x << 13U;
+    x ^= x >> 7U;
+    x ^= x << 17U;
     *seed = x;
     return x;
 }
@@ -595,7 +540,10 @@ BT_TEST(fto_inline, inverse_round_trips_a_deterministic_alg_sweep) {
         size_t length = (size_t)(xorshift(&seed) % 24);
         void *alg = bt_pz_alg_create();
         for (size_t i = 0; i < length; i++) {
-            bt_fto_move move = {(uint8_t)(xorshift(&seed) % 8), (uint8_t)(xorshift(&seed) % 2 + 1)};
+            bt_fto_move move = {
+                (uint8_t)(xorshift(&seed) % 8),
+                (uint8_t)(xorshift(&seed) % 2 + 1),
+            };
             bt_pz_alg_push(&eng, alg, &move);
         }
         void *inverse = bt_pz_alg_create();

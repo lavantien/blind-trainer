@@ -16,30 +16,15 @@ static const int8_t VERTEX_SIGNS[4][3] = {
 };
 
 static const int8_t FACE_NORMALS[6][3] = {
-    {0, 1, 0},
-    {0, 0, 1},
-    {1, 0, 0},
-    {-1, 0, 0},
-    {0, 0, -1},
-    {0, -1, 0},
+    {0, 1, 0}, {0, 0, 1}, {1, 0, 0}, {-1, 0, 0}, {0, 0, -1}, {0, -1, 0},
 };
 
 static const int8_t FACE_UPS[6][3] = {
-    {0, 0, -1},
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 1, 0},
-    {0, 0, 1},
+    {0, 0, -1}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 0, 1},
 };
 
 static const int8_t FACE_RIGHTS[6][3] = {
-    {1, 0, 0},
-    {1, 0, 0},
-    {0, 0, -1},
-    {0, 0, 1},
-    {-1, 0, 0},
-    {1, 0, 0},
+    {1, 0, 0}, {1, 0, 0}, {0, 0, -1}, {0, 0, 1}, {-1, 0, 0}, {1, 0, 0},
 };
 
 static void rotate_point(const int8_t signs[3], uint8_t quarter, const int8_t point[3],
@@ -94,7 +79,8 @@ static void anchors(int8_t out[BT_SKEWB_FACELET_COUNT][3]) {
 
 static size_t slot_of(const int8_t table[BT_SKEWB_FACELET_COUNT][3], const int8_t point[3]) {
     for (size_t slot = 0; slot < BT_SKEWB_FACELET_COUNT; slot++) {
-        if (table[slot][0] == point[0] && table[slot][1] == point[1] && table[slot][2] == point[2]) {
+        if (table[slot][0] == point[0] && table[slot][1] == point[1] &&
+            table[slot][2] == point[2]) {
             return slot;
         }
     }
@@ -105,7 +91,8 @@ static size_t slot_of(const int8_t table[BT_SKEWB_FACELET_COUNT][3], const int8_
 
 static bool starts_with(const char *token, size_t len, const char *prefix) {
     size_t plen = strlen(prefix);
-    return len >= plen && len <= plen + 1 && strncmp(token, prefix, plen) == 0;
+    bool match = (len >= plen && len <= plen + 1 && strncmp(token, prefix, plen) == 0) != 0;
+    return match;
 }
 
 bt_skewb bt_skewb_new(void) {
@@ -148,11 +135,13 @@ void bt_skewb_turn_table(const bt_skewb *skewb, uint8_t vertex, uint8_t quarter,
 }
 
 bool bt_skewb_move_eq(bt_skewb_move a, bt_skewb_move b) {
-    return a.vertex == b.vertex && a.quarter == b.quarter;
+    bool eq = (a.vertex == b.vertex && a.quarter == b.quarter) != 0;
+    return eq;
 }
 
 bool bt_skewb_state_eq(const bt_skewb_state *a, const bt_skewb_state *b) {
-    return memcmp(a->facelets, b->facelets, BT_SKEWB_FACELET_COUNT) == 0;
+    bool eq = (memcmp(a->facelets, b->facelets, BT_SKEWB_FACELET_COUNT) == 0) != 0;
+    return eq;
 }
 
 bool bt_skewb_parse_move(const char *token, size_t len, bt_skewb_move *out, bt_pz_error *err) {
@@ -284,12 +273,14 @@ void bt_skewb_solved_state(const bt_skewb *skewb, bt_skewb_state *out) {
 bool bt_skewb_is_solved(const bt_skewb *skewb, const bt_skewb_state *state) {
     BT_TRACE_ENTER("bt_skewb_is_solved");
     (void)skewb;
-    bool solved = true;
     for (size_t i = 0; i < BT_SKEWB_FACELET_COUNT; i++) {
-        solved = solved && state->facelets[i] == (uint8_t)(i / 9);
+        if (state->facelets[i] != (uint8_t)(i / 9)) {
+            BT_TRACE_EXIT("bt_skewb_is_solved");
+            return false;
+        }
     }
     BT_TRACE_EXIT("bt_skewb_is_solved");
-    return solved;
+    return true;
 }
 
 void bt_skewb_facelets(const bt_skewb *skewb, const bt_skewb_state *state, bt_pz_grid *out) {

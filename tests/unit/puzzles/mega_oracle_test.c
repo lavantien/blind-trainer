@@ -1,6 +1,8 @@
 #include "puzzles/mega.h"
 #include "puzzles/tier1.h"
 
+#include "common.h"
+
 #include "common/bt_harness.h"
 #include "common/rng.h"
 
@@ -278,7 +280,7 @@ BT_TEST(mega_oracle, pinned_tokens_parse_format_and_round_trip) {
         if (!bt_mega_parse_alg(PINNED_TOKENS[i], strlen(PINNED_TOKENS[i]), alg, &err)) {
             BT_ABORT("parse %s failed: %s", PINNED_TOKENS[i], err.token);
         }
-        BT_CHECK_EQ(bt_pz_alg_len(alg), 1u);
+        BT_CHECK_EQ(bt_pz_alg_len(alg), 1U);
         bt_pz_engine eng = bt_mega_engine();
         bt_mega_move parsed = *(const bt_mega_move *)bt_pz_alg_at(&eng, alg, 0);
         BT_CHECK(bt_mega_move_eq(parsed, move));
@@ -529,9 +531,13 @@ BT_TEST(mega_oracle, y_perm_matches_independent_derivation_and_structure) {
         for (size_t t = 0; t < BT_MEGA_RING; t++) {
             bool matches = true;
             for (size_t k = 0; k < BT_MEGA_RING; k++) {
-                matches = matches && target[(k + t) % BT_MEGA_RING] == image[k];
+                if (target[(k + t) % BT_MEGA_RING] != image[k]) {
+                    matches = false;
+                }
             }
-            shifted = shifted || matches;
+            if (matches) {
+                shifted = true;
+            }
         }
         BT_CHECK(shifted);
     }
@@ -563,9 +569,15 @@ BT_TEST(mega_oracle, quarter_turn_anatomy_moves_the_layer_strips) {
                 bool corner_found = false;
                 bool corner_prev = false;
                 for (size_t i = 0; i < moved_count; i++) {
-                    edge_found = edge_found || moved[i] == bt_mega_edge_slot((pos + 4) % 5);
-                    corner_found = corner_found || moved[i] == bt_mega_corner_slot(pos);
-                    corner_prev = corner_prev || moved[i] == bt_mega_corner_slot((pos + 4) % 5);
+                    if (moved[i] == bt_mega_edge_slot((pos + 4) % 5)) {
+                        edge_found = true;
+                    }
+                    if (moved[i] == bt_mega_corner_slot(pos)) {
+                        corner_found = true;
+                    }
+                    if (moved[i] == bt_mega_corner_slot((pos + 4) % 5)) {
+                        corner_prev = true;
+                    }
                 }
                 BT_CHECK(edge_found);
                 BT_CHECK(corner_found);
@@ -733,68 +745,16 @@ BT_TEST(mega_oracle, random_algs_pass_tier1_and_round_trips) {
     }
 }
 
-static char *read_pack(void) {
-    const char *root = getenv("BT_REF_GROUND");
-    if (root == NULL || root[0] == '\0') {
-        root = "ref_ground";
-    }
-    char path[512];
-    snprintf(path, sizeof path, "%s/packs/megaminx_4lll.tsv", root);
-    FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
-    if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    text[size] = '\0';
-    fclose(file);
-    return text;
-}
-
 static size_t parse_rows(char *text, char keys[64][32], char algs[64][512]) {
     size_t rows = 0;
-    char *cursor = text;
-    bool first = true;
-    while (*cursor != '\0') {
-        char *line_end = strchr(cursor, '\n');
-        if (line_end == NULL) {
-            line_end = cursor + strlen(cursor);
-        }
-        char *line = cursor;
-        bool last = *line_end == '\0';
-        if (line_end > line && line_end[-1] == '\r') {
-            line_end[-1] = '\0';
-        }
-        *line_end = '\0';
-        cursor = last ? line_end : line_end + 1;
-        if (line[0] == '\0') {
+    pz_pack_rows walker;
+    pz_pack_rows_init(&walker, text);
+    char *fields[8];
+    size_t field_count = 0;
+    bool is_header = false;
+    while (pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
+        if (is_header) {
             continue;
-        }
-        if (first) {
-            first = false;
-            continue;
-        }
-        char *fields[8];
-        size_t field_count = 0;
-        char *field = line;
-        for (char *scan = line;; scan++) {
-            if (*scan == '\t' || *scan == '\0') {
-                if (field_count < 8) {
-                    fields[field_count] = field;
-                }
-                field_count++;
-                bool done = *scan == '\0';
-                *scan = '\0';
-                if (done) {
-                    break;
-                }
-                field = scan + 1;
-            }
         }
         BT_CHECK(field_count == 5);
         snprintf(keys[rows], 32, "%s", fields[0]);
@@ -812,7 +772,7 @@ static size_t parse_rows(char *text, char keys[64][32], char algs[64][512]) {
 }
 
 BT_TEST(mega_oracle, tsv_rows_all_pass_tier1_except_the_wave_b_row) {
-    char *text = read_pack();
+    char *text = pz_read_pack("megaminx_4lll.tsv");
     char keys[64][32];
     char algs[64][512];
     size_t rows = parse_rows(text, keys, algs);
@@ -848,7 +808,7 @@ BT_TEST(mega_oracle, tsv_rows_all_pass_tier1_except_the_wave_b_row) {
 }
 
 BT_TEST(mega_oracle, tsv_row_33_bracket_tokens_are_pinned) {
-    char *text = read_pack();
+    char *text = pz_read_pack("megaminx_4lll.tsv");
     char keys[64][32];
     char algs[64][512];
     size_t rows = parse_rows(text, keys, algs);
@@ -888,7 +848,7 @@ BT_TEST(mega_oracle, facelet_grid_layout_pins_the_pentagon) {
     BT_CHECK_EQ((long long)grid.face_count, 12);
     const size_t widths[5] = {1, 2, 3, 3, 2};
     for (size_t face = 0; face < grid.face_count; face++) {
-        BT_CHECK_EQ(grid.faces[face].row_count, 5u);
+        BT_CHECK_EQ(grid.faces[face].row_count, 5U);
         for (size_t row = 0; row < grid.faces[face].row_count; row++) {
             BT_CHECK_EQ(grid.faces[face].rows[row].cols, widths[row]);
             for (size_t col = 0; col < grid.faces[face].rows[row].cols; col++) {

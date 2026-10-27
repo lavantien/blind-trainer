@@ -1,6 +1,8 @@
 #include "puzzles/pyra.h"
 #include "puzzles/tier1.h"
 
+#include "common.h"
+
 #include "common/bt_harness.h"
 
 #include <stdio.h>
@@ -102,10 +104,6 @@ static int cmp_size(const void *a, const void *b) {
         return -1;
     }
     return left > right ? 1 : 0;
-}
-
-static int cmp_string_p(const void *a, const void *b) {
-    return strcmp(*(const char *const *)a, *(const char *const *)b);
 }
 
 BT_TEST(pyra_oracle, solved_grid_shape_and_colors) {
@@ -348,10 +346,10 @@ BT_TEST(pyra_oracle, formats_and_inverts) {
     bt_strbuf_init(&empty_text, 8);
     bt_pyra_format_alg(empty, &empty_text);
     BT_CHECK_EQ(empty_text.data, "");
-    BT_CHECK_EQ(bt_pz_alg_len(empty), 0u);
+    BT_CHECK_EQ(bt_pz_alg_len(empty), 0U);
     void *inverse_empty = bt_pz_alg_create();
     bt_pyra_invert_alg(empty, inverse_empty);
-    BT_CHECK_EQ(bt_pz_alg_len(inverse_empty), 0u);
+    BT_CHECK_EQ(bt_pz_alg_len(inverse_empty), 0U);
     void *reparsed = bt_pz_alg_create();
     if (!bt_pyra_parse_alg(text.data, text.len, reparsed, &err)) {
         BT_ABORT("reparse failed: %s", err.token);
@@ -387,9 +385,9 @@ BT_TEST(pyra_oracle, apply_always_succeeds) {
 
 static uint64_t xorshift(uint64_t *seed) {
     uint64_t x = *seed;
-    x ^= x << 13;
-    x ^= x >> 7;
-    x ^= x << 17;
+    x ^= x << 13U;
+    x ^= x >> 7U;
+    x ^= x << 17U;
     *seed = x;
     return x;
 }
@@ -468,72 +466,21 @@ BT_TEST(pyra_oracle, random_algs_round_trip) {
     }
 }
 
-static char *read_pack(void) {
-    const char *root = getenv("BT_REF_GROUND");
-    if (root == NULL || root[0] == '\0') {
-        root = "ref_ground";
-    }
-    char path[512];
-    snprintf(path, sizeof path, "%s/packs/pyraminx_l4e.tsv", root);
-    FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
-    if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
-        BT_ABORT("pack unreadable: %s", path);
-    }
-    text[size] = '\0';
-    fclose(file);
-    return text;
-}
-
 BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
-    char *text = read_pack();
+    char *text = pz_read_pack("pyraminx_l4e.tsv");
     size_t rows = 0;
     char unique[64][16];
     size_t unique_count = 0;
-    char *cursor = text;
-    bool first = true;
-    while (*cursor != '\0') {
-        char *line_end = strchr(cursor, '\n');
-        if (line_end == NULL) {
-            line_end = cursor + strlen(cursor);
-        }
-        char *line = cursor;
-        bool last = *line_end == '\0';
-        if (line_end > line && line_end[-1] == '\r') {
-            line_end[-1] = '\0';
-        }
-        *line_end = '\0';
-        cursor = last ? line_end : line_end + 1;
-        if (line[0] == '\0') {
+    pz_pack_rows walker;
+    pz_pack_rows_init(&walker, text);
+    char *fields[8];
+    size_t field_count = 0;
+    bool is_header = false;
+    while (pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
+        if (is_header) {
+            BT_CHECK(strcmp(fields[0], "case_key") == 0);
+            BT_CHECK(strcmp(fields[1], "alg") == 0);
             continue;
-        }
-        if (first) {
-            BT_CHECK(strncmp(line, "case_key\talg\t", 12) == 0);
-            first = false;
-            continue;
-        }
-        char *fields[8];
-        size_t field_count = 0;
-        char *field = line;
-        for (char *scan = line;; scan++) {
-            if (*scan == '\t' || *scan == '\0') {
-                if (field_count < 8) {
-                    fields[field_count] = field;
-                }
-                field_count++;
-                bool done = *scan == '\0';
-                *scan = '\0';
-                if (done) {
-                    break;
-                }
-                field = scan + 1;
-            }
         }
         BT_CHECK(field_count >= 2);
         char alg[512];
@@ -546,22 +493,9 @@ BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
         if (!tier1_ok(alg)) {
             BT_ABORT("tier1 failed for row %s", fields[0]);
         }
-        char *token = alg;
-        while (*token != '\0') {
-            while (*token == ' ') {
-                token++;
-            }
-            if (*token == '\0') {
-                break;
-            }
-            char *end = token;
-            while (*end != '\0' && *end != ' ') {
-                end++;
-            }
-            if (*end != '\0') {
-                *end = '\0';
-                end++;
-            }
+        char *save = NULL;
+        for (char *token = pz_split_space(alg, &save); token != NULL;
+             token = pz_split_space(NULL, &save)) {
             bool known = false;
             for (size_t i = 0; i < unique_count; i++) {
                 if (strcmp(unique[i], token) == 0) {
@@ -572,7 +506,6 @@ BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
                 snprintf(unique[unique_count], 16, "%s", token);
                 unique_count++;
             }
-            token = end;
         }
         rows++;
     }
@@ -582,7 +515,7 @@ BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
     for (size_t i = 0; i < unique_count; i++) {
         pointers[i] = unique[i];
     }
-    qsort(pointers, unique_count, sizeof pointers[0], cmp_string_p);
+    qsort(pointers, unique_count, sizeof pointers[0], pz_cmp_string);
     const char *want[6] = {"L", "L'", "R", "R'", "U", "U'"};
     for (size_t i = 0; i < 6; i++) {
         BT_CHECK_EQ(pointers[i], want[i]);
