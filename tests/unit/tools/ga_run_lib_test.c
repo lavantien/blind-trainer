@@ -417,6 +417,19 @@ BT_TEST(ga_run_lib, config_path_keeps_absolute_paths_and_joins_relative_ones) {
     BT_CHECK(strchr(out, '/') != NULL);
 }
 
+BT_TEST(ga_run_lib, config_path_root_only_keeps_the_workspace_drive) {
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    BT_CHECK(root[1] == ':');
+    char expected[BT_PATH_MAX];
+    snprintf(expected, sizeof expected, "%2.2s/zz/config.json", root);
+    char out[BT_PATH_MAX];
+    BT_CHECK_EQ(bt_gr_config_path("/zz/config.json", out), 0);
+    BT_CHECK(strcmp(out, expected) == 0);
+    BT_CHECK_EQ(bt_gr_config_path("C:ga/config.json", out), 0);
+    BT_CHECK(strcmp(out, "C:ga/config.json") == 0);
+}
+
 BT_TEST(ga_run_lib, build_assignment_maps_pool_texts_onto_scheme_cases) {
     bt_gr_run_inputs inputs;
     synth_inputs(900, &inputs);

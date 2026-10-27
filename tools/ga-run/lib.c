@@ -55,19 +55,11 @@ void bt_gr_offenders_free(bt_gr_offenders *list) {
     BT_TRACE_EXIT("gr.offenders_free");
 }
 
-static int is_absolute_path(const char *path) {
-    return path[0] == '/' || path[0] == '\\' || (path[0] != '\0' && path[1] == ':');
-}
-
 int bt_gr_config_path(const char *relative, char out[BT_PATH_MAX]) {
     BT_TRACE_ENTER("gr.config_path");
-    if (is_absolute_path(relative)) {
-        snprintf(out, BT_PATH_MAX, "%s", relative);
-    } else {
-        char root[BT_PATH_MAX];
-        bt_data_workspace_root(root);
-        snprintf(out, BT_PATH_MAX, "%s/%s", root, relative);
-    }
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    bt_paths_join(root, relative, out);
     BT_TRACE_EXIT("gr.config_path");
     return 0;
 }
