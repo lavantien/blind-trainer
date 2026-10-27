@@ -1,0 +1,32 @@
+2026-10-27T21:53:40 [entry] test-unit tools --only visual_diff
+2026-10-27T21:53:40 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\config.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\json.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\paths.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\rng.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\sha256.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\space.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\strbuf.c up to date
+2026-10-27T21:53:40 [skip] compile src\common\when.c up to date
+2026-10-27T21:53:40 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T21:53:40 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T21:53:40 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T21:53:40 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T21:53:42 [fail] compile tests\unit\tools\visual_diff_selftest_test.c In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:31:12: error: unused function 'vd_util_is_dir' [-Werror,-Wunused-function]
+   31 | static int vd_util_is_dir(const char *path) {
+      |            ^~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:66:15: error: unused function 'vd_util_read_bytes' [-Werror,-Wunused-function]
+   66 | static size_t vd_util_read_bytes(const char *path, unsigned char *out, size_t cap) {
+      |               ^~~~~~~~~~~~~~~~~~
+2 errors generated.
+2026-10-27T21:53:42 [fail] compile tools\visual-diff\fs.c C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:400:49: error: passing 'wchar_t **' (aka 'unsigned short **') to parameter of type 'const wchar_t *const *' (aka 'const unsigned short *const *') discards qualifiers in nested pointer types [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+  400 |         code = (int)_wspawnv(_P_WAIT, wide_exe, wide);
+      |                                                 ^~~~
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\corecrt_wprocess.h:93:42: note: passing argument to parameter '_ArgList' here
+   93 |             _In_z_ wchar_t const* const* _ArgList
+      |                                          ^
+1 error generated.
+2026-10-27T21:53:42 [fail] test-build BtError: 2 of 145 compiles failed

@@ -3,18 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "common/bt_trace.h"
+#include "fs.h"
 #include "raylib.h"
-
-#ifdef _WIN32
-#include <direct.h>
-#include <io.h>
-#else
-#include <dirent.h>
-#include <unistd.h>
-#endif
 
 static const struct {
     const char *name;
@@ -99,91 +91,32 @@ static void config_file(const char *workdir, char out[BT_PATH_MAX]) {
     snprintf(out, BT_PATH_MAX, "%s/config.json", workdir);
 }
 
-static void write_solid_png(const char *path) {
-    Image image = GenImageColor(BTVD_SELFTEST_WIDTH, BTVD_SELFTEST_HEIGHT, (Color){0, 0, 0, 255});
-    if (!ExportImage(image, path)) {
+static void write_png_image(const char *path, Image image) {
+    int size = 0;
+    unsigned char *bytes = ExportImageToMemory(image, ".png", &size);
+    UnloadImage(image);
+    if (bytes == NULL || size <= 0) {
+        MemFree(bytes);
+        abort_png(path);
+        return;
+    }
+    char err[BTVD_ERR_MAX];
+    if (btvd_fs_write_bytes(path, bytes, (size_t)size, err, sizeof err) != 0) {
         abort_png(path);
     }
-    UnloadImage(image);
+    MemFree(bytes);
+}
+
+static void write_solid_png(const char *path) {
+    Image image = GenImageColor(BTVD_SELFTEST_WIDTH, BTVD_SELFTEST_HEIGHT, (Color){0, 0, 0, 255});
+    write_png_image(path, image);
 }
 
 static void write_dotted_png(const char *path, uint32_t x, uint32_t y,
                              const unsigned char rgba[4]) {
     Image image = GenImageColor(BTVD_SELFTEST_WIDTH, BTVD_SELFTEST_HEIGHT, (Color){0, 0, 0, 255});
     ImageDrawPixel(&image, (int)x, (int)y, (Color){rgba[0], rgba[1], rgba[2], rgba[3]});
-    if (!ExportImage(image, path)) {
-        abort_png(path);
-    }
-    UnloadImage(image);
-}
-
-static int path_is_dir(const char *path) {
-    struct stat info;
-    return stat(path, &info) == 0 && (info.st_mode & S_IFMT) == S_IFDIR;
-}
-
-static void rm_rf(const char *path) {
-    if (!path_is_dir(path)) {
-        remove(path);
-        return;
-    }
-#ifdef _WIN32
-    char pattern[BT_PATH_MAX];
-    snprintf(pattern, sizeof pattern, "%s/*", path);
-    struct _finddata_t entry;
-    intptr_t handle = _findfirst(pattern, &entry);
-    if (handle != -1) {
-        do {
-            if (strcmp(entry.name, ".") == 0 || strcmp(entry.name, "..") == 0) {
-                continue;
-            }
-            char child[BT_PATH_MAX];
-            snprintf(child, sizeof child, "%s/%s", path, entry.name);
-            rm_rf(child);
-        } while (_findnext(handle, &entry) == 0);
-        _findclose(handle);
-    }
-    _rmdir(path);
-#else
-    DIR *dir = opendir(path);
-    if (dir != NULL) {
-        struct dirent *entry;
-        while ((entry = readdir(dir)) != NULL) {
-            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-                continue;
-            }
-            char child[BT_PATH_MAX];
-            snprintf(child, sizeof child, "%s/%s", path, entry->d_name);
-            rm_rf(child);
-        }
-        closedir(dir);
-    }
-    rmdir(path);
-#endif
-}
-
-static void mkdir_p(const char *path) {
-    char partial[BT_PATH_MAX];
-    snprintf(partial, sizeof partial, "%s", path);
-    size_t len = strlen(partial);
-    for (size_t at = 1; at < len; at++) {
-        if (partial[at] != '/' && partial[at] != '\\') {
-            continue;
-        }
-        char keep = partial[at];
-        partial[at] = '\0';
-#ifdef _WIN32
-        _mkdir(partial);
-#else
-        mkdir(partial, 0755);
-#endif
-        partial[at] = keep;
-    }
-#ifdef _WIN32
-    _mkdir(partial);
-#else
-    mkdir(partial, 0755);
-#endif
+    write_png_image(path, image);
 }
 
 int btvd_write_selftest_config(const char *workdir, char *err, size_t err_len) {
@@ -195,23 +128,12 @@ int btvd_write_selftest_config(const char *workdir, char *err, size_t err_len) {
     char *slash = strrchr(parent, '/');
     if (slash != NULL) {
         *slash = '\0';
-        mkdir_p(parent);
+        btvd_fs_mkdir_p(parent);
     }
     char text[128];
     snprintf(text, sizeof text, "{\"visual\": {\"tolerance\": %u}}", BTVD_SELFTEST_TOLERANCE);
-    FILE *file = fopen(path, "wb");
-    if (file == NULL) {
-        snprintf(err, err_len, "cannot write config: %s", path);
-        BT_TRACE_FAIL("visual_diff.write_selftest_config", "%s", err);
-        BT_TRACE_EXIT("visual_diff.write_selftest_config");
-        return -1;
-    }
-    size_t len = strlen(text);
-    int broken = fwrite(text, 1, len, file) != len;
-    if (fclose(file) != 0) {
-        broken = 1;
-    }
-    if (broken) {
+    char write_err[BTVD_ERR_MAX];
+    if (btvd_fs_write_bytes(path, text, strlen(text), write_err, sizeof write_err) != 0) {
         snprintf(err, err_len, "cannot write config: %s", path);
         BT_TRACE_FAIL("visual_diff.write_selftest_config", "%s", err);
         BT_TRACE_EXIT("visual_diff.write_selftest_config");
@@ -244,11 +166,11 @@ int btvd_materialize(const char *workdir, uint16_t tolerance, char shots[BT_PATH
     snprintf(bases, BT_PATH_MAX, "%s/baselines", workdir);
     const char *dirs[] = {shots, bases};
     for (size_t at = 0; at < 2; at++) {
-        if (path_is_dir(dirs[at])) {
-            rm_rf(dirs[at]);
+        if (btvd_fs_is_dir(dirs[at])) {
+            btvd_fs_rm_rf(dirs[at]);
         }
-        mkdir_p(dirs[at]);
-        if (!path_is_dir(dirs[at])) {
+        btvd_fs_mkdir_p(dirs[at]);
+        if (!btvd_fs_is_dir(dirs[at])) {
             snprintf(err, err_len, "cannot create %s", dirs[at]);
             BT_TRACE_FAIL("visual_diff.materialize", "%s", err);
             BT_TRACE_EXIT("visual_diff.materialize");

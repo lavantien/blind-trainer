@@ -1,0 +1,24 @@
+2026-10-27T22:09:58 [entry] test-unit tools --only visual_diff
+2026-10-27T22:09:58 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\config.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\json.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\paths.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\rng.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\sha256.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\space.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\strbuf.c up to date
+2026-10-27T22:09:58 [skip] compile src\common\when.c up to date
+2026-10-27T22:09:58 [skip] compile tests\unit\tools\visual_diff_lib_test.c up to date
+2026-10-27T22:09:58 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T22:09:58 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T22:09:58 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T22:09:58 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T22:09:58 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T22:10:00 [fail] compile tools\visual-diff\fs.c C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:443:9: error: call to undeclared library function 'wmemcpy' with type 'unsigned short *(unsigned short *, const unsigned short *, __size_t)' (aka 'unsigned short *(unsigned short *, const unsigned short *, unsigned long long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  443 |         wmemcpy(mutable_line, line, at + 1);
+      |         ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:443:9: note: include the header <wchar.h> or explicitly provide a declaration for 'wmemcpy'
+1 error generated.
+2026-10-27T22:10:00 [fail] test-build BtError: 1 of 146 compiles failed

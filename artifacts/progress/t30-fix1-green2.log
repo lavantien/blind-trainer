@@ -1,0 +1,60 @@
+2026-10-27T22:06:17 [entry] test-unit tools --only visual_diff
+2026-10-27T22:06:18 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\config.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\json.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\paths.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\rng.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\sha256.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\space.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\strbuf.c up to date
+2026-10-27T22:06:18 [skip] compile src\common\when.c up to date
+2026-10-27T22:06:18 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T22:06:20 [repro] 162 object timestamps zeroed
+2026-10-27T22:06:20 [compile] 150 compiled, 150 ok
+[fail] tools_visual_diff_lib_test
+f_lib.render_report_lists_pairs_and_totals
+ok tools_visual_diff_lib_test visual_diff_lib.render_report_prints_dirs_and_escapes_pipes
+INFO: IMAGE: Data loaded successfully (2x2 | R8G8B8A8 | 1 mipmaps)
+INFO: IMAGE: Data loaded successfully (2x2 | R8G8B8A8 | 1 mipmaps)
+ok tools_visual_diff_lib_test visual_diff_lib.run_compare_unions_names_from_both_sides
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-utf8-missing/out/visual/report.md
+ảnh.png: missing on baselines side
+ok tools_visual_diff_lib_test visual_diff_lib.run_fails_exit_diff_on_shot_only_vietnamese_pair
+ok tools_visual_diff_lib_test visual_diff_lib.run_fails_on_config_without_tolerance
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-crc/out/visual/report.md
+scene.png: decode failed on baselines side: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-crc/bases/scene.png: png chunk crc invalid
+ok tools_visual_diff_lib_test visual_diff_lib.run_fails_with_exit_diff_on_crc_corrupted_baseline
+ok tools_visual_diff_lib_test visual_diff_lib.run_rejects_wrong_arg_count_with_usage_message
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-utf8/out/visual/report.md
+menu.png: ok
+ảnh.png: ok
+ok tools_visual_diff_lib_test visual_diff_lib.run_reports_vietnamese_dirs_and_names
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-diff/out/visual/report.md
+scene.png: over tolerance (1 px)
+ok tools_visual_diff_lib_test visual_diff_lib.run_returns_diff_code_for_over_tolerance_pair
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-ok/out/visual/report.md
+scene.png: ok
+ok tools_visual_diff_lib_test visual_diff_lib.run_returns_zero_and_writes_report_for_identical_dirs
+identical.png: expected ok, got ok
+over.png: expected over, got over
+missing.png: expected missing-baseline, got missing-baseline
+at-tolerance.png: expected ok, got ok
+selftest: 4/4 checks passed
+ok tools_visual_diff_lib_test visual_diff_lib.run_selftest_mode_ignores_env_config_and_passes
+ok tools_visual_diff_lib_test visual_diff_lib.run_selftest_stdout_carries_only_report_lines
+updated 1 baselines
+updated ảnh.png
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_copies_vietnamese_names
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_mirrors_screenshots_into_baselines
+updated 1 baselines
+updated fresh.png
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_mode_mirrors_and_returns_zero
+ok tools_visual_diff_lib_test visual_diff_lib.visual_cfg_from_reads_tolerance_and_rejects_bad_values
+ok tools_visual_diff_lib_test visual_diff_lib.write_report_creates_visual_dir_under_artifacts
+suite tools_visual_diff_lib_test: 36 passed, 1 failed
+bt-visual-diff: usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>
+bt-visual-diff: usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>
+2026-10-27T22:06:21 [summary] 1 passed, 1 failed
+2026-10-27T22:06:21 [exit] test-unit code=1

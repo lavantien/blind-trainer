@@ -1,24 +1,16 @@
 #include "lib.h"
 
+#include "fs.h"
 #include "selftest.h"
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "raylib.h"
-
-#ifdef _WIN32
-#include <direct.h>
-#include <io.h>
-#else
-#include <dirent.h>
-#include <unistd.h>
-#endif
 
 static void *xalloc(size_t size) {
     void *block = malloc(size);
@@ -38,37 +30,11 @@ static char *xstrdup(const char *text) {
 }
 
 static int path_is_dir(const char *path) {
-    struct stat info;
-    return stat(path, &info) == 0 && (info.st_mode & S_IFMT) == S_IFDIR;
+    return btvd_fs_is_dir(path);
 }
 
 static int path_is_file(const char *path) {
-    struct stat info;
-    return stat(path, &info) == 0 && (info.st_mode & S_IFMT) == S_IFREG;
-}
-
-static void mkdir_p(const char *path) {
-    char partial[BT_PATH_MAX];
-    snprintf(partial, sizeof partial, "%s", path);
-    size_t len = strlen(partial);
-    for (size_t at = 1; at < len; at++) {
-        if (partial[at] != '/' && partial[at] != '\\') {
-            continue;
-        }
-        char keep = partial[at];
-        partial[at] = '\0';
-#ifdef _WIN32
-        _mkdir(partial);
-#else
-        mkdir(partial, 0755);
-#endif
-        partial[at] = keep;
-    }
-#ifdef _WIN32
-    _mkdir(partial);
-#else
-    mkdir(partial, 0755);
-#endif
+    return btvd_fs_is_file(path);
 }
 
 static int join_path(char out[BT_PATH_MAX], const char *base, const char *leaf) {
@@ -218,54 +184,28 @@ static int png_crc_valid(const unsigned char *data, size_t len) {
     return 0;
 }
 
-static unsigned char *read_file_bytes(const char *path, size_t *len_out, char *err,
-                                      size_t err_len) {
-    FILE *file = fopen(path, "rb");
-    if (file == NULL) {
-        snprintf(err, err_len, "%s: open failed", path);
-        return NULL;
-    }
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    if (size < 0) {
-        fclose(file);
-        snprintf(err, err_len, "%s: size failed", path);
-        return NULL;
-    }
-    unsigned char *bytes = xalloc((size_t)size + 1);
-    size_t got = fread(bytes, 1, (size_t)size, file);
-    fclose(file);
-    if (got != (size_t)size) {
-        free(bytes);
-        snprintf(err, err_len, "%s: short read", path);
-        return NULL;
-    }
-    *len_out = (size_t)size;
-    return bytes;
-}
-
 int btvd_decode(const char *path, btvd_image *out, char *err, size_t err_len) {
     BT_TRACE_ENTER("visual_diff.decode");
     out->pixels = NULL;
     out->width = 0;
     out->height = 0;
     size_t bytes_len = 0;
-    unsigned char *bytes = read_file_bytes(path, &bytes_len, err, err_len);
+    unsigned char *bytes = btvd_fs_read_bytes(path, &bytes_len, err, err_len);
     if (bytes == NULL) {
         BT_TRACE_FAIL("visual_diff.decode", "%s", err);
         BT_TRACE_EXIT("visual_diff.decode");
         return -1;
     }
     int crc_ok = png_crc_valid(bytes, bytes_len);
-    free(bytes);
     if (!crc_ok) {
+        free(bytes);
         snprintf(err, err_len, "%s: png chunk crc invalid", path);
         BT_TRACE_FAIL("visual_diff.decode", "%s", err);
         BT_TRACE_EXIT("visual_diff.decode");
         return -1;
     }
-    Image image = LoadImage(path);
+    Image image = LoadImageFromMemory(".png", bytes, (int)bytes_len);
+    free(bytes);
     if (image.data == NULL) {
         snprintf(err, err_len, "%s: raylib load failed", path);
         BT_TRACE_FAIL("visual_diff.decode", "%s", err);
@@ -425,47 +365,11 @@ int btvd_png_names(const char *dir, btvd_strvec *names, char *err, size_t err_le
         return 0;
     }
     btvd_strvec raw = {0};
-#ifdef _WIN32
-    char pattern[BT_PATH_MAX];
-    int wrote = snprintf(pattern, sizeof pattern, "%s/*", dir);
-    if (wrote < 0 || (size_t)wrote >= sizeof pattern) {
-        snprintf(err, err_len, "path too long under %s", dir);
+    if (btvd_fs_list_names(dir, &raw, err, err_len) != 0) {
         BT_TRACE_FAIL("visual_diff.png_names", "%s", err);
         BT_TRACE_EXIT("visual_diff.png_names");
         return -1;
     }
-    struct _finddata_t entry;
-    intptr_t handle = _findfirst(pattern, &entry);
-    if (handle == -1) {
-        snprintf(err, err_len, "cannot list %s", dir);
-        BT_TRACE_FAIL("visual_diff.png_names", "%s", err);
-        BT_TRACE_EXIT("visual_diff.png_names");
-        return -1;
-    }
-    do {
-        if (strcmp(entry.name, ".") == 0 || strcmp(entry.name, "..") == 0) {
-            continue;
-        }
-        btvd_strvec_push(&raw, xstrdup(entry.name));
-    } while (_findnext(handle, &entry) == 0);
-    _findclose(handle);
-#else
-    DIR *handle = opendir(dir);
-    if (handle == NULL) {
-        snprintf(err, err_len, "cannot list %s", dir);
-        BT_TRACE_FAIL("visual_diff.png_names", "%s", err);
-        BT_TRACE_EXIT("visual_diff.png_names");
-        return -1;
-    }
-    struct dirent *entry;
-    while ((entry = readdir(handle)) != NULL) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-            continue;
-        }
-        btvd_strvec_push(&raw, xstrdup(entry->d_name));
-    }
-    closedir(handle);
-#endif
     btvd_strvec_sort(&raw);
     for (size_t at = 0; at < raw.count; at++) {
         char full[BT_PATH_MAX];
@@ -556,38 +460,6 @@ int btvd_run_compare(const btvd_args *args, uint16_t tolerance, btvd_report_vec 
     return 0;
 }
 
-static int copy_file(const char *from, const char *to, char *err, size_t err_len) {
-    FILE *src = fopen(from, "rb");
-    if (src == NULL) {
-        snprintf(err, err_len, "cannot read %s: %s", from, strerror(errno));
-        return -1;
-    }
-    FILE *dst = fopen(to, "wb");
-    if (dst == NULL) {
-        fclose(src);
-        snprintf(err, err_len, "cannot write %s: %s", to, strerror(errno));
-        return -1;
-    }
-    char buffer[4096];
-    size_t got;
-    while ((got = fread(buffer, 1, sizeof buffer, src)) > 0) {
-        if (fwrite(buffer, 1, got, dst) != got) {
-            snprintf(err, err_len, "short write on %s", to);
-            fclose(src);
-            fclose(dst);
-            return -1;
-        }
-    }
-    int broken = ferror(src);
-    fclose(src);
-    fclose(dst);
-    if (broken) {
-        snprintf(err, err_len, "read failed on %s", from);
-        return -1;
-    }
-    return 0;
-}
-
 static int strvec_contains(const btvd_strvec *vec, const char *name) {
     for (size_t at = 0; at < vec->count; at++) {
         if (strcmp(vec->items[at], name) == 0) {
@@ -601,7 +473,7 @@ int btvd_run_update(const btvd_args *args, btvd_strvec *updated, char *err, size
     BT_TRACE_ENTER("visual_diff.run_update");
     char scratch[BTVD_ERR_MAX];
     if (!path_is_dir(args->baselines)) {
-        mkdir_p(args->baselines);
+        btvd_fs_mkdir_p(args->baselines);
     }
     if (!path_is_dir(args->baselines)) {
         snprintf(err, err_len, "cannot create %s", args->baselines);
@@ -627,7 +499,7 @@ int btvd_run_update(const btvd_args *args, btvd_strvec *updated, char *err, size
             BT_TRACE_EXIT("visual_diff.run_update");
             return -1;
         }
-        if (copy_file(from, to, scratch, sizeof scratch) != 0) {
+        if (btvd_fs_copy(from, to, scratch, sizeof scratch) != 0) {
             snprintf(err, err_len, "%s", scratch);
             BT_TRACE_FAIL("visual_diff.run_update", "%s", err);
             btvd_strvec_free(&current);
@@ -647,7 +519,9 @@ int btvd_run_update(const btvd_args *args, btvd_strvec *updated, char *err, size
     for (size_t at = 0; at < stale.count; at++) {
         if (!strvec_contains(&current, stale.items[at])) {
             char path[BT_PATH_MAX];
-            if (join_path(path, args->baselines, stale.items[at]) != 0 || remove(path) != 0) {
+            char remove_err[BTVD_ERR_MAX];
+            if (join_path(path, args->baselines, stale.items[at]) != 0 ||
+                btvd_fs_remove(path, remove_err, sizeof remove_err) != 0) {
                 snprintf(err, err_len, "cannot remove %s", stale.items[at]);
                 BT_TRACE_FAIL("visual_diff.run_update", "%s", err);
                 btvd_strvec_free(&stale);
@@ -720,8 +594,8 @@ int btvd_write_report(const char *text, const char *artifacts_root, char *out_pa
         BT_TRACE_EXIT("visual_diff.write_report");
         return -1;
     }
-    mkdir_p(dir);
-    FILE *file = fopen(path, "wb");
+    btvd_fs_mkdir_p(dir);
+    FILE *file = btvd_fs_open(path, "wb");
     if (file == NULL) {
         snprintf(err, err_len, "cannot write %s: %s", path, strerror(errno));
         BT_TRACE_FAIL("visual_diff.write_report", "%s", err);
@@ -750,7 +624,7 @@ void btvd_config_path_from(const char *env_value, const char *root, char out[BT_
 
 bt_json_value *btvd_read_config(const char *path, char *err, size_t err_len) {
     BT_TRACE_ENTER("visual_diff.read_config");
-    FILE *file = fopen(path, "rb");
+    FILE *file = btvd_fs_open(path, "rb");
     if (file == NULL) {
         snprintf(err, err_len, "cannot read config %s", path);
         BT_TRACE_FAIL("visual_diff.read_config", "%s", err);
@@ -876,12 +750,13 @@ int btvd_artifacts_root_from(const char *env_value, const bt_json_value *config,
     return 0;
 }
 
-void btvd_env_from_process(btvd_env *env, char **argv, size_t argc) {
+void btvd_env_from_process(btvd_env *env, char **argv, size_t argc, const char *config,
+                           const char *artifacts) {
     BT_TRACE_ENTER("visual_diff.env_from_process");
     env->argv = argv;
     env->argc = argc;
-    env->config = getenv("BT_CONFIG");
-    env->artifacts = getenv("BT_ARTIFACTS");
+    env->config = config;
+    env->artifacts = artifacts;
     bt_paths_workspace_root(env->root);
     BT_TRACE_EXIT("visual_diff.env_from_process");
 }

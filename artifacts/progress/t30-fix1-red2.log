@@ -1,0 +1,81 @@
+2026-10-27T21:50:52 [entry] test-unit tools --only visual_diff
+2026-10-27T21:50:52 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\config.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\json.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\paths.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\rng.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\sha256.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\space.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\strbuf.c up to date
+2026-10-27T21:50:52 [skip] compile src\common\when.c up to date
+2026-10-27T21:50:52 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T21:50:52 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T21:50:52 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T21:50:52 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T21:50:55 [fail] compile tests\unit\tools\visual_diff_lib_test.c tests\unit\tools\visual_diff_lib_test_util.h:4:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:45:18: error: too many arguments to function call, expected single argument '_Stream', have 2 arguments
+   45 |     _getcwd(cwd, sizeof cwd);
+      |     ~~~~~~~      ^~~~~~~~~~
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\stdio.h:321:26: note: '_getw' declared here
+  321 |     _ACRTIMP int __cdecl _getw(
+      |                          ^
+  322 |         _Inout_ FILE* _Stream
+      |                 ~~~~~~~~~~~~~
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test_util.h:27:15: error: redefinition of 'vd_util_read_bytes'
+   27 | static size_t vd_util_read_bytes(const char *path, unsigned char *out, size_t cap) {
+      |               ^
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:65:15: note: previous definition is here
+   65 | static size_t vd_util_read_bytes(const char *path, unsigned char *out, size_t cap) {
+      |               ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test_util.h:38:13: error: redefinition of 'vd_util_write_bytes'
+   38 | static void vd_util_write_bytes(const char *path, const unsigned char *data, size_t len) {
+      |             ^
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:54:13: note: previous definition is here
+   54 | static void vd_util_write_bytes(const char *path, const unsigned char *data, size_t len) {
+      |             ^
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:316:5: error: use of undeclared identifier '_mkdir'
+  316 |     _mkdir(nested);
+      |     ^~~~~~
+5 errors generated.
+2026-10-27T21:50:55 [fail] compile tests\unit\tools\visual_diff_selftest_test.c In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:45:5: error: use of undeclared identifier '_getcwd'; did you mean '_getw'?
+   45 |     _getcwd(cwd, sizeof cwd);
+      |     ^~~~~~~
+      |     _getw
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\stdio.h:321:26: note: '_getw' declared here
+  321 |     _ACRTIMP int __cdecl _getw(
+      |                          ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_selftest_test.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_test_util.h:45:18: error: too many arguments to function call, expected single argument '_Stream', have 2 arguments
+   45 |     _getcwd(cwd, sizeof cwd);
+      |     ~~~~~~~      ^~~~~~~~~~
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\stdio.h:321:26: note: '_getw' declared here
+  321 |     _ACRTIMP int __cdecl _getw(
+      |                          ^
+  322 |         _Inout_ FILE* _Stream
+      |                 ~~~~~~~~~~~~~
+2 errors generated.
+2026-10-27T21:50:55 [fail] compile tools\visual-diff\fs.c C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:379:15: error: 'wcsdup' is deprecated: The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _wcsdup. See online help for details. [-Werror,-Wdeprecated-declarations]
+  379 |     wide[0] = wcsdup(wide_exe);
+      |               ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\corecrt_wstring.h:570:20: note: 'wcsdup' has been explicitly marked deprecated here
+  570 |     _Check_return_ _CRT_NONSTDC_DEPRECATE(_wcsdup)
+      |                    ^
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt\corecrt.h:428:50: note: expanded from macro '_CRT_NONSTDC_DEPRECATE'
+  428 |         #define _CRT_NONSTDC_DEPRECATE(_NewName) _CRT_DEPRECATE_TEXT(             \
+      |                                                  ^
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\include\vcruntime.h:348:47: note: expanded from macro '_CRT_DEPRECATE_TEXT'
+  348 | #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+      |                                               ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:390:21: error: use of undeclared identifier '_wspawnv'
+  390 |         code = (int)_wspawnv(_P_WAIT, wide_exe, wide);
+      |                     ^~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\visual-diff\fs.c:390:30: error: use of undeclared identifier '_P_WAIT'
+  390 |         code = (int)_wspawnv(_P_WAIT, wide_exe, wide);
+      |                              ^~~~~~~
+3 errors generated.
+2026-10-27T21:50:55 [fail] test-build BtError: 3 of 144 compiles failed

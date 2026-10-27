@@ -1,0 +1,58 @@
+2026-10-27T21:54:31 [entry] test-unit tools --only visual_diff
+2026-10-27T21:54:31 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\config.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\json.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\paths.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\rng.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\sha256.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\space.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\strbuf.c up to date
+2026-10-27T21:54:31 [skip] compile src\common\when.c up to date
+2026-10-27T21:54:31 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T21:54:31 [skip] compile tools\visual-diff\fs.c up to date
+2026-10-27T21:54:31 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T21:54:31 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T21:54:31 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T21:54:31 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T21:54:33 [repro] 160 object timestamps zeroed
+2026-10-27T21:54:33 [compile] 143 compiled, 143 ok
+[fail] tools_visual_diff_lib_test
+s_visual_diff_lib_test visual_diff_lib.run_fails_on_config_without_tolerance
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-crc/out/visual/report.md
+scene.png: decode failed on baselines side: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-crc/bases/scene.png: png chunk crc invalid
+ok tools_visual_diff_lib_test visual_diff_lib.run_fails_with_exit_diff_on_crc_corrupted_baseline
+ok tools_visual_diff_lib_test visual_diff_lib.run_rejects_wrong_arg_count_with_usage_message
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-utf8/out/visual/report.md
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:641: check failed: strstr(text, "| ảnh.png | ok | 0 | 0 | 4 |") != NULL
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:642: check failed: strstr(text, "| menu.png | ok | 0 | 0 | 4 |") != NULL
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:643: check failed: strstr(text, "2 pairs, 2 ok, 0 failed") != NULL
+FAIL tools_visual_diff_lib_test visual_diff_lib.run_reports_vietnamese_dirs_and_names
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-diff/out/visual/report.md
+scene.png: over tolerance (1 px)
+ok tools_visual_diff_lib_test visual_diff_lib.run_returns_diff_code_for_over_tolerance_pair
+report: C:\Users\lavantien\dev\github\blind-trainer/build/test-tmp/visual-diff-run-ok/out/visual/report.md
+scene.png: ok
+ok tools_visual_diff_lib_test visual_diff_lib.run_returns_zero_and_writes_report_for_identical_dirs
+identical.png: expected ok, got ok
+over.png: expected over, got over
+missing.png: expected missing-baseline, got missing-baseline
+at-tolerance.png: expected ok, got ok
+selftest: 4/4 checks passed
+ok tools_visual_diff_lib_test visual_diff_lib.run_selftest_mode_ignores_env_config_and_passes
+ok tools_visual_diff_lib_test visual_diff_lib.run_selftest_stdout_carries_only_report_lines
+updated 0 baselines
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\visual_diff_lib_test.c:712: check failed: vd_util_is_file(path)
+FAIL tools_visual_diff_lib_test visual_diff_lib.run_update_copies_vietnamese_names
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_mirrors_screenshots_into_baselines
+updated 1 baselines
+updated fresh.png
+ok tools_visual_diff_lib_test visual_diff_lib.run_update_mode_mirrors_and_returns_zero
+ok tools_visual_diff_lib_test visual_diff_lib.visual_cfg_from_reads_tolerance_and_rejects_bad_values
+ok tools_visual_diff_lib_test visual_diff_lib.write_report_creates_visual_dir_under_artifacts
+suite tools_visual_diff_lib_test: 32 passed, 5 failed
+bt-visual-diff: usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>
+bt-visual-diff: usage: bt-visual-diff <screenshots-dir> <baselines-dir> [--update] | --selftest <workdir>
+2026-10-27T21:54:34 [summary] 1 passed, 1 failed
+2026-10-27T21:54:34 [exit] test-unit code=1

@@ -133,7 +133,8 @@ typedef struct {
     char root[BT_PATH_MAX];
 } btvd_env;
 
-void btvd_env_from_process(btvd_env *env, char **argv, size_t argc);
+void btvd_env_from_process(btvd_env *env, char **argv, size_t argc, const char *config,
+                           const char *artifacts);
 int btvd_run(const btvd_env *env, char *err, size_t err_len);
 
 #endif
