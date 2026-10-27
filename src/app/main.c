@@ -28,8 +28,8 @@ int bt_app_main(int argc, char **argv) {
     bt_app_font_book book;
     char font_error[BT_APP_ERROR_MAX];
     const bt_corpus *corpus = ctx.has_corpus ? &ctx.vendor_corpus : NULL;
-    int fonts_ok = bt_app_fonts_load(ctx.paths.config_path, corpus, NULL, 0, &book,
-                                     font_error, sizeof font_error);
+    int fonts_ok = bt_app_fonts_load(ctx.paths.config_path, corpus, NULL, 0, &book, font_error,
+                                     sizeof font_error);
     if (fonts_ok != 0) {
         fprintf(stderr, "%s\n", font_error);
         bt_app_window_close();
