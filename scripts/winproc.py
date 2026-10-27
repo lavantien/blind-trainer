@@ -7,6 +7,7 @@ PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 PROCESS_VM_READ = 0x10
 STILL_ACTIVE = 259
 DOTNET_FILETIME_OFFSET = 504911232000000000
+PATH_BUFFER_WCHARS = 1024
 
 
 class PROCESSENTRY32W(ctypes.Structure):
@@ -102,7 +103,7 @@ def pid_exe_path(pid):
     if not handle:
         return None
     try:
-        size = wintypes.DWORD(1024)
+        size = wintypes.DWORD(PATH_BUFFER_WCHARS)
         buf = ctypes.create_unicode_buffer(size.value)
         k32.QueryFullProcessImageNameW.argtypes = [
             wintypes.HANDLE,
@@ -114,9 +115,9 @@ def pid_exe_path(pid):
             return None
         path = buf.value
         if "~" in path:
-            long_buf = ctypes.create_unicode_buffer(1024)
+            long_buf = ctypes.create_unicode_buffer(PATH_BUFFER_WCHARS)
             k32.GetLongPathNameW.argtypes = [wintypes.LPWSTR, wintypes.LPWSTR, wintypes.DWORD]
-            if k32.GetLongPathNameW(path, long_buf, 1024):
+            if k32.GetLongPathNameW(path, long_buf, PATH_BUFFER_WCHARS):
                 path = long_buf.value
         return path
     finally:
@@ -206,8 +207,8 @@ def process_row(pid):
 def short_path(path):
     """8.3 short form when available, else the input unchanged."""
     k32 = _kernel32()
-    buf = ctypes.create_unicode_buffer(1024)
+    buf = ctypes.create_unicode_buffer(PATH_BUFFER_WCHARS)
     k32.GetShortPathNameW.argtypes = [wintypes.LPWSTR, wintypes.LPWSTR, wintypes.DWORD]
-    if k32.GetShortPathNameW(path, buf, 1024):
+    if k32.GetShortPathNameW(path, buf, PATH_BUFFER_WCHARS):
         return buf.value
     return path

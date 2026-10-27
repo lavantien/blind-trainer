@@ -61,8 +61,8 @@ class MemguardLogicTests(unittest.TestCase):
     def test_filetime_to_dotnet_ticks_matches_net_epoch_math(self):
         self.assertEqual(winproc.filetime_to_dotnet_ticks(0, 0), 504911232000000000)
         self.assertEqual(
-            winproc.filetime_to_dotnet_ticks(0x28000000, 0x01D00000),
-            (0x01D0000002800000) + 504911232000000000,
+            winproc.filetime_to_dotnet_ticks(1, 2),
+            ((2 << 32) | 1) + 504911232000000000,
         )
 
     def test_monitor_ok_line_and_code(self):
@@ -85,13 +85,13 @@ class MemguardLogicTests(unittest.TestCase):
 
     def test_monitor_kill_failure_lands_on_five(self):
         rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
-        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid: False)
+        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: False)
         self.assertEqual(result["code"], 5)
         self.assertTrue(any("kill failed" in line for line in result["lines"]))
 
     def test_monitor_kill_success_still_reports_breach(self):
         rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
-        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid: True)
+        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: True)
         self.assertEqual(result["code"], 3)
         self.assertTrue(any("killed pid 7 z, verified gone" in line for line in result["lines"]))
 
@@ -238,9 +238,10 @@ class CoverageBadgeLogicTests(unittest.TestCase):
 
     def test_badge_svg_geometry_and_colors(self):
         svg = coverage_badge.badge_svg("coverage", "50.0%", 50.0)
-        self.assertIn('fill="#bf8700"', svg)
+        self.assertIn('fill="#cf222e"', svg)
         self.assertIn('width="122"', svg)
         self.assertIn("coverage: 50.0%", svg)
+        self.assertIn('fill="#bf8700"', coverage_badge.badge_svg("coverage", "60.0%", 60.0))
         self.assertIn('fill="#2ea043"', coverage_badge.badge_svg("coverage", "80.0%", 80.0))
         self.assertIn('fill="#cf222e"', coverage_badge.badge_svg("coverage", "10.0%", 10.0))
 
@@ -268,7 +269,7 @@ class AlgCoverageBadgeLogicTests(unittest.TestCase):
 
     def test_badge_matches_shared_geometry(self):
         svg = alg_coverage_badge.badge_svg("alg coverage", "70.0%", 70.0)
-        self.assertIn('fill="#2ea043"', svg)
+        self.assertIn('fill="#bf8700"', svg)
         self.assertIn("alg coverage: 70.0%", svg)
 
 
@@ -295,7 +296,7 @@ class FetchDocsLogicTests(unittest.TestCase):
     def test_preamble_states_raylib_line_and_format(self):
         preamble = fetch_docs.preamble_lines("2026-10-27")
         joined = "\n".join(preamble)
-        self.assertIn("raylib 6.2", joined)
+        self.assertIn("6.2 is current", joined)
         self.assertIn("sha256  bytes  path  url", joined)
         self.assertIn("# ", joined)
 
