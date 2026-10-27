@@ -9,6 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#define BT_NORETURN [[noreturn]]
+#else
+#define BT_NORETURN _Noreturn
+#endif
+
 typedef void (*bt_test_fn)(void);
 
 typedef struct {
@@ -18,7 +24,7 @@ typedef struct {
 
 int bt_harness_run(const char *suite, const bt_test_entry *tests, size_t count);
 void bt_harness_fail(const char *file, int line, const char *fmt, ...);
-void bt_harness_exit_failure(void);
+BT_NORETURN void bt_harness_exit_failure(void);
 FILE *bt_test_open_scratch(const char *name);
 
 void bt_harness_check_str(const char *file, int line, const char *actual_expr,

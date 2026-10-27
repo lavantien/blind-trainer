@@ -70,7 +70,7 @@ void bt_harness_check_f64(const char *file, int line, const char *actual_expr,
     }
 }
 
-void bt_harness_exit_failure(void) {
+BT_NORETURN void bt_harness_exit_failure(void) {
     bt_trace_dump();
     printf("suite abort in %s: %lu passed, %lu failed\n",
            g_current_name ? g_current_name : "(no test)", (unsigned long)g_passed,
