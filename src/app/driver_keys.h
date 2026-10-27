@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define BT_VK_BACK 0x08u
+#define BT_VK_TAB 0x09u
 #define BT_VK_RETURN 0x0Du
 #define BT_VK_ESCAPE 0x1Bu
 #define BT_VK_SPACE 0x20u

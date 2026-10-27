@@ -269,20 +269,9 @@ int bt_case_drill_facelets(const char *event, int has_size, long long size, cons
     return rendered;
 }
 
-static long long size_label_value(const char *label) {
-    char digits[BT_REPO_LABEL_MAX];
-    size_t at = 0;
-    while (label[at] != '\0' && label[at] != 'x' && at + 1 < sizeof digits) {
-        digits[at] = label[at];
-        at++;
-    }
-    digits[at] = '\0';
-    return strtoll(digits, NULL, 10);
-}
-
 static size_t collect_node(const bt_repo_node *node, const char *event, const char *method,
                            const char *stage, int has_size, long long size,
-                           const bt_overrides *store, bt_drill_case *out, size_t cap) {
+                           const bt_overrides *store, bt_drill_case_queue *out) {
     size_t count = 0;
     if (node->kind == BT_REPO_LETTERS) {
         return 0;
@@ -293,34 +282,38 @@ static size_t collect_node(const bt_repo_node *node, const char *event, const ch
         const char *node_stage = node->kind == BT_REPO_STAGE ? node->label : stage;
         for (size_t i = 0; i < node->children_count; i++) {
             count += collect_node(&node->children[i], event, node_method, node_stage, has_size,
-                                  size, store, out + count, cap - count);
+                                  size, store, out);
         }
         return count;
     }
     if (node->kind == BT_REPO_SIZE) {
+        long long parsed = 0;
+        int parsed_ok = bt_repo_size_of_label(node->label, &parsed);
         for (size_t i = 0; i < node->children_count; i++) {
-            count += collect_node(&node->children[i], event, method, stage, 1,
-                                  size_label_value(node->label), store, out + count, cap - count);
+            count += collect_node(&node->children[i], event, method, stage, parsed_ok, parsed,
+                                  store, out);
         }
         return count;
     }
     if (method != NULL && stage != NULL && node->has_case) {
-        if (cap == 0) {
+        bt_drill_case drill;
+        memset(&drill, 0, sizeof drill);
+        bt_case_ref_of(&drill.case_ref, event, method, stage, node->label);
+        drill.has_size = has_size;
+        drill.size = size;
+        snprintf(drill.seed_alg, BT_CASE_DRILL_TEXT_MAX, "%s", node->case_alg);
+        bt_effective_alg effective = bt_view_effective_alg(&drill.case_ref, node->case_alg, store);
+        snprintf(drill.alg, BT_CASE_DRILL_TEXT_MAX, "%s", effective.alg);
+        if (bt_drill_case_queue_push(out, &drill) != 0) {
             return 0;
         }
-        bt_case_ref_of(&out->case_ref, event, method, stage, node->label);
-        out->has_size = has_size;
-        out->size = size;
-        snprintf(out->seed_alg, BT_CASE_DRILL_TEXT_MAX, "%s", node->case_alg);
-        bt_effective_alg effective = bt_view_effective_alg(&out->case_ref, node->case_alg, store);
-        snprintf(out->alg, BT_CASE_DRILL_TEXT_MAX, "%s", effective.alg);
         return 1;
     }
     return 0;
 }
 
 size_t bt_case_drill_collect_cases(const bt_repo_browser *browser, const bt_overrides *store,
-                                   bt_drill_case out[BT_CASE_DRILL_QUEUE_MAX]) {
+                                   bt_drill_case_queue *out) {
     BT_TRACE_ENTER("app.case_drill_collect_cases");
     if (browser->arm >= browser->arm_count) {
         BT_TRACE_EXIT("app.case_drill_collect_cases");
@@ -336,53 +329,52 @@ size_t bt_case_drill_collect_cases(const bt_repo_browser *browser, const bt_over
     const char *stage = NULL;
     int has_size = 0;
     long long size = 0;
+    out->count = 0;
     for (size_t step = 0; step < browser->depth; step++) {
         node = &node->children[browser->path[step]];
         if (node->kind == BT_REPO_SIZE) {
-            has_size = 1;
-            size = size_label_value(node->label);
+            has_size = bt_repo_size_of_label(node->label, &size);
         } else if (node->kind == BT_REPO_METHOD) {
             method = node->label;
         } else if (node->kind == BT_REPO_STAGE) {
             stage = node->label;
         }
     }
-    size_t count = collect_node(node, arm->label, method, stage, has_size, size, store, out,
-                                BT_CASE_DRILL_QUEUE_MAX);
+    size_t count = collect_node(node, arm->label, method, stage, has_size, size, store, out);
     BT_TRACE_EXIT("app.case_drill_collect_cases");
     return count;
 }
 
-size_t bt_case_drill_due_session(const bt_drill_case *cases, size_t count,
-                                 const bt_case_cards *cards, long long now_day,
-                                 bt_drill_case out[BT_CASE_DRILL_QUEUE_MAX]) {
+size_t bt_case_drill_due_session(const bt_drill_case_queue *cases, const bt_case_cards *cards,
+                                 long long now_day, bt_drill_case_queue *out) {
     BT_TRACE_ENTER("app.case_drill_due_session");
-    bt_drill_case due[BT_CASE_DRILL_QUEUE_MAX];
-    bt_drill_case seen[BT_CASE_DRILL_QUEUE_MAX];
-    size_t due_count = 0;
-    size_t seen_count = 0;
-    for (size_t i = 0; i < count; i++) {
-        const bt_card *card = bt_case_cards_get(cards, &cases[i].case_ref);
+    bt_drill_case_queue due;
+    bt_drill_case_queue_init(&due);
+    bt_drill_case_queue seen;
+    bt_drill_case_queue_init(&seen);
+    for (size_t i = 0; i < cases->count; i++) {
+        const bt_card *card = bt_case_cards_get(cards, &cases->items[i].case_ref);
         if (card != NULL && !bt_card_is_due(card, now_day)) {
-            seen[seen_count++] = cases[i];
+            bt_drill_case_queue_push(&seen, &cases->items[i]);
         } else {
-            due[due_count++] = cases[i];
+            bt_drill_case_queue_push(&due, &cases->items[i]);
         }
     }
-    const bt_drill_case *source = due;
-    size_t source_count = due_count;
-    if (due_count == 0) {
-        source = seen;
-        source_count = seen_count;
+    bt_drill_case_queue *source = &due;
+    if (due.count == 0) {
+        source = &seen;
     }
-    memcpy(out, source, source_count * sizeof *source);
+    size_t count = source->count;
+    bt_drill_case_queue_set(out, source->items, source->count);
+    bt_drill_case_queue_free(&seen);
+    bt_drill_case_queue_free(&due);
     BT_TRACE_EXIT("app.case_drill_due_session");
-    return source_count;
+    return count;
 }
 
 int bt_case_drill_request(const bt_repo_browser *browser, const bt_overrides *store,
                           const bt_case_card_store *cards, long long now_day,
-                          bt_drill_case out[BT_CASE_DRILL_QUEUE_MAX], size_t *out_count) {
+                          bt_drill_case_queue *out) {
     BT_TRACE_ENTER("app.case_drill_request");
     const bt_repo_node *node = bt_repo_browser_node(browser);
     if (node == NULL) {
@@ -394,26 +386,18 @@ int bt_case_drill_request(const bt_repo_browser *browser, const bt_overrides *st
         BT_TRACE_EXIT("app.case_drill_request");
         return 0;
     }
-    if (node->kind == BT_REPO_CASE) {
-        *out_count = all;
-        BT_TRACE_EXIT("app.case_drill_request");
-        return 1;
+    if (node->kind != BT_REPO_CASE) {
+        bt_case_drill_due_session(out, &cards->cards, now_day, out);
     }
-    *out_count = bt_case_drill_due_session(out, all, &cards->cards, now_day, out);
     BT_TRACE_EXIT("app.case_drill_request");
     return 1;
 }
 
-void bt_case_drill_install(bt_case_drill_session *session, const bt_drill_case *queue,
-                           size_t count) {
+void bt_case_drill_install(bt_case_drill_session *session, const bt_drill_case_queue *queue) {
     BT_TRACE_ENTER("app.case_drill_install");
-    session->total = count;
+    session->total = queue->count;
     session->done = 0;
-    if (count > BT_CASE_DRILL_QUEUE_MAX) {
-        count = BT_CASE_DRILL_QUEUE_MAX;
-    }
-    memcpy(session->queue.items, queue, count * sizeof *queue);
-    session->queue.count = count;
+    bt_drill_case_queue_set(&session->queue, queue->items, queue->count);
     session->has_save_error = 0;
     session->save_error[0] = '\0';
     bt_case_drill_advance(session);
@@ -460,10 +444,63 @@ void bt_case_drill_case_site_line(const bt_drill_case *case_drill,
 
 static bt_view_case_drill_app_state *shared_case_drill_app;
 
+void bt_drill_case_queue_init(bt_drill_case_queue *queue) {
+    BT_TRACE_ENTER("app.case_drill_queue_init");
+    queue->items = NULL;
+    queue->count = 0;
+    queue->cap = 0;
+    BT_TRACE_EXIT("app.case_drill_queue_init");
+}
+
+void bt_drill_case_queue_free(bt_drill_case_queue *queue) {
+    BT_TRACE_ENTER("app.case_drill_queue_free");
+    free(queue->items);
+    queue->items = NULL;
+    queue->count = 0;
+    queue->cap = 0;
+    BT_TRACE_EXIT("app.case_drill_queue_free");
+}
+
+int bt_drill_case_queue_push(bt_drill_case_queue *queue, const bt_drill_case *case_drill) {
+    if (queue->count == queue->cap) {
+        size_t cap = queue->cap == 0 ? 16 : queue->cap * 2;
+        bt_drill_case *grown = realloc(queue->items, cap * sizeof *grown);
+        if (grown == NULL) {
+            BT_TRACE_FAIL("app.case_drill_queue_push", "out of memory");
+            return -1;
+        }
+        queue->items = grown;
+        queue->cap = cap;
+    }
+    queue->items[queue->count++] = *case_drill;
+    return 0;
+}
+
+int bt_drill_case_queue_set(bt_drill_case_queue *queue, const bt_drill_case *cases, size_t count) {
+    if (count > queue->cap) {
+        size_t cap = queue->cap == 0 ? 16 : queue->cap;
+        while (cap < count) {
+            cap *= 2;
+        }
+        bt_drill_case *grown = realloc(queue->items, cap * sizeof *grown);
+        if (grown == NULL) {
+            BT_TRACE_FAIL("app.case_drill_queue_set", "out of memory");
+            return -1;
+        }
+        queue->items = grown;
+        queue->cap = cap;
+    }
+    memcpy(queue->items, cases, count * sizeof *cases);
+    queue->count = count;
+    return 0;
+}
+
 void bt_view_case_drill_app_init(bt_view_case_drill_app_state *app) {
     BT_TRACE_ENTER("app.case_drill_app_init");
     memset(app, 0, sizeof *app);
     bt_case_cards_init(&app->cards.cards);
+    bt_drill_case_queue_init(&app->pending);
+    bt_drill_case_queue_init(&app->session.queue);
     app->initialized = 1;
     BT_TRACE_EXIT("app.case_drill_app_init");
 }
@@ -483,15 +520,14 @@ bt_view_case_drill_app_state *bt_view_case_drill_app(void) {
     return shared_case_drill_app;
 }
 
-void bt_view_case_drill_set_pending(const bt_drill_case *queue, size_t count) {
+void bt_view_case_drill_set_pending(const bt_drill_case_queue *queue) {
     BT_TRACE_ENTER("app.case_drill_set_pending");
     bt_view_case_drill_app_state *app = bt_view_case_drill_app();
-    if (app == NULL || count > BT_CASE_DRILL_QUEUE_MAX) {
+    if (app == NULL) {
         BT_TRACE_EXIT("app.case_drill_set_pending");
         return;
     }
-    memcpy(app->pending.items, queue, count * sizeof *queue);
-    app->pending.count = count;
+    bt_drill_case_queue_set(&app->pending, queue->items, queue->count);
     BT_TRACE_EXIT("app.case_drill_set_pending");
 }
 
@@ -530,7 +566,7 @@ void bt_view_case_drill_enter_state(bt_app_ctx *ctx, bt_view_case_drill_app_stat
         BT_TRACE_EXIT("app.case_drill_enter_state");
         return;
     }
-    bt_case_drill_install(&app->session, app->pending.items, app->pending.count);
+    bt_case_drill_install(&app->session, &app->pending);
     app->pending.count = 0;
     if (app->cards.has_load_error) {
         app->session.has_save_error = 1;

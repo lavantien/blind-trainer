@@ -497,6 +497,28 @@ size_t bt_repo_count_kind(const bt_repo_node *node, bt_repo_kind kind) {
     return count;
 }
 
+int bt_repo_size_of_label(const char *label, long long *out) {
+    BT_TRACE_ENTER("app.repo_size_of_label");
+    char digits[BT_REPO_LABEL_MAX];
+    size_t at = 0;
+    while (label[at] != '\0' && label[at] != 'x' && at + 1 < sizeof digits) {
+        if (label[at] < '0' || label[at] > '9') {
+            BT_TRACE_EXIT("app.repo_size_of_label");
+            return 0;
+        }
+        digits[at] = label[at];
+        at++;
+    }
+    digits[at] = '\0';
+    if (at == 0 || label[at] != 'x') {
+        BT_TRACE_EXIT("app.repo_size_of_label");
+        return 0;
+    }
+    *out = strtoll(digits, NULL, 10);
+    BT_TRACE_EXIT("app.repo_size_of_label");
+    return 1;
+}
+
 static bt_repo_browser *shared_repo_browser;
 
 bt_repo_browser *bt_view_algs_repo(void) {

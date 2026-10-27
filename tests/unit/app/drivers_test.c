@@ -24,6 +24,11 @@ BT_TEST(drivers, vk_of_maps_the_script_keys_to_virtual_keys) {
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_SLASH), (unsigned)BT_VK_OEM_2);
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_B), (unsigned)'B');
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_D), (unsigned)'D');
+    BT_CHECK_EQ(bt_app_driver_vk_of(KEY_O), (unsigned)'O');
+    BT_CHECK_EQ(bt_app_driver_vk_of(KEY_X), (unsigned)'X');
+    BT_CHECK_EQ(bt_app_driver_vk_of(KEY_V), (unsigned)'V');
+    BT_CHECK_EQ(bt_app_driver_vk_of(KEY_TAB), (unsigned)BT_VK_TAB);
+    BT_CHECK_EQ(bt_app_driver_vk_of(KEY_BACKSPACE), (unsigned)BT_VK_BACK);
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_Z), (unsigned)0);
 }
 
@@ -50,8 +55,7 @@ BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {
     char mode_dir[BT_PATH_MAX];
     char error[BT_APP_ERROR_MAX];
     char *argv[] = {(char *)"bt-app", NULL};
-    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error,
-                           sizeof error),
+    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
                 0);
     BT_CHECK_EQ(mode, BT_APP_SHOT_NONE);
     const char *dir = ta_temp_dir("drivers", "smoke-tour");
@@ -74,6 +78,53 @@ BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {
     }
 }
 
+static int shot_has_distinct_colors(const char *path) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    int first_r = pixels[0].r;
+    int first_g = pixels[0].g;
+    int first_b = pixels[0].b;
+    int distinct = 0;
+    for (int y = 0; !distinct && y < image.height; y++) {
+        for (int x = 0; !distinct && x < image.width; x++) {
+            Color c = pixels[y * image.width + x];
+            if (c.r != first_r || c.g != first_g || c.b != first_b) {
+                distinct = 1;
+            }
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return distinct;
+}
+
+BT_TEST(drivers, smoke_tour_shots_carry_distinct_colors) {
+    char saved_appdata[TA_PATH_MAX];
+    sandbox_appdata("smoke-colors-user", saved_appdata, sizeof saved_appdata);
+    bt_app_ctx ctx;
+    bt_app_shot_mode mode;
+    char mode_dir[BT_PATH_MAX];
+    char error[BT_APP_ERROR_MAX];
+    char *argv[] = {(char *)"bt-app", NULL};
+    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
+                0);
+    const char *dir = ta_temp_dir("drivers", "smoke-colors");
+    BT_CHECK_EQ(bt_app_smoke_main(&ctx, dir, 20261012), 0);
+    for (size_t i = 0; i < BT_APP_TOUR_COUNT; i++) {
+        char path[TA_PATH_MAX];
+        snprintf(path, sizeof path, "%s/%s.png", dir, bt_app_state_slug(BT_APP_TOUR[i]));
+        if (!shot_has_distinct_colors(path)) {
+            fprintf(stderr, "drivers: blank shot %s\n", path);
+        }
+        BT_CHECK(shot_has_distinct_colors(path));
+    }
+    restore_appdata(saved_appdata);
+}
+
 BT_TEST(drivers, smoke_main_fails_when_the_output_dir_cannot_exist) {
     char saved_appdata[TA_PATH_MAX];
     sandbox_appdata("smoke-bad-dir-user", saved_appdata, sizeof saved_appdata);
@@ -82,8 +133,7 @@ BT_TEST(drivers, smoke_main_fails_when_the_output_dir_cannot_exist) {
     char mode_dir[BT_PATH_MAX];
     char error[BT_APP_ERROR_MAX];
     char *argv[] = {(char *)"bt-app", NULL};
-    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error,
-                           sizeof error),
+    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
                 0);
     int code = bt_app_smoke_main(&ctx, "nul/bad-dir", 20261012);
     BT_CHECK_EQ(code, 1);

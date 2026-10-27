@@ -66,6 +66,8 @@ size_t bt_view_algs_filter_cases(const bt_case *all, size_t count, const char *q
                                  bt_case out[BT_ALGS_CASES_MAX]);
 size_t bt_view_algs_case_rows(const bt_corpus *corpus, const bt_case *case_id,
                               const bt_corpus_row *out[BT_ALGS_ROWS_MAX]);
+size_t bt_view_algs_case_rows_dyn(const bt_corpus *corpus, const bt_case *case_id,
+                                  const bt_corpus_row ***out);
 int bt_view_algs_covered(const bt_corpus *corpus, const bt_case *case_id);
 size_t bt_view_algs_list_capacity(const bt_app_config *config);
 size_t bt_view_algs_list_rows(const bt_view_algs_browser *browser, size_t capacity,
@@ -106,6 +108,7 @@ typedef struct {
 } bt_view_algs_detail_line;
 
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
-                                 bt_view_algs_detail_line out[BT_ALGS_ROWS_MAX * 2]);
+                                 bt_view_algs_detail_line **out);
+void bt_view_algs_style_metrics(bt_algs_style style, float *size, bt_theme_color *color);
 
 #endif

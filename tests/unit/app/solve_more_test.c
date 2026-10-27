@@ -573,3 +573,24 @@ BT_TEST(solve_more, set_seed_drives_the_next_rebuild) {
     BT_CHECK(app->session.seed == app->seed);
     bt_app_ctx_free(&ctx);
 }
+
+BT_TEST(solve_more, review_parts_show_every_broken_line) {
+    bt_solve_session session;
+    bt_view_solve_session_init(&session);
+    session.has_finished = 1;
+    session.finished.record.memo_ms = 900;
+    session.finished.record.exec_ms = 500;
+    session.finished.has_outcome = 1;
+    session.finished.outcome.success = 0;
+    for (int i = 0; i < 10; i++) {
+        char text[32];
+        snprintf(text, sizeof text, "pair %d uncovered", i);
+        session.finished.outcome.broken[i] = _strdup(text);
+    }
+    session.finished.outcome.broken_count = 10;
+    bt_solve_view_parts parts;
+    bt_view_solve_review_parts(&session, &parts);
+    BT_CHECK(strstr(parts.broken, "pair 9 uncovered") != NULL);
+    BT_CHECK(strstr(parts.broken, "pair 0 uncovered") != NULL);
+    bt_view_solve_session_free(&session);
+}

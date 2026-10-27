@@ -307,25 +307,27 @@ BT_TEST(view_case_drill, collect_cases_walks_the_subtree_with_the_site_reference
     BT_CHECK(strcmp(bt_repo_browser_node(&browser)->label, "par.1") == 0);
     bt_overrides store;
     bt_overrides_init(&store);
-    bt_drill_case cases[BT_CASE_DRILL_QUEUE_MAX];
-    size_t count = bt_case_drill_collect_cases(&browser, &store, cases);
+    bt_drill_case_queue cases;
+    bt_drill_case_queue_init(&cases);
+    size_t count = bt_case_drill_collect_cases(&browser, &store, &cases);
     BT_CHECK_EQ(count, (size_t)1);
-    BT_CHECK(strcmp(cases[0].case_ref.event, "bigcube") == 0);
-    BT_CHECK(strcmp(cases[0].case_ref.method, "yau") == 0);
-    BT_CHECK(strcmp(cases[0].case_ref.stage, "parity") == 0);
-    BT_CHECK(strcmp(cases[0].case_ref.case_key, "par.1") == 0);
-    BT_CHECK(cases[0].has_size);
-    BT_CHECK_EQ(cases[0].size, (long long)4);
-    BT_CHECK(strcmp(cases[0].alg, "alg par.1") == 0);
-    BT_CHECK(strcmp(cases[0].seed_alg, "alg par.1") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.event, "bigcube") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.method, "yau") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.stage, "parity") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.case_key, "par.1") == 0);
+    BT_CHECK(cases.items[0].has_size);
+    BT_CHECK_EQ(cases.items[0].size, (long long)4);
+    BT_CHECK(strcmp(cases.items[0].alg, "alg par.1") == 0);
+    BT_CHECK(strcmp(cases.items[0].seed_alg, "alg par.1") == 0);
 
     bt_repo_browser event_browser = armed(rows);
     at_2x2_event(&event_browser);
-    count = bt_case_drill_collect_cases(&event_browser, &store, cases);
+    count = bt_case_drill_collect_cases(&event_browser, &store, &cases);
     BT_CHECK_EQ(count, (size_t)2);
-    BT_CHECK(strcmp(cases[0].case_ref.case_key, "cll.1") == 0);
-    BT_CHECK(strcmp(cases[1].case_ref.case_key, "cll.2") == 0);
-    BT_CHECK(!cases[0].has_size && !cases[1].has_size);
+    BT_CHECK(strcmp(cases.items[0].case_ref.case_key, "cll.1") == 0);
+    BT_CHECK(strcmp(cases.items[1].case_ref.case_key, "cll.2") == 0);
+    BT_CHECK(!cases.items[0].has_size && !cases.items[1].has_size);
+    bt_drill_case_queue_free(&cases);
     bt_overrides_free(&store);
     bt_repo_browser_free(&event_browser);
     bt_repo_browser_free(&browser);
@@ -341,11 +343,13 @@ BT_TEST(view_case_drill, collect_cases_uses_the_override_as_the_effective_alg) {
     bt_overrides store;
     bt_overrides_init(&store);
     bt_overrides_put(&store, &case_ref, "R U R'");
-    bt_drill_case cases[BT_CASE_DRILL_QUEUE_MAX];
-    size_t count = bt_case_drill_collect_cases(&browser, &store, cases);
+    bt_drill_case_queue cases;
+    bt_drill_case_queue_init(&cases);
+    size_t count = bt_case_drill_collect_cases(&browser, &store, &cases);
     BT_CHECK_EQ(count, (size_t)1);
-    BT_CHECK(strcmp(cases[0].seed_alg, "alg par.1") == 0);
-    BT_CHECK(strcmp(cases[0].alg, "R U R'") == 0);
+    BT_CHECK(strcmp(cases.items[0].seed_alg, "alg par.1") == 0);
+    BT_CHECK(strcmp(cases.items[0].alg, "R U R'") == 0);
+    bt_drill_case_queue_free(&cases);
     bt_overrides_free(&store);
     bt_repo_browser_free(&browser);
     free_rows(rows, 4);
@@ -357,7 +361,9 @@ BT_TEST(view_case_drill, collect_cases_ignores_the_letters_and_3bld_arms) {
     bt_repo_deeper(&browser);
     bt_overrides store;
     bt_overrides_init(&store);
-    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, NULL), (size_t)0);
+    bt_drill_case_queue collected;
+    bt_drill_case_queue_init(&collected);
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, &collected), (size_t)0);
 
     bt_pack_entry packs[2];
     make_pack("3bld", "3style", "parity", 0, &packs[0]);
@@ -371,7 +377,8 @@ BT_TEST(view_case_drill, collect_cases_ignores_the_letters_and_3bld_arms) {
     bld.arms = bt_repo_arms(packs, 2, &hidden, rows, 2, &bld.arm_count);
     bt_repo_deeper(&bld);
     bt_repo_move(&bld, 1);
-    BT_CHECK_EQ(bt_case_drill_collect_cases(&bld, &store, NULL), (size_t)0);
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&bld, &store, &collected), (size_t)0);
+    bt_drill_case_queue_free(&collected);
     bt_str_list_free(&hidden);
     bt_overrides_free(&store);
     bt_repo_browser_free(&bld);
@@ -397,20 +404,30 @@ BT_TEST(view_case_drill, due_session_prioritizes_missing_and_due_cards) {
     scheduled.due_day = 900;
     bt_case_ref future_ref = future.case_ref;
     bt_case_ref overdue_ref = overdue.case_ref;
-    bt_drill_case queue_in[3] = {fresh, future, overdue};
+    bt_drill_case_queue queue_in;
+    bt_drill_case_queue_init(&queue_in);
+    bt_drill_case_queue_push(&queue_in, &fresh);
+    bt_drill_case_queue_push(&queue_in, &future);
+    bt_drill_case_queue_push(&queue_in, &overdue);
     bt_case_cards_put(&cards, &future_ref, &scheduled);
     bt_card fresh_card;
     bt_card_init(&fresh_card, 0);
     bt_case_cards_put(&cards, &overdue_ref, &fresh_card);
-    bt_drill_case queue_out[BT_CASE_DRILL_QUEUE_MAX];
-    size_t count = bt_case_drill_due_session(queue_in, 3, &cards, 1, queue_out);
+    bt_drill_case_queue queue_out;
+    bt_drill_case_queue_init(&queue_out);
+    size_t count = bt_case_drill_due_session(&queue_in, &cards, 1, &queue_out);
     BT_CHECK_EQ(count, (size_t)2);
-    BT_CHECK(strcmp(queue_out[0].case_ref.case_key, "cll.1") == 0);
-    BT_CHECK(strcmp(queue_out[1].case_ref.case_key, "cll.3") == 0);
-    bt_drill_case only_future[1] = {future};
-    count = bt_case_drill_due_session(only_future, 1, &cards, 1, queue_out);
+    BT_CHECK(strcmp(queue_out.items[0].case_ref.case_key, "cll.1") == 0);
+    BT_CHECK(strcmp(queue_out.items[1].case_ref.case_key, "cll.3") == 0);
+    bt_drill_case_queue only_future;
+    bt_drill_case_queue_init(&only_future);
+    bt_drill_case_queue_push(&only_future, &future);
+    count = bt_case_drill_due_session(&only_future, &cards, 1, &queue_out);
     BT_CHECK_EQ(count, (size_t)1);
-    BT_CHECK(strcmp(queue_out[0].case_ref.case_key, "cll.2") == 0);
+    BT_CHECK(strcmp(queue_out.items[0].case_ref.case_key, "cll.2") == 0);
+    bt_drill_case_queue_free(&queue_out);
+    bt_drill_case_queue_free(&only_future);
+    bt_drill_case_queue_free(&queue_in);
     bt_case_cards_free(&cards);
 }
 
@@ -420,24 +437,25 @@ BT_TEST(view_case_drill, drill_request_drills_one_case_and_due_sessions_below_it
     bt_case_cards_init(&cards.cards);
     bt_overrides store;
     bt_overrides_init(&store);
-    bt_drill_case out[BT_CASE_DRILL_QUEUE_MAX];
-    size_t count = 0;
+    bt_drill_case_queue out;
+    bt_drill_case_queue_init(&out);
 
     bt_seed_row rows[4];
     bt_repo_browser case_browser = armed(rows);
     at_bigcube_case(&case_browser);
-    BT_CHECK(bt_case_drill_request(&case_browser, &store, &cards, 0, out, &count));
-    BT_CHECK_EQ(count, (size_t)1);
+    BT_CHECK(bt_case_drill_request(&case_browser, &store, &cards, 0, &out));
+    BT_CHECK_EQ(out.count, (size_t)1);
 
     bt_repo_browser event_browser = armed(rows);
     at_2x2_event(&event_browser);
-    BT_CHECK(bt_case_drill_request(&event_browser, &store, &cards, 0, out, &count));
-    BT_CHECK_EQ(count, (size_t)2);
+    BT_CHECK(bt_case_drill_request(&event_browser, &store, &cards, 0, &out));
+    BT_CHECK_EQ(out.count, (size_t)2);
 
     bt_repo_browser letters = armed(rows);
     bt_repo_deeper(&letters);
-    BT_CHECK(!bt_case_drill_request(&letters, &store, &cards, 0, out, &count));
+    BT_CHECK(!bt_case_drill_request(&letters, &store, &cards, 0, &out));
 
+    bt_drill_case_queue_free(&out);
     bt_overrides_free(&store);
     bt_case_cards_free(&cards.cards);
     bt_repo_browser_free(&letters);
@@ -458,7 +476,11 @@ BT_TEST(view_case_drill, install_and_advance_run_the_session_queue) {
     bt_case_ref_of(&queue[1].case_ref, "3x3", "cfop", "pll", "pll.2");
     snprintf(queue[1].seed_alg, BT_CASE_DRILL_TEXT_MAX, "%s", "QQ");
     snprintf(queue[1].alg, BT_CASE_DRILL_TEXT_MAX, "%s", "QQ");
-    bt_case_drill_install(&session, queue, 2);
+    bt_drill_case_queue pending;
+    bt_drill_case_queue_init(&pending);
+    bt_drill_case_queue_push(&pending, &queue[0]);
+    bt_drill_case_queue_push(&pending, &queue[1]);
+    bt_case_drill_install(&session, &pending);
     BT_CHECK_EQ(session.total, (size_t)2);
     BT_CHECK_EQ(session.done, (size_t)0);
     BT_CHECK(session.has_current);
@@ -478,6 +500,8 @@ BT_TEST(view_case_drill, install_and_advance_run_the_session_queue) {
     BT_CHECK(!session.has_current);
     BT_CHECK(!session.has_grid);
     BT_CHECK(!session.has_grid_error);
+    bt_drill_case_queue_free(&pending);
+    bt_drill_case_queue_free(&session.queue);
 }
 
 BT_TEST(view_case_drill, case_site_line_spells_the_site_and_size) {
@@ -488,4 +512,92 @@ BT_TEST(view_case_drill, case_site_line_spells_the_site_and_size) {
     char line[BT_CASE_DRILL_TEXT_MAX];
     bt_case_drill_case_site_line(&case_drill, line);
     BT_CHECK(strcmp(line, "bigcube > yau > parity 5x5") == 0);
+}
+
+BT_TEST(view_case_drill, collect_cases_keeps_every_case_past_the_queue_cap) {
+    enum { ROWS = 300 };
+    bt_pack_entry packs[1];
+    make_pack("2x2", "cll", "cll", 0, &packs[0]);
+    bt_seed_row rows[ROWS];
+    for (int i = 0; i < ROWS; i++) {
+        char key[16];
+        snprintf(key, sizeof key, "cll.%d", i);
+        make_row("2x2", "cll", "cll", key, &rows[i]);
+    }
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    browser.arms = bt_repo_arms(packs, 1, &hidden, rows, ROWS, &browser.arm_count);
+    bt_repo_deeper(&browser);
+    bt_repo_move(&browser, 1);
+    bt_repo_deeper(&browser);
+    bt_repo_deeper(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_drill_case_queue cases;
+    bt_drill_case_queue_init(&cases);
+    size_t count = bt_case_drill_collect_cases(&browser, &store, &cases);
+    BT_CHECK_EQ(count, (size_t)ROWS);
+    bt_case_drill_session session;
+    memset(&session, 0, sizeof session);
+    bt_case_drill_install(&session, &cases);
+    BT_CHECK_EQ(session.total, (size_t)ROWS);
+    BT_CHECK(session.has_current);
+    BT_CHECK_EQ(session.queue.count, (size_t)ROWS - 1);
+    bt_drill_case_queue_free(&cases);
+    bt_drill_case_queue_free(&session.queue);
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+    bt_str_list_free(&hidden);
+    for (int i = 0; i < ROWS; i++) {
+        free(rows[i].alg);
+        free(rows[i].front_json);
+        free(rows[i].source_url);
+        free(rows[i].source_at);
+    }
+}
+
+BT_TEST(view_case_drill, a_non_numeric_size_label_has_no_size) {
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    bt_repo_node *arm = &browser.arms[0];
+    snprintf(arm->label, sizeof arm->label, "%s", "2x2");
+    arm->kind = BT_REPO_EVENT;
+    arm->children = calloc(1, sizeof *arm->children);
+    arm->children_count = 1;
+    bt_repo_node *size = &arm->children[0];
+    snprintf(size->label, sizeof size->label, "%s", "NxN");
+    size->kind = BT_REPO_SIZE;
+    size->children = calloc(1, sizeof *size->children);
+    size->children_count = 1;
+    bt_repo_node *method = &size->children[0];
+    snprintf(method->label, sizeof method->label, "%s", "cll");
+    method->kind = BT_REPO_METHOD;
+    method->children = calloc(1, sizeof *method->children);
+    method->children_count = 1;
+    bt_repo_node *stage = &method->children[0];
+    snprintf(stage->label, sizeof stage->label, "%s", "cll");
+    stage->kind = BT_REPO_STAGE;
+    stage->children = calloc(1, sizeof *stage->children);
+    stage->children_count = 1;
+    bt_repo_node *case_node = &stage->children[0];
+    snprintf(case_node->label, sizeof case_node->label, "%s", "cll.1");
+    case_node->kind = BT_REPO_CASE;
+    case_node->has_case = 1;
+    case_node->case_alg = dup_text("R U R'");
+    case_node->case_source_url = dup_text("u");
+    case_node->case_source_at = dup_text("d");
+    browser.arm_count = 1;
+    browser.arm = 0;
+    browser.repo_focused = 1;
+    browser.depth = 4;
+    browser.path[0] = 0;
+    browser.path[1] = 0;
+    browser.path[2] = 0;
+    browser.path[3] = 0;
+    bt_case_site site;
+    BT_CHECK(bt_view_case_site_of(&browser, &site));
+    BT_CHECK(!site.has_size);
+    bt_repo_browser_free(&browser);
 }

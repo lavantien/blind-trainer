@@ -65,6 +65,7 @@ size_t bt_repo_selection(const bt_repo_browser *browser);
 size_t bt_repo_list_rows(const bt_repo_browser *browser, size_t cap, bt_repo_list_row *out);
 void bt_repo_breadcrumb(const bt_repo_browser *browser, char *out, size_t out_len);
 size_t bt_repo_count_kind(const bt_repo_node *node, bt_repo_kind kind);
+int bt_repo_size_of_label(const char *label, long long *out);
 
 bt_repo_browser *bt_view_algs_repo(void);
 

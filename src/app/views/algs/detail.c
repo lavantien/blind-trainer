@@ -53,17 +53,6 @@ int bt_view_case_expand_line(const char *event, const char *alg, char out[BT_ALG
     return written;
 }
 
-static long long size_label_value(const char *label) {
-    char digits[BT_REPO_LABEL_MAX];
-    size_t at = 0;
-    while (label[at] != '\0' && label[at] != 'x' && at + 1 < sizeof digits) {
-        digits[at] = label[at];
-        at++;
-    }
-    digits[at] = '\0';
-    return strtoll(digits, NULL, 10);
-}
-
 int bt_view_case_site_of(const bt_repo_browser *browser, bt_case_site *out) {
     BT_TRACE_ENTER("app.algs_case_site_of");
     memset(out, 0, sizeof *out);
@@ -83,8 +72,7 @@ int bt_view_case_site_of(const bt_repo_browser *browser, bt_case_site *out) {
             return 0;
         }
         if (walked->kind == BT_REPO_SIZE) {
-            out->has_size = 1;
-            out->size = size_label_value(walked->label);
+            out->has_size = bt_repo_size_of_label(walked->label, &out->size);
         } else if (walked->kind == BT_REPO_METHOD) {
             method = walked->label;
         } else if (walked->kind == BT_REPO_STAGE) {

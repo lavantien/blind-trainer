@@ -1,3 +1,4 @@
+#include "app/boot.h"
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
@@ -155,9 +156,9 @@ BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     bt_corpus_row row = covered_row(COVERED_ALG, "R2 U':[S,R2]");
     load_rows(&ctx, &row, 1);
     query_algs(&ctx, "ab");
-    bt_view_algs_detail_line lines[BT_ALGS_ROWS_MAX * 2];
+    bt_view_algs_detail_line *lines = NULL;
     size_t count =
-        bt_view_algs_detail_lines(&ctx.vendor_corpus, &bt_view_algs_app()->browser, lines);
+        bt_view_algs_detail_lines(&ctx.vendor_corpus, &bt_view_algs_app()->browser, &lines);
     char meta[BT_ALGS_TEXT_MAX];
     bt_view_algs_meta_line(&ctx.vendor_corpus.rows[0], meta);
     BT_CHECK(detail_has(lines, count, "2 of 818 cases match"));
@@ -171,6 +172,7 @@ BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     BT_CHECK(detail_line_is(lines, count, ",", bt_theme_text_muted()));
     BT_CHECK(detail_line_is(lines, count, "R2", bt_theme_interchange()));
     BT_CHECK(detail_line_is(lines, count, "]", bt_theme_text_muted()));
+    free(lines);
     bt_app_ctx_free(&ctx);
 }
 
@@ -182,9 +184,9 @@ BT_TEST(algs_more, extra_vendor_rows_render_as_alternatives_with_their_own_meta)
     };
     load_rows(&ctx, rows, 2);
     query_algs(&ctx, "ab");
-    bt_view_algs_detail_line lines[BT_ALGS_ROWS_MAX * 2];
+    bt_view_algs_detail_line *lines = NULL;
     size_t count =
-        bt_view_algs_detail_lines(&ctx.vendor_corpus, &bt_view_algs_app()->browser, lines);
+        bt_view_algs_detail_lines(&ctx.vendor_corpus, &bt_view_algs_app()->browser, &lines);
     BT_CHECK(detail_has(lines, count, "R2 U' R2 S R2 S' U R2"));
     char meta[BT_ALGS_TEXT_MAX];
     bt_view_algs_meta_line(&ctx.vendor_corpus.rows[1], meta);
@@ -197,6 +199,7 @@ BT_TEST(algs_more, extra_vendor_rows_render_as_alternatives_with_their_own_meta)
         }
     }
     BT_CHECK(recon_lines >= 2);
+    free(lines);
     bt_app_ctx_free(&ctx);
 }
 
@@ -271,10 +274,11 @@ BT_TEST(algs_more, a_shrunk_match_set_clamps_the_selection_and_blocks_the_handof
     size_t count = bt_view_algs_list_rows(&app->browser, 6, rows);
     BT_CHECK_EQ(count, (size_t)1);
     BT_CHECK(strcmp(rows[0].label, "no case matches the query") == 0);
-    bt_view_algs_detail_line lines[BT_ALGS_ROWS_MAX * 2];
-    size_t detail_count = bt_view_algs_detail_lines(&ctx.vendor_corpus, &app->browser, lines);
+    bt_view_algs_detail_line *lines = NULL;
+    size_t detail_count = bt_view_algs_detail_lines(&ctx.vendor_corpus, &app->browser, &lines);
     BT_CHECK(detail_has(lines, detail_count, "0 of 818 cases match"));
     BT_CHECK(detail_has(lines, detail_count, "no case matches the query"));
+    free(lines);
     bt_app_ctx_free(&ctx);
 }
 
@@ -307,22 +311,7 @@ static void repo_walk_to_case(bt_app_ctx *ctx) {
     bt_view_algs_frame(ctx, keys, 5);
 }
 
-BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
-    bt_app_ctx ctx = algs_ctx("frame");
-    bt_corpus_row row;
-    memset(&row, 0, sizeof row);
-    row.solver = BT_SOLVER_CHERRY;
-    row.sheet = BT_SHEET_EDGE;
-    row.rowid = 1;
-    row.position = _strdup("UF-UB-UR");
-    char err_token[64];
-    BT_CHECK(bt_alg_parse(COVERED_ALG, &row.alg, err_token, sizeof err_token));
-    row.alg_text = _strdup(COVERED_ALG);
-    row.commutator = _strdup("");
-    row.recon_link = _strdup("");
-    row.youtube_link = _strdup("");
-    load_rows(&ctx, &row, 1);
-
+static bt_repo_browser *install_cll_repo(bt_app_ctx *ctx) {
     bt_seed_row rows[1];
     memset(&rows[0], 0, sizeof rows[0]);
     snprintf(rows[0].event, sizeof rows[0].event, "%s", "2x2");
@@ -342,11 +331,30 @@ BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
     snprintf(packs[0].method, sizeof packs[0].method, "%s", "cll");
     snprintf(packs[0].stage, sizeof packs[0].stage, "%s", "cll");
     packs[0].expected_rows = 1;
-    bt_view_algs_enter(&ctx);
+    bt_view_algs_enter(ctx);
     bt_repo_browser *repo = bt_view_algs_repo();
     bt_repo_browser_free(repo);
     repo->arms = bt_repo_arms(packs, 1, &hidden, rows, 1, &repo->arm_count);
     bt_str_list_free(&hidden);
+    return repo;
+}
+
+BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
+    bt_app_ctx ctx = algs_ctx("frame");
+    bt_corpus_row row;
+    memset(&row, 0, sizeof row);
+    row.solver = BT_SOLVER_CHERRY;
+    row.sheet = BT_SHEET_EDGE;
+    row.rowid = 1;
+    row.position = _strdup("UF-UB-UR");
+    char err_token[64];
+    BT_CHECK(bt_alg_parse(COVERED_ALG, &row.alg, err_token, sizeof err_token));
+    row.alg_text = _strdup(COVERED_ALG);
+    row.commutator = _strdup("");
+    row.recon_link = _strdup("");
+    row.youtube_link = _strdup("");
+    load_rows(&ctx, &row, 1);
+    bt_repo_browser *repo = install_cll_repo(&ctx);
 
     repo_walk_to_case(&ctx);
     BT_CHECK(repo->repo_focused);
@@ -383,4 +391,60 @@ BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
     bt_view_algs_frame(&ctx, d_key, 1);
     BT_CHECK(ctx.state == BT_APP_CASE_DRILL);
     bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, reentering_the_algs_view_resets_the_query_focus_for_the_d_gate) {
+    bt_app_ctx ctx = algs_ctx("reenter");
+    install_cll_repo(&ctx);
+    int slash_key[1] = {47 /* slash */};
+    bt_view_algs_frame(&ctx, slash_key, 1);
+    BT_CHECK(bt_view_algs_app()->query_focused);
+    bt_app_request_state(&ctx, BT_APP_MENU);
+    bt_app_transition_frame(&ctx);
+    bt_app_request_state(&ctx, BT_APP_ALGS);
+    bt_app_transition_frame(&ctx);
+    BT_CHECK(!bt_view_algs_app()->query_focused);
+    install_cll_repo(&ctx);
+    repo_walk_to_case(&ctx);
+    int d_key[1] = {KEY_D};
+    bt_view_algs_frame(&ctx, d_key, 1);
+    BT_CHECK(ctx.state == BT_APP_CASE_DRILL);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, case_rows_report_every_vendor_row) {
+    bt_app_ctx ctx = algs_ctx("manyrows");
+    enum { ROWS = 70 };
+    bt_corpus_row rows[ROWS];
+    for (int i = 0; i < ROWS; i++) {
+        rows[i] = covered_row(COVERED_ALG, "");
+    }
+    bt_corpus_row *heap = malloc(ROWS * sizeof *heap);
+    memcpy(heap, rows, ROWS * sizeof *heap);
+    bt_corpus_from_rows(heap, ROWS, &ctx.vendor_corpus);
+    ctx.has_corpus = 1;
+    bt_case case_id;
+    case_id.orbit = BT_ORBIT_EDGE;
+    case_id.t1 = bt_scheme_sticker_of(BT_ORBIT_EDGE, 'A');
+    case_id.t2 = bt_scheme_sticker_of(BT_ORBIT_EDGE, 'B');
+    const bt_corpus_row **found = NULL;
+    size_t count = bt_view_algs_case_rows_dyn(&ctx.vendor_corpus, &case_id, &found);
+    BT_CHECK_EQ(count, (size_t)ROWS);
+    free(found);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, detail_line_styles_map_to_font_and_color) {
+    float size = 0.0F;
+    bt_theme_color color;
+    bt_view_algs_style_metrics(BT_ALGS_STYLE_FOCAL, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_title);
+    bt_view_algs_style_metrics(BT_ALGS_STYLE_MUTED, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_body);
+    bt_view_algs_style_metrics(BT_ALGS_STYLE_ALG, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_alg);
+    bt_view_algs_style_metrics(BT_ALGS_STYLE_SMALL, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_small);
+    bt_view_algs_style_metrics(BT_ALGS_STYLE_MICRO, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_micro);
 }

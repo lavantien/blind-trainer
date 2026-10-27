@@ -77,6 +77,21 @@ unsigned int bt_app_driver_vk_of(int raylib_key) {
     case KEY_P:
         vk = 'P';
         break;
+    case KEY_O:
+        vk = 'O';
+        break;
+    case KEY_X:
+        vk = 'X';
+        break;
+    case KEY_V:
+        vk = 'V';
+        break;
+    case KEY_TAB:
+        vk = BT_VK_TAB;
+        break;
+    case KEY_BACKSPACE:
+        vk = BT_VK_BACK;
+        break;
     default:
         vk = 0;
         break;
@@ -102,8 +117,7 @@ static int open_window_and_fonts(bt_app_ctx *ctx, bt_app_font_book *book) {
     char font_error[BT_APP_ERROR_MAX];
     const bt_corpus *corpus = ctx->has_corpus ? &ctx->vendor_corpus : NULL;
     if (bt_app_fonts_load(ctx->paths.config_path, corpus, NULL, 0, book, font_error,
-                          sizeof font_error)
-        != 0) {
+                          sizeof font_error) != 0) {
         fprintf(stderr, "%s\n", font_error);
         bt_app_window_close();
         BT_TRACE_FAIL("app.drivers", "%s", font_error);
@@ -142,7 +156,11 @@ static void arm_smoke_resources(uint64_t seed) {
     strcpy(tour_case.case_ref.case_key, "smoke");
     strcpy(tour_case.seed_alg, "R U R'");
     strcpy(tour_case.alg, "R U R'");
-    bt_view_case_drill_set_pending(&tour_case, 1);
+    bt_drill_case_queue tour_queue;
+    bt_drill_case_queue_init(&tour_queue);
+    bt_drill_case_queue_push(&tour_queue, &tour_case);
+    bt_view_case_drill_set_pending(&tour_queue);
+    bt_drill_case_queue_free(&tour_queue);
     bt_app_views_shared()->net.frozen = 1;
 }
 
@@ -177,8 +195,7 @@ static int smoke_loop(bt_app_ctx *ctx, bt_smoke_tour *tour) {
         bt_app_frame_input_set(NULL);
         char request[BT_PATH_MAX];
         int has_request = 0;
-        code = bt_smoke_step(tour, ctx, bt_app_fonts_current() != NULL, dt, request,
-                             &has_request);
+        code = bt_smoke_step(tour, ctx, bt_app_fonts_current() != NULL, dt, request, &has_request);
         if (has_request) {
             snprintf(pending, sizeof pending, "%s", request);
             has_pending = 1;
@@ -306,8 +323,8 @@ static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
     if (fatal) {
         init_ok = bt_usage_fatal_init(&tour, dir);
     } else {
-        init_ok = bt_usage_tour_init(&tour, dir, ctx->config.smoke_seed,
-                                     ctx->config.memo.cadence_ms);
+        init_ok =
+            bt_usage_tour_init(&tour, dir, ctx->config.smoke_seed, ctx->config.memo.cadence_ms);
     }
     if (init_ok != 0) {
         driver_teardown(ctx, &book);

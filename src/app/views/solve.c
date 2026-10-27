@@ -346,8 +346,19 @@ size_t bt_view_solve_review_lines(const bt_solve_session *session, char out[][BT
 
 void bt_view_solve_review_parts(const bt_solve_session *session, bt_solve_view_parts *out) {
     BT_TRACE_ENTER("app.solve_review_parts");
-    char lines[BT_SOLVE_LINES_MAX][BT_SOLVE_TEXT_MAX];
-    size_t count = bt_view_solve_review_lines(session, lines, BT_SOLVE_LINES_MAX);
+    size_t broken_count = 0;
+    if (session->has_finished && session->finished.has_outcome) {
+        broken_count = session->finished.outcome.broken_count;
+    }
+    size_t rows = 4 + broken_count;
+    char (*lines)[BT_SOLVE_TEXT_MAX] = malloc(rows * sizeof *lines);
+    if (lines == NULL) {
+        BT_TRACE_FAIL("app.solve_review_parts", "out of memory");
+        memset(out, 0, sizeof *out);
+        BT_TRACE_EXIT("app.solve_review_parts");
+        return;
+    }
+    size_t count = bt_view_solve_review_lines(session, lines, rows);
     memset(out, 0, sizeof *out);
     if (count > 0) {
         snprintf(out->result, sizeof out->result, "%s", lines[0]);
@@ -365,6 +376,7 @@ void bt_view_solve_review_parts(const bt_solve_session *session, bt_solve_view_p
         }
         strncat(out->broken, lines[i], sizeof out->broken - strlen(out->broken) - 1);
     }
+    free(lines);
     BT_TRACE_EXIT("app.solve_review_parts");
 }
 
