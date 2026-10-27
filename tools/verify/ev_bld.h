@@ -15,6 +15,7 @@
 #define VERIFY_BLD_MAX_PIECES 20
 #define VERIFY_BLD_MAX_SLOT 4
 #define VERIFY_BLD_NAME_MAX 8
+#define VERIFY_BLD_KIND_MAX 24
 #define VERIFY_BLD_MAX_BAND 12
 
 typedef struct {

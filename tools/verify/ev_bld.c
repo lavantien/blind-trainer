@@ -578,7 +578,7 @@ static int oldpoch_case(const char *front_json, const verify_bld_state_audit *au
         BT_TRACE_EXIT("ev_bld.oldpoch_case");
         return 1;
     }
-    char kind[VERIFY_BLD_NAME_MAX];
+    char kind[VERIFY_BLD_KIND_MAX];
     char swaps[128];
     bool has_kind = text_field(fields, "kind", kind, sizeof kind);
     bool has_swaps = text_field(fields, "swaps", swaps, sizeof swaps);
@@ -694,7 +694,7 @@ static int m2_case(const char *front_json, const verify_bld_state_audit *audit,
         BT_TRACE_EXIT("ev_bld.m2_case");
         return 1;
     }
-    char kind[VERIFY_BLD_NAME_MAX];
+    char kind[VERIFY_BLD_KIND_MAX];
     bool has_kind = text_field(fields, "kind", kind, sizeof kind);
     size_t edges[VERIFY_BLD_MAX_BAND];
     size_t corners[VERIFY_BLD_MAX_BAND];
