@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 extern void bt_test_gendata_build_build_attaches_a_verified_corner_three_style_to_its_case(void);
 extern void bt_test_gendata_build_build_attaches_a_verified_edge_three_style_to_its_case(void);
@@ -30,9 +31,10 @@ int main(void) {
         bt_test_gendata_build_regen_is_skipped_only_when_both_hashes_match,
     };
     for (int i = 0; i < 9; i++) {
-        fprintf(stderr, "start %d %s\n", i, names[i]);
+        clock_t started = clock();
         fns[i]();
-        fprintf(stderr, "done %d %s\n", i, names[i]);
+        double secs = (double)(clock() - started) / CLOCKS_PER_SEC;
+        fprintf(stderr, "%6.1fs %d %s\n", secs, i, names[i]);
     }
     return 0;
 }
