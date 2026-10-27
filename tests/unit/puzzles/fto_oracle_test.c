@@ -502,6 +502,26 @@ BT_TEST(fto_oracle, apply_rejects_hand_built_illegal_quarters) {
     }
 }
 
+BT_TEST(fto_inline, move_tokens_round_trip_through_format) {
+    bt_fto fto = bt_fto_new();
+    bt_pz_engine eng = bt_fto_engine(&fto);
+    for (uint8_t face = 0; face < 8; face++) {
+        for (uint8_t quarter = 1; quarter <= 2; quarter++) {
+            void *alg = bt_pz_alg_create();
+            bt_fto_move move = {face, quarter};
+            bt_pz_alg_push(&eng, alg, &move);
+            bt_strbuf text;
+            bt_strbuf_init(&text, 8);
+            bt_fto_format_alg(&fto, alg, &text);
+            bt_fto_move parsed;
+            BT_CHECK(bt_fto_parse_move(text.data, text.len, &parsed, NULL));
+            BT_CHECK(bt_fto_move_eq(parsed, move));
+            bt_strbuf_free(&text);
+            bt_pz_alg_destroy(alg);
+        }
+    }
+}
+
 BT_TEST(fto_inline, solved_state_is_solved) {
     bt_fto fto = bt_fto_new();
     bt_fto_state state;
