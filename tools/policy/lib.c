@@ -293,15 +293,41 @@ static int path_is_file(const char *path) {
     return stat(path, &info) == 0 && (info.st_mode & S_IFMT) == S_IFREG;
 }
 
-static void list_dir(const char *dir, policy_strvec *names) {
+static int path_is_reparse_or_link(const char *path) {
+#ifdef _WIN32
+    DWORD attrs = GetFileAttributesA(path);
+    return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+#else
+    struct stat info;
+    return lstat(path, &info) == 0 && S_ISLNK(info.st_mode);
+#endif
+}
+
+static int join_checked(char out[BT_PATH_MAX], const char *base, const char *leaf, char *err,
+                        size_t err_len) {
+    int wrote = snprintf(out, BT_PATH_MAX, "%s/%s", base, leaf);
+    if (wrote < 0 || (size_t)wrote >= BT_PATH_MAX) {
+        snprintf(err, err_len, "path too long under %s", base);
+        BT_TRACE_FAIL("policy.walk", "path too long under %s", base);
+        return -1;
+    }
+    return 0;
+}
+
+static int list_dir(const char *dir, policy_strvec *names, char *err, size_t err_len) {
     policy_strvec raw = {0};
 #ifdef _WIN32
     char pattern[BT_PATH_MAX];
-    snprintf(pattern, sizeof pattern, "%s/*", dir);
+    int wrote = snprintf(pattern, sizeof pattern, "%s/*", dir);
+    if (wrote < 0 || (size_t)wrote >= sizeof pattern) {
+        snprintf(err, err_len, "path too long under %s", dir);
+        BT_TRACE_FAIL("policy.walk", "pattern too long under %s", dir);
+        return -1;
+    }
     WIN32_FIND_DATAA entry;
     HANDLE handle = FindFirstFileA(pattern, &entry);
     if (handle == INVALID_HANDLE_VALUE) {
-        return;
+        return 0;
     }
     do {
         if (strcmp(entry.cFileName, ".") == 0 || strcmp(entry.cFileName, "..") == 0) {
@@ -313,7 +339,7 @@ static void list_dir(const char *dir, policy_strvec *names) {
 #else
     DIR *handle = opendir(dir);
     if (handle == NULL) {
-        return;
+        return 0;
     }
     struct dirent *entry;
     while ((entry = readdir(handle)) != NULL) {
@@ -331,6 +357,7 @@ static void list_dir(const char *dir, policy_strvec *names) {
         strvec_push(names, raw.items[at]);
     }
     free(raw.items);
+    return 0;
 }
 
 static int skip_dir_name(const char *name) {
@@ -342,44 +369,61 @@ static int skip_dir_name(const char *name) {
     return 0;
 }
 
-static void walk(const char *dir, const char *const *segs, size_t depth, policy_strvec *out) {
+static int walk(const char *dir, const char *const *segs, size_t depth, policy_strvec *out,
+                char *err, size_t err_len) {
     if (depth == 0) {
-        if (path_is_file(dir)) {
+        if (path_is_file(dir) && !path_is_reparse_or_link(dir)) {
             strvec_push(out, policy_xstrdup(dir));
         }
-        return;
-    }
-    if (strcmp(segs[0], "**") == 0) {
-        walk(dir, segs + 1, depth - 1, out);
-        policy_strvec names = {0};
-        list_dir(dir, &names);
-        for (size_t at = 0; at < names.count; at++) {
-            char child[BT_PATH_MAX];
-            snprintf(child, sizeof child, "%s/%s", dir, names.items[at]);
-            if (path_is_dir(child) && !skip_dir_name(names.items[at])) {
-                walk(child, segs, depth, out);
-            }
-        }
-        for (size_t at = 0; at < names.count; at++) {
-            free(names.items[at]);
-        }
-        free(names.items);
-        return;
+        return 0;
     }
     policy_strvec names = {0};
-    list_dir(dir, &names);
-    for (size_t at = 0; at < names.count; at++) {
-        char child[BT_PATH_MAX];
-        snprintf(child, sizeof child, "%s/%s", dir, names.items[at]);
-        if (policy_glob_match(segs[0], names.items[at])) {
-            walk(child, segs + 1, depth - 1, out);
+    if (list_dir(dir, &names, err, err_len) != 0) {
+        goto fail;
+    }
+    if (strcmp(segs[0], "**") == 0) {
+        if (walk(dir, segs + 1, depth - 1, out, err, err_len) != 0) {
+            goto fail;
         }
+        for (size_t at = 0; at < names.count; at++) {
+            char child[BT_PATH_MAX];
+            if (join_checked(child, dir, names.items[at], err, err_len) != 0) {
+                goto fail;
+            }
+            if (path_is_dir(child) && !skip_dir_name(names.items[at]) &&
+                !path_is_reparse_or_link(child)) {
+                if (walk(child, segs, depth, out, err, err_len) != 0) {
+                    goto fail;
+                }
+            }
+        }
+    } else {
+        for (size_t at = 0; at < names.count; at++) {
+            if (policy_glob_match(segs[0], names.items[at])) {
+                char child[BT_PATH_MAX];
+                if (join_checked(child, dir, names.items[at], err, err_len) != 0) {
+                    goto fail;
+                }
+                if (walk(child, segs + 1, depth - 1, out, err, err_len) != 0) {
+                    goto fail;
+                }
+            }
+        }
+    }
+    for (size_t at = 0; at < names.count; at++) {
         free(names.items[at]);
     }
     free(names.items);
+    return 0;
+fail:
+    for (size_t at = 0; at < names.count; at++) {
+        free(names.items[at]);
+    }
+    free(names.items);
+    return -1;
 }
 
-char **policy_collect_sources(const char *root, size_t *count) {
+char **policy_collect_sources(const char *root, size_t *count, char *err, size_t err_len) {
     BT_TRACE_ENTER("policy.collect_sources");
     policy_strvec files = {0};
     for (size_t at = 0; at < POLICY_SCAN_PATTERN_COUNT; at++) {
@@ -397,7 +441,14 @@ char **policy_collect_sources(const char *root, size_t *count) {
             segs[seg_count++] = cursor;
             cursor = slash != NULL ? slash + 1 : NULL;
         }
-        walk(root, segs, seg_count, &files);
+        if (walk(root, segs, seg_count, &files, err, err_len) != 0) {
+            for (size_t hit = 0; hit < files.count; hit++) {
+                free(files.items[hit]);
+            }
+            free(files.items);
+            BT_TRACE_EXIT("policy.collect_sources");
+            return NULL;
+        }
     }
     if (files.count > 1) {
         qsort(files.items, files.count, sizeof *files.items, strvec_cmp);
@@ -411,6 +462,12 @@ char **policy_collect_sources(const char *root, size_t *count) {
         files.items[used++] = files.items[at];
     }
     *count = used;
+    if (used == 0) {
+        snprintf(err, err_len, "no sources under %s", root);
+        BT_TRACE_FAIL("policy.collect_sources", "no sources under %s", root);
+        BT_TRACE_EXIT("policy.collect_sources");
+        return NULL;
+    }
     BT_TRACE_EXIT("policy.collect_sources");
     return files.items;
 }
@@ -459,7 +516,14 @@ static int read_source(const char *path, char **text_out, size_t *len_out, char 
     fseek(file, 0, SEEK_SET);
     char *text = policy_xalloc(size > 0 ? (size_t)size + 1 : 1);
     size_t got = fread(text, 1, size > 0 ? (size_t)size : 0, file);
+    int read_error = ferror(file);
     fclose(file);
+    if (read_error || got != (size > 0 ? (size_t)size : 0)) {
+        snprintf(err, err_len, "read %s: short read", path);
+        BT_TRACE_FAIL("policy.read_source", "short read on %s", path);
+        free(text);
+        return -1;
+    }
     text[got] = '\0';
     *text_out = text;
     *len_out = got;
@@ -499,20 +563,87 @@ typedef struct {
     char *core;
 } policy_covered_pair;
 
+static int code_extension(const char *name, const char **ext_out) {
+    const char *dot = strrchr(name, '.');
+    if (dot == NULL || dot == name || dot[1] == '\0') {
+        return 1;
+    }
+    *ext_out = dot;
+    return strcmp(dot, ".c") == 0 || strcmp(dot, ".h") == 0 || strcmp(dot, ".py") == 0 ||
+           strcmp(dot, ".pyw") == 0;
+}
+
+static int sweep_unexpected_extensions(const char *dir, const char *root, policy_outcome *outcome,
+                                       char *err, size_t err_len) {
+    policy_strvec names = {0};
+    if (list_dir(dir, &names, err, err_len) != 0) {
+        return -1;
+    }
+    size_t at = 0;
+    for (; at < names.count; at++) {
+        char child[BT_PATH_MAX];
+        if (join_checked(child, dir, names.items[at], err, err_len) != 0) {
+            goto fail;
+        }
+        if (path_is_reparse_or_link(child)) {
+            continue;
+        }
+        if (path_is_dir(child)) {
+            if (!skip_dir_name(names.items[at])) {
+                if (sweep_unexpected_extensions(child, root, outcome, err, err_len) != 0) {
+                    goto fail;
+                }
+            }
+        } else {
+            const char *ext = NULL;
+            if (!code_extension(names.items[at], &ext)) {
+                policy_finding finding;
+                memset(&finding, 0, sizeof finding);
+                finding.path = policy_xstrdup(rel_path(child, root));
+                finding.line = 1;
+                finding.kind = "extension";
+                finding.detail = policy_xalloc(64);
+                snprintf(finding.detail, 64, "unexpected %s file", ext);
+                outcome_push_finding(outcome, finding);
+            }
+        }
+        free(names.items[at]);
+    }
+    free(names.items);
+    return 0;
+fail:
+    for (; at < names.count; at++) {
+        free(names.items[at]);
+    }
+    free(names.items);
+    return -1;
+}
+
+static const char *const POLICY_SCAN_ROOTS[] = {"src", "tools", "tests", "scripts"};
+
 int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_value *config,
                       const char *allowlist_path, policy_outcome *outcome, char *err,
                       size_t err_len) {
     BT_TRACE_ENTER("policy.run_checks");
     memset(outcome, 0, sizeof *outcome);
     size_t file_count = 0;
-    char **files = policy_collect_sources(root, &file_count);
-    if (file_count == 0) {
-        snprintf(err, err_len, "no sources under %s", root);
-        BT_TRACE_FAIL("policy.run_checks", "no sources under %s", root);
+    char **files = policy_collect_sources(root, &file_count, err, err_len);
+    if (files == NULL) {
         BT_TRACE_EXIT("policy.run_checks");
         return -1;
     }
     int rc = 0;
+    if (mode == POLICY_MODE_BOTH) {
+        for (size_t at = 0; at < sizeof POLICY_SCAN_ROOTS / sizeof POLICY_SCAN_ROOTS[0] && rc == 0;
+             at++) {
+            char dir[BT_PATH_MAX];
+            if (join_checked(dir, root, POLICY_SCAN_ROOTS[at], err, err_len) != 0) {
+                rc = -1;
+                break;
+            }
+            rc = sweep_unexpected_extensions(dir, root, outcome, err, err_len);
+        }
+    }
     if (mode == POLICY_MODE_COMMENTS || mode == POLICY_MODE_BOTH) {
         for (size_t at = 0; at < file_count && rc == 0; at++) {
             char *text = NULL;
@@ -659,9 +790,13 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
 
 static int selftest_write(const char *path, const char *text, char *err, size_t err_len) {
     char partial[BT_PATH_MAX];
-    snprintf(partial, sizeof partial, "%s", path);
+    int wrote = snprintf(partial, sizeof partial, "%s", path);
+    if (wrote < 0 || (size_t)wrote >= sizeof partial) {
+        snprintf(err, err_len, "write %s: path too long", path);
+        return -1;
+    }
     for (char *cut = partial + 1; *cut != '\0'; cut++) {
-        if (*cut != '/') {
+        if (*cut != '/' && *cut != '\\') {
             continue;
         }
         char keep = *cut;
@@ -719,17 +854,93 @@ static int finding_is(const policy_finding *finding, const char *path, const cha
     return strcmp(finding->path, path) == 0 && strcmp(finding->detail, detail) == 0;
 }
 
+static void rm_rf(const char *path) {
+    if (!path_is_dir(path)) {
+        remove(path);
+        return;
+    }
+    policy_strvec names = {0};
+    char scratch_err[POLICY_ERR_MAX];
+    if (list_dir(path, &names, scratch_err, sizeof scratch_err) != 0) {
+        return;
+    }
+    for (size_t at = 0; at < names.count; at++) {
+        char child[BT_PATH_MAX];
+        if (join_checked(child, path, names.items[at], scratch_err, sizeof scratch_err) != 0) {
+            break;
+        }
+        rm_rf(child);
+        free(names.items[at]);
+    }
+    free(names.items);
+#ifdef _WIN32
+    _rmdir(path);
+#else
+    rmdir(path);
+#endif
+}
+
+static unsigned long policy_process_id(void) {
+#ifdef _WIN32
+    return (unsigned long)GetCurrentProcessId();
+#else
+    return (unsigned long)getpid();
+#endif
+}
+
+static int selftest_run_dir(const char *workdir, char out[BT_PATH_MAX], char *err, size_t err_len) {
+#ifdef _WIN32
+    _mkdir(workdir);
+#else
+    mkdir(workdir, 0755);
+#endif
+    policy_strvec names = {0};
+    if (list_dir(workdir, &names, err, err_len) != 0) {
+        return -1;
+    }
+    for (size_t at = 0; at < names.count; at++) {
+        if (strncmp(names.items[at], "pol-", 4) == 0) {
+            char child[BT_PATH_MAX];
+            if (join_checked(child, workdir, names.items[at], err, err_len) != 0) {
+                for (size_t left = at; left < names.count; left++) {
+                    free(names.items[left]);
+                }
+                free(names.items);
+                return -1;
+            }
+            rm_rf(child);
+        }
+        free(names.items[at]);
+    }
+    free(names.items);
+    static unsigned long long run_counter;
+    run_counter++;
+    int wrote = snprintf(out, BT_PATH_MAX, "%s/pol-%lu-%llu", workdir,
+                         (unsigned long)policy_process_id(), run_counter);
+    if (wrote < 0 || (size_t)wrote >= BT_PATH_MAX) {
+        snprintf(err, err_len, "selftest run dir too long under %s", workdir);
+        return -1;
+    }
+    return 0;
+}
+
 int policy_selftest(const char *workdir, char *err, size_t err_len) {
     BT_TRACE_ENTER("policy.selftest");
-    if (selftest_plant(workdir, err, err_len) != 0) {
-        BT_TRACE_FAIL("policy.selftest", "planting fixtures failed in %s", workdir);
+    char run_dir[BT_PATH_MAX];
+    if (selftest_run_dir(workdir, run_dir, err, err_len) != 0) {
+        BT_TRACE_FAIL("policy.selftest", "fresh run dir failed under %s", workdir);
+        BT_TRACE_EXIT("policy.selftest");
+        return -1;
+    }
+    if (selftest_plant(run_dir, err, err_len) != 0) {
+        BT_TRACE_FAIL("policy.selftest", "planting fixtures failed in %s", run_dir);
         BT_TRACE_EXIT("policy.selftest");
         return -1;
     }
     char config_path[BT_PATH_MAX];
     char allow_path[BT_PATH_MAX];
-    snprintf(config_path, sizeof config_path, "%s/config.json", workdir);
-    snprintf(allow_path, sizeof allow_path, "%s/allow.txt", workdir);
+    snprintf(config_path, sizeof config_path, "%s/config.json", run_dir);
+    snprintf(allow_path, sizeof allow_path, "%s/allow.txt", run_dir);
     char *config_text = NULL;
     size_t config_len = 0;
     if (read_source(config_path, &config_text, &config_len, err, err_len) != 0) {
@@ -749,7 +960,7 @@ int policy_selftest(const char *workdir, char *err, size_t err_len) {
     free(config_text);
     policy_outcome dirty_run;
     int rc =
-        policy_run_checks(workdir, POLICY_MODE_BOTH, config, allow_path, &dirty_run, err, err_len);
+        policy_run_checks(run_dir, POLICY_MODE_BOTH, config, allow_path, &dirty_run, err, err_len);
     if (rc != 0) {
         bt_json_free(config);
         BT_TRACE_FAIL("policy.selftest", "dirty run failed: %s", err);
@@ -785,7 +996,7 @@ int policy_selftest(const char *workdir, char *err, size_t err_len) {
     }
     size_t dirty_stale = dirty_run.stale_count;
     char clean_root[BT_PATH_MAX];
-    snprintf(clean_root, sizeof clean_root, "%s/clean_only", workdir);
+    snprintf(clean_root, sizeof clean_root, "%s/clean_only", run_dir);
     policy_outcome clean_run;
     int clean_rc = policy_run_checks(clean_root, POLICY_MODE_BOTH, config, allow_path, &clean_run,
                                      err, err_len);

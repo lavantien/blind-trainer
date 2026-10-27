@@ -61,7 +61,7 @@ int policy_parse_allowlist(const char *text, const char *source, policy_allowlis
 int policy_allowlist_covers(const policy_allowlist *allow, const char *path, const char *core);
 
 int policy_glob_match(const char *pattern, const char *name);
-char **policy_collect_sources(const char *root, size_t *count);
+char **policy_collect_sources(const char *root, size_t *count, char *err, size_t err_len);
 void policy_free_sources(char **files, size_t count);
 
 int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_value *config,

@@ -97,6 +97,46 @@ static void policy_util_scratch(const char *tag, char out[POLICY_UTIL_PATH_MAX])
     policy_util_mkdir_p(out);
 }
 
+static int policy_util_find_child(const char *root, const char *prefix,
+                                  char out[POLICY_UTIL_PATH_MAX]) {
+    out[0] = '\0';
+#ifdef _WIN32
+    char pattern[POLICY_UTIL_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/*", root);
+    WIN32_FIND_DATAA entry;
+    HANDLE handle = FindFirstFileA(pattern, &entry);
+    if (handle == INVALID_HANDLE_VALUE) {
+        return 0;
+    }
+    int found = 0;
+    do {
+        if (strncmp(entry.cFileName, prefix, strlen(prefix)) == 0) {
+            policy_util_join(out, root, entry.cFileName);
+            found = 1;
+            break;
+        }
+    } while (FindNextFileA(handle, &entry) != 0);
+    FindClose(handle);
+    return found;
+#else
+    DIR *dir = opendir(root);
+    if (dir == NULL) {
+        return 0;
+    }
+    int found = 0;
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strncmp(entry->d_name, prefix, strlen(prefix)) == 0) {
+            policy_util_join(out, root, entry->d_name);
+            found = 1;
+            break;
+        }
+    }
+    closedir(dir);
+    return found;
+#endif
+}
+
 static void policy_util_write(const char *path, const char *text) {
     char parent[POLICY_UTIL_PATH_MAX];
     snprintf(parent, sizeof parent, "%s", path);

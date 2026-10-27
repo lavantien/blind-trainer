@@ -127,7 +127,9 @@ BT_TEST(policy_lib, collect_sources_covers_every_scan_root) {
     char root[BT_PATH_MAX];
     policy_workspace_root(root);
     size_t count = 0;
-    char **files = policy_collect_sources(root, &count);
+    char coll_err[POLICY_ERR_MAX];
+    char **files = policy_collect_sources(root, &count, coll_err, sizeof coll_err);
+    BT_CHECK(files != NULL);
     BT_CHECK(count > 0);
     size_t root_len = strlen(root);
     int has_common = 0;
@@ -316,13 +318,34 @@ BT_TEST(policy_lib, walk_skips_excluded_directories) {
     plant(root, "src/vendor/gen.c", POLICY_DIRTY_FIXTURE);
     plant(root, "src/build/gen.c", POLICY_DIRTY_FIXTURE);
     size_t count = 0;
-    char **files = policy_collect_sources(root, &count);
+    char coll_err[POLICY_ERR_MAX];
+    char **files = policy_collect_sources(root, &count, coll_err, sizeof coll_err);
+    BT_CHECK(files != NULL);
     BT_CHECK_EQ(count, 1);
     if (count == 1) {
         size_t root_len = strlen(root);
         BT_CHECK(strcmp(files[0] + root_len + 1, "src/real.c") == 0);
     }
     policy_free_sources(files, count);
+    policy_util_rm_rf(root);
+}
+
+BT_TEST(policy_lib, unexpected_extensions_under_scan_roots_are_findings) {
+    char root[POLICY_UTIL_PATH_MAX];
+    policy_util_scratch("run-ext", root);
+    plant(root, "src/a.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "src/stray.json", "{}\n");
+    plant(root, "tools/note.txt", "x\n");
+    plant(root, "allow.txt", "# allow\n");
+    policy_outcome outcome = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = run(root, POLICY_MODE_BOTH, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(outcome.finding_count, 2);
+    BT_CHECK(strcmp(outcome.findings[0].path, "src/stray.json") == 0);
+    BT_CHECK(strcmp(outcome.findings[0].kind, "extension") == 0);
+    BT_CHECK(strcmp(outcome.findings[1].path, "tools/note.txt") == 0);
+    policy_outcome_free(&outcome);
     policy_util_rm_rf(root);
 }
 
@@ -334,10 +357,16 @@ BT_TEST(policy_lib, selftest_proves_both_detection_directions) {
     BT_CHECK_EQ(rc, 1);
     char probe[POLICY_UTIL_PATH_MAX];
     policy_util_join(probe, workdir, "src/dirty.c");
-    FILE *file = fopen(probe, "rb");
-    BT_CHECK(file != NULL);
-    if (file != NULL) {
-        fclose(file);
+    BT_CHECK(fopen(probe, "rb") == NULL);
+    char run_dir[POLICY_UTIL_PATH_MAX];
+    BT_CHECK(policy_util_find_child(workdir, "pol-", run_dir) == 1);
+    if (run_dir[0] != '\0') {
+        policy_util_join(probe, run_dir, "src/dirty.c");
+        FILE *file = fopen(probe, "rb");
+        BT_CHECK(file != NULL);
+        if (file != NULL) {
+            fclose(file);
+        }
     }
     policy_util_rm_rf(workdir);
 }
