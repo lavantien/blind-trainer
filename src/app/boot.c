@@ -3,6 +3,7 @@
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/case_drill_view.h"
+#include "app/views/fatal.h"
 #include "app/views/drill.h"
 #include "app/views/drill_view.h"
 #include "app/views/memo.h"
@@ -150,7 +151,7 @@ int bt_app_transition_frame(bt_app_ctx *ctx) {
 
 const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {enter_bootstrap, NULL, NULL},
-    {noop_row, NULL, NULL},
+    {noop_row, NULL, bt_view_fatal_row_draw},
     {noop_row, NULL, bt_view_menu_row_draw},
     {bt_view_drill_enter, bt_view_drill_update, bt_view_drill_row_draw},
     {bt_view_memo_enter, bt_view_memo_update, bt_view_memo_row_draw},
