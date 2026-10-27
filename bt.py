@@ -961,6 +961,10 @@ def fuzz_suites(root):
     return [s for s in discover_test_suites(root) if s["stem"].startswith("fuzz_")]
 
 
+def verify_suites(root):
+    return [s for s in discover_test_suites(root) if s["stem"].startswith("verify_")]
+
+
 def mutants_plan(root, areas):
     plans = []
     for area in areas:
@@ -1125,9 +1129,9 @@ def ensure_tool_exes(hub, logger, build_label, names):
     return exes
 
 
-def run_policy_exe(exe, argv, label, logger):
+def run_policy_exe(exe, argv, label, logger, env=None):
     try:
-        proc = run([exe, *argv], label, check=False, timeout=300)
+        proc = run([exe, *argv], label, check=False, timeout=300, env=env)
     except subprocess.TimeoutExpired as e:
         logger.fail(label, f"timeout after {e.timeout}s: {e.cmd}")
         logger.exit(label, 2)
@@ -1140,7 +1144,7 @@ def run_policy_exe(exe, argv, label, logger):
     return proc.returncode
 
 
-def tool_run(hub, build_label, exe_name, argv, label):
+def tool_run(hub, build_label, exe_name, argv, label, env=None):
     logger = Logger()
     logger.entry(label)
     try:
@@ -1148,7 +1152,7 @@ def tool_run(hub, build_label, exe_name, argv, label):
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail(build_label, f"{type(e).__name__}: {e}")
         return 1
-    return run_policy_exe(exe, argv, label, logger)
+    return run_policy_exe(exe, argv, label, logger, env=env)
 
 
 def tgt_policy(args):
@@ -1272,6 +1276,29 @@ def tgt_visual_selftest(args):
 def tgt_gen_data(args):
     """build data/vendor from ref_ground and synthesize uncovered pairs"""
     return tool_run(load_hub(), "gendata-build", "gendata.exe", [], "gen-data")
+
+
+def tgt_verify_algs(args):
+    """verify every vendor alg and pack row, write the verify and packs reports"""
+    hub = load_hub()
+    return tool_run(hub, "verify-build", "verify.exe", [], "verify-algs", env=child_env(hub))
+
+
+def tgt_verify_algs_selftest(args):
+    """run every verify_* unit suite with the ref ground and config env"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("verify-algs-selftest")
+    try:
+        build_suites(hub, logger)
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("verify-algs-selftest-build", f"{type(e).__name__}: {e}")
+        return 1
+    results = run_suite_exes(hub, verify_suites(REPO_ROOT))
+    code, line = aggregate_results(results)
+    logger.line("summary", line)
+    logger.exit("verify-algs-selftest", code)
+    return code
 
 
 def tgt_clean(args):
