@@ -15,9 +15,8 @@ typedef void (*test_fn)(void);
 int main(void) {
     setvbuf(stderr, NULL, _IONBF, 0);
     static const char *names[] = {
-        "attaches_corner",   "attaches_edge", "catalogs",  "other_buffer",
-        "flags_non_three",   "routes_special", "manifest_counts",
-        "regen_needed",      "regen_skipped",
+        "attaches_corner", "attaches_edge",   "catalogs",     "other_buffer",  "flags_non_three",
+        "routes_special",  "manifest_counts", "regen_needed", "regen_skipped",
     };
     static const test_fn fns[] = {
         bt_test_gendata_build_build_attaches_a_verified_corner_three_style_to_its_case,
