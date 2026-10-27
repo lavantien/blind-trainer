@@ -3,6 +3,7 @@
 
 #include "app/logic.h"
 #include "app/states.h"
+#include "app/ui.h"
 
 #include <stddef.h>
 
@@ -27,5 +28,8 @@ int bt_app_parse_shot_mode(int argc, char **argv, bt_app_shot_mode *mode, char *
                            size_t dir_len, char *error, size_t error_len);
 int bt_app_init(int argc, char **argv, bt_app_ctx *ctx, bt_app_shot_mode *mode, char *dir,
                 size_t dir_len, char *error, size_t error_len);
+
+void bt_app_frame_input_set(const bt_ui_input *input);
+const bt_ui_input *bt_app_frame_input(void);
 
 #endif

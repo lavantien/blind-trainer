@@ -51,6 +51,7 @@ int bt_app_main(int argc, char **argv) {
         bt_app_process_keys(&ctx);
         bt_ui_input_clear(&input);
         bt_app_poll_input(&input);
+        bt_app_frame_input_set(&input);
         if (BT_APP_STATE_TABLE[ctx.state].update != NULL) {
             BT_APP_STATE_TABLE[ctx.state].update(&ctx);
         }
@@ -65,6 +66,7 @@ int bt_app_main(int argc, char **argv) {
             BT_APP_STATE_TABLE[ctx.state].draw(&ctx);
         }
         bt_app_window_frame_end();
+        bt_app_frame_input_set(NULL);
     }
     bt_app_fonts_unload(&book);
     bt_app_window_close();

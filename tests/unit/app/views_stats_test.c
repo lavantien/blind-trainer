@@ -1,3 +1,4 @@
+#include "app/boot.h"
 #include "app/views/frame.h"
 #include "app/views/settings.h"
 #include "app/views/stats.h"
@@ -315,6 +316,67 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     BT_CHECK(bt_app_window_capture(shot));
     BT_CHECK(shot_has_variance(shot));
     remove(shot);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+}
+
+BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
+    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings seam test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
+    float body = theme->font_body * theme->root_rem;
+    float field_h = body * 1.4F;
+    float line_gap = theme->spacing_rem * theme->root_rem;
+    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
+    float cadence_x = metrics.content_x + metrics.content_w - 2.0F * 160.0F - line_gap;
+    float reps_x = cadence_x + 160.0F + line_gap;
+    bt_app_ctx ctx;
+    fixture_ctx("seam", BT_APP_SETTINGS, &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    BT_CHECK(app->draft.drill_reps == 4);
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.x = reps_x + 160.0F - field_h / 2.0F;
+    input.y = field_y + field_h / 2.0F;
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        input.click = frame == 0;
+        bt_app_frame_input_set(&input);
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_settings_row_draw(&ctx);
+        bt_app_window_frame_end();
+        bt_app_frame_input_set(NULL);
+    }
+    BT_CHECK(app->draft.drill_reps == 5);
+    BT_CHECK(app->changed == 1);
+    bt_ui_input second;
+    bt_ui_input_clear(&second);
+    second.x = cadence_x + 100.0F;
+    second.y = field_y + field_h + line_gap + field_h * (2.5F / 3.0F);
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        second.click = frame == 0;
+        bt_app_frame_input_set(&second);
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_settings_row_draw(&ctx);
+        bt_app_window_frame_end();
+        bt_app_frame_input_set(NULL);
+    }
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_PER_ORBIT);
+    bt_app_ctx_free(&ctx);
     bt_app_fonts_unload(&book);
     bt_app_window_close();
 }

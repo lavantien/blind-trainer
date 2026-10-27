@@ -1,5 +1,6 @@
 #include "app/views/settings.h"
 
+#include "app/boot.h"
 #include "app/theme.h"
 #include "app/views/frame.h"
 #include "app/views/state.h"
@@ -57,8 +58,9 @@ void bt_view_settings_lines(const bt_settings_draft *draft,
     snprintf(out[0], BT_SETTINGS_TEXT_MAX, "memo cadence %u ms", draft->memo_cadence_ms);
     snprintf(out[1], BT_SETTINGS_TEXT_MAX, "memo mode %s", bt_memo_mode_label(draft->memo_mode));
     snprintf(out[2], BT_SETTINGS_TEXT_MAX, "drill reps %u", draft->drill_reps);
-    snprintf(out[3], BT_SETTINGS_TEXT_MAX, "%s", "1 syllables  2 images  3 per-orbit  edits save "
-                                                 "immediately");
+    snprintf(out[3], BT_SETTINGS_TEXT_MAX, "%s",
+             "1 syllables  2 images  3 per-orbit  edits save "
+             "immediately");
     BT_TRACE_EXIT("app.view_settings_lines");
 }
 
@@ -146,8 +148,8 @@ void bt_view_settings_update(bt_app_ctx *ctx) {
 }
 
 void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *font_regular,
-                          const void *font_bold, float window_w, float window_h,
-                          const bt_ui_input *input) {
+                           const void *font_bold, float window_w, float window_h,
+                           const bt_ui_input *input) {
     BT_TRACE_ENTER("app.view_settings_draw");
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
@@ -156,8 +158,8 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
     bt_view_settings_lines(draft, lines);
     float body = theme->font_body * theme->root_rem;
     float line_gap = theme->spacing_rem * 1.0F * theme->root_rem;
-    float total_h = body * (float)BT_SETTINGS_LINE_COUNT +
-                    line_gap * (float)(BT_SETTINGS_LINE_COUNT - 1);
+    float total_h =
+        body * (float)BT_SETTINGS_LINE_COUNT + line_gap * (float)(BT_SETTINGS_LINE_COUNT - 1);
     float y = metrics.content_y + (metrics.content_h - total_h) / 2.0F;
     for (size_t i = 0; i < BT_SETTINGS_LINE_COUNT; i++) {
         bt_app_draw_text(font_regular, lines[i], metrics.content_x, y, body,
@@ -168,15 +170,23 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
     float field_h = body * 1.4F;
     float field_w = 160.0F;
     float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
-    bt_ui_rect cadence_rect = {metrics.content_x + metrics.content_w - 2.0F * field_w - line_gap,
-                               field_y, field_w, field_h,};
+    bt_ui_rect cadence_rect = {
+        metrics.content_x + metrics.content_w - 2.0F * field_w - line_gap,
+        field_y,
+        field_w,
+        field_h,
+    };
     bt_ui_rect reps_rect = {cadence_rect.x + field_w + line_gap, field_y, field_w, field_h};
-    bt_ui_rect select_rect = {cadence_rect.x, field_y + field_h + line_gap,
-                              metrics.content_w - (cadence_rect.x - metrics.content_x), field_h,};
+    bt_ui_rect select_rect = {
+        cadence_rect.x,
+        field_y + field_h + line_gap,
+        metrics.content_w - (cadence_rect.x - metrics.content_x),
+        field_h,
+    };
     int edited = 0;
-    long long cadence = bt_ui_number_field(&regular, &cadence_rect, (long long)draft->memo_cadence_ms,
-                                           BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, input,
-                                           &edited);
+    long long cadence =
+        bt_ui_number_field(&regular, &cadence_rect, (long long)draft->memo_cadence_ms,
+                           BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_cadence(cadence);
         if (clamped != draft->memo_cadence_ms) {
@@ -184,9 +194,8 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
             *changed = 1;
         }
     }
-    long long reps =
-        bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps,
-                           BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, input, &edited);
+    long long reps = bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps,
+                                        BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_reps(reps);
         if (clamped != draft->drill_reps) {
@@ -223,11 +232,15 @@ void bt_view_settings_row_draw(bt_app_ctx *ctx) {
         return;
     }
     bt_settings_app_state *app = bt_view_settings_app();
-    bt_ui_input input;
-    bt_ui_input_clear(&input);
+    bt_ui_input fallback;
+    bt_ui_input_clear(&fallback);
+    const bt_ui_input *input = bt_app_frame_input();
+    if (input == NULL) {
+        input = &fallback;
+    }
     int changed = 0;
     bt_view_settings_draw(&app->draft, &changed, book->regular, book->bold, (float)GetScreenWidth(),
-                          (float)GetScreenHeight(), &input);
+                          (float)GetScreenHeight(), input);
     if (changed) {
         app->changed = 1;
     }

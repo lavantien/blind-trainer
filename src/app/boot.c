@@ -116,6 +116,20 @@ static void noop_row(bt_app_ctx *ctx) {
     (void)ctx;
 }
 
+static const bt_ui_input *g_frame_input;
+
+void bt_app_frame_input_set(const bt_ui_input *input) {
+    BT_TRACE_ENTER("app.frame_input_set");
+    g_frame_input = input;
+    BT_TRACE_EXIT("app.frame_input_set");
+}
+
+const bt_ui_input *bt_app_frame_input(void) {
+    BT_TRACE_ENTER("app.frame_input");
+    BT_TRACE_EXIT("app.frame_input");
+    return g_frame_input;
+}
+
 const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {enter_bootstrap, NULL, NULL},
     {noop_row, NULL, NULL},
