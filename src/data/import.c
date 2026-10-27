@@ -62,13 +62,11 @@ static int target_is_regular_file(const char *path) {
     return stat(path, &info) == 0 && (info.st_mode & S_IFMT) == S_IFREG;
 }
 
-static int migrate_one(const char *file, const char *migrated, char *error,
-                       size_t error_len) {
+static int migrate_one(const char *file, const char *migrated, char *error, size_t error_len) {
     if (rename(file, migrated) == 0) {
         return 0;
     }
-    if (!target_is_regular_file(migrated) || remove(migrated) != 0 ||
-        rename(file, migrated) != 0) {
+    if (!target_is_regular_file(migrated) || remove(migrated) != 0 || rename(file, migrated) != 0) {
         snprintf(error, error_len,
                  "rename %s: %s: the import already committed to the db, finish by "
                  "renaming it to %s or removing it",

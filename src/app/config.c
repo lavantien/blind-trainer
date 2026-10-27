@@ -21,8 +21,7 @@ void bt_app_config_defaults(bt_app_config *config) {
     BT_TRACE_ENTER("app.config_defaults");
     config->window.width = BT_APP_DEFAULT_WINDOW_WIDTH;
     config->window.height = BT_APP_DEFAULT_WINDOW_HEIGHT;
-    snprintf(config->window.title, sizeof config->window.title, "%s",
-             BT_APP_DEFAULT_WINDOW_TITLE);
+    snprintf(config->window.title, sizeof config->window.title, "%s", BT_APP_DEFAULT_WINDOW_TITLE);
     config->memo.cadence_ms = BT_APP_DEFAULT_MEMO_CADENCE_MS;
     snprintf(config->memo.mode, sizeof config->memo.mode, "%s", BT_APP_DEFAULT_MEMO_MODE);
     config->drill.reps = BT_APP_DEFAULT_DRILL_REPS;
@@ -43,11 +42,10 @@ static int field_uint(const bt_json_value *section, const char *name, unsigned i
     return 0;
 }
 
-static int field_text(const bt_json_value *section, const char *name, char *out,
-                      size_t out_len, char *error, size_t error_len) {
+static int field_text(const bt_json_value *section, const char *name, char *out, size_t out_len,
+                      char *error, size_t error_len) {
     const bt_json_value *field = bt_json_get(section, name);
-    if (field == NULL || field->type != BT_JSON_STRING ||
-        strlen(field->as.string) >= out_len) {
+    if (field == NULL || field->type != BT_JSON_STRING || strlen(field->as.string) >= out_len) {
         snprintf(error, error_len, "config app section malformed: field %s", name);
         BT_TRACE_FAIL("app.config_from_json", "field %s invalid", name);
         return -1;
@@ -65,8 +63,7 @@ static int window_from(const bt_json_value *section, bt_app_window_cfg *window, 
     }
     if (field_uint(section, "width", &window->width, error, error_len) != 0 ||
         field_uint(section, "height", &window->height, error, error_len) != 0 ||
-        field_text(section, "title", window->title, sizeof window->title, error,
-                   error_len) != 0) {
+        field_text(section, "title", window->title, sizeof window->title, error, error_len) != 0) {
         return -1;
     }
     return 0;
@@ -143,8 +140,7 @@ const char *bt_app_display_path(const char *path, char *out, size_t out_len) {
     return out;
 }
 
-int bt_app_load_config_value(const char *path, bt_json_value **out, char *error,
-                             size_t error_len) {
+int bt_app_load_config_value(const char *path, bt_json_value **out, char *error, size_t error_len) {
     BT_TRACE_ENTER("app.load_config_value");
     char shown[BT_PATH_MAX];
     bt_app_display_path(path, shown, sizeof shown);
@@ -174,8 +170,7 @@ int bt_app_load_config_value(const char *path, bt_json_value **out, char *error,
     free(text);
     if (rc != 0) {
         snprintf(error, error_len, "cannot parse config %s: %s", shown, json_error.message);
-        BT_TRACE_FAIL("app.load_config_value", "cannot parse %s: %s", shown,
-                      json_error.message);
+        BT_TRACE_FAIL("app.load_config_value", "cannot parse %s: %s", shown, json_error.message);
         BT_TRACE_EXIT("app.load_config_value");
         return -1;
     }
