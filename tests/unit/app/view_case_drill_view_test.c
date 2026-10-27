@@ -79,6 +79,14 @@ BT_TEST(view_case_drill_view, panel_lines_spell_the_case_site_and_progress) {
     BT_CHECK(strcmp(lines[5].text, "db locked") == 0);
     BT_CHECK(lines[5].danger);
 
+    session.has_save_error = 0;
+    session.has_grid_error = 1;
+    snprintf(session.grid_error, sizeof session.grid_error, "%s", "no case geometry for event zzz");
+    count = bt_case_view_lines(&session, 1, lines);
+    BT_CHECK(count >= 6);
+    BT_CHECK(strcmp(lines[5].text, "no case geometry for event zzz") == 0);
+    BT_CHECK(lines[5].danger);
+
     session.has_current = 0;
     count = bt_case_view_lines(&session, 0, lines);
     BT_CHECK_EQ(count, (size_t)1);

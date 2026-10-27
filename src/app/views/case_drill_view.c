@@ -100,9 +100,10 @@ size_t bt_case_view_lines(const bt_case_drill_session *session, int revealed,
         out[count].danger = 1;
         count++;
     }
-    if (session->has_grid_error) {
+    if (session->has_grid_error && count < BT_CASE_VIEW_LINES_MAX) {
         snprintf(out[count].text, BT_CASE_DRILL_TEXT_MAX, "%s", session->grid_error);
         out[count].danger = 1;
+        count++;
     }
     BT_TRACE_EXIT("app.case_view_lines");
     return count;
