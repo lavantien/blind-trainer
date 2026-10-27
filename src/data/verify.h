@@ -67,6 +67,7 @@ void bt_verdict_init(bt_verdict *verdict);
 void bt_verdict_free(bt_verdict *verdict);
 bool bt_verdict_ok(const bt_verdict *verdict);
 void bt_verdict_string(const bt_verdict *verdict, char *out, size_t out_len);
+void bt_problem_string(const bt_problem *problem, char *out, size_t out_len);
 bool bt_problem_eq(const bt_problem *a, const bt_problem *b);
 bool bt_note_eq(const bt_note *a, const bt_note *b);
 bool bt_verdict_contains_problem(const bt_verdict *verdict, bt_problem_kind kind,

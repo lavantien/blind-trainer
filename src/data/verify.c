@@ -116,6 +116,12 @@ void bt_verdict_string(const bt_verdict *verdict, char *out, size_t out_len) {
     BT_TRACE_EXIT("verify.verdict_string");
 }
 
+void bt_problem_string(const bt_problem *problem, char *out, size_t out_len) {
+    BT_TRACE_ENTER("verify.problem_string");
+    problem_string(problem, out, out_len);
+    BT_TRACE_EXIT("verify.problem_string");
+}
+
 static bool text_matches(const char *field, const char *want) {
     if (want == NULL) {
         return true;
@@ -400,8 +406,7 @@ static void residue_problems(const bt_cube *cube, bt_verdict *verdict, const bt_
 }
 
 static bool place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from, uint8_t to,
-                        char *detail,
-                        size_t detail_len) {
+                        char *detail, size_t detail_len) {
     bt_piece piece = piece_of_sticker(from);
     bt_piece slot_piece = piece_of_sticker(to);
     uint8_t piece_stickers[3];
