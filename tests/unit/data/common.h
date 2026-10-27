@@ -24,6 +24,24 @@ static const td_sheet_pin TD_SHEETS[12] = {
     {"eggins", "twists.tsv", 5},  {"eggins", "parity.tsv", 2},   {"eggins", "ltct.tsv", 3},
 };
 
+static inline void td_config_repo_root(char out[BT_PATH_MAX]) {
+    const char *config = getenv("BT_CONFIG");
+    if (config != NULL && config[0] != '\0') {
+        snprintf(out, BT_PATH_MAX, "%s", config);
+        for (int i = 0; i < 2; i++) {
+            char *slash = strrchr(out, '/');
+            char *backslash = strrchr(out, '\\');
+            char *cut = slash > backslash ? slash : backslash;
+            if (cut == NULL) {
+                break;
+            }
+            *cut = '\0';
+        }
+        return;
+    }
+    bt_paths_workspace_root(out);
+}
+
 static inline void td_ref_ground(char out[BT_PATH_MAX]) {
     const char *raw = getenv("BT_REF_GROUND");
     if (raw == NULL || raw[0] == '\0') {
@@ -34,7 +52,7 @@ static inline void td_ref_ground(char out[BT_PATH_MAX]) {
         return;
     }
     char root[BT_PATH_MAX];
-    bt_paths_workspace_root(root);
+    td_config_repo_root(root);
     snprintf(out, BT_PATH_MAX, "%s\\%s", root, raw);
 }
 
