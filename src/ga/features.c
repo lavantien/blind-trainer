@@ -224,51 +224,43 @@ static size_t bt_ga_utf8_decode(const char *s, uint32_t *cp) {
         *cp = p[0];
         return 1;
     }
+    size_t width = 0;
+    uint32_t least = 0;
     if ((p[0] & 0xE0) == 0xC0) {
-        *cp = ((uint32_t)(p[0] & 0x1F) << 6) | (uint32_t)(p[1] & 0x3F);
-        return 2;
+        width = 2;
+        least = 0x80;
+    } else if ((p[0] & 0xF0) == 0xE0) {
+        width = 3;
+        least = 0x800;
+    } else if ((p[0] & 0xF8) == 0xF0) {
+        width = 4;
+        least = 0x10000;
+    } else {
+        return 0;
     }
-    if ((p[0] & 0xF0) == 0xE0) {
-        *cp = ((uint32_t)(p[0] & 0x0F) << 12) | ((uint32_t)(p[1] & 0x3F) << 6) |
-              (uint32_t)(p[2] & 0x3F);
-        return 3;
+    uint32_t value = (uint32_t)(p[0] & (0x7F >> width));
+    for (size_t k = 1; k < width; k++) {
+        if ((p[k] & 0xC0) != 0x80) {
+            return 0;
+        }
+        value = (value << 6) | (uint32_t)(p[k] & 0x3F);
     }
-    if ((p[0] & 0xF8) == 0xF0) {
-        *cp = ((uint32_t)(p[0] & 0x07) << 18) | ((uint32_t)(p[1] & 0x3F) << 12) |
-              ((uint32_t)(p[2] & 0x3F) << 6) | (uint32_t)(p[3] & 0x3F);
-        return 4;
+    if (value < least || (value >= 0xD800 && value <= 0xDFFF) || value > 0x10FFFF) {
+        return 0;
     }
-    return 0;
+    *cp = value;
+    return width;
 }
 
 int bt_ga_utf8_valid(const char *text) {
     BT_TRACE_ENTER("ga.utf8_valid");
     int ok = 1;
-    for (const unsigned char *p = (const unsigned char *)text; ok && *p != '\0';) {
+    for (const unsigned char *p = (const unsigned char *)text; *p != '\0';) {
         uint32_t cp = 0;
         size_t width = bt_ga_utf8_decode((const char *)p, &cp);
         if (width == 0) {
             ok = 0;
             break;
-        }
-        if ((width == 2 && cp < 0x80) || (width == 3 && cp < 0x800) ||
-            (width == 4 && cp < 0x10000)) {
-            ok = 0;
-            break;
-        }
-        if (cp >= 0xD800 && cp <= 0xDFFF) {
-            ok = 0;
-            break;
-        }
-        if (cp > 0x10FFFF) {
-            ok = 0;
-            break;
-        }
-        for (size_t k = 1; k < width; k++) {
-            if ((p[k] & 0xC0) != 0x80) {
-                ok = 0;
-                break;
-            }
         }
         p += width;
     }

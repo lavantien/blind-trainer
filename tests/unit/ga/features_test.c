@@ -240,3 +240,14 @@ BT_TEST(features, flow_penalty_pins_exact_values_on_parsed_syllables) {
     bt_ga_features bap = f("báp");
     BT_CHECK_EQ(bt_ga_flow_penalty(&bap, 3, &bap, 2), 2.25f);
 }
+
+BT_TEST(features, parse_rejects_malformed_utf8_sequences) {
+    static const char *const rows[] = {
+        "ma\xc3",   "\xe1\xba",     "\xf0\x9f\x98", "a\x80",
+        "\xc0\xaf", "\xe0\x80\xaf", "\xed\xa0\x80", "\xf4\x90\x80\x80",
+    };
+    for (size_t i = 0; i < sizeof rows / sizeof rows[0]; i++) {
+        bt_ga_features out;
+        BT_CHECK(!bt_ga_parse(rows[i], &out));
+    }
+}

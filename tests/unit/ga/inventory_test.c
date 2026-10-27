@@ -423,3 +423,14 @@ BT_TEST(inventory, build_inventory_pins_cells_across_feature_slots) {
     bt_ga_inventory_free(entries);
     bt_ga_strset_free(&wordlist);
 }
+
+BT_TEST(inventory, utf8_checks_reject_malformed_sequences) {
+    static const char *const rows[] = {
+        "ma\xc3",   "\xe1\xba",     "\xf0\x9f\x98", "a\x80",
+        "\xc0\xaf", "\xe0\x80\xaf", "\xed\xa0\x80", "\xf4\x90\x80\x80",
+    };
+    for (size_t i = 0; i < sizeof rows / sizeof rows[0]; i++) {
+        BT_CHECK(!bt_ga_utf8_valid(rows[i]));
+        BT_CHECK(!bt_ga_is_nfc(rows[i]));
+    }
+}
