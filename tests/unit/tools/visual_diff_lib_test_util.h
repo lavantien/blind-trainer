@@ -24,6 +24,29 @@ static void vd_util_write_config(const char *root, char out[VD_UTIL_PATH_MAX], u
     vd_util_write(out, text);
 }
 
+static size_t vd_util_read_bytes(const char *path, unsigned char *out, size_t cap) {
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "cannot open %s", path);
+        return 0;
+    }
+    size_t got = fread(out, 1, cap, file);
+    fclose(file);
+    return got;
+}
+
+static void vd_util_write_bytes(const char *path, const unsigned char *data, size_t len) {
+    FILE *file = fopen(path, "wb");
+    if (file == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "cannot open %s", path);
+        return;
+    }
+    if (fwrite(data, 1, len, file) != len) {
+        bt_harness_fail(__FILE__, __LINE__, "short write on %s", path);
+    }
+    fclose(file);
+}
+
 static int vd_util_redirect_stdout(const char *path) {
     fflush(stdout);
 #ifdef _WIN32

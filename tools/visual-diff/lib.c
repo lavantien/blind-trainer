@@ -179,11 +179,92 @@ void btvd_compare_images(const btvd_image *shot, const btvd_image *base, uint16_
     BT_TRACE_EXIT("visual_diff.compare_images");
 }
 
+static unsigned png_crc32(const unsigned char *data, size_t len) {
+    unsigned crc = 0xFFFFFFFFu;
+    for (size_t at = 0; at < len; at++) {
+        crc ^= data[at];
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
+        }
+    }
+    return ~crc;
+}
+
+static unsigned be32_at(const unsigned char *data) {
+    return ((unsigned)data[0] << 24U) | ((unsigned)data[1] << 16U) | ((unsigned)data[2] << 8U) |
+           (unsigned)data[3];
+}
+
+static int png_crc_valid(const unsigned char *data, size_t len) {
+    static const unsigned char signature[8] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
+    if (len < 8 || memcmp(data, signature, 8) != 0) {
+        return 0;
+    }
+    size_t at = 8;
+    while (at + 12 <= len) {
+        unsigned chunk_len = be32_at(data + at);
+        if (chunk_len > len - at - 12) {
+            return 0;
+        }
+        const unsigned char *type = data + at + 4;
+        if (png_crc32(type, (size_t)chunk_len + 4) != be32_at(data + at + 8 + chunk_len)) {
+            return 0;
+        }
+        if (memcmp(type, "IEND", 4) == 0) {
+            return 1;
+        }
+        at += 12 + chunk_len;
+    }
+    return 0;
+}
+
+static unsigned char *read_file_bytes(const char *path, size_t *len_out, char *err,
+                                      size_t err_len) {
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+        snprintf(err, err_len, "%s: open failed", path);
+        return NULL;
+    }
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    if (size < 0) {
+        fclose(file);
+        snprintf(err, err_len, "%s: size failed", path);
+        return NULL;
+    }
+    unsigned char *bytes = xalloc((size_t)size + 1);
+    size_t got = fread(bytes, 1, (size_t)size, file);
+    fclose(file);
+    if (got != (size_t)size) {
+        free(bytes);
+        snprintf(err, err_len, "%s: short read", path);
+        return NULL;
+    }
+    *len_out = (size_t)size;
+    return bytes;
+}
+
 int btvd_decode(const char *path, btvd_image *out, char *err, size_t err_len) {
     BT_TRACE_ENTER("visual_diff.decode");
     out->pixels = NULL;
     out->width = 0;
     out->height = 0;
+    size_t bytes_len = 0;
+    unsigned char *bytes = read_file_bytes(path, &bytes_len, err, err_len);
+    if (bytes == NULL) {
+        BT_TRACE_FAIL("visual_diff.decode", "%s", err);
+        BT_TRACE_EXIT("visual_diff.decode");
+        return -1;
+    }
+    int crc_ok = png_crc_valid(bytes, bytes_len);
+    free(bytes);
+    if (!crc_ok) {
+        snprintf(err, err_len, "%s: png chunk crc invalid", path);
+        BT_TRACE_FAIL("visual_diff.decode", "%s", err);
+        BT_TRACE_EXIT("visual_diff.decode");
+        return -1;
+    }
     Image image = LoadImage(path);
     if (image.data == NULL) {
         snprintf(err, err_len, "%s: raylib load failed", path);
@@ -201,9 +282,9 @@ int btvd_decode(const char *path, btvd_image *out, char *err, size_t err_len) {
         BT_TRACE_EXIT("visual_diff.decode");
         return -1;
     }
-    size_t bytes = (size_t)image.width * (size_t)image.height * 4;
-    unsigned char *pixels = xalloc(bytes);
-    memcpy(pixels, image.data, bytes);
+    size_t pixel_bytes = (size_t)image.width * (size_t)image.height * 4;
+    unsigned char *pixels = xalloc(pixel_bytes);
+    memcpy(pixels, image.data, pixel_bytes);
     UnloadImage(image);
     out->pixels = pixels;
     out->width = (uint32_t)image.width;

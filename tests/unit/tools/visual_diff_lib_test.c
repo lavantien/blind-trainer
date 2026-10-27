@@ -576,6 +576,97 @@ BT_TEST(visual_diff_lib, parse_cli_rejects_selftest_without_single_workdir) {
     BT_CHECK_EQ(btvd_parse_cli(empty, 2, &cli), -1);
 }
 
+BT_TEST(visual_diff_lib, decode_rejects_pngs_with_zeroed_chunk_crcs) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("crc", dir);
+    char shot[VD_UTIL_PATH_MAX];
+    char base[VD_UTIL_PATH_MAX];
+    vd_util_join(shot, dir, "shot.png");
+    vd_util_join(base, dir, "base.png");
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {0, 0, 0, 255};
+    vd_util_solid_image(&solid, 2, 1, solid_rgba);
+    vd_util_write_png(shot, &solid);
+    vd_util_write_png(base, &solid);
+    unsigned char bytes[4096];
+    size_t len = vd_util_read_bytes(base, bytes, sizeof bytes);
+    BT_CHECK(len > 33);
+    if (len > 33) {
+        unsigned ihdr_len = ((unsigned)bytes[8] << 24U) | ((unsigned)bytes[9] << 16U) |
+                            ((unsigned)bytes[10] << 8U) | (unsigned)bytes[11];
+        size_t crc_at = 12 + 4 + ihdr_len;
+        BT_CHECK(crc_at + 4 <= len);
+        bytes[crc_at] = 0;
+        bytes[crc_at + 1] = 0;
+        bytes[crc_at + 2] = 0;
+        bytes[crc_at + 3] = 0;
+        vd_util_write_bytes(base, bytes, len);
+    }
+    btvd_image decoded;
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_decode(base, &decoded, err, sizeof err), -1);
+    btvd_pair_report report = btvd_compare_pair("pair.png", shot, base, 0);
+    BT_CHECK_EQ(report.verdict.kind, BTVD_VERDICT_DECODE);
+    BT_CHECK_EQ(report.verdict.side, BTVD_SIDE_BASE);
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(dir);
+}
+
+BT_TEST(visual_diff_lib, run_fails_with_exit_diff_on_crc_corrupted_baseline) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("run-crc", root);
+    char shots[VD_UTIL_PATH_MAX];
+    char bases_dir[VD_UTIL_PATH_MAX];
+    snprintf(shots, sizeof shots, "%s/shots", root);
+    snprintf(bases_dir, sizeof bases_dir, "%s/bases", root);
+    vd_util_mkdir_p(shots);
+    vd_util_mkdir_p(bases_dir);
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {0, 0, 0, 255};
+    vd_util_solid_image(&solid, 2, 2, solid_rgba);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, shots, "scene.png");
+    vd_util_write_png(path, &solid);
+    vd_util_join(path, bases_dir, "scene.png");
+    vd_util_write_png(path, &solid);
+    unsigned char bytes[4096];
+    size_t len = vd_util_read_bytes(path, bytes, sizeof bytes);
+    unsigned idat_at = 8 + 12 + 13;
+    unsigned idat_len = ((unsigned)bytes[idat_at] << 24U) | ((unsigned)bytes[idat_at + 1] << 16U) |
+                        ((unsigned)bytes[idat_at + 2] << 8U) | (unsigned)bytes[idat_at + 3];
+    size_t crc_at = idat_at + 4 + idat_len;
+    if (len > 33 && crc_at + 4 <= len) {
+        bytes[crc_at] = 0;
+        bytes[crc_at + 1] = 0;
+        bytes[crc_at + 2] = 0;
+        bytes[crc_at + 3] = 0;
+        vd_util_write_bytes(path, bytes, len);
+    }
+    char config[VD_UTIL_PATH_MAX];
+    vd_util_write_config(root, config, 0);
+    char artifacts[VD_UTIL_PATH_MAX];
+    vd_util_join(artifacts, root, "out");
+    char *argv[] = {shots, bases_dir};
+    btvd_env env;
+    vd_util_env_for(&env, root, config, argv, 2);
+    env.artifacts = artifacts;
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_run(&env, err, sizeof err), BTVD_EXIT_DIFF);
+    char report[VD_UTIL_PATH_MAX];
+    vd_util_join(report, artifacts, "visual/report.md");
+    FILE *file = fopen(report, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        char text[4096] = {0};
+        fread(text, 1, sizeof text - 1, file);
+        fclose(file);
+        BT_CHECK(strstr(text, "decode failed on baselines side") != NULL);
+        BT_CHECK(strstr(text, "1 pairs, 0 ok, 1 failed") != NULL);
+    }
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(root);
+}
+
 BT_TEST(visual_diff_lib, run_selftest_mode_ignores_env_config_and_passes) {
     char root[VD_UTIL_PATH_MAX];
     vd_util_scratch("run-selftest", root);

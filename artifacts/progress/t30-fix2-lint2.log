@@ -1,0 +1,201 @@
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_audit_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_audit_test.c:22:24: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   22 |     BT_CHECK_EQ(count, 12u);
+      |                        ^ ~
+      |                          U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_audit_test.c:107:24: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  107 |     BT_CHECK_EQ(count, 0u);
+      |                        ^~
+      |                         U
+657 warnings generated.
+Suppressed 655 warnings (655 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+2 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_build_test.c  BT_CHECK_EQ(manifest.cases.corner.uncovered, 378u);
+      |                                                  ^  ~
+      |                                                     U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_build_test.c:467:44: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  467 |     BT_CHECK_EQ(manifest.specials.entries, 2u);
+      |                                            ^~
+      |                                             U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_build_test.c:476:51: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  476 |     BT_CHECK_EQ(manifest.specials.counts[0].rows, 1u);
+      |                                                   ^~
+      |                                                    U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_build_test.c:479:51: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  479 |     BT_CHECK_EQ(manifest.specials.counts[4].rows, 0u);
+      |                                                   ^~
+      |                                                    U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_build_test.c:482:51: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  482 |     BT_CHECK_EQ(manifest.specials.counts[5].rows, 1u);
+      |                                                   ^~
+      |                                                    U
+742 warnings generated.
+Suppressed 704 warnings (704 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+38 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_determinism_test.c has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  140 |     BT_CHECK_EQ(dig.rows, 1077u);
+      |                           ^   ~
+      |                               U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_determinism_test.c:145:50: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  145 |         BT_CHECK_EQ(strlen(dig.files[i].sha256), 64u);
+      |                                                  ^ ~
+      |                                                    U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_determinism_test.c:173:90: error: initializer list should have a trailing comma [readability-trailing-comma,-warnings-as-errors]
+  173 |                                        (const char *)"parity", (const char *)"ltct", NULL};
+      |                                                                                          ^
+      |                                                                                          ,
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_determinism_test.c:208:29: error: use of a signed integer operand with a binary bitwise operator [bugprone-signed-bitwise,-warnings-as-errors]
+  208 |         char *text = malloc(1 << 20);
+      |                             ^ ~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_determinism_test.c:209:37: error: use of a signed integer operand with a binary bitwise operator [bugprone-signed-bitwise,-warnings-as-errors]
+  209 |         size_t len = fread(text, 1, 1 << 20, file);
+      |                                     ^ ~~
+4692 warnings generated.
+Suppressed 4686 warnings (4686 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+6 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_manifest_pins_test.c :89:42: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   89 |     BT_CHECK_EQ(record.specials.entries, 89u);
+      |                                          ^ ~
+      |                                            U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_manifest_pins_test.c:97:46: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   97 |     BT_CHECK_EQ(record.specials.count_count, 8u);
+      |                                              ^~
+      |                                               U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_manifest_pins_test.c:129:46: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  129 |     BT_CHECK_EQ(strlen(record.cases.sha256), 64u);
+      |                                              ^ ~
+      |                                                U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_manifest_pins_test.c:201:13: error: implicit conversion 'int' -> 'bool' [readability-implicit-bool-conversion,-warnings-as-errors]
+  201 |             strcmp(entry->class_name, "flips") == 0 || strcmp(entry->class_name, "twists") == 0 ||
+      |             ^
+      |             (
+  202 |             strcmp(entry->class_name, "parity") == 0 || strcmp(entry->class_name, "ltct") == 0;
+      |                                                                                               
+      |                                                                                               ) != 0
+4681 warnings generated.
+Suppressed 4666 warnings (4666 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+15 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_model_test.c memcpy(manifest.cases.sha256 + i * 2, "ef", 2);
+      |                ^
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:176:40: note: make conversion explicit to silence this warning
+  176 |         memcpy(manifest.cases.sha256 + i * 2, "ef", 2);
+      |                                        ^~~~~
+      |                                        (ptrdiff_t)( )
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:176:40: note: perform multiplication in a wider type
+  176 |         memcpy(manifest.cases.sha256 + i * 2, "ef", 2);
+      |                                        ^
+      |                                        (ptrdiff_t)
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:185:16: error: result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result,-warnings-as-errors]
+  185 |         memcpy(manifest.specials.sha256 + i * 2, "12", 2);
+      |                ^
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:185:43: note: make conversion explicit to silence this warning
+  185 |         memcpy(manifest.specials.sha256 + i * 2, "12", 2);
+      |                                           ^~~~~
+      |                                           (ptrdiff_t)( )
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:185:43: note: perform multiplication in a wider type
+  185 |         memcpy(manifest.specials.sha256 + i * 2, "12", 2);
+      |                                           ^
+      |                                           (ptrdiff_t)
+506 warnings generated.
+Suppressed 501 warnings (501 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+5 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_scoring_test.c ta_scoring_test.c:368:23: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  368 |     bt_rng_seed(&rng, 0xb739d5ee4a11f208ull);
+      |                       ^                 ~~~
+      |                                         ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_scoring_test.c:405:23: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  405 |     bt_rng_seed(&rng, 0x1c62f0aa93d74e55ull);
+      |                       ^                 ~~~
+      |                                         ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_scoring_test.c:428:23: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  428 |     bt_rng_seed(&rng, 0x5ee4bca71d0f9316ull);
+      |                       ^                 ~~~
+      |                                         ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_scoring_test.c:430:9: error: multiple declarations in a single statement reduces readability [readability-isolate-declaration,-warnings-as-errors]
+  430 |         bt_move first[24], second[24], third[24];
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_scoring_test.c:431:9: error: multiple declarations in a single statement reduces readability [readability-isolate-declaration,-warnings-as-errors]
+  431 |         size_t first_len = 0, second_len = 0, third_len = 0;
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+616 warnings generated.
+Suppressed 516 warnings (516 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+100 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_synth_test.c  |     uint8_t t1, t2;
+      |     ^~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:242:5: error: multiple declarations in a single statement reduces readability [readability-isolate-declaration,-warnings-as-errors]
+  242 |     uint8_t t1, t2;
+      |     ^~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:338:29: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  338 |     BT_CHECK_EQ(edge_added, 1u);
+      |                             ^~
+      |                              U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:339:31: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  339 |     BT_CHECK_EQ(corner_added, 0u);
+      |                               ^~
+      |                                U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:340:46: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  340 |     BT_CHECK_EQ(cases.cases[0].vendor_count, 1u);
+      |                                              ^~
+      |                                               U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:347:43: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  347 |     BT_CHECK_EQ(generated->problem_count, 0u);
+      |                                           ^~
+      |                                            U
+661 warnings generated.
+Suppressed 649 warnings (649 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+12 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_vendor_pins_test.c vendor_pins_test.c:232:31: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  232 |     BT_CHECK_EQ(counts[1][2], 2u);
+      |                               ^~
+      |                                U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_vendor_pins_test.c:233:31: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  233 |     BT_CHECK_EQ(counts[1][3], 3u);
+      |                               ^~
+      |                                U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_vendor_pins_test.c:243:39: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  243 |     BT_CHECK_EQ(built.offender_count, 0u);
+      |                                       ^~
+      |                                        U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_vendor_pins_test.c:248:62: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  248 |             BT_CHECK_EQ(entry->vendor_algs[a].problem_count, 0u);
+      |                                                              ^~
+      |                                                               U
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_vendor_pins_test.c:285:24: error: integer literal has suffix 'u', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+  285 |     BT_CHECK_EQ(count, 0u);
+      |                        ^~
+      |                         U
+4764 warnings generated.
+Suppressed 4737 warnings (4737 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+27 warnings treated as errors
+2026-10-27T21:40:26 [fail] tidy tests\unit\tools\gendata_when_test.c t uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   33 |     bt_when_iso8601(2ull * 365ull * 86400ull, stamp, sizeof stamp);
+      |                            ^  ~~~
+      |                               ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:33:37: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   33 |     bt_when_iso8601(2ull * 365ull * 86400ull, stamp, sizeof stamp);
+      |                                     ^    ~~~
+      |                                          ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:35:21: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   35 |     bt_when_iso8601(3ull * 365ull * 86400ull, stamp, sizeof stamp);
+      |                     ^~~~
+      |                      ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:35:28: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   35 |     bt_when_iso8601(3ull * 365ull * 86400ull, stamp, sizeof stamp);
+      |                            ^  ~~~
+      |                               ULL
+C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:35:37: error: integer literal has suffix 'ull', which is not uppercase [readability-uppercase-literal-suffix,-warnings-as-errors]
+   35 |     bt_when_iso8601(3ull * 365ull * 86400ull, stamp, sizeof stamp);
+      |                                     ^    ~~~
+      |                                          ULL
+484 warnings generated.
+Suppressed 478 warnings (478 in non-user code).
+Use -header-filter=.* or leave it as default to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+6 warnings treated as errors
+2026-10-27T21:40:26 [lint] 38 clean, 9 failed
