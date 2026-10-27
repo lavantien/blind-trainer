@@ -111,6 +111,27 @@ void bt_view_settings_key(bt_app_ctx *ctx, bt_settings_app_state *app, int key) 
     BT_TRACE_EXIT("app.view_settings_key");
 }
 
+void bt_view_settings_keys(bt_app_ctx *ctx, bt_settings_app_state *app, const int *keys,
+                           size_t count) {
+    BT_TRACE_ENTER("app.view_settings_keys");
+    for (size_t i = 0; i < count; i++) {
+        bt_memo_mode mode;
+        int index = keys[i] - '1';
+        if (index < 0 || index >= BT_MEMO_MODE_COUNT || !bt_memo_mode_from_index(index, &mode)) {
+            continue;
+        }
+        if (ctx->input_focus) {
+            BT_TRACE_EXIT("app.view_settings_keys");
+            return;
+        }
+        app->draft.memo_mode = mode;
+        app->changed = 1;
+        BT_TRACE_EXIT("app.view_settings_keys");
+        return;
+    }
+    BT_TRACE_EXIT("app.view_settings_keys");
+}
+
 void bt_view_settings_update_state(bt_app_ctx *ctx, bt_settings_app_state *app) {
     BT_TRACE_ENTER("app.view_settings_update_state");
     if (!app->changed) {
@@ -138,16 +159,21 @@ void bt_view_settings_update(bt_app_ctx *ctx) {
     BT_TRACE_ENTER("app.view_settings_update");
     bt_settings_app_state *app = bt_view_settings_app();
     int keys[BT_MEMO_MODE_COUNT] = {KEY_ONE, KEY_TWO, KEY_THREE};
+    int pressed[BT_MEMO_MODE_COUNT];
+    size_t count = 0;
     for (int i = 0; i < BT_MEMO_MODE_COUNT; i++) {
         if (IsKeyPressed(keys[i])) {
-            bt_view_settings_key(ctx, app, keys[i]);
+            pressed[count] = keys[i];
+            count++;
         }
     }
+    bt_view_settings_keys(ctx, app, pressed, count);
     bt_view_settings_update_state(ctx, app);
     BT_TRACE_EXIT("app.view_settings_update");
 }
 
-void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *font_regular,
+void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
+                           bt_settings_widgets *widgets, const void *font_regular,
                            const void *font_bold, float window_w, float window_h,
                            const bt_ui_input *input) {
     BT_TRACE_ENTER("app.view_settings_draw");
@@ -186,7 +212,8 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
     int edited = 0;
     long long cadence =
         bt_ui_number_field(&regular, &cadence_rect, (long long)draft->memo_cadence_ms,
-                           BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, input, &edited);
+                           BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, &widgets->cadence,
+                           input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_cadence(cadence);
         if (clamped != draft->memo_cadence_ms) {
@@ -195,7 +222,8 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
         }
     }
     long long reps = bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps,
-                                        BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, input, &edited);
+                                        BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, &widgets->reps,
+                                        input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_reps(reps);
         if (clamped != draft->drill_reps) {
@@ -207,24 +235,27 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
     for (int i = 0; i < BT_MEMO_MODE_COUNT; i++) {
         mode_rows[i] = BT_MEMO_MODE_LABELS[i].label;
     }
-    bt_ui_list_window window;
-    memset(&window, 0, sizeof window);
-    window.selected = bt_memo_mode_index(draft->memo_mode);
+    widgets->mode_list.selected = bt_memo_mode_index(draft->memo_mode);
+    if (widgets->mode_list.selected < 0) {
+        widgets->mode_list.selected = 0;
+    }
     bt_ui_list_window picked = bt_ui_list(&regular, &select_rect, mode_rows, BT_MEMO_MODE_COUNT,
-                                          BT_MEMO_MODE_COUNT, window, input);
-    if (picked.selected != window.selected) {
+                                          BT_MEMO_MODE_COUNT, widgets->mode_list, input);
+    if (picked.selected != widgets->mode_list.selected) {
         bt_memo_mode mode;
         if (bt_memo_mode_from_index(picked.selected, &mode)) {
             draft->memo_mode = mode;
             *changed = 1;
+            picked.selected = bt_memo_mode_index(mode);
         }
     }
+    widgets->mode_list = picked;
+    *focus = widgets->cadence.focused || widgets->reps.focused;
     BT_TRACE_EXIT("app.view_settings_draw");
 }
 
 void bt_view_settings_row_draw(bt_app_ctx *ctx) {
     BT_TRACE_ENTER("app.view_settings_row_draw");
-    (void)ctx;
     const bt_app_font_book *book = bt_app_fonts_current();
     if (book == NULL) {
         BT_TRACE_FAIL("app.view_settings_row_draw", "fonts not loaded");
@@ -239,10 +270,12 @@ void bt_view_settings_row_draw(bt_app_ctx *ctx) {
         input = &fallback;
     }
     int changed = 0;
-    bt_view_settings_draw(&app->draft, &changed, book->regular, book->bold, (float)GetScreenWidth(),
-                          (float)GetScreenHeight(), input);
+    int focus = 0;
+    bt_view_settings_draw(&app->draft, &changed, &focus, &app->widgets, book->regular, book->bold,
+                          (float)GetScreenWidth(), (float)GetScreenHeight(), input);
     if (changed) {
         app->changed = 1;
     }
+    ctx->input_focus = focus;
     BT_TRACE_EXIT("app.view_settings_row_draw");
 }

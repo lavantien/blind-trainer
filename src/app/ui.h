@@ -6,6 +6,7 @@
 
 #define BT_UI_TEXT_MAX 256
 #define BT_UI_INPUT_CHARS 16
+#define BT_UI_NUMBER_TEXT 32
 
 struct Font;
 
@@ -40,6 +41,12 @@ typedef struct {
     int selected;
 } bt_ui_list_window;
 
+typedef struct {
+    int focused;
+    int selected;
+    char text[BT_UI_NUMBER_TEXT];
+} bt_ui_number_state;
+
 void bt_ui_input_clear(bt_ui_input *input);
 int bt_ui_contains(const bt_ui_rect *rect, float x, float y);
 bt_ui_button_state bt_ui_button_hit(const bt_ui_rect *rect, const bt_ui_input *input);
@@ -58,6 +65,7 @@ bt_ui_list_window bt_ui_list(const struct Font *font, const bt_ui_rect *rect,
 int bt_ui_text_field(const struct Font *font, const bt_ui_rect *rect, char *buffer, size_t cap,
                      size_t *cursor, int focused, const bt_ui_input *input, int *committed);
 int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int64_t value,
-                           int64_t low, int64_t high, const bt_ui_input *input, int *edited);
+                           int64_t low, int64_t high, bt_ui_number_state *state,
+                           const bt_ui_input *input, int *edited);
 
 #endif

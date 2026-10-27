@@ -285,12 +285,15 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     input.x = reps_x + 160.0F - field_h / 2.0F;
     input.y = field_y + field_h / 2.0F;
     int changed = 0;
+    int focus = 0;
+    bt_settings_widgets widgets;
+    memset(&widgets, 0, sizeof widgets);
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
         input.click = frame == 0;
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
-        bt_view_settings_draw(&draft, &changed, book.regular, book.bold, (float)PROBE_W,
-                              (float)PROBE_H, &input);
+        bt_view_settings_draw(&draft, &changed, &focus, &widgets, book.regular, book.bold,
+                              (float)PROBE_W, (float)PROBE_H, &input);
         bt_app_window_frame_end();
     }
     BT_CHECK(changed == 1);
@@ -304,8 +307,8 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
         second.click = frame == 0;
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
-        bt_view_settings_draw(&draft, &changed, book.regular, book.bold, (float)PROBE_W,
-                              (float)PROBE_H, &second);
+        bt_view_settings_draw(&draft, &changed, &focus, &widgets, book.regular, book.bold,
+                              (float)PROBE_W, (float)PROBE_H, &second);
         bt_app_window_frame_end();
     }
     BT_CHECK(changed == 1);
@@ -316,6 +319,94 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     BT_CHECK(bt_app_window_capture(shot));
     BT_CHECK(shot_has_variance(shot));
     remove(shot);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+}
+
+BT_TEST(views_stats, settings_mode_keys_apply_the_first_match_only) {
+    bt_app_ctx ctx;
+    fixture_ctx("first-match", BT_APP_SETTINGS, &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    int keys[2] = {'2', '1'};
+    bt_view_settings_keys(&ctx, app, keys, 2);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_IMAGES);
+    bt_view_settings_update_state(&ctx, app);
+    BT_CHECK(ctx.stores.settings.memo_mode == BT_MEMO_IMAGES);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
+    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings typing test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
+    float body = theme->font_body * theme->root_rem;
+    float field_h = body * 1.4F;
+    float line_gap = theme->spacing_rem * theme->root_rem;
+    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
+    float cadence_x = metrics.content_x + metrics.content_w - 2.0F * 160.0F - line_gap;
+    float reps_x = cadence_x + 160.0F + line_gap;
+    bt_app_ctx ctx;
+    fixture_ctx("typing", BT_APP_SETTINGS, &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    BT_CHECK(app->draft.drill_reps == 4);
+    bt_ui_input focus;
+    bt_ui_input_clear(&focus);
+    focus.x = reps_x + 80.0F;
+    focus.y = field_y + field_h / 2.0F;
+    focus.click = 1;
+    bt_app_frame_input_set(&focus);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(ctx.input_focus == 1);
+    BT_CHECK(app->draft.drill_reps == 4);
+    bt_view_settings_key(&ctx, app, '2');
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
+    bt_ui_input typed;
+    bt_ui_input_clear(&typed);
+    typed.chars[0] = '1';
+    typed.chars[1] = '2';
+    typed.char_count = 2;
+    bt_app_frame_input_set(&typed);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->draft.drill_reps == 12);
+    BT_CHECK(app->changed == 1);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
+    bt_ui_input blur;
+    bt_ui_input_clear(&blur);
+    blur.x = metrics.content_x + 10.0F;
+    blur.y = 200.0F;
+    blur.click = 1;
+    bt_app_frame_input_set(&blur);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(ctx.input_focus == 0);
+    BT_CHECK(app->draft.drill_reps == 12);
+    bt_app_ctx_free(&ctx);
     bt_app_fonts_unload(&book);
     bt_app_window_close();
 }

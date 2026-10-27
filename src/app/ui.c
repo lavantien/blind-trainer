@@ -2,6 +2,9 @@
 
 #include "common/bt_trace.h"
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void bt_ui_input_clear(bt_ui_input *input) {
@@ -257,28 +260,100 @@ int bt_ui_text_field(const struct Font *font, const bt_ui_rect *rect, char *buff
     return active;
 }
 
+static int number_text_apply(const char *text, int64_t low, int64_t high, int64_t *out) {
+    char *end = NULL;
+    errno = 0;
+    long long parsed = strtoll(text, &end, 10);
+    if (end == text || errno == ERANGE) {
+        return 0;
+    }
+    *out = bt_ui_number_clamp((int64_t)parsed, low, high);
+    return 1;
+}
+
 int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int64_t value,
-                           int64_t low, int64_t high, const bt_ui_input *input, int *edited) {
+                           int64_t low, int64_t high, bt_ui_number_state *state,
+                           const bt_ui_input *input, int *edited) {
     BT_TRACE_ENTER("app.ui_number_field");
     *edited = 0;
-    ui_fill(rect, bt_theme_panel());
-    ui_lines(rect, bt_theme_hairline());
+    value = bt_ui_number_clamp(value, low, high);
+    float step_width = rect->height;
+    bt_ui_rect minus = {rect->x, rect->y, step_width, rect->height,};
+    bt_ui_rect plus = {rect->x + rect->width - step_width, rect->y, step_width, rect->height,};
+    int in_minus = bt_ui_contains(&minus, input->x, input->y);
+    int in_plus = bt_ui_contains(&plus, input->x, input->y);
+    int inside = bt_ui_contains(rect, input->x, input->y);
+    if (input->click && (in_minus || in_plus)) {
+        state->focused = 0;
+        value = bt_ui_number_clamp(value + (in_plus ? 1 : -1), low, high);
+        *edited = 1;
+    } else if (input->click && inside && !state->focused) {
+        state->focused = 1;
+        state->selected = 1;
+        snprintf(state->text, BT_UI_NUMBER_TEXT, "%lld", (long long)value);
+    } else if (input->click && !inside && state->focused) {
+        state->focused = 0;
+    }
+    if (state->focused) {
+        size_t len = strlen(state->text);
+        for (int i = 0; i < input->char_count; i++) {
+            int c = input->chars[i];
+            if (c >= '0' && c <= '9') {
+                if (state->selected) {
+                    len = 0;
+                    state->selected = 0;
+                }
+                if (len + 1 < BT_UI_NUMBER_TEXT) {
+                    state->text[len] = (char)c;
+                    len++;
+                    state->text[len] = '\0';
+                }
+            } else if (c == '-') {
+                if (state->selected) {
+                    len = 0;
+                    state->selected = 0;
+                }
+                if (len == 0 && len + 1 < BT_UI_NUMBER_TEXT) {
+                    state->text[len] = '-';
+                    len++;
+                    state->text[len] = '\0';
+                }
+            } else if (c == '\b' || c == 127) {
+                if (state->selected) {
+                    len = 0;
+                    state->selected = 0;
+                } else if (len > 0) {
+                    len--;
+                    state->text[len] = '\0';
+                }
+            }
+        }
+        if (input->backspace && !state->selected && len > 0) {
+            len--;
+            state->text[len] = '\0';
+        }
+        if (input->enter || input->escape) {
+            state->focused = 0;
+        }
+        int64_t parsed_value = value;
+        if (number_text_apply(state->text, low, high, &parsed_value)) {
+            if (parsed_value != value) {
+                value = parsed_value;
+                *edited = 1;
+            }
+        }
+    }
+    ui_fill(rect, state->focused ? bt_theme_panel_raised() : bt_theme_panel());
+    ui_lines(rect, state->focused ? bt_theme_accent() : bt_theme_hairline());
     const bt_theme *theme = bt_theme_table();
     float size = theme->font_body * theme->root_rem;
-    char text[32];
-    snprintf(text, sizeof text, "%lld", (long long)bt_ui_number_clamp(value, low, high));
-    float step_width = rect->height;
-    bt_ui_rect minus = {rect->x, rect->y, step_width, rect->height};
-    bt_ui_rect plus = {rect->x + rect->width - step_width, rect->y, step_width, rect->height};
     bt_ui_button_state minus_hit = bt_ui_button_hit(&minus, input);
     bt_ui_button_state plus_hit = bt_ui_button_hit(&plus, input);
-    if (minus_hit.clicked) {
-        value = bt_ui_number_clamp(value - 1, low, high);
-        *edited = 1;
-    }
-    if (plus_hit.clicked) {
-        value = bt_ui_number_clamp(value + 1, low, high);
-        *edited = 1;
+    char display[BT_UI_NUMBER_TEXT];
+    if (state->focused) {
+        snprintf(display, sizeof display, "%s", state->text);
+    } else {
+        snprintf(display, sizeof display, "%lld", (long long)value);
     }
     ui_fill(&minus, minus_hit.hovered ? bt_theme_panel_raised() : bt_theme_background());
     ui_fill(&plus, plus_hit.hovered ? bt_theme_panel_raised() : bt_theme_background());
@@ -286,9 +361,9 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
             bt_theme_text_primary());
     ui_text(font, "+", plus.x + step_width / 2.0F, plus.y + (rect->height - size) / 2.0F, size,
             bt_theme_text_primary());
-    Vector2 measured = ui_measure(font, text, size);
-    ui_text(font, text, rect->x + (rect->width - measured.x) / 2.0F,
+    Vector2 measured = ui_measure(font, display, size);
+    ui_text(font, display, rect->x + (rect->width - measured.x) / 2.0F,
             rect->y + (rect->height - size) / 2.0F, size, bt_theme_text_primary());
     BT_TRACE_EXIT("app.ui_number_field");
-    return bt_ui_number_clamp(value, low, high);
+    return value;
 }
