@@ -9,6 +9,7 @@
 #include "common/bt_trace.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static const char *state_description(bt_app_state state) {
@@ -48,22 +49,35 @@ void bt_view_menu_title(const bt_view_menu_row *row, char out[BT_VIEW_MENU_TEXT_
     BT_TRACE_EXIT("app.view_menu_title");
 }
 
-void bt_view_menu_warning_context(const bt_str_list *warnings, char out[BT_VIEW_MENU_TEXT_MAX]) {
+char *bt_view_menu_warning_context(const bt_str_list *warnings) {
     BT_TRACE_ENTER("app.view_menu_warning_context");
+    size_t cap = 64;
+    char *joined = malloc(cap);
+    if (joined == NULL) {
+        BT_TRACE_FAIL("app.view_menu_warning_context", "out of memory");
+        BT_TRACE_EXIT("app.view_menu_warning_context");
+        return NULL;
+    }
     size_t at = 0;
-    out[0] = '\0';
+    joined[0] = 0;
     for (size_t i = 0; i < warnings->count; i++) {
-        if (i > 0 && at + 3 < BT_VIEW_MENU_TEXT_MAX) {
-            snprintf(out + at, BT_VIEW_MENU_TEXT_MAX - at, " | ");
-            at += 3;
+        const char *sep = i > 0 ? " | " : "";
+        size_t need = at + strlen(sep) + strlen(warnings->items[i]) + 1;
+        if (need > cap) {
+            char *grown = realloc(joined, need);
+            if (grown == NULL) {
+                free(joined);
+                BT_TRACE_FAIL("app.view_menu_warning_context", "out of memory");
+                BT_TRACE_EXIT("app.view_menu_warning_context");
+                return NULL;
+            }
+            joined = grown;
+            cap = need;
         }
-        snprintf(out + at, BT_VIEW_MENU_TEXT_MAX - at, "%s", warnings->items[i]);
-        at += strlen(out + at);
-        if (at >= BT_VIEW_MENU_TEXT_MAX - 1) {
-            break;
-        }
+        at += (size_t)snprintf(joined + at, need - at, "%s%s", sep, warnings->items[i]);
     }
     BT_TRACE_EXIT("app.view_menu_warning_context");
+    return joined;
 }
 
 void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, const void *font_bold,
@@ -71,9 +85,10 @@ void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, co
     BT_TRACE_ENTER("app.view_menu_draw");
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
-    char context[BT_VIEW_MENU_TEXT_MAX];
-    bt_view_menu_warning_context(warnings, context);
-    bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "menu", context);
+    char *context = bt_view_menu_warning_context(warnings);
+    bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "menu",
+                       context != NULL ? context : "");
+    free(context);
     bt_view_menu_row rows[BT_VIEW_MENU_ROW_COUNT];
     bt_view_menu_rows(rows);
     float heading = theme->font_heading * theme->root_rem;
