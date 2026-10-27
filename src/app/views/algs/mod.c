@@ -515,7 +515,7 @@ static void push_detail(bt_view_algs_detail_line *out, size_t cap, size_t *count
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
                                  bt_view_algs_detail_line out[BT_ALGS_ROWS_MAX * 2]) {
     BT_TRACE_ENTER("app.algs_detail_lines");
-    size_t cap = BT_ALGS_ROWS_MAX * 2;
+    size_t cap = (size_t)BT_ALGS_ROWS_MAX * 2U;
     size_t count = 0;
     char text[BT_ALGS_TEXT_MAX];
     snprintf(text, sizeof text, "%zu of %zu cases match", browser->filtered_count,

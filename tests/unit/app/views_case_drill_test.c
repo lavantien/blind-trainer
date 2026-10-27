@@ -21,8 +21,6 @@ static const char *REGISTRY_TEXT =
     "\"expected_rows\":2},{\"file\":\"bld.tsv\",\"event\":\"3bld\",\"method\":\"3style\","
     "\"stage\":\"parity\",\"n\":null,\"expected_rows\":1}]";
 
-static const char *PACK_HEADER = "case_key\talg\tfront_json\tsource_url\tsource_at\n";
-
 static bt_app_ctx drill_fixture(const char *tag) {
     const char *base = ta_temp_dir("views_case_drill", tag);
     char packs[BT_PATH_MAX];

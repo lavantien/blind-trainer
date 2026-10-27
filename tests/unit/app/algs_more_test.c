@@ -154,8 +154,10 @@ BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
 
 BT_TEST(algs_more, extra_vendor_rows_render_as_alternatives_with_their_own_meta) {
     bt_app_ctx ctx = algs_ctx("morealt");
-    bt_corpus_row rows[2] = {covered_row(COVERED_ALG, "R2 U':[S,R2]"),
-                             alt_row("R2 U' R2 S R2 S' U R2")};
+    bt_corpus_row rows[2] = {
+        covered_row(COVERED_ALG, "R2 U':[S,R2]"),
+        alt_row("R2 U' R2 S R2 S' U R2"),
+    };
     load_rows(&ctx, rows, 2);
     query_algs(&ctx, "ab");
     bt_view_algs_detail_line lines[BT_ALGS_ROWS_MAX * 2];

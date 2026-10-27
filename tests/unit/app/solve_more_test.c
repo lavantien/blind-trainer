@@ -51,21 +51,6 @@ static bt_cube single_pair_scramble(char first, char second) {
     return bt_cube_from_occ(occ);
 }
 
-static bt_cube corner_pair_scramble(char first, char second) {
-    bt_case case_id;
-    case_id.orbit = BT_ORBIT_CORNER;
-    case_id.t1 = bt_scheme_sticker_of(BT_ORBIT_CORNER, first);
-    case_id.t2 = bt_scheme_sticker_of(BT_ORBIT_CORNER, second);
-    uint8_t occ[54];
-    bt_cube solved = bt_cube_solved();
-    bt_scheme_state_array(&solved, occ);
-    bt_scheme_cycles inverse;
-    bt_scheme_ideal_cycle_at(BT_ORBIT_CORNER, BT_SCHEME_CORNER_BUFFER_STICKER, case_id.t2,
-                             case_id.t1, &inverse);
-    bt_scheme_apply_sticker_cycles(occ, &inverse);
-    return bt_cube_from_occ(occ);
-}
-
 static bt_cube alg_cube(const char *alg) {
     bt_cube cube = bt_cube_solved();
     bt_alg parsed;
@@ -110,7 +95,7 @@ static bt_residue twist_pair_residue(void) {
 static bt_residue parity_residue(void) {
     bt_residue residue;
     memset(&residue, 0, sizeof residue);
-    residue.has_parity = 1;
+    residue.has_parity = true;
     residue.parity.edge[0] = 26;
     residue.parity.edge[1] = 24;
     residue.parity.corner[0] = 2;

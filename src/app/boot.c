@@ -1,11 +1,15 @@
 #include "app/boot.h"
 
+#include "app/views/algs/mod.h"
+#include "app/views/case_drill.h"
+#include "app/views/case_drill_view.h"
 #include "app/views/drill.h"
 #include "app/views/drill_view.h"
 #include "app/views/memo.h"
 #include "app/views/menu.h"
 #include "app/views/replay.h"
 #include "app/views/settings.h"
+#include "app/views/solve.h"
 #include "app/views/stats.h"
 #include "common/bt_trace.h"
 
@@ -150,10 +154,10 @@ const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {noop_row, NULL, bt_view_menu_row_draw},
     {bt_view_drill_enter, bt_view_drill_update, bt_view_drill_row_draw},
     {bt_view_memo_enter, bt_view_memo_update, bt_view_memo_row_draw},
-    {noop_row, NULL, NULL},
+    {bt_view_solve_enter, bt_view_solve_update, bt_view_solve_row_draw},
     {bt_view_replay_enter, bt_view_replay_update, bt_view_replay_draw},
-    {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},
+    {bt_view_algs_enter, bt_view_algs_update, bt_view_algs_row_draw},
+    {bt_view_case_drill_enter, bt_view_case_drill_update, bt_view_case_drill_row_draw},
     {bt_view_stats_enter, NULL, bt_view_stats_row_draw},
     {bt_view_settings_enter, bt_view_settings_update, bt_view_settings_row_draw},
 };
