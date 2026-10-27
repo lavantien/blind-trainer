@@ -12,6 +12,8 @@ enum {
     KEY_D = 68,
     KEY_DOWN = 264,
     KEY_UP = 265,
+    KEY_RIGHT = 262,
+    KEY_LEFT = 263,
 };
 
 static const char *COVERED_ALG = "R2 U' S R2 S' R2 U R2";
@@ -298,4 +300,87 @@ BT_TEST(algs_more, meta_line_badges_verification_and_problem_counts) {
     broken.youtube_link = _strdup("");
     bt_view_algs_meta_line(&broken, meta);
     BT_CHECK(strcmp(meta, "eggins qtm 0 htm 0 [6 problem(s)]") == 0);
+}
+
+static void repo_walk_to_case(bt_app_ctx *ctx) {
+    int keys[5] = {KEY_RIGHT, KEY_DOWN, KEY_RIGHT, KEY_RIGHT, KEY_RIGHT};
+    bt_view_algs_frame(ctx, keys, 5);
+}
+
+BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
+    bt_app_ctx ctx = algs_ctx("frame");
+    bt_corpus_row row;
+    memset(&row, 0, sizeof row);
+    row.solver = BT_SOLVER_CHERRY;
+    row.sheet = BT_SHEET_EDGE;
+    row.rowid = 1;
+    row.position = _strdup("UF-UB-UR");
+    char err_token[64];
+    BT_CHECK(bt_alg_parse(COVERED_ALG, &row.alg, err_token, sizeof err_token));
+    row.alg_text = _strdup(COVERED_ALG);
+    row.commutator = _strdup("");
+    row.recon_link = _strdup("");
+    row.youtube_link = _strdup("");
+    load_rows(&ctx, &row, 1);
+
+    bt_seed_row rows[1];
+    memset(&rows[0], 0, sizeof rows[0]);
+    snprintf(rows[0].event, sizeof rows[0].event, "%s", "2x2");
+    snprintf(rows[0].method, sizeof rows[0].method, "%s", "cll");
+    snprintf(rows[0].stage, sizeof rows[0].stage, "%s", "cll");
+    snprintf(rows[0].case_key, sizeof rows[0].case_key, "%s", "cll.1");
+    rows[0].alg = _strdup("R U R'");
+    rows[0].front_json = _strdup("{}");
+    rows[0].source_url = _strdup("https://example.test");
+    rows[0].source_at = _strdup("2026-01-01");
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    bt_pack_entry packs[1];
+    memset(&packs[0], 0, sizeof packs[0]);
+    snprintf(packs[0].file, sizeof packs[0].file, "%s", "cll.tsv");
+    snprintf(packs[0].event, sizeof packs[0].event, "%s", "2x2");
+    snprintf(packs[0].method, sizeof packs[0].method, "%s", "cll");
+    snprintf(packs[0].stage, sizeof packs[0].stage, "%s", "cll");
+    packs[0].expected_rows = 1;
+    bt_view_algs_enter(&ctx);
+    bt_repo_browser *repo = bt_view_algs_repo();
+    bt_repo_browser_free(repo);
+    repo->arms = bt_repo_arms(packs, 1, &hidden, rows, 1, &repo->arm_count);
+    bt_str_list_free(&hidden);
+
+    repo_walk_to_case(&ctx);
+    BT_CHECK(repo->repo_focused);
+    BT_CHECK(strcmp(bt_repo_browser_node(repo)->label, "cll.1") == 0);
+
+    int open_key[1] = {79 /* o */};
+    bt_view_algs_frame(&ctx, open_key, 1);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(draft->has_case);
+    BT_CHECK(strcmp(draft->site.case_ref.case_key, "cll.1") == 0);
+    BT_CHECK(strcmp(draft->text, "R U R'") == 0);
+
+    int cancel_key[1] = {258 /* tab */};
+    bt_view_algs_frame(&ctx, cancel_key, 1);
+    BT_CHECK(!draft->has_case);
+
+    bt_view_algs_frame(&ctx, open_key, 1);
+    BT_CHECK(draft->has_case);
+    bt_view_override_submit(&ctx, "F R F'");
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(bt_overrides_contains(bt_view_algs_overrides(), &key));
+    BT_CHECK(!draft->has_case);
+
+    int delete_key[1] = {88 /* x */};
+    bt_view_algs_frame(&ctx, delete_key, 1);
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+
+    int enter_key[1] = {KEY_ENTER};
+    bt_view_algs_frame(&ctx, enter_key, 1);
+    BT_CHECK(ctx.state == BT_APP_ALGS);
+
+    int d_key[1] = {KEY_D};
+    bt_view_algs_frame(&ctx, d_key, 1);
+    BT_CHECK(ctx.state == BT_APP_CASE_DRILL);
+    bt_app_ctx_free(&ctx);
 }

@@ -89,6 +89,12 @@ void bt_view_algs_read_query(bt_app_ctx *ctx, const char *text);
 void bt_view_algs_key(bt_app_ctx *ctx, int key);
 void bt_view_case_drill_open_request(bt_app_ctx *ctx);
 
+void bt_view_override_open(bt_app_ctx *ctx);
+void bt_view_override_submit(bt_app_ctx *ctx, const char *text);
+void bt_view_override_cancel(void);
+void bt_view_override_delete(bt_app_ctx *ctx);
+int bt_view_algs_frame(bt_app_ctx *ctx, const int *keys, int count);
+
 void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
                        float window_w, float window_h);
 void bt_view_algs_row_draw(bt_app_ctx *ctx);
