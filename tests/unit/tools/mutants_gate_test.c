@@ -70,7 +70,7 @@ BT_TEST(gate_driver, selftest_passes) {
     }
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 0);
-    BT_CHECK(strstr(out, "suite mutants-gate: 40 passed, 0 failed") != NULL);
+    BT_CHECK(strstr(out, "suite mutants-gate: 42 passed, 0 failed") != NULL);
 }
 
 BT_TEST(gate_driver, usage_without_args_exits_2) {

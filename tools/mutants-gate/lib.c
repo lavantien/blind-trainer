@@ -11,7 +11,6 @@
 #include "common/strbuf.h"
 
 #define BT_GATE_EMPTY_SENTINEL "(empty)"
-#define BT_GATE_MAX_UINT_DOUBLE 9007199254740992.0
 
 typedef struct {
     char *file;
@@ -72,11 +71,11 @@ static char *copy_text(const char *text) {
 }
 
 static int json_uint(const bt_json_value *value, unsigned long long *out) {
-    if (value == NULL || value->type != BT_JSON_NUMBER) {
+    if (!bt_json_is_integer(value)) {
         return -1;
     }
-    double number = value->as.number;
-    if (number < 0 || number > BT_GATE_MAX_UINT_DOUBLE || number != (double)(long long)number) {
+    long long number = value->integer;
+    if (number < 0) {
         return -1;
     }
     *out = (unsigned long long)number;
@@ -358,7 +357,7 @@ static int parse_count_column(const char *raw, unsigned long long *out) {
     while (end > raw && (end[-1] == ' ' || end[-1] == '\t')) {
         end--;
     }
-    if (end == raw) {
+    if (end == raw || raw[0] < '0' || raw[0] > '9') {
         return -1;
     }
     errno = 0;
@@ -716,7 +715,7 @@ int bt_gate_merge(const char *const *inputs, size_t input_count, char **json_out
                 }
             }
             if (rc == BT_GATE_OK) {
-                bt_json_object_set(merged, sums[i], bt_json_new_number((double)total));
+                bt_json_object_set(merged, sums[i], bt_json_new_integer((long long)total));
             }
         }
     }

@@ -24,6 +24,15 @@ static const char FX_MISSED_ONE[] =
     "start\":{\"line\":7,\"column\":5},\"end\":{\"line\":7,\"column\":6}},\"replacement\":\""
     "y\",\"genre\":\"FnValue\"}},\"summary\":\"MissedMutant\"}]}";
 
+static const char FX_FRACTIONAL_COUNTER[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1.0,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[\n{\"scenario\":\"Baseline\",\"summary\":\"Success\"},\n{\"scenario\":{\""
+    "Mutant\":{\"name\":\"src/a.rs:7:5: replace x with y in f\",\"package\":\"bt-x\",\"file\""
+    ":\"src/a.rs\",\"function\":{\"function_name\":\"f\",\"return_type\":\"-> u8\",\"span\":{"
+    "\"start\":{\"line\":5,\"column\":1},\"end\":{\"line\":9,\"column\":2}}},\"span\":{\""
+    "start\":{\"line\":7,\"column\":5},\"end\":{\"line\":7,\"column\":6}},\"replacement\":\""
+    "y\",\"genre\":\"FnValue\"}},\"summary\":\"MissedMutant\"}]}";
+
 static const char FX_MISSED_ONE_WRONG_COUNTER[] =
     "{\"total_mutants\":1,\"caught\":0,\"missed\":0,\"timeout\":0,\"unviable\":0,\"success\":"
     "0,\"outcomes\":[\n{\"scenario\":\"Baseline\",\"summary\":\"Success\"},\n{\"scenario\":{\""
@@ -362,6 +371,22 @@ BT_TEST(gate, an_empty_function_column_is_rejected_naming_the_sentinel) {
     const char *msg = bt_gate_last_error();
     BT_CHECK(strstr(msg, "allowlist row 1") != NULL);
     BT_CHECK(strstr(msg, "(empty)") != NULL);
+}
+
+BT_TEST(gate, a_fractional_counter_is_rejected) {
+    char summary[BT_GATE_SUMMARY_MAX];
+    int rc = bt_gate_run(FX_FRACTIONAL_COUNTER, FX_COMMENTED_ALLOWLIST, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "counter 'missed'") != NULL);
+}
+
+BT_TEST(gate, a_negative_count_is_not_an_integer) {
+    const char *allowlist = "src/b.rs\tg\tBinaryOperator\t*=\t-5\taccepted";
+    char summary[BT_GATE_SUMMARY_MAX];
+    bt_gate_run(FX_TIMEOUT_ONE, allowlist, summary, sizeof summary);
+    const char *msg = bt_gate_last_error();
+    BT_CHECK(strstr(msg, "allowlist row 1") != NULL);
+    BT_CHECK(strstr(msg, "count '-5' is not an integer") != NULL);
 }
 
 BT_TEST(gate, alien_scenario_string_fails) {
@@ -737,6 +762,14 @@ BT_TEST(gate, missing_replacement_field_fails) {
 
 int bt_mutants_gate_selftest(void) {
     bt_test_entry tests[] = {
+        {
+            "gate.a_fractional_counter_is_rejected",
+            bt_test_gate_a_fractional_counter_is_rejected,
+        },
+        {
+            "gate.a_negative_count_is_not_an_integer",
+            bt_test_gate_a_negative_count_is_not_an_integer,
+        },
         {
             "gate.an_empty_function_column_is_rejected_naming_the_sentinel",
             bt_test_gate_an_empty_function_column_is_rejected_naming_the_sentinel,
