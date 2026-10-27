@@ -29,7 +29,10 @@ static int review_cmp(const void *a, const void *b) {
     if (left->day != right->day) {
         return left->day < right->day ? -1 : 1;
     }
-    return left->seq < right->seq ? -1 : left->seq > right->seq ? 1 : 0;
+    if (left->seq != right->seq) {
+        return left->seq < right->seq ? -1 : 1;
+    }
+    return 0;
 }
 
 static int card_order_cmp(const void *a, const void *b) {
@@ -39,7 +42,10 @@ static int card_order_cmp(const void *a, const void *b) {
     if (cmp != 0) {
         return cmp;
     }
-    return left->seq < right->seq ? -1 : left->seq > right->seq ? 1 : 0;
+    if (left->seq != right->seq) {
+        return left->seq < right->seq ? -1 : 1;
+    }
+    return 0;
 }
 
 double bt_stats_median(long long *values, size_t count) {

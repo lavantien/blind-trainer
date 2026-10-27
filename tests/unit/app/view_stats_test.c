@@ -88,7 +88,7 @@ BT_TEST(view_stats, snapshot_aggregates_splits_and_due_counts) {
     future.due_day = 900;
     const char *refs[3][4] = {{"2x2", "cll", "cll", "cll.1"},
                               {"2x2", "cll", "cll", "cll.2"},
-                              {"skewb", "sarah", "sarah", "s.1"}};
+                              {"skewb", "sarah", "sarah", "s.1"},};
     bt_card card_values[3] = {card_with_reviews(due_q, 1), future, card_with_reviews(corner_q, 1)};
     bt_case_cards cards;
     case_fixture_cards(refs, card_values, 3, &cards);
@@ -119,7 +119,7 @@ BT_TEST(view_stats, due_events_count_per_event_in_card_order) {
     future.due_day = 900;
     const char *refs[3][4] = {{"skewb", "sarah", "sarah", "s.1"},
                               {"2x2", "cll", "cll", "cll.1"},
-                              {"2x2", "cll", "cll", "cll.2"}};
+                              {"2x2", "cll", "cll", "cll.2"},};
     bt_card card_values[3] = {card_with_reviews(due_q, 1), card_with_reviews(due_q, 1), future};
     bt_case_cards cards;
     case_fixture_cards(refs, card_values, 3, &cards);
@@ -190,7 +190,7 @@ BT_TEST(view_stats, blocks_pair_values_with_labels_in_a_fixed_order) {
     BT_CHECK(count == 9);
     const char *labels[9] = {"solves",         "verified drill streak", "memo mean",
                              "memo median",    "exec mean",             "exec median",
-                             "due edge",       "due corner",            "due 2x2"};
+                             "due edge",       "due corner",            "due 2x2",};
     const char *values[9] = {"2", "2", "25.0s", "25.0s", "15.0s", "15.0s", "1", "0", "3"};
     for (size_t i = 0; i < 9; i++) {
         BT_CHECK(strcmp(blocks[i].label, labels[i]) == 0);

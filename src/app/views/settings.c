@@ -169,10 +169,10 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, const void *f
     float field_w = 160.0F;
     float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
     bt_ui_rect cadence_rect = {metrics.content_x + metrics.content_w - 2.0F * field_w - line_gap,
-                               field_y, field_w, field_h};
+                               field_y, field_w, field_h,};
     bt_ui_rect reps_rect = {cadence_rect.x + field_w + line_gap, field_y, field_w, field_h};
     bt_ui_rect select_rect = {cadence_rect.x, field_y + field_h + line_gap,
-                              metrics.content_w - (cadence_rect.x - metrics.content_x), field_h};
+                              metrics.content_w - (cadence_rect.x - metrics.content_x), field_h,};
     int edited = 0;
     long long cadence = bt_ui_number_field(&regular, &cadence_rect, (long long)draft->memo_cadence_ms,
                                            BT_SETTINGS_CADENCE_MIN, BT_SETTINGS_CADENCE_MAX, input,
