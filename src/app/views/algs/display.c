@@ -7,7 +7,7 @@
 
 #define BT_NET_PLAN_PAD ((size_t)-1)
 
-static void net_face_of(size_t face, const bt_pz_face *view, bt_net_face *out) {
+static void net_face_of(size_t face, const bt_pz_face *view, bt_netdisp_face *out) {
     BT_TRACE_ENTER("app.net_display_face");
     memset(out, 0, sizeof *out);
     out->face = face;
@@ -23,10 +23,10 @@ static void net_face_of(size_t face, const bt_pz_face *view, bt_net_face *out) {
         size_t lead = (out->width - cells) / 2;
         size_t at = 0;
         for (; at < lead; at++) {
-            out->rows[row][at].kind = BT_NET_SLOT_PAD;
+            out->rows[row][at].kind = BT_NETDISP_SLOT_PAD;
         }
         for (size_t col = 0; col < cells; col++) {
-            out->rows[row][at].kind = BT_NET_SLOT_CELL;
+            out->rows[row][at].kind = BT_NETDISP_SLOT_CELL;
             out->rows[row][at].cell.face = face;
             out->rows[row][at].cell.row = row;
             out->rows[row][at].cell.col = col;
@@ -34,17 +34,18 @@ static void net_face_of(size_t face, const bt_pz_face *view, bt_net_face *out) {
             at++;
         }
         for (; at < out->width; at++) {
-            out->rows[row][at].kind = BT_NET_SLOT_PAD;
+            out->rows[row][at].kind = BT_NETDISP_SLOT_PAD;
         }
         out->row_lengths[row] = out->width;
     }
     BT_TRACE_EXIT("app.net_display_face");
 }
 
-static size_t band_plan(size_t face_count, size_t plan[BT_NET_LAYOUT_MAX_BANDS][BT_NET_LAYOUT_MAX_SLOTS],
-                        size_t counts[BT_NET_LAYOUT_MAX_BANDS]) {
+static size_t band_plan(size_t face_count,
+                        size_t plan[BT_NETDISP_LAYOUT_MAX_BANDS][BT_NETDISP_LAYOUT_MAX_SLOTS],
+                        size_t counts[BT_NETDISP_LAYOUT_MAX_BANDS]) {
     BT_TRACE_ENTER("app.net_display_band_plan");
-    memset(counts, 0, BT_NET_LAYOUT_MAX_BANDS * sizeof *counts);
+    memset(counts, 0, BT_NETDISP_LAYOUT_MAX_BANDS * sizeof *counts);
     size_t band_count = 0;
     if (face_count == 0) {
         BT_TRACE_EXIT("app.net_display_band_plan");
@@ -108,30 +109,30 @@ static size_t band_plan(size_t face_count, size_t plan[BT_NET_LAYOUT_MAX_BANDS][
     return band_count;
 }
 
-void bt_net_display_layout(const bt_pz_grid *grid, bt_net_layout *out) {
+void bt_netdisp_layout_of(const bt_pz_grid *grid, bt_netdisp_layout *out) {
     BT_TRACE_ENTER("app.net_display_layout");
     memset(out, 0, sizeof *out);
     if (grid->face_count == 0 || grid->face_count > BT_PZ_MAX_FACES) {
         BT_TRACE_EXIT("app.net_display_layout");
         return;
     }
-    bt_net_face faces[BT_PZ_MAX_FACES];
+    bt_netdisp_face faces[BT_PZ_MAX_FACES];
     for (size_t face = 0; face < grid->face_count; face++) {
         net_face_of(face, &grid->faces[face], &faces[face]);
     }
     size_t spacer = faces[0].width;
-    size_t plan[BT_NET_LAYOUT_MAX_BANDS][BT_NET_LAYOUT_MAX_SLOTS];
-    size_t counts[BT_NET_LAYOUT_MAX_BANDS];
+    size_t plan[BT_NETDISP_LAYOUT_MAX_BANDS][BT_NETDISP_LAYOUT_MAX_SLOTS];
+    size_t counts[BT_NETDISP_LAYOUT_MAX_BANDS];
     out->band_count = band_plan(grid->face_count, plan, counts);
     for (size_t band = 0; band < out->band_count; band++) {
         for (size_t slot = 0; slot < counts[band]; slot++) {
             size_t wanted = plan[band][slot];
-            bt_net_band_slot *dst = &out->bands[band][slot];
+            bt_netdisp_band_slot *dst = &out->bands[band][slot];
             if (wanted == BT_NET_PLAN_PAD) {
-                dst->kind = BT_NET_BAND_SPACER;
+                dst->kind = BT_NETDISP_BAND_SPACER;
                 dst->spacer = spacer;
             } else {
-                dst->kind = BT_NET_BAND_FACE;
+                dst->kind = BT_NETDISP_BAND_FACE;
                 dst->face = faces[wanted];
             }
         }
@@ -140,7 +141,7 @@ void bt_net_display_layout(const bt_pz_grid *grid, bt_net_layout *out) {
     BT_TRACE_EXIT("app.net_display_layout");
 }
 
-bt_theme_color bt_net_display_cell_color(const bt_net_cell *cell) {
+bt_theme_color bt_netdisp_cell_color(const bt_netdisp_cell *cell) {
     BT_TRACE_ENTER("app.net_display_cell_color");
     bt_theme_color color = bt_theme_palette_color(cell->color);
     BT_TRACE_EXIT("app.net_display_cell_color");

@@ -11,47 +11,47 @@ typedef struct {
     size_t row;
     size_t col;
     unsigned char color;
-} bt_net_cell;
+} bt_netdisp_cell;
 
 typedef enum {
-    BT_NET_SLOT_PAD,
-    BT_NET_SLOT_CELL,
-} bt_net_slot_kind;
+    BT_NETDISP_SLOT_PAD,
+    BT_NETDISP_SLOT_CELL,
+} bt_netdisp_slot_kind;
 
 typedef struct {
-    bt_net_slot_kind kind;
-    bt_net_cell cell;
-} bt_net_slot;
+    bt_netdisp_slot_kind kind;
+    bt_netdisp_cell cell;
+} bt_netdisp_slot;
 
 typedef struct {
     size_t face;
     size_t width;
     size_t row_count;
     size_t row_lengths[BT_PZ_MAX_ROWS];
-    bt_net_slot rows[BT_PZ_MAX_ROWS][BT_PZ_MAX_COLS];
-} bt_net_face;
+    bt_netdisp_slot rows[BT_PZ_MAX_ROWS][BT_PZ_MAX_COLS];
+} bt_netdisp_face;
 
 typedef enum {
-    BT_NET_BAND_FACE,
-    BT_NET_BAND_SPACER,
+    BT_NETDISP_BAND_FACE,
+    BT_NETDISP_BAND_SPACER,
 } bt_net_band_kind;
 
 typedef struct {
     bt_net_band_kind kind;
-    bt_net_face face;
+    bt_netdisp_face face;
     size_t spacer;
-} bt_net_band_slot;
+} bt_netdisp_band_slot;
 
-#define BT_NET_LAYOUT_MAX_BANDS 8
-#define BT_NET_LAYOUT_MAX_SLOTS 4
+#define BT_NETDISP_LAYOUT_MAX_BANDS 8
+#define BT_NETDISP_LAYOUT_MAX_SLOTS 4
 
 typedef struct {
     size_t band_count;
-    size_t band_slot_count[BT_NET_LAYOUT_MAX_BANDS];
-    bt_net_band_slot bands[BT_NET_LAYOUT_MAX_BANDS][BT_NET_LAYOUT_MAX_SLOTS];
-} bt_net_layout;
+    size_t band_slot_count[BT_NETDISP_LAYOUT_MAX_BANDS];
+    bt_netdisp_band_slot bands[BT_NETDISP_LAYOUT_MAX_BANDS][BT_NETDISP_LAYOUT_MAX_SLOTS];
+} bt_netdisp_layout;
 
-void bt_net_display_layout(const bt_pz_grid *grid, bt_net_layout *out);
-bt_theme_color bt_net_display_cell_color(const bt_net_cell *cell);
+void bt_netdisp_layout_of(const bt_pz_grid *grid, bt_netdisp_layout *out);
+bt_theme_color bt_netdisp_cell_color(const bt_netdisp_cell *cell);
 
 #endif
