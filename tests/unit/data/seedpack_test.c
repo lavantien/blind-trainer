@@ -1,6 +1,8 @@
 #include "common.h"
 #include "common/bt_harness.h"
+#include "data/db.h"
 #include "data/paths.h"
+#include "data/repo_seeds.h"
 #include "data/seedpack/hashing.h"
 #include "data/seedpack/mod.h"
 #include "data/seedpack/parse.h"
@@ -11,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "sqlite3.h"
 
 #define HEADER "case_key\talg\tfront_json\tsource_url\tsource_at"
 
@@ -655,4 +659,146 @@ BT_TEST(seedpack, packs_root_resolves_from_the_hub_and_the_env_override) {
     bt_json_free(config);
     bt_json_free(missing_paths);
     tu_remove_tree(temp);
+}
+
+BT_TEST(seedpack, seed_all_loads_every_real_row_and_a_rerun_verifies_without_duplicates) {
+    bt_db db;
+    bt_db_error db_err;
+    BT_CHECK(bt_db_open_memory(&db, &db_err) == 0);
+    char packs[BT_PATH_MAX];
+    td_packs(packs);
+    bt_seed_report *reports = NULL;
+    size_t report_count = 0;
+    bt_seed_error err;
+    BT_CHECK(bt_seed_all(&db, packs, &reports, &report_count, &err) == 0);
+    BT_CHECK(report_count == 21);
+    size_t inserted = 0;
+    for (size_t i = 0; i < report_count; i++) {
+        inserted += reports[i].inserted;
+    }
+    BT_CHECK(inserted == 1115);
+    bt_seed_reports_free(reports);
+    reports = NULL;
+    BT_CHECK(bt_seed_all(&db, packs, &reports, &report_count, &err) == 0);
+    size_t verified = 0;
+    for (size_t i = 0; i < report_count; i++) {
+        verified += reports[i].verified;
+    }
+    BT_CHECK(verified == 1115);
+    bt_seed_reports_free(reports);
+    long long count = 0;
+    BT_CHECK(bt_seed_row_count(&db, &count, &err) == 0);
+    BT_CHECK(count == 1115);
+    bt_seed_rows rows;
+    BT_CHECK(bt_load_seed_rows(&db, &rows, &err) == 0);
+    BT_CHECK(rows.count == 1115);
+    const bt_seed_row *cs002 = NULL;
+    for (size_t i = 0; i < rows.count; i++) {
+        if (strcmp(rows.items[i].case_key, "cs.002") == 0) {
+            cs002 = &rows.items[i];
+            break;
+        }
+    }
+    BT_CHECK(cs002 != NULL);
+    if (cs002 != NULL) {
+        BT_CHECK_EQ(cs002->alg, "/ (3,3) /");
+        BT_CHECK_EQ(cs002->event, "sq1");
+        BT_CHECK_EQ(cs002->method, "lbl");
+        BT_CHECK_EQ(cs002->stage, "cubeshape");
+        BT_CHECK_EQ(cs002->source_url, "https://cubingapp.com/algorithms/SQ1-Cube-Shape");
+        BT_CHECK_EQ(cs002->source_at, "2026-10-10");
+        BT_CHECK_EQ(cs002->content_hash,
+                    "e43d1ec256ede1a9fe0878cf40fd4fd9f022a11f154addf3c5297af5ad4fa805");
+    }
+    bt_seed_rows_free(&rows);
+    bt_db_close(&db);
+}
+
+BT_TEST(seedpack, a_rerun_of_an_unchanged_pack_reports_only_verifies) {
+    const char *dir = tu_temp_dir("bt-seedpack", "noop");
+    char registry[256];
+    mini_registry(registry, sizeof registry, "1");
+    char tsv[512];
+    const char *keys[] = {"a1"};
+    const char *algs[] = {"R U"};
+    mini_tsv(tsv, sizeof tsv, keys, algs, 1);
+    write_pack(dir, registry, "mini.tsv", tsv);
+    bt_db db;
+    bt_db_error db_err;
+    BT_CHECK(bt_db_open_memory(&db, &db_err) == 0);
+    bt_pack_entry entry = mini_entry();
+    bt_seed_report report;
+    bt_seed_error err;
+    BT_CHECK(bt_seed_pack(&db, dir, &entry, &report, &err) == 0);
+    BT_CHECK(report.inserted == 1 && report.verified == 0);
+    BT_CHECK(bt_seed_pack(&db, dir, &entry, &report, &err) == 0);
+    BT_CHECK(report.inserted == 0 && report.verified == 1);
+    bt_db_close(&db);
+    tu_remove_tree(dir);
+}
+
+BT_TEST(seedpack, a_drifted_rerun_fails_hard_naming_the_file_and_row) {
+    const char *dir = tu_temp_dir("bt-seedpack", "drift");
+    char registry[256];
+    mini_registry(registry, sizeof registry, "2");
+    char tsv[512];
+    const char *keys[] = {"a1", "a2"};
+    const char *algs[] = {"R U", "R U'"};
+    mini_tsv(tsv, sizeof tsv, keys, algs, 2);
+    write_pack(dir, registry, "mini.tsv", tsv);
+    bt_pack_entry entry = parse_entry_of(registry);
+    bt_db db;
+    bt_db_error db_err;
+    BT_CHECK(bt_db_open_memory(&db, &db_err) == 0);
+    bt_seed_report report;
+    bt_seed_error err;
+    BT_CHECK(bt_seed_pack(&db, dir, &entry, &report, &err) == 0);
+    const char *algs2[] = {"R U", "R U2"};
+    mini_tsv(tsv, sizeof tsv, keys, algs2, 2);
+    write_pack(dir, registry, "mini.tsv", tsv);
+    BT_CHECK(bt_seed_pack(&db, dir, &entry, &report, &err) != 0);
+    char text[768];
+    bt_seed_error_string(&err, text, sizeof text);
+    BT_CHECK(strstr(text, "mini.tsv") != NULL);
+    BT_CHECK(strstr(text, "a2") != NULL);
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_prepare_v2(bt_db_conn(&db), "SELECT alg FROM seed_alg WHERE case_key = 'a2'", -1, &stmt,
+                       NULL);
+    BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
+    BT_CHECK(strcmp((const char *)sqlite3_column_text(stmt, 0), "R U'") == 0);
+    sqlite3_finalize(stmt);
+    bt_db_close(&db);
+    tu_remove_tree(dir);
+}
+
+BT_TEST(seedpack, a_row_dropped_from_a_pack_fails_hard_naming_the_orphan) {
+    const char *dir = tu_temp_dir("bt-seedpack", "orphan");
+    char registry[256];
+    mini_registry(registry, sizeof registry, "2");
+    char tsv[512];
+    const char *keys[] = {"a1", "a2"};
+    const char *algs[] = {"R U", "R U'"};
+    mini_tsv(tsv, sizeof tsv, keys, algs, 2);
+    write_pack(dir, registry, "mini.tsv", tsv);
+    bt_pack_entry entry = parse_entry_of(registry);
+    bt_db db;
+    bt_db_error db_err;
+    BT_CHECK(bt_db_open_memory(&db, &db_err) == 0);
+    bt_seed_report report;
+    bt_seed_error err;
+    BT_CHECK(bt_seed_pack(&db, dir, &entry, &report, &err) == 0);
+    char registry_one[256];
+    mini_registry(registry_one, sizeof registry_one, "1");
+    const char *keys_one[] = {"a1"};
+    const char *algs_one[] = {"R U"};
+    mini_tsv(tsv, sizeof tsv, keys_one, algs_one, 1);
+    write_pack(dir, registry_one, "mini.tsv", tsv);
+    bt_pack_entry shrunk = parse_entry_of(registry_one);
+    BT_CHECK(bt_seed_pack(&db, dir, &shrunk, &report, &err) != 0);
+    char text[768];
+    bt_seed_error_string(&err, text, sizeof text);
+    BT_CHECK(strstr(text, "a2") != NULL);
+    BT_CHECK(strstr(text, "mini.tsv") != NULL);
+    bt_db_close(&db);
+    tu_remove_tree(dir);
 }
