@@ -486,6 +486,20 @@ BT_TEST(fto_oracle, apply_rejects_hand_built_illegal_quarters) {
         bt_strbuf_free(&message);
         bt_pz_alg_destroy(alg);
     }
+    const bt_fto_move illegal[3] = {{8, 1}, {9, 2}, {255, 1}};
+    for (size_t i = 0; i < 3; i++) {
+        void *alg = bt_pz_alg_create();
+        bt_pz_alg_push(&eng, alg, &illegal[i]);
+        bt_fto_state state;
+        bt_fto_solved_state(&fto, &state);
+        bt_pz_error err;
+        BT_CHECK(!bt_fto_apply_alg(&fto, &state, alg, &err));
+        BT_CHECK_EQ(err.kind, (int)BT_PZ_ERR_APPLY);
+        char prefix[20];
+        snprintf(prefix, sizeof prefix, "face %u", illegal[i].face);
+        BT_CHECK(strncmp(err.token, prefix, strlen(prefix)) == 0);
+        bt_pz_alg_destroy(alg);
+    }
 }
 
 BT_TEST(fto_inline, solved_state_is_solved) {

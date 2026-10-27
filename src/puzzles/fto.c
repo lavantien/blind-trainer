@@ -1,5 +1,6 @@
 #include "puzzles/fto.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -8,6 +9,8 @@
 const char *const BT_FTO_FACE_NAMES[BT_FTO_FACE_COUNT] = {
     "U", "F", "R", "BR", "B", "BL", "L", "D",
 };
+
+enum { BT_FTO_TEXT_MAX = 32 };
 
 static const int8_t FACE_SIGNS[8][3] = {
     {1, 1, 1},   {1, 1, -1}, {-1, 1, -1}, {-1, 1, 1},
@@ -362,8 +365,8 @@ void bt_fto_invert_alg(const bt_fto *fto, const void *alg, void *out) {
 
 static const uint8_t *table_for(const bt_fto *fto, bt_fto_move mv, bt_pz_error *err) {
     if (mv.face >= 8 || mv.quarter == 0 || mv.quarter > 2) {
-        char text[5];
-        format_move(mv, text);
+        char text[BT_FTO_TEXT_MAX];
+        snprintf(text, sizeof text, "face %u quarter %u", mv.face, mv.quarter);
         bt_pz_error_set(err, BT_PZ_ERR_APPLY, text, strlen(text));
         return NULL;
     }

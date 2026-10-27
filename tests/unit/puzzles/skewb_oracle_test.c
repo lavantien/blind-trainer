@@ -977,4 +977,18 @@ BT_TEST(skewb_oracle, apply_rejects_hand_built_illegal_quarters) {
         bt_strbuf_free(&message);
         bt_pz_alg_destroy(alg);
     }
+    const bt_skewb_move illegal[3] = {{4, 1}, {200, 2}, {255, 1}};
+    for (size_t i = 0; i < 3; i++) {
+        void *alg = bt_pz_alg_create();
+        bt_pz_alg_push(&eng, alg, &illegal[i]);
+        bt_skewb_state state;
+        bt_skewb_solved_state(&skewb, &state);
+        bt_pz_error err;
+        BT_CHECK(!bt_skewb_apply_alg(&skewb, &state, alg, &err));
+        BT_CHECK_EQ(err.kind, (int)BT_PZ_ERR_APPLY);
+        char prefix[24];
+        snprintf(prefix, sizeof prefix, "vertex %u", illegal[i].vertex);
+        BT_CHECK(strncmp(err.token, prefix, strlen(prefix)) == 0);
+        bt_pz_alg_destroy(alg);
+    }
 }

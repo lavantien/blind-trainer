@@ -1,5 +1,6 @@
 #include "puzzles/skewb.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,6 +8,8 @@
 
 const char *const BT_SKEWB_FACE_NAMES[BT_SKEWB_FACE_COUNT] = {"U", "F", "R", "L", "B", "D"};
 const char *const BT_SKEWB_VERTEX_NAMES[BT_SKEWB_VERTEX_COUNT] = {"F", "L", "R", "B"};
+
+enum { BT_SKEWB_TEXT_MAX = 32 };
 
 static const int8_t VERTEX_SIGNS[4][3] = {
     {1, 1, 1},
@@ -230,8 +233,8 @@ void bt_skewb_invert_alg(const bt_skewb *skewb, const void *alg, void *out) {
 
 static const uint8_t *table_for(const bt_skewb *skewb, bt_skewb_move mv, bt_pz_error *err) {
     if (mv.vertex >= 4 || mv.quarter == 0 || mv.quarter > 2) {
-        char text[4];
-        format_move(mv, text);
+        char text[BT_SKEWB_TEXT_MAX];
+        snprintf(text, sizeof text, "vertex %u quarter %u", mv.vertex, mv.quarter);
         bt_pz_error_set(err, BT_PZ_ERR_APPLY, text, strlen(text));
         return NULL;
     }
