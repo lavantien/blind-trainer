@@ -6,8 +6,8 @@
 
 int bt_notation_is_rotation(const char *token) {
     BT_TRACE_ENTER("notation.is_rotation");
-    if (token == NULL || token[0] == '\0' || (token[0] != 'x' && token[0] != 'y' &&
-                                              token[0] != 'z')) {
+    if (token == NULL || token[0] == '\0' ||
+        (token[0] != 'x' && token[0] != 'y' && token[0] != 'z')) {
         BT_TRACE_EXIT("notation.is_rotation");
         return 0;
     }
