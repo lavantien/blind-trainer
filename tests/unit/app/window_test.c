@@ -40,8 +40,8 @@ static bt_app_config load_config(void) {
 
 BT_TEST(window, probe_opens_the_window_at_the_configured_size) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height,
-                                config.window.title, &config.render));
+    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                &config.render));
     BT_CHECK(bt_app_window_ready());
     ClearBackground(bt_app_color(bt_theme_background()));
     bt_app_window_close();
@@ -50,8 +50,8 @@ BT_TEST(window, probe_opens_the_window_at_the_configured_size) {
 
 BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height,
-                                config.window.title, &config.render));
+    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                &config.render));
     char vendor[BT_PATH_MAX];
     ref_ground(vendor);
     bt_corpus corpus;
@@ -78,8 +78,8 @@ BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
 
 BT_TEST(window, probe_screenshot_captures_the_window_dims) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height,
-                                config.window.title, &config.render));
+    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                &config.render));
     for (unsigned frame = 0; frame < config.render.capture_dwell_frames; frame++) {
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
@@ -98,10 +98,14 @@ BT_TEST(window, probe_screenshot_captures_the_window_dims) {
     BT_CHECK_EQ(got, 24);
     BT_CHECK_EQ(header[0], 0x89);
     BT_CHECK_EQ(header[12], 'I');
-    unsigned width = ((unsigned)header[16] << 24) | ((unsigned)header[17] << 16) |
-                     ((unsigned)header[18] << 8) | header[19];
-    unsigned height = ((unsigned)header[20] << 24) | ((unsigned)header[21] << 16) |
-                      ((unsigned)header[22] << 8) | header[23];
+    unsigned width =
+        (((unsigned)header[16] * 256U + (unsigned)header[17]) * 256U + (unsigned)header[18]) *
+            256U +
+        (unsigned)header[19];
+    unsigned height =
+        (((unsigned)header[20] * 256U + (unsigned)header[21]) * 256U + (unsigned)header[22]) *
+            256U +
+        (unsigned)header[23];
     BT_CHECK_EQ(width, config.window.width);
     BT_CHECK_EQ(height, config.window.height);
     remove(shot);
@@ -110,8 +114,8 @@ BT_TEST(window, probe_screenshot_captures_the_window_dims) {
 
 BT_TEST(window, probe_input_poll_runs_clean_without_devices) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height,
-                                config.window.title, &config.render));
+    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                &config.render));
     bt_app_window_frame_begin();
     ClearBackground(bt_app_color(bt_theme_background()));
     bt_app_window_frame_end();

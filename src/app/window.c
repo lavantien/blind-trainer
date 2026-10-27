@@ -51,7 +51,7 @@ void bt_app_window_frame_end(void) {
 int bt_app_window_capture(const char *path) {
     BT_TRACE_ENTER("app.window_capture");
     TakeScreenshot(path);
-    int exists = FileExists(path);
+    int exists = FileExists(path) ? 1 : 0;
     if (!exists) {
         BT_TRACE_FAIL("app.window_capture", "no shot at %s", path);
     }
@@ -81,8 +81,8 @@ void bt_app_poll_input(bt_ui_input *input) {
     Vector2 mouse = GetMousePosition();
     input->x = mouse.x;
     input->y = mouse.y;
-    input->click = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-    input->down = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+    input->click = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) ? 1 : 0;
+    input->down = IsMouseButtonDown(MOUSE_BUTTON_LEFT) ? 1 : 0;
     float wheel = GetMouseWheelMove();
     input->wheel = wheel > 0.0F ? 1 : (wheel < 0.0F ? -1 : 0);
     input->escape = IsKeyPressed(KEY_ESCAPE);
@@ -178,21 +178,19 @@ static int load_face(const char *config_path, const char *key, const char *file_
     return 0;
 }
 
-int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus,
-                      const char *const *words, size_t word_count, bt_app_font_book *out,
-                      char *error, size_t error_len) {
+int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus, const char *const *words,
+                      size_t word_count, bt_app_font_book *out, char *error, size_t error_len) {
     BT_TRACE_ENTER("app.fonts_load");
     static int codepoints[BT_APP_FONTS_MAX];
     Font regular;
-    if (load_face(config_path, "regular", "NotoSans-Regular.ttf", corpus, words,
-                  word_count, codepoints, BT_APP_FONTS_MAX, &regular, error,
-                  error_len) != 0) {
+    if (load_face(config_path, "regular", "NotoSans-Regular.ttf", corpus, words, word_count,
+                  codepoints, BT_APP_FONTS_MAX, &regular, error, error_len) != 0) {
         BT_TRACE_EXIT("app.fonts_load");
         return -1;
     }
     Font bold;
-    if (load_face(config_path, "bold", "NotoSans-Bold.ttf", corpus, words,
-                  word_count, codepoints, BT_APP_FONTS_MAX, &bold, error, error_len) != 0) {
+    if (load_face(config_path, "bold", "NotoSans-Bold.ttf", corpus, words, word_count, codepoints,
+                  BT_APP_FONTS_MAX, &bold, error, error_len) != 0) {
         UnloadFont(regular);
         BT_TRACE_EXIT("app.fonts_load");
         return -1;
