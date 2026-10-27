@@ -894,13 +894,15 @@ def fmt_run(write):
         logger.line("fmt", "no files")
         return 0
     mode = ["-i"] if write else ["--dry-run", "--Werror"]
-    argv = [tool, *mode, *[str(f) for f in files]]
     label = "fmt" if not write else "fmt-fix"
-    proc = run(argv, label, check=False)
-    if proc.returncode != 0:
-        tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
-        Logger().fail(label, tail or "no output")
-    return proc.returncode
+    for at in range(0, len(files), 64):
+        argv = [tool, *mode, *[str(f) for f in files[at : at + 64]]]
+        proc = run(argv, label, check=False)
+        if proc.returncode != 0:
+            tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
+            Logger().fail(label, tail or "no output")
+            return proc.returncode
+    return 0
 
 
 def in_lint_area(file, area):
