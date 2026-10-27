@@ -164,7 +164,9 @@ int main(void) {
     } else {
         block_used = raw_env;
     }
-    if (CreateProcessW(NULL, wide_command, NULL, NULL, FALSE, 0, block_used, NULL, &startup,
+    DWORD env_flags = block_used != NULL ? CREATE_UNICODE_ENVIRONMENT : 0;
+    if (CreateProcessW(NULL, wide_command, NULL, NULL, FALSE, env_flags, block_used, NULL,
+                       &startup,
                        &info) == 0) {
         fprintf(stderr, "CreateProcessW variant %d failed: %lu\n", variant, GetLastError());
         FreeEnvironmentStringsW(raw_env);
