@@ -1,4 +1,5 @@
 #include "policy/lib.h"
+#include "policy/selftest.h"
 
 #include <stdio.h>
 #include <string.h>

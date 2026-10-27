@@ -190,7 +190,7 @@ BT_TEST(policy_constants, recurring_counts_per_core_within_one_file) {
 BT_TEST(policy_constants, policy_section_parses_when_present) {
     bt_json_value *config =
         parse_cfg("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [\"1\", "
-                  "\"2\"]}}");
+                  "\"2\"], \"exempt_ext\": [\".rs\"]}}");
     policy_policy_config cfg = {0};
     char err[POLICY_ERR_MAX];
     int rc = policy_constants_from_config(config, &cfg, err, sizeof err);
@@ -199,6 +199,8 @@ BT_TEST(policy_constants, policy_section_parses_when_present) {
     BT_CHECK_EQ(cfg.allow_count, 2);
     BT_CHECK(strcmp(cfg.small_literal_allow[0], "1") == 0);
     BT_CHECK(strcmp(cfg.small_literal_allow[1], "2") == 0);
+    BT_CHECK_EQ(cfg.exempt_count, 1);
+    BT_CHECK(strcmp(cfg.exempt_ext[0], ".rs") == 0);
     policy_policy_config_free(&cfg);
     bt_json_free(config);
 }
@@ -208,25 +210,40 @@ BT_TEST(policy_constants, missing_policy_section_is_an_error_naming_the_key) {
 }
 
 BT_TEST(policy_constants, missing_policy_keys_are_errors_naming_the_keys) {
-    config_err_is("{\"policy\": {\"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"small_literal_allow\": [], \"exempt_ext\": []}}",
                   "config section missing: policy.literal_recurrence");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 2}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"exempt_ext\": []}}",
                   "config section missing: policy.small_literal_allow");
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": []}}",
+                  "config section missing: policy.exempt_ext");
 }
 
 BT_TEST(policy_constants, malformed_or_zero_recurrence_is_an_error) {
-    config_err_is("{\"policy\": {\"literal_recurrence\": \"2\", \"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": \"2\", \"small_literal_allow\": [], "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.literal_recurrence");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 2.0, \"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2.0, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.literal_recurrence");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 2.5, \"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2.5, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.literal_recurrence");
-    config_err_is("{\"policy\": {\"literal_recurrence\": -1, \"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": -1, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.literal_recurrence");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 0, \"small_literal_allow\": []}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 0, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": []}}",
                   "policy.literal_recurrence must be >= 1");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [1]}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [1], "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.small_literal_allow");
-    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": \"1\"}}",
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": \"1\", "
+                  "\"exempt_ext\": []}}",
                   "config value malformed: policy.small_literal_allow");
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": \".rs\"}}",
+                  "config value malformed: policy.exempt_ext");
+    config_err_is("{\"policy\": {\"literal_recurrence\": 2, \"small_literal_allow\": [], "
+                  "\"exempt_ext\": [1]}}",
+                  "config value malformed: policy.exempt_ext");
 }

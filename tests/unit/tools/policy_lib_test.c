@@ -6,6 +6,7 @@
 #include "policy/constants.h"
 #include "policy/lexer.h"
 #include "policy/lib.h"
+#include "policy/selftest.h"
 #include "policy/sloc.h"
 
 static bt_json_value *parse_cfg(const char *text) {
@@ -262,7 +263,8 @@ BT_TEST(policy_lib, small_literal_allow_silences_a_core_everywhere) {
     plant(root, "src/dirty.c", POLICY_DIRTY_FIXTURE);
     plant(root, "allow.txt", "# allow\n");
     bt_json_value *config =
-        parse_cfg("{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[\"7\"]}}");
+        parse_cfg("{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[\"7\"],"
+                  "\"exempt_ext\":[]}}");
     policy_outcome outcome = {0};
     char err[POLICY_ERR_MAX];
     int rc = run(root, POLICY_MODE_CONSTANTS, config, "allow.txt", &outcome, err);
@@ -330,11 +332,13 @@ BT_TEST(policy_lib, walk_skips_excluded_directories) {
     policy_util_rm_rf(root);
 }
 
-BT_TEST(policy_lib, unexpected_extensions_under_scan_roots_are_findings) {
+BT_TEST(policy_lib, source_extensions_flag_and_data_extensions_stay_silent) {
     char root[POLICY_UTIL_PATH_MAX];
     policy_util_scratch("run-ext", root);
     plant(root, "src/a.c", POLICY_CLEAN_FIXTURE);
-    plant(root, "src/stray.json", "{}\n");
+    plant(root, "src/stray.cpp", "int x;\n");
+    plant(root, "tools/old.rs", "fn x() {}\n");
+    plant(root, "src/data.json", "{}\n");
     plant(root, "tools/note.txt", "x\n");
     plant(root, "allow.txt", "# allow\n");
     policy_outcome outcome = {0};
@@ -342,10 +346,30 @@ BT_TEST(policy_lib, unexpected_extensions_under_scan_roots_are_findings) {
     int rc = run(root, POLICY_MODE_BOTH, selftest_cfg(), "allow.txt", &outcome, err);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(outcome.finding_count, 2);
-    BT_CHECK(strcmp(outcome.findings[0].path, "src/stray.json") == 0);
+    BT_CHECK(strcmp(outcome.findings[0].path, "src/stray.cpp") == 0);
     BT_CHECK(strcmp(outcome.findings[0].kind, "extension") == 0);
-    BT_CHECK(strcmp(outcome.findings[1].path, "tools/note.txt") == 0);
+    BT_CHECK(strcmp(outcome.findings[0].detail, "unexpected .cpp file") == 0);
+    BT_CHECK(strcmp(outcome.findings[1].path, "tools/old.rs") == 0);
     policy_outcome_free(&outcome);
+    policy_util_rm_rf(root);
+}
+
+BT_TEST(policy_lib, exempt_ext_config_rows_silence_an_extension) {
+    char root[POLICY_UTIL_PATH_MAX];
+    policy_util_scratch("run-exempt", root);
+    plant(root, "src/a.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "src/old.rs", "fn x() {}\n");
+    plant(root, "allow.txt", "# allow\n");
+    bt_json_value *config =
+        parse_cfg("{\"policy\":{\"literal_recurrence\":2,\"small_literal_allow\":[],\"exempt_ext\":"
+                  "[\".rs\"]},\"sloc\":{\"max_file_lines\":8}}");
+    policy_outcome outcome = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = run(root, POLICY_MODE_BOTH, config, "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(outcome.finding_count, 0);
+    policy_outcome_free(&outcome);
+    bt_json_free(config);
     policy_util_rm_rf(root);
 }
 

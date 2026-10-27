@@ -63,11 +63,12 @@ int policy_allowlist_covers(const policy_allowlist *allow, const char *path, con
 int policy_glob_match(const char *pattern, const char *name);
 char **policy_collect_sources(const char *root, size_t *count, char *err, size_t err_len);
 void policy_free_sources(char **files, size_t count);
+int policy_read_source(const char *path, char **text_out, size_t *len_out, char *err,
+                       size_t err_len);
 
 int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_value *config,
                       const char *allowlist_path, policy_outcome *outcome, char *err,
                       size_t err_len);
-int policy_selftest(const char *workdir, char *err, size_t err_len);
 
 extern const char POLICY_DIRTY_FIXTURE[];
 extern const char POLICY_CLEAN_FIXTURE[];

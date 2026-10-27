@@ -150,6 +150,34 @@ int policy_constants_from_config(const bt_json_value *config, policy_policy_conf
         out->small_literal_allow[out->allow_count] = policy_xstrdup(entry->as.string);
         out->allow_count++;
     }
+    const bt_json_value *exempt = bt_json_get(section, "exempt_ext");
+    if (exempt == NULL) {
+        policy_policy_config_free(out);
+        snprintf(err, err_len, "config section missing: policy.exempt_ext");
+        BT_TRACE_FAIL("policy.constants_from_config", "exempt_ext missing");
+        BT_TRACE_EXIT("policy.constants_from_config");
+        return -1;
+    }
+    if (exempt->type != BT_JSON_ARRAY) {
+        policy_policy_config_free(out);
+        snprintf(err, err_len, "config value malformed: policy.exempt_ext");
+        BT_TRACE_FAIL("policy.constants_from_config", "exempt_ext is not an array");
+        BT_TRACE_EXIT("policy.constants_from_config");
+        return -1;
+    }
+    out->exempt_ext = policy_xalloc(exempt->as.array.count * sizeof *out->exempt_ext);
+    for (size_t at = 0; at < exempt->as.array.count; at++) {
+        const bt_json_value *entry = bt_json_at(exempt, at);
+        if (entry == NULL || entry->type != BT_JSON_STRING) {
+            policy_policy_config_free(out);
+            snprintf(err, err_len, "config value malformed: policy.exempt_ext");
+            BT_TRACE_FAIL("policy.constants_from_config", "exempt_ext entry not a string");
+            BT_TRACE_EXIT("policy.constants_from_config");
+            return -1;
+        }
+        out->exempt_ext[out->exempt_count] = policy_xstrdup(entry->as.string);
+        out->exempt_count++;
+    }
     out->literal_recurrence = recurrence;
     BT_TRACE_EXIT("policy.constants_from_config");
     return 0;
@@ -162,6 +190,12 @@ void policy_policy_config_free(policy_policy_config *config) {
     free(config->small_literal_allow);
     config->small_literal_allow = NULL;
     config->allow_count = 0;
+    for (size_t at = 0; at < config->exempt_count; at++) {
+        free(config->exempt_ext[at]);
+    }
+    free(config->exempt_ext);
+    config->exempt_ext = NULL;
+    config->exempt_count = 0;
 }
 
 static int core_integer_value(const char *core, policy_lang lang, unsigned long long *out) {

@@ -21,6 +21,8 @@ typedef struct {
     unsigned long long literal_recurrence;
     char **small_literal_allow;
     size_t allow_count;
+    char **exempt_ext;
+    size_t exempt_count;
 } policy_policy_config;
 
 int policy_constants_from_config(const bt_json_value *config, policy_policy_config *out, char *err,

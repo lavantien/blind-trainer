@@ -157,7 +157,11 @@
       "8",
       "9"
     ],
-    "literal_recurrence": 4
+    "literal_recurrence": 4,
+    "exempt_ext": [
+      ".rs",
+      ".ps1"
+    ]
   },
   "sloc": {
     "max_file_lines": 1000
