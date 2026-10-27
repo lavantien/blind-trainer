@@ -57,10 +57,7 @@ int bt_app_main(int argc, char **argv) {
         if (BT_APP_STATE_TABLE[ctx.state].update != NULL) {
             BT_APP_STATE_TABLE[ctx.state].update(&ctx);
         }
-        if (bt_app_apply_pending(&ctx) && BT_APP_STATE_TABLE[ctx.state].enter != NULL) {
-            BT_APP_STATE_TABLE[ctx.state].enter(&ctx);
-            bt_app_apply_pending(&ctx);
-        }
+        bt_app_transition_frame(&ctx);
         bt_view_net_update(&ctx.net, &bt_app_views_shared()->net, GetFrameTime());
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));

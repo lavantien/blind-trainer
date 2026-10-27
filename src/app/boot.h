@@ -31,5 +31,6 @@ int bt_app_init(int argc, char **argv, bt_app_ctx *ctx, bt_app_shot_mode *mode, 
 
 void bt_app_frame_input_set(const bt_ui_input *input);
 const bt_ui_input *bt_app_frame_input(void);
+int bt_app_transition_frame(bt_app_ctx *ctx);
 
 #endif

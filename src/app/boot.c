@@ -130,6 +130,20 @@ const bt_ui_input *bt_app_frame_input(void) {
     return g_frame_input;
 }
 
+int bt_app_transition_frame(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.transition_frame");
+    int transitioned = bt_app_apply_pending(ctx);
+    if (transitioned) {
+        if (BT_APP_STATE_TABLE[ctx->state].enter != NULL) {
+            BT_APP_STATE_TABLE[ctx->state].enter(ctx);
+        }
+        bt_app_apply_pending(ctx);
+        bt_app_frame_input_set(NULL);
+    }
+    BT_TRACE_EXIT("app.transition_frame");
+    return transitioned;
+}
+
 const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {enter_bootstrap, NULL, NULL},
     {noop_row, NULL, NULL},

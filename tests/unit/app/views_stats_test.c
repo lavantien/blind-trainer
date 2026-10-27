@@ -337,6 +337,21 @@ BT_TEST(views_stats, settings_mode_keys_apply_the_first_match_only) {
     bt_app_ctx_free(&ctx);
 }
 
+BT_TEST(views_stats, transition_frame_clears_the_published_input) {
+    bt_app_ctx ctx;
+    fixture_ctx("transition", BT_APP_MENU, &ctx);
+    bt_app_request_state(&ctx, BT_APP_SETTINGS);
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.click = 1;
+    bt_app_frame_input_set(&input);
+    int transitioned = bt_app_transition_frame(&ctx);
+    BT_CHECK(transitioned == 1);
+    BT_CHECK(ctx.state == BT_APP_SETTINGS);
+    BT_CHECK(bt_app_frame_input() == NULL);
+    bt_app_ctx_free(&ctx);
+}
+
 BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
     if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings typing test", NULL)) {
         BT_CHECK(0);
