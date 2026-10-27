@@ -101,6 +101,7 @@ def main():
                 "commit_lane: commit swept foreign files: " + ", ".join(stray)
             )
     finally:
+        sh(["git", "restore", "--staged", "--"] + list(args.paths), check=False)
         release()
 
 
