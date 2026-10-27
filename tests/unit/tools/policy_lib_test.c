@@ -218,12 +218,14 @@ BT_TEST(policy_lib, run_checks_reports_relative_paths_and_both_kinds) {
     policy_util_rm_rf(root);
 }
 
-BT_TEST(policy_lib, constants_scope_covers_impl_roots_and_exempts_tests) {
+BT_TEST(policy_lib, constants_scope_covers_impl_roots_and_exempts_tests_components) {
     char root[POLICY_UTIL_PATH_MAX];
     policy_util_scratch("run-scope", root);
     plant(root, "src/a.c", POLICY_DIRTY_FIXTURE);
     plant(root, "tools/b.c", POLICY_DIRTY_FIXTURE);
     plant(root, "tests/c.c", POLICY_DIRTY_FIXTURE);
+    plant(root, "src/tests/d.c", POLICY_DIRTY_FIXTURE);
+    plant(root, "tools/tests/e.c", POLICY_DIRTY_FIXTURE);
     plant(root, "allow.txt", "# allow\n");
     policy_outcome outcome = {0};
     char err[POLICY_ERR_MAX];

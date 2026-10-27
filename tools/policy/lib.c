@@ -430,6 +430,23 @@ static const char *rel_path(const char *path, const char *root) {
     return path;
 }
 
+static int has_tests_component(const char *rel) {
+    const char *at = rel;
+    while (*at != '\0') {
+        const char *seg = at;
+        while (*at != '\0' && *at != '/') {
+            at++;
+        }
+        if ((size_t)(at - seg) == 5 && memcmp(seg, "tests", 5) == 0) {
+            return 1;
+        }
+        if (*at == '/') {
+            at++;
+        }
+    }
+    return 0;
+}
+
 static int read_source(const char *path, char **text_out, size_t *len_out, char *err,
                        size_t err_len) {
     FILE *file = fopen(path, "rb");
@@ -532,7 +549,7 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
         size_t covered_cap = 0;
         for (size_t at = 0; at < file_count && rc == 0; at++) {
             const char *rel_probe = rel_path(files[at], root);
-            if (strncmp(rel_probe, "tests/", 6) == 0) {
+            if (has_tests_component(rel_probe)) {
                 continue;
             }
             char *text = NULL;

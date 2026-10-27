@@ -220,6 +220,16 @@ BT_TEST(policy_lexer, universal_char_escapes_are_masked) {
     policy_masked_free(&masked);
 }
 
+BT_TEST(policy_lexer, python_dispatch_is_case_insensitive_and_takes_pyw) {
+    BT_CHECK_EQ(policy_lang_of_path("src/dirty.py"), POLICY_LANG_PY);
+    BT_CHECK_EQ(policy_lang_of_path("src/DIRTY.PY"), POLICY_LANG_PY);
+    BT_CHECK_EQ(policy_lang_of_path("src/gui.pyw"), POLICY_LANG_PY);
+    BT_CHECK_EQ(policy_lang_of_path("src/GUI.PYW"), POLICY_LANG_PY);
+    BT_CHECK_EQ(policy_lang_of_path("src/a.c"), POLICY_LANG_C);
+    BT_CHECK_EQ(policy_lang_of_path("src/a.h"), POLICY_LANG_C);
+    BT_CHECK_EQ(policy_lang_of_path("src/a.pyc"), POLICY_LANG_C);
+}
+
 BT_TEST(policy_lexer, line_of_counts_newlines_before_the_offset) {
     const char *text = "ab\ncd\nef";
     BT_CHECK_EQ(policy_line_of(text, 0), 1);

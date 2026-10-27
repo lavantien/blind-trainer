@@ -1,5 +1,5 @@
 # path TAB literal-core TAB justification
-# constants scan scope: c and python under src, tools, tests, scripts, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
+# constants scan scope: c and python implementation sources under src, tools, scripts, tests components exempt, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
 src/core/analysis.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests

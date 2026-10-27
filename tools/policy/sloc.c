@@ -9,6 +9,39 @@ static int is_blank(unsigned char byte) {
     return byte == ' ' || byte == '\t' || byte == '\r' || byte == '\v' || byte == '\f';
 }
 
+static int is_unicode_space(unsigned int codepoint) {
+    return codepoint == 0x85 || codepoint == 0xA0 || codepoint == 0x1680 ||
+           (codepoint >= 0x2000 && codepoint <= 0x200A) || codepoint == 0x2028 ||
+           codepoint == 0x2029 || codepoint == 0x202F || codepoint == 0x205F || codepoint == 0x3000;
+}
+
+static int line_is_blank(const char *text, size_t from, size_t to) {
+    size_t at = from;
+    while (at < to) {
+        unsigned char byte = (unsigned char)text[at];
+        if (is_blank(byte)) {
+            at++;
+            continue;
+        }
+        if (byte < 0x80) {
+            return 0;
+        }
+        size_t width = byte < 0xE0 ? 2 : (byte < 0xF0 ? 3 : 4);
+        if (at + width > to) {
+            return 0;
+        }
+        unsigned int codepoint = byte & (width == 2 ? 0x1F : (width == 3 ? 0x0F : 0x07));
+        for (size_t k = 1; k < width; k++) {
+            codepoint = (codepoint << 6) | ((unsigned char)text[at + k] & 0x3FU);
+        }
+        if (!is_unicode_space(codepoint)) {
+            return 0;
+        }
+        at += width;
+    }
+    return 1;
+}
+
 int policy_sloc_from_config(const bt_json_value *config, policy_sloc_config *out, char *err,
                             size_t err_len) {
     BT_TRACE_ENTER("policy.sloc_from_config");
@@ -65,14 +98,7 @@ int policy_cap_finding(const char *text, size_t len, const char *rel, unsigned l
         while (nl < len && text[nl] != '\n') {
             nl++;
         }
-        int blank = 1;
-        for (size_t at = line_start; at < nl; at++) {
-            if (!is_blank((unsigned char)text[at])) {
-                blank = 0;
-                break;
-            }
-        }
-        if (!blank) {
+        if (!line_is_blank(text, line_start, nl)) {
             non_blank++;
             if (non_blank == cap + 1) {
                 crossing = index + 1;

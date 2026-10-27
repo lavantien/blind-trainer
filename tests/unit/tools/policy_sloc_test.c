@@ -82,6 +82,12 @@ BT_TEST(policy_sloc, the_crossing_line_skips_blank_lines) {
     policy_finding_free(&finding);
 }
 
+BT_TEST(policy_sloc, unicode_whitespace_lines_stay_blank) {
+    const char *at_cap = "a\n\xc2\xa0\n\xe3\x80\x80\nb\nc\nd\ne\n";
+    policy_finding finding = {0};
+    BT_CHECK_EQ(policy_cap_finding(at_cap, strlen(at_cap), "src/u.c", 6, &finding), 0);
+}
+
 BT_TEST(policy_sloc, an_empty_file_stays_silent) {
     policy_finding finding = {0};
     BT_CHECK_EQ(policy_cap_finding("", 0, "src/e.c", 1, &finding), 0);

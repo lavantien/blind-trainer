@@ -42,9 +42,27 @@ const char *policy_comment_kind_str(policy_comment_kind kind) {
     return "unknown";
 }
 
+static int ext_equals_ci(const char *path, size_t len, const char *ext, size_t ext_len) {
+    if (len < ext_len) {
+        return 0;
+    }
+    const char *tail = path + len - ext_len;
+    for (size_t at = 0; at < ext_len; at++) {
+        char left = tail[at];
+        char right = ext[at];
+        if (left >= 'A' && left <= 'Z') {
+            left = (char)(left - 'A' + 'a');
+        }
+        if (left != right) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 policy_lang policy_lang_of_path(const char *path) {
     size_t len = strlen(path);
-    if (len >= 3 && strcmp(path + len - 3, ".py") == 0) {
+    if (ext_equals_ci(path, len, ".py", 3) || ext_equals_ci(path, len, ".pyw", 4)) {
         return POLICY_LANG_PY;
     }
     return POLICY_LANG_C;
