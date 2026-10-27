@@ -823,6 +823,28 @@ BT_TEST(mutate, dep_inputs_land_under_scratch) {
     bt_mut_build_free(&engine.build);
 }
 
+BT_TEST(mutate, link_list_never_references_missing_objects) {
+    ensure_setup();
+    bt_mut_engine engine;
+    engine_for("linklist", 60000, NULL, &engine);
+    bt_mut_target target;
+    int rc = bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_alg_test", &target);
+    BT_CHECK_EQ(rc, 0);
+    if (rc == 0) {
+        BT_CHECK(target.link_obj_count > 1);
+        BT_CHECK(target.target_index < target.link_obj_count);
+        for (size_t i = 0; i < target.link_obj_count; i++) {
+            FILE *probe = fopen(target.link_objs[i], "rb");
+            MUT_CHECK(probe != NULL, "link list references missing object %s", target.link_objs[i]);
+            if (probe != NULL) {
+                fclose(probe);
+            }
+        }
+    }
+    bt_mut_target_free(&target);
+    bt_mut_build_free(&engine.build);
+}
+
 BT_TEST(mutate, spawn_error_leaves_the_row_pending) {
     bt_mut_mutant_list list;
     enumerate_fixture(&list);
@@ -985,6 +1007,10 @@ int bt_mutate_selftest(void) {
             bt_test_mutate_exe_switch_reruns_terminal_rows,
         },
         {"mutate.dep_inputs_land_under_scratch", bt_test_mutate_dep_inputs_land_under_scratch},
+        {
+            "mutate.link_list_never_references_missing_objects",
+            bt_test_mutate_link_list_never_references_missing_objects,
+        },
         {
             "mutate.flooding_child_hits_the_deadline",
             bt_test_mutate_flooding_child_hits_the_deadline,

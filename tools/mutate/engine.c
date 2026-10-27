@@ -189,7 +189,15 @@ int bt_mut_target_from_repo(const bt_mut_engine *engine, const char *file_rel, c
         if (obj_len > 2 && strcmp(obj + obj_len - 2, ".c") == 0) {
             snprintf(obj + obj_len - 2, sizeof obj - (obj_len - 2), ".obj");
         }
-        if (strcmp(src_files.items[i], rel_under_src) == 0) {
+        int is_target = strcmp(src_files.items[i], rel_under_src) == 0;
+        if (!is_target) {
+            FILE *probe = fopen(obj, "rb");
+            if (probe == NULL) {
+                continue;
+            }
+            fclose(probe);
+        }
+        if (is_target) {
             target->target_index = objs.count;
             target_seen = 1;
         }
