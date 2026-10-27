@@ -213,6 +213,13 @@ def discover_test_suites(root):
     return suites
 
 
+def filter_suites(suites, area, only=None):
+    picked = [s for s in suites if s["area"] == area]
+    if only is not None:
+        picked = [s for s in picked if only in s["stem"]]
+    return picked
+
+
 def suite_exe_name(suite):
     return "_".join(part for part in (suite.get("area", ""), suite["stem"]) if part)
 
@@ -431,7 +438,7 @@ def raylib_link_map(hub, root):
     return {name: (lib, list(cfg.get("system_libs", []))) for name in tools}
 
 
-def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
+def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
@@ -456,6 +463,8 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None):
                     continue
                 area_parts = rel.split("/")
                 if len(area_parts) < 3 or area_parts[2] != test_area:
+                    continue
+                if only is not None and only not in Path(rel).stem:
                     continue
             elif rel.startswith("src/") and not rel.startswith("src/common/"):
                 area_parts = rel.split("/")
@@ -544,7 +553,7 @@ def write_link_stamp(hub, root):
     stamp.write_text(link_stamp_payload(hub), encoding="utf-8")
 
 
-def link_stage(hub, root, compiler, logger, obj_root, entries):
+def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
     cfg = build_cfg(hub)
     bin_dir = root / dirs_cfg(hub)["bin"]
     flags = compile_flags(hub)
@@ -565,6 +574,8 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
             tool_sources = sorted(tool_dir.glob("*.c"))
             if not tool_sources:
                 continue
+            if only is not None and only.replace("_", "-") not in tool_dir.name:
+                continue
             tool_objs = [objs_by_source[s] for s in tool_sources if s in objs_by_source]
             if not tool_objs:
                 continue
@@ -581,6 +592,8 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         test_obj = objs_by_source.get(suite["source"])
         main_obj = obj_root / "gen" / f"{suite['exe_name']}_main.obj"
         if test_obj is None or main_obj not in built_objects:
+            continue
+        if only is not None and only not in suite["stem"]:
             continue
         suite_tool_objects = []
         extra_lib = None
@@ -967,25 +980,26 @@ def tgt_test(args):
 
 
 def tgt_test_unit(args):
-    """run one area's unit tests: python bt.py test-unit <area>"""
+    """run one area's unit tests: python bt.py test-unit <area> [--only substring]"""
     if not args:
-        print("usage: python bt.py test-unit <area>")
+        print("usage: python bt.py test-unit <area> [--only substring]")
         return 2
     area = args[0]
+    only = args[2] if len(args) >= 3 and args[1] == "--only" else None
     hub = load_hub()
     logger = Logger()
-    logger.entry("test-unit", area)
+    logger.entry("test-unit", area if only is None else f"{area} --only {only}")
     try:
         compiler = [resolve_tool("clang", hub)]
         generated = generate_stage(hub, REPO_ROOT)
         obj_root, entries = compile_stage(
-            hub, REPO_ROOT, compiler, logger, extra=generated, test_area=area
+            hub, REPO_ROOT, compiler, logger, extra=generated, test_area=area, only=only
         )
-        link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
+        link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries, only=only)
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("test-build", f"{type(e).__name__}: {e}")
         return 1
-    suites = [s for s in discover_test_suites(REPO_ROOT) if s["area"] == area]
+    suites = filter_suites(discover_test_suites(REPO_ROOT), area, only)
     if not suites:
         logger.fail("test-unit", f"no test suites under tests/unit/{area}")
         return 1

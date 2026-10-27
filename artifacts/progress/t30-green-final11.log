@@ -1,0 +1,141 @@
+2026-10-27T17:02:19 [entry] test-unit tools
+2026-10-27T17:02:19 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\config.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\json.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\paths.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\rng.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\sha256.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\space.c up to date
+2026-10-27T17:02:19 [skip] compile src\common\strbuf.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\alg.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\analysis.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\cube.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\expand.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\lib.c up to date
+2026-10-27T17:02:19 [skip] compile src\core\moves.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\commutator.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\corpus.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\db.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\fsrs.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\import.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\migrations_embedded.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\notation.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\paths.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_algs.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_cards.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_seeds.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_settings.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_solves.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_srs.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\repo_user.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\hashing.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\mod.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\normalizer.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\parse.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\registry.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\seedpack\rulings.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\srs.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\tsv.c up to date
+2026-10-27T17:02:19 [skip] compile src\data\verify.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\fto.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\geometry.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\lib.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\mega.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\nxn.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\pyra.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\skewb.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\sq1.c up to date
+2026-10-27T17:02:19 [skip] compile src\puzzles\tier1.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\classifier.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\lib.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\memo.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\pairs.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\scheme.c up to date
+2026-10-27T17:02:19 [skip] compile src\scheme\scramble.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\fixtures\fx_main.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\fixtures\fx_target.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\fixtures\stub_clang.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\jobwrap_ceiling_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\jobwrap_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\mutants_gate_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\mutate_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\sleeper_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\verify_when_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\visual_diff_lib_test.c up to date
+2026-10-27T17:02:19 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T17:02:19 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T17:02:19 [skip] compile tools\jobwrap\lib.c up to date
+2026-10-27T17:02:19 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\report.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T17:02:19 [skip] compile tools\mutate\token.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\comments.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\constants.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\lib.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T17:02:19 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T17:02:19 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T17:02:19 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\verify\when.c up to date
+2026-10-27T17:02:19 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T17:02:19 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T17:02:19 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T17:02:19 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_hash_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_hash_test.c:1:10: fatal error: 'gendata/hash.h' file not found
+    1 | #include "gendata/hash.h"
+      |          ^~~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_lib_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_lib_test.c:1:10: fatal error: 'gendata/lib.h' file not found
+    1 | #include "gendata/lib.h"
+      |          ^~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_model_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_model_test.c:1:10: fatal error: 'gendata/model.h' file not found
+    1 | #include "gendata/model.h"
+      |          ^~~~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_out_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:1:10: fatal error: 'gendata/out.h' file not found
+    1 | #include "gendata/out.h"
+      |          ^~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_scoring_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_scoring_test.c:1:10: fatal error: 'gendata/scoring.h' file not found
+    1 | #include "gendata/scoring.h"
+      |          ^~~~~~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_synth_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_synth_test.c:1:10: fatal error: 'gendata/scoring.h' file not found
+    1 | #include "gendata/scoring.h"
+      |          ^~~~~~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\gendata_when_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_when_test.c:1:10: fatal error: 'common/when.h' file not found
+    1 | #include "common/when.h"
+      |          ^~~~~~~~~~~~~~~
+1 error generated.
+2026-10-27T17:02:21 [fail] compile tests\unit\tools\verify_digest_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\verify_digest_test.c:90:30: error: incompatible pointer types passing 'const char *[12]' to parameter of type 'const unsigned char *const *' [-Wincompatible-pointer-types]
+   90 |     verify_corpus_sha256_hex(texts, text_lens, VERIFY_DIGEST_FILES, want);
+      |                              ^~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\verify/digest.h:29:59: note: passing argument to parameter 'parts' here
+   29 | void verify_corpus_sha256_hex(const unsigned char *const *parts, const size_t *lens, size_t count,
+      |                                                           ^
+1 error generated.
+2026-10-27T17:02:21 [fail] test-build BtError: 8 of 129 compiles failed

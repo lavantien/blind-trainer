@@ -85,5 +85,20 @@ class HelloTests(unittest.TestCase):
         self.assertNotIn("//", source)
 
 
+class FilterSuitesTests(unittest.TestCase):
+    def test_filter_suites_scopes_area_and_substring(self):
+        suites = [
+            {"area": "tools", "stem": "visual_diff_lib_test"},
+            {"area": "tools", "stem": "policy_lib_test"},
+            {"area": "common", "stem": "rng_test"},
+        ]
+        picked = bt.filter_suites(suites, "tools")
+        self.assertEqual([s["stem"] for s in picked], ["visual_diff_lib_test", "policy_lib_test"])
+        picked = bt.filter_suites(suites, "tools", "visual_diff")
+        self.assertEqual([s["stem"] for s in picked], ["visual_diff_lib_test"])
+        picked = bt.filter_suites(suites, "tools", "absent")
+        self.assertEqual(picked, [])
+
+
 if __name__ == "__main__":
     unittest.main()
