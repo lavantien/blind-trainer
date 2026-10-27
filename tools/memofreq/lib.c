@@ -432,14 +432,14 @@ static int emit_case_rows(const bt_ga_case_row *rows, size_t count, bt_strbuf *o
         return -1;
     }
     for (size_t i = 0; i < count; i++) {
-        if (append_indent(out, 3) != 0 || bt_strbuf_append_str(out, "{\n") != 0 ||
-            append_indent(out, 4) != 0 || bt_strbuf_append_str(out, "\"orbit\": ") != 0 ||
+        if (append_indent(out, 2) != 0 || bt_strbuf_append_str(out, "{\n") != 0 ||
+            append_indent(out, 3) != 0 || bt_strbuf_append_str(out, "\"orbit\": ") != 0 ||
             emit_string(out, rows[i].orbit) != 0 || bt_strbuf_append_str(out, ",\n") != 0 ||
-            append_indent(out, 4) != 0 || bt_strbuf_append_str(out, "\"letters\": ") != 0 ||
+            append_indent(out, 3) != 0 || bt_strbuf_append_str(out, "\"letters\": ") != 0 ||
             emit_string(out, rows[i].letters) != 0 || bt_strbuf_append_str(out, ",\n") != 0 ||
-            append_indent(out, 4) != 0 ||
+            append_indent(out, 3) != 0 ||
             bt_strbuf_appendf(out, "\"count\": %llu", (unsigned long long)rows[i].count) != 0 ||
-            bt_strbuf_append_str(out, "\n") != 0 || append_indent(out, 3) != 0 ||
+            bt_strbuf_append_str(out, "\n") != 0 || append_indent(out, 2) != 0 ||
             bt_strbuf_append_str(out, "}") != 0) {
             return -1;
         }
@@ -450,7 +450,7 @@ static int emit_case_rows(const bt_ga_case_row *rows, size_t count, bt_strbuf *o
             return -1;
         }
     }
-    if (append_indent(out, 2) != 0 || bt_strbuf_append_str(out, "]") != 0) {
+    if (append_indent(out, 1) != 0 || bt_strbuf_append_str(out, "]") != 0) {
         return -1;
     }
     return 0;
@@ -464,14 +464,14 @@ static int emit_pair_rows(const bt_ga_pair_count *rows, size_t count, bt_strbuf 
         return -1;
     }
     for (size_t i = 0; i < count; i++) {
-        if (append_indent(out, 3) != 0 || bt_strbuf_append_str(out, "{\n") != 0 ||
-            append_indent(out, 4) != 0 ||
+        if (append_indent(out, 2) != 0 || bt_strbuf_append_str(out, "{\n") != 0 ||
+            append_indent(out, 3) != 0 ||
             bt_strbuf_appendf(out, "\"from\": %u", (unsigned)rows[i].from) != 0 ||
-            bt_strbuf_append_str(out, ",\n") != 0 || append_indent(out, 4) != 0 ||
+            bt_strbuf_append_str(out, ",\n") != 0 || append_indent(out, 3) != 0 ||
             bt_strbuf_appendf(out, "\"to\": %u", (unsigned)rows[i].to) != 0 ||
-            bt_strbuf_append_str(out, ",\n") != 0 || append_indent(out, 4) != 0 ||
+            bt_strbuf_append_str(out, ",\n") != 0 || append_indent(out, 3) != 0 ||
             bt_strbuf_appendf(out, "\"count\": %llu", (unsigned long long)rows[i].count) != 0 ||
-            bt_strbuf_append_str(out, "\n") != 0 || append_indent(out, 3) != 0 ||
+            bt_strbuf_append_str(out, "\n") != 0 || append_indent(out, 2) != 0 ||
             bt_strbuf_append_str(out, "}") != 0) {
             return -1;
         }
@@ -482,7 +482,7 @@ static int emit_pair_rows(const bt_ga_pair_count *rows, size_t count, bt_strbuf 
             return -1;
         }
     }
-    if (append_indent(out, 2) != 0 || bt_strbuf_append_str(out, "]") != 0) {
+    if (append_indent(out, 1) != 0 || bt_strbuf_append_str(out, "]") != 0) {
         return -1;
     }
     return 0;
