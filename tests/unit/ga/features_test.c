@@ -243,8 +243,8 @@ BT_TEST(features, flow_penalty_pins_exact_values_on_parsed_syllables) {
 
 BT_TEST(features, parse_rejects_malformed_utf8_sequences) {
     static const char *const rows[] = {
-        "ma\xc3",   "\xe1\xba",     "\xf0\x9f\x98", "a\x80",
-        "\xc0\xaf", "\xe0\x80\xaf", "\xed\xa0\x80", "\xf4\x90\x80\x80",
+        "ma\xc3",       "\xe1\xba",         "\xf0\x9f\x98",     "a\x80", "\xc0\xaf", "\xe0\x80\xaf",
+        "\xed\xa0\x80", "\xf4\x90\x80\x80", "\xf0\x81\xba\xa3",
     };
     for (size_t i = 0; i < sizeof rows / sizeof rows[0]; i++) {
         bt_ga_features out;
