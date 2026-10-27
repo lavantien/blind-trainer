@@ -353,6 +353,18 @@ BT_TEST(ga, run_rejects_zero_elite) {
     bt_ga_death_expect("run_rejects_zero_elite", "ga run", run_with_zero_elite);
 }
 
+static void run_mutate_swap_with_one_gene(void) {
+    bt_rng rng;
+    bt_rng_seed(&rng, 1);
+    uint32_t chrom[1] = {0};
+    bt_ga_mutate_swap(chrom, 1, &rng);
+}
+
+BT_TEST(ga, mutate_swap_rejects_single_gene_chromosomes) {
+    bt_ga_death_expect("mutate_swap_rejects_single_gene", "ga mutate_swap",
+                       run_mutate_swap_with_one_gene);
+}
+
 BT_TEST(ga, run_with_zero_generations_returns_the_initial_best) {
     bt_ga_env *env = env_fixture_texts(3, (const char *[]){"ma", "má", "mù", "mút"}, 4);
     bt_ga_params params = small_params(9);

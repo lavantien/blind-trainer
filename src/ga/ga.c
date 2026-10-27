@@ -9,6 +9,8 @@
 
 #define BT_GA_GENE_MAX UINT32_MAX
 
+BT_NORETURN static void bt_ga_abort(const char *trace_unit, const char *label, const char *why);
+
 int bt_ga_build_env(size_t pool_size, float *lengths, size_t lengths_count, bt_ga_features *feats,
                     size_t feats_count, size_t case_count, bt_ga_pair_weight *cooc,
                     size_t cooc_count, bt_ga_pair_weight *adj, size_t adj_count, bt_ga_env *out,
@@ -151,6 +153,9 @@ void bt_ga_draw_cuts(bt_rng *rng, size_t n, size_t *cut1, size_t *cut2) {
 
 void bt_ga_mutate_swap(uint32_t *chrom, size_t n, bt_rng *rng) {
     BT_TRACE_ENTER("ga.mutate_swap");
+    if (n < 2) {
+        bt_ga_abort("ga.mutate_swap", "ga mutate_swap", "n below 2");
+    }
     size_t i = (size_t)bt_rng_below(rng, (uint64_t)n);
     size_t j = (size_t)bt_rng_below(rng, (uint64_t)n - 1);
     if (j >= i) {
@@ -240,16 +245,16 @@ static void bt_ga_sorted_order(const float *fitness, uint32_t *const *population
     }
 }
 
-BT_NORETURN static void bt_ga_run_abort(const char *why) {
-    BT_TRACE_FAIL("ga.run", "ga run: %s", why);
-    bt_harness_fail("src/ga/ga.c", 0, "abort: ga run: %s", why);
+BT_NORETURN static void bt_ga_abort(const char *trace_unit, const char *label, const char *why) {
+    BT_TRACE_FAIL(trace_unit, "ga abort: %s", why);
+    bt_harness_fail("src/ga/ga.c", 0, "abort: %s: %s", label, why);
     bt_harness_exit_failure();
 }
 
 static void *bt_ga_run_alloc(size_t bytes) {
     void *block = malloc(bytes);
     if (block == NULL) {
-        bt_ga_run_abort("allocation failed");
+        bt_ga_abort("ga.run", "ga run", "allocation failed");
     }
     return block;
 }
@@ -257,13 +262,13 @@ static void *bt_ga_run_alloc(size_t bytes) {
 bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params) {
     BT_TRACE_ENTER("ga.run");
     if (!(params->population > params->elite)) {
-        bt_ga_run_abort("population must exceed elite");
+        bt_ga_abort("ga.run", "ga run", "population must exceed elite");
     }
     if (!(params->population >= 2)) {
-        bt_ga_run_abort("population must be at least 2");
+        bt_ga_abort("ga.run", "ga run", "population must be at least 2");
     }
     if (!(params->elite >= 1)) {
-        bt_ga_run_abort("elite must be at least 1");
+        bt_ga_abort("ga.run", "ga run", "elite must be at least 1");
     }
     bt_rng rng;
     bt_rng_seed(&rng, params->seed);
