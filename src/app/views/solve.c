@@ -1,6 +1,7 @@
 #include "app/views/solve.h"
 
 #include "app/views/drill.h"
+#include "app/views/drill_view.h"
 #include "app/views/frame.h"
 #include "app/views/memo.h"
 #include "app/views/net_view.h"
@@ -569,6 +570,9 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     bt_solve_view_parts parts;
     bt_view_solve_review_parts(&app->session, &parts);
     float gap = theme->spacing_rem * theme->root_rem;
+    bt_views_net *pulse = &bt_app_views_shared()->net;
+    bt_view_drill_net_draw(font_bold, pulse, metrics.content_x, metrics.content_y,
+                           theme->drill_net_width_pct * metrics.content_w, metrics.content_h);
     float x = metrics.content_x + theme->drill_net_width_pct * metrics.content_w + gap * 2.0F;
     float y = metrics.content_y;
     bt_app_draw_text(font_regular, phase, x, y, theme->font_small, bt_theme_text_muted());
