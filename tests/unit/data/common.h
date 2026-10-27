@@ -78,12 +78,25 @@ static inline char *td_ref_file(const char *relative) {
     return td_read_file(path);
 }
 
+#define TD_SIMCELL_MAX 256
+#define TD_SIMCHECK_MAX 1077
+
 typedef struct {
     size_t count;
-    char cols[1077][8][TD_TEXT_MAX];
+    char (*cols)[8][TD_SIMCELL_MAX];
 } td_simcheck_rows;
 
+static inline void td_simcheck_free(td_simcheck_rows *rows) {
+    free(rows->cols);
+    rows->cols = NULL;
+    rows->count = 0;
+}
+
 static inline void td_load_simcheck(td_simcheck_rows *out) {
+    out->cols = malloc(TD_SIMCHECK_MAX * sizeof *out->cols);
+    if (out->cols == NULL) {
+        BT_ABORT("simcheck alloc failed");
+    }
     char *text = td_ref_file("simcheck.tsv");
     out->count = 0;
     char *cursor = text;
@@ -114,22 +127,25 @@ static inline void td_load_simcheck(td_simcheck_rows *out) {
             header = false;
             continue;
         }
+        if (out->count >= TD_SIMCHECK_MAX) {
+            BT_ABORT("simcheck rows exceed %d", TD_SIMCHECK_MAX);
+        }
         char copy[TD_TEXT_MAX];
         snprintf(copy, sizeof copy, "%s", line);
         size_t col = 0;
         char *cell = copy;
-        out->cols[out->count][col][0] = '\0';
+        snprintf(out->cols[out->count][col], TD_SIMCELL_MAX, "%s", cell);
         for (char *p = copy;; p++) {
             if (*p == '\t' || *p == '\0') {
                 bool end = *p == '\0';
                 *p = '\0';
-                snprintf(out->cols[out->count][col], TD_TEXT_MAX, "%s", cell);
+                snprintf(out->cols[out->count][col], TD_SIMCELL_MAX, "%s", cell);
                 col += 1;
                 if (end || col >= 8) {
                     break;
                 }
                 cell = p + 1;
-                out->cols[out->count][col][0] = '\0';
+                snprintf(out->cols[out->count][col], TD_SIMCELL_MAX, "%s", cell);
             }
         }
         out->count += 1;

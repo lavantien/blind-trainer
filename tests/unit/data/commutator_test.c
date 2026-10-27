@@ -424,8 +424,12 @@ BT_TEST(commutator, empty_unit_inside_a_sum_is_rejected) {
 BT_TEST(commutator, padded_not_found_marker_is_rejected) {
     bt_expanded_list units;
     bt_expanded_list_init(&units);
-    const char *bad[] = {" Not found. ", "\tNot found.\n", "Not found. now really",
-                         "prefix Not found.",};
+    const char *bad[] = {
+        " Not found. ",
+        "\tNot found.\n",
+        "Not found. now really",
+        "prefix Not found.",
+    };
     for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
         BT_CHECK(bt_decompose(bad[i], &units) == false);
     }
