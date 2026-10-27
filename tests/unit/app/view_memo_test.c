@@ -1,5 +1,7 @@
 #include "app/views/memo.h"
 
+#include "app/views/images.h"
+
 #include "common.h"
 
 #include <stdio.h>
@@ -49,13 +51,6 @@ static void memo_with_edge_pair(char first, char second, bt_memo *out) {
         }
     }
     BT_ABORT("no seed produced edge pair %c%c", first, second);
-}
-
-static const char *stub_images_for(const char letters[2]) {
-    if (letters[0] == 'A' && letters[1] == 'B') {
-        return "Anthony Brooks";
-    }
-    return NULL;
 }
 
 BT_TEST(view_memo, tokens_fall_back_to_letters_without_syllables) {
@@ -109,7 +104,7 @@ BT_TEST(view_memo, syllable_book_overrides_pair_text_when_present) {
 }
 
 BT_TEST(view_memo, image_mode_uses_words_when_available) {
-    bt_views_set_image_lookup(stub_images_for);
+    bt_view_images_install();
     bt_memo memo;
     memo_with_edge_pair('A', 'B', &memo);
     bt_syllable_book book;
@@ -128,7 +123,6 @@ BT_TEST(view_memo, image_mode_uses_words_when_available) {
     char text[BT_MEMO_TEXT_MAX];
     bt_memo_token_text(ab, BT_MEMO_IMAGES, text);
     BT_CHECK(strcmp(text, "Anthony Brooks") == 0);
-    bt_views_set_image_lookup(NULL);
     bt_syllable_book_free(&book);
 }
 

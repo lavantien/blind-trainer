@@ -1,5 +1,7 @@
 #include "app/views/state.h"
 
+#include "app/views/images.h"
+
 #include "app/config.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
@@ -68,6 +70,7 @@ bt_app_views *bt_app_views_shared(void) {
             return NULL;
         }
         bt_app_views_init(shared_views);
+        bt_view_images_install();
     }
     BT_TRACE_EXIT("app.views_shared");
     return shared_views;

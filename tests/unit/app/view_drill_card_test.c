@@ -1,5 +1,7 @@
 #include "app/views/drill_card.h"
 
+#include "app/views/images.h"
+
 #include "common.h"
 
 #include <stdio.h>
@@ -108,13 +110,6 @@ static const bt_card_row *find_row(const bt_card_content *content, const char *p
         if (strncmp(content->rows[i].text, prefix, strlen(prefix)) == 0) {
             return &content->rows[i];
         }
-    }
-    return NULL;
-}
-
-static const char *stub_images_for(const char letters[2]) {
-    if (letters[0] == 'A' && letters[1] == 'B') {
-        return "Anthony Brooks";
     }
     return NULL;
 }
@@ -392,7 +387,7 @@ BT_TEST(view_drill_card, card_prepare_line_prefers_the_vendor_flip_alg) {
 }
 
 BT_TEST(view_drill_card, card_lines_pick_tokens_per_orbit_with_letter_fallback) {
-    bt_views_set_image_lookup(stub_images_for);
+    bt_view_images_install();
     bt_stores stores = stores_with_reps(4);
     bt_corpus_row corner_rows[1] = {
         heap_row(BT_SOLVER_CHERRY, BT_SHEET_CORNER, "UFR-UBL-UBR", "R U' L' U", ""),
@@ -408,7 +403,7 @@ BT_TEST(view_drill_card, card_lines_pick_tokens_per_orbit_with_letter_fallback) 
     BT_CHECK(strcmp(corner_content.rows[0].text, "AB") == 0);
     BT_CHECK(strcmp(corner_content.rows[1].text, "corner UFR-UBL-UBR") == 0);
     char corner_expected[BT_CARD_TEXT_MAX];
-    snprintf(corner_expected, sizeof corner_expected, "memo %s", stub_images_for("AB"));
+    snprintf(corner_expected, sizeof corner_expected, "memo %s", bt_view_images_for("AB"));
     BT_CHECK(strcmp(corner_content.rows[2].text, corner_expected) == 0);
     bt_corpus edge_corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "");
     bt_drill_session edge_session;
@@ -417,7 +412,6 @@ BT_TEST(view_drill_card, card_lines_pick_tokens_per_orbit_with_letter_fallback) 
     bt_card_content edge_content;
     bt_view_card_content(&edge_session, &edge_corpus, &book, &stores, 0, &edge_content);
     BT_CHECK(strcmp(edge_content.rows[2].text, "memo AB") == 0);
-    bt_views_set_image_lookup(NULL);
     bt_drill_session_free(&edge_session);
     bt_corpus_free(&edge_corpus);
     bt_drill_session_free(&corner_session);
