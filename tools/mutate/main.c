@@ -141,6 +141,11 @@ static int expand_segment(const char *base, const char *rel, const char *pattern
 #endif
 }
 
+static int path_is_c_source(const char *path) {
+    size_t len = strlen(path);
+    return len > 2 && strcmp(path + len - 2, ".c") == 0;
+}
+
 static int expand_globs(const char *repo_root, char **patterns, int pattern_count,
                         bt_mut_paths *out) {
     for (int i = 0; i < pattern_count; i++) {
@@ -168,6 +173,12 @@ static int expand_globs(const char *repo_root, char **patterns, int pattern_coun
         int rc = expand_segment(repo_root, "", pattern, out);
         if (rc != 0) {
             return rc;
+        }
+    }
+    for (size_t i = 0; i < out->count; i++) {
+        if (!path_is_c_source(out->items[i])) {
+            fprintf(stderr, "mutate: target is not a .c file: %s\n", out->items[i]);
+            return 2;
         }
     }
     if (out->count > 1) {
@@ -431,6 +442,13 @@ int main(int argc, char **argv) {
     }
     if (strcmp(argv[1], "selftest-probe") == 0) {
         printf("%llu\n", (unsigned long long)bt_mut_process_start());
+        return 0;
+    }
+    if (strcmp(argv[1], "selftest-flood") == 0) {
+        for (;;) {
+            printf("flood\n");
+            fflush(stdout);
+        }
         return 0;
     }
     char config_path[BT_MUT_PATH_MAX];

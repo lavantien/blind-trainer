@@ -1,14 +1,13 @@
 #include "mutate/mutate.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "common/bt_trace.h"
 
 #ifdef _WIN32
 #include <windows.h>
-#else
-#include <stdlib.h>
 #endif
 
 int bt_mut_scratch_root(const char *config_value, char out[BT_MUT_PATH_MAX]) {
@@ -67,8 +66,54 @@ static int dir_first_file_creation(const char *dir, uint64_t *out) {
     return rc;
 }
 
+static int pid_alive(unsigned long long pid) {
+    if (pid == 0 || pid > 0xFFFFFFFFULL) {
+        return 0;
+    }
+    if (pid == (unsigned long long)GetCurrentProcessId()) {
+        return 1;
+    }
+    HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, (DWORD)pid);
+    if (process == NULL) {
+        return 0;
+    }
+    DWORD code = 0;
+    int alive = GetExitCodeProcess(process, &code) && code == STILL_ACTIVE;
+    CloseHandle(process);
+    return alive;
+}
+
+static int marker_owner_alive(const char *dir) {
+    char marker[BT_MUT_PATH_MAX];
+    snprintf(marker, sizeof marker, "%s/marker.txt", dir);
+    char *text = NULL;
+    size_t len = 0;
+    if (bt_mut_read_file(marker, &text, &len) != 0) {
+        return 0;
+    }
+    int alive = 0;
+    if (len > 0 && len <= 10) {
+        int digits = 1;
+        for (size_t i = 0; i < len; i++) {
+            if (text[i] < '0' || text[i] > '9') {
+                digits = 0;
+                break;
+            }
+        }
+        if (digits) {
+            alive = pid_alive(strtoull(text, NULL, 10));
+        }
+    }
+    free(text);
+    return alive;
+}
+
 int bt_mut_scratch_is_orphan(const char *dir, uint64_t live_start) {
     BT_TRACE_ENTER("mutate.scratch_is_orphan");
+    if (marker_owner_alive(dir)) {
+        BT_TRACE_EXIT("mutate.scratch_is_orphan");
+        return 0;
+    }
     char marker[BT_MUT_PATH_MAX];
     snprintf(marker, sizeof marker, "%s/marker.txt", dir);
     uint64_t creation = 0;

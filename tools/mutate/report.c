@@ -26,11 +26,11 @@ static const char *summary_for(bt_mut_status status) {
 static bt_json_value *span_object(size_t line, size_t col, size_t end_line, size_t end_col) {
     bt_json_value *span = bt_json_new_object();
     bt_json_value *start = bt_json_new_object();
-    bt_json_object_set(start, "line", bt_json_new_number((double)line));
-    bt_json_object_set(start, "column", bt_json_new_number((double)col));
+    bt_json_object_set(start, "line", bt_json_new_integer((long long)line));
+    bt_json_object_set(start, "column", bt_json_new_integer((long long)col));
     bt_json_value *end = bt_json_new_object();
-    bt_json_object_set(end, "line", bt_json_new_number((double)end_line));
-    bt_json_object_set(end, "column", bt_json_new_number((double)end_col));
+    bt_json_object_set(end, "line", bt_json_new_integer((long long)end_line));
+    bt_json_object_set(end, "column", bt_json_new_integer((long long)end_col));
     bt_json_object_set(span, "start", start);
     bt_json_object_set(span, "end", end);
     return span;
@@ -121,12 +121,12 @@ int bt_mut_report(const char *ledger_path, const char *repo_root, const char *ou
             counters[4]++;
         }
     }
-    bt_json_object_set(root, "total_mutants", bt_json_new_number((double)counters[0]));
-    bt_json_object_set(root, "caught", bt_json_new_number((double)counters[1]));
-    bt_json_object_set(root, "missed", bt_json_new_number((double)counters[2]));
-    bt_json_object_set(root, "timeout", bt_json_new_number((double)counters[3]));
-    bt_json_object_set(root, "unviable", bt_json_new_number((double)counters[4]));
-    bt_json_object_set(root, "success", bt_json_new_number(0));
+    bt_json_object_set(root, "total_mutants", bt_json_new_integer((long long)counters[0]));
+    bt_json_object_set(root, "caught", bt_json_new_integer((long long)counters[1]));
+    bt_json_object_set(root, "missed", bt_json_new_integer((long long)counters[2]));
+    bt_json_object_set(root, "timeout", bt_json_new_integer((long long)counters[3]));
+    bt_json_object_set(root, "unviable", bt_json_new_integer((long long)counters[4]));
+    bt_json_object_set(root, "success", bt_json_new_integer(0));
     bt_json_object_set(root, "cargo_mutants_version", bt_json_new_string("bt-mutate"));
     bt_json_object_set(root, "start_time", bt_json_new_string(now));
     bt_json_object_set(root, "end_time", bt_json_new_string(now));

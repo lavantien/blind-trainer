@@ -263,18 +263,33 @@ void bt_mut_target_free(bt_mut_target *target) {
     target->link_obj_count = 0;
 }
 
-static int prepare_scratch(const bt_mut_engine *engine, const char *slot, const char *file_rel,
+int bt_mut_prepare_scratch(const bt_mut_engine *engine, const char *slot, const char *file_rel,
                            const char *text, size_t len, const bt_mut_mutant *mutant,
                            char source_out[BT_MUT_PATH_MAX], char include_out[BT_MUT_PATH_MAX]) {
+    BT_TRACE_ENTER("mutate.prepare_scratch");
+    include_out[0] = '\0';
     char dir[BT_MUT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s/%s", engine->scratch_root, slot);
     if (bt_mut_mkdirs(dir) != 0) {
         engine_error("cannot create scratch %s", dir);
+        BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.prepare_scratch");
         return -1;
     }
     char marker[BT_MUT_PATH_MAX];
     snprintf(marker, sizeof marker, "%s/marker.txt", dir);
-    bt_mut_write_file(marker, slot, strlen(slot));
+    char owner[32];
+#ifdef _WIN32
+    snprintf(owner, sizeof owner, "%lu", (unsigned long)GetCurrentProcessId());
+#else
+    snprintf(owner, sizeof owner, "0");
+#endif
+    if (bt_mut_write_file(marker, owner, strlen(owner)) != 0) {
+        engine_error("cannot write %s", marker);
+        BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.prepare_scratch");
+        return -1;
+    }
     const char *stem_start = strrchr(file_rel, '/');
     stem_start = stem_start == NULL ? file_rel : stem_start + 1;
     snprintf(source_out, BT_MUT_PATH_MAX, "%s/%s", dir, stem_start);
@@ -283,16 +298,22 @@ static int prepare_scratch(const bt_mut_engine *engine, const char *slot, const 
         size_t mutated_len = 0;
         if (bt_mut_apply(text, len, mutant, &mutated, &mutated_len) != 0) {
             engine_error("cannot apply mutant %s", mutant->id);
+            BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+            BT_TRACE_EXIT("mutate.prepare_scratch");
             return -1;
         }
         int rc = bt_mut_write_file(source_out, mutated, mutated_len);
         free(mutated);
         if (rc != 0) {
             engine_error("cannot write %s", source_out);
+            BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+            BT_TRACE_EXIT("mutate.prepare_scratch");
             return -1;
         }
     } else if (bt_mut_write_file(source_out, text, len) != 0) {
         engine_error("cannot write %s", source_out);
+        BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.prepare_scratch");
         return -1;
     }
     char obj_root[BT_MUT_PATH_MAX];
@@ -308,10 +329,33 @@ static int prepare_scratch(const bt_mut_engine *engine, const char *slot, const 
         if (bt_mut_read_file(dep, &dep_text, &dep_len_text) == 0) {
             char inputs[BT_MUT_PATH_MAX];
             snprintf(inputs, BT_MUT_PATH_MAX, "%s/inputs", dir);
-            bt_mut_mkdirs(inputs);
+            if (bt_mut_mkdirs(inputs) != 0) {
+                free(dep_text);
+                engine_error("cannot create %s", inputs);
+                BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+                BT_TRACE_EXIT("mutate.prepare_scratch");
+                return -1;
+            }
             snprintf(include_out, BT_MUT_PATH_MAX, "%s", inputs);
+            char root_norm[BT_MUT_PATH_MAX];
+            snprintf(root_norm, sizeof root_norm, "%s", engine->repo_root);
+            for (char *c = root_norm; *c != '\0'; c++) {
+                if (*c == '\\') {
+                    *c = '/';
+                }
+            }
+            char obj_root_norm[BT_MUT_PATH_MAX];
+            snprintf(obj_root_norm, sizeof obj_root_norm, "%s", obj_root);
+            for (char *c = obj_root_norm; *c != '\0'; c++) {
+                if (*c == '\\') {
+                    *c = '/';
+                }
+            }
+            size_t root_len = strlen(root_norm);
+            size_t obj_root_len = strlen(obj_root_norm);
             char *cursor = dep_text;
-            while (cursor != NULL && *cursor != '\0') {
+            int failed = 0;
+            while (cursor != NULL && *cursor != '\0' && !failed) {
                 while (*cursor == ' ' || *cursor == '\n' || *cursor == '\r' || *cursor == '\\' ||
                        *cursor == '\t') {
                     cursor++;
@@ -325,34 +369,61 @@ static int prepare_scratch(const bt_mut_engine *engine, const char *slot, const 
                 }
                 char saved = *end;
                 *end = '\0';
-                char *colon = strchr(cursor, ':');
-                if (colon != NULL) {
-                    *colon = '\0';
-                }
-                char copy_dest[BT_MUT_PATH_MAX];
-                if (strncmp(cursor, engine->repo_root, strlen(engine->repo_root)) == 0) {
-                    snprintf(copy_dest, sizeof copy_dest, "%s/inputs/%s", dir,
-                             cursor + strlen(engine->repo_root) + 1);
-                    bt_mut_mkdirs(copy_dest);
-                    char *copy_dest_dir = strrchr(copy_dest, '/');
-                    if (copy_dest_dir != NULL) {
-                        *copy_dest_dir = '\0';
-                        bt_mut_mkdirs(copy_dest);
-                        *copy_dest_dir = '/';
-                    }
-                    char *content = NULL;
-                    size_t content_len = 0;
-                    if (bt_mut_read_file(cursor, &content, &content_len) == 0) {
-                        bt_mut_write_file(copy_dest, content, content_len);
-                        free(content);
-                    }
-                }
+                char token[BT_MUT_PATH_MAX];
+                snprintf(token, sizeof token, "%s", cursor);
                 *end = saved;
                 cursor = end;
+                for (char *c = token; *c != '\0'; c++) {
+                    if (*c == '\\') {
+                        *c = '/';
+                    }
+                }
+                size_t token_len = strlen(token);
+                if (token_len > 0 && token[token_len - 1] == ':') {
+                    token[token_len - 1] = '\0';
+                }
+                if (strncmp(token, root_norm, root_len) != 0 || token[root_len] != '/' ||
+                    strncmp(token, obj_root_norm, obj_root_len) == 0) {
+                    continue;
+                }
+                const char *rel = token + root_len + 1;
+                if (rel[0] == '\0') {
+                    continue;
+                }
+                char copy_dest[BT_MUT_PATH_MAX];
+                snprintf(copy_dest, sizeof copy_dest, "%s/inputs/%s", dir, rel);
+                char *parent = strrchr(copy_dest, '/');
+                if (parent != NULL) {
+                    *parent = '\0';
+                    int mk = bt_mut_mkdirs(copy_dest);
+                    *parent = '/';
+                    if (mk != 0) {
+                        engine_error("cannot create input dir for %s", token);
+                        failed = 1;
+                        break;
+                    }
+                }
+                char *content = NULL;
+                size_t content_len = 0;
+                if (bt_mut_read_file(token, &content, &content_len) == 0) {
+                    int w = bt_mut_write_file(copy_dest, content, content_len);
+                    free(content);
+                    if (w != 0) {
+                        engine_error("cannot copy input %s", token);
+                        failed = 1;
+                        break;
+                    }
+                }
             }
             free(dep_text);
+            if (failed) {
+                BT_TRACE_FAIL("mutate.prepare_scratch", "%s", bt_mut_engine_last_error());
+                BT_TRACE_EXIT("mutate.prepare_scratch");
+                return -1;
+            }
         }
     }
+    BT_TRACE_EXIT("mutate.prepare_scratch");
     return 0;
 }
 
@@ -363,8 +434,8 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
     *verdict = BT_MUT_BUILDERR;
     char source[BT_MUT_PATH_MAX];
     char include_extra[BT_MUT_PATH_MAX] = "";
-    if (prepare_scratch(engine, slot, target->file, text, len, mutant, source, include_extra) !=
-        0) {
+    if (bt_mut_prepare_scratch(engine, slot, target->file, text, len, mutant, source,
+                               include_extra) != 0) {
         BT_TRACE_FAIL("mutate.run_one", "%s", bt_mut_engine_last_error());
         BT_TRACE_EXIT("mutate.run_one");
         return -1;
@@ -385,6 +456,13 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
     int compile_rc =
         bt_mut_compile_file(&engine->build, include_extra[0] != '\0' ? include_extra : NULL, source,
                             obj, diag, sizeof diag);
+    if (compile_rc == -1) {
+        *verdict = BT_MUT_PENDING;
+        bt_mut_rmtree(dir);
+        BT_TRACE_FAIL("mutate.run_one", "compile spawn failed");
+        BT_TRACE_EXIT("mutate.run_one");
+        return 0;
+    }
     if (compile_rc != 0) {
         *verdict = BT_MUT_BUILDERR;
         bt_mut_rmtree(dir);
@@ -420,6 +498,14 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
     bt_mut_proc proc;
     int link_rc = bt_mut_spawn(engine->build.clang, link_argv, NULL, 300000, &proc);
     free(objects);
+    if (link_rc == -1) {
+        bt_mut_proc_free(&proc);
+        *verdict = BT_MUT_PENDING;
+        bt_mut_rmtree(dir);
+        BT_TRACE_FAIL("mutate.run_one", "link spawn failed");
+        BT_TRACE_EXIT("mutate.run_one");
+        return 0;
+    }
     if (link_rc != 0 || proc.exit_code != 0) {
         bt_mut_proc_free(&proc);
         *verdict = BT_MUT_BUILDERR;
@@ -441,12 +527,12 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
         bt_mut_spawn(exe_native, run_argv, engine->repo_root, (unsigned)engine->timeout_ms, &proc);
     if (run_rc == -2) {
         *verdict = BT_MUT_TIMEOUT;
-    } else if (run_rc == 0 && proc.exit_code == 0) {
+    } else if (run_rc == -1) {
+        *verdict = BT_MUT_PENDING;
+    } else if (proc.exit_code == 0) {
         *verdict = BT_MUT_SURVIVED;
-    } else if (run_rc == 0) {
-        *verdict = BT_MUT_KILLED;
     } else {
-        *verdict = BT_MUT_BUILDERR;
+        *verdict = BT_MUT_KILLED;
     }
     bt_mut_proc_free(&proc);
     bt_mut_rmtree(dir);
@@ -513,9 +599,27 @@ int bt_mut_engine_run(bt_mut_engine *engine, bt_mut_target *targets, size_t targ
             break;
         }
         for (size_t i = 0; i < lists[t].count; i++) {
-            if (bt_mut_ledger_upsert(&ledger, &lists[t].items[i]) != 0) {
+            if (bt_mut_ledger_upsert(&ledger, &lists[t].items[i], engine->test_exe) != 0) {
                 rc = 2;
                 break;
+            }
+        }
+    }
+    for (size_t t = 0; t < target_count && rc == 0; t++) {
+        for (size_t r = 0; r < ledger.count; r++) {
+            if (strcmp(ledger.rows[r].file, targets[t].file) != 0) {
+                continue;
+            }
+            int enumerated = 0;
+            for (size_t m = 0; m < lists[t].count; m++) {
+                if (strcmp(lists[t].items[m].id, ledger.rows[r].id) == 0) {
+                    enumerated = 1;
+                    break;
+                }
+            }
+            if (!enumerated) {
+                bt_mut_ledger_drop(&ledger, ledger.rows[r].id);
+                r--;
             }
         }
     }
@@ -562,6 +666,12 @@ int bt_mut_engine_run(bt_mut_engine *engine, bt_mut_target *targets, size_t targ
             int run_rc =
                 run_one(engine, &targets[t], mutant->id, texts[t], text_lens[t], mutant, &verdict);
             if (run_rc != 0) {
+                rc = 1;
+                break;
+            }
+            if (verdict == BT_MUT_PENDING) {
+                engine_error("spawn failed for mutant %s in %s", mutant->id, targets[t].file);
+                BT_TRACE_FAIL("mutate.engine_run", "%s", bt_mut_engine_last_error());
                 rc = 1;
                 break;
             }

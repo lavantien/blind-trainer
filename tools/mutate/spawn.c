@@ -171,6 +171,14 @@ int bt_mut_spawn(const char *exe, char *const argv[], const char *cwd, unsigned 
     }
     free(wide_cmd);
     free(wide_cwd);
+    HANDLE job = CreateJobObjectW(NULL, NULL);
+    if (job != NULL) {
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits;
+        memset(&limits, 0, sizeof limits);
+        limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        SetInformationJobObject(job, JobObjectExtendedLimitInformation, &limits, sizeof limits);
+        AssignProcessToJobObject(job, info.hProcess);
+    }
     size_t cap = 8192;
     char *buffer = malloc(cap);
     size_t used = 0;
@@ -180,6 +188,14 @@ int bt_mut_spawn(const char *exe, char *const argv[], const char *cwd, unsigned 
     ULONGLONG deadline = GetTickCount64() + timeout_ms;
     int done = 0;
     while (!done) {
+        if (GetTickCount64() > deadline) {
+            TerminateProcess(info.hProcess, 124);
+            WaitForSingleObject(info.hProcess, 5000);
+            out->rc = -2;
+            out->timed_out = 1;
+            done = 1;
+            break;
+        }
         DWORD available = 0;
         if (!PeekNamedPipe(read_end, NULL, 0, NULL, &available, NULL)) {
             done = 1;
@@ -193,7 +209,7 @@ int bt_mut_spawn(const char *exe, char *const argv[], const char *cwd, unsigned 
                 done = 1;
                 continue;
             }
-            if (buffer != NULL) {
+            if (buffer != NULL && used + (size_t)got < BT_MUT_CAPTURE_MAX) {
                 if (used + got + 1 > cap) {
                     size_t want_cap = cap * 2;
                     while (used + got + 1 > want_cap) {
@@ -219,16 +235,12 @@ int bt_mut_spawn(const char *exe, char *const argv[], const char *cwd, unsigned 
                 done = 1;
             }
         }
-        if (GetTickCount64() > deadline) {
-            TerminateProcess(info.hProcess, 124);
-            WaitForSingleObject(info.hProcess, 5000);
-            out->rc = -2;
-            out->timed_out = 1;
-            done = 1;
-        }
     }
     DWORD code = 0;
     GetExitCodeProcess(info.hProcess, &code);
+    if (job != NULL) {
+        CloseHandle(job);
+    }
     CloseHandle(read_end);
     CloseHandle(info.hProcess);
     CloseHandle(info.hThread);
@@ -273,6 +285,14 @@ int bt_mut_compile_file(const bt_mut_build *build, const char *extra_include, co
     argv[count] = NULL;
     bt_mut_proc proc;
     int rc = bt_mut_spawn(build->clang, argv, NULL, 300000, &proc);
+    if (rc == -2) {
+        if (diag != NULL) {
+            snprintf(diag, diag_cap, "compile timed out on %s", build->clang);
+        }
+        BT_TRACE_FAIL("mutate.compile_file", "timeout on %s", build->clang);
+        BT_TRACE_EXIT("mutate.compile_file");
+        return -2;
+    }
     if (rc != 0) {
         if (diag != NULL) {
             snprintf(diag, diag_cap, "spawn failed: %s", build->clang);

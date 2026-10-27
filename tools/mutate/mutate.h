@@ -9,6 +9,7 @@
 #define BT_MUT_PATH_MAX 1024
 #define BT_MUT_ID_LEN 16
 #define BT_MUT_LINE_MAX 4096
+#define BT_MUT_CAPTURE_MAX (16ULL * 1024ULL * 1024ULL)
 
 int bt_mut_read_file(const char *path, char **out, size_t *out_len);
 int bt_mut_write_file(const char *path, const char *data, size_t len);
@@ -123,6 +124,7 @@ typedef struct {
     bt_mut_status status;
     unsigned long long attempts;
     char *last_run;
+    char *test_exe;
 } bt_mut_row;
 
 typedef struct {
@@ -134,7 +136,8 @@ typedef struct {
 int bt_mut_ledger_load(const char *path, bt_mut_ledger *ledger);
 int bt_mut_ledger_save(const char *path, const bt_mut_ledger *ledger);
 bt_mut_row *bt_mut_ledger_find(bt_mut_ledger *ledger, const char *id);
-int bt_mut_ledger_upsert(bt_mut_ledger *ledger, const bt_mut_mutant *mutant);
+int bt_mut_ledger_upsert(bt_mut_ledger *ledger, const bt_mut_mutant *mutant, const char *test_exe);
+void bt_mut_ledger_drop(bt_mut_ledger *ledger, const char *id);
 void bt_mut_ledger_free(bt_mut_ledger *ledger);
 void bt_mut_now_iso(char out[32]);
 
@@ -152,6 +155,7 @@ typedef struct {
     char **link_flags;
     size_t link_flag_count;
     char include_dirs[3][BT_MUT_PATH_MAX];
+    char system_include_dir[BT_MUT_PATH_MAX];
 } bt_mut_build;
 
 int bt_mut_build_load(const char *repo_root, const bt_json_value *config,
@@ -209,6 +213,9 @@ typedef struct {
 int bt_mut_engine_run(bt_mut_engine *engine, bt_mut_target *targets, size_t target_count,
                       const char *only_csv, size_t limit, bt_mut_summary *summary);
 const char *bt_mut_engine_last_error(void);
+int bt_mut_prepare_scratch(const bt_mut_engine *engine, const char *slot, const char *file_rel,
+                           const char *text, size_t len, const bt_mut_mutant *mutant,
+                           char source_out[BT_MUT_PATH_MAX], char include_out[BT_MUT_PATH_MAX]);
 
 int bt_mut_report(const char *ledger_path, const char *repo_root, const char *out_path);
 

@@ -110,6 +110,7 @@ int bt_mut_build_load(const char *repo_root, const bt_json_value *config,
     for (int i = 0; i < 3 && rc == 0; i++) {
         snprintf(out->include_dirs[i], BT_MUT_PATH_MAX, "%s/%s", repo_root, includes[i]);
     }
+    snprintf(out->system_include_dir, BT_MUT_PATH_MAX, "%s/vendor/sqlite", repo_root);
     if (rc != 0) {
         bt_mut_build_free(out);
         BT_TRACE_FAIL("mutate.build_load", "flag assembly failed");
@@ -159,6 +160,11 @@ size_t bt_mut_compile_argv(const bt_mut_build *build, const char *extra_include,
         argv[count++] = (char *)"-I";
         argv[count++] = (char *)build->include_dirs[i];
     }
+    if (count + 2 > cap) {
+        return 0;
+    }
+    argv[count++] = (char *)"-isystem";
+    argv[count++] = (char *)build->system_include_dir;
     if (count + 4 > cap) {
         return 0;
     }

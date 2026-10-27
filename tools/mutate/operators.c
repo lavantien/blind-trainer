@@ -89,6 +89,15 @@ static void mutant_id(bt_mut_mutant *mutant) {
     mutant->id[BT_MUT_ID_LEN] = '\0';
 }
 
+static int fields_clean(const char *text) {
+    for (const char *cursor = text; *cursor != '\0'; cursor++) {
+        if (*cursor == '\t' || *cursor == '\n' || *cursor == '\r') {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 static int init_mutant(bt_mut_mutant *mutant, const char *file, size_t line, size_t col,
                        bt_mut_op op, const char *from, const char *to) {
     memset(mutant, 0, sizeof *mutant);
@@ -102,6 +111,10 @@ static int init_mutant(bt_mut_mutant *mutant, const char *file, size_t line, siz
         free_mutant_fields(mutant);
         return -1;
     }
+    if (!fields_clean(mutant->from) || !fields_clean(mutant->to)) {
+        free_mutant_fields(mutant);
+        return -2;
+    }
     mutant_id(mutant);
     return 0;
 }
@@ -109,7 +122,11 @@ static int init_mutant(bt_mut_mutant *mutant, const char *file, size_t line, siz
 static int push_replace(bt_mut_mutant_list *list, const char *file, const bt_mut_token *token,
                         bt_mut_op op, const char *from, const char *to) {
     bt_mut_mutant mutant;
-    if (init_mutant(&mutant, file, token->line, token->col, op, from, to) != 0) {
+    int init_rc = init_mutant(&mutant, file, token->line, token->col, op, from, to);
+    if (init_rc == -2) {
+        return 0;
+    }
+    if (init_rc != 0) {
         return -1;
     }
     mutant.end_line = token->end_line;
@@ -133,7 +150,7 @@ static int is_digit(char c) {
     return c >= '0' && c <= '9';
 }
 
-static int numeric_core(const char *token, size_t len, char *core, char *suffix) {
+static int numeric_core(const char *token, size_t len, char *core, char *suffix, int *is_float) {
     int hex = len > 2 && token[0] == '0' && (token[1] == 'x' || token[1] == 'X');
     int has_dot = 0;
     int has_exp = 0;
@@ -148,7 +165,7 @@ static int numeric_core(const char *token, size_t len, char *core, char *suffix)
             has_exp = 1;
         }
     }
-    int is_float = has_dot || has_exp;
+    *is_float = has_dot || has_exp;
     size_t end = len;
     while (end > 0) {
         char c = token[end - 1];
@@ -169,6 +186,9 @@ static int numeric_core(const char *token, size_t len, char *core, char *suffix)
     size_t out = 0;
     for (size_t i = 0; i < end; i++) {
         if (token[i] != '\'') {
+            if (out >= 127) {
+                return -1;
+            }
             core[out++] = token[i];
         }
     }
@@ -176,11 +196,14 @@ static int numeric_core(const char *token, size_t len, char *core, char *suffix)
     out = 0;
     for (size_t i = end; i < len; i++) {
         if (token[i] != '\'') {
+            if (out >= 15) {
+                return -1;
+            }
             suffix[out++] = token[i];
         }
     }
     suffix[out] = '\0';
-    return is_float;
+    return 0;
 }
 
 static void format_float(char *out, size_t cap, double value) {
@@ -210,7 +233,10 @@ static int enumerate_numeric(bt_mut_mutant_list *list, const char *file, const c
                              const bt_mut_token *token) {
     char core[128];
     char suffix[16];
-    int is_float = numeric_core(token_text, token->len, core, suffix);
+    int is_float = 0;
+    if (numeric_core(token_text, token->len, core, suffix, &is_float) != 0) {
+        return 0;
+    }
     char variants[4][64];
     if (is_float) {
         double value = strtod(core, NULL);
@@ -320,12 +346,15 @@ static int enumerate_negation(bt_mut_mutant_list *list, const char *file,
         return -1;
     }
     bt_mut_mutant mutant;
-    if (init_mutant(&mutant, file, keyword->line, keyword->col, BT_MUT_CONDITION_NEGATION,
-                    keyword_text, "!(...)") != 0) {
-        free(keyword_text);
+    int init_rc = init_mutant(&mutant, file, keyword->line, keyword->col, BT_MUT_CONDITION_NEGATION,
+                              keyword_text, "!(...)");
+    free(keyword_text);
+    if (init_rc == -2) {
+        return 0;
+    }
+    if (init_rc != 0) {
         return -1;
     }
-    free(keyword_text);
     mutant.end_line = close->end_line;
     mutant.end_col = close->end_col;
     mutant.edits[0].offset = open->offset + open->len;
@@ -369,9 +398,53 @@ static int statement_deletable(const bt_mut_tokens *tokens, size_t start, size_t
     return 1;
 }
 
+static int trace_call_exempt(const bt_mut_tokens *tokens, size_t start, size_t end) {
+    if (end < start + 3) {
+        return 0;
+    }
+    const bt_mut_token *name = &tokens->items[start];
+    if (name->kind != BT_MUT_TOK_IDENT) {
+        return 0;
+    }
+    const char *text = bt_mut_token_text(tokens, name);
+    static const char *const names[3] = {"BT_TRACE_ENTER", "BT_TRACE_EXIT", "BT_TRACE_FAIL"};
+    static const size_t lens[3] = {14, 13, 13};
+    int matched = 0;
+    for (int k = 0; k < 3; k++) {
+        if (name->len == lens[k] && memcmp(text, names[k], lens[k]) == 0) {
+            matched = 1;
+            break;
+        }
+    }
+    if (!matched) {
+        return 0;
+    }
+    if (!op_is_single(tokens, &tokens->items[start + 1], '(') ||
+        !op_is_single(tokens, &tokens->items[end - 1], ')') ||
+        !op_is_single(tokens, &tokens->items[end], ';')) {
+        return 0;
+    }
+    for (size_t i = start + 2; i + 1 < end; i++) {
+        const bt_mut_token *arg = &tokens->items[i];
+        if (arg->kind == BT_MUT_TOK_STRING || arg->kind == BT_MUT_TOK_NUMBER ||
+            arg->kind == BT_MUT_TOK_CHAR) {
+            continue;
+        }
+        if (arg->kind == BT_MUT_TOK_OP && arg->len == 1 &&
+            bt_mut_token_text(tokens, arg)[0] == ',') {
+            continue;
+        }
+        return 0;
+    }
+    return 1;
+}
+
 static int enumerate_statement_delete(bt_mut_mutant_list *list, const char *file,
                                       const bt_mut_tokens *tokens, size_t start, size_t end) {
     if (!statement_deletable(tokens, start, end)) {
+        return 0;
+    }
+    if (trace_call_exempt(tokens, start, end)) {
         return 0;
     }
     const bt_mut_token *first = &tokens->items[start];
@@ -382,8 +455,12 @@ static int enumerate_statement_delete(bt_mut_mutant_list *list, const char *file
     memcpy(from_text, from, from_len);
     from_text[from_len] = '\0';
     bt_mut_mutant mutant;
-    if (init_mutant(&mutant, file, first->line, first->col, BT_MUT_STATEMENT_DELETE, from_text,
-                    "") != 0) {
+    int init_rc =
+        init_mutant(&mutant, file, first->line, first->col, BT_MUT_STATEMENT_DELETE, from_text, "");
+    if (init_rc == -2) {
+        return 0;
+    }
+    if (init_rc != 0) {
         return -1;
     }
     mutant.end_line = last->end_line;
@@ -473,13 +550,18 @@ int bt_mut_enumerate(const char *file_rel, const char *text, size_t len, bt_mut_
         }
         if (op_is_single(&tokens, token, ')')) {
             paren_depth = paren_depth > 0 ? paren_depth - 1 : 0;
+            if (paren_depth == 0 && tokens.items[statement_start].kind == BT_MUT_TOK_KEYWORD) {
+                statement_start = i + 1;
+            }
             continue;
         }
         if (op_is_single(&tokens, token, ';')) {
-            if (brace_depth >= 1 && paren_depth == 0) {
-                rc = enumerate_statement_delete(out, file_rel, &tokens, statement_start, i);
+            if (paren_depth == 0) {
+                if (brace_depth >= 1) {
+                    rc = enumerate_statement_delete(out, file_rel, &tokens, statement_start, i);
+                }
+                statement_start = i + 1;
             }
-            statement_start = i + 1;
             continue;
         }
         if ((token->len == 1 && op_raw[0] == '!') ||

@@ -58,6 +58,7 @@ static void row_free(bt_mut_row *row) {
     free(row->from);
     free(row->to);
     free(row->last_run);
+    free(row->test_exe);
 }
 
 void bt_mut_ledger_free(bt_mut_ledger *ledger) {
@@ -70,7 +71,7 @@ void bt_mut_ledger_free(bt_mut_ledger *ledger) {
     ledger->cap = 0;
 }
 
-static int row_from_fields(char *fields[10], bt_mut_row *row) {
+static int row_from_fields(char *fields[11], size_t field_count, bt_mut_row *row) {
     memset(row, 0, sizeof *row);
     if (strlen(fields[0]) != BT_MUT_ID_LEN) {
         return -1;
@@ -88,12 +89,13 @@ static int row_from_fields(char *fields[10], bt_mut_row *row) {
     if (row->last_run != NULL) {
         snprintf(row->last_run, 32, "%s", fields[9]);
     }
+    row->test_exe = dup_str(field_count >= 11 ? fields[10] : "");
     if (bt_mut_status_parse(fields[7], &row->status) != 0) {
         row_free(row);
         return -1;
     }
     if (row->file == NULL || row->op == NULL || row->from == NULL || row->to == NULL ||
-        row->last_run == NULL) {
+        row->last_run == NULL || row->test_exe == NULL) {
         row_free(row);
         return -1;
     }
@@ -126,17 +128,18 @@ int bt_mut_ledger_load(const char *path, bt_mut_ledger *ledger) {
             cursor = newline == NULL ? NULL : newline + 1;
             continue;
         }
-        char *fields[10];
+        char *fields[11];
         size_t tabs = 0;
         for (char *scan = cursor; *scan != '\0'; scan++) {
             if (*scan == '\t') {
                 tabs++;
             }
         }
-        if (tabs != 9) {
+        if (tabs != 9 && tabs != 10) {
             rc = -1;
             break;
         }
+        size_t field_count = tabs + 1;
         size_t index = 0;
         fields[index++] = cursor;
         for (char *scan = cursor; *scan != '\0'; scan++) {
@@ -155,7 +158,7 @@ int bt_mut_ledger_load(const char *path, bt_mut_ledger *ledger) {
             ledger->rows = grown;
             ledger->cap = want;
         }
-        if (row_from_fields(fields, &ledger->rows[ledger->count]) != 0) {
+        if (row_from_fields(fields, field_count, &ledger->rows[ledger->count]) != 0) {
             rc = -1;
             break;
         }
@@ -183,7 +186,8 @@ int bt_mut_ledger_save(const char *path, const bt_mut_ledger *ledger) {
     }
     int rc = 0;
     int written = snprintf(buffer + used, cap - used,
-                           "id\tfile\tline\tcol\top\tfrom\tto\tstatus\tattempts\tlast_run\n");
+                           "id\tfile\tline\tcol\top\tfrom\tto\tstatus\tattempts\tlast_run\t"
+                           "test_exe\n");
     if (written < 0 || (size_t)written >= cap - used) {
         rc = -1;
     } else {
@@ -191,10 +195,11 @@ int bt_mut_ledger_save(const char *path, const bt_mut_ledger *ledger) {
     }
     for (size_t i = 0; i < ledger->count && rc == 0; i++) {
         const bt_mut_row *row = &ledger->rows[i];
-        int needed = snprintf(NULL, 0, "%s\t%s\t%zu\t%zu\t%s\t%s\t%s\t%s\t%llu\t%s\n", row->id,
+        int needed = snprintf(NULL, 0, "%s\t%s\t%zu\t%zu\t%s\t%s\t%s\t%s\t%llu\t%s\t%s\n", row->id,
                               row->file, row->line, row->col, row->op, row->from, row->to,
                               bt_mut_status_name(row->status), row->attempts,
-                              row->last_run == NULL ? "" : row->last_run);
+                              row->last_run == NULL ? "" : row->last_run,
+                              row->test_exe == NULL ? "" : row->test_exe);
         if (needed < 0) {
             rc = -1;
             break;
@@ -212,10 +217,11 @@ int bt_mut_ledger_save(const char *path, const bt_mut_ledger *ledger) {
             buffer = grown;
             cap = want;
         }
-        snprintf(buffer + used, cap - used, "%s\t%s\t%zu\t%zu\t%s\t%s\t%s\t%s\t%llu\t%s\n", row->id,
-                 row->file, row->line, row->col, row->op, row->from, row->to,
+        snprintf(buffer + used, cap - used, "%s\t%s\t%zu\t%zu\t%s\t%s\t%s\t%s\t%llu\t%s\t%s\n",
+                 row->id, row->file, row->line, row->col, row->op, row->from, row->to,
                  bt_mut_status_name(row->status), row->attempts,
-                 row->last_run == NULL ? "" : row->last_run);
+                 row->last_run == NULL ? "" : row->last_run,
+                 row->test_exe == NULL ? "" : row->test_exe);
         used += (size_t)needed;
     }
     if (rc == 0 && bt_paths_write_atomic(path, buffer, used) != 0) {
@@ -238,9 +244,18 @@ bt_mut_row *bt_mut_ledger_find(bt_mut_ledger *ledger, const char *id) {
     return NULL;
 }
 
-int bt_mut_ledger_upsert(bt_mut_ledger *ledger, const bt_mut_mutant *mutant) {
+int bt_mut_ledger_upsert(bt_mut_ledger *ledger, const bt_mut_mutant *mutant, const char *test_exe) {
     bt_mut_row *found = bt_mut_ledger_find(ledger, mutant->id);
     if (found != NULL) {
+        if (found->test_exe == NULL || strcmp(found->test_exe, test_exe) != 0) {
+            char *copy = dup_str(test_exe);
+            if (copy == NULL) {
+                return -1;
+            }
+            free(found->test_exe);
+            found->test_exe = copy;
+            found->status = BT_MUT_PENDING;
+        }
         return 0;
     }
     if (ledger->count == ledger->cap) {
@@ -267,11 +282,27 @@ int bt_mut_ledger_upsert(bt_mut_ledger *ledger, const bt_mut_mutant *mutant) {
     if (row->last_run != NULL) {
         row->last_run[0] = '\0';
     }
+    row->test_exe = dup_str(test_exe);
     if (row->file == NULL || row->op == NULL || row->from == NULL || row->to == NULL ||
-        row->last_run == NULL) {
+        row->last_run == NULL || row->test_exe == NULL) {
         row_free(row);
         return -1;
     }
     ledger->count++;
     return 0;
+}
+
+void bt_mut_ledger_drop(bt_mut_ledger *ledger, const char *id) {
+    BT_TRACE_ENTER("mutate.ledger_drop");
+    for (size_t i = 0; i < ledger->count; i++) {
+        if (strcmp(ledger->rows[i].id, id) == 0) {
+            row_free(&ledger->rows[i]);
+            memmove(&ledger->rows[i], &ledger->rows[i + 1],
+                    (ledger->count - i - 1) * sizeof(bt_mut_row));
+            ledger->count--;
+            BT_TRACE_EXIT("mutate.ledger_drop");
+            return;
+        }
+    }
+    BT_TRACE_EXIT("mutate.ledger_drop");
 }
