@@ -5,6 +5,8 @@
 #include "app/views/memo.h"
 #include "app/views/menu.h"
 #include "app/views/replay.h"
+#include "app/views/settings.h"
+#include "app/views/stats.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -124,6 +126,6 @@ const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {bt_view_replay_enter, bt_view_replay_update, bt_view_replay_draw},
     {noop_row, NULL, NULL},
     {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},
+    {bt_view_stats_enter, NULL, bt_view_stats_row_draw},
+    {bt_view_settings_enter, bt_view_settings_update, bt_view_settings_row_draw},
 };
