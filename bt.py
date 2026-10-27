@@ -963,19 +963,24 @@ def tgt_test_unit(args):
     return code
 
 
-def build_tool_exe(hub, logger, label):
+def build_tool_exe(hub, logger, build_label):
     compiler = [resolve_tool("clang", hub)]
     generated = generate_stage(hub, REPO_ROOT)
     obj_root, entries = compile_stage(hub, REPO_ROOT, compiler, logger, extra=generated)
     link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
     exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "policy.exe"
     if not exe.is_file():
-        raise BtError(f"{label} exe missing after build: {exe}")
+        raise BtError(f"{build_label}: policy.exe missing after build: {exe}")
     return exe
 
 
 def run_policy_exe(exe, argv, label, logger):
-    proc = run([exe, *argv], label, check=False, timeout=300)
+    try:
+        proc = run([exe, *argv], label, check=False, timeout=300)
+    except subprocess.TimeoutExpired as e:
+        logger.fail(label, f"timeout after {e.timeout}s: {e.cmd}")
+        logger.exit(label, 2)
+        return 2
     if proc.returncode != 0:
         tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
         if tail:
@@ -990,7 +995,7 @@ def tgt_policy(args):
     logger = Logger()
     logger.entry("policy")
     try:
-        exe = build_tool_exe(hub, logger, "policy")
+        exe = build_tool_exe(hub, logger, "policy-build")
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("policy-build", f"{type(e).__name__}: {e}")
         return 1
@@ -1007,7 +1012,7 @@ def tgt_policy_selftest(args):
     logger = Logger()
     logger.entry("policy-selftest")
     try:
-        exe = build_tool_exe(hub, logger, "policy-selftest")
+        exe = build_tool_exe(hub, logger, "policy-selftest-build")
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("policy-selftest-build", f"{type(e).__name__}: {e}")
         return 1
