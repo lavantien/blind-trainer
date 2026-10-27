@@ -1,4 +1,5 @@
 #include "app/boot.h"
+#include "app/drivers.h"
 #include "app/views/drill.h"
 #include "app/views/memo.h"
 #include "app/views/net_view.h"
@@ -24,6 +25,18 @@ int bt_app_main(int argc, char **argv) {
         BT_TRACE_FAIL("app.main", "%s", error);
         BT_TRACE_EXIT("app.main");
         return 2;
+    }
+    if (mode == BT_APP_SHOT_SMOKE) {
+        BT_TRACE_EXIT("app.main");
+        return bt_app_smoke_main(&ctx, dir, ctx.config.smoke_seed);
+    }
+    if (mode == BT_APP_SHOT_USAGE) {
+        BT_TRACE_EXIT("app.main");
+        return bt_app_usage_main(&ctx, dir);
+    }
+    if (mode == BT_APP_SHOT_FATAL_SHOT) {
+        BT_TRACE_EXIT("app.main");
+        return bt_app_fatal_main(&ctx, dir);
     }
     if (!bt_app_window_open(ctx.config.window.width, ctx.config.window.height,
                             ctx.config.window.title, &ctx.config.render)) {
