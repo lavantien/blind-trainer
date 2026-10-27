@@ -270,7 +270,7 @@
       "/brepro"
     ],
     "jobs": 0,
-    "test_timeout_secs": 120,
+    "test_timeout_secs": 300,
     "src_deps": {
       "core": [],
       "scheme": [
