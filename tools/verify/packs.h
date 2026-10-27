@@ -12,6 +12,8 @@
 #define VERIFY_HONESTY_MAX 256
 #define VERIFY_HONESTY_CAP 96
 
+#define VERIFY_PROSE_ALG "prose row holds no mechanical alg"
+
 typedef enum {
     VERIFY_PUZZLE_CORE,
     VERIFY_PUZZLE_NXN,
