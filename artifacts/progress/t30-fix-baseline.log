@@ -1,0 +1,239 @@
+2026-10-27T21:26:05 [entry] test-unit tools --only visual_diff
+2026-10-27T21:26:05 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\config.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\json.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\paths.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\rng.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\sha256.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\space.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\strbuf.c up to date
+2026-10-27T21:26:05 [skip] compile src\common\when.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\alg.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\analysis.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\cube.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\expand.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\lib.c up to date
+2026-10-27T21:26:05 [skip] compile src\core\moves.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\commutator.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\corpus.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\db.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\digest.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\fsrs.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\import.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\migrations_embedded.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\notation.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\paths.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_algs.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_cards.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_seeds.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_settings.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_solves.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_srs.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\repo_user.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\hashing.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\mod.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\normalizer.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\parse.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\registry.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\seedpack\rulings.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\srs.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\tsv.c up to date
+2026-10-27T21:26:05 [skip] compile src\data\verify.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\fto.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\geometry.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\lib.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\mega.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\nxn.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\pyra.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\skewb.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\sq1.c up to date
+2026-10-27T21:26:05 [skip] compile src\puzzles\tier1.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\classifier.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\lib.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\memo.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\pairs.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\scheme.c up to date
+2026-10-27T21:26:05 [skip] compile src\scheme\scramble.c up to date
+2026-10-27T21:26:05 [skip] compile tests\unit\tools\visual_diff_lib_test.c up to date
+2026-10-27T21:26:05 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T21:26:05 [skip] compile tools\gendata\scoring.c up to date
+2026-10-27T21:26:05 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T21:26:05 [skip] compile tools\jobwrap\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\report.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T21:26:05 [skip] compile tools\mutate\token.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\comments.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\constants.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T21:26:05 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T21:26:05 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\ev_fto.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\ev_mega.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\ev_nxn.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\ev_pyra.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\ev_skewb.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\verify\packs.c up to date
+2026-10-27T21:26:05 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T21:26:05 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T21:26:05 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T21:26:05 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T21:26:07 [fail] compile tools\gendata\audit.c In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\audit.c:1:
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/audit.h:7:
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/build.h:24:58: error: unknown type name 'bt_digest_corpus'
+   24 | void bt_gd_manifest_make(const bt_gd_built *built, const bt_digest_corpus *digest,
+      |                                                          ^
+In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\audit.c:9:
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/lib.h:40:5: error: redefinition of 'bt_gd_synth_limits' as different kind of symbol
+   40 | int bt_gd_synth_limits(const bt_json_value *config, bt_gd_synth_limits *out, char *err,
+      |     ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/synth.h:17:3: note: previous definition is here
+   17 | } bt_gd_synth_limits;
+      |   ^
+2 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\build.c init' declared here
+   10 | int bt_trace_init(size_t ring_bytes, size_t max_threads, size_t line_max);
+      |     ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:152:26: error: use of undeclared identifier 'verdict'
+  152 |         bt_verdict_init(&verdict);
+      |                          ^~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:153:9: error: unknown type name 'bt_verify'; did you mean 'bt_parity'?
+  153 |         bt_verify(&row->alg, row->position, row->sheet, &verdict);
+      |         ^~~~~~~~~
+      |         bt_parity
+C:\Users\lavantien\dev\github\blind-trainer\src\scheme/memo.h:22:3: note: 'bt_parity' declared here
+   22 | } bt_parity;
+      |   ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:153:19: error: expected identifier or '('
+  153 |         bt_verify(&row->alg, row->position, row->sheet, &verdict);
+      |                   ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:153:19: error: expected ')'
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:153:18: note: to match this '('
+  153 |         bt_verify(&row->alg, row->position, row->sheet, &verdict);
+      |                  ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:154:19: error: use of undeclared identifier 'bt_verdict_ok'
+  154 |         bool ok = bt_verdict_ok(&verdict);
+      |                   ^~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:154:34: error: use of undeclared identifier 'verdict'
+  154 |         bool ok = bt_verdict_ok(&verdict);
+      |                                  ^~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\build.c:160:26: error: use of undeclared identifier 'verdict'
+  160 |         verdict_strings(&verdict, &problems, &problem_count, &notes, &note_count);
+      |                          ^~~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\lib.c In file included from C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\lib.c:1:
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/lib.h:40:5: error: redefinition of 'bt_gd_synth_limits' as different kind of symbol
+   40 | int bt_gd_synth_limits(const bt_json_value *config, bt_gd_synth_limits *out, char *err,
+      |     ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/synth.h:17:3: note: previous definition is here
+   17 | } bt_gd_synth_limits;
+      |   ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\lib.c:45:30: error: too few arguments to function call, expected 2, have 1
+   45 |     bt_strbuf_init(&canonical);
+      |     ~~~~~~~~~~~~~~           ^
+C:\Users\lavantien\dev\github\blind-trainer\src\common\strbuf.h:14:5: note: 'bt_strbuf_init' declared here
+   14 | int bt_strbuf_init(bt_strbuf *sb, size_t cap);
+      |     ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\lib.c:54:38: error: no member named 'items' in 'bt_strbuf'
+   54 |     bt_sha256_update(&ctx, canonical.items, canonical.len);
+      |                            ~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\lib.c:77:5: error: redefinition of 'bt_gd_synth_limits' as different kind of symbol
+   77 | int bt_gd_synth_limits(const bt_json_value *config, bt_gd_synth_limits *out, char *err,
+      |     ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata/synth.h:17:3: note: previous definition is here
+   17 | } bt_gd_synth_limits;
+      |   ^
+4 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\main.c ndata\main.c:183:40: error: no member named 'items' in 'bt_strbuf'
+  183 |     bt_digest_sha256_hex(specials_text.items, specials_text.len, specials_sha);
+      |                          ~~~~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:187:34: error: use of undeclared identifier 'digest'
+  187 |     bt_gd_manifest_make(&built, &digest, cases_sha, specials_sha, params_sha256, stamp, &record);
+      |                                  ^~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:190:34: error: too few arguments to function call, expected 2, have 1
+  190 |     bt_strbuf_init(&manifest_text);
+      |     ~~~~~~~~~~~~~~               ^
+C:\Users\lavantien\dev\github\blind-trainer\src\common\strbuf.h:14:5: note: 'bt_strbuf_init' declared here
+   14 | int bt_strbuf_init(bt_strbuf *sb, size_t cap);
+      |     ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:193:51: error: no member named 'items' in 'bt_strbuf'
+  193 |     if (bt_gd_write_atomic(cases_path, cases_text.items, cases_text.len, err, sizeof err) != 0) {
+      |                                        ~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:196:64: error: no member named 'items' in 'bt_strbuf'
+  196 |     } else if (bt_gd_write_atomic(specials_path, specials_text.items, specials_text.len, err,
+      |                                                  ~~~~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:200:64: error: no member named 'items' in 'bt_strbuf'
+  200 |     } else if (bt_gd_write_atomic(manifest_path, manifest_text.items, manifest_text.len, err,
+      |                                                  ~~~~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\main.c:72:5: error: expression result unused [-Werror,-Wunused-value]
+   72 |     bt_digest_corpus digest;
+      |     ^~~~~~~~~~~~~~~~
+18 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\model.c C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\model.c:444:35: error: incompatible pointer types passing 'uint8_t *' (aka 'unsigned char *') to parameter of type 'uint32_t *' (aka 'unsigned int *') [-Wincompatible-pointer-types]
+  444 |             get_u32(object, "t1", &entry->t1, err, err_len) != 0 ||
+      |                                   ^~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\model.c:215:76: note: passing argument to parameter 'out' here
+  215 | static int get_u32(const bt_json_value *object, const char *key, uint32_t *out, char *err,
+      |                                                                            ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\model.c:445:35: error: incompatible pointer types passing 'uint8_t *' (aka 'unsigned char *') to parameter of type 'uint32_t *' (aka 'unsigned int *') [-Wincompatible-pointer-types]
+  445 |             get_u32(object, "t2", &entry->t2, err, err_len) != 0 ||
+      |                                   ^~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\model.c:215:76: note: passing argument to parameter 'out' here
+  215 | static int get_u32(const bt_json_value *object, const char *key, uint32_t *out, char *err,
+      |                                                                            ^
+2 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\out.c C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\out.c:18:17: error: use of undeclared identifier '_mkdir'
+   18 |             if (_mkdir(copy) != 0 && errno != EEXIST) {
+      |                 ^~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\out.c:25:9: error: use of undeclared identifier '_mkdir'
+   25 |     if (_mkdir(copy) != 0 && errno != EEXIST) {
+      |         ^~~~~~
+2 errors generated.
+2026-10-27T21:26:07 [fail] compile tools\gendata\synth.c ~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:400:35: error: too few arguments to function call, expected 2, have 1
+  400 |         bt_strbuf_init(&setup_text);
+      |         ~~~~~~~~~~~~~~            ^
+C:\Users\lavantien\dev\github\blind-trainer\src\common/strbuf.h:14:5: note: 'bt_strbuf_init' declared here
+   14 | int bt_strbuf_init(bt_strbuf *sb, size_t cap);
+      |     ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:404:59: error: no member named 'items' in 'bt_strbuf'
+  404 |         snprintf(text, text_len, "%s:[%s,%s]", setup_text.items, first_text.items,
+      |                                                ~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:404:77: error: no member named 'items' in 'bt_strbuf'
+  404 |         snprintf(text, text_len, "%s:[%s,%s]", setup_text.items, first_text.items,
+      |                                                                  ~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:405:30: error: no member named 'items' in 'bt_strbuf'
+  405 |                  second_text.items);
+      |                  ~~~~~~~~~~~ ^
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:742:33: error: too few arguments to function call, expected 2, have 1
+  742 |         bt_strbuf_init(&alg_text);
+      |         ~~~~~~~~~~~~~~          ^
+C:\Users\lavantien\dev\github\blind-trainer\src\common/strbuf.h:14:5: note: 'bt_strbuf_init' declared here
+   14 | int bt_strbuf_init(bt_strbuf *sb, size_t cap);
+      |     ^              ~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\lavantien\dev\github\blind-trainer\tools\gendata\synth.c:745:82: error: no member named 'items' in 'bt_strbuf'
+  745 |         if (vendor_alg_from_verdict("generated", 0, position, &hit.alg, alg_text.items, &verdict,
+      |                                                                         ~~~~~~~~ ^
+10 errors generated.
+2026-10-27T21:26:07 [fail] test-build BtError: 7 of 144 compiles failed

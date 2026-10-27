@@ -48,5 +48,37 @@ class TargetTableTests(unittest.TestCase):
             self.assertTrue(bt.target_doc(names[name]))
 
 
+class TestUnitScopeTests(unittest.TestCase):
+    def test_scope_accepts_area_and_only_pairs(self):
+        self.assertEqual(bt.test_unit_scope(["tools"]), ("tools", None))
+        self.assertEqual(
+            bt.test_unit_scope(["tools", "--only", "visual_diff"]),
+            ("tools", "visual_diff"),
+        )
+        self.assertEqual(bt.test_unit_scope(["common"]), ("common", None))
+
+    def test_scope_rejects_malformed_only_forms(self):
+        for args in (
+            ["--only"],
+            ["tools", "--only"],
+            ["tools", "--only", ""],
+            ["tools", "--only=visual_diff"],
+            ["tools", "--only", "visual_diff", "extra"],
+            ["tools", "extra"],
+            ["--only", "visual_diff"],
+        ):
+            self.assertIsNone(bt.test_unit_scope(args), args)
+
+    def test_scoped_tools_needed_narrows_to_matching_suites(self):
+        suites = [
+            {"area": "tools", "stem": "policy_lib_test"},
+            {"area": "tools", "stem": "visual_diff_lib_test"},
+        ]
+        wide = bt.tools_needed_scoped(bt.REPO_ROOT, suites)
+        self.assertEqual(wide, {"policy", "visual-diff"})
+        narrow = bt.tools_needed_scoped(bt.REPO_ROOT, suites, "visual_diff")
+        self.assertEqual(narrow, {"visual-diff"})
+
+
 if __name__ == "__main__":
     unittest.main()

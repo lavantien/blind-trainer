@@ -400,6 +400,20 @@ def tools_needed_for_suites(root, suites):
     return needed
 
 
+def tools_needed_scoped(root, suites, only=None):
+    if only is not None:
+        suites = [s for s in suites if only in s["stem"]]
+    return tools_needed_for_suites(root, suites)
+
+
+def test_unit_scope(args):
+    if len(args) == 1 and not args[0].startswith("--"):
+        return args[0], None
+    if len(args) == 3 and args[1] == "--only" and args[2] and not args[0].startswith("--"):
+        return args[0], args[2]
+    return None
+
+
 def src_area_closure(hub, areas):
     deps = build_cfg(hub).get("src_deps", {})
     seen = set()
@@ -443,7 +457,11 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
     flags = compile_flags(hub)
     system_dirs = system_include_dirs(hub)
-    tools_needed = tools_needed_for_suites(root, discover_test_suites(root)) if test_area == "tools" else set()
+    tools_needed = (
+        tools_needed_scoped(root, discover_test_suites(root), only)
+        if test_area == "tools"
+        else set()
+    )
     if test_area == "tools":
         src_areas = tool_area_closure(hub, tools_needed)
     elif test_area is not None:
@@ -984,8 +1002,11 @@ def tgt_test_unit(args):
     if not args:
         print("usage: python bt.py test-unit <area> [--only substring]")
         return 2
-    area = args[0]
-    only = args[2] if len(args) >= 3 and args[1] == "--only" else None
+    scope = test_unit_scope(args)
+    if scope is None:
+        print("usage: python bt.py test-unit <area> [--only substring]")
+        return 2
+    area, only = scope
     hub = load_hub()
     logger = Logger()
     logger.entry("test-unit", area if only is None else f"{area} --only {only}")
@@ -1200,6 +1221,11 @@ def tgt_visual_selftest(args):
         ["--selftest", workdir],
         "visual-selftest",
     )
+
+
+def tgt_gen_data(args):
+    """build data/vendor from ref_ground and synthesize uncovered pairs"""
+    return tool_run(load_hub(), "gendata-build", "gendata.exe", [], "gen-data")
 
 
 def tgt_clean(args):

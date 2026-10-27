@@ -1,0 +1,18 @@
+item 3 red evidence, 2026-10-27 21:26-21:27 local
+
+defect 1, scoped compile set ignores the filter:
+t30-fix-baseline.log, python bt.py test-unit tools --only visual_diff against the
+pre-fix bt.py compiles tools/gendata/*.c units and fails on them:
+[fail] compile tools\gendata\audit.c ... [fail] compile tools\gendata\model.c:
+error: incompatible pointer types ... 4+ foreign units compiled for a 2-suite run.
+
+defect 2, malformed only forms widen silently:
+pre-fix python -m unittest tests.python.test_bt_targets, 3 errors:
+ERROR: test_scope_accepts_area_and_only_pairs (AttributeError: bt.test_unit_scope)
+ERROR: test_scope_rejects_malformed_only_forms (AttributeError: bt.test_unit_scope)
+ERROR: test_scoped_tools_needed_narrows_to_matching_suites (AttributeError: bt.tools_needed_scoped)
+first run of the landed form also showed ["--only"] accepted as an area name,
+AssertionError: ('--only', None) is not None, fixed by rejecting leading -- tokens.
+
+post-fix: python suite 99 OK, malformed forms print usage and exit 2,
+scoped run t30-fix3-scoped.log 2 passed 0 failed.

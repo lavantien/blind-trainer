@@ -1,0 +1,23 @@
+2026-10-27T21:27:35 [entry] test-unit tools --only visual_diff
+2026-10-27T21:27:35 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\config.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\json.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\paths.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\rng.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\sha256.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\space.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\strbuf.c up to date
+2026-10-27T21:27:35 [skip] compile src\common\when.c up to date
+2026-10-27T21:27:35 [skip] compile tests\unit\tools\visual_diff_lib_test.c up to date
+2026-10-27T21:27:35 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T21:27:35 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T21:27:35 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T21:27:35 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T21:27:35 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T21:27:37 [repro] 155 object timestamps zeroed
+2026-10-27T21:27:37 [compile] 138 compiled, 138 ok
+2026-10-27T21:27:37 [skip] link visual-diff.exe up to date
+2026-10-27T21:27:38 [summary] 2 passed, 0 failed
+2026-10-27T21:27:38 [exit] test-unit code=0
