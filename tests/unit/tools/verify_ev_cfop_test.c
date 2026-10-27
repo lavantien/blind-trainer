@@ -152,3 +152,18 @@ BT_TEST(verify_ev_cfop, an_unknown_alg_token_names_the_core_error) {
     BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
     verify_section_free(&section);
 }
+
+BT_TEST(verify_ev_cfop, a_single_frame_must_satisfy_both_conjuncts) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    bt_cube state;
+    after("F R U R' U' F'", &state);
+    verify_tier2 pll =
+        verify_cfop_stage_outcome(VERIFY_CFOP_PLL, &state, &layout, "{\"case\":\"line\"}");
+    BT_CHECK_EQ(pll.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(pll.fail, "no rotation frames a solved first two layers with an oriented last "
+                          "layer");
+    verify_tier2 oll =
+        verify_cfop_stage_outcome(VERIFY_CFOP_OLL, &state, &layout, "{\"case\":\"line\"}");
+    BT_CHECK_EQ(oll.kind, VERIFY_TIER2_PASS);
+}
