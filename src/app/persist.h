@@ -15,7 +15,7 @@
 
 #include <stddef.h>
 
-#define BT_APP_ERROR_MAX 192
+#define BT_APP_ERROR_MAX 512
 #define BT_MEMO_MODE_COUNT 3
 
 typedef enum {
