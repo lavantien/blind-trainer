@@ -180,11 +180,16 @@ int bt_gr_cross_check_cases(const bt_json_value *config, bt_gr_offenders *offend
             BT_TRACE_FAIL("gr.cross_check_cases", "row %zu missing t1 or t2", i);
             return -1;
         }
-        if (got_l1 == NULL || got_l1->type != BT_JSON_STRING || got_l2 == NULL ||
-            got_l2->type != BT_JSON_STRING) {
-            bt_gr_offenders_push(offenders, "cases.json row missing letters");
+        if (got_l1 == NULL || got_l1->type != BT_JSON_STRING) {
+            bt_gr_offenders_push(offenders, "cases.json row missing t1_letter");
             bt_json_free(root);
-            BT_TRACE_FAIL("gr.cross_check_cases", "row %zu missing letters", i);
+            BT_TRACE_FAIL("gr.cross_check_cases", "row %zu missing t1_letter", i);
+            return -1;
+        }
+        if (got_l2 == NULL || got_l2->type != BT_JSON_STRING) {
+            bt_gr_offenders_push(offenders, "cases.json row missing t2_letter");
+            bt_json_free(root);
+            BT_TRACE_FAIL("gr.cross_check_cases", "row %zu missing t2_letter", i);
             return -1;
         }
         if (strcmp(got_orbit->as.string, orbit_text) != 0 ||
@@ -201,8 +206,24 @@ int bt_gr_cross_check_cases(const bt_json_value *config, bt_gr_offenders *offend
         letters[0] = bt_scheme_letter_of(case_id->t1);
         letters[1] = bt_scheme_letter_of(case_id->t2);
         letters[2] = '\0';
-        if (tolower((unsigned char)got_l1->as.string[0]) != tolower((unsigned char)letters[0]) ||
-            tolower((unsigned char)got_l2->as.string[0]) != tolower((unsigned char)letters[1])) {
+        char got[64];
+        size_t at = 0;
+        for (const unsigned char *c = (const unsigned char *)got_l1->as.string;
+             *c != '\0' && at < sizeof got - 1; c++) {
+            got[at] = (char)tolower(*c);
+            at++;
+        }
+        for (const unsigned char *c = (const unsigned char *)got_l2->as.string;
+             *c != '\0' && at < sizeof got - 1; c++) {
+            got[at] = (char)tolower(*c);
+            at++;
+        }
+        got[at] = '\0';
+        char want[3];
+        want[0] = (char)tolower((unsigned char)letters[0]);
+        want[1] = (char)tolower((unsigned char)letters[1]);
+        want[2] = '\0';
+        if (strcmp(got, want) != 0) {
             bt_gr_offenders_push(offenders, "cases.json letters %s%s vs scheme %s",
                                  got_l1->as.string, got_l2->as.string, letters);
             bt_json_free(root);

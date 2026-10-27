@@ -10,6 +10,8 @@
 #include "ga/inventory.h"
 #include "scheme/pairs.h"
 
+#include <direct.h>
+#include <process.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -182,6 +184,111 @@ BT_TEST(ga_run_lib, cross_check_passes_on_generated_vendor_data) {
     int rc = bt_gr_cross_check_cases(config, &offenders);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(offenders.count, (size_t)0);
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+}
+
+static void xcheck_scratch(const char *name, char root[BT_PATH_MAX]) {
+    const char *temp = getenv("TEMP");
+    if (temp == NULL) {
+        temp = getenv("TMP");
+    }
+    if (temp == NULL) {
+        temp = ".";
+    }
+    snprintf(root, BT_PATH_MAX, "%s/bt-gr-%s-%d", temp, name, _getpid());
+    _mkdir(root);
+}
+
+static void xcheck_write_cases(const char *root, const char *row0_letters, int omit_t1,
+                               int omit_t2) {
+    bt_strbuf text;
+    bt_strbuf_init(&text, 4096);
+    bt_strbuf_append_str(&text, "{\"cases\": [");
+    bt_case edge[BT_PAIRS_MAX];
+    bt_case corner[BT_PAIRS_MAX];
+    size_t edge_count = bt_scheme_enumerate_cases(BT_ORBIT_EDGE, edge);
+    size_t corner_count = bt_scheme_enumerate_cases(BT_ORBIT_CORNER, corner);
+    for (size_t i = 0; i < edge_count + corner_count; i++) {
+        const bt_case *case_id = i < edge_count ? &edge[i] : &corner[i - edge_count];
+        char letters[3];
+        letters[0] = bt_scheme_letter_of(case_id->t1);
+        letters[1] = bt_scheme_letter_of(case_id->t2);
+        letters[2] = '\0';
+        bt_strbuf_appendf(&text, "%s{\"orbit\": \"%s\", \"t1\": %u, \"t2\": %u", i > 0 ? "," : "",
+                          case_id->orbit == BT_ORBIT_EDGE ? "edge" : "corner",
+                          (unsigned)case_id->t1, (unsigned)case_id->t2);
+        char l1[2] = {letters[0], '\0'};
+        char l2[2] = {letters[1], '\0'};
+        if (!omit_t1) {
+            bt_strbuf_appendf(&text, ", \"t1_letter\": \"%s\"",
+                              row0_letters != NULL && i == 0 ? "ax" : l1);
+        }
+        if (!omit_t2) {
+            bt_strbuf_appendf(&text, ", \"t2_letter\": \"%s\"",
+                              row0_letters != NULL && i == 0 ? "b" : l2);
+        }
+        bt_strbuf_append_str(&text, "}");
+    }
+    bt_strbuf_append_str(&text, "]}");
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/cases.json", root);
+    FILE *file = fopen(path, "wb");
+    fwrite(text.data, 1, text.len, file);
+    fclose(file);
+    bt_strbuf_free(&text);
+}
+
+static bt_json_value *xcheck_config(const char *root) {
+    char clean[BT_PATH_MAX];
+    snprintf(clean, sizeof clean, "%s", root);
+    for (char *cursor = clean; *cursor != '\0'; cursor++) {
+        if (*cursor == '\\') {
+            *cursor = '/';
+        }
+    }
+    char text[BT_PATH_MAX + 64];
+    snprintf(text, sizeof text, "{\"paths\": {\"data_vendor\": \"%s\"}}", clean);
+    return parse_json(text);
+}
+
+BT_TEST(ga_run_lib, cross_check_compares_the_full_letter_strings) {
+    char root[BT_PATH_MAX];
+    xcheck_scratch("xletters", root);
+    xcheck_write_cases(root, "axb", 0, 0);
+    bt_json_value *config = xcheck_config(root);
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)1);
+    if (offenders.count == 1) {
+        BT_CHECK_EQ(offenders.items[0], "cases.json letters axb vs scheme AB");
+    }
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+}
+
+BT_TEST(ga_run_lib, cross_check_names_each_missing_letter_field) {
+    char root[BT_PATH_MAX];
+    xcheck_scratch("xomit1", root);
+    xcheck_write_cases(root, NULL, 1, 0);
+    bt_json_value *config = xcheck_config(root);
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)1);
+    if (offenders.count == 1) {
+        BT_CHECK_EQ(offenders.items[0], "cases.json row missing t1_letter");
+    }
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+    xcheck_scratch("xomit2", root);
+    xcheck_write_cases(root, NULL, 0, 1);
+    config = xcheck_config(root);
+    offenders = (bt_gr_offenders){0};
+    BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)1);
+    if (offenders.count == 1) {
+        BT_CHECK_EQ(offenders.items[0], "cases.json row missing t2_letter");
+    }
     bt_gr_offenders_free(&offenders);
     bt_json_free(config);
 }
