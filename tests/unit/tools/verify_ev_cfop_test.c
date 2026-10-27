@@ -132,3 +132,23 @@ BT_TEST(verify_ev_cfop, solved_and_stage_names_resolve) {
     BT_CHECK_EQ(stage, VERIFY_CFOP_F2L);
     BT_CHECK(verify_cfop_stage_of("x", &stage, err, sizeof err) != 0);
 }
+
+BT_TEST(verify_ev_cfop, an_unknown_alg_token_names_the_core_error) {
+    bt_seed_row storage;
+    memset(&storage, 0, sizeof storage);
+    snprintf(storage.case_key, sizeof storage.case_key, "%s", "pll.probe");
+    storage.alg = (char *)"R X";
+    storage.front_json = (char *)"{\"case\":\"P\"}";
+    storage.source_url = (char *)"https://example.test";
+    storage.source_at = (char *)"2026-10-10";
+    bt_seed_rows rows;
+    rows.items = &storage;
+    rows.count = 1;
+    verify_section_result section;
+    verify_cfop_verify_pll(&rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier1_err, "unknown token: X");
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+}

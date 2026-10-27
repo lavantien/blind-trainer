@@ -850,7 +850,7 @@ static int parse_mapped(const char *alg, char *mapped, size_t mapped_len, bt_alg
     verify_bld_map_wide_suffix(alg, mapped, mapped_len);
     char token[64];
     if (!bt_alg_parse(mapped, out, token, sizeof token)) {
-        snprintf(err, err_len, "alg parse failed at %s", token);
+        snprintf(err, err_len, "unknown token: %s", token);
         return 1;
     }
     return 0;
