@@ -1,6 +1,7 @@
 #include "memofreq/lib.h"
 
 #include "common/bt_trace.h"
+#include "data/paths.h"
 #include "scheme/memo.h"
 #include "scheme/scramble.h"
 
@@ -12,6 +13,14 @@ const char *bt_mf_tool_id(void) {
     BT_TRACE_ENTER("mf.tool_id");
     BT_TRACE_EXIT("mf.tool_id");
     return "bt-memofreq";
+}
+
+void bt_mf_data_ga_path(const char *relative, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("mf.data_ga_path");
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    bt_paths_join(root, relative, out);
+    BT_TRACE_EXIT("mf.data_ga_path");
 }
 
 size_t bt_mf_edge_count(void) {

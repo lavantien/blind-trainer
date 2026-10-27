@@ -1,6 +1,7 @@
 #include "memofreq/lib.h"
 
 #include "common/bt_harness.h"
+#include "data/paths.h"
 #include "ga/dist.h"
 #include "ga/inventory.h"
 #include "scheme/memo.h"
@@ -8,6 +9,7 @@
 #include "scheme/scramble.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,6 +29,19 @@ static int cmp_u64(const void *left, const void *right) {
         return -1;
     }
     return a > b ? 1 : 0;
+}
+
+BT_TEST(memofreq_lib, data_ga_path_root_only_keeps_the_drive) {
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    BT_CHECK(root[1] == ':');
+    char expected[BT_PATH_MAX];
+    snprintf(expected, sizeof expected, "%2.2s/zz-ga", root);
+    char out[BT_PATH_MAX];
+    bt_mf_data_ga_path("/zz-ga", out);
+    BT_CHECK(strcmp(out, expected) == 0);
+    bt_mf_data_ga_path("C:ga", out);
+    BT_CHECK(strcmp(out, "C:ga") == 0);
 }
 
 BT_TEST(memofreq_lib, draw_seed_is_splitmix_stable) {

@@ -54,10 +54,6 @@ static void offenders_free(bt_mf_offenders *list) {
     list->cap = 0;
 }
 
-static int is_absolute_path(const char *path) {
-    return path[0] == '/' || path[0] == '\\' || (path[0] != '\0' && path[1] == ':');
-}
-
 static int data_ga_path(const bt_json_value *config, char out[BT_PATH_MAX],
                         bt_mf_offenders *offenders) {
     BT_TRACE_ENTER("mf.data_ga_path");
@@ -67,13 +63,7 @@ static int data_ga_path(const bt_json_value *config, char out[BT_PATH_MAX],
         BT_TRACE_FAIL("mf.data_ga_path", "paths.data_ga missing");
         return -1;
     }
-    if (is_absolute_path(relative)) {
-        snprintf(out, BT_PATH_MAX, "%s", relative);
-    } else {
-        char root[BT_PATH_MAX];
-        bt_data_workspace_root(root);
-        snprintf(out, BT_PATH_MAX, "%s/%s", root, relative);
-    }
+    bt_mf_data_ga_path(relative, out);
     BT_TRACE_EXIT("mf.data_ga_path");
     return 0;
 }

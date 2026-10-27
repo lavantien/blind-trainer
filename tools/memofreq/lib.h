@@ -1,6 +1,7 @@
 #ifndef BT_MF_LIB_H
 #define BT_MF_LIB_H
 
+#include "common/paths.h"
 #include "common/strbuf.h"
 #include "ga/dist.h"
 #include "ga/hash.h"
@@ -18,6 +19,7 @@ const char *bt_mf_tool_id(void);
 size_t bt_mf_edge_count(void);
 size_t bt_mf_corner_count(void);
 size_t bt_mf_total_cases(void);
+void bt_mf_data_ga_path(const char *relative, char out[BT_PATH_MAX]);
 
 uint64_t bt_mf_draw_seed(uint64_t seed, uint64_t index);
 
