@@ -160,7 +160,8 @@
     }
   },
   "visual": {
-    "tolerance": 48
+    "tolerance": 48,
+    "raylib_log_level": "warning"
   },
   "fuzz": {
     "seed": 20261012,
@@ -316,6 +317,7 @@
       "sleeper": []
     },
     "hello_exe": "bt-hello.exe",
+    "app_exe": "bt-app.exe",
     "dirs": {
       "root": "build",
       "bin": "build/bin",
@@ -380,6 +382,9 @@
       ],
       "tools": [
         "visual-diff"
+      ],
+      "src_areas": [
+        "app"
       ]
     }
   },

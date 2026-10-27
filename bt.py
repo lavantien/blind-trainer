@@ -452,6 +452,37 @@ def raylib_link_map(hub, root):
     return {name: (lib, list(cfg.get("system_libs", []))) for name in tools}
 
 
+def raylib_src_pair(hub, root, src_sources):
+    areas = set(build_cfg(hub).get("raylib_build", {}).get("src_areas", []))
+    if not areas:
+        return None
+    for source in src_sources:
+        rel = str(source.relative_to(root)).replace("\\", "/")
+        parts = rel.split("/")
+        if len(parts) > 2 and parts[1] in areas:
+            cfg = build_cfg(hub).get("raylib_build", {})
+            lib = root / cfg["lib"]
+            if not lib.is_file():
+                raise BtError(f"raylib lib missing at {lib}: run python scripts/vendor.py")
+            return (lib, list(cfg.get("system_libs", [])))
+    return None
+
+
+def app_exe_link(hub, root, bin_dir, objs_by_source, src_objects, vendor_objects, src_lib):
+    name = build_cfg(hub).get("app_exe", "")
+    if not name:
+        return None
+    app_main = objs_by_source.get(root / "src" / "app" / "main.c")
+    if app_main is None:
+        return None
+    objects = [*src_objects, app_main, *vendor_objects]
+    libs = ()
+    if src_lib is not None:
+        objects = [*objects, src_lib[0]]
+        libs = tuple(src_lib[1])
+    return (bin_dir / name, objects, libs)
+
+
 def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None):
     includes, obj_root, units = discover_compile_units(hub, root)
     prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
@@ -577,10 +608,16 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
     flags = compile_flags(hub)
     objs_by_source = {source: obj for source, obj in entries}
     built_objects = {obj for _, obj in entries}
+    src_sources = [
+        source for source, _ in entries if source.is_relative_to(root / "src")
+    ]
     src_objects = [
-        obj for source, obj in entries if source.is_relative_to(root / "src")
+        obj
+        for source, obj in entries
+        if source.is_relative_to(root / "src") and source.name != "main.c"
     ]
     raylib = raylib_link_map(hub, root)
+    src_lib = raylib_src_pair(hub, root, src_sources)
     links = []
     vendor_objects = [
         obj for source, obj in entries if source.is_relative_to(root / "vendor")
@@ -598,6 +635,8 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
             if not tool_objs:
                 continue
             extra_lib, libs = raylib.get(tool_dir.name, (None, ()))
+            if src_lib is not None:
+                extra_lib, libs = src_lib
             objects = [*src_objects, *tool_objs, *vendor_objects]
             if extra_lib is not None:
                 objects.append(extra_lib)
@@ -626,6 +665,8 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
                 ]
                 if tool_dir.name in raylib:
                     extra_lib, libs = raylib[tool_dir.name]
+        if src_lib is not None:
+            extra_lib, libs = src_lib
         objects = [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects]
         if extra_lib is not None:
             objects.append(extra_lib)
@@ -634,6 +675,11 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
                 f"link {suite['exe_name']}.exe",
                 (bin_dir / f"{suite['exe_name']}.exe", objects, libs),
             ))
+    app_link = app_exe_link(
+        hub, root, bin_dir, objs_by_source, src_objects, vendor_objects, src_lib
+    )
+    if app_link is not None:
+        links.append((f"link {app_link[0].name}", app_link))
     hello_exe = bin_dir / cfg["hello_exe"]
     hello_obj = obj_root / "gen" / "hello.obj"
     if hello_obj in built_objects:
