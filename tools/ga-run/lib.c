@@ -622,7 +622,7 @@ int bt_gr_render_markdown(const bt_gr_ga_report *report, bt_strbuf *out) {
                                    (double)report->inventory.wordlist_size) == 0 &&
              bt_strbuf_appendf(out,
                                "## pool\n\nsize %zu top entries\n\n| syllable | corpus "
-                               "frequency |\n| --- | |\n",
+                               "frequency |\n| --- | --- |\n",
                                report->pool_size) == 0;
     if (rc) {
         for (size_t i = 0; i < report->pool_top_count && rc; i++) {

@@ -121,7 +121,7 @@ static int render_ryu(bt_strbuf *out, double value, int is_f32) {
     if (exp10 >= 0 && exp10 <= BT_GR_RYU_KK_LIMIT) {
         if (bt_strbuf_append(out, digits, (size_t)exp10 + 1) != 0 ||
             bt_strbuf_append_str(out, ".") != 0 ||
-            bt_strbuf_append(out, digits + exp10 + 1, count - (size_t)exp10 + 1) != 0) {
+            bt_strbuf_append(out, digits + exp10 + 1, count - ((size_t)exp10 + 1)) != 0) {
             return -1;
         }
         return 0;
@@ -174,7 +174,7 @@ int bt_gr_display_f64(bt_strbuf *out, double value) {
         } else if (exp10 >= 0) {
             rc = bt_strbuf_append(out, digits, (size_t)exp10 + 1) == 0 &&
                          bt_strbuf_append_str(out, ".") == 0 &&
-                         bt_strbuf_append(out, digits + exp10 + 1, count - (size_t)exp10 + 1) == 0
+                         bt_strbuf_append(out, digits + exp10 + 1, count - ((size_t)exp10 + 1)) == 0
                      ? 0
                      : -1;
         } else {

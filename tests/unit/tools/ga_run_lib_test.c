@@ -48,14 +48,14 @@ static void synth_inputs(size_t pool_size, bt_gr_run_inputs *inputs) {
     inputs->params.elite = 2;
     inputs->params.swap = 0.2;
     inputs->params.replace = 0.1;
-    inputs->params.w_conf = 0.5f;
-    inputs->params.w_flow = 0.3f;
-    inputs->params.w_cplx = 0.2f;
+    inputs->params.w_conf = 0.5F;
+    inputs->params.w_flow = 0.3F;
+    inputs->params.w_cplx = 0.2F;
     inputs->env.pool_size = pool_size;
     inputs->env.case_count = bt_ga_case_count();
     inputs->env.lengths = malloc(pool_size * sizeof *inputs->env.lengths);
     for (size_t i = 0; i < pool_size; i++) {
-        inputs->env.lengths[i] = 3.0f;
+        inputs->env.lengths[i] = 3.0F;
     }
     inputs->env.feats = NULL;
     inputs->env.conf_table = NULL;
@@ -86,12 +86,12 @@ static void outcome_with_best(const uint32_t *best, size_t best_count, bt_ga_run
     outcome->best = malloc((best_count > 0 ? best_count : 1) * sizeof *outcome->best);
     memcpy(outcome->best, best, best_count * sizeof *outcome->best);
     outcome->best_count = best_count;
-    outcome->best_fitness = 0.75f;
-    outcome->best_parts[0] = 0.1f;
-    outcome->best_parts[1] = 0.2f;
-    outcome->best_parts[2] = 0.3f;
+    outcome->best_fitness = 0.75F;
+    outcome->best_parts[0] = 0.1F;
+    outcome->best_parts[1] = 0.2F;
+    outcome->best_parts[2] = 0.3F;
     outcome->per_gen_best = malloc(sizeof *outcome->per_gen_best);
-    outcome->per_gen_best[0] = 0.5f;
+    outcome->per_gen_best[0] = 0.5F;
     outcome->per_gen_count = 1;
     outcome->best_generation = 2;
     outcome->stagnation_tail = 1;
@@ -126,10 +126,10 @@ static void fixture_report(bt_gr_ga_report *report, const float *per_gen, size_t
     snprintf(report->pool_top[1].text, BT_GA_TEXT_MAX, "to");
     report->pool_top[1].frequency = 400;
     report->pool_top_count = 2;
-    report->best_fitness = 0.654321f;
-    report->best_parts[0] = 0.1f;
-    report->best_parts[1] = 0.2f;
-    report->best_parts[2] = 0.3f;
+    report->best_fitness = 0.654321F;
+    report->best_parts[0] = 0.1F;
+    report->best_parts[1] = 0.2F;
+    report->best_parts[2] = 0.3F;
     report->best_generation = 4;
     report->generations_run = 7;
     report->per_gen_best =
@@ -269,7 +269,7 @@ BT_TEST(ga_run_lib, build_assignment_maps_pool_texts_onto_scheme_cases) {
     BT_CHECK_EQ(last->letters, "XW");
     BT_CHECK_EQ(assignment.pool_size, (size_t)900);
     BT_CHECK_EQ(assignment.seed, (uint64_t)77);
-    BT_CHECK_EQ(assignment.best_fitness, 0.75f);
+    BT_CHECK_EQ(assignment.best_fitness, 0.75F);
     char want_freq_sha[BT_GA_SHA256_HEX_LEN];
     bt_ga_sha256_hex(inputs.freq_bytes, inputs.freq_bytes_len, want_freq_sha);
     BT_CHECK(strcmp(assignment.freq_sha256, want_freq_sha) == 0);
@@ -397,14 +397,14 @@ BT_TEST(ga_run_lib, build_report_copies_run_state_and_the_pool_head) {
     BT_CHECK_EQ(report.pool_top[0].frequency, (uint64_t)15);
     BT_CHECK_EQ(report.pool_top[9].text, "syllable-9");
     BT_CHECK_EQ(report.pool_top[9].frequency, (uint64_t)6);
-    BT_CHECK_EQ(report.best_fitness, 0.75f);
-    BT_CHECK_EQ(report.best_parts[0], 0.1f);
-    BT_CHECK_EQ(report.best_parts[1], 0.2f);
-    BT_CHECK_EQ(report.best_parts[2], 0.3f);
+    BT_CHECK_EQ(report.best_fitness, 0.75F);
+    BT_CHECK_EQ(report.best_parts[0], 0.1F);
+    BT_CHECK_EQ(report.best_parts[1], 0.2F);
+    BT_CHECK_EQ(report.best_parts[2], 0.3F);
     BT_CHECK_EQ(report.best_generation, (size_t)2);
     BT_CHECK_EQ(report.generations_run, (size_t)7);
     BT_CHECK_EQ(report.per_gen_count, (size_t)1);
-    BT_CHECK_EQ(report.per_gen_best[0], 0.5f);
+    BT_CHECK_EQ(report.per_gen_best[0], 0.5F);
     BT_CHECK_EQ(report.stagnation_tail, (uint32_t)1);
     BT_CHECK_EQ(report.max_stagnation, (uint32_t)5);
     BT_CHECK_EQ(report.evaluations, (uint64_t)100);
@@ -435,7 +435,7 @@ BT_TEST(ga_run_lib, build_report_copies_run_state_and_the_pool_head) {
 BT_TEST(ga_run_lib, render_markdown_prints_config_inventory_pool_result_and_artifacts) {
     float per_gen[10];
     for (size_t i = 0; i < 10; i++) {
-        per_gen[i] = (float)i / 100.0f;
+        per_gen[i] = (float)i / 100.0F;
     }
     bt_gr_ga_report report;
     fixture_report(&report, per_gen, 10);
@@ -468,10 +468,44 @@ BT_TEST(ga_run_lib, render_markdown_prints_config_inventory_pool_result_and_arti
     fixture_report_free(&report);
 }
 
+BT_TEST(ga_run_lib, json_value_text_prints_f64_the_serde_way) {
+    bt_json_value *value =
+        parse_json("{\"zoom_min\": 3.5, \"zoom_max\": 12.0, \"replace\": 0.15, \"one\": 1.0, "
+                   "\"tiny\": 1e-7, \"huge\": 1e16, \"count\": 20261012}");
+    bt_strbuf text;
+    bt_strbuf_init(&text, 256);
+    BT_CHECK_EQ(bt_gr_json_value_text(value, &text), 0);
+    const char *want = "{\n"
+                       "  \"count\": 20261012,\n"
+                       "  \"huge\": 1e16,\n"
+                       "  \"one\": 1.0,\n"
+                       "  \"replace\": 0.15,\n"
+                       "  \"tiny\": 1e-7,\n"
+                       "  \"zoom_max\": 12.0,\n"
+                       "  \"zoom_min\": 3.5\n"
+                       "}";
+    BT_CHECK(strcmp(text.data, want) == 0);
+    bt_strbuf_free(&text);
+    bt_json_free(value);
+}
+
+BT_TEST(ga_run_lib, render_markdown_uses_the_two_column_pool_separator) {
+    float per_gen[1] = {0.5F};
+    bt_gr_ga_report report;
+    fixture_report(&report, per_gen, 1);
+    bt_strbuf md;
+    bt_strbuf_init(&md, 512);
+    BT_CHECK_EQ(bt_gr_render_markdown(&report, &md), 0);
+    BT_CHECK(strstr(md.data, "| syllable | corpus frequency |\n| --- | --- |\n| ma | 500 |\n") !=
+             NULL);
+    bt_strbuf_free(&md);
+    fixture_report_free(&report);
+}
+
 BT_TEST(ga_run_lib, render_markdown_samples_long_trajectories_to_twenty_points) {
     float per_gen[40];
     for (size_t i = 0; i < 40; i++) {
-        per_gen[i] = (float)i / 100.0f;
+        per_gen[i] = (float)i / 100.0F;
     }
     bt_gr_ga_report report;
     fixture_report(&report, per_gen, 40);
