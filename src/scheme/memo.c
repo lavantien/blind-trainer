@@ -396,13 +396,13 @@ void bt_scheme_walk_run(bt_orbit_walk *walk) {
             if (bt_scheme_same_piece(s, h)) {
                 break;
             }
-            walk->pending[walk->pending_count++] = s;
-            walk->letters[walk->letter_count++] = bt_scheme_letter_of(s);
-            walk->visited[s] = true;
             budget++;
             if (budget > BT_MEMO_MAX_LETTERS) {
                 BT_SCHEME_ABORT("memo.walk", "memo walk letter budget exceeded");
             }
+            walk->pending[walk->pending_count++] = s;
+            walk->letters[walk->letter_count++] = bt_scheme_letter_of(s);
+            walk->visited[s] = true;
             if (walk->pending_count == 2) {
                 bt_case case_id = {walk->orbit, walk->pending[0], walk->pending[1]};
                 assert_case_legal(&case_id);

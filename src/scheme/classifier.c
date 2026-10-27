@@ -76,8 +76,16 @@ size_t bt_scheme_trace_cases(const bt_trace *trace, bt_case out[BT_TRACE_BLOCKS_
     return count;
 }
 
+static void require_cube_shaped(const uint8_t occ[54], const char *unit) {
+    bt_cube probe;
+    if (!bt_cube_try_from_occ(occ, &probe)) {
+        BT_SCHEME_ABORT(unit, "state must be a permutation of 0..54 with fixed orbit bands");
+    }
+}
+
 void bt_scheme_trace(const uint8_t occ[54], bt_orbit orbit, bt_trace *out) {
     BT_TRACE_ENTER("scheme.trace");
+    require_cube_shaped(occ, "scheme.trace");
     const char *const *order =
         orbit == BT_ORBIT_EDGE ? BT_SCHEME_EDGE_FLOATING : BT_SCHEME_CORNER_FLOATING;
     size_t order_count = orbit == BT_ORBIT_EDGE ? 12 : 8;
@@ -111,6 +119,10 @@ void bt_scheme_trace(const uint8_t occ[54], bt_orbit orbit, bt_trace *out) {
             block[len++] = target;
         }
         if (len > 1) {
+            if (len >= BT_TRACE_BLOCK_MAX) {
+                BT_SCHEME_ABORT("scheme.trace", "trace block budget exceeded at sticker %u",
+                                block[len - 1]);
+            }
             block[len++] = head;
             for (size_t i = 0; i < len; i++) {
                 visited[block[i]] = true;
@@ -243,6 +255,7 @@ static void defects_of(const uint8_t occ[54], bt_defects *out) {
 
 void bt_scheme_classify(const uint8_t occ[54], bt_report *out) {
     BT_TRACE_ENTER("scheme.classify");
+    require_cube_shaped(occ, "scheme.classify");
     memset(out, 0, sizeof *out);
     bt_scheme_trace(occ, BT_ORBIT_EDGE, &out->edge);
     bt_scheme_trace(occ, BT_ORBIT_CORNER, &out->corner);
