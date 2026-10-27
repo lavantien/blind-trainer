@@ -1,0 +1,2 @@
+2026-10-27T11:34:06 [fail] compile tests\unit\tools\jobwrap_test.c C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\jobwrap_test.c:1:10: fatal error: 'jobwrap/lib.h' file not found
+2026-10-27T11:34:06 [fail] test-build BtError: 1 of 86 compiles failed

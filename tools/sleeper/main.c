@@ -48,7 +48,7 @@ static int alloc_and_touch(unsigned long long mb) {
     fprintf(stderr, "bt-sleeper: selftest alloc %llu MiB starting\n", mb);
     fflush(stderr);
     for (unsigned long long block_at = 0; block_at < mb; block_at++) {
-        unsigned char *block = calloc((size_t)BT_SLEEPER_ALLOC_CHUNK_BYTES, 1);
+        volatile unsigned char *block = calloc((size_t)BT_SLEEPER_ALLOC_CHUNK_BYTES, 1);
         if (block == NULL) {
             fprintf(stderr, "bt-sleeper: selftest alloc failed at block %llu\n", block_at);
             fflush(stderr);
