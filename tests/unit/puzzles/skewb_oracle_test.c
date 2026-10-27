@@ -860,16 +860,15 @@ BT_TEST(skewb_oracle, pack_rows_pass_tier1_after_stripping) {
 BT_TEST(skewb_oracle, inverse_round_trips_through_solved) {
     bt_skewb skewb = bt_skewb_new();
     bt_pz_engine eng = bt_skewb_engine(&skewb);
-    bt_rng rng;
-    bt_rng_seed(&rng, 20261012);
+    uint64_t seed = 0x5eed1234abcdf00dULL;
     bt_pz_error err;
-    for (size_t iteration = 0; iteration < 256; iteration++) {
-        size_t length = (size_t)bt_rng_below(&rng, 24);
+    for (size_t iteration = 0; iteration < 4096; iteration++) {
+        size_t length = (size_t)(pz_xorshift(&seed) % 24);
         void *alg = bt_pz_alg_create();
         for (size_t i = 0; i < length; i++) {
             bt_skewb_move move = {
-                (uint8_t)bt_rng_below(&rng, 4),
-                (uint8_t)(bt_rng_below(&rng, 2) + 1),
+                (uint8_t)(pz_xorshift(&seed) % 4),
+                (uint8_t)(pz_xorshift(&seed) % 2 + 1),
             };
             bt_pz_alg_push(&eng, alg, &move);
         }

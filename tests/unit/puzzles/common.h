@@ -105,6 +105,15 @@ static inline char *pz_split_space(char *str, char **save) {
     return start;
 }
 
+static inline uint64_t pz_xorshift(uint64_t *seed) {
+    uint64_t x = *seed;
+    x ^= x << 13U;
+    x ^= x >> 7U;
+    x ^= x << 17U;
+    *seed = x;
+    return x;
+}
+
 static inline int pz_cmp_size(const void *a, const void *b) {
     size_t left = *(const size_t *)a;
     size_t right = *(const size_t *)b;
