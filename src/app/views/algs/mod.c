@@ -549,13 +549,12 @@ size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_bro
             bt_expanded_list units;
             bt_expanded_list_init(&units);
             if (bt_decompose_verified(row->commutator, &row->alg, &units)) {
-                for (size_t unit = 0; unit < units.count; unit++) {
-                    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
-                    size_t span_count = bt_view_algs_mechanic_spans(&units, spans);
-                    (void)span_count;
-                    break;
+                bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+                size_t span_count = bt_view_algs_mechanic_spans(&units, spans);
+                for (size_t span = 0; span < span_count; span++) {
+                    push_detail(out, cap, &count, BT_ALGS_STYLE_ALG, spans[span].text,
+                                spans[span].color);
                 }
-                push_detail(out, cap, &count, BT_ALGS_STYLE_ALG, "", bt_theme_text_primary());
                 bt_expanded_list_free(&units);
             } else {
                 bt_expanded_list_free(&units);

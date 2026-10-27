@@ -134,6 +134,20 @@ BT_TEST(algs_more, the_list_bind_renders_caret_rows_and_blanks_the_overflow) {
     bt_app_ctx_free(&ctx);
 }
 
+static int colors_equal(bt_theme_color a, bt_theme_color b) {
+    return a.red == b.red && a.green == b.green && a.blue == b.blue && a.alpha == b.alpha;
+}
+
+static int detail_line_is(const bt_view_algs_detail_line *lines, size_t count, const char *text,
+                          bt_theme_color color) {
+    for (size_t i = 0; i < count; i++) {
+        if (strcmp(lines[i].text, text) == 0 && colors_equal(lines[i].color, color)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     bt_app_ctx ctx = algs_ctx("moredetail");
     bt_corpus_row row = covered_row(COVERED_ALG, "R2 U':[S,R2]");
@@ -149,6 +163,12 @@ BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     BT_CHECK(detail_has(lines, count, "edge UF-UB-UR covered yes"));
     BT_CHECK(detail_has(lines, count, meta));
     BT_CHECK(detail_has(lines, count, "recon  video https://example.test/recon"));
+    BT_CHECK(detail_line_is(lines, count, "R2 U': ", bt_theme_setup()));
+    BT_CHECK(detail_line_is(lines, count, "[", bt_theme_text_muted()));
+    BT_CHECK(detail_line_is(lines, count, "S", bt_theme_teal()));
+    BT_CHECK(detail_line_is(lines, count, ",", bt_theme_text_muted()));
+    BT_CHECK(detail_line_is(lines, count, "R2", bt_theme_interchange()));
+    BT_CHECK(detail_line_is(lines, count, "]", bt_theme_text_muted()));
     bt_app_ctx_free(&ctx);
 }
 
