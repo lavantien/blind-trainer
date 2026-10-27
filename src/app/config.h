@@ -25,9 +25,16 @@ typedef struct {
 } bt_app_drill_cfg;
 
 typedef struct {
+    unsigned int target_fps;
+    int vsync;
+    unsigned int capture_dwell_frames;
+} bt_app_render_cfg;
+
+typedef struct {
     bt_app_window_cfg window;
     bt_app_memo_cfg memo;
     bt_app_drill_cfg drill;
+    bt_app_render_cfg render;
     unsigned long long smoke_seed;
 } bt_app_config;
 

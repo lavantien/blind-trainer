@@ -11,6 +11,8 @@ enum {
     BT_APP_DEFAULT_WINDOW_HEIGHT = 800,
     BT_APP_DEFAULT_MEMO_CADENCE_MS = 800,
     BT_APP_DEFAULT_DRILL_REPS = 6,
+    BT_APP_DEFAULT_TARGET_FPS = 60,
+    BT_APP_DEFAULT_CAPTURE_DWELL = 12,
     BT_APP_DEFAULT_SMOKE_SEED = 20261012,
 };
 
@@ -25,6 +27,9 @@ void bt_app_config_defaults(bt_app_config *config) {
     config->memo.cadence_ms = BT_APP_DEFAULT_MEMO_CADENCE_MS;
     snprintf(config->memo.mode, sizeof config->memo.mode, "%s", BT_APP_DEFAULT_MEMO_MODE);
     config->drill.reps = BT_APP_DEFAULT_DRILL_REPS;
+    config->render.target_fps = BT_APP_DEFAULT_TARGET_FPS;
+    config->render.vsync = 0;
+    config->render.capture_dwell_frames = BT_APP_DEFAULT_CAPTURE_DWELL;
     config->smoke_seed = BT_APP_DEFAULT_SMOKE_SEED;
     BT_TRACE_EXIT("app.config_defaults");
 }
@@ -110,6 +115,16 @@ int bt_app_config_from_json(const bt_json_value *value, bt_app_config *out, char
         drill_from(bt_json_get(section, "drill"), &parsed.drill, error, error_len) != 0) {
         BT_TRACE_EXIT("app.config_from_json");
         return -1;
+    }
+    const bt_json_value *render = bt_json_get(section, "render");
+    if (render != NULL && render->type == BT_JSON_OBJECT) {
+        field_uint(render, "target_fps", &parsed.render.target_fps, error, error_len);
+        field_uint(render, "capture_dwell_frames", &parsed.render.capture_dwell_frames,
+                   error, error_len);
+        const bt_json_value *vsync = bt_json_get(render, "vsync");
+        if (vsync != NULL && vsync->type == BT_JSON_BOOL) {
+            parsed.render.vsync = vsync->as.boolean;
+        }
     }
     const bt_json_value *seed = bt_json_get(section, "smoke_seed");
     if (seed != NULL) {
