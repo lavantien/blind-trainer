@@ -8,6 +8,8 @@
 
 void bt_paths_workspace_root_from(const char *start_dir, char out[BT_PATH_MAX]);
 void bt_paths_workspace_root(char out[BT_PATH_MAX]);
+int bt_paths_is_absolute(const char *path);
+void bt_paths_join(const char *base, const char *push, char out[BT_PATH_MAX]);
 void bt_paths_user_root_from(const char *appdata, const char *xdg, const char *home,
                              char out[BT_PATH_MAX]);
 void bt_paths_user_root(char out[BT_PATH_MAX]);

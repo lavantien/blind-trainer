@@ -1,5 +1,6 @@
 #include "common/paths.h"
 
+#include <stdarg.h>
 #include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,112 @@ static int dir_contains_config(const char *path) {
 
 static void join_path(char out[BT_PATH_MAX], const char *base, const char *leaf) {
     snprintf(out, BT_PATH_MAX, "%s/%s", base, leaf);
+}
+
+static int path_is_sep(char unit) {
+    return unit == '/' || unit == '\\';
+}
+
+static int path_is_drive_letter(char unit) {
+    return (unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z');
+}
+
+static int path_is_unc_lead(const char *path) {
+    return path[0] != '\0' && path_is_sep(path[0]) && path[1] != '\0' && path_is_sep(path[1]);
+}
+
+static int unc_is_absolute(const char *path) {
+    size_t at = 2;
+    while (path[at] != '\0' && !path_is_sep(path[at])) {
+        at++;
+    }
+    if (path[at] == '\0' || path[at + 1] == '\0' || path_is_sep(path[at + 1])) {
+        return 0;
+    }
+    at++;
+    while (path[at] != '\0' && !path_is_sep(path[at])) {
+        at++;
+    }
+    return path_is_sep(path[at]);
+}
+
+int bt_paths_is_absolute(const char *path) {
+    BT_TRACE_ENTER("paths.is_absolute");
+    int absolute = 0;
+    if (path != NULL && path[0] != '\0') {
+        if (path_is_unc_lead(path)) {
+            absolute = unc_is_absolute(path);
+        } else if (path_is_drive_letter(path[0]) && path[1] == ':') {
+            absolute = path_is_sep(path[2]);
+        }
+    }
+    BT_TRACE_EXIT("paths.is_absolute");
+    return absolute;
+}
+
+static size_t base_prefix_len(const char *base) {
+    if (base[0] == '\0') {
+        return 0;
+    }
+    if (path_is_drive_letter(base[0]) && base[1] == ':') {
+        return 2;
+    }
+    if (!path_is_unc_lead(base)) {
+        return 0;
+    }
+    size_t at = 2;
+    while (base[at] != '\0' && !path_is_sep(base[at])) {
+        at++;
+    }
+    if (base[at] == '\0' || base[at + 1] == '\0' || path_is_sep(base[at + 1])) {
+        return 0;
+    }
+    at++;
+    while (base[at] != '\0' && !path_is_sep(base[at])) {
+        at++;
+    }
+    return at;
+}
+
+static void join_out(char out[BT_PATH_MAX], const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int need = vsnprintf(out, BT_PATH_MAX, fmt, args);
+    va_end(args);
+    if (need < 0 || (size_t)need >= BT_PATH_MAX) {
+        BT_TRACE_FAIL("paths.join", "joined path exceeds %d bytes", BT_PATH_MAX);
+    }
+}
+
+void bt_paths_join(const char *base, const char *push, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("paths.join");
+    if (push == NULL || push[0] == '\0') {
+        join_out(out, "%s", base != NULL ? base : "");
+        BT_TRACE_EXIT("paths.join");
+        return;
+    }
+    int push_prefix = path_is_unc_lead(push) || (path_is_drive_letter(push[0]) && push[1] == ':');
+    if (push_prefix) {
+        join_out(out, "%s", push);
+        BT_TRACE_EXIT("paths.join");
+        return;
+    }
+    if (path_is_sep(push[0])) {
+        size_t prefix = base != NULL ? base_prefix_len(base) : 0;
+        if (prefix > 0) {
+            join_out(out, "%.*s%s", (int)prefix, base, push);
+        } else {
+            join_out(out, "%s", push);
+        }
+        BT_TRACE_EXIT("paths.join");
+        return;
+    }
+    if (base != NULL && base[0] != '\0') {
+        join_out(out, "%s/%s", base, push);
+    } else {
+        join_out(out, "%s", push);
+    }
+    BT_TRACE_EXIT("paths.join");
 }
 
 void bt_paths_workspace_root_from(const char *start_dir, char out[BT_PATH_MAX]) {

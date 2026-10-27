@@ -122,3 +122,51 @@ BT_TEST(paths, exe_dir_points_at_an_existing_directory) {
     BT_CHECK(stat(out, &info) == 0);
     BT_CHECK(out[0] != '\0');
 }
+
+BT_TEST(paths, is_absolute_requires_prefix_and_root) {
+    BT_CHECK_EQ(bt_paths_is_absolute("C:/hub.json"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("C:\\hub.json"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("C:/"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("\\\\srv\\share\\ga"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("//srv/share/ga"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("\\\\srv\\share\\"), 1);
+    BT_CHECK_EQ(bt_paths_is_absolute("C:ga"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("C"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("C:"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("/out"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("\\out"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("out/x"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute(""), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("\\\\srv\\share"), 0);
+    BT_CHECK_EQ(bt_paths_is_absolute("\\\\srv"), 0);
+}
+
+BT_TEST(paths, join_follows_pathbuf_push_semantics) {
+    char out[BT_PATH_MAX];
+    bt_paths_join("R:/ws", "/out", out);
+    BT_CHECK(strcmp(out, "R:/out") == 0);
+    bt_paths_join("R:/ws", "\\out", out);
+    BT_CHECK(strcmp(out, "R:\\out") == 0);
+    bt_paths_join("R:/ws", "C:ga", out);
+    BT_CHECK(strcmp(out, "C:ga") == 0);
+    bt_paths_join("R:/ws", "C:/abs", out);
+    BT_CHECK(strcmp(out, "C:/abs") == 0);
+    bt_paths_join("R:/ws", "\\\\other\\sh\\ga", out);
+    BT_CHECK(strcmp(out, "\\\\other\\sh\\ga") == 0);
+    bt_paths_join("R:/ws", "leaf/x", out);
+    BT_CHECK(strcmp(out, "R:/ws/leaf/x") == 0);
+    bt_paths_join("R:/ws", "", out);
+    BT_CHECK(strcmp(out, "R:/ws") == 0);
+    bt_paths_join("", "leaf", out);
+    BT_CHECK(strcmp(out, "leaf") == 0);
+}
+
+BT_TEST(paths, join_keeps_the_base_prefix_on_root_push) {
+    char out[BT_PATH_MAX];
+    bt_paths_join("\\\\srv\\share\\data", "/out", out);
+    BT_CHECK(strcmp(out, "\\\\srv\\share/out") == 0);
+    bt_paths_join("\\\\srv\\share\\data", "\\\\other\\sh\\x", out);
+    BT_CHECK(strcmp(out, "\\\\other\\sh\\x") == 0);
+    bt_paths_join("\\\\srv\\share\\data", "leaf", out);
+    BT_CHECK(strcmp(out, "\\\\srv\\share\\data/leaf") == 0);
+}
