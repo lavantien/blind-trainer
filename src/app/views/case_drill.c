@@ -24,11 +24,13 @@ static const char *const SKEWB_FACES[6] = {"U", "F", "R", "L", "B", "D"};
 static const char *const FTO_FACES[8] = {"U", "F", "R", "BR", "B", "BL", "L", "D"};
 static const char *const FTO_DISPLAY[8] = {"U", "L", "F", "R", "B", "BR", "BL", "D"};
 static const char *const PYRA_FACES[4] = {"F", "L", "R", "D"};
-static const char *const MEGA_FACES[12] = {"U", "F", "R",  "BR", "BL", "L",
-                                           "D", "B", "UR", "DR", "DL", "UL"};
+static const char *const MEGA_FACES[12] = {
+    "U", "F", "R", "BR", "BL", "L", "D", "B", "UR", "DR", "DL", "UL",
+};
 static const char *const SQ1_FACES[2] = {"U", "D"};
-static const char *const FACE_COLOR_NAMES[12] = {"U",  "L",  "F",  "R",  "B",  "D",
-                                                 "BR", "BL", "UR", "DR", "DL", "UL"};
+static const char *const FACE_COLOR_NAMES[12] = {
+    "U", "L", "F", "R", "B", "D", "BR", "BL", "UR", "DR", "DL", "UL",
+};
 
 typedef struct {
     const char *const *faces;
