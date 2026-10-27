@@ -59,6 +59,9 @@ done:
     bt_pz_alg_destroy(inverse);
     free(forward);
     free(reverse);
+    if (err != NULL) {
+        err->status = status;
+    }
     if (status == BT_TIER1_OK) {
         BT_TRACE_EXIT("bt_verify_tier1");
         return status;

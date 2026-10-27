@@ -298,6 +298,19 @@ BT_TEST(tier1, cycle_mock_moves_and_renders_honestly) {
     bt_strbuf_free(&isb);
 }
 
+BT_TEST(tier1, verify_reports_the_ok_status_for_callers_skipping_the_return) {
+    cycle_cfg cfg = cycle_sound();
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    bt_tier1_error err = {.status = BT_TIER1_FORWARD, .cause = {0}};
+    BT_CHECK_EQ(bt_verify_tier1(&eng, "a b", &err), (int)BT_TIER1_OK);
+    BT_CHECK_EQ(err.status, (int)BT_TIER1_OK);
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 32);
+    bt_tier1_error_message(&err, &sb);
+    BT_CHECK_EQ(sb.len, (size_t)0);
+    bt_strbuf_free(&sb);
+}
+
 BT_TEST(tier1, cycle_invert_replaces_a_reused_out_alg) {
     cycle_cfg cfg = cycle_sound();
     bt_pz_engine eng = cycle_engine_full(&cfg);
