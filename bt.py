@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -14,21 +15,23 @@ REPO_ROOT = Path(__file__).resolve().parent
 HUB_RELPATH = "config/config.json"
 TARGET_PREFIX = "tgt_"
 SOURCE_GLOBS = ("src/**/*.c", "tools/**/*.c", "tests/**/*.c")
+MUTANT_AREAS = ("core", "scheme", "data", "puzzles", "ga", "app")
+MIGRATIONS_GENERATOR = "scripts/gen_migrations.py"
+EMBEDDED_MIGRATIONS = ("src/data/migrations_embedded.c", "src/data/migrations_embedded.h")
 INCLUDE_DIRS = ("src", "tools", "tests")
 SYSTEM_INCLUDE_DIRS = ("vendor/sqlite",)
 VENDOR_UNITS = (("vendor/sqlite/sqlite3.c", ("-DSQLITE_THREADSERIALIZED=1",)),)
 LLVM_MAJOR = "23"
 REQUIRED_TOOLS = ("clang", "clang_format", "clang_tidy", "llvm_cov")
 LINKER_FLAG = "-fuse-ld=lld-link"
-FUZZ_HARNESS = (
-    "#include <stdint.h>\n"
-    "#include <stddef.h>\n"
-    "int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {\n"
-    "    (void)data;\n"
-    "    (void)size;\n"
-    "    return 0;\n"
-    "}\n"
-)
+FUZZ_HARNESS = """#include <stdint.h>
+#include <stddef.h>
+int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    (void)data;
+    (void)size;
+    return 0;
+}
+"""
 
 
 class BtError(RuntimeError):
@@ -206,8 +209,7 @@ def discover_test_suites(root):
                 "stem": stem,
                 "exe_name": "_".join([*area_parts, stem]),
                 "tests": tests,
-            }
-        )
+            })
     return suites
 
 
@@ -220,11 +222,7 @@ def generated_main_source(suite_name, tests):
     lines = ['#include "common/bt_harness.h"', ""]
     for group, name in ordered:
         lines.append(f"extern void bt_test_{group}_{name}(void);")
-    lines += [
-        "",
-        "int main(void) {",
-        "    bt_test_entry tests[] = {",
-    ]
+    lines += ["", "int main(void) {", "    bt_test_entry tests[] = {"]
     for group, name in ordered:
         lines.append(f'        {{"{group}.{name}", bt_test_{group}_{name}}},')
     lines += [
@@ -498,9 +496,7 @@ def generate_stage(hub, root):
         main_source.write_text(
             generated_main_source(suite["exe_name"], suite["tests"]), encoding="utf-8"
         )
-        generated.append(
-            (main_source, obj_root / "gen" / f"{suite['exe_name']}_main.obj")
-        )
+        generated.append((main_source, obj_root / "gen" / f"{suite['exe_name']}_main.obj"))
     hello_source_path = gen_dir / "hello.c"
     hello_source_path.write_text(hello_source(), encoding="utf-8")
     generated.append((hello_source_path, obj_root / "gen" / "hello.obj"))
@@ -554,13 +550,9 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
             links.append(
                 (
                     f"link {tool_dir.name}.exe",
-                    (
-                        bin_dir / f"{tool_dir.name}.exe",
-                        [*src_objects, *tool_objs, *vendor_objects],
-                        (),
-                    ),
-                )
-            )
+                    (bin_dir / f"{tool_dir.name}.exe",
+                     [*src_objects, *tool_objs, *vendor_objects], ()),
+                ))
     for suite in discover_test_suites(root):
         test_obj = objs_by_source.get(suite["source"])
         main_obj = obj_root / "gen" / f"{suite['exe_name']}_main.obj"
@@ -578,13 +570,10 @@ def link_stage(hub, root, compiler, logger, obj_root, entries):
         links.append(
             (
                 f"link {suite['exe_name']}.exe",
-                (
-                    bin_dir / f"{suite['exe_name']}.exe",
-                    [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects],
-                    (),
-                ),
-            )
-        )
+                (bin_dir / f"{suite['exe_name']}.exe",
+                 [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects],
+                 ()),
+            ))
     hello_exe = bin_dir / cfg["hello_exe"]
     hello_obj = obj_root / "gen" / "hello.obj"
     if hello_obj in built_objects:
@@ -621,10 +610,11 @@ def needs_link(objects, exe):
 
 
 def version_line(output):
-    for line in output.splitlines():
+    lines = output.splitlines()
+    for line in lines:
         if "version" in line.lower():
             return line.strip()
-    for line in output.splitlines():
+    for line in lines:
         if line.strip():
             return line.strip()
     return ""
@@ -648,13 +638,7 @@ def probe_fuzz(hub, root, compiler):
     harness = gen_dir / "harness.c"
     harness.write_text(FUZZ_HARNESS, encoding="utf-8")
     exe = gen_dir / "fuzz_probe.exe"
-    flags = [
-        *compile_flags(hub),
-        "-fsanitize=fuzzer",
-        str(harness),
-        "-o",
-        str(exe),
-    ]
+    flags = [*compile_flags(hub), "-fsanitize=fuzzer", str(harness), "-o", str(exe)]
     proc = run([*compiler, *flags], "probe fuzz compile", check=False)
     if proc.returncode != 0:
         tail = ((proc.stderr or "") + (proc.stdout or ""))[-400:].strip()
@@ -678,14 +662,10 @@ def write_env(hub, env):
 def doctor_collect():
     hub = load_hub()
     env = {
-        "clang": probe_tool("clang", hub),
-        "clang_format": probe_tool("clang_format", hub),
-        "clang_tidy": probe_tool("clang_tidy", hub),
-        "llvm_cov": probe_tool("llvm_cov", hub),
-        "llvm_ar": probe_tool("llvm_ar", hub),
-        "nvcc": probe_tool("nvcc", hub),
-        "python": {"path": sys.executable, "version": platform.python_version()},
+        name: probe_tool(name, hub)
+        for name in ("clang", "clang_format", "clang_tidy", "llvm_cov", "llvm_ar", "nvcc")
     }
+    env["python"] = {"path": sys.executable, "version": platform.python_version()}
     clang = env["clang"]
     if clang["path"] is None:
         env["fuzz"] = {"mode": "plainloop", "detail": "clang missing"}
@@ -755,6 +735,7 @@ def tgt_build(args):
     logger = Logger()
     logger.entry("build")
     try:
+        verify_migrations_fresh(REPO_ROOT, logger)
         generated = generate_stage(hub, REPO_ROOT)
         obj_root, entries = compile_stage(
             hub, REPO_ROOT, compiler, logger, extra=generated
@@ -776,6 +757,7 @@ def tgt_check(args):
     logger = Logger()
     logger.entry("check")
     try:
+        verify_migrations_fresh(REPO_ROOT, logger)
         compile_stage(hub, REPO_ROOT, compiler, logger)
         logger.exit("check", 0)
         return 0
@@ -799,8 +781,7 @@ def fmt_run(write):
     tool = resolve_tool("clang_format", hub)
     logger = Logger()
     files = [f for f in c_files(REPO_ROOT)] + sorted(
-        p
-        for pattern in ("src/**/*.h", "tools/**/*.h", "tests/**/*.h")
+        p for pattern in ("src/**/*.h", "tools/**/*.h", "tests/**/*.h")
         for p in REPO_ROOT.glob(pattern)
     )
     if not files:
@@ -873,6 +854,36 @@ def fuzz_suites(root):
     return [s for s in discover_test_suites(root) if s["stem"].startswith("fuzz_")]
 
 
+def mutants_plan(root, areas):
+    plans = []
+    for area in areas:
+        if area not in MUTANT_AREAS:
+            raise BtError(f"unknown mutants area: {area}")
+        sources = sorted(root.glob(f"src/{area}/**/*.c"))
+        suites = [
+            s
+            for s in discover_test_suites(root)
+            if s["area"] == area and not s["stem"].startswith("fuzz_")
+        ]
+        if not sources:
+            raise BtError(f"no c sources under src/{area}")
+        if not suites:
+            raise BtError(f"no unit suites under tests/unit/{area}")
+        rels = [str(s.relative_to(root)).replace("\\", "/") for s in sources]
+        for suite in suites:
+            name = suite["exe_name"]
+            plans.append(
+                {
+                    "area": area,
+                    "suite": name,
+                    "sources": rels,
+                    "ledger": f"artifacts/mutants/ledger-{name}.tsv",
+                    "outcomes": f"artifacts/mutants/outcomes-{name}.json",
+                }
+            )
+    return plans
+
+
 def run_suite_exes(hub, suites):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
     timeout = build_cfg(hub)["test_timeout_secs"]
@@ -892,14 +903,7 @@ def run_python_suite(hub):
     if not suite_dir.is_dir() or not list(suite_dir.glob("test_*.py")):
         return []
     python = build_cfg(hub)["tools"].get("python", "")
-    argv = [
-        python or sys.executable,
-        "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests/python",
-    ]
+    argv = [python or sys.executable, "-m", "unittest", "discover", "-s", "tests/python"]
     proc = run(
         argv,
         "python suite",
@@ -920,12 +924,7 @@ def tgt_test(args):
     logger = Logger()
     logger.entry("test")
     try:
-        compiler = [resolve_tool("clang", hub)]
-        generated = generate_stage(hub, REPO_ROOT)
-        obj_root, entries = compile_stage(
-            hub, REPO_ROOT, compiler, logger, extra=generated
-        )
-        link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
+        build_suites(hub, logger)
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("test-build", f"{type(e).__name__}: {e}")
         return 1
@@ -967,15 +966,52 @@ def tgt_test_unit(args):
     return code
 
 
-def build_tool_exe(hub, logger, build_label):
+def migrations_stale(root):
+    with tempfile.TemporaryDirectory() as tmp:
+        probe = Path(tmp)
+        (probe / "scripts").mkdir(parents=True)
+        shutil.copyfile(root / MIGRATIONS_GENERATOR, probe / MIGRATIONS_GENERATOR)
+        shutil.copyfile(root / ".clang-format", probe / ".clang-format")
+        shutil.copytree(root / "db" / "migrations", probe / "db" / "migrations")
+        (probe / "src" / "data").mkdir(parents=True)
+        run([sys.executable, "-I", probe / MIGRATIONS_GENERATOR], "gen_migrations probe")
+        fmt_tool = resolve_tool("clang_format", load_hub())
+        generated = [probe / rel for rel in EMBEDDED_MIGRATIONS]
+        run([fmt_tool, "-i", "--style=file", *generated], "gen_migrations format")
+        for rel in EMBEDDED_MIGRATIONS:
+            committed = root / rel
+            if not committed.is_file() or committed.read_bytes() != (probe / rel).read_bytes():
+                return rel
+    return None
+
+
+def verify_migrations_fresh(root, logger):
+    stale = migrations_stale(root)
+    if stale is not None:
+        raise BtError(
+            f"{stale} is stale: run python {MIGRATIONS_GENERATOR}, python bt.py fmt-fix,"
+            " and commit"
+        )
+    logger.line("check", "embedded migrations fresh")
+
+
+def build_suites(hub, logger):
     compiler = [resolve_tool("clang", hub)]
     generated = generate_stage(hub, REPO_ROOT)
     obj_root, entries = compile_stage(hub, REPO_ROOT, compiler, logger, extra=generated)
     link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
-    exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "policy.exe"
-    if not exe.is_file():
-        raise BtError(f"{build_label}: policy.exe missing after build: {exe}")
-    return exe
+
+
+def ensure_tool_exes(hub, logger, build_label, names):
+    build_suites(hub, logger)
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+    exes = []
+    for name in names:
+        exe = bin_dir / name
+        if not exe.is_file():
+            raise BtError(f"{build_label}: {name} missing after build: {exe}")
+        exes.append(exe)
+    return exes
 
 
 def run_policy_exe(exe, argv, label, logger):
@@ -993,35 +1029,111 @@ def run_policy_exe(exe, argv, label, logger):
     return proc.returncode
 
 
+def tool_run(hub, build_label, exe_name, argv, label):
+    logger = Logger()
+    logger.entry(label)
+    try:
+        exe = ensure_tool_exes(hub, logger, build_label, (exe_name,))[0]
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail(build_label, f"{type(e).__name__}: {e}")
+        return 1
+    return run_policy_exe(exe, argv, label, logger)
+
+
 def tgt_policy(args):
     """selftest then the zero-comment, constants-hub, and sloc scans"""
     hub = load_hub()
-    logger = Logger()
-    logger.entry("policy")
-    try:
-        exe = build_tool_exe(hub, logger, "policy-build")
-    except (BtError, OSError, KeyError, ValueError) as e:
-        logger.fail("policy-build", f"{type(e).__name__}: {e}")
-        return 1
-    workdir = REPO_ROOT / "artifacts" / "policy-selftest"
-    code = run_policy_exe(exe, ["selftest", str(workdir)], "policy-selftest", logger)
+    workdir = str(REPO_ROOT / "artifacts" / "policy-selftest")
+    code = tool_run(hub, "policy-build", "policy.exe", ["selftest", workdir], "policy-selftest")
     if code != 0:
         return code
-    return run_policy_exe(exe, [], "policy-scan", logger)
+    return tool_run(hub, "policy-build", "policy.exe", [], "policy-scan")
 
 
 def tgt_policy_selftest(args):
     """prove bt-policy detects planted comments, literals, and cap breaches"""
+    workdir = REPO_ROOT / "artifacts" / "policy-selftest"
+    return tool_run(
+        load_hub(),
+        "policy-selftest-build",
+        "policy.exe",
+        ["selftest", str(workdir)],
+        "policy-selftest",
+    )
+
+
+def tgt_fuzz(args):
+    """run every fuzz_*_test suite exe in plainloop mode, harness bodies keep the early-return, exit-at-bound applies only under a libFuzzer driver"""
     hub = load_hub()
     logger = Logger()
-    logger.entry("policy-selftest")
+    logger.entry("fuzz")
     try:
-        exe = build_tool_exe(hub, logger, "policy-selftest-build")
+        build_suites(hub, logger)
     except (BtError, OSError, KeyError, ValueError) as e:
-        logger.fail("policy-selftest-build", f"{type(e).__name__}: {e}")
+        logger.fail("fuzz-build", f"{type(e).__name__}: {e}")
         return 1
-    workdir = REPO_ROOT / "artifacts" / "policy-selftest"
-    return run_policy_exe(exe, ["selftest", str(workdir)], "policy-selftest", logger)
+    results = run_suite_exes(hub, fuzz_suites(REPO_ROOT))
+    code, line = aggregate_results(results)
+    logger.line("summary", line)
+    logger.exit("fuzz", code)
+    return code
+
+
+def tgt_mutants(args):
+    """mutate area sources against their unit suites: python bt.py mutants [area...]"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("mutants", " ".join(args) or "all")
+    try:
+        areas = args or [a for a in MUTANT_AREAS if (REPO_ROOT / "src" / a).is_dir()]
+        mutate, gate = ensure_tool_exes(
+            hub, logger, "mutants-build", ("mutate.exe", "mutants-gate.exe")
+        )
+        plans = mutants_plan(REPO_ROOT, areas)
+        env = child_env(hub)
+        for plan in plans:
+            run(
+                [mutate, "run", "--ledger", plan["ledger"], "--exe", plan["suite"],
+                 *plan["sources"]],
+                f"mutate {plan['suite']}",
+                env=env,
+            )
+            run(
+                [mutate, "report", "--ledger", plan["ledger"], "--out", plan["outcomes"]],
+                f"report {plan['suite']}",
+                env=env,
+            )
+        merged = REPO_ROOT / "artifacts/mutants/outcomes.json"
+        inputs = [REPO_ROOT / plan["outcomes"] for plan in plans]
+        if len(inputs) > 1:
+            run([gate, "merge", merged, *inputs], "merge outcomes", env=env)
+        else:
+            shutil.copyfile(inputs[0], merged)
+            logger.line("merge", f"single ledger copied to {merged}")
+        logger.exit("mutants", 0)
+        return 0
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("mutants", f"{type(e).__name__}: {e}")
+        return 1
+
+
+def tgt_mutants_gate(args):
+    """adjudicate mutation survivors in artifacts/mutants/outcomes.json against the allowlist"""
+    return tool_run(
+        load_hub(),
+        "mutants-gate-build",
+        "mutants-gate.exe",
+        [str(REPO_ROOT / "artifacts/mutants/outcomes.json"), str(REPO_ROOT / "config/allowlist.tsv")],
+        "mutants-gate",
+    )
+
+
+def tgt_mutants_gate_selftest(args):
+    """the mutants gate selftest over planted outcomes"""
+    return tool_run(
+        load_hub(), "mutants-gate-selftest-build", "mutants-gate.exe", ["selftest"],
+        "mutants-gate-selftest",
+    )
 
 
 def tgt_clean(args):

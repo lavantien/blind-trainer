@@ -41,6 +41,12 @@ class TargetTableTests(unittest.TestCase):
         text = bt.format_help(bt.target_table(bt.target_functions(bt)))
         self.assertNotIn("tgt_", text)
 
+    def test_postwave_targets_are_registered(self):
+        names = dict(bt.target_functions(bt))
+        for name in ("fuzz", "mutants", "mutants-gate", "mutants-gate-selftest"):
+            self.assertIn(name, names)
+            self.assertTrue(bt.target_doc(names[name]))
+
 
 if __name__ == "__main__":
     unittest.main()
