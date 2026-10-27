@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "common/bt_trace.h"
+#include "common/paths.h"
 #include "common/strbuf.h"
 
 const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[12] = {
@@ -16,6 +17,15 @@ const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[12] = {
 };
 
 const size_t VERIFY_SHEET_PIN_COUNT = 12;
+
+void verify_artifacts_dir_from(const char *raw_value, const char *workspace_root,
+                               char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("verify.lib.artifacts_dir_from");
+    char joined[BT_PATH_MAX];
+    bt_paths_join(workspace_root, raw_value, joined);
+    snprintf(out, BT_PATH_MAX, "%s/verify", joined);
+    BT_TRACE_EXIT("verify.lib.artifacts_dir_from");
+}
 
 void verify_sim_map_init(verify_sim_map *map) {
     map->items = NULL;

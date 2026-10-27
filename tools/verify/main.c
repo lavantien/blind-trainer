@@ -16,21 +16,13 @@
 
 enum { VERIFY_MAIN_ERR_MAX = 512 };
 
-static int path_is_absolute(const char *path) {
-    return path[0] == '/' || path[0] == '\\' || (path[0] != '\0' && path[1] == ':');
-}
-
 static int artifacts_verify_dir(char out[BT_PATH_MAX], char *err, size_t err_len) {
     BT_TRACE_ENTER("verify.main.artifacts_dir");
     const char *raw = getenv("BT_ARTIFACTS");
     if (raw != NULL && raw[0] != '\0') {
-        if (path_is_absolute(raw)) {
-            snprintf(out, BT_PATH_MAX, "%s/verify", raw);
-        } else {
-            char root[BT_PATH_MAX];
-            bt_paths_workspace_root(root);
-            snprintf(out, BT_PATH_MAX, "%s/%s/verify", root, raw);
-        }
+        char root[BT_PATH_MAX];
+        bt_paths_workspace_root(root);
+        verify_artifacts_dir_from(raw, root, out);
         BT_TRACE_EXIT("verify.main.artifacts_dir");
         return 0;
     }
@@ -51,11 +43,7 @@ static int artifacts_verify_dir(char out[BT_PATH_MAX], char *err, size_t err_len
     }
     char root[BT_PATH_MAX];
     bt_paths_workspace_root(root);
-    if (path_is_absolute(node->as.string)) {
-        snprintf(out, BT_PATH_MAX, "%s/verify", node->as.string);
-    } else {
-        snprintf(out, BT_PATH_MAX, "%s/%s/verify", root, node->as.string);
-    }
+    verify_artifacts_dir_from(node->as.string, root, out);
     bt_json_free(config);
     BT_TRACE_EXIT("verify.main.artifacts_dir");
     return 0;

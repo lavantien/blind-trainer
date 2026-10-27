@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "common/paths.h"
 #include "data/corpus.h"
 
 #define VERIFY_SIMCHECK_HEADER "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote"
@@ -48,5 +49,7 @@ const verify_sim_row *verify_sim_map_get(const verify_sim_map *map, bt_solver so
 int verify_load_simcheck(const char *root, verify_sim_map *out, char *err, size_t err_len);
 const char *verify_crate_id(void);
 char *verify_xstrdup(const char *text);
+void verify_artifacts_dir_from(const char *raw_value, const char *workspace_root,
+                               char out[BT_PATH_MAX]);
 
 #endif

@@ -16,3 +16,13 @@ BT_TEST(verify_lib, sheet_expectations_sum_to_the_corpus_total) {
     }
     BT_CHECK_EQ(sum, BT_DATA_TOTAL_ROWS);
 }
+
+BT_TEST(verify_lib, artifacts_dir_from_root_only_keeps_the_base_drive) {
+    char out[BT_PATH_MAX];
+    verify_artifacts_dir_from("/out", "R:/ws", out);
+    BT_CHECK(strcmp(out, "R:/out/verify") == 0);
+    verify_artifacts_dir_from("C:ga", "R:/ws", out);
+    BT_CHECK(strcmp(out, "C:ga/verify") == 0);
+    verify_artifacts_dir_from("rel", "R:/ws", out);
+    BT_CHECK(strcmp(out, "R:/ws/rel/verify") == 0);
+}
