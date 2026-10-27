@@ -374,6 +374,78 @@ BT_TEST(ga_run_lib, build_assignment_rejects_a_duplicate_syllable) {
     synth_inputs_free(&inputs);
 }
 
+BT_TEST(ga_run_lib, build_assignment_reports_every_gene_offender_in_rust_order) {
+    bt_gr_run_inputs inputs;
+    synth_inputs(bt_ga_case_count(), &inputs);
+    uint32_t best[BT_PAIRS_MAX * 2];
+    for (size_t i = 0; i < bt_ga_case_count(); i++) {
+        best[i] = (uint32_t)i;
+    }
+    best[1] = best[0];
+    best[2] = (uint32_t)bt_ga_case_count();
+    best[3] = best[0];
+    bt_ga_run_outcome outcome;
+    outcome_with_best(best, bt_ga_case_count(), &outcome);
+    bt_gr_syllable_assignment assignment;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_build_assignment(&inputs, &outcome, &assignment, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)3);
+    BT_CHECK_EQ(offenders.items[0], "duplicate pool index 0 in assignment");
+    BT_CHECK_EQ(offenders.items[1], "pool index 818 outside pool 818");
+    BT_CHECK_EQ(offenders.items[2], "duplicate pool index 0 in assignment");
+    bt_gr_offenders_free(&offenders);
+    free(outcome.best);
+    free(outcome.per_gen_best);
+    synth_inputs_free(&inputs);
+}
+
+BT_TEST(ga_run_lib, build_assignment_reports_duplicate_and_range_for_the_same_gene) {
+    bt_gr_run_inputs inputs;
+    synth_inputs(bt_ga_case_count(), &inputs);
+    uint32_t best[BT_PAIRS_MAX * 2];
+    for (size_t i = 0; i < bt_ga_case_count(); i++) {
+        best[i] = (uint32_t)i;
+    }
+    best[0] = 9999;
+    best[1] = 9999;
+    bt_ga_run_outcome outcome;
+    outcome_with_best(best, bt_ga_case_count(), &outcome);
+    bt_gr_syllable_assignment assignment;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_build_assignment(&inputs, &outcome, &assignment, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)3);
+    BT_CHECK_EQ(offenders.items[0], "pool index 9999 outside pool 818");
+    BT_CHECK_EQ(offenders.items[1], "duplicate pool index 9999 in assignment");
+    BT_CHECK_EQ(offenders.items[2], "pool index 9999 outside pool 818");
+    bt_gr_offenders_free(&offenders);
+    free(outcome.best);
+    free(outcome.per_gen_best);
+    synth_inputs_free(&inputs);
+}
+
+BT_TEST(ga_run_lib, build_assignment_reports_every_duplicate_syllable) {
+    bt_gr_run_inputs inputs;
+    synth_inputs(bt_ga_case_count(), &inputs);
+    snprintf(inputs.pool[1].text, BT_GA_TEXT_MAX, "%s", inputs.pool[0].text);
+    snprintf(inputs.pool[2].text, BT_GA_TEXT_MAX, "%s", inputs.pool[0].text);
+    uint32_t identity[BT_PAIRS_MAX * 2];
+    for (size_t i = 0; i < bt_ga_case_count(); i++) {
+        identity[i] = (uint32_t)i;
+    }
+    bt_ga_run_outcome outcome;
+    outcome_with_best(identity, bt_ga_case_count(), &outcome);
+    bt_gr_syllable_assignment assignment;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_build_assignment(&inputs, &outcome, &assignment, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)2);
+    BT_CHECK_EQ(offenders.items[0], "duplicate syllable syllable-0");
+    BT_CHECK_EQ(offenders.items[1], "duplicate syllable syllable-0");
+    bt_gr_offenders_free(&offenders);
+    free(outcome.best);
+    free(outcome.per_gen_best);
+    synth_inputs_free(&inputs);
+}
+
 BT_TEST(ga_run_lib, build_report_copies_run_state_and_the_pool_head) {
     bt_gr_run_inputs inputs;
     synth_inputs(15, &inputs);

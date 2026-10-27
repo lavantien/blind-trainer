@@ -445,16 +445,18 @@ int bt_gr_build_assignment(const bt_gr_run_inputs *inputs, const bt_ga_run_outco
                       case_count);
         return -1;
     }
-    for (size_t i = 0; i < outcome->best_count && offenders->count == 0; i++) {
+    for (size_t i = 0; i < outcome->best_count; i++) {
+        int seen = 0;
         for (size_t j = 0; j < i; j++) {
             if (outcome->best[j] == outcome->best[i]) {
-                bt_gr_offenders_push(offenders, "duplicate pool index %u in assignment",
-                                     (unsigned)outcome->best[i]);
+                seen = 1;
                 break;
             }
         }
-    }
-    for (size_t i = 0; i < outcome->best_count && offenders->count == 0; i++) {
+        if (seen) {
+            bt_gr_offenders_push(offenders, "duplicate pool index %u in assignment",
+                                 (unsigned)outcome->best[i]);
+        }
         if ((size_t)outcome->best[i] >= inputs->pool_count) {
             bt_gr_offenders_push(offenders, "pool index %u outside pool %zu",
                                  (unsigned)outcome->best[i], inputs->pool_count);
@@ -492,13 +494,16 @@ int bt_gr_build_assignment(const bt_gr_run_inputs *inputs, const bt_ga_run_outco
                  "%s", inputs->pool[outcome->best[position]].text);
         assignment->cases[position].frequency = inputs->freq.cases[position].count;
     }
-    for (size_t i = 0; i < case_count && offenders->count == 0; i++) {
+    for (size_t i = 0; i < case_count; i++) {
+        int seen = 0;
         for (size_t j = 0; j < i; j++) {
             if (strcmp(assignment->cases[i].syllable, assignment->cases[j].syllable) == 0) {
-                bt_gr_offenders_push(offenders, "duplicate syllable %s",
-                                     assignment->cases[i].syllable);
+                seen = 1;
                 break;
             }
+        }
+        if (seen) {
+            bt_gr_offenders_push(offenders, "duplicate syllable %s", assignment->cases[i].syllable);
         }
     }
     if (offenders->count > 0) {
