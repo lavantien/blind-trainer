@@ -15,7 +15,6 @@
 
 #define BT_DRILL_TEXT_MAX 256
 #define BT_DRILL_LABEL_MAX 32
-#define BT_DRILL_SPLITS_MAX 128
 
 typedef struct {
     bt_case case_id;
@@ -45,8 +44,9 @@ typedef struct {
     int reps_side_a;
     float reps_clock;
     float last_split_at;
-    bt_drill_split splits[BT_DRILL_SPLITS_MAX];
+    bt_drill_split *splits;
     size_t split_count;
+    size_t split_cap;
     unsigned char rate_step;
     bt_cube prepared;
 } bt_drill_session;
@@ -57,6 +57,7 @@ void bt_drill_side_letters(const bt_drill_side *side, char out[3]);
 
 void bt_drill_session_init(bt_drill_session *session);
 void bt_drill_session_free(bt_drill_session *session);
+int bt_drill_push_split(bt_drill_session *session, int is_a, float secs);
 const bt_drill_side *bt_drill_session_sides(const bt_drill_session *session,
                                             const bt_drill_side **side_b);
 const bt_drill_side *bt_drill_session_current_side(const bt_drill_session *session);

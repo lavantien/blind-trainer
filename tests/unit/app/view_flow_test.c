@@ -2,6 +2,8 @@
 #include "app/views/drill_view.h"
 #include "app/views/memo.h"
 
+#include "app/views/drill_card.h"
+
 #include "common.h"
 
 #include <stdio.h>
@@ -196,5 +198,27 @@ BT_TEST(view_flow, rate_repick_ignores_pending_and_reruns_drill_enter) {
     bt_view_drill_enter_state(&ctx, app);
     BT_CHECK(app->has_pending == 0);
     BT_CHECK(app->session.pin.orbit == BT_ORBIT_CORNER);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(view_flow, splits_history_grows_past_the_old_128_cap) {
+    bt_app_ctx ctx;
+    fill_flow_ctx(&ctx, "splits-grow");
+    ctx.stores.settings.drill_reps = 130;
+    bt_drill_app_state *app = bt_view_drill_app();
+    bt_view_drill_app_init(app);
+    app->seed = 20261012;
+    bt_view_drill_enter_state(&ctx, app);
+    bt_view_drill_key(&ctx, app, KEY_SPACE);
+    for (int rep = 0; rep < 130; rep++) {
+        bt_view_drill_tick(&ctx, app, 0.5F);
+        bt_view_drill_key(&ctx, app, KEY_SPACE);
+    }
+    BT_CHECK(ctx.drill_phase == BT_DRILL_RATE);
+    BT_CHECK(app->session.split_count == 130);
+    char lines[3][BT_CARD_TEXT_MAX];
+    size_t count = 0;
+    bt_view_rate_lines(&app->session, lines, 3, &count);
+    BT_CHECK(strcmp(lines[1], "130 reps avg 0.5s") == 0);
     bt_app_ctx_free(&ctx);
 }

@@ -473,11 +473,8 @@ BT_TEST(view_drill_card, rate_lines_prompt_each_side_in_order) {
     bt_drill_session session;
     bt_drill_session_init(&session);
     bt_view_install_pair(&session, &corpus, &stores, edge_case('A', 'B'));
-    session.splits[0].is_a = 1;
-    session.splits[0].secs = 1.0F;
-    session.splits[1].is_a = 0;
-    session.splits[1].secs = 2.0F;
-    session.split_count = 2;
+    bt_drill_push_split(&session, 1, 1.0F);
+    bt_drill_push_split(&session, 0, 2.0F);
     char lines[3][BT_CARD_TEXT_MAX];
     size_t count = 0;
     bt_view_rate_lines(&session, lines, 3, &count);

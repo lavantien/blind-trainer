@@ -201,11 +201,8 @@ static void draw_drill_reps(void) {
     bt_view_install_pair(&session, &corpus, &stores, edge_ab());
     bt_view_drill_reps_draw(&session, book->regular, 60.0F, 60.0F, 360.0F);
     session.reps_done = 2;
-    session.splits[0].is_a = 1;
-    session.splits[0].secs = 1.0F;
-    session.splits[1].is_a = 0;
-    session.splits[1].secs = 2.0F;
-    session.split_count = 2;
+    bt_drill_push_split(&session, 1, 1.0F);
+    bt_drill_push_split(&session, 0, 2.0F);
     bt_view_drill_rate_draw(&session, book->regular, 60.0F, 300.0F, 160.0F);
     bt_drill_session_free(&session);
     bt_stores_free(&stores);

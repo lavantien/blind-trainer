@@ -15,6 +15,7 @@
 #include "scheme/scheme.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void bt_drill_side_init(bt_drill_side *side) {
@@ -54,7 +55,31 @@ void bt_drill_session_free(bt_drill_session *session) {
     BT_TRACE_ENTER("app.drill_session_free");
     bt_drill_side_free(&session->side_a);
     bt_drill_side_free(&session->side_b);
+    free(session->splits);
+    session->splits = NULL;
+    session->split_count = 0;
+    session->split_cap = 0;
     BT_TRACE_EXIT("app.drill_session_free");
+}
+
+int bt_drill_push_split(bt_drill_session *session, int is_a, float secs) {
+    BT_TRACE_ENTER("app.drill_push_split");
+    if (session->split_count == session->split_cap) {
+        size_t cap = session->split_cap == 0 ? 8 : session->split_cap * 2;
+        bt_drill_split *grown = realloc(session->splits, cap * sizeof *grown);
+        if (grown == NULL) {
+            BT_TRACE_FAIL("app.drill_push_split", "out of memory at %zu", session->split_count);
+            BT_TRACE_EXIT("app.drill_push_split");
+            return -1;
+        }
+        session->splits = grown;
+        session->split_cap = cap;
+    }
+    session->splits[session->split_count].is_a = is_a;
+    session->splits[session->split_count].secs = secs;
+    session->split_count += 1;
+    BT_TRACE_EXIT("app.drill_push_split");
+    return 0;
 }
 
 const bt_drill_side *bt_drill_session_sides(const bt_drill_session *session,
@@ -526,12 +551,9 @@ void bt_view_drill_key(bt_app_ctx *ctx, bt_drill_app_state *app, int key) {
             split = 0.0F;
         }
         app->session.last_split_at = app->session.reps_clock;
-        if (app->session.split_count < BT_DRILL_SPLITS_MAX) {
-            app->session.splits[app->session.split_count].is_a = app->session.reps_side_a;
-            app->session.splits[app->session.split_count].secs = split;
-            app->session.split_count += 1;
-        } else {
-            BT_TRACE_FAIL("app.drill_key", "split overflow at %zu", app->session.split_count);
+        if (bt_drill_push_split(&app->session, app->session.reps_side_a, split) != 0) {
+            BT_TRACE_EXIT("app.drill_key");
+            return;
         }
         bt_cube_apply_alg(&ctx->net.cube, &side->alg);
         app->session.reps_side_a = app->session.reps_side_a == 0;
