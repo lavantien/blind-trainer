@@ -1,4 +1,6 @@
 #include "app/boot.h"
+#include "app/views/drill.h"
+#include "app/views/memo.h"
 #include "app/views/net_view.h"
 #include "app/views/state.h"
 #include "app/window.h"
@@ -67,6 +69,8 @@ int bt_app_main(int argc, char **argv) {
     bt_app_window_close();
     bt_app_ctx_free(&ctx);
     bt_app_views_dispose_shared();
+    bt_view_drill_app_free(bt_view_drill_app());
+    bt_view_memo_app_free(bt_view_memo_app());
     BT_TRACE_EXIT("app.main");
     return 0;
 }
