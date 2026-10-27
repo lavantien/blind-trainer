@@ -228,6 +228,15 @@ long long bt_views_now_unix_secs(void) {
     return (long long)now.tv_sec;
 }
 
+long long bt_views_now_unix_ms(void) {
+    BT_TRACE_ENTER("app.views_now_unix_ms");
+    struct timespec now;
+    timespec_get(&now, TIME_UTC);
+    long long ms = (long long)now.tv_sec * 1000 + now.tv_nsec / 1000000;
+    BT_TRACE_EXIT("app.views_now_unix_ms");
+    return ms;
+}
+
 long long bt_views_now_day(void) {
     BT_TRACE_ENTER("app.views_now_day");
     long long day = bt_views_now_unix_secs() / 86400;

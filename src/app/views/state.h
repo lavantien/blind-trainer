@@ -48,6 +48,7 @@ void bt_app_views_dispose_shared(void);
 void bt_views_syllables_path(const bt_app_runtime_paths *paths, char out[BT_PATH_MAX]);
 void bt_app_views_load_syllables(bt_app_views *views, const bt_app_runtime_paths *paths);
 long long bt_views_now_unix_secs(void);
+long long bt_views_now_unix_ms(void);
 long long bt_views_now_day(void);
 uint64_t bt_views_time_seed(void);
 
