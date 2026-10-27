@@ -31,5 +31,6 @@ int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus, const ch
                       size_t word_count, bt_app_font_book *out, char *error, size_t error_len);
 void bt_app_fonts_unload(bt_app_font_book *book);
 const bt_app_font_book *bt_app_fonts_current(void);
+void bt_app_fonts_dir_from(const char *configured, char out[BT_PATH_MAX]);
 
 #endif

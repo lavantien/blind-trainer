@@ -3,11 +3,20 @@
 #include "app/config.h"
 #include "app/fonts.h"
 #include "common/bt_trace.h"
+#include "common/paths.h"
 
 #include "raylib.h"
 
 #include <stdio.h>
 #include <string.h>
+
+void bt_app_fonts_dir_from(const char *configured, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("app.fonts_dir_from");
+    char root[BT_PATH_MAX];
+    bt_paths_workspace_root(root);
+    bt_paths_join(root, configured != NULL ? configured : "assets/fonts", out);
+    BT_TRACE_EXIT("app.fonts_dir_from");
+}
 
 int bt_app_window_open(unsigned int width, unsigned int height, const char *title,
                        const bt_app_render_cfg *render) {
@@ -133,16 +142,15 @@ static int load_face(const char *config_path, const char *key, const char *file_
             }
         }
     }
-    char root[BT_PATH_MAX];
-    bt_paths_workspace_root(root);
     char fonts_dir[BT_PATH_MAX];
-    snprintf(fonts_dir, sizeof fonts_dir, "%s/assets/fonts", root);
+    const char *configured_fonts = NULL;
     if (config != NULL) {
         const bt_json_value *paths_fonts = bt_json_get(bt_json_get(config, "paths"), "fonts");
         if (paths_fonts != NULL && paths_fonts->type == BT_JSON_STRING) {
-            snprintf(fonts_dir, sizeof fonts_dir, "%s/%s", root, paths_fonts->as.string);
+            configured_fonts = paths_fonts->as.string;
         }
     }
+    bt_app_fonts_dir_from(configured_fonts, fonts_dir);
     int built = bt_app_fonts_codepoints(config, corpus, words, word_count, codepoints, count);
     bt_json_free(config);
     if (built < 0) {
@@ -151,7 +159,7 @@ static int load_face(const char *config_path, const char *key, const char *file_
         return -1;
     }
     char path[BT_PATH_MAX];
-    snprintf(path, sizeof path, "%s/%s", fonts_dir, name);
+    bt_paths_join(fonts_dir, name, path);
     *out = LoadFontEx(path, 64, codepoints, built);
     if (out->texture.id == 0) {
         snprintf(error, error_len, "font load failed at %s", path);

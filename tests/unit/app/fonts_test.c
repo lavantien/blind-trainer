@@ -1,4 +1,5 @@
 #include "app/fonts.h"
+#include "app/window.h"
 
 #include "common.h"
 
@@ -50,6 +51,24 @@ static int contains(const int *codepoints, int count, int want) {
         }
     }
     return 0;
+}
+
+BT_TEST(fonts, dir_from_honors_configured_and_absolute_values) {
+    char out[BT_PATH_MAX];
+    char root[BT_PATH_MAX];
+    bt_paths_workspace_root(root);
+    char want[BT_PATH_MAX];
+    snprintf(want, sizeof want, "%s/assets/fonts", root);
+    bt_app_fonts_dir_from(NULL, out);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_app_fonts_dir_from("C:/fonts", out);
+    BT_CHECK(strcmp(out, "C:/fonts") == 0);
+    bt_app_fonts_dir_from("scratch/fonts", out);
+    snprintf(want, sizeof want, "%s/scratch/fonts", root);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_app_fonts_dir_from("scratch/fonts/", out);
+    snprintf(want, sizeof want, "%s/scratch/fonts/", root);
+    BT_CHECK(strcmp(out, want) == 0);
 }
 
 BT_TEST(fonts, codepoint_set_covers_config_ranges_corpus_and_words) {
