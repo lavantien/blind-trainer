@@ -38,13 +38,6 @@ bt_net_geometry bt_view_drill_net_geometry(float window_w, float window_h) {
     return geo;
 }
 
-void bt_view_drill_net_update(bt_app_net_state *net, bt_views_net *pulse, float dt) {
-    BT_TRACE_ENTER("app.view_drill_net_update");
-    pulse->elapsed += dt;
-    bt_net_update_cells(net, pulse->pulse, dt, (float)pulse->elapsed, pulse->frozen, pulse->ink);
-    BT_TRACE_EXIT("app.view_drill_net_update");
-}
-
 void bt_view_drill_net_draw(const void *font_bold, const bt_views_net *pulse, float region_x,
                             float region_y, float region_w, float region_h) {
     BT_TRACE_ENTER("app.view_drill_net_draw");

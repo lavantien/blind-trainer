@@ -66,3 +66,10 @@ void bt_view_net_draw(const void *font_bold, const bt_net_geometry *geo,
     }
     BT_TRACE_EXIT("app.view_net_draw");
 }
+
+void bt_view_net_update(bt_app_net_state *net, bt_views_net *pulse, float dt) {
+    BT_TRACE_ENTER("app.view_net_update");
+    pulse->elapsed += dt;
+    bt_net_update_cells(net, pulse->pulse, dt, (float)pulse->elapsed, pulse->frozen, pulse->ink);
+    BT_TRACE_EXIT("app.view_net_update");
+}

@@ -1,4 +1,5 @@
 #include "app/boot.h"
+#include "app/views/net_view.h"
 #include "app/views/state.h"
 #include "app/window.h"
 #include "common/bt_trace.h"
@@ -54,6 +55,7 @@ int bt_app_main(int argc, char **argv) {
             BT_APP_STATE_TABLE[ctx.state].enter(&ctx);
             bt_app_apply_pending(&ctx);
         }
+        bt_view_net_update(&ctx.net, &bt_app_views_shared()->net, GetFrameTime());
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
         if (BT_APP_STATE_TABLE[ctx.state].draw != NULL) {

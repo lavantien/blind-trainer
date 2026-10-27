@@ -217,7 +217,7 @@ static void draw_net(void) {
     bt_app_net_state net;
     bt_app_net_state_default(&net);
     bt_app_views *views = bt_app_views_shared();
-    bt_view_drill_net_update(&net, &views->net, 0.016F);
+    bt_view_net_update(&net, &views->net, 0.016F);
     bt_view_drill_net_draw(book->bold, &views->net, 40.0F, 40.0F, 560.0F, 400.0F);
     bt_app_views_dispose_shared();
 }
@@ -321,18 +321,18 @@ static int run_drill_row(const bt_app_font_book *book) {
     bt_drill_app_state *app = bt_view_drill_app();
     bt_view_drill_enter_state(&g_ctx, app);
     bt_app_views *views = bt_app_views_shared();
-    bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+    bt_view_net_update(&g_ctx.net, &views->net, 0.016F);
     int ok = draw_and_capture(draw_drill_row);
     if (ok) {
         bt_view_drill_key(&g_ctx, app, 32);
-        bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+        bt_view_net_update(&g_ctx.net, &views->net, 0.016F);
         ok = draw_and_capture(draw_drill_row);
     }
     if (ok) {
         for (int rep = 0; rep < 4; rep++) {
             bt_view_drill_key(&g_ctx, app, 32);
         }
-        bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+        bt_view_net_update(&g_ctx.net, &views->net, 0.016F);
         ok = draw_and_capture(draw_drill_row);
     }
     bt_app_ctx_free(&g_ctx);
@@ -383,4 +383,41 @@ BT_TEST(view_draw, menu_row_draw_renders) {
 BT_TEST(view_draw, fonts_current_tracks_the_loaded_book) {
     BT_CHECK(with_fonts(run_fonts_current));
     BT_CHECK(bt_app_fonts_current() == NULL);
+}
+
+static int colors_equal(bt_theme_color a, bt_theme_color b) {
+    return a.red == b.red && a.green == b.green && a.blue == b.blue && a.alpha == b.alpha;
+}
+
+static int colors_near(bt_theme_color a, bt_theme_color b) {
+    return fabsf(a.red - b.red) < 1e-5F && fabsf(a.green - b.green) < 1e-5F &&
+           fabsf(a.blue - b.blue) < 1e-5F && fabsf(a.alpha - b.alpha) < 1e-5F;
+}
+
+BT_TEST(view_draw, net_update_puts_highlight_ink_on_target_cells) {
+    bt_app_ctx ctx;
+    fill_row_ctx(&ctx);
+    bt_drill_app_state *app = bt_view_drill_app();
+    bt_view_drill_app_init(app);
+    app->seed = 20261012;
+    bt_view_drill_enter_state(&ctx, app);
+    bt_app_views *views = bt_app_views_shared();
+    memset(&views->net, 0, sizeof views->net);
+    bt_view_net_update(&ctx.net, &views->net, 0.5F);
+    float wave = 0.6F + 0.4F * sinf(0.5F * 6.283185307F * 2.0F);
+    unsigned char target = ctx.net.targets[0];
+    size_t target_grid = bt_net_grid_index(target);
+    unsigned char occupant = bt_cube_sticker_at(&ctx.net.cube, target);
+    bt_theme_color expected = bt_theme_mix(bt_theme_face_color((size_t)bt_net_face_of(occupant)),
+                                           bt_theme_interchange(), wave);
+    BT_CHECK(colors_near(views->net.ink[target_grid].background, expected));
+    unsigned char buffer = ctx.net.buffer_sticker;
+    size_t buffer_grid = bt_net_grid_index(buffer);
+    unsigned char buffer_occupant = bt_cube_sticker_at(&ctx.net.cube, buffer);
+    bt_theme_color buffer_expected = bt_theme_mix(
+        bt_theme_face_color((size_t)bt_net_face_of(buffer_occupant)), bt_theme_teal(), wave);
+    BT_CHECK(colors_near(views->net.ink[buffer_grid].background, buffer_expected));
+    BT_CHECK(colors_equal(views->net.ink[4].background, bt_theme_face_color(0)));
+    bt_app_views_dispose_shared();
+    bt_app_ctx_free(&ctx);
 }
