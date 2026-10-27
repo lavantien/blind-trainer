@@ -64,7 +64,7 @@ BT_TEST(view_state, syllables_path_defaults_to_workspace_data_ga) {
     char root[BT_PATH_MAX];
     bt_paths_workspace_root(root);
     char expected[BT_PATH_MAX];
-    snprintf(expected, sizeof expected, "%s\\data\\ga\\syllables.json", root);
+    snprintf(expected, sizeof expected, "%s/data\\ga\\syllables.json", root);
     const char *dir = ta_temp_dir("view_state", "path-default");
     bt_app_runtime_paths paths = *paths_without_config_owned(dir);
     char out[BT_PATH_MAX];
@@ -76,7 +76,7 @@ BT_TEST(view_state, syllables_path_honors_relative_data_ga) {
     char root[BT_PATH_MAX];
     bt_paths_workspace_root(root);
     char expected[BT_PATH_MAX];
-    snprintf(expected, sizeof expected, "%s\\scratch/ga\\syllables.json", root);
+    snprintf(expected, sizeof expected, "%s/scratch/ga\\syllables.json", root);
     const char *dir = ta_temp_dir("view_state", "path-relative");
     write_config(dir, "scratch/ga");
     bt_app_runtime_paths paths = *paths_with_config_owned(dir);
@@ -90,6 +90,42 @@ BT_TEST(view_state, syllables_path_keeps_absolute_data_ga) {
     snprintf(expected, sizeof expected, "C:/ga-root\\syllables.json");
     const char *dir = ta_temp_dir("view_state", "path-absolute");
     write_config(dir, "C:/ga-root");
+    bt_app_runtime_paths paths = *paths_with_config_owned(dir);
+    char out[BT_PATH_MAX];
+    bt_views_syllables_path(&paths, out);
+    BT_CHECK(strcmp(out, expected) == 0);
+}
+
+BT_TEST(view_state, syllables_path_root_only_data_ga_keeps_the_drive) {
+    char root[BT_PATH_MAX];
+    bt_paths_workspace_root(root);
+    BT_CHECK(root[1] == ':');
+    char expected[BT_PATH_MAX];
+    snprintf(expected, sizeof expected, "%2.2s/out\\syllables.json", root);
+    const char *dir = ta_temp_dir("view_state", "path-root-only");
+    write_config(dir, "/out");
+    bt_app_runtime_paths paths = *paths_with_config_owned(dir);
+    char out[BT_PATH_MAX];
+    bt_views_syllables_path(&paths, out);
+    BT_CHECK(strcmp(out, expected) == 0);
+}
+
+BT_TEST(view_state, syllables_path_drive_without_root_replaces) {
+    char expected[TA_PATH_MAX];
+    snprintf(expected, sizeof expected, "C:ga\\syllables.json");
+    const char *dir = ta_temp_dir("view_state", "path-drive-only");
+    write_config(dir, "C:ga");
+    bt_app_runtime_paths paths = *paths_with_config_owned(dir);
+    char out[BT_PATH_MAX];
+    bt_views_syllables_path(&paths, out);
+    BT_CHECK(strcmp(out, expected) == 0);
+}
+
+BT_TEST(view_state, syllables_path_unc_data_ga_replaces) {
+    char expected[TA_PATH_MAX];
+    snprintf(expected, sizeof expected, "\\\\srv\\sh\\ga\\syllables.json");
+    const char *dir = ta_temp_dir("view_state", "path-unc");
+    write_config(dir, "\\\\srv\\sh\\ga");
     bt_app_runtime_paths paths = *paths_with_config_owned(dir);
     char out[BT_PATH_MAX];
     bt_views_syllables_path(&paths, out);

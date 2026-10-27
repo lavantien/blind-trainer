@@ -86,13 +86,6 @@ void bt_app_views_dispose_shared(void) {
     BT_TRACE_EXIT("app.views_dispose_shared");
 }
 
-static int configured_is_absolute(const char *path) {
-    if (path[0] != '\0' && path[1] == ':') {
-        return 1;
-    }
-    return path[0] == '\\' && path[1] == '\\';
-}
-
 void bt_views_syllables_path(const bt_app_runtime_paths *paths, char out[BT_PATH_MAX]) {
     BT_TRACE_ENTER("app.views_syllables_path");
     char configured[BT_PATH_MAX] = "data\\ga";
@@ -107,13 +100,11 @@ void bt_views_syllables_path(const bt_app_runtime_paths *paths, char out[BT_PATH
         }
     }
     bt_json_free(config);
-    if (configured_is_absolute(configured)) {
-        snprintf(out, BT_PATH_MAX, "%s\\syllables.json", configured);
-    } else {
-        char root[BT_PATH_MAX];
-        bt_paths_workspace_root(root);
-        snprintf(out, BT_PATH_MAX, "%s\\%s\\syllables.json", root, configured);
-    }
+    char root[BT_PATH_MAX];
+    bt_paths_workspace_root(root);
+    char joined[BT_PATH_MAX];
+    bt_paths_join(root, configured, joined);
+    snprintf(out, BT_PATH_MAX, "%s\\syllables.json", joined);
     BT_TRACE_EXIT("app.views_syllables_path");
 }
 
