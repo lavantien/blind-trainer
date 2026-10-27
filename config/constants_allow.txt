@@ -1,12 +1,24 @@
 # path TAB literal-core TAB justification
 # constants scan scope: c and python implementation sources under src, tools, scripts, tests components exempt, recurrence per hub policy.literal_recurrence, digits per policy.small_literal_allow
+src/common/bt_trace.c	512	trace line clamp buffer sized for the config trace.line_max ceiling, pinned by the common trace tests
+src/common/json.c	10	hex digit value base of the json number parser, pinned by parser tests
+src/common/json.c	32	initial writer buffer for one json scalar, pinned by writer tests
+src/common/json.c	63	utf-8 continuation mask of the json parser, pinned by parser tests
+src/common/json.c	128	ascii lead byte boundary of the json utf-8 scanner, pinned by parser tests
+src/common/sha256.c	15	message schedule reach back of sha-256, pinned by nist vectors
+src/common/sha256.c	16	first message schedule words of sha-256, pinned by nist vectors
+src/common/sha256.c	32	word width of the sha-256 rotation primitive, pinned by nist vectors
+src/common/sha256.c	64	message schedule block words of sha-256, pinned by nist vectors
+src/core/alg.c	128	wide move marker byte of the alg tokenizer, pinned by parse tests
 src/core/analysis.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/cube.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/cube.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/moves.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/data/fsrs.c	0.0	FSRS-5 retention guard pinned by the py-fsrs 5.1.3 golden vectors
 src/data/fsrs.c	1.0	FSRS-5 formula constant pinned by the py-fsrs 5.1.3 golden vectors
+src/data/import.c	512	line buffer sized for the longest import row, pinned by import tests
 src/scheme/classifier.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/classifier.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/memo.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
@@ -17,3 +29,8 @@ src/scheme/scheme.c	48	cube or Speffz geometry constant intrinsic to the 3x3 mod
 src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+tools/mutate/engine.c	256	link argv slot cap mirroring the engine link list, pinned by the mutate selftests
+tools/mutate/ledger.c	10	decimal radix of the ledger field parser, pinned by the mutate selftests
+tools/mutate/ledger.c	32	iso timestamp buffer of the ledger row, pinned by the mutate selftests
+tools/mutate/scratch.c	64	slot name capacity of the scratch sweep, pinned by the mutate selftests
+tools/mutate/tests.c	60000	clang compile timeout of the mutate selftest spawns
