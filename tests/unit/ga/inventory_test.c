@@ -24,7 +24,10 @@ BT_TEST(inventory, stop_coda_syllables_take_only_sac_or_nang) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     BT_CHECK(count > 0);
     for (size_t i = 0; i < count; i++) {
         if (entries[i].coda == BT_GA_CODA_P || entries[i].coda == BT_GA_CODA_T ||
@@ -103,7 +106,10 @@ BT_TEST(inventory, inventory_filters_against_wordlist_and_reports) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     int has_khong = 0;
     int has_tia = 0;
     int has_cua = 0;
@@ -135,8 +141,13 @@ BT_TEST(inventory, build_inventory_is_deterministic) {
     size_t count_b = 0;
     bt_ga_inventory_report ra;
     bt_ga_inventory_report rb;
-    bt_ga_build_inventory(&wordlist, &a, &count_a, &ra);
-    bt_ga_build_inventory(&wordlist, &b, &count_b, &rb);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &a, &count_a, &ra, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
+    if (!bt_ga_build_inventory(&wordlist, &b, &count_b, &rb, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     BT_CHECK(count_a == count_b);
     int equal = 1;
     for (size_t i = 0; i < count_a; i++) {
@@ -158,7 +169,10 @@ BT_TEST(inventory, generated_entries_carry_no_combining_marks) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     for (size_t i = 0; i < count; i++) {
         BT_CHECK(bt_ga_is_nfc(entries[i].text));
     }
@@ -173,7 +187,10 @@ BT_TEST(inventory, pool_ranks_by_frequency_and_stays_in_wordlist) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     const char *const keys[] = {"má", "ma", "mà", "zzz"};
     const uint64_t values[] = {500, 900, 900, 99999};
     bt_ga_freqs freqs = freqs_from(keys, values, 4);
@@ -206,7 +223,10 @@ BT_TEST(inventory, real_pool_size_meets_case_count) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     char dir[BT_PATH_MAX];
     bt_ga_vietnamese_dir(dir);
     char path[BT_PATH_MAX];
@@ -379,7 +399,10 @@ BT_TEST(inventory, build_inventory_pins_cells_across_feature_slots) {
     bt_ga_inventory_entry *entries = NULL;
     size_t count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     const bt_ga_inventory_entry *nghiem = NULL;
     const bt_ga_inventory_entry *xua = NULL;
     const bt_ga_inventory_entry *mut = NULL;

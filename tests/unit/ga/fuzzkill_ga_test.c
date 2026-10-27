@@ -406,7 +406,10 @@ static void inventory_texts_of(const char *const *texts, size_t count, char out[
     bt_ga_inventory_entry *entries = NULL;
     size_t entry_count = 0;
     bt_ga_inventory_report report;
-    bt_ga_build_inventory(&wordlist, &entries, &entry_count, &report);
+    char inv_err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_inventory(&wordlist, &entries, &entry_count, &report, inv_err)) {
+        BT_ABORT("build_inventory: %s", inv_err);
+    }
     size_t written = 0;
     for (size_t i = 0; i < entry_count; i++) {
         strcpy(out[written], entries[i].text);

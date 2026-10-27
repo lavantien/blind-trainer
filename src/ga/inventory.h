@@ -106,8 +106,8 @@ typedef struct {
     size_t wordlist_covered;
 } bt_ga_inventory_report;
 
-void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **entries,
-                           size_t *count, bt_ga_inventory_report *report);
+int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **entries,
+                          size_t *count, bt_ga_inventory_report *report, char err[BT_GA_ERR_MAX]);
 void bt_ga_inventory_free(bt_ga_inventory_entry *entries);
 
 int bt_ga_nucleus_rime(bt_ga_nucleus nucleus, bt_ga_coda coda, const char **rime, size_t *mark_at);

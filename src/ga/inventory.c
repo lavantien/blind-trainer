@@ -167,12 +167,16 @@ static void bt_ga_freqs_push(bt_ga_freqs *freqs, const char *key, uint64_t value
         }
     }
     char **grown_keys = realloc(freqs->keys, (freqs->count + 1) * sizeof *grown_keys);
+    if (grown_keys != NULL) {
+        freqs->keys = grown_keys;
+    }
     uint64_t *grown_values = realloc(freqs->values, (freqs->count + 1) * sizeof *grown_values);
+    if (grown_values != NULL) {
+        freqs->values = grown_values;
+    }
     if (grown_keys == NULL || grown_values == NULL) {
         return;
     }
-    freqs->keys = grown_keys;
-    freqs->values = grown_values;
     freqs->keys[freqs->count] = _strdup(key);
     freqs->values[freqs->count] = value;
     freqs->count++;
@@ -725,10 +729,55 @@ static int bt_ga_entry_cmp(const void *a, const void *b) {
     return 0;
 }
 
-void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **entries,
-                           size_t *count, bt_ga_inventory_report *report) {
+static int bt_ga_cover_word(char ***covered, size_t *covered_size, size_t *covered_capacity,
+                            const char *text) {
+    for (size_t c = 0; c < *covered_size; c++) {
+        if (strcmp((*covered)[c], text) == 0) {
+            return 1;
+        }
+    }
+    if (*covered_size == *covered_capacity) {
+        *covered_capacity *= 2;
+        char **grown = realloc(*covered, *covered_capacity * sizeof *grown);
+        if (grown == NULL) {
+            return 0;
+        }
+        *covered = grown;
+    }
+    char *copy = _strdup(text);
+    if (copy == NULL) {
+        return 0;
+    }
+    (*covered)[(*covered_size)++] = copy;
+    return 1;
+}
+
+static int bt_ga_grow_list(bt_ga_inventory_entry **list, size_t *capacity, size_t size) {
+    if (size < *capacity) {
+        return 1;
+    }
+    *capacity *= 2;
+    bt_ga_inventory_entry *grown = realloc(*list, *capacity * sizeof *grown);
+    if (grown == NULL) {
+        return 0;
+    }
+    *list = grown;
+    return 1;
+}
+
+int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **entries,
+                          size_t *count, bt_ga_inventory_report *report, char err[BT_GA_ERR_MAX]) {
     BT_TRACE_ENTER("ga.build_inventory");
+    int ok = 1;
+    size_t covered_capacity = 64;
+    size_t covered_size = 0;
+    char **covered = NULL;
+    bt_ga_inventory_entry *list = NULL;
     const char **sorted = malloc(wordlist->count * sizeof *sorted);
+    if (sorted == NULL) {
+        ok = 0;
+        goto fail;
+    }
     for (size_t i = 0; i < wordlist->count; i++) {
         sorted[i] = wordlist->items[i];
     }
@@ -736,11 +785,17 @@ void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry *
 
     size_t capacity = 64;
     size_t size = 0;
-    bt_ga_inventory_entry *list = malloc(capacity * sizeof *list);
+    list = malloc(capacity * sizeof *list);
+    if (list == NULL) {
+        ok = 0;
+        goto fail;
+    }
     size_t generated = 0;
-    size_t covered_capacity = 64;
-    size_t covered_size = 0;
-    char **covered = malloc(covered_capacity * sizeof *covered);
+    covered = malloc(covered_capacity * sizeof *covered);
+    if (covered == NULL) {
+        ok = 0;
+        goto fail;
+    }
 
     for (size_t oi = 0; oi < sizeof BT_GA_ONSETS / sizeof BT_GA_ONSETS[0]; oi++) {
         bt_ga_onset onset = BT_GA_ONSETS[oi];
@@ -762,23 +817,14 @@ void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry *
                             if (!bt_ga_sorted_contains(sorted, wordlist->count, forms.items[f])) {
                                 continue;
                             }
-                            int already = 0;
-                            for (size_t c = 0; c < covered_size; c++) {
-                                if (strcmp(covered[c], forms.items[f]) == 0) {
-                                    already = 1;
-                                    break;
-                                }
+                            if (!bt_ga_cover_word(&covered, &covered_size, &covered_capacity,
+                                                  forms.items[f])) {
+                                ok = 0;
+                                goto fail;
                             }
-                            if (!already) {
-                                if (covered_size == covered_capacity) {
-                                    covered_capacity *= 2;
-                                    covered = realloc(covered, covered_capacity * sizeof *covered);
-                                }
-                                covered[covered_size++] = _strdup(forms.items[f]);
-                            }
-                            if (size == capacity) {
-                                capacity *= 2;
-                                list = realloc(list, capacity * sizeof *list);
+                            if (!bt_ga_grow_list(&list, &capacity, size)) {
+                                ok = 0;
+                                goto fail;
                             }
                             strcpy(list[size].text, forms.items[f]);
                             list[size].onset = onset;
@@ -799,23 +845,14 @@ void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry *
                             if (!bt_ga_sorted_contains(sorted, wordlist->count, text)) {
                                 continue;
                             }
-                            int already = 0;
-                            for (size_t c = 0; c < covered_size; c++) {
-                                if (strcmp(covered[c], text) == 0) {
-                                    already = 1;
-                                    break;
-                                }
+                            if (!bt_ga_cover_word(&covered, &covered_size, &covered_capacity,
+                                                  text)) {
+                                ok = 0;
+                                goto fail;
                             }
-                            if (!already) {
-                                if (covered_size == covered_capacity) {
-                                    covered_capacity *= 2;
-                                    covered = realloc(covered, covered_capacity * sizeof *covered);
-                                }
-                                covered[covered_size++] = _strdup(text);
-                            }
-                            if (size == capacity) {
-                                capacity *= 2;
-                                list = realloc(list, capacity * sizeof *list);
+                            if (!bt_ga_grow_list(&list, &capacity, size)) {
+                                ok = 0;
+                                goto fail;
                             }
                             strcpy(list[size].text, text);
                             list[size].onset = onset;
@@ -847,12 +884,23 @@ void bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry *
     *entries = list;
     *count = kept;
 
+fail:
     for (size_t c = 0; c < covered_size; c++) {
         free(covered[c]);
     }
     free(covered);
     free(sorted);
+    if (!ok) {
+        free(list);
+        *entries = NULL;
+        *count = 0;
+        memset(report, 0, sizeof *report);
+        snprintf(err, BT_GA_ERR_MAX, "inventory allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "allocation failed");
+        return 0;
+    }
     BT_TRACE_EXIT("ga.build_inventory");
+    return 1;
 }
 
 void bt_ga_inventory_free(bt_ga_inventory_entry *entries) {

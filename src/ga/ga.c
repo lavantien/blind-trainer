@@ -246,6 +246,14 @@ BT_NORETURN static void bt_ga_run_abort(const char *why) {
     bt_harness_exit_failure();
 }
 
+static void *bt_ga_run_alloc(size_t bytes) {
+    void *block = malloc(bytes);
+    if (block == NULL) {
+        bt_ga_run_abort("allocation failed");
+    }
+    return block;
+}
+
 bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params) {
     BT_TRACE_ENTER("ga.run");
     if (!(params->population > params->elite)) {
@@ -261,30 +269,30 @@ bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params) {
     bt_rng_seed(&rng, params->seed);
     size_t pop = params->population;
     size_t case_count = env->case_count;
-    uint32_t *scratch = malloc(env->pool_size * sizeof *scratch);
-    uint32_t **population = malloc(pop * sizeof *population);
+    uint32_t *scratch = bt_ga_run_alloc(env->pool_size * sizeof *scratch);
+    uint32_t **population = bt_ga_run_alloc(pop * sizeof *population);
     for (size_t i = 0; i < pop; i++) {
-        population[i] = malloc(case_count * sizeof **population);
+        population[i] = bt_ga_run_alloc(case_count * sizeof **population);
         bt_ga_random_individual(&rng, env->pool_size, case_count, scratch, population[i]);
     }
     uint64_t evaluations = pop;
-    float *scores = malloc(pop * sizeof *scores);
+    float *scores = bt_ga_run_alloc(pop * sizeof *scores);
     for (size_t i = 0; i < pop; i++) {
         scores[i] = bt_ga_fitness(params, env, population[i]);
     }
-    size_t *order = malloc(pop * sizeof *order);
+    size_t *order = bt_ga_run_alloc(pop * sizeof *order);
     bt_ga_sorted_order(scores, population, pop, case_count, order);
-    uint32_t *best = malloc(case_count * sizeof *best);
+    uint32_t *best = bt_ga_run_alloc(case_count * sizeof *best);
     memcpy(best, population[order[0]], case_count * sizeof *best);
     float best_fitness = scores[order[0]];
     size_t best_generation = 0;
-    float *per_gen_best = malloc((params->generations + 1) * sizeof *per_gen_best);
+    float *per_gen_best = bt_ga_run_alloc((params->generations + 1) * sizeof *per_gen_best);
     per_gen_best[0] = best_fitness;
     uint32_t stagnation_tail = 0;
     uint32_t max_stagnation = 0;
 
-    uint32_t **next = malloc(pop * sizeof *next);
-    unsigned char *is_elite = malloc(pop);
+    uint32_t **next = bt_ga_run_alloc(pop * sizeof *next);
+    unsigned char *is_elite = bt_ga_run_alloc(pop);
     uint64_t swap_gate = (uint64_t)(params->swap * 1000000.0);
     uint64_t replace_gate = (uint64_t)(params->replace * 1000000.0);
     for (size_t generation = 1; generation <= params->generations; generation++) {
@@ -301,7 +309,7 @@ bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params) {
             size_t cut1 = 0;
             size_t cut2 = 0;
             bt_ga_draw_cuts(&rng, case_count, &cut1, &cut2);
-            uint32_t *child = malloc(case_count * sizeof *child);
+            uint32_t *child = bt_ga_run_alloc(case_count * sizeof *child);
             bt_ga_ox(population[p1], population[p2], case_count, cut1, cut2, child);
             if (bt_rng_below(&rng, 1000000) < swap_gate) {
                 bt_ga_mutate_swap(child, case_count, &rng);
@@ -348,7 +356,7 @@ bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params) {
     free(scores);
     free(order);
 
-    bt_ga_run_outcome *outcome = malloc(sizeof *outcome);
+    bt_ga_run_outcome *outcome = bt_ga_run_alloc(sizeof *outcome);
     float parts[3];
     bt_ga_fitness_parts(env, best, parts);
     outcome->best = best;
