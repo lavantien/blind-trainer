@@ -26,20 +26,26 @@ def release_config():
 
 
 def staging_plan(repo, dist_root, release):
-    """ordered (src, dst) copy list for the staged dist tree; raises when the exe is missing."""
+    """ordered (src, dst) copy list for the staged dist tree; raises when exe, config or fonts are missing."""
     staging = Path(dist_root) / release["staging_dir"]
     exe_src = Path(repo) / "build" / "bin" / release["exe"]
     if not exe_src.is_file():
         raise FileNotFoundError(f"{exe_src} missing, run python bt.py build first")
     config_src = Path(repo) / release["config_file"]
-    plan = [(exe_src, staging / release["exe"])]
-    if config_src.is_file():
-        plan.append((config_src, staging / release["config_file"]))
+    if not config_src.is_file():
+        raise FileNotFoundError(f"{config_src} missing")
+    plan = [
+        (exe_src, staging / release["exe"]),
+        (config_src, staging / release["config_file"]),
+    ]
     fonts = Path(repo) / release["fonts_dir"]
-    if fonts.is_dir():
-        for font in sorted(fonts.iterdir()):
-            if font.is_file():
-                plan.append((font, staging / release["fonts_dir"] / font.name))
+    if not fonts.is_dir():
+        raise FileNotFoundError(f"{fonts} missing")
+    font_files = sorted(child for child in fonts.iterdir() if child.is_file())
+    if not font_files:
+        raise FileNotFoundError(f"{fonts} has no font files")
+    for font in font_files:
+        plan.append((font, staging / release["fonts_dir"] / font.name))
     return plan
 
 
@@ -70,16 +76,19 @@ def main(argv=None):
     dist_root = REPO / "artifacts" / "dist"
     try:
         plan = staging_plan(REPO, dist_root, release)
+        staging = Path(dist_root) / release["staging_dir"]
+        if staging.exists():
+            shutil.rmtree(staging)
+        for src, dst in plan:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+        target = build_zip(staging, zip_path(dist_root, args.version))
     except FileNotFoundError as exc:
         fail(str(exc))
         return 1
-    staging = Path(dist_root) / release["staging_dir"]
-    if staging.exists():
-        shutil.rmtree(staging)
-    for src, dst in plan:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
-    target = build_zip(staging, zip_path(dist_root, args.version))
+    except (KeyError, OSError, ValueError) as exc:
+        fail(f"dist failed: {exc}")
+        return 2
     print(f"{target.name} {target.stat().st_size}")
     TOOL.exit("dist", 0)
     return 0

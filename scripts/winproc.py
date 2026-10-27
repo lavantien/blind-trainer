@@ -4,19 +4,48 @@ from ctypes import wintypes
 
 PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 PROCESS_VM_READ = 0x10
-STILL_ACTIVE = 259
+SYNCHRONIZE = 0x00100000
+WAIT_TIMEOUT = 0x102
 DOTNET_FILETIME_OFFSET = 504911232000000000
 PATH_BUFFER_WCHARS = 1024
+SYSTEM_PROCESS_INFORMATION_CLASS = 5
+STATUS_INFO_LENGTH_MISMATCH = 0xC0000004
 
 
 class PROCESS_BASIC_INFORMATION(ctypes.Structure):
     _fields_ = [
-        ("Reserved1", ctypes.c_void_p * 2),
+        ("ExitStatus", ctypes.c_void_p),
         ("PebBaseAddress", ctypes.c_void_p),
-        ("Reserved2", ctypes.c_void_p * 2),
+        ("AffinityMask", ctypes.c_void_p),
+        ("BasePriority", ctypes.c_void_p),
         ("UniqueProcessId", ctypes.c_void_p),
         ("InheritedFromUniqueProcessId", ctypes.c_void_p),
-        ("Reserved3", ctypes.c_void_p),
+    ]
+
+
+class UNICODE_STRING(ctypes.Structure):
+    _fields_ = [
+        ("Length", wintypes.USHORT),
+        ("MaximumLength", wintypes.USHORT),
+        ("Buffer", ctypes.c_void_p),
+    ]
+
+
+class SYSTEM_PROCESS_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("NextEntryOffset", wintypes.ULONG),
+        ("NumberOfThreads", wintypes.ULONG),
+        ("WorkingSetPrivate", ctypes.c_int64),
+        ("HardFaultCount", wintypes.ULONG),
+        ("NumberOfThreadsHighWatermark", wintypes.ULONG),
+        ("CycleTime", ctypes.c_uint64),
+        ("CreateTime", ctypes.c_int64),
+        ("UserTime", ctypes.c_int64),
+        ("KernelTime", ctypes.c_int64),
+        ("ImageName", UNICODE_STRING),
+        ("BasePriority", ctypes.c_long),
+        ("UniqueProcessId", ctypes.c_void_p),
+        ("InheritedFromUniqueProcessId", ctypes.c_void_p),
     ]
 
 
@@ -200,18 +229,55 @@ def pid_start_ticks(pid):
 
 
 def pid_alive(pid):
+    """true only while the process object still exists, an exited process with code 259 is gone."""
     k32 = _kernel32()
-    handle = _open(pid, PROCESS_QUERY_LIMITED_INFORMATION)
+    handle = _open(pid, PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE)
     if not handle:
         return False
     try:
-        code = wintypes.DWORD(0)
-        k32.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
-        if not k32.GetExitCodeProcess(handle, ctypes.byref(code)):
-            return False
-        return code.value == STILL_ACTIVE
+        k32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        k32.WaitForSingleObject.restype = wintypes.DWORD
+        return k32.WaitForSingleObject(handle, 0) == WAIT_TIMEOUT
     finally:
         k32.CloseHandle(handle)
+
+
+def process_name_rows():
+    """(pid, image name) for every process in the system snapshot, no handle needed per pid."""
+    ntdll = _ntdll()
+    ntdll.NtQuerySystemInformation.argtypes = [
+        wintypes.INT,
+        ctypes.c_void_p,
+        wintypes.ULONG,
+        ctypes.POINTER(wintypes.ULONG),
+    ]
+    ntdll.NtQuerySystemInformation.restype = ctypes.c_long
+    size = 1 << 20
+    while True:
+        buf = ctypes.create_string_buffer(size)
+        retlen = wintypes.ULONG(0)
+        status = ntdll.NtQuerySystemInformation(
+            SYSTEM_PROCESS_INFORMATION_CLASS, buf, size, ctypes.byref(retlen)
+        )
+        if status == 0:
+            break
+        if status & 0xFFFFFFFF == STATUS_INFO_LENGTH_MISMATCH:
+            size = max(size * 2, retlen.value + 4096)
+            continue
+        raise OSError(f"ntquery system information failed: {status & 0xFFFFFFFF:#x}")
+    rows = []
+    offset = 0
+    while True:
+        entry = ctypes.cast(ctypes.byref(buf, offset), ctypes.POINTER(SYSTEM_PROCESS_INFORMATION)).contents
+        name = ""
+        if entry.ImageName.Length:
+            raw = ctypes.string_at(entry.ImageName.Buffer, entry.ImageName.Length)
+            name = raw.decode("utf-16-le", "replace")
+        rows.append((int(entry.UniqueProcessId or 0), name))
+        if not entry.NextEntryOffset:
+            break
+        offset += entry.NextEntryOffset
+    return rows
 
 
 def pid_name(pid):

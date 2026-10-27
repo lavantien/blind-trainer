@@ -26,6 +26,10 @@ def fmt_gb(value):
     return f"{value / GB:.2f}"
 
 
+def fmt_floor(value):
+    return f"{value:.6f}".rstrip("0").rstrip(".") or "0"
+
+
 def config_path(repo):
     env = os.environ.get("BT_CONFIG", "")
     if env:
@@ -123,7 +127,15 @@ def drive_free_bytes(path):
 
 def processes_named(names):
     wanted = {name.lower() for name in names}
-    return [proc for proc in winproc.snapshot_processes() if proc["exe"].rsplit(".", 1)[0].lower() in wanted]
+    found = [proc for proc in winproc.snapshot_processes() if proc["exe"].rsplit(".", 1)[0].lower() in wanted]
+    seen = {proc["pid"] for proc in found}
+    for pid, name in winproc.process_name_rows():
+        if pid == 0 or pid in seen or not name:
+            continue
+        if name.rsplit(".", 1)[0].lower() in wanted:
+            found.append({"pid": pid, "ppid": 0, "exe": name})
+            seen.add(pid)
+    return found
 
 
 def selftest(work_dir):
@@ -227,7 +239,7 @@ def main(argv=None):
     scratch_bytes = sum(dir_bytes(p) for p in scratches)
     ext_bytes = sum(dir_bytes(p) for p in externals)
     deep_bytes = sum(dir_bytes(p) for p in deep_dirs)
-    print(f"clean-rust: free {fmt_gb(free_before)} GB floor {floor} GB")
+    print(f"clean-rust: free {fmt_gb(free_before)} GB floor {fmt_floor(floor)} GB")
     print(f"incremental: {len(incrementals)} dirs {fmt_gb(inc_bytes)} GB")
     orphan_note = ", orphans with no live owner included" if args.orphan_scratch else ""
     print(
@@ -237,12 +249,13 @@ def main(argv=None):
     print(f"external: {len(externals)} dirs {fmt_gb(ext_bytes)} GB (coverage and mutation targets)")
     print(f"deep: {len(deep_dirs)} dirs {fmt_gb(deep_bytes)} GB (e2e and fuzz targets, needs -Deep and no live cargo or rustc)")
     if free_before / GB < floor:
-        print(f"clean-rust: WARN below {floor} GB floor")
+        print(f"clean-rust: WARN below {fmt_floor(floor)} GB floor")
     if not args.apply:
         print(f"reclaimable now {fmt_gb(inc_bytes + scratch_bytes + ext_bytes)} GB (run with -Apply)")
         return 0
-    if args.deep and processes_named(["cargo", "rustc"]):
-        fail(f"deep clean refused: {len(processes_named(['cargo', 'rustc']))} cargo or rustc processes live")
+    live_cargo = processes_named(["cargo", "rustc"]) if args.deep else []
+    if args.deep and live_cargo:
+        fail(f"deep clean refused: {len(live_cargo)} cargo or rustc processes live")
         return 3
     for path in incrementals:
         remove_incremental(str(path))

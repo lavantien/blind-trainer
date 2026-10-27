@@ -83,7 +83,6 @@ def sha256_of(path):
 def fetch_one(entry, retrieved):
     target = REF_DOC / entry["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
-    tmp = Path(str(target) + ".download")
     last_error = ""
     for attempt in range(3):
         try:
@@ -93,7 +92,6 @@ def fetch_one(entry, retrieved):
             if not body:
                 return {"ok": False, "error": "empty body"}
             target.write_bytes(header_text(entry, retrieved).encode("utf-8") + body)
-            tmp.unlink(missing_ok=True)
             return {"ok": True, "error": ""}
         except OSError as exc:
             last_error = str(exc)

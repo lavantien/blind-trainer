@@ -101,7 +101,11 @@ def memguard_value(key):
     except (OSError, ValueError) as exc:
         fail(f"config unreadable: {path} : {exc}")
         raise SystemExit(2)
-    value = doc.get("memguard", {}).get(key)
+    value = None
+    if isinstance(doc, dict):
+        section = doc.get("memguard")
+        if isinstance(section, dict):
+            value = section.get(key)
     if value is None:
         fail(f"config section missing: memguard.{key} in {path}")
         raise SystemExit(2)
@@ -210,9 +214,9 @@ def monitor(rows, cap, kill=False, killer=None, waiter=None):
     if not kill:
         return {"code": 3, "lines": [breach], "stderr": True}
     lines = [breach]
-    killed = (killer or taskkill_tree)(largest["id"])
+    (killer or taskkill_tree)(largest["id"])
     wait = waiter if waiter is not None else lambda pid, seconds: wait_process_gone(pid, seconds)
-    gone = killed and bool(wait(largest["id"], 5))
+    gone = bool(wait(largest["id"], 5))
     if gone:
         lines.append(f"memguard: killed pid {largest['id']} {largest['name']}, verified gone")
         return {"code": 3, "lines": lines, "stderr": False}
@@ -227,12 +231,25 @@ def split_wrap_command(command):
     return tokens
 
 
+def wrap_payload_argv(tokens):
+    lowered = tokens[0].strip().lower()
+    if lowered.endswith(".bat") or lowered.endswith(".cmd"):
+        return ["cmd.exe", "/c"] + list(tokens)
+    return list(tokens)
+
+
 def spawn_hidden(argv, stderr_file=None):
-    kwargs = {"stdout": subprocess.DEVNULL, "stderr": subprocess.PIPE if stderr_file else subprocess.DEVNULL}
+    kwargs = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
+    stream = None
     if stderr_file:
-        kwargs["stderr"] = open(stderr_file, "wb")
+        stream = open(stderr_file, "wb")
+        kwargs["stderr"] = stream
     creationflags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    return subprocess.Popen(argv, creationflags=creationflags, **kwargs)
+    try:
+        return subprocess.Popen(argv, creationflags=creationflags, **kwargs)
+    finally:
+        if stream is not None:
+            stream.close()
 
 
 def selftest(sleeper_path):
@@ -530,7 +547,7 @@ def run_wrap(name, command):
     pid_file = pid_dir / f"{name}-{own}.pid"
     _write(pid_file, stamp)
     try:
-        done = subprocess.run(payload)
+        done = subprocess.run(wrap_payload_argv(payload))
         raise SystemExit(done.returncode)
     except OSError as exc:
         fail(f"wrap payload failed to launch: {payload[0]} : {exc}")
@@ -556,8 +573,6 @@ def main(argv=None):
     parser.add_argument("-WrapCommand", "--wrap-command", dest="wrap_command", default="")
     args = parser.parse_args(argv)
     TOOL.entry("memguard", f"selftest={args.self_test} wrap={args.wrap or '-'}")
-    if not args.sleeper_path:
-        args.sleeper_path = str(REPO / "build" / "bin" / "sleeper.exe")
     if args.self_test:
         code = selftest(args.sleeper_path)
         TOOL.exit("selftest", code)

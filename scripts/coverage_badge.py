@@ -127,7 +127,9 @@ def main(argv=None):
     import datetime
 
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    (report_dir / "report.md").write_text("\n".join(report_lines(data, stamp)), encoding="utf-8", newline="\n")
+    (report_dir / "report.md").write_text(
+        "\n".join(report_lines(data, stamp)) + "\n", encoding="utf-8", newline="\n"
+    )
     value = f"{percent:.1f}%"
     (badge_dir / "coverage.svg").write_text(badge_svg("coverage", value, percent), encoding="utf-8", newline="\n")
     print(f"coverage regions: {percent:.1f}%")

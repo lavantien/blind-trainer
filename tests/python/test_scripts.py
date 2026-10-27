@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import subprocess
 import sys
 import tempfile
 import time
@@ -95,20 +97,75 @@ class MemguardLogicTests(unittest.TestCase):
         self.assertEqual(result["code"], 3)
         self.assertTrue(any("killed pid 7 z, verified gone" in line for line in result["lines"]))
 
+    def test_monitor_kill_taskkill_failure_with_gone_process_still_threes(self):
+        rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
+        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: False, waiter=lambda pid, secs: True)
+        self.assertEqual(result["code"], 3)
+        self.assertTrue(any("killed pid 7 z, verified gone" in line for line in result["lines"]))
+
     def test_wrap_split_honors_quotes(self):
         self.assertEqual(memguard.split_wrap_command('a "b c" d'), ["a", "b c", "d"])
         self.assertEqual(memguard.split_wrap_command("  only  "), ["only"])
+
+    def test_wrap_payload_argv_routes_batch_through_cmd(self):
+        self.assertEqual(memguard.wrap_payload_argv(["x.bat", "a"]), ["cmd.exe", "/c", "x.bat", "a"])
+        self.assertEqual(memguard.wrap_payload_argv(["X.CMD", "a"]), ["cmd.exe", "/c", "X.CMD", "a"])
+        self.assertEqual(memguard.wrap_payload_argv(["x.exe", "a"]), ["x.exe", "a"])
+        self.assertEqual(memguard.wrap_payload_argv(["batch", "/c"]), ["batch", "/c"])
 
     def test_cap_resolution_prefers_positive_override(self):
         self.assertEqual(memguard.resolve_cap(5, 9), 5)
         self.assertEqual(memguard.resolve_cap(0, 9), 9)
         self.assertEqual(memguard.resolve_cap(-1, 9), "-CapBytes must be a positive byte count")
 
+    def test_memguard_value_exits_two_on_null_section_and_non_dict_doc(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for text in ('{"memguard": null}', "[]", '{"memguard": 5}'):
+                path = Path(tmp) / "config.json"
+                path.write_text(text, encoding="utf-8")
+                os.environ["BT_CONFIG"] = str(path)
+                try:
+                    with self.assertRaises(SystemExit) as caught:
+                        memguard.memguard_value("cap_bytes")
+                    self.assertEqual(caught.exception.code, 2)
+                finally:
+                    os.environ.pop("BT_CONFIG", None)
+
+    def test_main_selftest_without_sleeper_path_exits_four(self):
+        self.assertEqual(memguard.main(["-SelfTest"]), 4)
+
+
+class WinprocLiveTests(unittest.TestCase):
+    def test_pid_ppid_reads_parent_for_spawned_child(self):
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
+        try:
+            self.assertEqual(winproc._pid_ppid(child.pid), os.getpid())
+        finally:
+            child.kill()
+            child.wait()
+
+    def test_pid_alive_false_for_child_exiting_259(self):
+        child = subprocess.Popen([sys.executable, "-c", "raise SystemExit(259)"])
+        self.assertEqual(child.wait(), 259)
+        deadline = time.monotonic() + 5
+        while winproc.pid_alive(child.pid) and time.monotonic() < deadline:
+            time.sleep(0.1)
+        self.assertFalse(winproc.pid_alive(child.pid))
+
+    def test_process_name_rows_see_our_own_process(self):
+        names = dict(winproc.process_name_rows())
+        self.assertTrue(names.get(os.getpid(), "").lower().startswith("python"))
+
 
 class CleanRustLogicTests(unittest.TestCase):
     def test_gb_format_matches_pwsh_f2(self):
         self.assertEqual(clean_rust.fmt_gb(2 * GB), "2.00")
         self.assertEqual(clean_rust.fmt_gb(0), "0.00")
+
+    def test_floor_format_drops_trailing_zero_like_pwsh(self):
+        self.assertEqual(clean_rust.fmt_floor(20.0), "20")
+        self.assertEqual(clean_rust.fmt_floor(20.5), "20.5")
+        self.assertEqual(clean_rust.fmt_floor(12.75), "12.75")
 
     def test_stale_selection_picks_only_aged_scratch_names(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -193,6 +250,33 @@ class DistLogicTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 dist.staging_plan(repo, repo / "out", release)
 
+    def test_staging_plan_fails_when_config_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            exe = repo / "build" / "bin" / "e.exe"
+            exe.parent.mkdir(parents=True)
+            exe.write_text("x")
+            release = {"staging_dir": "s", "exe": "e.exe", "config_file": "config/config.json", "fonts_dir": "fonts"}
+            with self.assertRaises(FileNotFoundError):
+                dist.staging_plan(repo, repo / "out", release)
+
+    def test_staging_plan_fails_when_fonts_missing_or_empty(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            exe = repo / "build" / "bin" / "e.exe"
+            exe.parent.mkdir(parents=True)
+            exe.write_text("x")
+            config = repo / "config" / "config.json"
+            config.parent.mkdir()
+            config.write_text("{}")
+            release = {"staging_dir": "s", "exe": "e.exe", "config_file": "config/config.json", "fonts_dir": "fonts"}
+            with self.assertRaises(FileNotFoundError):
+                dist.staging_plan(repo, repo / "out", release)
+            fonts = repo / "fonts"
+            fonts.mkdir()
+            with self.assertRaises(FileNotFoundError):
+                dist.staging_plan(repo, repo / "out", release)
+
 
 COV_EXPORT = {
     "data": [
@@ -244,6 +328,20 @@ class CoverageBadgeLogicTests(unittest.TestCase):
         self.assertIn('fill="#bf8700"', coverage_badge.badge_svg("coverage", "60.0%", 60.0))
         self.assertIn('fill="#2ea043"', coverage_badge.badge_svg("coverage", "80.0%", 80.0))
         self.assertIn('fill="#cf222e"', coverage_badge.badge_svg("coverage", "10.0%", 10.0))
+
+    def test_badge_svg_ends_without_trailing_newline(self):
+        svg = coverage_badge.badge_svg("coverage", "50.0%", 50.0)
+        self.assertTrue(svg.endswith("</svg>"))
+        self.assertEqual(svg.count("\n"), 9)
+
+    def test_badge_bytes_match_committed_svgs(self):
+        badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
+        for name, label in (("coverage.svg", "coverage"), ("alg-coverage.svg", "alg coverage")):
+            raw = (badge_dir / name).read_bytes()
+            match = re.search(rb'aria-label="([^"]+): ([^"]+)"', raw)
+            value = match.group(2).decode("utf-8")
+            percent = float(value.rstrip("%"))
+            self.assertEqual(coverage_badge.badge_svg(label, value, percent).encode("utf-8"), raw)
 
     def test_report_lines_carry_table_and_totals(self):
         lines = coverage_badge.report_lines(COV_EXPORT["data"][0], "2026-10-27T00:00:00Z")

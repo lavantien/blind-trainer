@@ -27,5 +27,5 @@ def badge_svg(label, value, percent):
         f'  </g>\n'
         f'  <text x="{label_mid}" y="14" fill="#ffffff" font-family="{FONT}" font-size="11" text-anchor="middle">{label}</text>\n'
         f'  <text x="{value_mid}" y="14" fill="#ffffff" font-family="{FONT}" font-size="11" text-anchor="middle">{value}</text>\n'
-        f"</svg>\n"
+        f"</svg>"
     )
