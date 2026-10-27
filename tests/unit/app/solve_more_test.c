@@ -556,3 +556,20 @@ BT_TEST(solve_more, escape_mid_memo_returns_to_menu_and_a_reopen_restarts_ready)
     BT_CHECK(ctx.stores.solves.items[0].success);
     bt_app_ctx_free(&ctx);
 }
+
+BT_TEST(solve_more, set_seed_drives_the_next_rebuild) {
+    bt_corpus_row row;
+    bt_app_ctx ctx = covered_ctx("set-seed", &row);
+    bt_view_solve_set_seed(20261012);
+    bt_view_solve_set_scramble_override(single_pair_scramble('A', 'B'));
+    bt_view_solve_app_state *app = bt_view_solve_app();
+    bt_view_solve_enter_state(&ctx, app);
+    BT_CHECK_EQ(app->seed, (unsigned long long)20261012);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    BT_CHECK_EQ(app->seed, (unsigned long long)20261013);
+    BT_CHECK(app->session.seed == app->seed);
+    bt_app_ctx_free(&ctx);
+}

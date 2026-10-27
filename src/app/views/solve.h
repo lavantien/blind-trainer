@@ -96,6 +96,7 @@ void bt_view_solve_app_init(bt_view_solve_app_state *app);
 void bt_view_solve_app_free(bt_view_solve_app_state *app);
 bt_view_solve_app_state *bt_view_solve_app(void);
 void bt_view_solve_set_scramble_override(bt_cube scramble);
+void bt_view_solve_set_seed(uint64_t seed);
 void bt_view_solve_enter_state(bt_app_ctx *ctx, bt_view_solve_app_state *app);
 void bt_view_solve_enter_phase(bt_app_ctx *ctx, bt_view_solve_app_state *app, bt_solve_phase phase);
 void bt_view_solve_tick(bt_app_ctx *ctx, bt_view_solve_app_state *app, float dt);

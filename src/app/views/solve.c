@@ -400,6 +400,15 @@ bt_view_solve_app_state *bt_view_solve_app(void) {
     return shared_solve_app;
 }
 
+void bt_view_solve_set_seed(uint64_t seed) {
+    BT_TRACE_ENTER("app.solve_set_seed");
+    bt_view_solve_app_state *app = bt_view_solve_app();
+    if (app != NULL) {
+        app->seed = seed;
+    }
+    BT_TRACE_EXIT("app.solve_set_seed");
+}
+
 void bt_view_solve_set_scramble_override(bt_cube scramble) {
     BT_TRACE_ENTER("app.solve_set_scramble_override");
     bt_view_solve_app_state *app = bt_view_solve_app();
