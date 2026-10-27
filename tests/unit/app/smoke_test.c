@@ -329,3 +329,21 @@ BT_TEST(smoke, shoot_removes_a_stale_file_before_requesting) {
     unsigned long size = 0;
     BT_CHECK(!file_size(path, &size));
 }
+
+BT_TEST(smoke, finish_rejects_suffix_names_that_share_the_component) {
+    bt_smoke_tour tour;
+    landed_tour(&tour, ta_temp_dir("smoke", "finish-suffix"), BT_APP_TOUR, "png");
+    strcpy(tour.shots[0].path, "xmenu.png");
+    ta_write_file("xmenu.png", "png");
+    BT_CHECK_EQ(bt_smoke_finish(&tour), 1);
+    remove("xmenu.png");
+}
+
+BT_TEST(smoke, finish_accepts_a_bare_slug_file_name) {
+    bt_smoke_tour tour;
+    landed_tour(&tour, ta_temp_dir("smoke", "finish-bare"), BT_APP_TOUR, "png");
+    strcpy(tour.shots[0].path, "menu.png");
+    ta_write_file("menu.png", "png");
+    BT_CHECK_EQ(bt_smoke_finish(&tour), 0);
+    remove("menu.png");
+}

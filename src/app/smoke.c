@@ -51,16 +51,9 @@ static int path_matches_slug_png(const char *path, bt_app_state state) {
     }
     char suffix[64];
     snprintf(suffix, sizeof suffix, "%s.png", slug);
-    size_t path_len = strlen(path);
-    size_t suffix_len = strlen(suffix);
-    if (path_len < suffix_len) {
-        return 0;
-    }
-    const char *base = strrchr(path, '/');
-    if (base == NULL) {
-        return 0;
-    }
-    return strcmp(path + path_len - suffix_len, suffix) == 0;
+    const char *slash = strrchr(path, '/');
+    const char *base = slash != NULL ? slash + 1 : path;
+    return strcmp(base, suffix) == 0;
 }
 
 static int entered_matches_tour(const bt_smoke_tour *tour) {
