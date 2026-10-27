@@ -37,7 +37,7 @@ void bt_app_window_close(void) {
 }
 
 int bt_app_window_ready(void) {
-    return IsWindowReady();
+    return IsWindowReady() ? 1 : 0;
 }
 
 void bt_app_window_frame_begin(void) {
