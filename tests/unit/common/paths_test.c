@@ -90,6 +90,16 @@ BT_TEST(paths, config_path_from_env_and_default) {
     BT_CHECK(strcmp(out, "C:/abs/hub.json") == 0);
 }
 
+BT_TEST(paths, config_path_from_root_without_drive_keeps_the_base_drive) {
+    char out[BT_PATH_MAX];
+    bt_paths_config_path_from("/out/hub.json", "R:/ws", out);
+    BT_CHECK(strcmp(out, "R:/out/hub.json") == 0);
+    bt_paths_config_path_from("\\out\\hub.json", "R:/ws", out);
+    BT_CHECK(strcmp(out, "R:\\out\\hub.json") == 0);
+    bt_paths_config_path_from("C:ga/hub.json", "R:/ws", out);
+    BT_CHECK(strcmp(out, "C:ga/hub.json") == 0);
+}
+
 BT_TEST(paths, write_atomic_writes_exact_bytes_and_cleans_tmp) {
     const char *path = "build/test-tmp/atomic.json";
     const char *payload = "{\"a\":1}";

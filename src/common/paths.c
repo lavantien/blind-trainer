@@ -237,12 +237,7 @@ void bt_paths_config_path_from(const char *env_value, const char *workspace_root
                                char out[BT_PATH_MAX]) {
     BT_TRACE_ENTER("paths.config_path_from");
     if (env_value != NULL && env_value[0] != '\0') {
-        int absolute = env_value[0] == '/' || env_value[0] == '\\' || env_value[1] == ':';
-        if (absolute) {
-            snprintf(out, BT_PATH_MAX, "%s", env_value);
-        } else {
-            join_path(out, workspace_root, env_value);
-        }
+        bt_paths_join(workspace_root, env_value, out);
     } else {
         snprintf(out, BT_PATH_MAX, "%s/config/config.json", workspace_root);
     }
