@@ -129,9 +129,12 @@ static void draw_net(const bt_netdisp_layout *layout, float quad, float x, float
             float plate_y = y;
             float stroke = bt_net_cell_stroke(quad);
             DrawRectangleLinesEx(
-                (Rectangle){plate_x, plate_y,
-                            face_plate_width(face->width, quad, gap) + stroke * 2.0F,
-                            face_plate_width(face->row_count, quad, gap) + stroke * 2.0F},
+                (Rectangle){
+                    plate_x,
+                    plate_y,
+                    face_plate_width(face->width, quad, gap) + stroke * 2.0F,
+                    face_plate_width(face->row_count, quad, gap) + stroke * 2.0F,
+                },
                 stroke, bt_app_color(bt_theme_text_primary()));
             float row_y = plate_y + stroke;
             for (size_t row = 0; row < face->row_count; row++) {
