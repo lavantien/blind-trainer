@@ -18,7 +18,6 @@ void bt_view_replay_scene_default(bt_view_replay_scene *scene) {
     scene->orbit = bt_replay_default_orbit(&scene->cfg);
     bt_alg_init(&scene->moves);
     bt_replay_playback_init(&scene->playback, bt_cube_solved(), NULL, 0);
-    scene->fovy_deg = BT_VIEW_REPLAY_FOVY_DEFAULT;
     BT_TRACE_EXIT("view.replay_scene_default");
 }
 
@@ -56,16 +55,6 @@ Vector3 bt_view_replay_axis_vec(bt_axis axis) {
     return out;
 }
 
-static float replay_fovy_from(const bt_json_value *value) {
-    const bt_json_value *app = bt_json_get(value, "app");
-    const bt_json_value *section = app != NULL ? bt_json_get(app, "replay") : NULL;
-    const bt_json_value *fovy = section != NULL ? bt_json_get(section, "fovy_deg") : NULL;
-    if (fovy == NULL || fovy->type != BT_JSON_NUMBER) {
-        return BT_VIEW_REPLAY_FOVY_DEFAULT;
-    }
-    return (float)fovy->as.number;
-}
-
 static void ensure_scene(void) {
     if (!view_replay_ready) {
         bt_view_replay_scene_default(&view_replay_scene);
@@ -80,10 +69,8 @@ void bt_view_replay_enter(bt_app_ctx *ctx) {
     char error[BT_APP_ERROR_MAX];
     if (bt_app_load_config_value(ctx->paths.config_path, &value, error, sizeof error) == 0) {
         bt_replay_cfg_from(value, &view_replay_scene.cfg);
-        view_replay_scene.fovy_deg = replay_fovy_from(value);
     } else {
         bt_replay_cfg_defaults(&view_replay_scene.cfg);
-        view_replay_scene.fovy_deg = BT_VIEW_REPLAY_FOVY_DEFAULT;
     }
     bt_json_free(value);
     view_replay_scene.orbit = bt_replay_default_orbit(&view_replay_scene.cfg);
@@ -144,7 +131,8 @@ void bt_view_replay_update(bt_app_ctx *ctx) {
     BT_TRACE_EXIT("view.replay_update");
 }
 
-static Camera3D camera_of(const bt_view_replay_scene *scene) {
+Camera3D bt_view_replay_camera(const bt_view_replay_scene *scene) {
+    BT_TRACE_ENTER("view.replay_camera");
     float offset[3];
     bt_replay_camera_offset(&scene->orbit, offset);
     Camera3D camera = {0};
@@ -157,8 +145,9 @@ static Camera3D camera_of(const bt_view_replay_scene *scene) {
     camera.up.x = 0.0F;
     camera.up.y = 1.0F;
     camera.up.z = 0.0F;
-    camera.fovy = scene->fovy_deg;
+    camera.fovy = BT_REPLAY_FOVY_DEG;
     camera.projection = CAMERA_PERSPECTIVE;
+    BT_TRACE_EXIT("view.replay_camera");
     return camera;
 }
 
@@ -225,7 +214,7 @@ void bt_view_replay_draw(bt_app_ctx *ctx) {
     ensure_scene();
     bt_view_replay_scene *scene = &view_replay_scene;
     ClearBackground(bt_app_color(bt_theme_background()));
-    BeginMode3D(camera_of(scene));
+    BeginMode3D(bt_view_replay_camera(scene));
     bt_replay_turn turn;
     int has_turn = bt_replay_playback_current_turn(&scene->playback, &turn) ? 1 : 0;
     float progress =

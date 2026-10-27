@@ -93,7 +93,13 @@ BT_TEST(view_replay, scene_default_holds_a_still_solved_cube) {
     BT_CHECK_EQ(scene.orbit.pitch_deg, orbit.pitch_deg);
     BT_CHECK_EQ(scene.orbit.distance, orbit.distance);
     check_scene_cfg_defaults(&scene.cfg);
-    BT_CHECK_EQ(scene.fovy_deg, 45.0F);
+    Camera3D camera = bt_view_replay_camera(&scene);
+    BT_CHECK_EQ(camera.fovy, 45.0F);
+    BT_CHECK_EQ(camera.projection, CAMERA_PERSPECTIVE);
+    BT_CHECK_EQ(camera.up.y, 1.0F);
+    BT_CHECK_EQ(camera.target.x, 0.0F);
+    BT_CHECK_EQ(camera.target.y, 0.0F);
+    BT_CHECK_EQ(camera.target.z, 0.0F);
 }
 
 BT_TEST(view_replay, played_scene_replays_the_collected_moves) {

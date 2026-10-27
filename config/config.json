@@ -20,7 +20,6 @@
       "distance": 6.0,
       "zoom_min": 3.5,
       "zoom_max": 12.0,
-      "fovy_deg": 45.0,
       "pitch_clamp_deg": [
         -80.0,
         80.0
