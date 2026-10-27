@@ -148,6 +148,19 @@ static int syllable_upsert(bt_syllable_book *book, const char *orbit, const char
     return 0;
 }
 
+int bt_syllable_book_insert(bt_syllable_book *book, const char *orbit, const char letters[2],
+                            const char *syllable) {
+    BT_TRACE_ENTER("app.views.book_insert");
+    int written = syllable_upsert(book, orbit, letters, syllable);
+    if (written != 0) {
+        BT_TRACE_FAIL("app.views.book_insert", "out of memory");
+    }
+    BT_TRACE_EXIT("app.views.book_insert");
+    return written;
+}
+
+static bt_views_image_lookup image_lookup;
+
 void bt_app_views_load_syllables(bt_app_views *views, const bt_app_runtime_paths *paths) {
     BT_TRACE_ENTER("app.views_load_syllables");
     char path[BT_PATH_MAX];
@@ -223,4 +236,17 @@ uint64_t bt_views_time_seed(void) {
     uint64_t seed = (uint64_t)now.tv_sec * 1000000000ULL + (uint64_t)now.tv_nsec;
     BT_TRACE_EXIT("app.views_time_seed");
     return seed;
+}
+
+void bt_views_set_image_lookup(bt_views_image_lookup lookup) {
+    BT_TRACE_ENTER("app.views_set_image_lookup");
+    image_lookup = lookup;
+    BT_TRACE_EXIT("app.views_set_image_lookup");
+}
+
+const char *bt_views_image_for(const char letters[2]) {
+    BT_TRACE_ENTER("app.views_image_for");
+    const char *word = image_lookup != NULL ? image_lookup(letters) : NULL;
+    BT_TRACE_EXIT("app.views_image_for");
+    return word;
 }

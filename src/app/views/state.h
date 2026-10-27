@@ -35,6 +35,8 @@ typedef struct {
 
 void bt_syllable_book_init(bt_syllable_book *book);
 void bt_syllable_book_free(bt_syllable_book *book);
+int bt_syllable_book_insert(bt_syllable_book *book, const char *orbit, const char letters[2],
+                            const char *syllable);
 const char *bt_syllable_book_for(const bt_syllable_book *book, const char *orbit,
                                  const char letters[2]);
 
@@ -47,5 +49,10 @@ void bt_app_views_load_syllables(bt_app_views *views, const bt_app_runtime_paths
 long long bt_views_now_unix_secs(void);
 long long bt_views_now_day(void);
 uint64_t bt_views_time_seed(void);
+
+typedef const char *(*bt_views_image_lookup)(const char letters[2]);
+
+void bt_views_set_image_lookup(bt_views_image_lookup lookup);
+const char *bt_views_image_for(const char letters[2]);
 
 #endif
