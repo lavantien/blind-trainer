@@ -155,9 +155,9 @@ int bt_data_packs_root_from(const char *env_value, const bt_json_value *config,
     char root[BT_PATH_MAX];
     bt_data_workspace_root(root);
     if (env_value != NULL && env_value[0] != '\0') {
-        char base[BT_PATH_MAX];
-        bt_paths_join(root, env_value, base);
-        snprintf(out, BT_PATH_MAX, "%s/packs", base);
+        char joined[BT_PATH_MAX];
+        bt_paths_join(root, env_value, joined);
+        snprintf(out, BT_PATH_MAX, "%s/packs", joined);
         BT_TRACE_EXIT("data.packs_root_from");
         return 0;
     }
