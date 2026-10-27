@@ -1278,6 +1278,16 @@ def tgt_gen_data(args):
     return tool_run(load_hub(), "gendata-build", "gendata.exe", [], "gen-data")
 
 
+def tgt_memofreq(args):
+    """memo pair frequency monte carlo"""
+    return tool_run(load_hub(), "memofreq-build", "memofreq.exe", [], "memofreq")
+
+
+def tgt_ga(args):
+    """run the syllable optimizer into data/ga/"""
+    return tool_run(load_hub(), "ga-run-build", "ga-run.exe", [], "ga")
+
+
 def tgt_verify_algs(args):
     """verify every vendor alg and pack row, write the verify and packs reports"""
     hub = load_hub()
