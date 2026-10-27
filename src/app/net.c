@@ -87,8 +87,7 @@ int bt_net_face_of(unsigned char sticker) {
 bt_theme_color bt_net_ink_for(bt_theme_color color) {
     BT_TRACE_ENTER("app.net_ink_for");
     bt_theme_color linear = bt_theme_to_linear(color);
-    float luminance =
-        0.2126F * linear.red + 0.7152F * linear.green + 0.0722F * linear.blue;
+    float luminance = 0.2126F * linear.red + 0.7152F * linear.green + 0.0722F * linear.blue;
     bt_theme_color ink;
     if (luminance >= 0.5F) {
         ink = (bt_theme_color){0.08F, 0.08F, 0.08F, 1.0F};
@@ -212,15 +211,14 @@ void bt_net_update_cells(const bt_app_net_state *net, float pulse[BT_NET_GRID_CE
             if (bt_app_net_highlight_kind(net, occupant, &kind)) {
                 want_pulse = 1.0F;
                 has_highlight = 1;
-                highlight = kind == BT_APP_HIGHLIGHT_BUFFER ? bt_theme_teal()
-                                                           : bt_theme_interchange();
+                highlight =
+                    kind == BT_APP_HIGHLIGHT_BUFFER ? bt_theme_teal() : bt_theme_interchange();
             }
         }
         float delta = clampf(want_pulse - pulse[grid], -step, step);
         pulse[grid] += delta;
         float factor = frozen ? 1.0F : pulse[grid] * wave;
-        bt_theme_color background =
-            has_highlight ? bt_theme_mix(base, highlight, factor) : base;
+        bt_theme_color background = has_highlight ? bt_theme_mix(base, highlight, factor) : base;
         out[grid].background = background;
         out[grid].border = bt_net_ink_for(background);
     }

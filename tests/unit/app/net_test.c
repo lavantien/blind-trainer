@@ -113,8 +113,7 @@ BT_TEST(net, grid_matches_physical_unfold) {
         bt_net_cell cell;
         bt_net_grid_of((unsigned char)sticker, &cell);
         BT_CHECK(cell.face == at_face && cell.row == at_row && cell.col == at_col);
-        BT_CHECK_EQ(bt_net_grid_index((unsigned char)sticker),
-                    at_face * 9 + at_row * 3 + at_col);
+        BT_CHECK_EQ(bt_net_grid_index((unsigned char)sticker), at_face * 9 + at_row * 3 + at_col);
     }
 }
 

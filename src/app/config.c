@@ -119,8 +119,8 @@ int bt_app_config_from_json(const bt_json_value *value, bt_app_config *out, char
     const bt_json_value *render = bt_json_get(section, "render");
     if (render != NULL && render->type == BT_JSON_OBJECT) {
         field_uint(render, "target_fps", &parsed.render.target_fps, error, error_len);
-        field_uint(render, "capture_dwell_frames", &parsed.render.capture_dwell_frames,
-                   error, error_len);
+        field_uint(render, "capture_dwell_frames", &parsed.render.capture_dwell_frames, error,
+                   error_len);
         const bt_json_value *vsync = bt_json_get(render, "vsync");
         if (vsync != NULL && vsync->type == BT_JSON_BOOL) {
             parsed.render.vsync = vsync->as.boolean;
