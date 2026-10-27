@@ -275,3 +275,112 @@ BT_TEST(view_draw, net_view_renders_pixels) {
 BT_TEST(view_draw, memo_rows_render_pixels) {
     BT_CHECK(with_fonts(run_memo));
 }
+
+static void fill_row_ctx(bt_app_ctx *ctx) {
+    bt_app_ctx_init(ctx);
+    ctx->state = BT_APP_DRILL;
+    ctx->has_corpus = 1;
+    bt_corpus_row rows[1] = {heap_row("UF-UB-UR", "R2 U' S R2 S' R2 U R2", "R2 U':[S,R2]")};
+    bt_corpus_row *heap = malloc(sizeof rows);
+    memcpy(heap, rows, sizeof rows);
+    bt_corpus_from_rows(heap, 1, &ctx->vendor_corpus);
+    ctx->has_stores = 1;
+    memset(&ctx->stores, 0, sizeof ctx->stores);
+    ctx->stores.settings.memo_cadence_ms = 800;
+    ctx->stores.settings.memo_mode = BT_MEMO_PER_ORBIT;
+    ctx->stores.settings.drill_reps = 4;
+    bt_srs_store_init(&ctx->stores.srs);
+    bt_solve_log_init(&ctx->stores.solves);
+    bt_user_algs_init(&ctx->stores.user_algs);
+    bt_str_list_init(&ctx->stores.seeds.hidden);
+    bt_str_list_init(&ctx->stores.seeds.warnings);
+    bt_fsrs_config_defaults(&ctx->fsrs);
+}
+
+static bt_app_ctx g_ctx;
+
+static void draw_drill_row(void) {
+    bt_view_drill_row_draw(&g_ctx);
+}
+
+static void draw_memo_row(void) {
+    g_ctx.state = BT_APP_MEMO;
+    bt_view_memo_row_draw(&g_ctx);
+    g_ctx.state = BT_APP_DRILL;
+}
+
+static void draw_menu_row(void) {
+    g_ctx.state = BT_APP_MENU;
+    bt_view_menu_row_draw(&g_ctx);
+    g_ctx.state = BT_APP_DRILL;
+}
+
+static int run_drill_row(const bt_app_font_book *book) {
+    g_book = book;
+    fill_row_ctx(&g_ctx);
+    bt_drill_app_state *app = bt_view_drill_app();
+    bt_view_drill_enter_state(&g_ctx, app);
+    bt_app_views *views = bt_app_views_shared();
+    bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+    int ok = draw_and_capture(draw_drill_row);
+    if (ok) {
+        bt_view_drill_key(&g_ctx, app, 32);
+        bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+        ok = draw_and_capture(draw_drill_row);
+    }
+    if (ok) {
+        for (int rep = 0; rep < 4; rep++) {
+            bt_view_drill_key(&g_ctx, app, 32);
+        }
+        bt_view_drill_net_update(&g_ctx.net, &views->net, 0.016F);
+        ok = draw_and_capture(draw_drill_row);
+    }
+    bt_app_ctx_free(&g_ctx);
+    bt_app_views_dispose_shared();
+    return ok;
+}
+
+static int run_memo_row(const bt_app_font_book *book) {
+    g_book = book;
+    fill_row_ctx(&g_ctx);
+    bt_memo_app_state *app = bt_view_memo_app();
+    bt_view_memo_enter_state(&g_ctx, app);
+    g_ctx.memo_phase = BT_MEMO_STREAM;
+    int ok = draw_and_capture(draw_memo_row);
+    bt_app_ctx_free(&g_ctx);
+    bt_app_views_dispose_shared();
+    return ok;
+}
+
+static int run_menu_row(const bt_app_font_book *book) {
+    g_book = book;
+    fill_row_ctx(&g_ctx);
+    bt_str_list_push(&g_ctx.boot_warnings, "vendor data missing");
+    int ok = draw_and_capture(draw_menu_row);
+    bt_app_ctx_free(&g_ctx);
+    bt_app_views_dispose_shared();
+    return ok;
+}
+
+static int run_fonts_current(const bt_app_font_book *book) {
+    const bt_app_font_book *current = bt_app_fonts_current();
+    return current != NULL && current->regular == book->regular && current->bold == book->bold;
+}
+
+BT_TEST(view_draw, drill_row_draw_renders_all_three_phases) {
+    BT_CHECK(bt_app_fonts_current() == NULL);
+    BT_CHECK(with_fonts(run_drill_row));
+}
+
+BT_TEST(view_draw, memo_row_draw_renders) {
+    BT_CHECK(with_fonts(run_memo_row));
+}
+
+BT_TEST(view_draw, menu_row_draw_renders) {
+    BT_CHECK(with_fonts(run_menu_row));
+}
+
+BT_TEST(view_draw, fonts_current_tracks_the_loaded_book) {
+    BT_CHECK(with_fonts(run_fonts_current));
+    BT_CHECK(bt_app_fonts_current() == NULL);
+}

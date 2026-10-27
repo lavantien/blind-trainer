@@ -32,5 +32,6 @@ void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_r
                              float y, float h);
 void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_regular, float x,
                              float y, float h);
+void bt_view_drill_row_draw(bt_app_ctx *ctx);
 
 #endif

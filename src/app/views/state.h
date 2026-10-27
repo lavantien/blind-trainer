@@ -55,5 +55,6 @@ typedef const char *(*bt_views_image_lookup)(const char letters[2]);
 
 void bt_views_set_image_lookup(bt_views_image_lookup lookup);
 const char *bt_views_image_for(const char letters[2]);
+const bt_syllable_book *bt_views_book(const bt_app_ctx *ctx);
 
 #endif

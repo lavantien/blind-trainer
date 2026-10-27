@@ -313,17 +313,9 @@ bt_memo_app_state *bt_view_memo_app(void) {
     return &memo_singleton;
 }
 
-static const bt_syllable_book *flow_book(const bt_app_ctx *ctx) {
-    bt_app_views *views = bt_app_views_shared();
-    if (views != NULL && !views->syllables.loaded) {
-        bt_app_views_load_syllables(views, &ctx->paths);
-    }
-    return views != NULL ? &views->syllables : NULL;
-}
-
 void bt_view_memo_enter_state(bt_app_ctx *ctx, bt_memo_app_state *app) {
     BT_TRACE_ENTER("app.memo_enter_state");
-    bt_memo_rebuild(&app->session, app->seed, flow_book(ctx));
+    bt_memo_rebuild(&app->session, app->seed, bt_views_book(ctx));
     ctx->memo_phase = BT_MEMO_INTRO;
     BT_TRACE_EXIT("app.memo_enter_state");
 }
@@ -355,7 +347,7 @@ void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key) {
     if (ctx->memo_phase == BT_MEMO_INTRO) {
         if (key == KEY_SPACE) {
             app->seed += 1;
-            bt_memo_rebuild(&app->session, app->seed, flow_book(ctx));
+            bt_memo_rebuild(&app->session, app->seed, bt_views_book(ctx));
             ctx->memo_phase = BT_MEMO_STREAM;
         }
         BT_TRACE_EXIT("app.memo_key");
@@ -407,4 +399,24 @@ void bt_view_memo_update(bt_app_ctx *ctx) {
         }
     }
     BT_TRACE_EXIT("app.memo_update");
+}
+
+void bt_view_memo_row_draw(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.view_memo_row_draw");
+    const bt_app_font_book *book = bt_app_fonts_current();
+    if (book == NULL) {
+        BT_TRACE_FAIL("app.view_memo_row_draw", "fonts not loaded");
+        BT_TRACE_EXIT("app.view_memo_row_draw");
+        return;
+    }
+    if (!ctx->has_stores) {
+        BT_TRACE_FAIL("app.view_memo_row_draw", "no stores");
+        BT_TRACE_EXIT("app.view_memo_row_draw");
+        return;
+    }
+    bt_memo_rows rows;
+    bt_memo_view_rows(ctx->memo_phase, &bt_view_memo_app()->session, &ctx->stores, &rows);
+    bt_view_memo_draw(&rows, book->regular, book->bold, (float)GetScreenWidth(),
+                      (float)GetScreenHeight());
+    BT_TRACE_EXIT("app.view_memo_row_draw");
 }

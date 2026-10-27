@@ -183,6 +183,8 @@ static int load_face(const char *config_path, const char *key, const char *file_
     return 0;
 }
 
+static bt_app_font_book current_book;
+
 int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus, const char *const *words,
                       size_t word_count, bt_app_font_book *out, char *error, size_t error_len) {
     BT_TRACE_ENTER("app.fonts_load");
@@ -207,6 +209,7 @@ int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus, const ch
     out->regular = &held_regular;
     out->bold = &held_bold;
     out->glyph_count = regular.glyphCount;
+    current_book = *out;
     BT_TRACE_EXIT("app.fonts_load");
     return 0;
 }
@@ -221,5 +224,15 @@ void bt_app_fonts_unload(bt_app_font_book *book) {
     }
     book->regular = NULL;
     book->bold = NULL;
+    current_book.regular = NULL;
+    current_book.bold = NULL;
+    current_book.glyph_count = 0;
     BT_TRACE_EXIT("app.fonts_unload");
+}
+
+const bt_app_font_book *bt_app_fonts_current(void) {
+    BT_TRACE_ENTER("app.fonts_current");
+    const bt_app_font_book *book = current_book.regular != NULL ? &current_book : NULL;
+    BT_TRACE_EXIT("app.fonts_current");
+    return book;
 }

@@ -1,6 +1,7 @@
 #include "app/views/drill_view.h"
 
 #include "app/theme.h"
+#include "app/views/frame.h"
 #include "app/views/net_view.h"
 #include "app/window.h"
 #include "common/bt_trace.h"
@@ -171,4 +172,45 @@ void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_r
         cursor += sizes[i] + gap;
     }
     BT_TRACE_EXIT("app.view_drill_rate_draw");
+}
+
+void bt_view_drill_row_draw(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.view_drill_row_draw");
+    const bt_app_font_book *book = bt_app_fonts_current();
+    if (book == NULL) {
+        BT_TRACE_FAIL("app.view_drill_row_draw", "fonts not loaded");
+        BT_TRACE_EXIT("app.view_drill_row_draw");
+        return;
+    }
+    if (!ctx->has_corpus || !ctx->has_stores) {
+        BT_TRACE_FAIL("app.view_drill_row_draw", "corpus %d stores %d", ctx->has_corpus,
+                      ctx->has_stores);
+        BT_TRACE_EXIT("app.view_drill_row_draw");
+        return;
+    }
+    bt_drill_app_state *app = bt_view_drill_app();
+    bt_app_views *views = bt_app_views_shared();
+    float window_w = (float)GetScreenWidth();
+    float window_h = (float)GetScreenHeight();
+    bt_view_frame_draw(book->bold, book->regular, window_w, window_h, "drill",
+                       "space reps, 1..4 rate, esc menu");
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    bt_view_drill_layout layout = bt_view_drill_layout_for(metrics.content_x, metrics.content_y,
+                                                           metrics.content_w, metrics.content_h);
+    bt_view_drill_net_draw(book->bold, &views->net, layout.net_x, layout.net_y, layout.net_w,
+                           layout.net_h);
+    if (ctx->drill_phase == BT_DRILL_CARD) {
+        bt_card_content content;
+        bt_view_card_content(&app->session, &ctx->vendor_corpus, bt_views_book(ctx), &ctx->stores,
+                             bt_views_now_day(), &content);
+        bt_view_drill_card_draw(&content, book->regular, layout.card_x, layout.card_y,
+                                layout.card_h);
+    } else if (ctx->drill_phase == BT_DRILL_REPS) {
+        bt_view_drill_reps_draw(&app->session, book->regular, layout.card_x, layout.card_y,
+                                layout.card_h);
+    } else {
+        bt_view_drill_rate_draw(&app->session, book->regular, layout.card_x, layout.card_y,
+                                layout.card_h);
+    }
+    BT_TRACE_EXIT("app.view_drill_row_draw");
 }

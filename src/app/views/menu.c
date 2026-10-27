@@ -1,6 +1,7 @@
 #include "app/views/menu.h"
 
 #include "app/views/frame.h"
+#include "app/views/state.h"
 #include "app/window.h"
 
 #include "raylib.h"
@@ -100,4 +101,17 @@ void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, co
         y += row_height + row_gap;
     }
     BT_TRACE_EXIT("app.view_menu_draw");
+}
+
+void bt_view_menu_row_draw(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.view_menu_row_draw");
+    const bt_app_font_book *book = bt_app_fonts_current();
+    if (book == NULL) {
+        BT_TRACE_FAIL("app.view_menu_row_draw", "fonts not loaded");
+        BT_TRACE_EXIT("app.view_menu_row_draw");
+        return;
+    }
+    bt_view_menu_draw(&ctx->boot_warnings, book->regular, book->bold, (float)GetScreenWidth(),
+                      (float)GetScreenHeight());
+    BT_TRACE_EXIT("app.view_menu_row_draw");
 }

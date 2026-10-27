@@ -78,4 +78,6 @@ void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key);
 void bt_view_memo_enter(bt_app_ctx *ctx);
 void bt_view_memo_update(bt_app_ctx *ctx);
 
+void bt_view_memo_row_draw(bt_app_ctx *ctx);
+
 #endif

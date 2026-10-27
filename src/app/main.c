@@ -1,4 +1,5 @@
 #include "app/boot.h"
+#include "app/views/state.h"
 #include "app/window.h"
 #include "common/bt_trace.h"
 
@@ -63,6 +64,7 @@ int bt_app_main(int argc, char **argv) {
     bt_app_fonts_unload(&book);
     bt_app_window_close();
     bt_app_ctx_free(&ctx);
+    bt_app_views_dispose_shared();
     BT_TRACE_EXIT("app.main");
     return 0;
 }

@@ -22,4 +22,6 @@ void bt_view_menu_warning_context(const bt_str_list *warnings, char out[BT_VIEW_
 void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, const void *font_bold,
                        float window_w, float window_h);
 
+void bt_view_menu_row_draw(bt_app_ctx *ctx);
+
 #endif

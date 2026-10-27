@@ -241,6 +241,17 @@ uint64_t bt_views_time_seed(void) {
     return seed;
 }
 
+const bt_syllable_book *bt_views_book(const bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.views_book");
+    bt_app_views *views = bt_app_views_shared();
+    if (views != NULL && !views->syllables.loaded) {
+        bt_app_views_load_syllables(views, &ctx->paths);
+    }
+    const bt_syllable_book *book = views != NULL ? &views->syllables : NULL;
+    BT_TRACE_EXIT("app.views_book");
+    return book;
+}
+
 void bt_views_set_image_lookup(bt_views_image_lookup lookup) {
     BT_TRACE_ENTER("app.views_set_image_lookup");
     image_lookup = lookup;

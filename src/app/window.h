@@ -30,5 +30,6 @@ void bt_app_draw_text(const void *font, const char *text, float x, float y, floa
 int bt_app_fonts_load(const char *config_path, const bt_corpus *corpus, const char *const *words,
                       size_t word_count, bt_app_font_book *out, char *error, size_t error_len);
 void bt_app_fonts_unload(bt_app_font_book *book);
+const bt_app_font_book *bt_app_fonts_current(void);
 
 #endif
