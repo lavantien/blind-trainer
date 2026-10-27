@@ -1,7 +1,6 @@
+#include "fuzz/fuzz_common.h"
 #include "fuzz/memo.h"
 
-#include "fuzz_runner.h"
-
 BT_TEST(fuzz_memo, plainloop) {
-    bt_fuzz_run_plainloop("tests/fuzz/corpus/memo", "memo.pending", LLVMFuzzerTestOneInput);
+    fuzz_plainloop("memo", LLVMFuzzerTestOneInput, NULL, 0, fuzz_seed());
 }

@@ -1,7 +1,6 @@
 #include "fuzz/classify.h"
-
-#include "fuzz_runner.h"
+#include "fuzz/fuzz_common.h"
 
 BT_TEST(fuzz_classify, plainloop) {
-    bt_fuzz_run_plainloop("tests/fuzz/corpus/classify", "classify.pending", LLVMFuzzerTestOneInput);
+    fuzz_plainloop("classify", LLVMFuzzerTestOneInput, NULL, 0, fuzz_seed());
 }

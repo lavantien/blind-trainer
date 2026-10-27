@@ -135,6 +135,7 @@
     "tolerance": 48
   },
   "fuzz": {
+    "seed": 20261012,
     "runs": 5000,
     "secs": 30
   },

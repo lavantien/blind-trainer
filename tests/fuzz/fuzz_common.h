@@ -14,6 +14,8 @@
 #include "common/rng.h"
 #include "fuzz/fuzz_body.h"
 
+#define BT_FUZZ_GOLDEN 0x9E3779B97F4A7C15ULL
+
 typedef struct {
     bool active;
     size_t runs;
@@ -21,6 +23,26 @@ typedef struct {
     size_t secs;
     time_t start;
 } fuzz_bounds;
+
+static inline uint64_t bt_fuzz_seed_from(const uint8_t *data, size_t size) {
+    uint8_t bytes[8] = {0};
+    size_t take = size < 8 ? size : 8;
+    for (size_t i = 0; i < take; i++) {
+        bytes[i] = data[i];
+    }
+    uint64_t value;
+    memcpy(&value, bytes, sizeof value);
+    return value ^ ((uint64_t)size * BT_FUZZ_GOLDEN);
+}
+
+static inline uint64_t fuzz_seed(void) {
+    const bt_json_value *config = bt_config_load();
+    long long seed = 0;
+    if (bt_config_int(config, "fuzz.seed", &seed) != 0 || seed <= 0) {
+        seed = 20261012;
+    }
+    return (uint64_t)seed;
+}
 
 static inline void fuzz_bounds_init(fuzz_bounds *bounds) {
     const bt_json_value *config = bt_config_load();
@@ -47,6 +69,35 @@ static inline bool fuzz_within_bounds(fuzz_bounds *bounds) {
         return false;
     }
     bounds->done += 1;
+    return true;
+}
+
+static inline bool bt_fuzz_within_bounds(void) {
+    static bool inited;
+    static bool has_runs;
+    static long long runs;
+    static bool has_secs;
+    static long long secs;
+    static clock_t start;
+    static uint64_t count;
+    if (!inited) {
+        const bt_json_value *config = bt_config_load();
+        long long value = 0;
+        has_runs = (bt_config_int(config, "fuzz.runs", &value) == 0 && value > 0) != 0;
+        runs = value;
+        value = 0;
+        has_secs = (bt_config_int(config, "fuzz.secs", &value) == 0 && value > 0) != 0;
+        secs = value;
+        start = clock();
+        inited = true;
+    }
+    count++;
+    if (has_runs && count > (uint64_t)runs) {
+        return false;
+    }
+    if (has_secs && (double)(clock() - start) / CLOCKS_PER_SEC >= (double)secs) {
+        return false;
+    }
     return true;
 }
 
@@ -106,9 +157,9 @@ static inline bool fuzz_replay_dir(const char *name, int (*body)(const uint8_t *
     return true;
 }
 
-static inline void fuzz_generate(int (*body)(const uint8_t *, size_t), fuzz_bounds *bounds,
-                                 const char *alphabet, size_t alphabet_len, uint64_t seed,
-                                 size_t *ran) {
+static inline void fuzz_generate(const char *name, int (*body)(const uint8_t *, size_t),
+                                 fuzz_bounds *bounds, const char *alphabet, size_t alphabet_len,
+                                 uint64_t seed, size_t *ran) {
     bt_rng rng;
     bt_rng_seed(&rng, seed);
     while (fuzz_within_bounds(bounds)) {
@@ -125,9 +176,22 @@ static inline void fuzz_generate(int (*body)(const uint8_t *, size_t), fuzz_boun
                 buffer[i] = (uint8_t)bt_rng_below(&rng, 256);
             }
         }
+        fuzz_pending_write(name, buffer, size);
         body(buffer, size);
         *ran += 1;
     }
+    fuzz_pending_remove(name);
+}
+
+static inline void fuzz_plainloop(const char *name, int (*body)(const uint8_t *, size_t),
+                                  const char *alphabet, size_t alphabet_len, uint64_t seed) {
+    fuzz_bounds bounds;
+    fuzz_bounds_init(&bounds);
+    size_t ran = 0;
+    BT_CHECK(fuzz_replay_dir(name, body, &bounds, &ran));
+    fuzz_generate(name, body, &bounds, alphabet, alphabet_len, seed, &ran);
+    printf("fuzz %s: %zu inputs\n", name, ran);
+    BT_CHECK(ran > 0);
 }
 
 #endif

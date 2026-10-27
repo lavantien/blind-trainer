@@ -2,8 +2,7 @@
 #define BT_FUZZ_CLASSIFY_H
 
 #include "common/bt_harness.h"
-#include "common/config.h"
-#include "common/rng.h"
+#include "fuzz/fuzz_common.h"
 #include "scheme/classifier.h"
 #include "scheme/core_deps.h"
 #include "scheme/memo.h"
@@ -13,22 +12,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#define BT_FUZZ_GOLDEN 0x9E3779B97F4A7C15ULL
-
-static uint64_t bt_fuzz_seed_from(const uint8_t *data, size_t size) {
-    uint8_t bytes[8] = {0};
-    size_t take = size < 8 ? size : 8;
-    for (size_t i = 0; i < take; i++) {
-        bytes[i] = data[i];
-    }
-    uint64_t value;
-    memcpy(&value, bytes, sizeof value);
-    return value ^ ((uint64_t)size * BT_FUZZ_GOLDEN);
-}
 
 static void bt_fuzz_shuffle(bt_rng *rng, uint8_t *values, size_t n) {
     for (size_t i = n; i > 1; i--) {
@@ -78,35 +61,6 @@ static void bt_fuzz_repaired_occ(uint64_t seed, uint8_t occ[54]) {
             occ[positions[1]] = occupants[1];
         }
     }
-}
-
-static bool bt_fuzz_within_bounds(void) {
-    static bool inited;
-    static bool has_runs;
-    static long long runs;
-    static bool has_secs;
-    static long long secs;
-    static clock_t start;
-    static uint64_t count;
-    if (!inited) {
-        const bt_json_value *config = bt_config_load();
-        long long value = 0;
-        has_runs = (bt_config_int(config, "fuzz.runs", &value) == 0 && value > 0) != 0;
-        runs = value;
-        value = 0;
-        has_secs = (bt_config_int(config, "fuzz.secs", &value) == 0 && value > 0) != 0;
-        secs = value;
-        start = clock();
-        inited = true;
-    }
-    count++;
-    if (has_runs && count > (uint64_t)runs) {
-        return false;
-    }
-    if (has_secs && (double)(clock() - start) / CLOCKS_PER_SEC >= (double)secs) {
-        return false;
-    }
-    return true;
 }
 
 static void bt_fuzz_classify_once(const uint8_t *data, size_t size) {

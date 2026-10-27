@@ -869,6 +869,10 @@ def child_env(hub):
     return env
 
 
+def fuzz_suites(root):
+    return [s for s in discover_test_suites(root) if s["stem"].startswith("fuzz_")]
+
+
 def run_suite_exes(hub, suites):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
     timeout = build_cfg(hub)["test_timeout_secs"]
