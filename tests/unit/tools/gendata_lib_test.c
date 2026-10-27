@@ -1,13 +1,35 @@
 #include "gendata/lib.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "data/digest.h"
+#include "data/paths.h"
 
 BT_TEST(gendata_lib, crate_id_matches_package) {
     BT_CHECK_EQ(strcmp(bt_gd_crate_id(), "bt-gendata"), 0);
+}
+
+BT_TEST(gendata_lib, data_vendor_path_root_only_keeps_the_drive) {
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    BT_CHECK(root[1] == ':');
+    char want[BT_PATH_MAX];
+    snprintf(want, sizeof want, "%2.2s/dv", root);
+    char out[BT_PATH_MAX];
+    char err[96];
+    bt_json_value *config = bt_json_new_object();
+    bt_json_value *paths = bt_json_new_object();
+    bt_json_object_set(paths, "data_vendor", bt_json_new_string("/dv"));
+    bt_json_object_set(config, "paths", paths);
+    BT_CHECK_EQ(bt_gd_data_vendor_path(config, out, err, sizeof err), 0);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_json_object_set(paths, "data_vendor", bt_json_new_string("C:dv"));
+    BT_CHECK_EQ(bt_gd_data_vendor_path(config, out, err, sizeof err), 0);
+    BT_CHECK(strcmp(out, "C:dv") == 0);
+    bt_json_free(config);
 }
 
 BT_TEST(gendata_lib, coverage_constants_are_self_consistent) {

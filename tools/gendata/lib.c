@@ -18,20 +18,6 @@ const char *bt_gd_crate_id(void) {
     return "bt-gendata";
 }
 
-static int has_prefix_root(const char *path) {
-    if (path[0] == '\0') {
-        return 0;
-    }
-    if ((path[0] == '/' || path[0] == '\\')) {
-        return 1;
-    }
-    if (((path[0] >= 'a' && path[0] <= 'z') || (path[0] >= 'A' && path[0] <= 'Z')) &&
-        path[1] == ':') {
-        return 1;
-    }
-    return 0;
-}
-
 int bt_gd_synth_params_sha256(const bt_json_value *config, const char *generator, char out[65],
                               char *err, size_t err_len) {
     BT_TRACE_ENTER("gd.lib.synth_params_sha256");
@@ -103,13 +89,9 @@ int bt_gd_data_vendor_path(const bt_json_value *config, char out[BT_PATH_MAX], c
         BT_TRACE_FAIL("gd.lib.data_vendor_path", err);
         return -1;
     }
-    if (has_prefix_root(relative->as.string)) {
-        snprintf(out, BT_PATH_MAX, "%s", relative->as.string);
-    } else {
-        char root[BT_PATH_MAX];
-        bt_data_workspace_root(root);
-        snprintf(out, BT_PATH_MAX, "%s/%s", root, relative->as.string);
-    }
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    bt_paths_join(root, relative->as.string, out);
     BT_TRACE_EXIT("gd.lib.data_vendor_path");
     return 0;
 }
