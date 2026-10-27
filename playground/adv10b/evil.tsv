@@ -1,0 +1,2 @@
+case_key	alg	front_json	source_url	source_at
+evil.01	R U R'	{"nope":1}	https://example.invalid	2026-10-10
