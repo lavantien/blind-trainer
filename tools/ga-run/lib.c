@@ -133,8 +133,8 @@ int bt_gr_cross_check_cases(const bt_json_value *config, bt_gr_offenders *offend
     bt_json_error json_error;
     if (bt_json_parse(bytes, bytes_len, &root, &json_error) != 0) {
         free(bytes);
-        bt_gr_offenders_push(offenders, "parse %s", cases_file);
-        BT_TRACE_FAIL("gr.cross_check_cases", "cases.json parse failed: %s", cases_file);
+        bt_gr_offenders_push(offenders, "parse cases.json: %s", json_error.message);
+        BT_TRACE_FAIL("gr.cross_check_cases", "cases.json parse failed: %s", json_error.message);
         return -1;
     }
     free(bytes);
@@ -331,9 +331,6 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
             failed = 1;
         }
     }
-    if (!failed && bt_gr_cross_check_cases(config, offenders) != 0) {
-        failed = 1;
-    }
     char freq_file[BT_PATH_MAX] = {0};
     if (!failed) {
         const char *data_ga = NULL;
@@ -356,6 +353,9 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
     if (!failed && bt_ga_load_freq_data(freq_file, &inputs->freq, err) != 1) {
         bt_gr_offenders_push(offenders, "parse freq.json: %s", err);
         BT_TRACE_FAIL("gr.load_run_inputs", "freq.json parse failed: %s", err);
+        failed = 1;
+    }
+    if (!failed && bt_gr_cross_check_cases(config, offenders) != 0) {
         failed = 1;
     }
     float *lengths = NULL;

@@ -293,6 +293,84 @@ BT_TEST(ga_run_lib, cross_check_names_each_missing_letter_field) {
     bt_json_free(config);
 }
 
+static void scratch_write(const char *dir, const char *name, const char *bytes, size_t len) {
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/%s", dir, name);
+    FILE *file = fopen(path, "wb");
+    fwrite(bytes, 1, len, file);
+    fclose(file);
+}
+
+BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) {
+    char scratch[BT_PATH_MAX];
+    xcheck_scratch("xorder", scratch);
+    char ga_dir[BT_PATH_MAX];
+    char vendor_dir[BT_PATH_MAX];
+    snprintf(ga_dir, sizeof ga_dir, "%s/ga", scratch);
+    snprintf(vendor_dir, sizeof vendor_dir, "%s/vendor", scratch);
+    _mkdir(ga_dir);
+    _mkdir(vendor_dir);
+    scratch_write(ga_dir, "freq.json", "{ not json", 11);
+    scratch_write(vendor_dir, "cases.json", "{\"cases\": []}", 13);
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    char config_path[BT_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config/config.json", root);
+    FILE *file = fopen(config_path, "rb");
+    BT_CHECK(file != NULL);
+    char config_text[8192];
+    size_t config_len = fread(config_text, 1, sizeof config_text - 1, file);
+    fclose(file);
+    config_text[config_len] = '\0';
+    char ga_clean[BT_PATH_MAX];
+    char vendor_clean[BT_PATH_MAX];
+    snprintf(ga_clean, sizeof ga_clean, "%s", ga_dir);
+    snprintf(vendor_clean, sizeof vendor_clean, "%s", vendor_dir);
+    for (char *cursor = ga_clean; *cursor != '\0'; cursor++) {
+        if (*cursor == 92) {
+            *cursor = '/';
+        }
+    }
+    for (char *cursor = vendor_clean; *cursor != '\0'; cursor++) {
+        if (*cursor == 92) {
+            *cursor = '/';
+        }
+    }
+    char stage[8192];
+    char replacement[BT_PATH_MAX + 32];
+    snprintf(replacement, sizeof replacement, "\"data_ga\": \"%s\"", ga_clean);
+    char *at = strstr(config_text, "\"data_ga\": \"data/ga\"");
+    BT_CHECK(at != NULL);
+    snprintf(stage, sizeof stage, "%.*s%s%s", (int)(at - config_text), config_text, replacement,
+             at + strlen("\"data_ga\": \"data/ga\""));
+    snprintf(replacement, sizeof replacement, "\"data_vendor\": \"%s\"", vendor_clean);
+    at = strstr(stage, "\"data_vendor\": \"data/vendor\"");
+    BT_CHECK(at != NULL);
+    snprintf(config_text, sizeof config_text, "%.*s%s%s", (int)(at - stage), stage, replacement,
+             at + strlen("\"data_vendor\": \"data/vendor\""));
+    config_len = strlen(config_text);
+    char scratch_config[BT_PATH_MAX];
+    snprintf(scratch_config, sizeof scratch_config, "%s/config.json", scratch);
+    scratch_write(scratch, "config.json", config_text, config_len);
+    const char *original = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", original != NULL ? original : "");
+    _putenv_s("BT_CONFIG", scratch_config);
+    bt_gr_run_inputs inputs;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_load_run_inputs(&inputs, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)1);
+    if (offenders.count == 1) {
+        BT_CHECK(strncmp(offenders.items[0], "parse freq.json", 15) == 0);
+    }
+    bt_gr_offenders_free(&offenders);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+}
+
 BT_TEST(ga_run_lib, end_to_end_small_run_produces_full_injective_assignment) {
     bt_gr_run_inputs inputs;
     bt_gr_offenders offenders = {0};
