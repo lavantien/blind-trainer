@@ -413,9 +413,10 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
             }
         }
     }
-    static const int polled[] = {KEY_SLASH, KEY_RIGHT, KEY_LEFT,     KEY_DOWN, KEY_UP,
-                                 KEY_N,     KEY_P,     KEY_D,        KEY_O,    KEY_X,
-                                 KEY_ENTER, KEY_TAB,   KEY_BACKSPACE};
+    static const int polled[] = {
+        KEY_SLASH, KEY_RIGHT, KEY_LEFT, KEY_DOWN,  KEY_UP,  KEY_N,         KEY_P,
+        KEY_D,     KEY_O,     KEY_X,    KEY_ENTER, KEY_TAB, KEY_BACKSPACE,
+    };
     int keys[sizeof polled / sizeof polled[0]];
     int count = 0;
     for (size_t i = 0; i < sizeof polled / sizeof polled[0]; i++) {
