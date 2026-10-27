@@ -748,8 +748,15 @@ int btvd_artifacts_root_from(const char *env_value, const bt_json_value *config,
     } else if (bt_config_str(config, "paths.artifacts", &raw) != 0) {
         raw = "artifacts";
     }
-    int absolute = raw[0] == '/' || raw[0] == '\\' || raw[1] == ':';
-    if (absolute) {
+    int has_prefix = (raw[0] != '\0' && raw[1] == ':') || (raw[0] == '\\' && raw[1] == '\\');
+    int has_root = raw[0] == '/' || raw[0] == '\\';
+    if (raw[0] == '\0') {
+        snprintf(out, out_len, "%s", root);
+    } else if (has_prefix != 0) {
+        snprintf(out, out_len, "%s", raw);
+    } else if (has_root != 0 && root[1] == ':') {
+        snprintf(out, out_len, "%2.2s%s", root, raw);
+    } else if (has_root != 0) {
         snprintf(out, out_len, "%s", raw);
     } else {
         snprintf(out, out_len, "%s/%s", root, raw);

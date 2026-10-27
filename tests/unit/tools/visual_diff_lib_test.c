@@ -108,6 +108,24 @@ BT_TEST(visual_diff_lib, artifacts_root_from_prefers_env_then_config_then_defaul
     bt_json_free(config);
 }
 
+BT_TEST(visual_diff_lib, artifacts_root_from_matches_pathbuf_join_semantics) {
+    char out[BT_PATH_MAX];
+    btvd_artifacts_root_from("/x", NULL, "C:/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "C:/x") == 0);
+    btvd_artifacts_root_from("\\x", NULL, "C:/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "C:\\x") == 0);
+    btvd_artifacts_root_from("/x", NULL, "/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "/x") == 0);
+    btvd_artifacts_root_from("\\\\srv\\share", NULL, "C:/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "\\\\srv\\share") == 0);
+    btvd_artifacts_root_from("C:rel", NULL, "C:/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "C:rel") == 0);
+    bt_json_value *config = parse_config("{\"paths\": {\"artifacts\": \"\"}}");
+    btvd_artifacts_root_from(NULL, config, "C:/repo", out, sizeof out);
+    BT_CHECK(strcmp(out, "C:/repo") == 0);
+    bt_json_free(config);
+}
+
 BT_TEST(visual_diff_lib, compare_images_flags_pixel_only_when_a_channel_exceeds_tolerance) {
     btvd_image base;
     unsigned char base_rgba[4] = {10, 10, 10, 255};
