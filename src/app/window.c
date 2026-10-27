@@ -84,7 +84,12 @@ void bt_app_poll_input(bt_ui_input *input) {
     input->click = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) ? 1 : 0;
     input->down = IsMouseButtonDown(MOUSE_BUTTON_LEFT) ? 1 : 0;
     float wheel = GetMouseWheelMove();
-    input->wheel = wheel > 0.0F ? 1 : (wheel < 0.0F ? -1 : 0);
+    input->wheel = 0;
+    if (wheel > 0.0F) {
+        input->wheel = 1;
+    } else if (wheel < 0.0F) {
+        input->wheel = -1;
+    }
     input->escape = IsKeyPressed(KEY_ESCAPE);
     input->enter = IsKeyPressed(KEY_ENTER);
     input->backspace = IsKeyPressed(KEY_BACKSPACE);
