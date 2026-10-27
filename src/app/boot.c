@@ -4,6 +4,7 @@
 #include "app/views/drill_view.h"
 #include "app/views/memo.h"
 #include "app/views/menu.h"
+#include "app/views/replay.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -120,7 +121,7 @@ const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
     {bt_view_drill_enter, bt_view_drill_update, bt_view_drill_row_draw},
     {bt_view_memo_enter, bt_view_memo_update, bt_view_memo_row_draw},
     {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},
+    {bt_view_replay_enter, bt_view_replay_update, bt_view_replay_draw},
     {noop_row, NULL, NULL},
     {noop_row, NULL, NULL},
     {noop_row, NULL, NULL},
