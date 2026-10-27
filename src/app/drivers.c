@@ -221,6 +221,9 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
     bt_ui_input input;
     char pending[BT_PATH_MAX];
     int has_pending = 0;
+    unsigned int key_vk = 0;
+    unsigned int key_char = 0;
+    int key_phase = 0;
     int code = -1;
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -245,21 +248,34 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
         }
         bt_app_window_frame_end();
         bt_app_frame_input_set(NULL);
+        void *hwnd = GetWindowHandle();
+        if (key_phase == 2) {
+            if (!bt_app_driver_key_up(hwnd, key_vk)) {
+                BT_TRACE_FAIL("app.usage_loop", "key %u up not delivered", key_vk);
+            }
+            key_phase = 0;
+        }
         bt_usage_key_request keys;
         char request[BT_PATH_MAX];
         int has_request = 0;
         code = bt_usage_step(tour, ctx, bt_app_fonts_current() != NULL, dt, &keys, request,
                              &has_request);
-        if (keys.has_key) {
-            unsigned int vk = bt_app_driver_vk_of(keys.key);
-            int sent = 0;
-            if (vk != 0) {
-                sent = bt_app_driver_press_vk(vk);
-            } else if (keys.ch != 0) {
-                sent = bt_app_driver_press_unicode((unsigned char)keys.ch);
-            }
-            if (!sent) {
-                BT_TRACE_FAIL("app.usage_loop", "key %d not delivered", keys.key);
+        if (keys.has_key && key_phase == 0) {
+            key_vk = bt_app_driver_vk_of(keys.key);
+            key_char = (unsigned char)keys.ch;
+            if (key_vk != 0) {
+                int sent = bt_app_driver_key_down(hwnd, key_vk);
+                if (sent && key_char != 0) {
+                    sent = bt_app_driver_key_char(hwnd, key_char);
+                }
+                if (!sent) {
+                    BT_TRACE_FAIL("app.usage_loop", "key %u down not delivered", key_vk);
+                }
+                key_phase = 2;
+            } else if (key_char != 0) {
+                if (!bt_app_driver_key_char(hwnd, key_char)) {
+                    BT_TRACE_FAIL("app.usage_loop", "char %u not delivered", key_char);
+                }
             }
         }
         if (has_request) {
