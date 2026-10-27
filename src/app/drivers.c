@@ -19,6 +19,7 @@
 #include "common/bt_trace.h"
 
 #include "raylib.h"
+#include "rlgl.h"
 
 #include <direct.h>
 #include <stdio.h>
@@ -188,6 +189,7 @@ static int smoke_loop(bt_app_ctx *ctx, bt_smoke_tour *tour) {
             BT_APP_STATE_TABLE[ctx->state].draw(ctx);
         }
         if (has_pending) {
+            rlDrawRenderBatchActive();
             TakeScreenshot(pending);
             has_pending = 0;
         }
@@ -260,6 +262,7 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
             BT_APP_STATE_TABLE[ctx->state].draw(ctx);
         }
         if (has_pending) {
+            rlDrawRenderBatchActive();
             TakeScreenshot(pending);
             has_pending = 0;
         }
@@ -281,18 +284,14 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
             key_vk = bt_app_driver_vk_of(keys.key);
             key_char = (unsigned char)keys.ch;
             if (key_vk != 0) {
-                int sent = bt_app_driver_key_down(hwnd, key_vk);
-                if (sent && key_char != 0) {
-                    sent = bt_app_driver_key_char(hwnd, key_char);
-                }
+                int sent = bt_app_driver_key_down(hwnd, key_vk)
+                           && (key_char == 0 || bt_app_driver_key_char(hwnd, key_char));
                 if (!sent) {
                     BT_TRACE_FAIL("app.usage_loop", "key %u down not delivered", key_vk);
                 }
                 key_phase = 2;
-            } else if (key_char != 0) {
-                if (!bt_app_driver_key_char(hwnd, key_char)) {
-                    BT_TRACE_FAIL("app.usage_loop", "char %u not delivered", key_char);
-                }
+            } else if (key_char != 0 && !bt_app_driver_key_char(hwnd, key_char)) {
+                BT_TRACE_FAIL("app.usage_loop", "char %u not delivered", key_char);
             }
         }
         if (has_request) {
@@ -327,12 +326,14 @@ static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
             bt_usage_tour_init(&tour, dir, ctx->config.smoke_seed, ctx->config.memo.cadence_ms);
     }
     if (init_ok != 0) {
+        bt_usage_tour_free(&tour);
         driver_teardown(ctx, &book);
         return 1;
     }
     BT_APP_STATE_TABLE[ctx->state].enter(ctx);
     bt_app_apply_pending(ctx);
     int code = usage_loop(ctx, &tour);
+    bt_usage_tour_free(&tour);
     driver_teardown(ctx, &book);
     return code;
 }
