@@ -5,7 +5,6 @@
 
 #include <stddef.h>
 
-#define BT_USAGE_SCRIPT_MAX 124
 #define BT_USAGE_SHOT_MAX 19
 
 typedef enum {
@@ -38,7 +37,7 @@ typedef struct {
     const char *name;
 } bt_usage_action;
 
-size_t bt_usage_script(float cadence_secs, bt_usage_action *out, size_t cap);
-size_t bt_usage_fatal_script(bt_usage_action *out, size_t cap);
+bt_usage_action *bt_usage_script(float cadence_secs, size_t *count);
+bt_usage_action *bt_usage_fatal_script(size_t *count);
 
 #endif

@@ -4,22 +4,30 @@
 
 #include "raylib.h"
 
-static bt_usage_action *g_out;
+#include <stdlib.h>
+
+static bt_usage_action *g_actions;
 static size_t g_cap;
 static size_t g_at;
 
-static void begin(bt_usage_action *out, size_t cap) {
-    g_out = out;
-    g_cap = cap;
+static void begin(void) {
+    g_actions = NULL;
+    g_cap = 0;
     g_at = 0;
 }
 
 static void emit(bt_usage_action action) {
-    if (g_at >= g_cap) {
-        BT_TRACE_FAIL("app.usage_script", "capacity %zu exceeded", g_cap);
-        return;
+    if (g_at == g_cap) {
+        size_t next = g_cap == 0 ? 32 : g_cap * 2;
+        bt_usage_action *grown = realloc(g_actions, next * sizeof *grown);
+        if (grown == NULL) {
+            BT_TRACE_FAIL("app.usage_script", "allocation of %zu actions failed", next);
+            return;
+        }
+        g_actions = grown;
+        g_cap = next;
     }
-    g_out[g_at++] = action;
+    g_actions[g_at++] = action;
 }
 
 static void press(int key) {
@@ -117,10 +125,10 @@ static void shot(const char *name) {
     emit(action);
 }
 
-size_t bt_usage_script(float cadence_secs, bt_usage_action *out, size_t cap) {
+bt_usage_action *bt_usage_script(float cadence_secs, size_t *count) {
     BT_TRACE_ENTER("app.usage_script");
     float partial = cadence_secs * 3.25F;
-    begin(out, cap);
+    begin();
     wait_app(BT_APP_MENU);
     wait_fonts();
     shot("menu");
@@ -246,15 +254,17 @@ size_t bt_usage_script(float cadence_secs, bt_usage_action *out, size_t cap) {
     wait_app(BT_APP_SETTINGS);
     shot("settings");
     BT_TRACE_EXIT("app.usage_script");
-    return g_at;
+    *count = g_at;
+    return g_actions;
 }
 
-size_t bt_usage_fatal_script(bt_usage_action *out, size_t cap) {
+bt_usage_action *bt_usage_fatal_script(size_t *count) {
     BT_TRACE_ENTER("app.usage_fatal_script");
-    begin(out, cap);
+    begin();
     wait_app(BT_APP_FATAL);
     wait_fonts();
     shot("fatal");
     BT_TRACE_EXIT("app.usage_fatal_script");
-    return g_at;
+    *count = g_at;
+    return g_actions;
 }

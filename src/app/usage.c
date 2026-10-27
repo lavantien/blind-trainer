@@ -12,6 +12,7 @@
 
 #include <direct.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -86,6 +87,47 @@ static int dir_exists_or_made(const char *dir) {
     return -1;
 }
 
+void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions,
+                               size_t count) {
+    BT_TRACE_ENTER("app.usage_tour_set_actions");
+    free(tour->actions);
+    tour->actions = NULL;
+    tour->action_count = 0;
+    tour->action_cap = 0;
+    tour->expected_shots = 0;
+    if (count > 0) {
+        size_t cap = 16;
+        while (cap < count) {
+            cap *= 2;
+        }
+        bt_usage_action *grown = malloc(cap * sizeof *grown);
+        if (grown == NULL) {
+            BT_TRACE_FAIL("app.usage_tour_set_actions", "allocation of %zu actions failed", cap);
+            BT_TRACE_EXIT("app.usage_tour_set_actions");
+            return;
+        }
+        memcpy(grown, actions, count * sizeof *grown);
+        tour->actions = grown;
+        tour->action_count = count;
+        tour->action_cap = cap;
+        for (size_t i = 0; i < count; i++) {
+            if (actions[i].kind == BT_USAGE_ACT_SHOT) {
+                tour->expected_shots++;
+            }
+        }
+    }
+    BT_TRACE_EXIT("app.usage_tour_set_actions");
+}
+
+void bt_usage_tour_free(bt_usage_tour *tour) {
+    BT_TRACE_ENTER("app.usage_tour_free");
+    free(tour->actions);
+    tour->actions = NULL;
+    tour->action_count = 0;
+    tour->action_cap = 0;
+    BT_TRACE_EXIT("app.usage_tour_free");
+}
+
 static int tour_init(bt_usage_tour *tour, const char *dir, const bt_usage_action *actions,
                      size_t count) {
     memset(tour, 0, sizeof *tour);
@@ -93,30 +135,24 @@ static int tour_init(bt_usage_tour *tour, const char *dir, const bt_usage_action
         return 1;
     }
     snprintf(tour->dir, sizeof tour->dir, "%s", dir);
-    for (size_t i = 0; i < count; i++) {
-        tour->actions[i] = actions[i];
-    }
-    tour->action_count = count;
     tour->index = 0;
     tour->mode = BT_USAGE_MODE_ACT;
     tour->exit_code = -1;
-    for (size_t i = 0; i < count; i++) {
-        if (actions[i].kind == BT_USAGE_ACT_SHOT) {
-            tour->expected_shots++;
-        }
-    }
+    bt_usage_tour_set_actions(tour, actions, count);
     return 0;
 }
 
 int bt_usage_tour_init(bt_usage_tour *tour, const char *dir, uint64_t seed,
                        unsigned int cadence_ms) {
     BT_TRACE_ENTER("app.usage_tour_init");
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = bt_usage_script((float)cadence_ms / 1000.0F, actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = 0;
+    bt_usage_action *actions = bt_usage_script((float)cadence_ms / 1000.0F, &count);
     if (tour_init(tour, dir, actions, count) != 0) {
+        free(actions);
         BT_TRACE_EXIT("app.usage_tour_init");
         return 1;
     }
+    free(actions);
     uint64_t seeds[3];
     bt_smoke_seeds(seed, seeds);
     bt_view_memo_app()->seed = seeds[0];
@@ -128,9 +164,10 @@ int bt_usage_tour_init(bt_usage_tour *tour, const char *dir, uint64_t seed,
 
 int bt_usage_fatal_init(bt_usage_tour *tour, const char *dir) {
     BT_TRACE_ENTER("app.usage_fatal_init");
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = bt_usage_fatal_script(actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = 0;
+    bt_usage_action *actions = bt_usage_fatal_script(&count);
     int ok = tour_init(tour, dir, actions, count);
+    free(actions);
     BT_TRACE_EXIT("app.usage_fatal_init");
     return ok != 0 ? 1 : 0;
 }

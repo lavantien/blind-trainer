@@ -71,14 +71,11 @@ static void tour_world(bt_usage_tour *tour, const char *dir, const bt_usage_acti
                        size_t count, size_t expected_shots) {
     memset(tour, 0, sizeof *tour);
     snprintf(tour->dir, sizeof tour->dir, "%s", dir);
-    for (size_t i = 0; i < count; i++) {
-        tour->actions[i] = actions[i];
-    }
-    tour->action_count = count;
     tour->index = 0;
     tour->mode = BT_USAGE_MODE_ACT;
-    tour->expected_shots = expected_shots;
     tour->exit_code = -1;
+    bt_usage_tour_set_actions(tour, actions, count);
+    tour->expected_shots = expected_shots;
 }
 
 static void step(bt_usage_tour *tour, bt_app_ctx *ctx, bt_usage_key_request *keys,
@@ -401,4 +398,29 @@ BT_TEST(usage, finish_requires_every_expected_shot_written) {
     ta_write_file(tour.shots[1], "png");
     tour.shot_count = 2;
     BT_CHECK_EQ(bt_usage_finish(&tour), 0);
+    bt_usage_tour_free(&tour);
+}
+
+BT_TEST(usage, tour_storage_holds_more_than_the_fixed_capacity) {
+    bt_usage_tour tour;
+    memset(&tour, 0, sizeof tour);
+    snprintf(tour.dir, sizeof tour.dir, "%s", ta_temp_dir("usage", "grow"));
+    bt_usage_action actions[125];
+    for (size_t i = 0; i < 125; i++) {
+        memset(&actions[i], 0, sizeof actions[i]);
+        actions[i].kind = BT_USAGE_ACT_ELAPSE;
+        actions[i].secs = 0.1F;
+    }
+    bt_usage_tour_set_actions(&tour, actions, 125);
+    BT_CHECK_EQ(tour.action_count, (size_t)125);
+    BT_CHECK_EQ(tour.actions[124].kind, BT_USAGE_ACT_ELAPSE);
+    bt_usage_action extra[1] = {0};
+    extra[0].kind = BT_USAGE_ACT_SHOT;
+    extra[0].name = "tail";
+    bt_usage_tour_set_actions(&tour, extra, 1);
+    BT_CHECK_EQ(tour.action_count, (size_t)1);
+    BT_CHECK_EQ(tour.actions[0].kind, BT_USAGE_ACT_SHOT);
+    bt_usage_tour_free(&tour);
+    BT_CHECK(tour.actions == NULL);
+    BT_CHECK_EQ(tour.action_count, (size_t)0);
 }

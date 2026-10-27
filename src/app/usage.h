@@ -54,8 +54,9 @@ typedef struct {
 
 typedef struct {
     char dir[BT_PATH_MAX];
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
+    bt_usage_action *actions;
     size_t action_count;
+    size_t action_cap;
     size_t index;
     bt_usage_mode_kind mode;
     bt_usage_wait wait;
@@ -70,6 +71,9 @@ typedef struct {
 int bt_usage_tour_init(bt_usage_tour *tour, const char *dir, uint64_t seed,
                        unsigned int cadence_ms);
 int bt_usage_fatal_init(bt_usage_tour *tour, const char *dir);
+void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions,
+                               size_t count);
+void bt_usage_tour_free(bt_usage_tour *tour);
 bt_case bt_usage_pinned_case(void);
 const char *bt_usage_covered_alg_text(const bt_corpus *corpus, const bt_case *case_id);
 int bt_usage_fully_covered(const bt_corpus *corpus, const bt_cube *scramble);

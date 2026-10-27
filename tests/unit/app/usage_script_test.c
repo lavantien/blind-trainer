@@ -6,28 +6,32 @@
 
 #include <string.h>
 
-static size_t fill_script(bt_usage_action *actions, size_t cap) {
-    size_t count = bt_usage_script(0.8F, actions, cap);
-    BT_CHECK(count > 0);
-    return count;
+static bt_usage_action *g_actions;
+static size_t g_count;
+
+static size_t fill_script(void) {
+    g_actions = bt_usage_script(0.8F, &g_count);
+    BT_CHECK(g_actions != NULL);
+    BT_CHECK(g_count > 0);
+    return g_count;
 }
 
-static size_t shot_names(const bt_usage_action *actions, size_t count,
+static size_t shot_names(const bt_usage_action *g_actions, size_t count,
                          const char *out[BT_USAGE_SHOT_MAX]) {
     size_t names = 0;
     for (size_t i = 0; i < count; i++) {
-        if (actions[i].kind == BT_USAGE_ACT_SHOT) {
+        if (g_actions[i].kind == BT_USAGE_ACT_SHOT) {
             BT_CHECK(names < BT_USAGE_SHOT_MAX);
-            out[names++] = actions[i].name;
+            out[names++] = g_actions[i].name;
         }
     }
     return names;
 }
 
-static int name_before(const bt_usage_action *actions, size_t count, const char *name,
+static int name_before(const bt_usage_action *g_actions, size_t count, const char *name,
                        size_t *out) {
     for (size_t i = 0; i < count; i++) {
-        if (actions[i].kind == BT_USAGE_ACT_SHOT && strcmp(actions[i].name, name) == 0) {
+        if (g_actions[i].kind == BT_USAGE_ACT_SHOT && strcmp(g_actions[i].name, name) == 0) {
             *out = i;
             return 1;
         }
@@ -35,9 +39,9 @@ static int name_before(const bt_usage_action *actions, size_t count, const char 
     return 0;
 }
 
-static size_t position(const bt_usage_action *actions, size_t count, int (*pred)(const bt_usage_action *)) {
+static size_t position(const bt_usage_action *g_actions, size_t count, int (*pred)(const bt_usage_action *)) {
     for (size_t i = 0; i < count; i++) {
-        if (pred(&actions[i])) {
+        if (pred(&g_actions[i])) {
             return i;
         }
     }
@@ -90,10 +94,9 @@ static int is_press(const bt_usage_action *action) {
 }
 
 BT_TEST(usage_script, shots_are_unique_and_complete) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = fill_script(actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = fill_script();
     const char *names[BT_USAGE_SHOT_MAX];
-    size_t total = shot_names(actions, count, names);
+    size_t total = shot_names(g_actions, count, names);
     BT_CHECK_EQ(total, (size_t)19);
     for (size_t i = 0; i < total; i++) {
         for (size_t j = i + 1; j < total; j++) {
@@ -122,35 +125,32 @@ BT_TEST(usage_script, shots_are_unique_and_complete) {
 }
 
 BT_TEST(usage_script, never_issues_two_presses_back_to_back) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = fill_script(actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = fill_script();
     for (size_t i = 1; i < count; i++) {
-        BT_CHECK(!(is_press(&actions[i - 1]) && is_press(&actions[i])));
+        BT_CHECK(!(is_press(&g_actions[i - 1]) && is_press(&g_actions[i])));
     }
 }
 
 BT_TEST(usage_script, sequences_each_phase_before_its_shot) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = fill_script(actions, BT_USAGE_SCRIPT_MAX);
-    BT_CHECK(position(actions, count, is_wait_drill_rate)
-             < position(actions, count, is_shot_drill_rate_a));
-    BT_CHECK(position(actions, count, is_wait_memo_review)
-             < position(actions, count, is_shot_memo_review));
-    BT_CHECK(position(actions, count, is_pick_solve_seed)
-             < position(actions, count, is_nav_open_solve));
-    BT_CHECK(position(actions, count, is_nav_open_stats)
-             > position(actions, count, is_shot_solve_review));
+    size_t count = fill_script();
+    BT_CHECK(position(g_actions, count, is_wait_drill_rate)
+             < position(g_actions, count, is_shot_drill_rate_a));
+    BT_CHECK(position(g_actions, count, is_wait_memo_review)
+             < position(g_actions, count, is_shot_memo_review));
+    BT_CHECK(position(g_actions, count, is_pick_solve_seed)
+             < position(g_actions, count, is_nav_open_solve));
+    BT_CHECK(position(g_actions, count, is_nav_open_stats)
+             > position(g_actions, count, is_shot_solve_review));
 }
 
 BT_TEST(usage_script, the_case_drill_leg_drives_the_repo_and_all_four_grade_keys) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = fill_script(actions, BT_USAGE_SCRIPT_MAX);
-    size_t entry = position(actions, count, is_wait_app_case_drill);
+    size_t count = fill_script();
+    size_t entry = position(g_actions, count, is_wait_app_case_drill);
     int nav[5];
     size_t nav_count = 0;
     for (size_t i = entry; i-- > 0;) {
-        if (actions[i].kind == BT_USAGE_ACT_PRESS && nav_count < 5) {
-            nav[nav_count++] = actions[i].key;
+        if (g_actions[i].kind == BT_USAGE_ACT_PRESS && nav_count < 5) {
+            nav[nav_count++] = g_actions[i].key;
         }
     }
     BT_CHECK_EQ(nav_count, (size_t)5);
@@ -161,20 +161,20 @@ BT_TEST(usage_script, the_case_drill_leg_drives_the_repo_and_all_four_grade_keys
     BT_CHECK_EQ(nav[0], KEY_D);
     size_t exit = entry;
     for (size_t i = entry; i < count; i++) {
-        if (is_wait_app_menu(&actions[i])) {
+        if (is_wait_app_menu(&g_actions[i])) {
             exit = i;
             break;
         }
     }
     BT_CHECK(exit > entry);
-    BT_CHECK(actions[exit - 1].kind == BT_USAGE_ACT_PRESS);
-    BT_CHECK_EQ(actions[exit - 1].key, KEY_ESCAPE);
+    BT_CHECK(g_actions[exit - 1].kind == BT_USAGE_ACT_PRESS);
+    BT_CHECK_EQ(g_actions[exit - 1].key, KEY_ESCAPE);
     int drills[16];
     size_t drill_count = 0;
     for (size_t i = entry; i < exit; i++) {
-        if (actions[i].kind == BT_USAGE_ACT_PRESS) {
+        if (g_actions[i].kind == BT_USAGE_ACT_PRESS) {
             BT_CHECK(drill_count < 16);
-            drills[drill_count++] = actions[i].key;
+            drills[drill_count++] = g_actions[i].key;
         }
     }
     BT_CHECK_EQ(drill_count, (size_t)9);
@@ -187,32 +187,32 @@ BT_TEST(usage_script, the_case_drill_leg_drives_the_repo_and_all_four_grade_keys
     BT_CHECK_EQ(drills[6], KEY_SPACE);
     BT_CHECK_EQ(drills[7], KEY_FOUR);
     BT_CHECK_EQ(drills[8], KEY_ESCAPE);
-    BT_CHECK(actions[exit + 1].kind == BT_USAGE_ACT_NAV_OPEN);
-    BT_CHECK_EQ(actions[exit + 1].app, BT_APP_STATS);
+    BT_CHECK(g_actions[exit + 1].kind == BT_USAGE_ACT_NAV_OPEN);
+    BT_CHECK_EQ(g_actions[exit + 1].app, BT_APP_STATS);
 }
 
 BT_TEST(usage_script, fatal_script_shoots_only_the_fatal_screen) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = bt_usage_fatal_script(actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = 0;
+    bt_usage_action *actions = bt_usage_fatal_script(&count);
     BT_CHECK_EQ(count, (size_t)3);
     BT_CHECK(actions[0].kind == BT_USAGE_ACT_WAIT_APP);
     BT_CHECK_EQ(actions[0].app, BT_APP_FATAL);
     BT_CHECK(actions[1].kind == BT_USAGE_ACT_WAIT_FONTS);
     BT_CHECK(actions[2].kind == BT_USAGE_ACT_SHOT);
     BT_CHECK(strcmp(actions[2].name, "fatal") == 0);
+    free(g_actions);
 }
 
 BT_TEST(usage_script, elapsed_times_are_frame_dwells_or_cadence_scaled) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = fill_script(actions, BT_USAGE_SCRIPT_MAX);
+    size_t count = fill_script();
     double partial = 0.8 * 3.25;
     size_t stream_waits = 0;
     size_t frame_dwells = 0;
     for (size_t i = 0; i < count; i++) {
-        if (actions[i].kind != BT_USAGE_ACT_ELAPSE) {
+        if (g_actions[i].kind != BT_USAGE_ACT_ELAPSE) {
             continue;
         }
-        double secs = (double)actions[i].secs;
+        double secs = (double)g_actions[i].secs;
         int near_partial = (secs - partial) < 1e-6 && (partial - secs) < 1e-6;
         int near_frame = (secs - 0.1) < 1e-6 && (0.1 - secs) < 1e-6;
         int near_slow = (secs - 0.3) < 1e-6 && (0.3 - secs) < 1e-6;
@@ -229,12 +229,14 @@ BT_TEST(usage_script, elapsed_times_are_frame_dwells_or_cadence_scaled) {
     BT_CHECK(frame_dwells > 0);
 }
 
-BT_TEST(usage_script, script_count_fits_the_fixed_capacity) {
-    bt_usage_action actions[BT_USAGE_SCRIPT_MAX];
-    size_t count = bt_usage_script(0.8F, actions, BT_USAGE_SCRIPT_MAX);
-    BT_CHECK(count <= BT_USAGE_SCRIPT_MAX);
-    BT_CHECK_EQ(count, bt_usage_script(0.5F, actions, BT_USAGE_SCRIPT_MAX));
+BT_TEST(usage_script, script_count_is_stable_across_cadences) {
+    size_t count = fill_script();
     size_t at;
-    BT_CHECK(name_before(actions, count, "menu", &at));
+    BT_CHECK(name_before(g_actions, count, "menu", &at));
     BT_CHECK_EQ(at, (size_t)2);
+    bt_usage_action *actions = bt_usage_script(0.5F, &at);
+    BT_CHECK_EQ(at, count);
+    free(actions);
+    free(g_actions);
+    g_actions = NULL;
 }
