@@ -68,7 +68,7 @@ static void ensure_setup(void) {
     snprintf(fx_main, BT_MUT_PATH_MAX, "%s/tests/unit/tools/fixtures/fx_main.c", g_root);
     snprintf(g_fx_main_obj, BT_MUT_PATH_MAX, "%s/fx_main.obj", obj_dir);
     char diag[2048];
-    if (bt_mut_compile_file(&g_build, NULL, fx_main, g_fx_main_obj, diag, sizeof diag) != 0) {
+    if (bt_mut_compile_file(&g_build, NULL, NULL, fx_main, g_fx_main_obj, diag, sizeof diag) != 0) {
         BT_ABORT("cannot compile fx_main: %s", diag);
     }
     char stub_src[BT_MUT_PATH_MAX];
@@ -76,7 +76,7 @@ static void ensure_setup(void) {
     snprintf(stub_src, BT_MUT_PATH_MAX, "%s/tests/unit/tools/fixtures/stub_clang.c", g_root);
     snprintf(stub_obj, BT_MUT_PATH_MAX, "%s/stub_clang.obj", obj_dir);
     snprintf(g_stub_exe, BT_MUT_PATH_MAX, "%s/stub-clang.exe", g_dir);
-    if (bt_mut_compile_file(&g_build, NULL, stub_src, stub_obj, diag, sizeof diag) != 0) {
+    if (bt_mut_compile_file(&g_build, NULL, NULL, stub_src, stub_obj, diag, sizeof diag) != 0) {
         BT_ABORT("cannot compile stub: %s", diag);
     }
     char *objects[1] = {stub_obj};
@@ -103,6 +103,9 @@ static void engine_for(const char *slot, unsigned long long timeout_ms, const ch
     snprintf(engine->repo_root, BT_MUT_PATH_MAX, "%s", g_root);
     if (bt_mut_build_load(g_root, g_config, clang_override, &engine->build) != 0) {
         BT_ABORT("cannot load build settings");
+    }
+    if (bt_mut_area_map_load(g_config, &engine->area_map) != 0) {
+        BT_ABORT("cannot load the src area map");
     }
     snprintf(engine->scratch_root, BT_MUT_PATH_MAX, "%s/scratch-%s", g_dir, slot);
     snprintf(engine->ledger_path, BT_MUT_PATH_MAX, "%s/ledger-%s.tsv", g_dir, slot);
@@ -145,6 +148,36 @@ static void enumerate_fixture(bt_mut_mutant_list *list) {
         BT_ABORT("cannot enumerate fixture");
     }
     free(text);
+}
+
+static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
+    char base[BT_MUT_PATH_MAX];
+    snprintf(base, sizeof base, "%s/build/obj", g_root);
+    char pattern[BT_MUT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/*", base);
+    WIN32_FIND_DATAA entry;
+    HANDLE find = FindFirstFileA(pattern, &entry);
+    if (find == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+    char found[BT_MUT_PATH_MAX] = "";
+    size_t count = 0;
+    do {
+        if (strcmp(entry.cFileName, ".") == 0 || strcmp(entry.cFileName, "..") == 0) {
+            continue;
+        }
+        if (!(entry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            continue;
+        }
+        count++;
+        snprintf(found, BT_MUT_PATH_MAX, "%s", entry.cFileName);
+    } while (FindNextFileA(find, &entry));
+    FindClose(find);
+    if (count != 1) {
+        return -1;
+    }
+    snprintf(out, BT_MUT_PATH_MAX, "%s/%s", base, found);
+    return 0;
 }
 
 static bt_mut_row row_for(const char *ledger_path, const char *id) {
@@ -197,7 +230,7 @@ BT_TEST(mutate, apply_compiles_for_every_operator) {
         bt_mut_write_file(source, mutated, mutated_len);
         free(mutated);
         char diag[2048];
-        int rc = bt_mut_compile_file(&g_build, NULL, source, obj, diag, sizeof diag);
+        int rc = bt_mut_compile_file(&g_build, NULL, NULL, source, obj, diag, sizeof diag);
         MUT_CHECK(rc == 0, "%s mutant does not compile: %s", names[i], diag);
     }
     free(text);
@@ -567,7 +600,9 @@ BT_TEST(mutate, stub_assembly_matches_the_bt_py_contract) {
         }
     }
     size_t flag_count = expected_count;
-    size_t compile_argc = 1 + flag_count + 8 + 2 + 4;
+    size_t compile_argc = 1 + flag_count + 10 + 2 + 4;
+    snprintf(expected[expected_count++], BT_MUT_PATH_MAX, "-I");
+    snprintf(expected[expected_count++], BT_MUT_PATH_MAX, "%s/tests/unit/tools/fixtures", g_root);
     snprintf(expected[expected_count++], BT_MUT_PATH_MAX, "-I");
     snprintf(expected[expected_count++], BT_MUT_PATH_MAX, "%s/inputs", scratch_dir);
     static const char *const includes[3] = {"src", "tools", "tests"};
@@ -666,6 +701,81 @@ BT_TEST(mutate, link_list_never_references_missing_objects) {
     }
     bt_mut_target_free(&target);
     bt_mut_build_free(&engine.build);
+}
+
+BT_TEST(mutate, link_list_stays_inside_the_suite_area_closure) {
+    ensure_setup();
+    bt_mut_engine engine;
+    engine_for("linkarea", 60000, NULL, &engine);
+    char obj_root[BT_MUT_PATH_MAX];
+    MUT_CHECK(selftest_obj_root(obj_root) == 0, "cannot find the build obj root");
+    char foreign_dir[BT_MUT_PATH_MAX];
+    snprintf(foreign_dir, sizeof foreign_dir, "%s/src/app", obj_root);
+    int foreign_dir_existed = GetFileAttributesA(foreign_dir) != INVALID_FILE_ATTRIBUTES;
+    char planted[BT_MUT_PATH_MAX];
+    snprintf(planted, sizeof planted, "%s/zz_selftest_foreign.obj", foreign_dir);
+    MUT_CHECK(bt_mut_mkdirs(foreign_dir) == 0, "cannot create %s", foreign_dir);
+    const char *probe_bytes = "probe";
+    MUT_CHECK(bt_mut_write_file(planted, probe_bytes, strlen(probe_bytes)) == 0, "cannot plant %s",
+              planted);
+    bt_mut_target target;
+    int rc = bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_alg_test", &target);
+    remove(planted);
+    if (!foreign_dir_existed) {
+        RemoveDirectoryA(foreign_dir);
+    }
+    BT_CHECK_EQ(rc, 0);
+    if (rc == 0) {
+        const char *offender = NULL;
+        int common_seen = 0;
+        int core_seen = 0;
+        for (size_t i = 0; i < target.link_obj_count; i++) {
+            const char *obj = target.link_objs[i];
+            if (strstr(obj, "/src/") == NULL && strstr(obj, "\\src\\") == NULL) {
+                continue;
+            }
+            if (strstr(obj, "/src/common/") != NULL || strstr(obj, "\\src\\common\\") != NULL) {
+                common_seen = 1;
+            } else if (strstr(obj, "/src/core/") != NULL || strstr(obj, "\\src\\core\\") != NULL) {
+                core_seen = 1;
+            } else {
+                offender = obj;
+            }
+        }
+        MUT_CHECK(offender == NULL, "link list drags %s outside the core closure", offender);
+        MUT_CHECK(common_seen, "link list misses the always-linked src/common objects");
+        MUT_CHECK(core_seen, "link list misses the suite area src/core objects");
+        BT_CHECK(target.target_index < target.link_obj_count);
+    }
+    bt_mut_target_free(&target);
+    bt_mut_build_free(&engine.build);
+}
+
+BT_TEST(mutate, scratch_sources_keep_their_own_directory_on_the_include_path) {
+    ensure_setup();
+    char slot[BT_MUT_PATH_MAX];
+    snprintf(slot, sizeof slot, "%s/sibslot", g_dir);
+    bt_test_mkdirs(slot);
+    char original[BT_MUT_PATH_MAX];
+    snprintf(original, sizeof original, "%s/tests/unit/tools/fixtures/sib_target.c", g_root);
+    char *text = NULL;
+    size_t len = 0;
+    MUT_CHECK(bt_mut_read_file(original, &text, &len) == 0, "cannot read %s", original);
+    char scratch_src[BT_MUT_PATH_MAX];
+    snprintf(scratch_src, sizeof scratch_src, "%s/sib_target.c", slot);
+    bt_mut_write_file(scratch_src, text, len);
+    free(text);
+    char obj[BT_MUT_PATH_MAX];
+    snprintf(obj, sizeof obj, "%s/sib_target.obj", slot);
+    char dir_include[BT_MUT_PATH_MAX];
+    snprintf(dir_include, sizeof dir_include, "%s/tests/unit/tools/fixtures", g_root);
+    char diag[2048];
+    int bare = bt_mut_compile_file(&g_build, NULL, NULL, scratch_src, obj, diag, sizeof diag);
+    MUT_CHECK(bare != 0, "scratch copy compiled without its own directory: %s", diag);
+    int rooted =
+        bt_mut_compile_file(&g_build, dir_include, NULL, scratch_src, obj, diag, sizeof diag);
+    MUT_CHECK(rooted == 0, "scratch copy with its own directory failed: %s", diag);
+    bt_mut_rmtree(slot);
 }
 
 BT_TEST(mutate, spawn_error_leaves_the_row_pending) {
@@ -808,6 +918,14 @@ int bt_mutate_selftest(void) {
         {
             "mutate.link_list_never_references_missing_objects",
             bt_test_mutate_link_list_never_references_missing_objects,
+        },
+        {
+            "mutate.link_list_stays_inside_the_suite_area_closure",
+            bt_test_mutate_link_list_stays_inside_the_suite_area_closure,
+        },
+        {
+            "mutate.scratch_sources_keep_their_own_directory_on_the_include_path",
+            bt_test_mutate_scratch_sources_keep_their_own_directory_on_the_include_path,
         },
         {
             "mutate.flooding_child_hits_the_deadline",

@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "common/bt_trace.h"
+#include "common/config.h"
 #include "common/strbuf.h"
 
 #ifdef _WIN32
@@ -125,6 +126,120 @@ static int obj_root_of(const char *repo_root, char out[BT_MUT_PATH_MAX]) {
 #endif
 }
 
+int bt_mut_area_set_contains(const bt_mut_area_set *set, const char *area) {
+    for (size_t i = 0; i < set->count; i++) {
+        if (strcmp(set->items[i], area) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static int area_set_push(bt_mut_area_set *set, const char *area) {
+    if (bt_mut_area_set_contains(set, area)) {
+        return 0;
+    }
+    if (set->count >= BT_MUT_AREAS_MAX || strlen(area) >= BT_MUT_AREA_MAX) {
+        engine_error("area set overflow at %s", area);
+        return -1;
+    }
+    snprintf(set->items[set->count], BT_MUT_AREA_MAX, "%s", area);
+    set->count++;
+    return 0;
+}
+
+int bt_mut_area_closure(const bt_mut_area_map *map, const char *area, bt_mut_area_set *out) {
+    BT_TRACE_ENTER("mutate.area_closure");
+    memset(out, 0, sizeof *out);
+    int rc = area_set_push(out, area);
+    for (size_t i = 0; rc == 0 && i < out->count; i++) {
+        for (size_t n = 0; rc == 0 && n < map->count; n++) {
+            if (strcmp(map->areas[n], out->items[i]) != 0) {
+                continue;
+            }
+            for (size_t d = 0; rc == 0 && d < map->dep_counts[n]; d++) {
+                rc = area_set_push(out, map->deps[n][d]);
+            }
+            break;
+        }
+    }
+    if (rc != 0) {
+        BT_TRACE_FAIL("mutate.area_closure", "%s", bt_mut_engine_last_error());
+    }
+    BT_TRACE_EXIT("mutate.area_closure");
+    return rc;
+}
+
+int bt_mut_area_map_load(const bt_json_value *config, bt_mut_area_map *out) {
+    BT_TRACE_ENTER("mutate.area_map_load");
+    memset(out, 0, sizeof *out);
+    const bt_json_value *deps = bt_config_value(config, "build.src_deps");
+    int rc = 0;
+    if (deps == NULL) {
+        BT_TRACE_EXIT("mutate.area_map_load");
+        return 0;
+    }
+    if (deps->type != BT_JSON_OBJECT) {
+        engine_error("build.src_deps is not an object");
+        rc = -1;
+    }
+    for (size_t i = 0; rc == 0 && i < deps->as.object.count; i++) {
+        const char *name = deps->as.object.keys[i];
+        const bt_json_value *list = deps->as.object.values[i];
+        size_t slot = out->count;
+        if (name == NULL || strlen(name) >= BT_MUT_AREA_MAX || slot >= BT_MUT_AREAS_MAX) {
+            engine_error("area map overflow at %s", name == NULL ? "?" : name);
+            rc = -1;
+            break;
+        }
+        if (list == NULL || list->type != BT_JSON_ARRAY) {
+            engine_error("build.src_deps[%s] is not an array", name);
+            rc = -1;
+            break;
+        }
+        snprintf(out->areas[slot], BT_MUT_AREA_MAX, "%s", name);
+        for (size_t d = 0; rc == 0 && d < list->as.array.count; d++) {
+            const bt_json_value *dep = list->as.array.items[d];
+            if (dep == NULL || dep->type != BT_JSON_STRING ||
+                strlen(dep->as.string) >= BT_MUT_AREA_MAX ||
+                out->dep_counts[slot] >= BT_MUT_AREAS_MAX) {
+                engine_error("build.src_deps[%s] holds an invalid dependency", name);
+                rc = -1;
+                break;
+            }
+            snprintf(out->deps[slot][out->dep_counts[slot]], BT_MUT_AREA_MAX, "%s", dep->as.string);
+            out->dep_counts[slot]++;
+        }
+        if (rc == 0) {
+            out->count++;
+        }
+    }
+    if (rc != 0) {
+        memset(out, 0, sizeof *out);
+        BT_TRACE_FAIL("mutate.area_map_load", "%s", bt_mut_engine_last_error());
+    }
+    BT_TRACE_EXIT("mutate.area_map_load");
+    return rc;
+}
+
+static int src_in_link_areas(const char *src_rel, const bt_mut_area_set *areas) {
+    const char *slash = strchr(src_rel, '/');
+    if (slash == NULL) {
+        return 0;
+    }
+    size_t len = (size_t)(slash - src_rel);
+    char area[BT_MUT_AREA_MAX];
+    if (len >= BT_MUT_AREA_MAX) {
+        return 0;
+    }
+    memcpy(area, src_rel, len);
+    area[len] = '\0';
+    if (strcmp(area, "common") == 0) {
+        return 1;
+    }
+    return bt_mut_area_set_contains(areas, area);
+}
+
 static int test_source_for_exe(const char *repo_root, const char *test_exe,
                                char out[BT_MUT_PATH_MAX]) {
     bt_mut_paths sources = {0};
@@ -179,6 +294,21 @@ int bt_mut_target_from_repo(const bt_mut_engine *engine, const char *file_rel, c
     if (rc == 0 && test_source_for_exe(engine->repo_root, test_exe, test_source) != 0) {
         rc = -1;
     }
+    bt_mut_area_set link_areas = {0};
+    char suite_area[BT_MUT_AREA_MAX] = "";
+    if (rc == 0) {
+        const char *area_start = test_source + strlen("tests/unit/");
+        const char *slash = strchr(area_start, '/');
+        size_t area_len = slash == NULL ? strlen(area_start) : (size_t)(slash - area_start);
+        if (area_len == 0 || area_len >= BT_MUT_AREA_MAX) {
+            engine_error("cannot derive a suite area from %s", test_source);
+            rc = -1;
+        } else {
+            memcpy(suite_area, area_start, area_len);
+            suite_area[area_len] = '\0';
+            rc = bt_mut_area_closure(&engine->area_map, suite_area, &link_areas);
+        }
+    }
     bt_mut_paths objs = {0};
     int target_seen = 0;
     const char *rel_under_src = strncmp(file_rel, "src/", 4) == 0 ? file_rel + 4 : file_rel;
@@ -190,6 +320,9 @@ int bt_mut_target_from_repo(const bt_mut_engine *engine, const char *file_rel, c
             snprintf(obj + obj_len - 2, sizeof obj - (obj_len - 2), ".obj");
         }
         int is_target = strcmp(src_files.items[i], rel_under_src) == 0;
+        if (!is_target && !src_in_link_areas(src_files.items[i], &link_areas)) {
+            continue;
+        }
         if (!is_target) {
             FILE *probe = fopen(obj, "rb");
             if (probe == NULL) {
@@ -460,10 +593,16 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
     }
     char obj[BT_MUT_PATH_MAX];
     snprintf(obj, sizeof obj, "%s/%s.obj", dir, stem);
+    char dir_include[BT_MUT_PATH_MAX] = "";
+    const char *file_slash = strrchr(target->file, '/');
+    if (file_slash != NULL) {
+        snprintf(dir_include, sizeof dir_include, "%s/%.*s", engine->repo_root,
+                 (int)(file_slash - target->file), target->file);
+    }
     char diag[2048];
-    int compile_rc =
-        bt_mut_compile_file(&engine->build, include_extra[0] != '\0' ? include_extra : NULL, source,
-                            obj, diag, sizeof diag);
+    int compile_rc = bt_mut_compile_file(
+        &engine->build, dir_include[0] != '\0' ? dir_include : NULL,
+        include_extra[0] != '\0' ? include_extra : NULL, source, obj, diag, sizeof diag);
     if (compile_rc == -1) {
         *verdict = BT_MUT_PENDING;
         bt_mut_rmtree(dir);

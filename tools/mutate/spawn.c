@@ -269,11 +269,12 @@ void bt_mut_proc_free(bt_mut_proc *proc) {
     proc->output_len = 0;
 }
 
-int bt_mut_compile_file(const bt_mut_build *build, const char *extra_include, const char *source,
-                        const char *obj, char *diag, size_t diag_cap) {
+int bt_mut_compile_file(const bt_mut_build *build, const char *dir_include,
+                        const char *extra_include, const char *source, const char *obj, char *diag,
+                        size_t diag_cap) {
     BT_TRACE_ENTER("mutate.compile_file");
     char *argv[64];
-    size_t count = bt_mut_compile_argv(build, extra_include, source, obj, argv, 64);
+    size_t count = bt_mut_compile_argv(build, dir_include, extra_include, source, obj, argv, 64);
     if (count == 0 || count + 1 > 64) {
         if (diag != NULL) {
             snprintf(diag, diag_cap, "argv assembly failed");

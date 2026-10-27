@@ -136,8 +136,9 @@ void bt_mut_build_free(bt_mut_build *build) {
     build->link_flag_count = 0;
 }
 
-size_t bt_mut_compile_argv(const bt_mut_build *build, const char *extra_include, const char *source,
-                           const char *obj, char **argv, size_t cap) {
+size_t bt_mut_compile_argv(const bt_mut_build *build, const char *dir_include,
+                           const char *extra_include, const char *source, const char *obj,
+                           char **argv, size_t cap) {
     size_t count = 0;
     if (cap < 4) {
         return 0;
@@ -145,6 +146,13 @@ size_t bt_mut_compile_argv(const bt_mut_build *build, const char *extra_include,
     argv[count++] = (char *)build->clang;
     for (size_t i = 0; i < build->compile_flag_count && count < cap; i++) {
         argv[count++] = build->compile_flags[i];
+    }
+    if (dir_include != NULL && dir_include[0] != '\0') {
+        if (count + 2 > cap) {
+            return 0;
+        }
+        argv[count++] = (char *)"-I";
+        argv[count++] = (char *)dir_include;
     }
     if (extra_include != NULL && extra_include[0] != '\0') {
         if (count + 2 > cap) {

@@ -161,10 +161,30 @@ typedef struct {
 int bt_mut_build_load(const char *repo_root, const bt_json_value *config,
                       const char *clang_override, bt_mut_build *out);
 void bt_mut_build_free(bt_mut_build *build);
-size_t bt_mut_compile_argv(const bt_mut_build *build, const char *extra_include, const char *source,
-                           const char *obj, char **argv, size_t cap);
+size_t bt_mut_compile_argv(const bt_mut_build *build, const char *dir_include,
+                           const char *extra_include, const char *source, const char *obj,
+                           char **argv, size_t cap);
 size_t bt_mut_link_argv(const bt_mut_build *build, char *const *objects, size_t object_count,
                         const char *exe, char **argv, size_t cap);
+
+#define BT_MUT_AREA_MAX 32
+#define BT_MUT_AREAS_MAX 16
+
+typedef struct {
+    char items[BT_MUT_AREAS_MAX][BT_MUT_AREA_MAX];
+    size_t count;
+} bt_mut_area_set;
+
+typedef struct {
+    char areas[BT_MUT_AREAS_MAX][BT_MUT_AREA_MAX];
+    char deps[BT_MUT_AREAS_MAX][BT_MUT_AREAS_MAX][BT_MUT_AREA_MAX];
+    size_t dep_counts[BT_MUT_AREAS_MAX];
+    size_t count;
+} bt_mut_area_map;
+
+int bt_mut_area_map_load(const bt_json_value *config, bt_mut_area_map *out);
+int bt_mut_area_closure(const bt_mut_area_map *map, const char *area, bt_mut_area_set *out);
+int bt_mut_area_set_contains(const bt_mut_area_set *set, const char *area);
 
 typedef struct {
     int rc;
@@ -177,12 +197,14 @@ typedef struct {
 int bt_mut_spawn(const char *exe, char *const argv[], const char *cwd, unsigned timeout_ms,
                  bt_mut_proc *out);
 void bt_mut_proc_free(bt_mut_proc *proc);
-int bt_mut_compile_file(const bt_mut_build *build, const char *extra_include, const char *source,
-                        const char *obj, char *diag, size_t diag_cap);
+int bt_mut_compile_file(const bt_mut_build *build, const char *dir_include,
+                        const char *extra_include, const char *source, const char *obj, char *diag,
+                        size_t diag_cap);
 
 typedef struct {
     char repo_root[BT_MUT_PATH_MAX];
     bt_mut_build build;
+    bt_mut_area_map area_map;
     char scratch_root[BT_MUT_PATH_MAX];
     char ledger_path[BT_MUT_PATH_MAX];
     unsigned long long timeout_ms;

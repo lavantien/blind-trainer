@@ -324,6 +324,13 @@ int run_run(int argc, char **argv) {
         free(patterns);
         return 2;
     }
+    if (bt_mut_area_map_load(config, &engine.area_map) != 0) {
+        fprintf(stderr, "mutate run: %s\n", bt_mut_engine_last_error());
+        bt_mut_build_free(&engine.build);
+        bt_json_free(config);
+        free(patterns);
+        return 2;
+    }
     long long workers = 1;
     long long timeout_config = 120;
     config_mutants(config, "mutants.workers", &workers, 1);
