@@ -29,21 +29,21 @@ unsigned long bt_jobwrap_create_ceiling_job(unsigned long long per_process_bytes
     return 0;
 }
 
-unsigned long bt_jobwrap_spawn_suspended(const char *line, bt_jobwrap_spawned *out) {
+unsigned long bt_jobwrap_spawn_suspended(const wchar_t *line, bt_jobwrap_spawned *out) {
     BT_TRACE_ENTER("jobwrap.spawn_suspended");
-    wchar_t wide[BT_JOBWRAP_LINE_MAX];
-    if (MultiByteToWideChar(CP_UTF8, 0, line, -1, wide, (int)(sizeof wide / sizeof wide[0])) == 0) {
-        unsigned long code = GetLastError();
-        BT_TRACE_FAIL("jobwrap.spawn_suspended", "widen failed error %lu", code);
+    if (wcslen(line) + 1 > BT_JOBWRAP_CMDLINE_MAX) {
+        BT_TRACE_FAIL("jobwrap.spawn_suspended", "line over the CreateProcessW budget");
         BT_TRACE_EXIT("jobwrap.spawn_suspended");
-        return code;
+        return ERROR_INVALID_PARAMETER;
     }
+    wchar_t mutable_line[BT_JOBWRAP_CMDLINE_MAX];
+    wmemcpy(mutable_line, line, wcslen(line) + 1);
     STARTUPINFOW startup;
     ZeroMemory(&startup, sizeof startup);
     startup.cb = sizeof startup;
     PROCESS_INFORMATION info;
     ZeroMemory(&info, sizeof info);
-    if (CreateProcessW(NULL, wide, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &startup,
+    if (CreateProcessW(NULL, mutable_line, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &startup,
                        &info) == 0) {
         unsigned long code = GetLastError();
         BT_TRACE_FAIL("jobwrap.spawn_suspended", "CreateProcessW error %lu", code);

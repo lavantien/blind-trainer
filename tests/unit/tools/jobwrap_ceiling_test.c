@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "common/bt_harness.h"
+#include "jobwrap/lib.h"
 
 enum {
     CEILING_WAIT_FILE_MS = 10000,
@@ -105,31 +106,40 @@ static void bt_config_pop(void) {
     }
 }
 
-static int spawn_jobwrap(const char *bt_config, const char *const argv[],
+static int spawn_jobwrap(const char *bt_config, const wchar_t *const argv[],
                          PROCESS_INFORMATION *info) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "jobwrap.exe");
-    char exe_native[BT_PATH_MAX];
-    snprintf(exe_native, sizeof exe_native, "%s", exe);
-    bt_spawn_backslashes(exe_native);
-    char command[BT_PATH_MAX * 4];
-    if (bt_spawn_command(exe_native, argv, command, sizeof command) != 0) {
-        snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "command too long: %s", exe_native);
+    wchar_t wide_exe[BT_PATH_MAX];
+    if (MultiByteToWideChar(CP_UTF8, 0, exe, -1, wide_exe,
+                            (int)(sizeof wide_exe / sizeof wide_exe[0])) == 0) {
+        snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "exe widen failed");
         return -1;
     }
-    wchar_t wide_command[BT_PATH_MAX * 4];
-    if (MultiByteToWideChar(CP_UTF8, 0, command, -1, wide_command,
-                            (int)(sizeof wide_command / sizeof wide_command[0])) == 0) {
-        snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "command widen failed");
+    const wchar_t *parts[48];
+    parts[0] = wide_exe;
+    size_t count = 1;
+    for (size_t at = 0; argv[at] != NULL; at++) {
+        if (count >= 48) {
+            snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "too many spawn arguments");
+            return -1;
+        }
+        parts[count++] = argv[at];
+    }
+    wchar_t wide_command[BT_JOBWRAP_CMDLINE_MAX];
+    if (bt_jobwrap_command_line(parts, count, wide_command, BT_JOBWRAP_CMDLINE_MAX) != 0) {
+        snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "command too long");
         return -1;
     }
+    wchar_t mutable_command[BT_JOBWRAP_CMDLINE_MAX];
+    wmemcpy(mutable_command, wide_command, wcslen(wide_command) + 1);
     STARTUPINFOW startup;
     ZeroMemory(&startup, sizeof startup);
     startup.cb = sizeof startup;
     ZeroMemory(info, sizeof *info);
     bt_config_push(bt_config);
-    int spawned =
-        CreateProcessW(NULL, wide_command, NULL, NULL, FALSE, 0, NULL, NULL, &startup, info) != 0;
+    int spawned = CreateProcessW(NULL, mutable_command, NULL, NULL, FALSE, 0, NULL, NULL, &startup,
+                                 info) != 0;
     bt_config_pop();
     if (spawned == 0) {
         snprintf(g_ceiling_diag, sizeof g_ceiling_diag, "CreateProcessW failed: %lu",
@@ -151,7 +161,7 @@ static int wait_process(HANDLE process, unsigned timeout_ms, unsigned long *code
     return 0;
 }
 
-static int run_wrapped(const char *bt_config, const char *const argv[], unsigned timeout_ms,
+static int run_wrapped(const char *bt_config, const wchar_t *const argv[], unsigned timeout_ms,
                        int *exit_code) {
     PROCESS_INFORMATION info;
     if (spawn_jobwrap(bt_config, argv, &info) != 0) {
@@ -255,14 +265,40 @@ static void taskkill(unsigned long pid, int tree) {
                      sizeof err);
 }
 
-static void jobwrap_exe(char out[BT_PATH_MAX]) {
-    bt_test_bin_path(out, "jobwrap.exe");
+static void jobwrap_exe_wide(wchar_t out[BT_PATH_MAX]) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "jobwrap.exe");
+    MultiByteToWideChar(CP_UTF8, 0, exe, -1, out, BT_PATH_MAX);
+}
+
+BT_TEST(ceiling, non_ascii_payload_arguments_survive_the_wrap) {
+    ceiling_fixture fx;
+    fixture_ceiling(&fx, 268435456ULL);
+    char script[BT_PATH_MAX];
+    snprintf(script, sizeof script, "%s/arglen.ps1", fx.dir);
+    FILE *file = fopen(script, "wb");
+    BT_CHECK(file != NULL);
+    const unsigned char bom[3] = {0xEF, 0xBB, 0xBF};
+    const char *body = "param([string]$a)\nexit ($a.Length - 4)\n";
+    fwrite(bom, 1, sizeof bom, file);
+    fwrite(body, 1, strlen(body), file);
+    int close_rc = fclose(file);
+    BT_CHECK_EQ(close_rc, 0);
+    wchar_t wide_script[BT_PATH_MAX];
+    MultiByteToWideChar(CP_UTF8, 0, script, -1, wide_script, BT_PATH_MAX);
+    const wchar_t *argv[] = {
+        L"--", L"pwsh", L"-NoProfile", L"-File", wide_script, L"café", NULL,
+    };
+    int code = -1;
+    int rc = run_wrapped(fx.config, argv, CEILING_WAIT_EXIT_MS, &code);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
 }
 
 BT_TEST(ceiling, forwards_payload_exit_codes) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 268435456ULL);
-    const char *exit_zero[] = {"--", "pwsh", "-NoProfile", "-Command", "exit 0", NULL};
+    const wchar_t *exit_zero[] = {L"--", L"pwsh", L"-NoProfile", L"-Command", L"exit 0", NULL};
     int code = -1;
     int rc = run_wrapped(fx.config, exit_zero, CEILING_WAIT_EXIT_MS, &code);
     if (rc != 0) {
@@ -270,7 +306,7 @@ BT_TEST(ceiling, forwards_payload_exit_codes) {
     }
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 0);
-    const char *exit_seven[] = {"--", "pwsh", "-NoProfile", "-Command", "exit 7", NULL};
+    const wchar_t *exit_seven[] = {L"--", L"pwsh", L"-NoProfile", L"-Command", L"exit 7", NULL};
     rc = run_wrapped(fx.config, exit_seven, CEILING_WAIT_EXIT_MS, &code);
     if (rc != 0) {
         bt_harness_fail(__FILE__, __LINE__, "spawn failed: %s", ceiling_diag());
@@ -282,9 +318,9 @@ BT_TEST(ceiling, forwards_payload_exit_codes) {
 BT_TEST(ceiling, payload_under_ceiling_exits_zero) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 536870912ULL);
-    char exe[BT_PATH_MAX];
-    jobwrap_exe(exe);
-    const char *argv[] = {"--", exe, "--selftest-alloc-mb", "64", NULL};
+    wchar_t exe[BT_PATH_MAX];
+    jobwrap_exe_wide(exe);
+    const wchar_t *argv[] = {L"--", exe, L"--selftest-alloc-mb", L"64", NULL};
     int code = -1;
     ULONGLONG started = GetTickCount64();
     int rc = run_wrapped(fx.config, argv, CEILING_WAIT_EXIT_MS, &code);
@@ -297,9 +333,9 @@ BT_TEST(ceiling, payload_under_ceiling_exits_zero) {
 BT_TEST(ceiling, payload_past_ceiling_dies_fast) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 100663296ULL);
-    char exe[BT_PATH_MAX];
-    jobwrap_exe(exe);
-    const char *argv[] = {"--", exe, "--selftest-alloc-mb", "640", NULL};
+    wchar_t exe[BT_PATH_MAX];
+    jobwrap_exe_wide(exe);
+    const wchar_t *argv[] = {L"--", exe, L"--selftest-alloc-mb", L"640", NULL};
     int code = -1;
     ULONGLONG started = GetTickCount64();
     int rc = run_wrapped(fx.config, argv, CEILING_WAIT_EXIT_MS, &code);
@@ -317,9 +353,9 @@ BT_TEST(ceiling, ceiling_comes_from_the_config_at_runtime) {
     fixture_ceiling(&tight, 67108864ULL);
     ceiling_fixture loose;
     fixture_ceiling(&loose, 4294967296ULL);
-    char exe[BT_PATH_MAX];
-    jobwrap_exe(exe);
-    const char *argv[] = {"--", exe, "--selftest-alloc-mb", "96", NULL};
+    wchar_t exe[BT_PATH_MAX];
+    jobwrap_exe_wide(exe);
+    const wchar_t *argv[] = {L"--", exe, L"--selftest-alloc-mb", L"96", NULL};
     int code = -1;
     int rc = run_wrapped(tight.config, argv, CEILING_WAIT_EXIT_MS, &code);
     BT_CHECK_EQ(rc, 0);
@@ -333,10 +369,10 @@ BT_TEST(ceiling, ceiling_comes_from_the_config_at_runtime) {
 BT_TEST(ceiling, usage_and_config_failures_exit_2_and_3) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 268435456ULL);
-    const char *no_args[] = {NULL};
-    const char *marker_only[] = {"--", NULL};
-    const char *dangling_anchor[] = {"--anchor", NULL};
-    const char *bad_anchor[] = {"--anchor", "bad name", "--", "pwsh", NULL};
+    const wchar_t *no_args[] = {NULL};
+    const wchar_t *marker_only[] = {L"--", NULL};
+    const wchar_t *dangling_anchor[] = {L"--anchor", NULL};
+    const wchar_t *bad_anchor[] = {L"--anchor", L"bad name", L"--", L"pwsh", NULL};
     int code = -1;
     int rc = run_wrapped(fx.config, no_args, CEILING_WAIT_EXIT_MS, &code);
     BT_CHECK_EQ(rc, 0);
@@ -352,7 +388,7 @@ BT_TEST(ceiling, usage_and_config_failures_exit_2_and_3) {
     BT_CHECK_EQ(code, 2);
     char absent[BT_PATH_MAX];
     snprintf(absent, sizeof absent, "%s/absent.json", fx.dir);
-    const char *plain[] = {"--", "pwsh", "-NoProfile", "-Command", "exit 0", NULL};
+    const wchar_t *plain[] = {L"--", L"pwsh", L"-NoProfile", L"-Command", L"exit 0", NULL};
     rc = run_wrapped(absent, plain, CEILING_WAIT_EXIT_MS, &code);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 3);
@@ -363,12 +399,47 @@ BT_TEST(ceiling, usage_and_config_failures_exit_2_and_3) {
     BT_CHECK_EQ(code, 3);
 }
 
+BT_TEST(ceiling, missing_absolute_pid_dir_is_created_by_the_wrapper) {
+    ceiling_fixture fx;
+    fixture_ceiling(&fx, 268435456ULL);
+    char fresh[BT_PATH_MAX];
+    snprintf(fresh, sizeof fresh, "%s/deep/pids", fx.dir);
+    to_forward_slashes(fresh);
+    char body[BT_PATH_MAX * 2];
+    snprintf(body, sizeof body,
+             "{\"job\":{\"per_process_bytes\":268435456},\"memguard\":{\"pid_dir\":\"%s\"}}",
+             fresh);
+    write_text(fx.config, body);
+    const wchar_t *argv[] = {
+        L"--anchor", L"gw-abs", L"--", L"pwsh", L"-NoProfile", L"-Command", L"exit 0", NULL,
+    };
+    PROCESS_INFORMATION info;
+    if (spawn_jobwrap(fx.config, argv, &info) != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "spawn failed: %s", ceiling_diag());
+    }
+    char pidfile[BT_PATH_MAX];
+    snprintf(pidfile, sizeof pidfile, "%s/gw-abs-%lu.pid", fresh, info.dwProcessId);
+    if (!wait_for_file(pidfile, CEILING_WAIT_FILE_MS)) {
+        CloseHandle(info.hProcess);
+        CloseHandle(info.hThread);
+        bt_harness_fail(__FILE__, __LINE__, "pidfile never appeared: %s", pidfile);
+    }
+    unsigned long code = 0;
+    int rc = wait_process(info.hProcess, CEILING_WAIT_EXIT_MS, &code);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+}
+
 BT_TEST(ceiling, anchor_pidfile_carries_dotnet_start_ticks_and_clears_on_exit) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 268435456ULL);
-    char exe[BT_PATH_MAX];
-    jobwrap_exe(exe);
-    const char *argv[] = {"--anchor", "gw-stamp", "--", exe, "--selftest-hold-secs", "12", NULL};
+    wchar_t exe[BT_PATH_MAX];
+    jobwrap_exe_wide(exe);
+    const wchar_t *argv[] = {
+        L"--anchor", L"gw-stamp", L"--", exe, L"--selftest-hold-secs", L"12", NULL,
+    };
     PROCESS_INFORMATION info;
     if (spawn_jobwrap(fx.config, argv, &info) != 0) {
         bt_harness_fail(__FILE__, __LINE__, "spawn failed: %s", ceiling_diag());
@@ -415,11 +486,13 @@ BT_TEST(ceiling, anchor_pidfile_carries_dotnet_start_ticks_and_clears_on_exit) {
 BT_TEST(ceiling, killing_the_wrapper_takes_the_grandchild_with_it) {
     ceiling_fixture fx;
     fixture_ceiling(&fx, 4294967296ULL);
-    char exe[BT_PATH_MAX];
-    jobwrap_exe(exe);
-    const char *argv[] = {
-        "--anchor", "gw-outer", "--", exe, "--anchor", "gw-mid", "--", exe, "--selftest-hold-secs",
-        "90",       NULL,
+    wchar_t exe[BT_PATH_MAX];
+    jobwrap_exe_wide(exe);
+    const wchar_t *argv[] = {
+        L"--anchor", L"gw-outer", L"--",
+        exe,         L"--anchor", L"gw-mid",
+        L"--",       exe,         L"--selftest-hold-secs",
+        L"90",       NULL,
     };
     PROCESS_INFORMATION info;
     if (spawn_jobwrap(fx.config, argv, &info) != 0) {

@@ -5,10 +5,10 @@
 #include "common/paths.h"
 
 #include <stddef.h>
+#include <wchar.h>
 
 #define BT_JOBWRAP_ERR_MAX 192
-#define BT_JOBWRAP_ARGV_MAX 64
-#define BT_JOBWRAP_LINE_MAX 8192
+#define BT_JOBWRAP_CMDLINE_MAX 32767
 
 extern const char BT_JOBWRAP_USAGE[];
 extern const unsigned long long BT_JOBWRAP_DOTNET_TICKS_AT_FILETIME_ZERO;
@@ -27,18 +27,18 @@ enum {
 
 typedef struct {
     int kind;
-    const char *anchor;
-    const char *payload[BT_JOBWRAP_ARGV_MAX];
+    const wchar_t *anchor;
+    const wchar_t *const *payload;
     size_t payload_count;
     unsigned long long value;
 } bt_jobwrap_invocation;
 
 unsigned long long bt_jobwrap_dotnet_ticks(unsigned long long filetime);
-int bt_jobwrap_is_anchor_name(const char *raw);
-int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocation *out, char *err,
-                                size_t err_cap);
-int bt_jobwrap_quote_argument(const char *raw, char *out, size_t cap);
-int bt_jobwrap_command_line(char *const payload[], size_t count, char *out, size_t cap);
+int bt_jobwrap_is_anchor_name(const wchar_t *raw);
+int bt_jobwrap_parse_invocation(int argc, const wchar_t *const argv[], bt_jobwrap_invocation *out,
+                                char *err, size_t err_cap);
+int bt_jobwrap_quote_argument(const wchar_t *raw, wchar_t *out, size_t cap);
+int bt_jobwrap_command_line(const wchar_t *const payload[], size_t count, wchar_t *out, size_t cap);
 void bt_jobwrap_workspace_root(char out[BT_PATH_MAX]);
 void bt_jobwrap_config_path_from(const char *env_value, char out[BT_PATH_MAX]);
 bt_json_value *bt_jobwrap_load_config(char *err, size_t err_cap);

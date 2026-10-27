@@ -19,23 +19,19 @@ const char BT_JOBWRAP_USAGE[] = "usage: bt-jobwrap [--anchor NAME] -- <command> 
 
 const unsigned long long BT_JOBWRAP_DOTNET_TICKS_AT_FILETIME_ZERO = 504911232000000000ULL;
 
-enum {
-    BT_JOBWRAP_QUOTE_MAX = 8192,
-};
-
 unsigned long long bt_jobwrap_dotnet_ticks(unsigned long long filetime) {
     BT_TRACE_ENTER("jobwrap.dotnet_ticks");
     BT_TRACE_EXIT("jobwrap.dotnet_ticks");
     return filetime + BT_JOBWRAP_DOTNET_TICKS_AT_FILETIME_ZERO;
 }
 
-int bt_jobwrap_is_anchor_name(const char *raw) {
+int bt_jobwrap_is_anchor_name(const wchar_t *raw) {
     BT_TRACE_ENTER("jobwrap.is_anchor_name");
-    int ok = raw[0] != '\0';
-    for (const char *cursor = raw; ok != 0 && *cursor != '\0'; cursor++) {
-        unsigned char byte = (unsigned char)*cursor;
-        int good = (byte >= '0' && byte <= '9') || (byte >= 'a' && byte <= 'z') ||
-                   (byte >= 'A' && byte <= 'Z') || byte == '.' || byte == '_' || byte == '-';
+    int ok = raw[0] != L'\0';
+    for (const wchar_t *cursor = raw; ok != 0 && *cursor != L'\0'; cursor++) {
+        wchar_t unit = *cursor;
+        int good = (unit >= L'0' && unit <= L'9') || (unit >= L'a' && unit <= L'z') ||
+                   (unit >= L'A' && unit <= L'Z') || unit == L'.' || unit == L'_' || unit == L'-';
         if (good == 0) {
             ok = 0;
         }
@@ -44,16 +40,19 @@ int bt_jobwrap_is_anchor_name(const char *raw) {
     return ok;
 }
 
-static int parse_u64_strict(const char *raw, unsigned long long *out) {
-    if (raw[0] == '\0') {
+static int parse_u64_strict(const wchar_t *raw, unsigned long long *out) {
+    if (raw[0] == L'+') {
+        raw++;
+    }
+    if (raw[0] == L'\0') {
         return 0;
     }
     unsigned long long value = 0;
-    for (const char *cursor = raw; *cursor != '\0'; cursor++) {
-        if (*cursor < '0' || *cursor > '9') {
+    for (const wchar_t *cursor = raw; *cursor != L'\0'; cursor++) {
+        if (*cursor < L'0' || *cursor > L'9') {
             return 0;
         }
-        unsigned long long digit = (unsigned long long)(*cursor - '0');
+        unsigned long long digit = (unsigned long long)(*cursor - L'0');
         if (value > (ULLONG_MAX - digit) / 10ULL) {
             return 0;
         }
@@ -63,7 +62,7 @@ static int parse_u64_strict(const char *raw, unsigned long long *out) {
     return 1;
 }
 
-static int parse_selftest_number(int argc, char *const argv[], unsigned long long minimum,
+static int parse_selftest_number(int argc, const wchar_t *const argv[], unsigned long long minimum,
                                  const char *label, int kind, bt_jobwrap_invocation *out, char *err,
                                  size_t err_cap) {
     if (argc != 2) {
@@ -73,8 +72,8 @@ static int parse_selftest_number(int argc, char *const argv[], unsigned long lon
     }
     unsigned long long value = 0;
     if (parse_u64_strict(argv[1], &value) == 0) {
-        snprintf(err, err_cap, "selftest %s is not a number: %s", label, argv[1]);
-        BT_TRACE_FAIL("jobwrap.parse_invocation", "selftest %s not a number: %s", label, argv[1]);
+        snprintf(err, err_cap, "selftest %s is not a number: %ls", label, argv[1]);
+        BT_TRACE_FAIL("jobwrap.parse_invocation", "selftest %s not a number", label);
         return -1;
     }
     if (value < minimum) {
@@ -87,8 +86,8 @@ static int parse_selftest_number(int argc, char *const argv[], unsigned long lon
     return 0;
 }
 
-int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocation *out, char *err,
-                                size_t err_cap) {
+int bt_jobwrap_parse_invocation(int argc, const wchar_t *const argv[], bt_jobwrap_invocation *out,
+                                char *err, size_t err_cap) {
     BT_TRACE_ENTER("jobwrap.parse_invocation");
     memset(out, 0, sizeof *out);
     int rc = -1;
@@ -97,7 +96,7 @@ int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocat
         BT_TRACE_FAIL("jobwrap.parse_invocation", "no arguments");
         goto done;
     }
-    if (strcmp(argv[0], "--selftest-alloc-mb") == 0) {
+    if (wcscmp(argv[0], L"--selftest-alloc-mb") == 0) {
         if (parse_selftest_number(argc, argv, 1, "alloc mb", BT_JOBWRAP_INVOCATION_ALLOC_MB, out,
                                   err, err_cap) != 0) {
             goto done;
@@ -105,7 +104,7 @@ int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocat
         rc = 0;
         goto done;
     }
-    if (strcmp(argv[0], "--selftest-hold-secs") == 0) {
+    if (wcscmp(argv[0], L"--selftest-hold-secs") == 0) {
         if (parse_selftest_number(argc, argv, 0, "hold secs", BT_JOBWRAP_INVOCATION_HOLD_SECS, out,
                                   err, err_cap) != 0) {
             goto done;
@@ -114,21 +113,21 @@ int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocat
         goto done;
     }
     int rest_at = 0;
-    if (strcmp(argv[0], "--anchor") == 0) {
+    if (wcscmp(argv[0], L"--anchor") == 0) {
         if (argc < 2) {
             snprintf(err, err_cap, "--anchor needs a name");
             BT_TRACE_FAIL("jobwrap.parse_invocation", "anchor without name");
             goto done;
         }
         if (bt_jobwrap_is_anchor_name(argv[1]) == 0) {
-            snprintf(err, err_cap, "--anchor name must be alnum dot underscore dash: %s", argv[1]);
-            BT_TRACE_FAIL("jobwrap.parse_invocation", "anchor name rejected: %s", argv[1]);
+            snprintf(err, err_cap, "--anchor name must be alnum dot underscore dash: %ls", argv[1]);
+            BT_TRACE_FAIL("jobwrap.parse_invocation", "anchor name rejected");
             goto done;
         }
         out->anchor = argv[1];
         rest_at = 2;
     }
-    if (rest_at >= argc || strcmp(argv[rest_at], "--") != 0) {
+    if (rest_at >= argc || wcscmp(argv[rest_at], L"--") != 0) {
         snprintf(err, err_cap, "payload must follow --");
         BT_TRACE_FAIL("jobwrap.parse_invocation", "payload marker missing");
         goto done;
@@ -139,14 +138,7 @@ int bt_jobwrap_parse_invocation(int argc, char *const argv[], bt_jobwrap_invocat
         BT_TRACE_FAIL("jobwrap.parse_invocation", "payload empty");
         goto done;
     }
-    if (payload_count > BT_JOBWRAP_ARGV_MAX) {
-        snprintf(err, err_cap, "payload has too many arguments");
-        BT_TRACE_FAIL("jobwrap.parse_invocation", "payload count %zu", payload_count);
-        goto done;
-    }
-    for (size_t at = 0; at < payload_count; at++) {
-        out->payload[at] = argv[rest_at + 1 + (int)at];
-    }
+    out->payload = argv + rest_at + 1;
     out->payload_count = payload_count;
     out->kind = BT_JOBWRAP_INVOCATION_WRAP;
     rc = 0;
@@ -155,25 +147,25 @@ done:
     return rc;
 }
 
-int bt_jobwrap_quote_argument(const char *raw, char *out, size_t cap) {
+int bt_jobwrap_quote_argument(const wchar_t *raw, wchar_t *out, size_t cap) {
     BT_TRACE_ENTER("jobwrap.quote_argument");
     size_t used = 0;
-    int needs = raw[0] == '\0';
+    int needs = raw[0] == L'\0';
     if (needs == 0) {
-        for (const char *cursor = raw; *cursor != '\0'; cursor++) {
-            if (isspace((unsigned char)*cursor) != 0 || *cursor == '"') {
+        for (const wchar_t *cursor = raw; *cursor != L'\0'; cursor++) {
+            if (iswspace(*cursor) != 0 || *cursor == L'"') {
                 needs = 1;
                 break;
             }
         }
     }
     if (needs == 0) {
-        if (strlen(raw) + 1 > cap) {
+        if (wcslen(raw) + 1 > cap) {
             BT_TRACE_FAIL("jobwrap.quote_argument", "cap too small");
             BT_TRACE_EXIT("jobwrap.quote_argument");
             return -1;
         }
-        snprintf(out, cap, "%s", raw);
+        wmemcpy(out, raw, wcslen(raw) + 1);
         BT_TRACE_EXIT("jobwrap.quote_argument");
         return 0;
     }
@@ -182,21 +174,21 @@ int bt_jobwrap_quote_argument(const char *raw, char *out, size_t cap) {
         BT_TRACE_EXIT("jobwrap.quote_argument");
         return -1;
     }
-    out[used++] = '"';
+    out[used++] = L'"';
     size_t backslashes = 0;
-    for (const char *cursor = raw; *cursor != '\0'; cursor++) {
-        if (*cursor == '\\') {
+    for (const wchar_t *cursor = raw; *cursor != L'\0'; cursor++) {
+        if (*cursor == L'\\') {
             backslashes++;
             continue;
         }
-        size_t emit = *cursor == '"' ? backslashes * 2 + 1 : backslashes;
+        size_t emit = *cursor == L'"' ? backslashes * 2 + 1 : backslashes;
         if (used + emit + 2 >= cap) {
             BT_TRACE_FAIL("jobwrap.quote_argument", "cap too small");
             BT_TRACE_EXIT("jobwrap.quote_argument");
             return -1;
         }
         for (size_t at = 0; at < emit; at++) {
-            out[used++] = '\\';
+            out[used++] = L'\\';
         }
         backslashes = 0;
         out[used++] = *cursor;
@@ -207,37 +199,38 @@ int bt_jobwrap_quote_argument(const char *raw, char *out, size_t cap) {
         return -1;
     }
     for (size_t at = 0; at < backslashes * 2; at++) {
-        out[used++] = '\\';
+        out[used++] = L'\\';
     }
-    out[used++] = '"';
-    out[used] = '\0';
+    out[used++] = L'"';
+    out[used] = L'\0';
     BT_TRACE_EXIT("jobwrap.quote_argument");
     return 0;
 }
 
-int bt_jobwrap_command_line(char *const payload[], size_t count, char *out, size_t cap) {
+int bt_jobwrap_command_line(const wchar_t *const payload[], size_t count, wchar_t *out,
+                            size_t cap) {
     BT_TRACE_ENTER("jobwrap.command_line");
     size_t used = 0;
-    out[0] = '\0';
+    out[0] = L'\0';
     for (size_t at = 0; at < count; at++) {
-        char quoted[BT_JOBWRAP_QUOTE_MAX];
-        if (bt_jobwrap_quote_argument(payload[at], quoted, sizeof quoted) != 0) {
+        wchar_t quoted[BT_JOBWRAP_CMDLINE_MAX];
+        if (bt_jobwrap_quote_argument(payload[at], quoted, sizeof quoted / sizeof quoted[0]) != 0) {
             BT_TRACE_FAIL("jobwrap.command_line", "argument %zu too long", at);
             BT_TRACE_EXIT("jobwrap.command_line");
             return -1;
         }
-        size_t len = strlen(quoted);
-        if (used + len + 2 >= cap) {
+        size_t len = wcslen(quoted);
+        if (used + len + 1 > cap) {
             BT_TRACE_FAIL("jobwrap.command_line", "line too long at %zu", at);
             BT_TRACE_EXIT("jobwrap.command_line");
             return -1;
         }
         if (at > 0) {
-            out[used++] = ' ';
+            out[used++] = L' ';
         }
-        memcpy(out + used, quoted, len);
+        wmemcpy(out + used, quoted, len);
         used += len;
-        out[used] = '\0';
+        out[used] = L'\0';
     }
     BT_TRACE_EXIT("jobwrap.command_line");
     return 0;
@@ -368,27 +361,35 @@ int bt_jobwrap_pid_dir_from(const bt_json_value *config, char out[BT_PATH_MAX], 
     return 0;
 }
 
+static int dir_exists(const char *path) {
+    DWORD attrs = GetFileAttributesA(path);
+    return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
+}
+
+static int make_one_dir(const char *path, char *err, size_t err_cap) {
+    if (dir_exists(path) || (_mkdir(path) == 0) || dir_exists(path)) {
+        return 0;
+    }
+    snprintf(err, err_cap, "create %s: %s", path, strerror(errno));
+    return -1;
+}
+
 static int make_dirs(const char *path, char *err, size_t err_cap) {
     char copy[BT_PATH_MAX];
     snprintf(copy, sizeof copy, "%s", path);
     for (char *cursor = copy + 1; *cursor != '\0'; cursor++) {
         if (*cursor == '/' || *cursor == '\\') {
             *cursor = '\0';
-            if (_mkdir(copy) != 0 && errno != EEXIST) {
-                snprintf(err, err_cap, "create %s: %s", copy, strerror(errno));
+            if (make_one_dir(copy, err, err_cap) != 0) {
                 return -1;
             }
             *cursor = '/';
         }
     }
-    if (_mkdir(copy) != 0 && errno != EEXIST) {
-        snprintf(err, err_cap, "create %s: %s", copy, strerror(errno));
-        return -1;
-    }
-    return 0;
+    return make_one_dir(copy, err, err_cap);
 }
 
-static int write_pid_file(const bt_json_value *config, const char *anchor,
+static int write_pid_file(const bt_json_value *config, const wchar_t *anchor,
                           char path_out[BT_PATH_MAX], char *err, size_t err_cap) {
     BT_TRACE_ENTER("jobwrap.write_pid_file");
     char dir[BT_PATH_MAX];
@@ -411,7 +412,7 @@ static int write_pid_file(const bt_json_value *config, const char *anchor,
         return -1;
     }
     unsigned long pid = GetCurrentProcessId();
-    snprintf(path_out, BT_PATH_MAX, "%s/%s-%lu.pid", dir, anchor, pid);
+    snprintf(path_out, BT_PATH_MAX, "%s/%ls-%lu.pid", dir, anchor, pid);
     FILE *file = fopen(path_out, "wb");
     if (file == NULL) {
         snprintf(err, err_cap, "write %s: %s", path_out, strerror(errno));
@@ -434,8 +435,8 @@ static int write_pid_file(const bt_json_value *config, const char *anchor,
     return 0;
 }
 
-static int execute(const char *line, unsigned long long ceiling, unsigned int *exit_code, char *err,
-                   size_t err_cap) {
+static int execute(const wchar_t *line, unsigned long long ceiling, unsigned int *exit_code,
+                   char *err, size_t err_cap) {
     BT_TRACE_ENTER("jobwrap.execute");
     HANDLE job = NULL;
     unsigned long code = bt_jobwrap_create_ceiling_job(ceiling, &job);
@@ -508,7 +509,7 @@ int bt_jobwrap_run(const bt_jobwrap_invocation *invocation, unsigned int *exit_c
     if (invocation->anchor != NULL) {
         char inner[BT_JOBWRAP_ERR_MAX];
         if (write_pid_file(config, invocation->anchor, pidfile, inner, sizeof inner) != 0) {
-            snprintf(err, err_cap, "anchor %s: %s", invocation->anchor, inner);
+            snprintf(err, err_cap, "anchor %ls: %s", invocation->anchor, inner);
             bt_json_free(config);
             BT_TRACE_FAIL("jobwrap.run", "anchor write failed");
             BT_TRACE_EXIT("jobwrap.run");
@@ -516,9 +517,9 @@ int bt_jobwrap_run(const bt_jobwrap_invocation *invocation, unsigned int *exit_c
         }
     }
     bt_json_free(config);
-    char line[BT_JOBWRAP_LINE_MAX];
-    if (bt_jobwrap_command_line((char *const *)invocation->payload, invocation->payload_count, line,
-                                sizeof line) != 0) {
+    wchar_t line[BT_JOBWRAP_CMDLINE_MAX];
+    if (bt_jobwrap_command_line(invocation->payload, invocation->payload_count, line,
+                                BT_JOBWRAP_CMDLINE_MAX) != 0) {
         if (pidfile[0] != '\0') {
             remove(pidfile);
         }
@@ -527,9 +528,9 @@ int bt_jobwrap_run(const bt_jobwrap_invocation *invocation, unsigned int *exit_c
         BT_TRACE_EXIT("jobwrap.run");
         return BT_JOBWRAP_RUN_FAILURE;
     }
-    const char *program = invocation->payload_count > 0 ? invocation->payload[0] : "";
-    fprintf(stderr, "bt-jobwrap: anchor=%s ceiling=%llu payload=%s\n",
-            invocation->anchor != NULL ? invocation->anchor : "none", ceiling, program);
+    const wchar_t *program = invocation->payload_count > 0 ? invocation->payload[0] : L"";
+    fprintf(stderr, "bt-jobwrap: anchor=%ls ceiling=%llu payload=%ls\n",
+            invocation->anchor != NULL ? invocation->anchor : L"none", ceiling, program);
     fflush(stderr);
     ULONGLONG started = GetTickCount64();
     char exec_err[BT_JOBWRAP_ERR_MAX];
@@ -539,7 +540,7 @@ int bt_jobwrap_run(const bt_jobwrap_invocation *invocation, unsigned int *exit_c
     }
     if (exec_rc == 0) {
         double elapsed = (double)(GetTickCount64() - started) / 1000.0;
-        fprintf(stderr, "bt-jobwrap: payload %s exited %u after %.2fs\n", program, *exit_code,
+        fprintf(stderr, "bt-jobwrap: payload %ls exited %u after %.2fs\n", program, *exit_code,
                 elapsed);
         fflush(stderr);
         BT_TRACE_EXIT("jobwrap.run");
