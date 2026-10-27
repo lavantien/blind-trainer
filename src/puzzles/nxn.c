@@ -345,6 +345,8 @@ void bt_pz_nxn_format_alg(const bt_pz_nxn *nxn, const void *alg, bt_strbuf *out)
 void bt_pz_nxn_invert_alg(const bt_pz_nxn *nxn, const void *alg, void *out) {
     BT_TRACE_ENTER("bt_pz_nxn_invert_alg");
     bt_pz_engine eng = bt_pz_nxn_engine(nxn);
+    bt_pz_alg *vec = out;
+    vec->len = 0;
     size_t len = bt_pz_alg_len(alg);
     for (size_t i = 0; i < len; i++) {
         const bt_pz_nxn_move *src = bt_pz_alg_at(&eng, alg, len - 1 - i);

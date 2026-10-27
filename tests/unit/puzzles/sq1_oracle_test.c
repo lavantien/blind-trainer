@@ -728,6 +728,33 @@ BT_TEST(sq1_oracle, canonical_shape_keeps_a_single_run_unmerged) {
     BT_CHECK_EQ(shape[0], (uint8_t)12);
 }
 
+BT_TEST(sq1_oracle, invert_replaces_a_reused_out_alg) {
+    void *alg = bt_pz_alg_create();
+    sq1_parse_ok("(1,0) /", alg);
+    void *reused = bt_pz_alg_create();
+    sq1_parse_ok("3,3", reused);
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)1);
+    bt_pz_sq1_invert_alg(alg, reused);
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)2);
+    void *want = bt_pz_alg_create();
+    sq1_push(want, bt_pz_sq1_move_slash());
+    sq1_push(want, bt_pz_sq1_move_twist(-1, 0));
+    BT_CHECK(sq1_alg_moves_eq(reused, want));
+    void *fresh = bt_pz_alg_create();
+    bt_pz_sq1_invert_alg(alg, fresh);
+    BT_CHECK(sq1_alg_moves_eq(fresh, want));
+    bt_pz_alg_destroy(alg);
+    bt_pz_alg_destroy(reused);
+    bt_pz_alg_destroy(want);
+    bt_pz_alg_destroy(fresh);
+}
+
+BT_TEST(sq1_oracle, vertical_tab_is_not_a_separator) {
+    BT_CHECK(sq1_parse_fails("1,0\v", "1,0\v"));
+    BT_CHECK(sq1_parse_fails("/\v/", "\v/"));
+    BT_CHECK(sq1_parse_fails("1,0\v2,3", "1,0\v2,3"));
+}
+
 BT_TEST(sq1_oracle, parse_rejects_a_two_digit_turn_out_of_the_engine_domain) {
     bt_pz_error err;
     void *alg = bt_pz_alg_create();

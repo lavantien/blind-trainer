@@ -51,6 +51,21 @@ static bt_pz_engine nxn_engine_of(const bt_pz_nxn *nxn) {
     return bt_pz_nxn_engine(nxn);
 }
 
+static bool nxn_alg_moves_eq(const bt_pz_nxn *nxn, const void *a, const void *b) {
+    bt_pz_engine eng = nxn_engine_of(nxn);
+    if (bt_pz_alg_len(a) != bt_pz_alg_len(b)) {
+        return false;
+    }
+    for (size_t i = 0; i < bt_pz_alg_len(a); i++) {
+        const bt_pz_nxn_move *ma = bt_pz_alg_at(&eng, a, i);
+        const bt_pz_nxn_move *mb = bt_pz_alg_at(&eng, b, i);
+        if (!bt_pz_nxn_move_eq(*ma, *mb)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 BT_TEST(nxn_oracle, constructor_bounds_n_to_two_through_seven) {
     static const size_t rejected[] = {0, 1, 8, 100};
     for (size_t i = 0; i < sizeof rejected / sizeof rejected[0]; i++) {
@@ -860,6 +875,28 @@ BT_TEST(nxn_oracle, is_solved_detects_a_turned_state) {
     bt_pz_nxn_state turned;
     nxn_applied(&nxn, "U", &turned);
     BT_CHECK(!bt_pz_nxn_is_solved(&nxn, &turned));
+}
+
+BT_TEST(nxn_oracle, invert_replaces_a_reused_out_alg) {
+    bt_pz_nxn nxn;
+    bt_pz_nxn_init(&nxn, 3);
+    void *alg = bt_pz_alg_create();
+    nxn_parse_ok(&nxn, "R U'", alg);
+    void *reused = bt_pz_alg_create();
+    nxn_parse_ok(&nxn, "x", reused);
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)1);
+    bt_pz_nxn_invert_alg(&nxn, alg, reused);
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)2);
+    void *want = bt_pz_alg_create();
+    nxn_parse_ok(&nxn, "U R'", want);
+    BT_CHECK(nxn_alg_moves_eq(&nxn, reused, want));
+    void *fresh = bt_pz_alg_create();
+    bt_pz_nxn_invert_alg(&nxn, alg, fresh);
+    BT_CHECK(nxn_alg_moves_eq(&nxn, fresh, want));
+    bt_pz_alg_destroy(alg);
+    bt_pz_alg_destroy(reused);
+    bt_pz_alg_destroy(want);
+    bt_pz_alg_destroy(fresh);
 }
 
 BT_TEST(nxn_oracle, is_empty_reflects_the_parsed_move_count) {

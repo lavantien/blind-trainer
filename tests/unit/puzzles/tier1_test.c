@@ -99,6 +99,8 @@ static void cycle_format_alg(const bt_pz_engine *eng, const void *alg, bt_strbuf
 
 static void cycle_invert_alg(const bt_pz_engine *eng, const void *alg, void *out) {
     const cycle_cfg *cfg = eng->self;
+    bt_pz_alg *vec = out;
+    vec->len = 0;
     size_t len = bt_pz_alg_len(alg);
     for (size_t i = 0; i < len; i++) {
         const cycle_move *src = bt_pz_alg_at(eng, alg, len - 1 - i);
@@ -294,6 +296,26 @@ BT_TEST(tier1, cycle_mock_moves_and_renders_honestly) {
     bt_pz_alg_destroy(single);
     bt_strbuf_free(&sb);
     bt_strbuf_free(&isb);
+}
+
+BT_TEST(tier1, cycle_invert_replaces_a_reused_out_alg) {
+    cycle_cfg cfg = cycle_sound();
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    bt_pz_error perr;
+    void *alg = bt_pz_alg_create();
+    BT_CHECK(cycle_parse_text(&eng, "a b", alg, &perr));
+    void *reused = bt_pz_alg_create();
+    BT_CHECK(cycle_parse_text(&eng, "s", reused, &perr));
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)1);
+    eng.invert_alg(&eng, alg, reused);
+    BT_CHECK_EQ(bt_pz_alg_len(reused), (size_t)2);
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 32);
+    eng.format_alg(&eng, reused, &sb);
+    BT_CHECK_EQ(sb.data, "a b");
+    bt_strbuf_free(&sb);
+    bt_pz_alg_destroy(alg);
+    bt_pz_alg_destroy(reused);
 }
 
 BT_TEST(tier1, tier1_error_displays_its_cause) {

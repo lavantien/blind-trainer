@@ -10,8 +10,7 @@ const uint8_t BT_PZ_SQ1_SQUARE_SHAPE[BT_PZ_SQ1_PIECES_PER_LAYER] = {1, 2, 1, 2, 
 static const size_t SQ1_CUT_HALF = BT_PZ_SQ1_UNITS / BT_PZ_SQ1_LAYERS;
 
 static bool sq1_is_space(char byte) {
-    return (byte == ' ' || byte == '\t' || byte == '\n' || byte == '\r' || byte == '\v' ||
-            byte == '\f') != 0;
+    return (byte == ' ' || byte == '\t' || byte == '\n' || byte == '\r' || byte == '\f') != 0;
 }
 
 static int32_t sq1_rem_euclid(int32_t value, int32_t modulus) {
@@ -382,6 +381,8 @@ void bt_pz_sq1_format_alg(const void *alg, bt_strbuf *out) {
 void bt_pz_sq1_invert_alg(const void *alg, void *out) {
     BT_TRACE_ENTER("bt_pz_sq1_invert_alg");
     bt_pz_engine eng = bt_pz_sq1_engine();
+    bt_pz_alg *vec = out;
+    vec->len = 0;
     size_t len = bt_pz_alg_len(alg);
     for (size_t i = 0; i < len; i++) {
         const bt_pz_sq1_move *src = bt_pz_alg_at(&eng, alg, len - 1 - i);
