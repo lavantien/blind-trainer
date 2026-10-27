@@ -26,13 +26,24 @@ static int line_is_blank(const char *text, size_t from, size_t to) {
         if (byte < 0x80) {
             return 0;
         }
-        size_t width = byte < 0xE0 ? 2 : (byte < 0xF0 ? 3 : 4);
+        size_t width;
+        unsigned int lead_mask;
+        if (byte < 0xE0) {
+            width = 2;
+            lead_mask = 0x1FU;
+        } else if (byte < 0xF0) {
+            width = 3;
+            lead_mask = 0x0FU;
+        } else {
+            width = 4;
+            lead_mask = 0x07U;
+        }
         if (at + width > to) {
             return 0;
         }
-        unsigned int codepoint = byte & (width == 2 ? 0x1F : (width == 3 ? 0x0F : 0x07));
+        unsigned int codepoint = byte & lead_mask;
         for (size_t k = 1; k < width; k++) {
-            codepoint = (codepoint << 6) | ((unsigned char)text[at + k] & 0x3FU);
+            codepoint = (codepoint << 6U) | ((unsigned char)text[at + k] & 0x3FU);
         }
         if (!is_unicode_space(codepoint)) {
             return 0;

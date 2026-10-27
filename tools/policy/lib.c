@@ -391,10 +391,9 @@ static int walk(const char *dir, const char *const *segs, size_t depth, policy_s
                 goto fail;
             }
             if (path_is_dir(child) && !skip_dir_name(names.items[at]) &&
-                !path_is_reparse_or_link(child)) {
-                if (walk(child, segs, depth, out, err, err_len) != 0) {
-                    goto fail;
-                }
+                !path_is_reparse_or_link(child) &&
+                walk(child, segs, depth, out, err, err_len) != 0) {
+                goto fail;
             }
         }
     } else {
@@ -588,13 +587,11 @@ static int sweep_unexpected_extensions(const char *dir, const char *root, policy
         if (path_is_reparse_or_link(child)) {
             continue;
         }
-        if (path_is_dir(child)) {
-            if (!skip_dir_name(names.items[at])) {
-                if (sweep_unexpected_extensions(child, root, outcome, err, err_len) != 0) {
-                    goto fail;
-                }
-            }
-        } else {
+        if (path_is_dir(child) && !skip_dir_name(names.items[at]) &&
+            sweep_unexpected_extensions(child, root, outcome, err, err_len) != 0) {
+            goto fail;
+        }
+        if (!path_is_dir(child)) {
             const char *ext = NULL;
             if (!code_extension(names.items[at], &ext)) {
                 policy_finding finding;
@@ -915,8 +912,8 @@ static int selftest_run_dir(const char *workdir, char out[BT_PATH_MAX], char *er
     free(names.items);
     static unsigned long long run_counter;
     run_counter++;
-    int wrote = snprintf(out, BT_PATH_MAX, "%s/pol-%lu-%llu", workdir,
-                         (unsigned long)policy_process_id(), run_counter);
+    int wrote =
+        snprintf(out, BT_PATH_MAX, "%s/pol-%lu-%llu", workdir, policy_process_id(), run_counter);
     if (wrote < 0 || (size_t)wrote >= BT_PATH_MAX) {
         snprintf(err, err_len, "selftest run dir too long under %s", workdir);
         return -1;

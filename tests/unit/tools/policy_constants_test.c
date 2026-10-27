@@ -118,8 +118,9 @@ BT_TEST(policy_constants, digits_after_utf8_continuation_bytes_stay_excluded) {
 }
 
 BT_TEST(policy_constants, embedded_nuls_do_not_stop_the_scan) {
-    static const char text[] = {'i', ' ', '=', ' ', '7', ';', '\0',
-                                'j', ' ', '=', ' ', '7', ';', '\n'};
+    static const char text[] = {
+        'i', ' ', '=', ' ', '7', ';', '\0', 'j', ' ', '=', ' ', '7', ';', '\n',
+    };
     size_t count = 0;
     policy_occurrence *hits = policy_scan_literals(text, sizeof text - 1, POLICY_LANG_C, &count);
     BT_CHECK_EQ(count, 2);
@@ -177,11 +178,11 @@ BT_TEST(policy_constants, recurring_counts_per_core_within_one_file) {
     BT_CHECK_EQ(three->line, 3);
     policy_recurring_free(hits, count);
     count = 0;
-    hits = policy_recurring_literals(text, POLICY_LANG_C, 3, &count);
+    hits = policy_recurring_literals(text, strlen(text), POLICY_LANG_C, 3, &count);
     BT_CHECK_EQ(count, 1);
     policy_recurring_free(hits, count);
     count = 0;
-    hits = policy_recurring_literals(text, POLICY_LANG_C, 4, &count);
+    hits = policy_recurring_literals(text, strlen(text), POLICY_LANG_C, 4, &count);
     BT_CHECK_EQ(count, 0);
     policy_recurring_free(hits, count);
 }
