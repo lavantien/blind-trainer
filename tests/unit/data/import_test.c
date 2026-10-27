@@ -388,3 +388,27 @@ BT_TEST(import, imported_solves_match_the_legacy_json_exactly) {
     bt_db_close(&db);
     tu_remove_tree(root);
 }
+
+BT_TEST(import, a_reissued_legacy_file_replaces_its_migrated_marker) {
+    const char *root = temp_root("reissue");
+    char path[BT_TU_PATH_MAX];
+    bt_data_settings_path_at(root, path);
+    write_at(path, "{\"memo_cadence_ms\":640,\"memo_mode\":\"per-orbit\",\"drill_reps\":6}");
+    char migrated[BT_TU_PATH_MAX];
+    bt_import_migrated_path(path, migrated, BT_TU_PATH_MAX);
+    bt_db db;
+    open_at(&db, root);
+    char err[512];
+    BT_CHECK(bt_import_run(&db, root, err, sizeof err) == 0);
+    write_at(path, "{\"memo_cadence_ms\":1,\"memo_mode\":\"images\",\"drill_reps\":1}");
+    BT_CHECK(bt_import_run(&db, root, err, sizeof err) == 0);
+    char *settings = NULL;
+    bt_db_error db_err;
+    BT_CHECK(bt_repo_settings_load_text(&db, BT_REPO_SETTINGS_APP_KEY, &settings, &db_err) == 0);
+    BT_CHECK(settings != NULL && strstr(settings, "640") != NULL);
+    free(settings);
+    BT_CHECK(!path_exists(path));
+    BT_CHECK(path_exists(migrated));
+    bt_db_close(&db);
+    tu_remove_tree(root);
+}
