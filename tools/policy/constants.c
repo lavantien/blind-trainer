@@ -217,10 +217,10 @@ static int core_integer_value(const char *core, policy_lang lang, unsigned long 
     return 1;
 }
 
-policy_occurrence *policy_scan_literals(const char *masked_text, policy_lang lang, size_t *count) {
+policy_occurrence *policy_scan_literals(const char *masked_text, size_t len, policy_lang lang,
+                                        size_t *count) {
     BT_TRACE_ENTER("policy.scan_literals");
     const char *text = masked_text;
-    size_t len = strlen(text);
     policy_occurrence *hits = NULL;
     size_t hit_count = 0;
     size_t hit_cap = 0;
@@ -381,11 +381,12 @@ static int recurring_cmp(const void *left, const void *right) {
     return strcmp(a->core, b->core);
 }
 
-policy_recurring *policy_recurring_literals(const char *masked_text, policy_lang lang,
+policy_recurring *policy_recurring_literals(const char *masked_text, size_t len, policy_lang lang,
                                             unsigned long long threshold, size_t *count) {
     BT_TRACE_ENTER("policy.recurring_literals");
     size_t occurrence_count = 0;
-    policy_occurrence *occurrences = policy_scan_literals(masked_text, lang, &occurrence_count);
+    policy_occurrence *occurrences =
+        policy_scan_literals(masked_text, len, lang, &occurrence_count);
     policy_core_count *counts = NULL;
     size_t count_len = 0;
     size_t count_cap = 0;

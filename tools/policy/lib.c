@@ -563,8 +563,8 @@ int policy_run_checks(const char *root, policy_check_mode mode, const bt_json_va
             policy_mask_source(text, len, lang, &masked);
             const char *rel = rel_probe;
             size_t hit_count = 0;
-            policy_recurring *hits =
-                policy_recurring_literals(masked.text, lang, pcfg.literal_recurrence, &hit_count);
+            policy_recurring *hits = policy_recurring_literals(masked.text, len, lang,
+                                                               pcfg.literal_recurrence, &hit_count);
             for (size_t hit = 0; hit < hit_count; hit++) {
                 int small_allowed = 0;
                 for (size_t allow_at = 0; allow_at < pcfg.allow_count; allow_at++) {

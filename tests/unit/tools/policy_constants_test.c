@@ -9,7 +9,7 @@
 
 static void check_cores(const char *text, policy_lang lang, const char *want) {
     size_t count = 0;
-    policy_occurrence *hits = policy_scan_literals(text, lang, &count);
+    policy_occurrence *hits = policy_scan_literals(text, strlen(text), lang, &count);
     char got[512];
     size_t used = 0;
     got[0] = '\0';
@@ -117,6 +117,17 @@ BT_TEST(policy_constants, digits_after_utf8_continuation_bytes_stay_excluded) {
                 POLICY_LANG_C, "1");
 }
 
+BT_TEST(policy_constants, embedded_nuls_do_not_stop_the_scan) {
+    static const char text[] = {'i', ' ', '=', ' ', '7', ';', '\0',
+                                'j', ' ', '=', ' ', '7', ';', '\n'};
+    size_t count = 0;
+    policy_occurrence *hits = policy_scan_literals(text, sizeof text - 1, POLICY_LANG_C, &count);
+    BT_CHECK_EQ(count, 2);
+    BT_CHECK(strcmp(hits[0].core, "7") == 0);
+    BT_CHECK(strcmp(hits[1].core, "7") == 0);
+    policy_occurrences_free(hits, count);
+}
+
 BT_TEST(policy_constants, identifier_adjacent_digits_are_excluded) {
     check_cores("sha256 of md5 at v2", POLICY_LANG_C, "");
 }
@@ -134,7 +145,7 @@ BT_TEST(policy_constants, char_literals_hide_their_digits) {
 BT_TEST(policy_constants, occurrences_carry_one_based_lines) {
     const char *text = "int a = 1;\nint b = 2;\nint c = 1;";
     size_t count = 0;
-    policy_occurrence *hits = policy_scan_literals(text, POLICY_LANG_C, &count);
+    policy_occurrence *hits = policy_scan_literals(text, strlen(text), POLICY_LANG_C, &count);
     BT_CHECK_EQ(count, 3);
     BT_CHECK_EQ(hits[0].line, 1);
     BT_CHECK_EQ(hits[1].line, 2);
@@ -145,7 +156,8 @@ BT_TEST(policy_constants, occurrences_carry_one_based_lines) {
 BT_TEST(policy_constants, recurring_counts_per_core_within_one_file) {
     const char *text = "int a = 7;\nint b = 7;\nint c = 3;\nint d = 3;\nint e = 3;";
     size_t count = 0;
-    policy_recurring *hits = policy_recurring_literals(text, POLICY_LANG_C, 2, &count);
+    policy_recurring *hits =
+        policy_recurring_literals(text, strlen(text), POLICY_LANG_C, 2, &count);
     BT_CHECK_EQ(count, 2);
     const policy_recurring *seven = NULL;
     const policy_recurring *three = NULL;
