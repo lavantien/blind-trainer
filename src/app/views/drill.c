@@ -1,5 +1,11 @@
 #include "app/views/drill.h"
 
+#include "app/views/state.h"
+
+#include "raylib.h"
+
+#include <stdint.h>
+
 #include "app/views/drill_card.h"
 
 #include "common/bt_trace.h"
@@ -396,4 +402,198 @@ void bt_view_drill_net_sync(bt_app_net_state *net, const bt_drill_session *sessi
         bt_view_drill_net_clear(net);
     }
     BT_TRACE_EXIT("app.drill_net_sync");
+}
+
+static bt_drill_app_state drill_singleton;
+
+static void clear_pair(bt_drill_session *session) {
+    session->has_pin = 0;
+    clear_sides(session);
+    session->prepared = bt_cube_solved();
+    session->reps_target = 0;
+    reset_counters(session);
+}
+
+void bt_view_drill_app_init(bt_drill_app_state *app) {
+    BT_TRACE_ENTER("app.drill_app_init");
+    memset(app, 0, sizeof *app);
+    bt_drill_session_init(&app->session);
+    app->seed = bt_views_time_seed();
+    app->last_phase = (bt_drill_phase)-1;
+    app->initialized = 1;
+    BT_TRACE_EXIT("app.drill_app_init");
+}
+
+void bt_view_drill_app_free(bt_drill_app_state *app) {
+    BT_TRACE_ENTER("app.drill_app_free");
+    bt_drill_session_free(&app->session);
+    app->initialized = 0;
+    BT_TRACE_EXIT("app.drill_app_free");
+}
+
+bt_drill_app_state *bt_view_drill_app(void) {
+    BT_TRACE_ENTER("app.drill_app");
+    if (!drill_singleton.initialized) {
+        bt_view_drill_app_init(&drill_singleton);
+    }
+    BT_TRACE_EXIT("app.drill_app");
+    return &drill_singleton;
+}
+
+void bt_view_drill_set_pending(bt_case case_id) {
+    BT_TRACE_ENTER("app.drill_set_pending");
+    bt_drill_app_state *app = bt_view_drill_app();
+    app->has_pending = 1;
+    app->pending = case_id;
+    BT_TRACE_EXIT("app.drill_set_pending");
+}
+
+static void pick_and_install(bt_app_ctx *ctx, bt_drill_app_state *app) {
+    bt_case picked;
+    int has = 0;
+    if (app->has_pending) {
+        picked = app->pending;
+        app->has_pending = 0;
+        has = 1;
+    } else if (ctx->has_corpus && ctx->has_stores) {
+        bt_rng rng;
+        bt_rng_seed(&rng, app->seed);
+        has =
+            bt_view_pick_pair(&ctx->vendor_corpus, &ctx->stores, bt_views_now_day(), &rng, &picked);
+    }
+    if (has) {
+        bt_view_install_pair(&app->session, &ctx->vendor_corpus, &ctx->stores, picked);
+    } else {
+        clear_pair(&app->session);
+    }
+}
+
+void bt_view_drill_enter_state(bt_app_ctx *ctx, bt_drill_app_state *app) {
+    BT_TRACE_ENTER("app.drill_enter_state");
+    pick_and_install(ctx, app);
+    ctx->drill_phase = BT_DRILL_CARD;
+    bt_view_drill_net_sync(&ctx->net, &app->session);
+    app->last_phase = BT_DRILL_CARD;
+    BT_TRACE_EXIT("app.drill_enter_state");
+}
+
+void bt_view_drill_enter_phase(bt_app_ctx *ctx, bt_drill_app_state *app, bt_drill_phase phase) {
+    BT_TRACE_ENTER("app.drill_enter_phase");
+    if (phase == BT_DRILL_CARD) {
+        bt_view_drill_net_sync(&ctx->net, &app->session);
+    } else if (phase == BT_DRILL_REPS) {
+        app->session.reps_clock = 0.0F;
+        app->session.last_split_at = 0.0F;
+        const bt_drill_side *side = bt_drill_session_current_side(&app->session);
+        if (side != NULL) {
+            bt_view_drill_net_set(&ctx->net, app->session.prepared, side);
+        }
+    }
+    app->last_phase = phase;
+    BT_TRACE_EXIT("app.drill_enter_phase");
+}
+
+void bt_view_drill_tick(bt_app_ctx *ctx, bt_drill_app_state *app, float dt) {
+    BT_TRACE_ENTER("app.drill_tick");
+    if (ctx->drill_phase == BT_DRILL_REPS) {
+        app->session.reps_clock += dt;
+    }
+    BT_TRACE_EXIT("app.drill_tick");
+}
+
+void bt_view_drill_key(bt_app_ctx *ctx, bt_drill_app_state *app, int key) {
+    BT_TRACE_ENTER("app.drill_key");
+    if (ctx->drill_phase == BT_DRILL_CARD) {
+        if (key == KEY_SPACE && bt_drill_session_sides(&app->session, NULL) != NULL) {
+            ctx->drill_phase = BT_DRILL_REPS;
+            bt_view_drill_enter_phase(ctx, app, BT_DRILL_REPS);
+        }
+        BT_TRACE_EXIT("app.drill_key");
+        return;
+    }
+    if (ctx->drill_phase == BT_DRILL_REPS) {
+        if (key != KEY_SPACE) {
+            BT_TRACE_EXIT("app.drill_key");
+            return;
+        }
+        const bt_drill_side *side = bt_drill_session_current_side(&app->session);
+        if (side == NULL) {
+            BT_TRACE_EXIT("app.drill_key");
+            return;
+        }
+        float split = app->session.reps_clock - app->session.last_split_at;
+        if (split < 0.0F) {
+            split = 0.0F;
+        }
+        app->session.last_split_at = app->session.reps_clock;
+        if (app->session.split_count < BT_DRILL_SPLITS_MAX) {
+            app->session.splits[app->session.split_count].is_a = app->session.reps_side_a;
+            app->session.splits[app->session.split_count].secs = split;
+            app->session.split_count += 1;
+        } else {
+            BT_TRACE_FAIL("app.drill_key", "split overflow at %zu", app->session.split_count);
+        }
+        bt_cube_apply_alg(&ctx->net.cube, &side->alg);
+        app->session.reps_side_a = app->session.reps_side_a == 0;
+        app->session.reps_done += 1;
+        const bt_drill_side *next = bt_drill_session_current_side(&app->session);
+        if (next != NULL) {
+            bt_view_drill_net_set(&ctx->net, ctx->net.cube, next);
+        }
+        if (app->session.reps_done >= app->session.reps_target) {
+            ctx->drill_phase = BT_DRILL_RATE;
+            bt_view_drill_enter_phase(ctx, app, BT_DRILL_RATE);
+        }
+        BT_TRACE_EXIT("app.drill_key");
+        return;
+    }
+    if (ctx->drill_phase == BT_DRILL_RATE) {
+        bt_grade rating;
+        if (!bt_view_rating_of(key, &rating)) {
+            BT_TRACE_EXIT("app.drill_key");
+            return;
+        }
+        const bt_drill_side *side_b = NULL;
+        const bt_drill_side *a = bt_drill_session_sides(&app->session, &side_b);
+        if (a == NULL) {
+            BT_TRACE_EXIT("app.drill_key");
+            return;
+        }
+        const char *position = app->session.rate_step == 0 ? a->position : side_b->position;
+        bt_view_write_review(&ctx->stores, &ctx->fsrs, bt_view_sheet_of(a->case_id.orbit), position,
+                             rating, bt_views_now_day());
+        bt_app_save_stores(ctx);
+        app->session.rate_step += 1;
+        if (app->session.rate_step > 1) {
+            pick_and_install(ctx, app);
+            app->seed += 1;
+            ctx->drill_phase = BT_DRILL_CARD;
+            bt_view_drill_enter_phase(ctx, app, BT_DRILL_CARD);
+        }
+        BT_TRACE_EXIT("app.drill_key");
+        return;
+    }
+    BT_TRACE_EXIT("app.drill_key");
+}
+
+void bt_view_drill_enter(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.drill_enter");
+    bt_view_drill_enter_state(ctx, bt_view_drill_app());
+    BT_TRACE_EXIT("app.drill_enter");
+}
+
+void bt_view_drill_update(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.drill_update");
+    bt_drill_app_state *app = bt_view_drill_app();
+    if (app->last_phase != ctx->drill_phase) {
+        bt_view_drill_enter_phase(ctx, app, ctx->drill_phase);
+    }
+    bt_view_drill_tick(ctx, app, GetFrameTime());
+    int keys[5] = {KEY_SPACE, KEY_ONE, KEY_TWO, KEY_THREE, KEY_FOUR};
+    for (int i = 0; i < 5; i++) {
+        if (IsKeyPressed(keys[i])) {
+            bt_view_drill_key(ctx, app, keys[i]);
+        }
+    }
+    BT_TRACE_EXIT("app.drill_update");
 }

@@ -1,5 +1,7 @@
 #include "app/boot.h"
 
+#include "app/views/drill.h"
+#include "app/views/memo.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -110,8 +112,15 @@ static void noop_row(bt_app_ctx *ctx) {
 }
 
 const bt_app_state_row BT_APP_STATE_TABLE[BT_APP_STATE_COUNT] = {
-    {enter_bootstrap, NULL, NULL}, {noop_row, NULL, NULL}, {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},        {noop_row, NULL, NULL}, {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},        {noop_row, NULL, NULL}, {noop_row, NULL, NULL},
-    {noop_row, NULL, NULL},        {noop_row, NULL, NULL},
+    {enter_bootstrap, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {bt_view_drill_enter, bt_view_drill_update, NULL},
+    {bt_view_memo_enter, bt_view_memo_update, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
+    {noop_row, NULL, NULL},
 };

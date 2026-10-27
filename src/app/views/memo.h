@@ -63,4 +63,19 @@ void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, cons
 void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const void *font_bold,
                        float window_w, float window_h);
 
+typedef struct {
+    int initialized;
+    uint64_t seed;
+    bt_memo_session session;
+} bt_memo_app_state;
+
+void bt_view_memo_app_init(bt_memo_app_state *app);
+void bt_view_memo_app_free(bt_memo_app_state *app);
+bt_memo_app_state *bt_view_memo_app(void);
+void bt_view_memo_enter_state(bt_app_ctx *ctx, bt_memo_app_state *app);
+void bt_view_memo_tick(bt_app_ctx *ctx, bt_memo_app_state *app, float dt);
+void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key);
+void bt_view_memo_enter(bt_app_ctx *ctx);
+void bt_view_memo_update(bt_app_ctx *ctx);
+
 #endif

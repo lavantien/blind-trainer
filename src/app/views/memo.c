@@ -285,3 +285,126 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
     }
     BT_TRACE_EXIT("app.view_memo_draw");
 }
+
+static bt_memo_app_state memo_singleton;
+
+void bt_view_memo_app_init(bt_memo_app_state *app) {
+    BT_TRACE_ENTER("app.memo_app_init");
+    memset(app, 0, sizeof *app);
+    bt_memo_session_init(&app->session);
+    app->seed = bt_views_time_seed();
+    app->initialized = 1;
+    BT_TRACE_EXIT("app.memo_app_init");
+}
+
+void bt_view_memo_app_free(bt_memo_app_state *app) {
+    BT_TRACE_ENTER("app.memo_app_free");
+    bt_memo_session_free(&app->session);
+    app->initialized = 0;
+    BT_TRACE_EXIT("app.memo_app_free");
+}
+
+bt_memo_app_state *bt_view_memo_app(void) {
+    BT_TRACE_ENTER("app.memo_app");
+    if (!memo_singleton.initialized) {
+        bt_view_memo_app_init(&memo_singleton);
+    }
+    BT_TRACE_EXIT("app.memo_app");
+    return &memo_singleton;
+}
+
+static const bt_syllable_book *flow_book(const bt_app_ctx *ctx) {
+    bt_app_views *views = bt_app_views_shared();
+    if (views != NULL && !views->syllables.loaded) {
+        bt_app_views_load_syllables(views, &ctx->paths);
+    }
+    return views != NULL ? &views->syllables : NULL;
+}
+
+void bt_view_memo_enter_state(bt_app_ctx *ctx, bt_memo_app_state *app) {
+    BT_TRACE_ENTER("app.memo_enter_state");
+    bt_memo_rebuild(&app->session, app->seed, flow_book(ctx));
+    ctx->memo_phase = BT_MEMO_INTRO;
+    BT_TRACE_EXIT("app.memo_enter_state");
+}
+
+void bt_view_memo_tick(bt_app_ctx *ctx, bt_memo_app_state *app, float dt) {
+    BT_TRACE_ENTER("app.memo_tick");
+    if (ctx->memo_phase != BT_MEMO_STREAM) {
+        BT_TRACE_EXIT("app.memo_tick");
+        return;
+    }
+    float cadence = bt_memo_cadence_secs(&app->session, &ctx->stores);
+    if (cadence <= 0.0F) {
+        app->session.shown = app->session.token_count;
+    } else {
+        app->session.clock += dt;
+        while (app->session.clock >= cadence && app->session.shown < app->session.token_count) {
+            app->session.clock -= cadence;
+            app->session.shown += 1;
+        }
+    }
+    if (app->session.shown >= app->session.token_count && app->session.token_count > 0) {
+        ctx->memo_phase = BT_MEMO_RECALL;
+    }
+    BT_TRACE_EXIT("app.memo_tick");
+}
+
+void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key) {
+    BT_TRACE_ENTER("app.memo_key");
+    if (ctx->memo_phase == BT_MEMO_INTRO) {
+        if (key == KEY_SPACE) {
+            app->seed += 1;
+            bt_memo_rebuild(&app->session, app->seed, flow_book(ctx));
+            ctx->memo_phase = BT_MEMO_STREAM;
+        }
+        BT_TRACE_EXIT("app.memo_key");
+        return;
+    }
+    if (ctx->memo_phase == BT_MEMO_RECALL) {
+        if (key == KEY_SPACE) {
+            ctx->memo_phase = BT_MEMO_REVIEW;
+        }
+        BT_TRACE_EXIT("app.memo_key");
+        return;
+    }
+    if (ctx->memo_phase == BT_MEMO_REVIEW) {
+        if (key == KEY_R) {
+            ctx->memo_phase = BT_MEMO_STREAM;
+            bt_memo_reset_stream(&app->session);
+            BT_TRACE_EXIT("app.memo_key");
+            return;
+        }
+        if (key == KEY_SPACE) {
+            ctx->memo_phase = BT_MEMO_INTRO;
+            BT_TRACE_EXIT("app.memo_key");
+            return;
+        }
+        bt_grade rating;
+        if (bt_view_rating_of(key, &rating)) {
+            bt_memo_rate_pairs(&ctx->stores, &ctx->fsrs, &app->session, rating, bt_views_now_day());
+            bt_app_save_stores(ctx);
+            ctx->memo_phase = BT_MEMO_INTRO;
+        }
+    }
+    BT_TRACE_EXIT("app.memo_key");
+}
+
+void bt_view_memo_enter(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.memo_enter");
+    bt_view_memo_enter_state(ctx, bt_view_memo_app());
+    BT_TRACE_EXIT("app.memo_enter");
+}
+
+void bt_view_memo_update(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.memo_update");
+    bt_memo_app_state *app = bt_view_memo_app();
+    bt_view_memo_tick(ctx, app, GetFrameTime());
+    int keys[6] = {KEY_SPACE, KEY_R, KEY_ONE, KEY_TWO, KEY_THREE, KEY_FOUR};
+    for (int i = 0; i < 6; i++) {
+        if (IsKeyPressed(keys[i])) {
+            bt_view_memo_key(ctx, app, keys[i]);
+        }
+    }
+    BT_TRACE_EXIT("app.memo_update");
+}

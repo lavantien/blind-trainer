@@ -85,4 +85,24 @@ void bt_view_drill_net_set(bt_app_net_state *net, bt_cube cube, const bt_drill_s
 void bt_view_drill_net_clear(bt_app_net_state *net);
 void bt_view_drill_net_sync(bt_app_net_state *net, const bt_drill_session *session);
 
+typedef struct {
+    int initialized;
+    uint64_t seed;
+    int has_pending;
+    bt_case pending;
+    bt_drill_session session;
+    bt_drill_phase last_phase;
+} bt_drill_app_state;
+
+void bt_view_drill_app_init(bt_drill_app_state *app);
+void bt_view_drill_app_free(bt_drill_app_state *app);
+bt_drill_app_state *bt_view_drill_app(void);
+void bt_view_drill_set_pending(bt_case case_id);
+void bt_view_drill_enter_state(bt_app_ctx *ctx, bt_drill_app_state *app);
+void bt_view_drill_enter_phase(bt_app_ctx *ctx, bt_drill_app_state *app, bt_drill_phase phase);
+void bt_view_drill_tick(bt_app_ctx *ctx, bt_drill_app_state *app, float dt);
+void bt_view_drill_key(bt_app_ctx *ctx, bt_drill_app_state *app, int key);
+void bt_view_drill_enter(bt_app_ctx *ctx);
+void bt_view_drill_update(bt_app_ctx *ctx);
+
 #endif
