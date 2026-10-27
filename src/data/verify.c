@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum {
+    BT_VERIFY_NAME_COUNT = 48,
+    BT_VERIFY_FACELET_COUNT = 54,
+};
+
 static const int NORMALS[6][3] = {
     {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, {1, 0, 0}, {0, 0, -1}, {0, -1, 0},
 };
@@ -196,7 +201,7 @@ static void name_into(char *out, size_t out_len, uint8_t sticker) {
 }
 
 static int sticker_by_name(const char *name) {
-    for (uint8_t sticker = 0; sticker < 48; sticker++) {
+    for (int sticker = 0; sticker < BT_VERIFY_NAME_COUNT; sticker++) {
         if (strcmp(bt_scheme_name_of(sticker), name) == 0) {
             return sticker;
         }
@@ -370,7 +375,7 @@ static void fail_detail(bt_verdict *verdict, const char *detail) {
 
 static void residue_problems(const bt_cube *cube, bt_verdict *verdict, const bt_piece *exempt,
                              size_t exempt_count) {
-    for (uint8_t sticker = 0; sticker < 48; sticker++) {
+    for (int sticker = 0; sticker < BT_VERIFY_NAME_COUNT; sticker++) {
         bt_piece piece = piece_of_sticker(sticker);
         bool exempted = false;
         for (size_t i = 0; i < exempt_count; i++) {
@@ -394,7 +399,8 @@ static void residue_problems(const bt_cube *cube, bt_verdict *verdict, const bt_
     }
 }
 
-static bool place_rigid(int16_t expected[54], uint8_t from, uint8_t to, char *detail,
+static bool place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from, uint8_t to,
+                        char *detail,
                         size_t detail_len) {
     bt_piece piece = piece_of_sticker(from);
     bt_piece slot_piece = piece_of_sticker(to);
@@ -453,8 +459,8 @@ static bool place_rigid(int16_t expected[54], uint8_t from, uint8_t to, char *de
     return true;
 }
 
-static int expected_position(const int16_t expected[54], uint8_t sticker) {
-    for (int slot = 0; slot < 54; slot++) {
+static int expected_position(const int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t sticker) {
+    for (int slot = 0; slot < BT_VERIFY_FACELET_COUNT; slot++) {
         if (expected[slot] == (int16_t)sticker) {
             return slot;
         }
@@ -475,9 +481,9 @@ static void verify_three_style(const bt_cube *cube, bt_verdict *verdict, const c
         fail_detail(verdict, detail);
         return;
     }
-    int16_t expected[54];
-    for (int i = 0; i < 54; i++) {
-        expected[i] = i >= 48 ? (int16_t)i : -1;
+    int16_t expected[BT_VERIFY_FACELET_COUNT];
+    for (int i = 0; i < BT_VERIFY_FACELET_COUNT; i++) {
+        expected[i] = i >= BT_VERIFY_NAME_COUNT ? (int16_t)i : -1;
     }
     uint8_t pairs[3][2] = {
         {named.stickers[0], named.stickers[1]},
@@ -490,7 +496,7 @@ static void verify_three_style(const bt_cube *cube, bt_verdict *verdict, const c
             return;
         }
     }
-    for (uint8_t sticker = 0; sticker < 48; sticker++) {
+    for (int sticker = 0; sticker < BT_VERIFY_NAME_COUNT; sticker++) {
         int want_slot = expected_position(expected, sticker);
         uint8_t want = want_slot < 0 ? sticker : (uint8_t)want_slot;
         uint8_t got = bt_cube_position_of(cube, sticker);

@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum {
+    BT_TSV_CELL_SLOTS = 64,
+};
+
 static const char *HEADER_CELLS[BT_TSV_COLUMNS] = {
     "Position", "Alg", "Commutator", "Reconstruction Link", "Youtube Link",
 };
@@ -114,11 +118,11 @@ static int row_push(bt_tsv_rows *out, size_t line_number, char *cells[BT_TSV_COL
 
 static int validate_header(char *line, size_t line_number, bt_tsv_error *err) {
     BT_TRACE_ENTER("tsv.validate_header");
-    char *cells[64];
+    char *cells[BT_TSV_CELL_SLOTS];
     size_t count = 0;
     char *cursor = line;
     cells[count++] = cursor;
-    while ((cursor = strchr(cursor, '\t')) != NULL && count < 64) {
+    while ((cursor = strchr(cursor, '\t')) != NULL && count < BT_TSV_CELL_SLOTS) {
         *cursor = '\0';
         cursor += 1;
         cells[count++] = cursor;
@@ -202,11 +206,11 @@ int bt_tsv_parse_sheet(const char *text, bt_tsv_rows *out, bt_tsv_error *err) {
             }
             continue;
         }
-        char *cells[64];
+        char *cells[BT_TSV_CELL_SLOTS];
         size_t count = 0;
         char *scan = buffer;
         cells[count++] = scan;
-        while ((scan = strchr(scan, '\t')) != NULL && count < 64) {
+        while ((scan = strchr(scan, '\t')) != NULL && count < BT_TSV_CELL_SLOTS) {
             *scan = '\0';
             scan += 1;
             cells[count++] = scan;
