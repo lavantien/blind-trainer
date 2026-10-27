@@ -85,8 +85,7 @@ BT_TEST(config, display_path_relativizes_only_inside_the_workspace) {
 
 BT_TEST(config, load_config_value_reports_read_and_parse_errors) {
     char temp[BT_PATH_MAX];
-    snprintf(temp, sizeof temp, "%s\\bt-app-config-test-%d", getenv("TEMP"),
-             (int)_getpid());
+    snprintf(temp, sizeof temp, "%s\\bt-app-config-test-%d", getenv("TEMP"), _getpid());
     _mkdir(temp);
     char path[BT_PATH_MAX];
     snprintf(path, sizeof path, "%s\\config.json", temp);

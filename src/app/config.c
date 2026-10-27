@@ -6,13 +6,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BT_APP_DEFAULT_WINDOW_WIDTH 1280
-#define BT_APP_DEFAULT_WINDOW_HEIGHT 800
+enum {
+    BT_APP_DEFAULT_WINDOW_WIDTH = 1280,
+    BT_APP_DEFAULT_WINDOW_HEIGHT = 800,
+    BT_APP_DEFAULT_MEMO_CADENCE_MS = 800,
+    BT_APP_DEFAULT_DRILL_REPS = 6,
+    BT_APP_DEFAULT_SMOKE_SEED = 20261012,
+};
+
 #define BT_APP_DEFAULT_WINDOW_TITLE "blind trainer"
-#define BT_APP_DEFAULT_MEMO_CADENCE_MS 800
 #define BT_APP_DEFAULT_MEMO_MODE "per-orbit"
-#define BT_APP_DEFAULT_DRILL_REPS 6
-#define BT_APP_DEFAULT_SMOKE_SEED 20261012
 
 void bt_app_config_defaults(bt_app_config *config) {
     BT_TRACE_ENTER("app.config_defaults");
