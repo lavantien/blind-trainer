@@ -36,7 +36,7 @@ int verify_row_offender(const char *event, const char *method, const char *stage
                         const verify_row_outcome *row, char *out, size_t out_len);
 void verify_summarize(const bt_pack_entry *entry, const verify_section_result *section,
                       verify_pack_section_summary *summary, verify_strlist *offenders);
-int verify_audit_packs(const char *packs_root, verify_pack_audit *out);
+void verify_audit_packs(const char *packs_root, verify_pack_audit *out);
 void verify_pack_audit_free(verify_pack_audit *audit);
 void verify_render_packs_markdown(const verify_pack_audit *audit, bt_strbuf *out);
 

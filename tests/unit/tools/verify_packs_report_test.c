@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "data/seedpack/registry.h"
 #include "data/seedpack/rulings.h"
 #include "verify/packs_report.h"
 
@@ -187,4 +188,36 @@ BT_TEST(verify_packs_report, markdown_with_nothing_to_say_says_none) {
     bt_strbuf_free(&md);
     verify_strlist_free(&audit.drift);
     verify_strlist_free(&audit.offenders);
+}
+
+BT_TEST(verify_packs_report, registry_failure_keeps_the_real_error_and_the_audit_renders) {
+    char scratch[TV_PATH_MAX];
+    tv_scratch("vpr_regfail", scratch);
+    char packs[TV_PATH_MAX];
+    snprintf(packs, sizeof packs, "%s/packs", scratch);
+    tv_mkdir_p(packs);
+    char registry_path[TV_PATH_MAX];
+    snprintf(registry_path, sizeof registry_path, "%s/registry.json", packs);
+    tv_write_file(registry_path, "not a json array");
+    bt_pack_entry *probe_entries = NULL;
+    size_t probe_count = 0;
+    bt_seed_error probe_err;
+    bt_seedpack_load_registry(packs, &probe_entries, &probe_count, &probe_err);
+    char want[512];
+    bt_seed_error_string(&probe_err, want, sizeof want);
+    verify_pack_audit audit;
+    verify_audit_packs(packs, &audit);
+    BT_CHECK_EQ(audit.offenders.count, 1);
+    BT_CHECK_EQ(audit.offenders.items[0], want);
+    BT_CHECK(strstr(audit.offenders.items[0], "registry") != NULL);
+    BT_CHECK(strstr(audit.offenders.items[0], "pack registry load failed") == NULL);
+    BT_CHECK_EQ(audit.section_count, 0);
+    bt_strbuf md;
+    bt_strbuf_init(&md, 256);
+    verify_render_packs_markdown(&audit, &md);
+    BT_CHECK(strncmp(md.data, "# pack verification report\n\n", 28) == 0);
+    BT_CHECK(strstr(md.data, "- ") != NULL);
+    bt_strbuf_free(&md);
+    verify_pack_audit_free(&audit);
+    tv_rm_rf(scratch);
 }

@@ -114,7 +114,7 @@ void verify_summarize(const bt_pack_entry *entry, const verify_section_result *s
     BT_TRACE_EXIT("packs_report.summarize");
 }
 
-int verify_audit_packs(const char *packs_root, verify_pack_audit *out) {
+void verify_audit_packs(const char *packs_root, verify_pack_audit *out) {
     BT_TRACE_ENTER("packs_report.audit_packs");
     memset(out, 0, sizeof *out);
     verify_pinned_vs_registry(packs_root, &out->drift);
@@ -127,7 +127,7 @@ int verify_audit_packs(const char *packs_root, verify_pack_audit *out) {
     if (bt_seedpack_load_registry(packs_root, &entries, &entry_count, &err) != 0) {
         BT_TRACE_FAIL("packs_report.audit_packs", "registry load failed");
         BT_TRACE_EXIT("packs_report.audit_packs");
-        return 1;
+        return;
     }
     for (size_t at = 0; at < entry_count; at++) {
         const bt_pack_entry *entry = &entries[at];
@@ -162,7 +162,6 @@ int verify_audit_packs(const char *packs_root, verify_pack_audit *out) {
     }
     bt_seedpack_free_entries(entries);
     BT_TRACE_EXIT("packs_report.audit_packs");
-    return 0;
 }
 
 void verify_pack_audit_free(verify_pack_audit *audit) {

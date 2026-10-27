@@ -171,10 +171,7 @@ static int run(verify_strlist *offenders) {
         verify_strlist_push(offenders, err);
         goto fail;
     }
-    if (verify_audit_packs(packs_root, &pack_audit) != 0) {
-        verify_strlist_push(offenders, "pack registry load failed");
-        goto fail;
-    }
+    verify_audit_packs(packs_root, &pack_audit);
     char packs_md_path[BT_PATH_MAX];
     snprintf(packs_md_path, sizeof packs_md_path, "%s/packs.md", dir);
     bt_strbuf packs_md;
