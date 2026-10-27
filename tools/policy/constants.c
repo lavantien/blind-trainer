@@ -1,5 +1,6 @@
 #include "policy/constants.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -163,6 +164,59 @@ void policy_policy_config_free(policy_policy_config *config) {
     config->allow_count = 0;
 }
 
+static int core_integer_value(const char *core, policy_lang lang, unsigned long long *out) {
+    int radix = 10;
+    size_t at = 0;
+    if (core[0] == '\0') {
+        return 0;
+    }
+    if (core[0] == '0' && core[1] != '\0') {
+        if (core[1] == 'x' || core[1] == 'X') {
+            radix = 16;
+            at = 2;
+        } else if (core[1] == 'b' || core[1] == 'B') {
+            radix = 2;
+            at = 2;
+        } else if (core[1] == 'o' || core[1] == 'O') {
+            radix = 8;
+            at = 2;
+        } else if (lang == POLICY_LANG_C) {
+            radix = 8;
+            at = 1;
+        } else {
+            at = 1;
+        }
+    }
+    unsigned long long value = 0;
+    int digits_seen = 0;
+    for (; core[at] != '\0'; at++) {
+        unsigned char byte = (unsigned char)core[at];
+        int digit;
+        if (byte >= '0' && byte <= '9') {
+            digit = byte - '0';
+        } else if (byte >= 'a' && byte <= 'f') {
+            digit = byte - 'a' + 10;
+        } else if (byte >= 'A' && byte <= 'F') {
+            digit = byte - 'A' + 10;
+        } else {
+            return 0;
+        }
+        if (digit >= radix) {
+            return 0;
+        }
+        if (value > (ULLONG_MAX - (unsigned long long)digit) / (unsigned long long)radix) {
+            return 0;
+        }
+        value = value * (unsigned long long)radix + (unsigned long long)digit;
+        digits_seen++;
+    }
+    if (digits_seen == 0) {
+        return 0;
+    }
+    *out = value;
+    return 1;
+}
+
 policy_occurrence *policy_scan_literals(const char *masked_text, policy_lang lang, size_t *count) {
     BT_TRACE_ENTER("policy.scan_literals");
     const char *text = masked_text;
@@ -176,15 +230,30 @@ policy_occurrence *policy_scan_literals(const char *masked_text, policy_lang lan
             i++;
             continue;
         }
+        int leading_dot = 0;
+        int excluded = 0;
         if (i > 0) {
             unsigned char prev = (unsigned char)text[i - 1];
-            int prev_dots_range = prev == '.' && i >= 2 && text[i - 2] == '.';
-            if ((cscan_is_word(prev) || prev == '$' || prev == '.') && !prev_dots_range) {
-                i++;
-                continue;
+            unsigned char before = i >= 2 ? (unsigned char)text[i - 2] : 0;
+            int prev_dots_range = prev == '.' && before == '.';
+            int before_is_name = cscan_is_word(before) || (before & 0xC0U) == 0x80U;
+            if (prev_dots_range) {
+                excluded = 0;
+            } else if (prev == '.') {
+                if (before_is_name) {
+                    excluded = 1;
+                } else {
+                    leading_dot = 1;
+                }
+            } else if (cscan_is_word(prev) || prev == '$' || (prev & 0xC0U) == 0x80U) {
+                excluded = 1;
             }
         }
-        size_t start = i;
+        if (excluded) {
+            i++;
+            continue;
+        }
+        size_t start = leading_dot ? i - 1 : i;
         size_t j = i;
         unsigned char radix = 0;
         if (radix_prefix(text, len, j, &radix)) {
@@ -192,6 +261,27 @@ policy_occurrence *policy_scan_literals(const char *masked_text, policy_lang lan
             while (j < len && (radix_digit(radix, (unsigned char)text[j]) ||
                                is_sep((unsigned char)text[j], lang))) {
                 j++;
+            }
+            if (radix == 'x' || radix == 'X') {
+                if (j < len && text[j] == '.' && !(j + 1 < len && text[j + 1] == '.')) {
+                    j++;
+                    while (j < len && (cscan_is_hex_digit((unsigned char)text[j]) ||
+                                       is_sep((unsigned char)text[j], lang))) {
+                        j++;
+                    }
+                }
+                if (j < len && (text[j] == 'p' || text[j] == 'P')) {
+                    size_t k = j + 1;
+                    if (k < len && (text[k] == '+' || text[k] == '-')) {
+                        k++;
+                    }
+                    if (k < len && is_digit_or_sep((unsigned char)text[k], lang)) {
+                        j = k;
+                        while (j < len && is_digit_or_sep((unsigned char)text[j], lang)) {
+                            j++;
+                        }
+                    }
+                }
             }
         } else {
             while (j < len && is_digit_or_sep((unsigned char)text[j], lang)) {
@@ -239,6 +329,15 @@ policy_occurrence *policy_scan_literals(const char *masked_text, policy_lang lan
                 }
             }
             core[used] = '\0';
+            unsigned long long value = 0;
+            if (core_integer_value(core, lang, &value)) {
+                char canon[32];
+                int wrote = snprintf(canon, sizeof canon, "%llu", value);
+                if (wrote > 0 && (size_t)wrote < sizeof canon) {
+                    free(core);
+                    core = policy_xstrdup(canon);
+                }
+            }
             if (hit_count == hit_cap) {
                 hit_cap = hit_cap == 0 ? 16 : hit_cap * 2;
                 policy_occurrence *grown = realloc(hits, hit_cap * sizeof *grown);

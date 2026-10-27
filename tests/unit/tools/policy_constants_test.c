@@ -78,10 +78,11 @@ BT_TEST(policy_constants, separators_normalize_to_the_same_core) {
     check_cores("s = 1_000 + 1000", POLICY_LANG_PY, "1000,1000");
 }
 
-BT_TEST(policy_constants, radix_prefixes_stay_in_the_core) {
-    check_cores("0x1F", POLICY_LANG_C, "0x1F");
-    check_cores("0b1010", POLICY_LANG_C, "0b1010");
-    check_cores("0o17", POLICY_LANG_PY, "0o17");
+BT_TEST(policy_constants, integer_cores_normalize_to_decimal) {
+    check_cores("0x1F", POLICY_LANG_C, "31");
+    check_cores("0b1010", POLICY_LANG_C, "10");
+    check_cores("0o17", POLICY_LANG_PY, "15");
+    check_cores("0x1F + 31 + 037", POLICY_LANG_C, "31,31,31");
 }
 
 BT_TEST(policy_constants, exponents_stay_in_the_core) {
@@ -90,17 +91,30 @@ BT_TEST(policy_constants, exponents_stay_in_the_core) {
     check_cores("7E-2", POLICY_LANG_C, "7E-2");
 }
 
+BT_TEST(policy_constants, hex_float_literals_form_one_core) {
+    check_cores("double x = 0x1.8p3;", POLICY_LANG_C, "0x1.8p3");
+    check_cores("double y = 0x1p3;", POLICY_LANG_C, "0x1p3");
+}
+
 BT_TEST(policy_constants, type_suffixes_are_stripped) {
     check_cores("1u", POLICY_LANG_C, "1");
     check_cores("2ull", POLICY_LANG_C, "2");
     check_cores("1.5f", POLICY_LANG_C, "1.5");
-    check_cores("0xFFul", POLICY_LANG_C, "0xFF");
+    check_cores("0xFFul", POLICY_LANG_C, "255");
     check_cores("2j", POLICY_LANG_PY, "2");
 }
 
-BT_TEST(policy_constants, leading_dot_floats_are_excluded) {
-    check_cores("x = .5;", POLICY_LANG_PY, "");
+BT_TEST(policy_constants, leading_dot_floats_count_but_member_access_stays_excluded) {
+    check_cores("x = .5 + .25;", POLICY_LANG_PY, ".5,.25");
     check_cores("y = obj.field", POLICY_LANG_PY, "");
+    check_cores("int a = point.0;", POLICY_LANG_C, "");
+    check_cores("int b = nested.0.1;", POLICY_LANG_C, "");
+}
+
+BT_TEST(policy_constants, digits_after_utf8_continuation_bytes_stay_excluded) {
+    check_cores("v = a\xc3\xa9"
+                "2 + 1;",
+                POLICY_LANG_C, "1");
 }
 
 BT_TEST(policy_constants, identifier_adjacent_digits_are_excluded) {
