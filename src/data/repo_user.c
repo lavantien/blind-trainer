@@ -62,6 +62,30 @@ size_t bt_overrides_len(const bt_overrides *ov) {
     return ov->count;
 }
 
+int bt_overrides_contains(const bt_overrides *ov, const bt_case_ref *key) {
+    BT_TRACE_ENTER("data.repo_user_overrides_contains");
+    int found = bt_overrides_get(ov, key) != NULL;
+    BT_TRACE_EXIT("data.repo_user_overrides_contains");
+    return found;
+}
+
+int bt_overrides_remove(bt_overrides *ov, const bt_case_ref *key) {
+    BT_TRACE_ENTER("data.repo_user_overrides_remove");
+    for (size_t i = 0; i < ov->count; i++) {
+        if (bt_case_ref_cmp(&ov->items[i].ref, key) == 0) {
+            free(ov->items[i].alg);
+            for (size_t at = i; at + 1 < ov->count; at++) {
+                ov->items[at] = ov->items[at + 1];
+            }
+            ov->count--;
+            BT_TRACE_EXIT("data.repo_user_overrides_remove");
+            return 1;
+        }
+    }
+    BT_TRACE_EXIT("data.repo_user_overrides_remove");
+    return 0;
+}
+
 static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind kind,
                           const char *step) {
     err->kind = kind;
@@ -107,6 +131,16 @@ static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key, con
     ov->items[at].alg = alg_copy;
     ov->count++;
     return 0;
+}
+
+int bt_overrides_put(bt_overrides *ov, const bt_case_ref *key, const char *alg) {
+    BT_TRACE_ENTER("data.repo_user_overrides_put");
+    int written = overrides_insert_sorted(ov, key, alg);
+    if (written != 0) {
+        BT_TRACE_FAIL("data.repo_user_overrides_put", "out of memory");
+    }
+    BT_TRACE_EXIT("data.repo_user_overrides_put");
+    return written;
 }
 
 int bt_repo_user_upsert(bt_db *db, const bt_case_ref *key, const char *alg, bt_db_error *err) {
