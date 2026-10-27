@@ -189,6 +189,54 @@ BT_TEST(scramble, random_occ_flips_follow_the_generator_stream) {
     }
 }
 
+BT_TEST(scramble, random_occ_first_attempt_draw_sequence_is_pinned) {
+    bt_rng rng;
+    bt_rng_seed(&rng, 0);
+    uint8_t edges[12];
+    uint8_t corners[8];
+    for (uint8_t i = 0; i < 12; i++) {
+        edges[i] = i;
+    }
+    for (uint8_t i = 0; i < 8; i++) {
+        corners[i] = i;
+    }
+    bt_scheme_fisher_yates(&rng, edges, 12);
+    bt_scheme_fisher_yates(&rng, corners, 8);
+    bool flips[12];
+    for (int i = 0; i < 12; i++) {
+        flips[i] = (bt_rng_next(&rng) & 1ULL) == 1ULL;
+    }
+    uint8_t twists[8] = {0};
+    for (uint8_t i = 0; i < 7; i++) {
+        twists[i] = (uint8_t)bt_rng_below(&rng, 3);
+    }
+    uint32_t twist_sum = 0;
+    for (uint8_t i = 0; i < 7; i++) {
+        twist_sum += twists[i];
+    }
+    twists[7] = (uint8_t)((3 - twist_sum % 3) % 3);
+    uint32_t flip_total = 0;
+    for (int i = 0; i < 12; i++) {
+        flip_total += flips[i] ? 1 : 0;
+    }
+    if (flip_total % 2 == 1) {
+        flips[11] = !flips[11] != 0;
+    }
+    if (bt_scheme_perm_sign(edges, 12) != bt_scheme_perm_sign(corners, 8)) {
+        uint8_t tmp = edges[0];
+        edges[0] = edges[1];
+        edges[1] = tmp;
+    }
+    uint8_t replayed[54];
+    identity(replayed);
+    bt_scheme_build_occ(replayed, edges, flips, corners, twists);
+    uint8_t occ[54];
+    bt_scheme_random_occ(0, occ);
+    BT_CHECK(memcmp(replayed, occ, sizeof replayed) == 0);
+    BT_CHECK_EQ(bt_scheme_twist_sum(replayed) % 3, 0ULL);
+    BT_CHECK_EQ(bt_scheme_flip_count(replayed) % 2, 0ULL);
+}
+
 BT_TEST(scramble, identity_and_single_transposition_legality) {
     uint8_t occ[54];
     identity(occ);
