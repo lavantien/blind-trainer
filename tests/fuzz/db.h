@@ -183,8 +183,7 @@ static void bt_fuzz_db_once(const uint8_t *data, size_t size) {
     BT_CHECK(bt_solve_log_eq(&loaded_log, &log) == 1);
     bt_solve_log_free(&loaded_log);
     char *loaded_settings = NULL;
-    if (bt_repo_settings_load_text(&db, BT_REPO_SETTINGS_APP_KEY, &loaded_settings, &db_err) !=
-        0) {
+    if (bt_repo_settings_load_text(&db, BT_REPO_SETTINGS_APP_KEY, &loaded_settings, &db_err) != 0) {
         BT_ABORT("load settings");
     }
     BT_CHECK(loaded_settings != NULL && strcmp(loaded_settings, settings_text) == 0);

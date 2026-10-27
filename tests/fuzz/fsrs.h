@@ -221,7 +221,8 @@ static void bt_fuzz_fsrs_config_parse(uint64_t seed) {
         if (!(cfg.request_retention > 0.0 && cfg.request_retention <= 1.0)) {
             BT_ABORT("retention %.17g accepted", retention);
         }
-        if (cfg.interval_clamp_days[0] < 1 || cfg.interval_clamp_days[1] < cfg.interval_clamp_days[0]) {
+        if (cfg.interval_clamp_days[0] < 1 ||
+            cfg.interval_clamp_days[1] < cfg.interval_clamp_days[0]) {
             BT_ABORT("clamps [%lld, %lld] accepted", cfg.interval_clamp_days[0],
                      cfg.interval_clamp_days[1]);
         }
