@@ -27,7 +27,7 @@ def compile_unit(compiler, flags, includes, system_dirs, source, obj_root, logge
 def main():
     stems = sys.argv[1:]
     if not stems:
-        print("usage: python playground/l10/run_suite.py <stem>...")
+        print("usage: python playground/l10/run_suite.py <area>:<stem>...")
         return 2
     hub = bt.load_hub()
     compiler = [bt.resolve_tool("clang", hub)]
@@ -53,9 +53,13 @@ def main():
     bin_dir.mkdir(parents=True, exist_ok=True)
     timeout = bt.build_cfg(hub)["test_timeout_secs"]
     failed = 0
-    for stem in stems:
-        source = root / "tests" / "unit" / "tools" / f"{stem}.c"
-        suite = f"tools_{stem}"
+    for spec in stems:
+        if ":" in spec:
+            area, stem = spec.split(":", 1)
+        else:
+            area, stem = "tools", spec
+        source = root / "tests" / "unit" / area / f"{stem}.c"
+        suite = f"{area}_{stem}"
         test_obj = compile_unit(compiler, flags, includes, system_dirs, source, obj_root, logger)
         tests = bt.extract_bt_tests(source.read_text(encoding="utf-8"))
         gen_dir = root / bt.dirs_cfg(hub)["gen"]

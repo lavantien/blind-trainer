@@ -1,4 +1,4 @@
-#include "verify/when.h"
+#include "common/when.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -20,8 +20,8 @@ static void civil_from_days(long long days, long long *year, unsigned *month, un
     *year = *month <= 2 ? y + 1 : y;
 }
 
-void verify_when_iso8601(uint64_t unix_secs, char *out, size_t out_len) {
-    BT_TRACE_ENTER("verify.when_iso8601");
+void bt_when_iso8601(uint64_t unix_secs, char *out, size_t out_len) {
+    BT_TRACE_ENTER("when.iso8601");
     long long days = (long long)(unix_secs / 86400);
     uint64_t secs = unix_secs % 86400;
     long long year;
@@ -31,13 +31,13 @@ void verify_when_iso8601(uint64_t unix_secs, char *out, size_t out_len) {
     snprintf(out, out_len, "%04lld-%02u-%02uT%02llu:%02llu:%02lluZ", year, month, day,
              (unsigned long long)(secs / 3600), (unsigned long long)(secs % 3600 / 60),
              (unsigned long long)(secs % 60));
-    BT_TRACE_EXIT("verify.when_iso8601");
+    BT_TRACE_EXIT("when.iso8601");
 }
 
-void verify_when_now(char *out, size_t out_len) {
-    BT_TRACE_ENTER("verify.when_now");
+void bt_when_now(char *out, size_t out_len) {
+    BT_TRACE_ENTER("when.now");
     time_t now = time(NULL);
     uint64_t secs = now > 0 ? (uint64_t)now : 0;
-    verify_when_iso8601(secs, out, out_len);
-    BT_TRACE_EXIT("verify.when_now");
+    bt_when_iso8601(secs, out, out_len);
+    BT_TRACE_EXIT("when.now");
 }
