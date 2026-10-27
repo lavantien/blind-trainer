@@ -125,6 +125,13 @@ BT_TEST(skewb_inline, inverse_round_trips_a_deterministic_alg_sweep) {
         if (bt_pz_alg_len(twice) != bt_pz_alg_len(alg)) {
             BT_ABORT("double inverse length differs");
         }
+        for (size_t i = 0; i < bt_pz_alg_len(alg); i++) {
+            bt_skewb_move a = *(const bt_skewb_move *)bt_pz_alg_at(&eng, alg, i);
+            bt_skewb_move b = *(const bt_skewb_move *)bt_pz_alg_at(&eng, twice, i);
+            if (!bt_skewb_move_eq(a, b)) {
+                BT_ABORT("double inverse differs");
+            }
+        }
         if (!tier1_ok(&skewb, text.data)) {
             BT_ABORT("tier1 failed for %s", text.data);
         }

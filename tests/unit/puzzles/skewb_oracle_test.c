@@ -912,6 +912,13 @@ BT_TEST(skewb_oracle, inverse_round_trips_through_solved) {
             bt_pz_alg_len(reparsed_inverse) != bt_pz_alg_len(inverse)) {
             BT_ABORT("inverse format round trip failed for %s", inverse_text.data);
         }
+        for (size_t i = 0; i < bt_pz_alg_len(inverse); i++) {
+            bt_skewb_move a = *(const bt_skewb_move *)bt_pz_alg_at(&eng, inverse, i);
+            bt_skewb_move b = *(const bt_skewb_move *)bt_pz_alg_at(&eng, reparsed_inverse, i);
+            if (!bt_skewb_move_eq(a, b)) {
+                BT_ABORT("inverse format round trip differs for %s", inverse_text.data);
+            }
+        }
         void *twice = bt_pz_alg_create();
         bt_skewb_invert_alg(&skewb, inverse, twice);
         if (bt_pz_alg_len(twice) != bt_pz_alg_len(alg)) {

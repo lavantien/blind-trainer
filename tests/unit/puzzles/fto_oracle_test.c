@@ -429,6 +429,13 @@ BT_TEST(fto_oracle, inverse_round_trips_through_solved) {
             bt_pz_alg_len(reparsed_inverse) != bt_pz_alg_len(inverse)) {
             BT_ABORT("inverse format round trip failed for %s", inverse_text.data);
         }
+        for (size_t i = 0; i < bt_pz_alg_len(inverse); i++) {
+            bt_fto_move a = *(const bt_fto_move *)bt_pz_alg_at(&eng, inverse, i);
+            bt_fto_move b = *(const bt_fto_move *)bt_pz_alg_at(&eng, reparsed_inverse, i);
+            if (!bt_fto_move_eq(a, b)) {
+                BT_ABORT("inverse format round trip differs for %s", inverse_text.data);
+            }
+        }
         void *twice = bt_pz_alg_create();
         bt_fto_invert_alg(&fto, inverse, twice);
         if (bt_pz_alg_len(twice) != bt_pz_alg_len(alg)) {
@@ -613,6 +620,13 @@ BT_TEST(fto_inline, inverse_round_trips_a_deterministic_alg_sweep) {
         bt_fto_invert_alg(&fto, inverse, twice);
         if (bt_pz_alg_len(twice) != bt_pz_alg_len(alg)) {
             BT_ABORT("double inverse length differs");
+        }
+        for (size_t i = 0; i < bt_pz_alg_len(alg); i++) {
+            bt_fto_move a = *(const bt_fto_move *)bt_pz_alg_at(&eng, alg, i);
+            bt_fto_move b = *(const bt_fto_move *)bt_pz_alg_at(&eng, twice, i);
+            if (!bt_fto_move_eq(a, b)) {
+                BT_ABORT("double inverse differs");
+            }
         }
         if (!tier1_ok(&fto, text.data)) {
             BT_ABORT("tier1 failed for %s", text.data);
