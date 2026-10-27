@@ -6,6 +6,15 @@
 #include <string.h>
 
 #include "common/bt_trace.h"
+#include "verify/ev_bigcube.h"
+#include "verify/ev_bld.h"
+#include "verify/ev_cfop.h"
+#include "verify/ev_fto.h"
+#include "verify/ev_mega.h"
+#include "verify/ev_nxn.h"
+#include "verify/ev_pyra.h"
+#include "verify/ev_skewb.h"
+#include "verify/ev_sq1.h"
 
 const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[21] = {
     {"twoby2_cll.tsv", "2x2", "cll", "cll", 42},
@@ -238,4 +247,77 @@ void verify_pinned_vs_registry(const char *packs_root, verify_strlist *out) {
     verify_pinned_vs_entries(entries, count, out);
     bt_seedpack_free_entries(entries);
     BT_TRACE_EXIT("packs.pinned_vs_registry");
+}
+
+void verify_rows(const bt_pack_entry *entry, const bt_seed_rows *rows, verify_section_result *out) {
+    BT_TRACE_ENTER("packs.verify_rows");
+    const char *event = entry->event;
+    const char *method = entry->method;
+    const char *stage = entry->stage;
+    bool bigcube = (bool)(strcmp(event, "bigcube") == 0 &&
+                          (strcmp(method, "yau") == 0 || strcmp(method, "reduction") == 0) &&
+                          strcmp(stage, "parity") == 0);
+    bool cfop = (bool)((strcmp(event, "3x3") == 0 || strcmp(event, "oh") == 0) &&
+                       strcmp(method, "cfop") == 0);
+    if (strcmp(event, "2x2") == 0 && strcmp(method, "cll") == 0 && strcmp(stage, "cll") == 0) {
+        verify_nxn_verify_twoby2(rows, out);
+    } else if (strcmp(event, "sq1") == 0 && strcmp(method, "lbl") == 0 &&
+               strcmp(stage, "cubeshape") == 0) {
+        verify_sq1_verify_cubeshape(rows, out);
+    } else if (strcmp(event, "sq1") == 0 && strcmp(method, "lbl") == 0 &&
+               strcmp(stage, "co") == 0) {
+        verify_sq1_verify_co(rows, out);
+    } else if (strcmp(event, "sq1") == 0 && strcmp(method, "lbl") == 0 &&
+               strcmp(stage, "eo") == 0) {
+        verify_sq1_verify_eo(rows, out);
+    } else if (strcmp(event, "sq1") == 0 && strcmp(method, "lbl") == 0 &&
+               strcmp(stage, "cp") == 0) {
+        verify_sq1_verify_cp(rows, out);
+    } else if (strcmp(event, "sq1") == 0 && strcmp(method, "lbl") == 0 &&
+               strcmp(stage, "ep") == 0) {
+        verify_sq1_verify_ep(rows, out);
+    } else if (strcmp(event, "skewb") == 0 && strcmp(method, "sarah_intermediate") == 0 &&
+               strcmp(stage, "sarah") == 0) {
+        verify_skewb_verify_sarah(rows, out);
+    } else if (strcmp(event, "pyraminx") == 0 && strcmp(method, "l4e") == 0 &&
+               strcmp(stage, "l4e") == 0) {
+        verify_pyra_verify_l4e(rows, out);
+    } else if (strcmp(event, "megaminx") == 0 && strcmp(method, "4lll") == 0 &&
+               strcmp(stage, "4lll") == 0) {
+        verify_mega_verify_4lll(rows, out);
+    } else if (strcmp(event, "fto") == 0 && strcmp(method, "l4t_redux") == 0 &&
+               strcmp(stage, "l4t") == 0) {
+        verify_fto_verify_l4t(rows, out);
+    } else if (bigcube) {
+        verify_bigcube_verify_parity(entry, rows, out);
+    } else if (strcmp(event, "3bld") == 0 && strcmp(method, "old_pochmann") == 0 &&
+               strcmp(stage, "concept") == 0) {
+        verify_bld_verify_oldpoch(rows, out);
+    } else if (strcmp(event, "3bld") == 0 && strcmp(method, "m2") == 0 &&
+               strcmp(stage, "concept") == 0) {
+        verify_bld_verify_m2(rows, out);
+    } else if (strcmp(event, "3bld") == 0 && strcmp(method, "3style") == 0 &&
+               strcmp(stage, "parity") == 0) {
+        verify_bld_verify_3style(rows, out);
+    } else if (cfop && strcmp(stage, "pll") == 0) {
+        verify_cfop_verify_pll(rows, out);
+    } else if (cfop && strcmp(stage, "oll") == 0) {
+        verify_cfop_verify_oll(rows, out);
+    } else if (cfop && strcmp(stage, "f2l") == 0) {
+        verify_cfop_verify_f2l(rows, out);
+    } else {
+        BT_TRACE_FAIL("packs.verify_rows", "section %s/%s/%s is not implemented", event, method,
+                      stage);
+        verify_section_init(out);
+        for (size_t at = 0; at < rows->count; at++) {
+            const bt_seed_row *row = &rows->items[at];
+            verify_row_outcome outcome = {0};
+            snprintf(outcome.case_key, sizeof outcome.case_key, "%s", row->case_key);
+            snprintf(outcome.tier1_err, sizeof outcome.tier1_err,
+                     "section %s/%s/%s is not implemented", event, method, stage);
+            outcome.tier2 = verify_tier2_skipped("section not implemented");
+            verify_section_push_row(out, &outcome);
+        }
+    }
+    BT_TRACE_EXIT("packs.verify_rows");
 }

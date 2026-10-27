@@ -87,5 +87,7 @@ extern const size_t VERIFY_PACK_PIN_COUNT;
 void verify_nspec_text(const bt_nspec *n, char *out, size_t out_len);
 void verify_pinned_vs_entries(const bt_pack_entry *entries, size_t count, verify_strlist *out);
 void verify_pinned_vs_registry(const char *packs_root, verify_strlist *out);
+void verify_rows(const bt_pack_entry *entry, const bt_seed_rows *rows,
+                 verify_section_result *out);
 
 #endif
