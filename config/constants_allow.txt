@@ -28,13 +28,12 @@ src/scheme/scheme.c	24	cube or Speffz geometry constant intrinsic to the 3x3 mod
 src/scheme/scheme.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
-src/puzzles/geometry.c	128	utf-8 lead byte boundary of the unicode whitespace scanner, pinned by the separator tests
+src/common/space.c	128	utf-8 lead byte boundary of the unicode whitespace classifier, pinned by the separator and ga trim tests
 src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 tools/mutate/engine.c	256	link argv slot cap mirroring the engine link list, pinned by the mutate selftests
 tools/mutate/ledger.c	10	decimal radix of the ledger field parser, pinned by the mutate selftests
 tools/mutate/ledger.c	32	iso timestamp buffer of the ledger row, pinned by the mutate selftests
 tools/mutate/scratch.c	64	slot name capacity of the scratch sweep, pinned by the mutate selftests
 tools/mutate/tests.c	60000	clang compile timeout of the mutate selftest spawns
-src/ga/features.c	63	utf-8 continuation mask of the ga parser and renderer, pinned by parse tests
 src/ga/features.c	1.0	identity confusion and flow penalty unit terms of the ga feature model, pinned by features and fuzzkill tests
 src/ga/ga.c	0.0	floating accumulation identity of the ga fitness sums, pinned by the trajectory tests
