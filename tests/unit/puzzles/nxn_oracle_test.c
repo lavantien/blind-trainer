@@ -912,6 +912,28 @@ BT_TEST(nxn_oracle, engine_rejects_a_hand_built_n) {
                     nxn_die_on_hand_built_n);
 }
 
+BT_TEST(nxn_oracle, unicode_whitespace_separates_tokens) {
+    bt_pz_nxn nxn;
+    bt_pz_nxn_init(&nxn, 3);
+    static const char *texts[] = {
+        "R\xC2\x85 U",     "R\xC2\xA0 U",     "R\xE1\x9A\x80 U",
+        "R\xE2\x80\x80 U", "R\xE2\x80\xA8 U", "R\xE2\x80\xAF U",
+        "R\xE2\x81\x9F U", "R\xE3\x80\x80 U", "R\v U",
+    };
+    bt_pz_nxn_state want;
+    nxn_applied(&nxn, "R U", &want);
+    for (size_t i = 0; i < sizeof texts / sizeof texts[0]; i++) {
+        bt_pz_error err;
+        void *alg = bt_pz_alg_create();
+        BT_CHECK(bt_pz_nxn_parse_alg(&nxn, texts[i], strlen(texts[i]), alg, &err));
+        BT_CHECK_EQ(bt_pz_alg_len(alg), (size_t)2);
+        bt_pz_alg_destroy(alg);
+        bt_pz_nxn_state state;
+        nxn_applied(&nxn, texts[i], &state);
+        BT_CHECK(bt_pz_nxn_state_eq(&state, &want));
+    }
+}
+
 BT_TEST(nxn_oracle, is_empty_reflects_the_parsed_move_count) {
     bt_pz_nxn nxn;
     bt_pz_nxn_init(&nxn, 3);

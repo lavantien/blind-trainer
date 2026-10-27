@@ -28,6 +28,7 @@ src/scheme/scheme.c	24	cube or Speffz geometry constant intrinsic to the 3x3 mod
 src/scheme/scheme.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
+src/puzzles/geometry.c	128	utf-8 lead byte boundary of the unicode whitespace scanner, pinned by the separator tests
 src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 tools/mutate/engine.c	256	link argv slot cap mirroring the engine link list, pinned by the mutate selftests
 tools/mutate/ledger.c	10	decimal radix of the ledger field parser, pinned by the mutate selftests

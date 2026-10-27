@@ -192,6 +192,39 @@ static void tier1_message(const bt_tier1_error *err, char *out, size_t out_size)
     bt_strbuf_free(&sb);
 }
 
+static bool cycle_parse_text(bt_pz_engine *eng, const char *text, void *alg, bt_pz_error *err) {
+    return eng->parse_alg(eng, text, strlen(text), alg, err);
+}
+
+BT_TEST(tier1, default_parse_splits_on_unicode_whitespace) {
+    cycle_cfg cfg = cycle_sound();
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    bt_pz_error perr;
+    static const char *texts[] = {
+        "a\xC2\x85 b",     "a\xC2\xA0 b",     "a\xE1\x9A\x80 b",
+        "a\xE2\x80\x80 b", "a\xE2\x80\xA8 b", "a\xE2\x80\xAF b",
+        "a\xE2\x81\x9F b", "a\xE3\x80\x80 b", "a\v b",
+    };
+    for (size_t i = 0; i < sizeof texts / sizeof texts[0]; i++) {
+        void *alg = bt_pz_alg_create();
+        BT_CHECK(cycle_parse_text(&eng, texts[i], alg, &perr));
+        BT_CHECK_EQ(bt_pz_alg_len(alg), (size_t)2);
+        bt_strbuf sb;
+        bt_strbuf_init(&sb, 32);
+        eng.format_alg(&eng, alg, &sb);
+        BT_CHECK_EQ(sb.data, "a b");
+        bt_strbuf_free(&sb);
+        bt_pz_alg_destroy(alg);
+    }
+    void *fused = bt_pz_alg_create();
+    BT_CHECK(cycle_parse_text(&eng,
+                              "a\xC2\xA0"
+                              "s",
+                              fused, &perr));
+    BT_CHECK_EQ(bt_pz_alg_len(fused), (size_t)2);
+    bt_pz_alg_destroy(fused);
+}
+
 BT_TEST(tier1, accepts_valid_algs) {
     static const char *texts[] = {
         "", "a", "b", "s", "a b", "a a a a", "a2 b' a2", "  a   b2  ", "a s b",
@@ -256,10 +289,6 @@ BT_TEST(tier1, rejects_alg_legal_forward_but_illegal_reversed) {
     BT_CHECK_EQ(bt_verify_tier1(&eng, "a b s a", &err), (int)BT_TIER1_APPLY);
     BT_CHECK_EQ(err.cause.kind, (int)BT_PZ_ERR_APPLY);
     BT_CHECK(strcmp(err.cause.token, "s") == 0);
-}
-
-static bool cycle_parse_text(bt_pz_engine *eng, const char *text, void *alg, bt_pz_error *err) {
-    return eng->parse_alg(eng, text, strlen(text), alg, err);
 }
 
 BT_TEST(tier1, cycle_mock_moves_and_renders_honestly) {
