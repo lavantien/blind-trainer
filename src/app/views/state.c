@@ -104,7 +104,7 @@ void bt_views_syllables_path(const bt_app_runtime_paths *paths, char out[BT_PATH
     bt_paths_workspace_root(root);
     char joined[BT_PATH_MAX];
     bt_paths_join(root, configured, joined);
-    snprintf(out, BT_PATH_MAX, "%s\\syllables.json", joined);
+    bt_paths_join(joined, "syllables.json", out);
     BT_TRACE_EXIT("app.views_syllables_path");
 }
 

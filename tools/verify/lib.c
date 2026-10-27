@@ -23,7 +23,7 @@ void verify_artifacts_dir_from(const char *raw_value, const char *workspace_root
     BT_TRACE_ENTER("verify.lib.artifacts_dir_from");
     char joined[BT_PATH_MAX];
     bt_paths_join(workspace_root, raw_value, joined);
-    snprintf(out, BT_PATH_MAX, "%s/verify", joined);
+    bt_paths_join(joined, "verify", out);
     BT_TRACE_EXIT("verify.lib.artifacts_dir_from");
 }
 

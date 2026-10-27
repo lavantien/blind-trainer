@@ -44,6 +44,12 @@ BT_TEST(memofreq_lib, data_ga_path_root_only_keeps_the_drive) {
     BT_CHECK(strcmp(out, "C:ga") == 0);
 }
 
+BT_TEST(memofreq_lib, freq_json_path_stays_single_after_a_trailing_separator) {
+    char out[BT_PATH_MAX];
+    bt_mf_freq_json_path("C:/ga/", out);
+    BT_CHECK(strcmp(out, "C:/ga/freq.json") == 0);
+}
+
 BT_TEST(memofreq_lib, draw_seed_is_splitmix_stable) {
     BT_CHECK_EQ(bt_mf_draw_seed(20261012, 0), 16176770643486239525ULL);
     BT_CHECK_EQ(bt_mf_draw_seed(20261012, 1), 10310797173907234146ULL);

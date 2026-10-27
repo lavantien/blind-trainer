@@ -78,7 +78,7 @@ void bt_data_config_path_from(const char *env_value, char out[BT_PATH_MAX]) {
     if (env_value != NULL && env_value[0] != '\0') {
         bt_paths_join(root, env_value, out);
     } else {
-        snprintf(out, BT_PATH_MAX, "%s/config/config.json", root);
+        bt_paths_join(root, "config/config.json", out);
     }
     BT_TRACE_EXIT("data.config_path_from");
 }
@@ -131,7 +131,7 @@ int bt_data_vendor_root_from(const char *env_value, const bt_json_value *config,
         BT_TRACE_FAIL("data.vendor_root_from", "missing paths.ref_ground");
         return -1;
     }
-    snprintf(out, BT_PATH_MAX, "%s/%s", root, node->as.string);
+    bt_paths_join(root, node->as.string, out);
     BT_TRACE_EXIT("data.vendor_root_from");
     return 0;
 }
@@ -157,7 +157,7 @@ int bt_data_packs_root_from(const char *env_value, const bt_json_value *config,
     if (env_value != NULL && env_value[0] != '\0') {
         char joined[BT_PATH_MAX];
         bt_paths_join(root, env_value, joined);
-        snprintf(out, BT_PATH_MAX, "%s/packs", joined);
+        bt_paths_join(joined, "packs", out);
         BT_TRACE_EXIT("data.packs_root_from");
         return 0;
     }
@@ -169,7 +169,7 @@ int bt_data_packs_root_from(const char *env_value, const bt_json_value *config,
         BT_TRACE_FAIL("data.packs_root_from", "missing paths.packs");
         return -1;
     }
-    snprintf(out, BT_PATH_MAX, "%s/%s", root, node->as.string);
+    bt_paths_join(root, node->as.string, out);
     BT_TRACE_EXIT("data.packs_root_from");
     return 0;
 }

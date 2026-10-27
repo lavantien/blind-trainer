@@ -106,7 +106,7 @@ static int run(const bt_json_value *config, bt_mf_offenders *offenders) {
         return -1;
     }
     char path[BT_PATH_MAX];
-    snprintf(path, sizeof path, "%s/freq.json", out_dir);
+    bt_mf_freq_json_path(out_dir, path);
     bt_ga_freq_data *data = bt_mf_count_frequencies(samples, seed);
     if (data == NULL) {
         offenders_push(offenders, "count_frequencies failed");

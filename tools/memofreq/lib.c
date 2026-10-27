@@ -23,6 +23,12 @@ void bt_mf_data_ga_path(const char *relative, char out[BT_PATH_MAX]) {
     BT_TRACE_EXIT("mf.data_ga_path");
 }
 
+void bt_mf_freq_json_path(const char *data_ga_dir, char out[BT_PATH_MAX]) {
+    BT_TRACE_ENTER("mf.freq_json_path");
+    bt_paths_join(data_ga_dir, "freq.json", out);
+    BT_TRACE_EXIT("mf.freq_json_path");
+}
+
 size_t bt_mf_edge_count(void) {
     BT_TRACE_ENTER("mf.edge_count");
     BT_TRACE_EXIT("mf.edge_count");

@@ -33,6 +33,14 @@ static bt_json_value *config_with_ref_ground(const char *value) {
     return config;
 }
 
+static bt_json_value *config_with_packs(const char *value) {
+    bt_json_value *config = bt_json_new_object();
+    bt_json_value *paths = bt_json_new_object();
+    bt_json_object_set(paths, "packs", bt_json_new_string(value));
+    bt_json_object_set(config, "paths", paths);
+    return config;
+}
+
 static bt_json_value *read_json_file(const char *path) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
@@ -152,6 +160,28 @@ BT_TEST(paths_more, root_only_env_values_keep_the_workspace_drive) {
     config = config_with_ref_ground("from-config");
     BT_CHECK(bt_data_packs_root_from("/zz-rg", config, out, &err) == 0);
     snprintf(want, sizeof want, "%2.2s/zz-rg/packs", root);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_json_free(config);
+}
+
+BT_TEST(paths_more, suffix_joins_stay_single_after_a_trailing_separator) {
+    bt_json_value *config = config_with_ref_ground("from-config");
+    char out[BT_PATH_MAX];
+    bt_paths_error err;
+    BT_CHECK(bt_data_packs_root_from("C:/rg/", config, out, &err) == 0);
+    BT_CHECK(strcmp(out, "C:/rg/packs") == 0);
+    bt_json_free(config);
+    config = config_with_packs("scratch/packs");
+    BT_CHECK(bt_data_packs_root_from(NULL, config, out, &err) == 0);
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    char want[BT_PATH_MAX];
+    snprintf(want, sizeof want, "%s/scratch/packs", root);
+    BT_CHECK(strcmp(out, want) == 0);
+    bt_json_free(config);
+    config = config_with_ref_ground("scratch/rg/");
+    BT_CHECK(bt_data_vendor_root_from(NULL, config, out, &err) == 0);
+    snprintf(want, sizeof want, "%s/scratch/rg/", root);
     BT_CHECK(strcmp(out, want) == 0);
     bt_json_free(config);
 }

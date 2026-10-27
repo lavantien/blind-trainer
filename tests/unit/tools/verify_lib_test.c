@@ -25,4 +25,6 @@ BT_TEST(verify_lib, artifacts_dir_from_root_only_keeps_the_base_drive) {
     BT_CHECK(strcmp(out, "C:ga/verify") == 0);
     verify_artifacts_dir_from("rel", "R:/ws", out);
     BT_CHECK(strcmp(out, "R:/ws/rel/verify") == 0);
+    verify_artifacts_dir_from("C:/rg/", "R:/ws", out);
+    BT_CHECK(strcmp(out, "C:/rg/verify") == 0);
 }
