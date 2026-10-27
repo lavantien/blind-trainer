@@ -142,5 +142,6 @@ void bt_ga_pool_free(bt_ga_pool_entry *pool);
 
 int bt_ga_config_pool_top_k(const bt_json_value *config, size_t *out, char err[BT_GA_ERR_MAX]);
 int bt_ga_is_nfc(const char *text);
+int bt_ga_utf8_valid(const char *text);
 
 #endif

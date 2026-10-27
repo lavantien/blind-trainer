@@ -6,6 +6,8 @@
 
 #include "common/json.h"
 
+#include "ga/inventory.h"
+
 typedef struct {
     char orbit[16];
     char letters[8];
@@ -29,11 +31,11 @@ typedef struct {
     uint64_t seed;
 } bt_ga_freq_data;
 
-int bt_ga_load_freq_data(const char *path, bt_ga_freq_data *out, char err[128]);
+int bt_ga_load_freq_data(const char *path, bt_ga_freq_data *out, char err[BT_GA_ERR_MAX]);
 void bt_ga_freq_data_free(bt_ga_freq_data *data);
 int bt_ga_freq_data_eq(const bt_ga_freq_data *a, const bt_ga_freq_data *b);
 
 int bt_ga_config_memofreq(const bt_json_value *config, uint64_t *samples, uint64_t *seed,
-                          char err[128]);
+                          char err[BT_GA_ERR_MAX]);
 
 #endif

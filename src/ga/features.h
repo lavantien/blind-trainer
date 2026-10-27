@@ -5,6 +5,8 @@
 
 #include "ga/inventory.h"
 
+#define BT_GA_PARSE_MAX 128
+
 typedef enum {
     BT_GA_PLACE_LABIAL,
     BT_GA_PLACE_DENTAL,

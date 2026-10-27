@@ -147,7 +147,7 @@ BT_TEST(inventory_more, pool_truncates_orders_by_frequency_then_text) {
 static bt_json_value *pool_k_config(const char *literal) {
     bt_json_value *config = NULL;
     bt_json_error error;
-    if (!bt_json_parse(literal, strlen(literal), &config, &error)) {
+    if (bt_json_parse(literal, strlen(literal), &config, &error) != 0) {
         BT_ABORT("literal does not parse: %s", error.message);
     }
     return config;

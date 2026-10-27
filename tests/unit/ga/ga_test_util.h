@@ -78,7 +78,7 @@ static inline void bt_ga_vietnamese_dir(char out[BT_PATH_MAX]) {
     bt_paths_workspace_root(root);
     const bt_json_value *config = bt_config_load();
     const char *ref_doc = NULL;
-    if (config == NULL || !bt_config_str(config, "paths.ref_doc", &ref_doc)) {
+    if (config == NULL || bt_config_str(config, "paths.ref_doc", &ref_doc) != 0) {
         BT_ABORT("paths.ref_doc missing from the hub");
     }
     snprintf(out, BT_PATH_MAX, "%s/%s/vietnamese", root, ref_doc);

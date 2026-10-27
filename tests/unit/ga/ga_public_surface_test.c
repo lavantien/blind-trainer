@@ -42,7 +42,7 @@ static bt_ga_env *surface_env(size_t case_count) {
     adj[1].w = 0.7f;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(14, lengths, feats, case_count, cooc, 2, adj, 2, env, err)) {
+    if (!bt_ga_build_env(14, lengths, feats, 14, case_count, cooc, 2, adj, 2, env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     return env;

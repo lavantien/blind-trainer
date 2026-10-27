@@ -40,7 +40,8 @@ static bt_ga_env *env_fixture_texts(size_t case_count, const char *const *texts,
     adj[0].w = 0.5f;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(text_count, lengths, feats, case_count, cooc, 2, adj, 1, env, err)) {
+    if (!bt_ga_build_env(text_count, lengths, feats, text_count, case_count, cooc, 2, adj, 1, env,
+                         err)) {
         BT_ABORT("build_env: %s", err);
     }
     return env;
@@ -306,7 +307,8 @@ BT_TEST(ga, build_env_rejects_undersized_pools) {
     lengths[1] = 2.0f;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    BT_CHECK(!bt_ga_build_env(2, lengths, feats, bt_ga_case_count(), NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(
+        !bt_ga_build_env(2, lengths, feats, 2, bt_ga_case_count(), NULL, 0, NULL, 0, &env, err));
     free(lengths);
 }
 
@@ -435,7 +437,7 @@ BT_TEST(ga, two_gene_operators_have_pinned_outcomes) {
 static bt_json_value *config_from_literal(const char *text) {
     bt_json_value *config = NULL;
     bt_json_error error;
-    if (!bt_json_parse(text, strlen(text), &config, &error)) {
+    if (bt_json_parse(text, strlen(text), &config, &error) != 0) {
         BT_ABORT("config literal does not parse: %s", error.message);
     }
     return config;

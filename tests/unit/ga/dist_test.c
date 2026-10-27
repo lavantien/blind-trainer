@@ -15,7 +15,7 @@ BT_TEST(dist, freq_data_round_trips_through_json) {
                        "\"total_draws\":1000,\"seed\":20261012}";
     bt_json_error error;
     bt_json_value *root = NULL;
-    if (!bt_json_parse(text, strlen(text), &root, &error)) {
+    if (bt_json_parse(text, strlen(text), &root, &error) != 0) {
         BT_ABORT("fixture does not parse: %s", error.message);
     }
     bt_strbuf serialized;
