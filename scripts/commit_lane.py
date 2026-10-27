@@ -70,7 +70,7 @@ def main():
 
     acquire()
     try:
-        sh(["git", "add", "--"] + list(args.paths))
+        sh(["git", "add", "-f", "--"] + list(args.paths))
         staged = staged_files()
         intended = set()
         for path in args.paths:
