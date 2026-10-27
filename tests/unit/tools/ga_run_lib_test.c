@@ -471,22 +471,50 @@ BT_TEST(ga_run_lib, render_markdown_prints_config_inventory_pool_result_and_arti
 BT_TEST(ga_run_lib, json_value_text_prints_f64_the_serde_way) {
     bt_json_value *value =
         parse_json("{\"zoom_min\": 3.5, \"zoom_max\": 12.0, \"replace\": 0.15, \"one\": 1.0, "
-                   "\"tiny\": 1e-7, \"huge\": 1e16, \"count\": 20261012}");
+                   "\"tiny\": 1e-7, \"huge\": 1e16, \"count\": 20261012, \"sci6\": 1e-6, "
+                   "\"fix5\": 1e-5, \"big100\": 1e100}");
     bt_strbuf text;
     bt_strbuf_init(&text, 256);
     BT_CHECK_EQ(bt_gr_json_value_text(value, &text), 0);
     const char *want = "{\n"
+                       "  \"big100\": 1e+100,\n"
                        "  \"count\": 20261012,\n"
-                       "  \"huge\": 1e16,\n"
+                       "  \"fix5\": 0.00001,\n"
+                       "  \"huge\": 1e+16,\n"
                        "  \"one\": 1.0,\n"
                        "  \"replace\": 0.15,\n"
-                       "  \"tiny\": 1e-7,\n"
+                       "  \"sci6\": 1e-06,\n"
+                       "  \"tiny\": 1e-07,\n"
                        "  \"zoom_max\": 12.0,\n"
                        "  \"zoom_min\": 3.5\n"
                        "}";
     BT_CHECK(strcmp(text.data, want) == 0);
     bt_strbuf_free(&text);
     bt_json_free(value);
+}
+
+BT_TEST(ga_run_lib, assignment_text_prints_f32_the_serde_way) {
+    const struct {
+        float value;
+        const char *token;
+    } rows[] = {
+        {1e13F, "\"best_fitness\": 1e+13,"},
+        {1e12F, "\"best_fitness\": 1000000000000.0,"},
+        {1e-6F, "\"best_fitness\": 0.000001,"},
+    };
+    for (size_t i = 0; i < sizeof rows / sizeof rows[0]; i++) {
+        bt_gr_syllable_assignment assignment = {0};
+        assignment.pool_size = 1;
+        assignment.best_fitness = rows[i].value;
+        bt_strbuf text;
+        bt_strbuf_init(&text, 128);
+        BT_CHECK_EQ(bt_gr_assignment_text(&assignment, &text), 0);
+        if (strstr(text.data, rows[i].token) == NULL) {
+            bt_harness_fail(__FILE__, __LINE__, "f32 %g rendered without %s: %s",
+                            (double)rows[i].value, rows[i].token, text.data);
+        }
+        bt_strbuf_free(&text);
+    }
 }
 
 BT_TEST(ga_run_lib, render_markdown_uses_the_two_column_pool_separator) {

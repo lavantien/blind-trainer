@@ -10,8 +10,10 @@
 enum {
     BT_GR_F32_PRECISION_MAX = 9,
     BT_GR_F64_PRECISION_MAX = 17,
-    BT_GR_RYU_KK_LIMIT = 15,
-    BT_GR_RYU_EXP_FLOOR = -6,
+    BT_GR_F64_FIXED_CEILING = 15,
+    BT_GR_F64_FIXED_FLOOR = -5,
+    BT_GR_F32_FIXED_CEILING = 12,
+    BT_GR_F32_FIXED_FLOOR = -6,
     BT_GR_DIGITS_MAX = 40,
 };
 
@@ -111,14 +113,16 @@ static int render_ryu(bt_strbuf *out, double value, int is_f32) {
         return -1;
     }
     int n = (int)count;
-    if (exp10 >= n - 1 && exp10 <= BT_GR_RYU_KK_LIMIT) {
+    int fixed_ceiling = is_f32 ? BT_GR_F32_FIXED_CEILING : BT_GR_F64_FIXED_CEILING;
+    int fixed_floor = is_f32 ? BT_GR_F32_FIXED_FLOOR : BT_GR_F64_FIXED_FLOOR;
+    if (exp10 >= n - 1 && exp10 <= fixed_ceiling) {
         if (bt_strbuf_append(out, digits, count) != 0 || append_zeros(out, exp10 - n + 1) != 0 ||
             bt_strbuf_append_str(out, ".0") != 0) {
             return -1;
         }
         return 0;
     }
-    if (exp10 >= 0 && exp10 <= BT_GR_RYU_KK_LIMIT) {
+    if (exp10 >= 0 && exp10 <= fixed_ceiling) {
         if (bt_strbuf_append(out, digits, (size_t)exp10 + 1) != 0 ||
             bt_strbuf_append_str(out, ".") != 0 ||
             bt_strbuf_append(out, digits + exp10 + 1, count - ((size_t)exp10 + 1)) != 0) {
@@ -126,7 +130,7 @@ static int render_ryu(bt_strbuf *out, double value, int is_f32) {
         }
         return 0;
     }
-    if (exp10 >= BT_GR_RYU_EXP_FLOOR && exp10 <= -1) {
+    if (exp10 >= fixed_floor && exp10 <= -1) {
         if (bt_strbuf_append_str(out, "0.") != 0 || append_zeros(out, -exp10 - 1) != 0 ||
             bt_strbuf_append(out, digits, count) != 0) {
             return -1;
@@ -141,7 +145,7 @@ static int render_ryu(bt_strbuf *out, double value, int is_f32) {
         return -1;
     }
     char tail[16];
-    snprintf(tail, sizeof tail, "e%d", exp10);
+    snprintf(tail, sizeof tail, "e%+03d", exp10);
     return bt_strbuf_append_str(out, tail) == 0 ? 0 : -1;
 }
 
