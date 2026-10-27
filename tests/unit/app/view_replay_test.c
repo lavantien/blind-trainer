@@ -102,6 +102,31 @@ BT_TEST(view_replay, scene_default_holds_a_still_solved_cube) {
     BT_CHECK_EQ(camera.target.z, 0.0F);
 }
 
+BT_TEST(view_replay, v_transition_frame_still_drags_and_ticks) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    char err_token[64];
+    BT_CHECK(bt_alg_parse("U", &alg, err_token, sizeof err_token));
+    bt_view_replay_scene scene;
+    bt_view_replay_scene_default(&scene);
+    bt_view_replay_scene_session(&scene, bt_cube_solved(), alg.items, bt_alg_len(&alg));
+    bt_replay_playback_toggle(&scene.playback);
+    bt_app_ctx ctx;
+    bt_app_ctx_init(&ctx);
+    bt_view_replay_input input = {0};
+    input.v_key = 1;
+    input.drag_held = 1;
+    input.dx = 10.0F;
+    input.dt = 0.25;
+    bt_view_replay_frame(&ctx, &scene, &input);
+    BT_CHECK(ctx.has_pending);
+    BT_CHECK(ctx.pending == BT_APP_SOLVE);
+    BT_CHECK_F64_NEAR(scene.orbit.yaw_deg, 49.0, 1e-5);
+    BT_CHECK_F64_NEAR(scene.playback.elapsed, 0.25, 1e-9);
+    BT_CHECK_EQ(scene.playback.index, 0U);
+    bt_alg_free(&alg);
+}
+
 BT_TEST(view_replay, played_scene_replays_the_collected_moves) {
     bt_alg alg;
     bt_alg_init(&alg);

@@ -25,6 +25,20 @@ void bt_view_replay_scene_session(bt_view_replay_scene *scene, bt_cube scramble,
 Vector3 bt_view_replay_axis_vec(bt_axis axis);
 Camera3D bt_view_replay_camera(const bt_view_replay_scene *scene);
 
+typedef struct {
+    int space;
+    int r_key;
+    int v_key;
+    int drag_held;
+    float dx;
+    float dy;
+    float wheel;
+    double dt;
+} bt_view_replay_input;
+
+void bt_view_replay_frame(bt_app_ctx *ctx, bt_view_replay_scene *scene,
+                          const bt_view_replay_input *input);
+
 void bt_view_replay_enter(bt_app_ctx *ctx);
 void bt_view_replay_update(bt_app_ctx *ctx);
 void bt_view_replay_draw(bt_app_ctx *ctx);

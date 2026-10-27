@@ -99,35 +99,46 @@ void bt_view_replay_app_free(void) {
     BT_TRACE_EXIT("view.replay_app_free");
 }
 
+void bt_view_replay_frame(bt_app_ctx *ctx, bt_view_replay_scene *scene,
+                          const bt_view_replay_input *input) {
+    BT_TRACE_ENTER("view.replay_frame");
+    if (input->space) {
+        bt_replay_playback_toggle(&scene->playback);
+    }
+    if (input->r_key) {
+        scene->orbit = bt_replay_default_orbit(&scene->cfg);
+    }
+    if (input->v_key) {
+        bt_app_request_state(ctx, BT_APP_SOLVE);
+    }
+    if (input->drag_held && (input->dx != 0.0F || input->dy != 0.0F)) {
+        scene->orbit = bt_replay_apply_drag_delta(scene->orbit, &scene->cfg, input->dx, input->dy);
+    }
+    if (input->wheel != 0.0F) {
+        scene->orbit = bt_replay_apply_zoom(scene->orbit, &scene->cfg, input->wheel);
+    }
+    bt_replay_playback_tick(&scene->playback, input->dt, scene->cfg.secs_per_move);
+    BT_TRACE_EXIT("view.replay_frame");
+}
+
 void bt_view_replay_update(bt_app_ctx *ctx) {
     BT_TRACE_ENTER("view.replay_update");
     ensure_scene();
-    if (IsKeyPressed(KEY_SPACE)) {
-        bt_replay_playback_toggle(&view_replay_scene.playback);
-    }
-    if (IsKeyPressed(KEY_R)) {
-        view_replay_scene.orbit = bt_replay_default_orbit(&view_replay_scene.cfg);
-    }
-    if (IsKeyPressed(KEY_V)) {
-        bt_app_request_state(ctx, BT_APP_SOLVE);
-        BT_TRACE_EXIT("view.replay_update");
-        return;
-    }
-    bool held =
-        (bool)(IsMouseButtonDown(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT) ||
-               IsMouseButtonDown(MOUSE_BUTTON_MIDDLE));
+    bt_view_replay_input input = {0};
+    input.space = IsKeyPressed(KEY_SPACE) ? 1 : 0;
+    input.r_key = IsKeyPressed(KEY_R) ? 1 : 0;
+    input.v_key = IsKeyPressed(KEY_V) ? 1 : 0;
+    input.drag_held =
+        (IsMouseButtonDown(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT) ||
+         IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
+            ? 1
+            : 0;
     Vector2 delta = GetMouseDelta();
-    if (held && (delta.x != 0.0F || delta.y != 0.0F)) {
-        view_replay_scene.orbit = bt_replay_apply_drag_delta(
-            view_replay_scene.orbit, &view_replay_scene.cfg, delta.x, delta.y);
-    }
-    float wheel = GetMouseWheelMove();
-    if (wheel != 0.0F) {
-        view_replay_scene.orbit =
-            bt_replay_apply_zoom(view_replay_scene.orbit, &view_replay_scene.cfg, wheel);
-    }
-    bt_replay_playback_tick(&view_replay_scene.playback, (double)GetFrameTime(),
-                            view_replay_scene.cfg.secs_per_move);
+    input.dx = delta.x;
+    input.dy = delta.y;
+    input.wheel = GetMouseWheelMove();
+    input.dt = (double)GetFrameTime();
+    bt_view_replay_frame(ctx, &view_replay_scene, &input);
     BT_TRACE_EXIT("view.replay_update");
 }
 
