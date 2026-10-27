@@ -74,6 +74,33 @@ size_t bt_case_cards_len(const bt_case_cards *cards) {
     return cards->count;
 }
 
+int bt_case_cards_put(bt_case_cards *cards, const bt_case_ref *key, const bt_card *card) {
+    BT_TRACE_ENTER("data.repo_cards_put");
+    int written = cards_insert_sorted(cards, key, card);
+    if (written != 0) {
+        BT_TRACE_FAIL("data.repo_cards_put", "out of memory");
+    }
+    BT_TRACE_EXIT("data.repo_cards_put");
+    return written;
+}
+
+const bt_card *bt_case_cards_entry(bt_case_cards *cards, const bt_case_ref *key,
+                                   const bt_card *fallback) {
+    BT_TRACE_ENTER("data.repo_cards_entry");
+    const bt_card *found = bt_case_cards_get(cards, key);
+    if (found != NULL) {
+        BT_TRACE_EXIT("data.repo_cards_entry");
+        return found;
+    }
+    if (bt_case_cards_put(cards, key, fallback) != 0) {
+        BT_TRACE_EXIT("data.repo_cards_entry");
+        return NULL;
+    }
+    found = bt_case_cards_get(cards, key);
+    BT_TRACE_EXIT("data.repo_cards_entry");
+    return found;
+}
+
 int bt_case_cards_contains(const bt_case_cards *cards, const bt_case_ref *key) {
     return bt_case_cards_get(cards, key) != NULL;
 }

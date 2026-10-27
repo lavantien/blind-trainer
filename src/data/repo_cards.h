@@ -25,6 +25,9 @@ void bt_case_cards_free(bt_case_cards *cards);
 const bt_card *bt_case_cards_get(const bt_case_cards *cards, const bt_case_ref *key);
 size_t bt_case_cards_len(const bt_case_cards *cards);
 int bt_case_cards_contains(const bt_case_cards *cards, const bt_case_ref *key);
+int bt_case_cards_put(bt_case_cards *cards, const bt_case_ref *key, const bt_card *card);
+const bt_card *bt_case_cards_entry(bt_case_cards *cards, const bt_case_ref *key,
+                                   const bt_card *fallback);
 int bt_repo_cards_load(const bt_db *db, const bt_fsrs_config *cfg, bt_case_cards *out,
                        bt_srs_load_error *err);
 int bt_repo_cards_save_card(bt_db *db, const bt_case_ref *key, const bt_card *card,
