@@ -115,9 +115,12 @@ static const bt_ga_rime_row BT_GA_RIMES[95] = {
     {"o", BT_GA_NUC_O, BT_GA_CODA_OPEN},
     {"ia", BT_GA_NUC_IA, BT_GA_CODA_OPEN},
     {"ya", BT_GA_NUC_IA, BT_GA_CODA_OPEN},
-    {"\xc6\xb0"
-     "a",
-     BT_GA_NUC_WA, BT_GA_CODA_OPEN},
+    {
+        "\xc6\xb0"
+        "a",
+        BT_GA_NUC_WA,
+        BT_GA_CODA_OPEN,
+    },
     {"ua", BT_GA_NUC_UA, BT_GA_CODA_OPEN},
     {"im", BT_GA_NUC_I, BT_GA_CODA_M},
     {"ym", BT_GA_NUC_I, BT_GA_CODA_M},
@@ -189,33 +192,57 @@ static const bt_ga_rime_row BT_GA_RIMES[95] = {
     {"ich", BT_GA_NUC_I, BT_GA_CODA_K},
     {"ych", BT_GA_NUC_I, BT_GA_CODA_K},
     {"uc", BT_GA_NUC_U, BT_GA_CODA_K},
-    {"\xc3\xaa"
-     "ch",
-     BT_GA_NUC_EH, BT_GA_CODA_K},
-    {"\xc6\xb0"
-     "c",
-     BT_GA_NUC_UW, BT_GA_CODA_K},
+    {
+        "\xc3\xaa"
+        "ch",
+        BT_GA_NUC_EH,
+        BT_GA_CODA_K,
+    },
+    {
+        "\xc6\xb0"
+        "c",
+        BT_GA_NUC_UW,
+        BT_GA_CODA_K,
+    },
     {"ac", BT_GA_NUC_A, BT_GA_CODA_K},
     {"ach", BT_GA_NUC_E, BT_GA_CODA_K},
-    {"\xc3\xa2"
-     "c",
-     BT_GA_NUC_AH, BT_GA_CODA_K},
-    {"\xc4\x83"
-     "c",
-     BT_GA_NUC_AB, BT_GA_CODA_K},
+    {
+        "\xc3\xa2"
+        "c",
+        BT_GA_NUC_AH,
+        BT_GA_CODA_K,
+    },
+    {
+        "\xc4\x83"
+        "c",
+        BT_GA_NUC_AB,
+        BT_GA_CODA_K,
+    },
     {"oc", BT_GA_NUC_O, BT_GA_CODA_K},
-    {"\xc3\xb4"
-     "c",
-     BT_GA_NUC_OH, BT_GA_CODA_K},
-    {"i\xc3\xaa"
-     "c",
-     BT_GA_NUC_IA, BT_GA_CODA_K},
-    {"\xc6\xb0\xc6\xa1"
-     "c",
-     BT_GA_NUC_WA, BT_GA_CODA_K},
-    {"u\xc3\xb4"
-     "c",
-     BT_GA_NUC_UA, BT_GA_CODA_K},
+    {
+        "\xc3\xb4"
+        "c",
+        BT_GA_NUC_OH,
+        BT_GA_CODA_K,
+    },
+    {
+        "i\xc3\xaa"
+        "c",
+        BT_GA_NUC_IA,
+        BT_GA_CODA_K,
+    },
+    {
+        "\xc6\xb0\xc6\xa1"
+        "c",
+        BT_GA_NUC_WA,
+        BT_GA_CODA_K,
+    },
+    {
+        "u\xc3\xb4"
+        "c",
+        BT_GA_NUC_UA,
+        BT_GA_CODA_K,
+    },
 };
 
 static size_t bt_ga_utf8_decode(const char *s, uint32_t *cp) {
@@ -226,24 +253,24 @@ static size_t bt_ga_utf8_decode(const char *s, uint32_t *cp) {
     }
     size_t width = 0;
     uint32_t least = 0;
-    if ((p[0] & 0xE0) == 0xC0) {
+    if ((p[0] & 0xE0U) == 0xC0U) {
         width = 2;
         least = 0x80;
-    } else if ((p[0] & 0xF0) == 0xE0) {
+    } else if ((p[0] & 0xF0U) == 0xE0U) {
         width = 3;
         least = 0x800;
-    } else if ((p[0] & 0xF8) == 0xF0) {
+    } else if ((p[0] & 0xF8U) == 0xF0U) {
         width = 4;
         least = 0x10000;
     } else {
         return 0;
     }
-    uint32_t value = (uint32_t)(p[0] & (0x7F >> width));
+    uint32_t value = (uint32_t)(p[0] & (0x7FU >> width));
     for (size_t k = 1; k < width; k++) {
-        if ((p[k] & 0xC0) != 0x80) {
+        if ((p[k] & 0xC0U) != 0x80U) {
             return 0;
         }
-        value = (value << 6) | (uint32_t)(p[k] & 0x3F);
+        value = (value << 6U) | (uint32_t)(p[k] & 0x3FU);
     }
     if (value < least || (value >= 0xD800 && value <= 0xDFFF) || value > 0x10FFFF) {
         return 0;
@@ -513,42 +540,42 @@ done:
 
 static float bt_ga_tone_confusion(bt_ga_tone a, bt_ga_tone b) {
     if (a == b) {
-        return 1.0f;
+        return 1.0F;
     }
     if ((a == BT_GA_TONE_HOI && b == BT_GA_TONE_NGA) ||
         (a == BT_GA_TONE_NGA && b == BT_GA_TONE_HOI)) {
-        return 0.70f;
+        return 0.70F;
     }
     if ((a == BT_GA_TONE_HUYEN && b == BT_GA_TONE_NANG) ||
         (a == BT_GA_TONE_NANG && b == BT_GA_TONE_HUYEN)) {
-        return 0.60f;
+        return 0.60F;
     }
     if ((a == BT_GA_TONE_SAC && b == BT_GA_TONE_NGA) ||
         (a == BT_GA_TONE_NGA && b == BT_GA_TONE_SAC)) {
-        return 0.35f;
+        return 0.35F;
     }
     if ((a == BT_GA_TONE_NGANG && b == BT_GA_TONE_HUYEN) ||
         (a == BT_GA_TONE_HUYEN && b == BT_GA_TONE_NGANG)) {
-        return 0.30f;
+        return 0.30F;
     }
     if ((a == BT_GA_TONE_HOI && b == BT_GA_TONE_NANG) ||
         (a == BT_GA_TONE_NANG && b == BT_GA_TONE_HOI)) {
-        return 0.25f;
+        return 0.25F;
     }
-    return 0.05f;
+    return 0.05F;
 }
 
 static float bt_ga_nucleus_confusion(bt_ga_nucleus a, bt_ga_nucleus b) {
     if (a == b) {
-        return 1.0f;
+        return 1.0F;
     }
     if ((a == BT_GA_NUC_EH && b == BT_GA_NUC_E) || (a == BT_GA_NUC_E && b == BT_GA_NUC_EH) ||
         (a == BT_GA_NUC_OH && b == BT_GA_NUC_O) || (a == BT_GA_NUC_O && b == BT_GA_NUC_OH) ||
         (a == BT_GA_NUC_OR && b == BT_GA_NUC_AH) || (a == BT_GA_NUC_AH && b == BT_GA_NUC_OR) ||
         (a == BT_GA_NUC_A && b == BT_GA_NUC_AB) || (a == BT_GA_NUC_AB && b == BT_GA_NUC_A)) {
-        return 0.40f;
+        return 0.40F;
     }
-    return 0.05f;
+    return 0.05F;
 }
 
 static int bt_ga_coda_place_of(bt_ga_coda coda) {
@@ -569,48 +596,48 @@ static int bt_ga_coda_place_of(bt_ga_coda coda) {
 
 static float bt_ga_coda_confusion(bt_ga_coda a, bt_ga_coda b) {
     if (a == b) {
-        return 1.0f;
+        return 1.0F;
     }
     if ((a == BT_GA_CODA_P && b == BT_GA_CODA_T) || (a == BT_GA_CODA_T && b == BT_GA_CODA_P)) {
-        return 0.50f;
+        return 0.50F;
     }
     if ((a == BT_GA_CODA_T && b == BT_GA_CODA_K) || (a == BT_GA_CODA_K && b == BT_GA_CODA_T)) {
-        return 0.40f;
+        return 0.40F;
     }
     if ((a == BT_GA_CODA_P && b == BT_GA_CODA_K) || (a == BT_GA_CODA_K && b == BT_GA_CODA_P)) {
-        return 0.20f;
+        return 0.20F;
     }
     if ((a == BT_GA_CODA_M && b == BT_GA_CODA_N) || (a == BT_GA_CODA_N && b == BT_GA_CODA_M)) {
-        return 0.30f;
+        return 0.30F;
     }
     if ((a == BT_GA_CODA_N && b == BT_GA_CODA_NG) || (a == BT_GA_CODA_NG && b == BT_GA_CODA_N)) {
-        return 0.30f;
+        return 0.30F;
     }
     if ((a == BT_GA_CODA_M && b == BT_GA_CODA_NG) || (a == BT_GA_CODA_NG && b == BT_GA_CODA_M)) {
-        return 0.15f;
+        return 0.15F;
     }
     if ((a == BT_GA_CODA_P && b == BT_GA_CODA_M) || (a == BT_GA_CODA_M && b == BT_GA_CODA_P) ||
         (a == BT_GA_CODA_T && b == BT_GA_CODA_N) || (a == BT_GA_CODA_N && b == BT_GA_CODA_T) ||
         (a == BT_GA_CODA_K && b == BT_GA_CODA_NG) || (a == BT_GA_CODA_NG && b == BT_GA_CODA_K)) {
-        return 0.20f;
+        return 0.20F;
     }
-    return 0.10f;
+    return 0.10F;
 }
 
 static float bt_ga_onset_confusion(const bt_ga_features *a, const bt_ga_features *b) {
     if (!a->has_onset && !b->has_onset) {
-        return 1.0f;
+        return 1.0F;
     }
     if (a->has_onset && b->has_onset) {
         if (a->onset.place == b->onset.place && a->onset.manner == b->onset.manner) {
-            return 1.0f;
+            return 1.0F;
         }
         if (a->onset.place == b->onset.place || a->onset.manner == b->onset.manner) {
-            return 0.20f;
+            return 0.20F;
         }
-        return 0.10f;
+        return 0.10F;
     }
-    return 0.10f;
+    return 0.10F;
 }
 
 float bt_ga_confusion(const bt_ga_features *a, const bt_ga_features *b) {
@@ -625,16 +652,16 @@ float bt_ga_confusion(const bt_ga_features *a, const bt_ga_features *b) {
 float bt_ga_flow_penalty(const bt_ga_features *a, size_t a_len, const bt_ga_features *b,
                          size_t b_len) {
     BT_TRACE_ENTER("ga.flow_penalty");
-    float penalty = 0.0f;
+    float penalty = 0.0F;
     if (a->tone == b->tone) {
-        penalty += 1.0f;
+        penalty += 1.0F;
     }
     int place = bt_ga_coda_place_of(a->coda);
     if (place >= 0 && b->has_onset && (bt_ga_place)place == b->onset.place) {
-        penalty += 1.0f;
+        penalty += 1.0F;
     }
     size_t diff = a_len > b_len ? a_len - b_len : b_len - a_len;
-    penalty += 0.25f * (float)diff;
+    penalty += 0.25F * (float)diff;
     BT_TRACE_EXIT("ga.flow_penalty");
     return penalty;
 }

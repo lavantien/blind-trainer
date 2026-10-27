@@ -42,18 +42,19 @@ BT_TEST(features, every_tone_marked_row_is_detected_through_parse) {
 }
 
 BT_TEST(features, confusion_bounds_hold_across_a_parsed_corpus) {
-    const char *words[] = {"không", "của", "tía", "anh",  "mút",  "đặt",  "trăng",
-                           "y",     "òn",  "gì",  "xinh", "vững", "được", "ngăn",
-                           "ma",    "má",  "en",  "ôn",   "áp",   "ác"};
+    const char *words[] = {
+        "không", "của",  "tía",  "anh",  "mút", "đặt", "trăng", "y",  "òn", "gì",
+        "xinh",  "vững", "được", "ngăn", "ma",  "má",  "en",    "ôn", "áp", "ác",
+    };
     bt_ga_features feats[20];
     for (int i = 0; i < 20; i++) {
         feats[i] = bt_ga_parse_or_abort(words[i]);
     }
     for (int i = 0; i < 20; i++) {
-        BT_CHECK_EQ(bt_ga_confusion(&feats[i], &feats[i]), 1.0f);
+        BT_CHECK_EQ(bt_ga_confusion(&feats[i], &feats[i]), 1.0F);
         for (int j = 0; j < 20; j++) {
             float got = bt_ga_confusion(&feats[i], &feats[j]);
-            BT_CHECK(got > 0.0f && got <= 1.0f);
+            BT_CHECK(got > 0.0F && got <= 1.0F);
         }
     }
 }

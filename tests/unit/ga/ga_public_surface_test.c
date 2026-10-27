@@ -6,13 +6,15 @@
 
 #include "ga_test_util.h"
 
-static const char *const POOL[14] = {"không", "lông", "tía", "mút",  "đặt",  "trăng", "của",
-                                     "anh",   "ón",   "gì",  "xinh", "vững", "được",  "ngăn"};
+static const char *const POOL[14] = {
+    "không", "lông", "tía", "mút",  "đặt",  "trăng", "của",
+    "anh",   "ón",   "gì",  "xinh", "vững", "được",  "ngăn",
+};
 
 static size_t pool_codepoints(const char *text) {
     size_t count = 0;
     for (const unsigned char *p = (const unsigned char *)text; *p != '\0'; p++) {
-        if ((*p & 0xC0) != 0x80) {
+        if ((*p & 0xC0U) != 0x80U) {
             count++;
         }
     }
@@ -29,17 +31,17 @@ static bt_ga_env *surface_env(size_t case_count) {
     bt_ga_pair_weight *cooc = calloc(2, sizeof *cooc);
     cooc[0].i = 0;
     cooc[0].j = 3;
-    cooc[0].w = 0.4f;
+    cooc[0].w = 0.4F;
     cooc[1].i = 2;
     cooc[1].j = 5;
-    cooc[1].w = 0.6f;
+    cooc[1].w = 0.6F;
     bt_ga_pair_weight *adj = calloc(2, sizeof *adj);
     adj[0].i = 1;
     adj[0].j = 4;
-    adj[0].w = 0.3f;
+    adj[0].w = 0.3F;
     adj[1].i = 6;
     adj[1].j = 7;
-    adj[1].w = 0.7f;
+    adj[1].w = 0.7F;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_build_env(14, lengths, 14, feats, 14, case_count, cooc, 2, adj, 2, env, err)) {
@@ -66,9 +68,9 @@ static bt_ga_params surface_params(uint64_t seed) {
     params.elite = 2;
     params.swap = 0.15;
     params.replace = 0.05;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     return params;
 }
 

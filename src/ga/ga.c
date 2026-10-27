@@ -77,17 +77,17 @@ void bt_ga_env_free(bt_ga_env *env) {
 
 void bt_ga_fitness_parts(const bt_ga_env *env, const uint32_t *chrom, float parts[3]) {
     BT_TRACE_ENTER("ga.fitness_parts");
-    float conf = 0.0f;
+    float conf = 0.0F;
     for (size_t k = 0; k < env->cooc_count; k++) {
         conf += env->cooc[k].w * env->conf_table[(size_t)chrom[env->cooc[k].i] * env->pool_size +
                                                  (size_t)chrom[env->cooc[k].j]];
     }
-    float flow = 0.0f;
+    float flow = 0.0F;
     for (size_t k = 0; k < env->adj_count; k++) {
         flow += env->adj[k].w * env->flow_table[(size_t)chrom[env->adj[k].i] * env->pool_size +
                                                 (size_t)chrom[env->adj[k].j]];
     }
-    float cplx = 0.0f;
+    float cplx = 0.0F;
     for (size_t g = 0; g < env->case_count; g++) {
         cplx += env->lengths[chrom[g]];
     }

@@ -86,10 +86,10 @@ BT_TEST(features, parse_rejects_garbage_and_double_tones) {
 
 BT_TEST(features, identical_and_homophonous_pairs_score_maximally) {
     bt_ga_features a = f("không");
-    BT_CHECK_EQ(bt_ga_confusion(&a, &a), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&a, &a), 1.0F);
     bt_ga_features i = f("i");
     bt_ga_features y = f("y");
-    BT_CHECK_EQ(bt_ga_confusion(&i, &y), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&i, &y), 1.0F);
 }
 
 BT_TEST(features, documented_tone_confusions_rank_above_undocumented) {
@@ -101,11 +101,11 @@ BT_TEST(features, documented_tone_confusions_rank_above_undocumented) {
     float hoi_nga = bt_ga_confusion(&hoi, &nga);
     float huyen_nang = bt_ga_confusion(&huyen, &nang);
     float hoi_sac = bt_ga_confusion(&hoi, &sac);
-    BT_CHECK(hoi_nga > 0.6f);
-    BT_CHECK(huyen_nang > 0.5f);
+    BT_CHECK(hoi_nga > 0.6F);
+    BT_CHECK(huyen_nang > 0.5F);
     BT_CHECK(hoi_nga > hoi_sac);
     BT_CHECK(huyen_nang > hoi_sac);
-    BT_CHECK(hoi_sac < 0.1f);
+    BT_CHECK(hoi_sac < 0.1F);
 }
 
 BT_TEST(features, stop_coda_place_confusions_follow_kirby_ranking) {
@@ -127,8 +127,8 @@ BT_TEST(features, short_long_nucleus_pairs_partial_confusion) {
     bt_ga_features eh = f("ên");
     bt_ga_features o = f("on");
     bt_ga_features oh = f("ôn");
-    BT_CHECK(bt_ga_confusion(&e, &eh) > 0.3f);
-    BT_CHECK(bt_ga_confusion(&o, &oh) > 0.3f);
+    BT_CHECK(bt_ga_confusion(&e, &eh) > 0.3F);
+    BT_CHECK(bt_ga_confusion(&o, &oh) > 0.3F);
     bt_ga_features a = f("an");
     bt_ga_features u = f("un");
     BT_CHECK(bt_ga_confusion(&e, &eh) > bt_ga_confusion(&a, &u));
@@ -152,19 +152,19 @@ BT_TEST(features, confusion_is_symmetric) {
 BT_TEST(features, flow_penalty_counts_tone_clash_coda_clash_and_length) {
     bt_ga_features a = f("không");
     bt_ga_features b = f("lông");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&a, 4, &b, 4), 1.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&a, 4, &b, 4), 1.0F);
     bt_ga_features c = f("không");
     bt_ga_features d = f("không");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&c, 4, &d, 4), 2.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&c, 4, &d, 4), 2.0F);
     bt_ga_features e = f("ma");
     bt_ga_features g = f("má");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&e, 2, &g, 2), 0.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&e, 2, &g, 2), 0.0F);
     bt_ga_features h = f("cam");
     bt_ga_features i = f("ma");
-    BT_CHECK(bt_ga_flow_penalty(&h, 3, &i, 2) >= 0.25f);
+    BT_CHECK(bt_ga_flow_penalty(&h, 3, &i, 2) >= 0.25F);
     bt_ga_features j = f("ác");
     bt_ga_features k = f("can");
-    BT_CHECK(bt_ga_flow_penalty(&j, 2, &k, 3) >= 1.25f);
+    BT_CHECK(bt_ga_flow_penalty(&j, 2, &k, 3) >= 1.25F);
 }
 
 BT_TEST(features, parse_keeps_the_longest_onset_prefix) {
@@ -211,34 +211,34 @@ BT_TEST(features, onset_feature_collapse_makes_cross_spelling_pairs_homophonous)
     BT_CHECK(di.has_onset && xi.has_onset);
     BT_CHECK_EQ((long long)di.onset.place, (long long)xi.onset.place);
     BT_CHECK_EQ((long long)di.onset.manner, (long long)xi.onset.manner);
-    BT_CHECK_EQ(bt_ga_confusion(&di, &xi), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&di, &xi), 1.0F);
     bt_ga_features ga = f("gà");
     bt_ga_features kha = f("khà");
     BT_CHECK(ga.has_onset && kha.has_onset);
     BT_CHECK_EQ((long long)ga.onset.place, (long long)kha.onset.place);
     BT_CHECK_EQ((long long)ga.onset.manner, (long long)kha.onset.manner);
-    BT_CHECK_EQ(bt_ga_confusion(&ga, &kha), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&ga, &kha), 1.0F);
     bt_ga_features pha = f("pha");
     bt_ga_features va = f("va");
     BT_CHECK(pha.has_onset && va.has_onset);
     BT_CHECK_EQ((long long)pha.onset.place, (long long)va.onset.place);
     BT_CHECK_EQ((long long)pha.onset.manner, (long long)va.onset.manner);
-    BT_CHECK_EQ(bt_ga_confusion(&pha, &va), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&pha, &va), 1.0F);
 }
 
 BT_TEST(features, flow_penalty_pins_exact_values_on_parsed_syllables) {
     bt_ga_features ma = f("ma");
     for (size_t len = 2; len <= 6; len++) {
-        float expected = 1.0f + 0.25f * ((float)len - 2.0f);
+        float expected = 1.0F + 0.25F * ((float)len - 2.0F);
         BT_CHECK_EQ(bt_ga_flow_penalty(&ma, 2, &ma, len), expected);
     }
     bt_ga_features ap = f("áp");
     bt_ga_features ban = f("ban");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&ap, 2, &ban, 3), 1.25f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&ap, 2, &ban, 3), 1.25F);
     bt_ga_features am = f("ám");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&am, 2, &ma, 2), 1.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&am, 2, &ma, 2), 1.0F);
     bt_ga_features bap = f("báp");
-    BT_CHECK_EQ(bt_ga_flow_penalty(&bap, 3, &bap, 2), 2.25f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&bap, 3, &bap, 2), 2.25F);
 }
 
 BT_TEST(features, parse_rejects_malformed_utf8_sequences) {

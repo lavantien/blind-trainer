@@ -12,7 +12,7 @@ static const char *const POOL8[] = {"ả", "ã", "không", "lông", "tía", "mú
 static size_t codepoint_count(const char *text) {
     size_t count = 0;
     for (const unsigned char *p = (const unsigned char *)text; *p != '\0'; p++) {
-        if ((*p & 0xC0) != 0x80) {
+        if ((*p & 0xC0U) != 0x80U) {
             count++;
         }
     }
@@ -30,14 +30,14 @@ static bt_ga_env *env_fixture_texts(size_t case_count, const char *const *texts,
     bt_ga_pair_weight *cooc = calloc(2, sizeof *cooc);
     cooc[0].i = 0;
     cooc[0].j = 1;
-    cooc[0].w = 0.5f;
+    cooc[0].w = 0.5F;
     cooc[1].i = 1;
     cooc[1].j = 2;
-    cooc[1].w = 0.25f;
+    cooc[1].w = 0.25F;
     bt_ga_pair_weight *adj = calloc(1, sizeof *adj);
     adj[0].i = 0;
     adj[0].j = 1;
-    adj[0].w = 0.5f;
+    adj[0].w = 0.5F;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_build_env(text_count, lengths, text_count, feats, text_count, case_count, cooc, 2,
@@ -59,9 +59,9 @@ static bt_ga_params small_params(uint64_t seed) {
     params.elite = 2;
     params.swap = 0.15;
     params.replace = 0.05;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     return params;
 }
 
@@ -185,7 +185,7 @@ BT_TEST(ga, mutations_preserve_injectivity) {
 }
 
 BT_TEST(ga, tournament_is_deterministic_and_picks_the_lower_fitness) {
-    float fitness[8] = {5.0f, 3.0f, 8.0f, 1.0f, 9.0f, 2.0f, 7.0f, 4.0f};
+    float fitness[8] = {5.0F, 3.0F, 8.0F, 1.0F, 9.0F, 2.0F, 7.0F, 4.0F};
     bt_rng rng;
     bt_rng_seed(&rng, 1);
     size_t winner = bt_ga_tournament(&rng, fitness, 8);
@@ -202,7 +202,7 @@ BT_TEST(ga, tournament_is_deterministic_and_picks_the_lower_fitness) {
 }
 
 BT_TEST(ga, tournament_wins_track_the_drawn_pair) {
-    float fitness[8] = {5.0f, 3.0f, 8.0f, 1.0f, 9.0f, 2.0f, 7.0f, 4.0f};
+    float fitness[8] = {5.0F, 3.0F, 8.0F, 1.0F, 9.0F, 2.0F, 7.0F, 4.0F};
     for (uint64_t seed = 0; seed < 64; seed++) {
         bt_rng rng;
         bt_rng_seed(&rng, seed);
@@ -224,8 +224,8 @@ BT_TEST(ga, fitness_parts_pin_the_documented_constants) {
     uint32_t chrom[3] = {0, 1, 2};
     float parts[3];
     bt_ga_fitness_parts(env, chrom, parts);
-    float hoi_nga = 0.70f;
-    float expected = 0.5f * hoi_nga + 0.25f * bt_ga_confusion(&env->feats[1], &env->feats[2]);
+    float hoi_nga = 0.70F;
+    float expected = 0.5F * hoi_nga + 0.25F * bt_ga_confusion(&env->feats[1], &env->feats[2]);
     BT_CHECK_F64_NEAR(parts[0], expected, 1e-6);
     BT_CHECK_F64_NEAR(parts[2], 5.0 / 3.0, 1e-6);
     bt_ga_env_free(env);
@@ -236,7 +236,7 @@ BT_TEST(ga, flow_part_matches_the_feature_function) {
     uint32_t chrom[3] = {0, 1, 2};
     float parts[3];
     bt_ga_fitness_parts(env, chrom, parts);
-    float expected = 0.5f * bt_ga_flow_penalty(&env->feats[0], (size_t)env->lengths[0],
+    float expected = 0.5F * bt_ga_flow_penalty(&env->feats[0], (size_t)env->lengths[0],
                                                &env->feats[1], (size_t)env->lengths[1]);
     BT_CHECK_F64_NEAR(parts[1], expected, 1e-6);
     bt_ga_env_free(env);
@@ -264,7 +264,7 @@ BT_TEST(ga, run_keeps_elitism_monotone_and_valid_chromosomes) {
     bt_ga_run_outcome *outcome = bt_ga_run(env, &params);
     BT_CHECK_EQ((long long)outcome->per_gen_count, (long long)(params.generations + 1));
     for (size_t i = 1; i < outcome->per_gen_count; i++) {
-        BT_CHECK(outcome->per_gen_best[i] <= outcome->per_gen_best[i - 1] + 1.19209290e-07f);
+        BT_CHECK(outcome->per_gen_best[i] <= outcome->per_gen_best[i - 1] + 1.19209290e-07F);
     }
     BT_CHECK_EQ((long long)outcome->best_count, (long long)env->case_count);
     BT_CHECK(bt_ga_injective(outcome->best, outcome->best_count));
@@ -303,8 +303,8 @@ BT_TEST(ga, build_env_rejects_undersized_pools) {
     feats[0] = bt_ga_parse_or_abort("ma");
     feats[1] = bt_ga_parse_or_abort("má");
     float *lengths = calloc(2, sizeof *lengths);
-    lengths[0] = 2.0f;
-    lengths[1] = 2.0f;
+    lengths[0] = 2.0F;
+    lengths[1] = 2.0F;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     BT_CHECK(
@@ -531,9 +531,9 @@ BT_TEST(ga, run_survives_an_empty_pool) {
     params.elite = 1;
     params.swap = 0.0;
     params.replace = 0.0;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     bt_ga_run_outcome *outcome = bt_ga_run(&env, &params);
     BT_CHECK_EQ((long long)outcome->best_count, 0LL);
     BT_CHECK_EQ((long long)outcome->per_gen_count, 1LL);
@@ -546,7 +546,7 @@ BT_TEST(ga, build_env_rejects_disagreeing_table_counts) {
     bt_ga_features feats[2];
     feats[0] = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
     feats[1] = feats[0];
-    float lengths[2] = {1.0f, 1.0f};
+    float lengths[2] = {1.0F, 1.0F};
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     BT_CHECK(!bt_ga_build_env(2, lengths, 2, feats, 1, 0, NULL, 0, NULL, 0, &env, err));
@@ -558,7 +558,7 @@ BT_TEST(ga, build_env_rejects_disagreeing_table_counts) {
 BT_TEST(ga, build_env_rejects_pool_squared_table_overflow) {
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    size_t huge = (size_t)1 << 31;
+    size_t huge = (size_t)1 << 31U;
     BT_CHECK(!bt_ga_build_env(huge, NULL, huge, NULL, huge, 0, NULL, 0, NULL, 0, &env, err));
     BT_CHECK(strstr(err, "allocation failed") != NULL);
 }

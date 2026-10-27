@@ -42,10 +42,10 @@ BT_TEST(fuzzkill_ga, documented_tone_confusions_are_pinned) {
         bt_ga_tone b;
         float expected;
     } rows[] = {
-        {BT_GA_TONE_HOI, BT_GA_TONE_NGA, 0.70f},   {BT_GA_TONE_HUYEN, BT_GA_TONE_NANG, 0.60f},
-        {BT_GA_TONE_SAC, BT_GA_TONE_NGA, 0.35f},   {BT_GA_TONE_NGANG, BT_GA_TONE_HUYEN, 0.30f},
-        {BT_GA_TONE_HOI, BT_GA_TONE_NANG, 0.25f},  {BT_GA_TONE_NGANG, BT_GA_TONE_SAC, 0.05f},
-        {BT_GA_TONE_NGANG, BT_GA_TONE_NGA, 0.05f},
+        {BT_GA_TONE_HOI, BT_GA_TONE_NGA, 0.70F},   {BT_GA_TONE_HUYEN, BT_GA_TONE_NANG, 0.60F},
+        {BT_GA_TONE_SAC, BT_GA_TONE_NGA, 0.35F},   {BT_GA_TONE_NGANG, BT_GA_TONE_HUYEN, 0.30F},
+        {BT_GA_TONE_HOI, BT_GA_TONE_NANG, 0.25F},  {BT_GA_TONE_NGANG, BT_GA_TONE_SAC, 0.05F},
+        {BT_GA_TONE_NGANG, BT_GA_TONE_NGA, 0.05F},
     };
     for (size_t r = 0; r < sizeof rows / sizeof rows[0]; r++) {
         bt_ga_features second;
@@ -55,7 +55,7 @@ BT_TEST(fuzzkill_ga, documented_tone_confusions_are_pinned) {
     }
     bt_ga_features same_second;
     bt_ga_features same = tones_only(BT_GA_TONE_SAC, BT_GA_TONE_SAC, &same_second);
-    BT_CHECK_EQ(bt_ga_confusion(&same, &same_second), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&same, &same_second), 1.0F);
 }
 
 BT_TEST(fuzzkill_ga, documented_nucleus_confusions_are_pinned) {
@@ -64,9 +64,9 @@ BT_TEST(fuzzkill_ga, documented_nucleus_confusions_are_pinned) {
         bt_ga_nucleus b;
         float expected;
     } rows[] = {
-        {BT_GA_NUC_E, BT_GA_NUC_EH, 0.40f},  {BT_GA_NUC_O, BT_GA_NUC_OH, 0.40f},
-        {BT_GA_NUC_OR, BT_GA_NUC_AH, 0.40f}, {BT_GA_NUC_A, BT_GA_NUC_AB, 0.40f},
-        {BT_GA_NUC_A, BT_GA_NUC_E, 0.05f},   {BT_GA_NUC_OR, BT_GA_NUC_O, 0.05f},
+        {BT_GA_NUC_E, BT_GA_NUC_EH, 0.40F},  {BT_GA_NUC_O, BT_GA_NUC_OH, 0.40F},
+        {BT_GA_NUC_OR, BT_GA_NUC_AH, 0.40F}, {BT_GA_NUC_A, BT_GA_NUC_AB, 0.40F},
+        {BT_GA_NUC_A, BT_GA_NUC_E, 0.05F},   {BT_GA_NUC_OR, BT_GA_NUC_O, 0.05F},
     };
     for (size_t r = 0; r < sizeof rows / sizeof rows[0]; r++) {
         bt_ga_features second;
@@ -82,12 +82,12 @@ BT_TEST(fuzzkill_ga, documented_coda_confusions_are_pinned) {
         bt_ga_coda b;
         float expected;
     } rows[] = {
-        {BT_GA_CODA_P, BT_GA_CODA_T, 0.50f},    {BT_GA_CODA_T, BT_GA_CODA_K, 0.40f},
-        {BT_GA_CODA_P, BT_GA_CODA_K, 0.20f},    {BT_GA_CODA_M, BT_GA_CODA_N, 0.30f},
-        {BT_GA_CODA_N, BT_GA_CODA_NG, 0.30f},   {BT_GA_CODA_M, BT_GA_CODA_NG, 0.15f},
-        {BT_GA_CODA_P, BT_GA_CODA_M, 0.20f},    {BT_GA_CODA_T, BT_GA_CODA_N, 0.20f},
-        {BT_GA_CODA_K, BT_GA_CODA_NG, 0.20f},   {BT_GA_CODA_P, BT_GA_CODA_N, 0.10f},
-        {BT_GA_CODA_OPEN, BT_GA_CODA_T, 0.10f},
+        {BT_GA_CODA_P, BT_GA_CODA_T, 0.50F},    {BT_GA_CODA_T, BT_GA_CODA_K, 0.40F},
+        {BT_GA_CODA_P, BT_GA_CODA_K, 0.20F},    {BT_GA_CODA_M, BT_GA_CODA_N, 0.30F},
+        {BT_GA_CODA_N, BT_GA_CODA_NG, 0.30F},   {BT_GA_CODA_M, BT_GA_CODA_NG, 0.15F},
+        {BT_GA_CODA_P, BT_GA_CODA_M, 0.20F},    {BT_GA_CODA_T, BT_GA_CODA_N, 0.20F},
+        {BT_GA_CODA_K, BT_GA_CODA_NG, 0.20F},   {BT_GA_CODA_P, BT_GA_CODA_N, 0.10F},
+        {BT_GA_CODA_OPEN, BT_GA_CODA_T, 0.10F},
     };
     for (size_t r = 0; r < sizeof rows / sizeof rows[0]; r++) {
         bt_ga_features second;
@@ -101,32 +101,32 @@ BT_TEST(fuzzkill_ga, documented_onset_confusions_are_pinned) {
     bt_ga_features second;
     bt_ga_features first = onsets_only(BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_PLACE_LABIAL,
                                        BT_GA_MANNER_NASAL, &second);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.20f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.20F);
     first = onsets_only(BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_PLACE_DENTAL,
                         BT_GA_MANNER_STOP, &second);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.20f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.20F);
     first = onsets_only(BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_PLACE_DENTAL,
                         BT_GA_MANNER_NASAL, &second);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.10f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.10F);
     first = onsets_only(BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_PLACE_LABIAL,
                         BT_GA_MANNER_STOP, &second);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 1.0F);
     first = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
     second = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 1.0f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 1.0F);
     first = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
     second = bt_ga_feat(BT_GA_TONE_NGANG, 1, BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_NUC_A,
                         BT_GA_CODA_OPEN);
-    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.10f);
+    BT_CHECK_EQ(bt_ga_confusion(&first, &second), 0.10F);
 }
 
 BT_TEST(fuzzkill_ga, confusion_multiplies_all_feature_factors) {
     bt_ga_features x = bt_ga_feat(BT_GA_TONE_HOI, 0, 0, 0, BT_GA_NUC_E, BT_GA_CODA_P);
     bt_ga_features y = bt_ga_feat(BT_GA_TONE_NGA, 0, 0, 0, BT_GA_NUC_EH, BT_GA_CODA_T);
-    BT_CHECK_EQ(bt_ga_confusion(&x, &y), 0.70f * 0.40f * 0.50f);
+    BT_CHECK_EQ(bt_ga_confusion(&x, &y), 0.70F * 0.40F * 0.50F);
     x = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_M);
     y = bt_ga_feat(BT_GA_TONE_HUYEN, 0, 0, 0, BT_GA_NUC_AB, BT_GA_CODA_NG);
-    BT_CHECK_EQ(bt_ga_confusion(&x, &y), 0.30f * 0.40f * 0.15f);
+    BT_CHECK_EQ(bt_ga_confusion(&x, &y), 0.30F * 0.40F * 0.15F);
 }
 
 BT_TEST(fuzzkill_ga, flow_penalty_terms_are_pinned) {
@@ -134,13 +134,13 @@ BT_TEST(fuzzkill_ga, flow_penalty_terms_are_pinned) {
                                   BT_GA_NUC_A, BT_GA_CODA_P);
     bt_ga_features y = bt_ga_feat(BT_GA_TONE_SAC, 1, BT_GA_PLACE_LABIAL, BT_GA_MANNER_NASAL,
                                   BT_GA_NUC_A, BT_GA_CODA_T);
-    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 3, &y, 3), 2.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 3, &y, 3), 2.0F);
     x = bt_ga_feat(BT_GA_TONE_SAC, 1, BT_GA_PLACE_DENTAL, BT_GA_MANNER_STOP, BT_GA_NUC_A,
                    BT_GA_CODA_T);
     y = bt_ga_feat(BT_GA_TONE_HUYEN, 1, BT_GA_PLACE_LABIAL, BT_GA_MANNER_STOP, BT_GA_NUC_A,
                    BT_GA_CODA_P);
-    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 4, &y, 3), 0.25f);
-    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 7, &y, 3), 1.0f);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 4, &y, 3), 0.25F);
+    BT_CHECK_EQ(bt_ga_flow_penalty(&x, 7, &y, 3), 1.0F);
 }
 
 BT_TEST(fuzzkill_ga, parse_supplies_onset_features) {
@@ -165,16 +165,16 @@ BT_TEST(fuzzkill_ga, build_env_rejects_mismatched_tables) {
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     float *lengths = malloc(2 * sizeof *lengths);
-    lengths[0] = 3.0f;
-    lengths[1] = 4.0f;
+    lengths[0] = 3.0F;
+    lengths[1] = 4.0F;
     bt_ga_features *feats = malloc(2 * sizeof *feats);
     feats[0] = f0;
     feats[1] = f1;
     BT_CHECK(bt_ga_build_env(2, lengths, 2, feats, 2, 2, NULL, 0, NULL, 0, &env, err));
     bt_ga_env_free(&env);
     lengths = malloc(2 * sizeof *lengths);
-    lengths[0] = 3.0f;
-    lengths[1] = 4.0f;
+    lengths[0] = 3.0F;
+    lengths[1] = 4.0F;
     feats = malloc(1 * sizeof *feats);
     feats[0] = f0;
     BT_CHECK(!bt_ga_build_env(2, lengths, 2, feats, 1, 2, NULL, 0, NULL, 0, &env, err));
@@ -187,31 +187,31 @@ BT_TEST(fuzzkill_ga, fitness_parts_weights_are_pinned) {
     feats[0] = bt_ga_feat(BT_GA_TONE_HOI, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
     feats[1] = bt_ga_feat(BT_GA_TONE_NGA, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
     float *lengths = malloc(2 * sizeof *lengths);
-    lengths[0] = 3.0f;
-    lengths[1] = 4.0f;
+    lengths[0] = 3.0F;
+    lengths[1] = 4.0F;
     bt_ga_pair_weight *cooc = malloc(sizeof *cooc);
     cooc[0].i = 0;
     cooc[0].j = 1;
-    cooc[0].w = 1.0f;
+    cooc[0].w = 1.0F;
     bt_ga_pair_weight *adj = malloc(sizeof *adj);
     adj[0].i = 1;
     adj[0].j = 0;
-    adj[0].w = 2.0f;
+    adj[0].w = 2.0F;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_build_env(2, lengths, 2, feats, 2, 2, cooc, 1, adj, 1, &env, err)) {
         BT_ABORT("build_env: %s", err);
     }
-    BT_CHECK_EQ(env.conf_table[1], 0.70f);
-    BT_CHECK_EQ(env.conf_table[2], 0.70f);
-    BT_CHECK_EQ(env.conf_table[0], 1.0f);
-    BT_CHECK_EQ(env.flow_table[2], 0.25f);
+    BT_CHECK_EQ(env.conf_table[1], 0.70F);
+    BT_CHECK_EQ(env.conf_table[2], 0.70F);
+    BT_CHECK_EQ(env.conf_table[0], 1.0F);
+    BT_CHECK_EQ(env.flow_table[2], 0.25F);
     uint32_t chrom[2] = {0, 1};
     float parts[3];
     bt_ga_fitness_parts(&env, chrom, parts);
-    BT_CHECK_EQ(parts[0], 0.70f);
-    BT_CHECK_EQ(parts[1], 0.50f);
-    BT_CHECK_EQ(parts[2], 3.5f);
+    BT_CHECK_EQ(parts[0], 0.70F);
+    BT_CHECK_EQ(parts[1], 0.50F);
+    BT_CHECK_EQ(parts[2], 3.5F);
     bt_ga_env_free(&env);
 }
 
@@ -283,7 +283,7 @@ BT_TEST(fuzzkill_ga, draw_cuts_stay_bounded_and_spread) {
 }
 
 BT_TEST(fuzzkill_ga, tournament_breaks_ties_toward_the_first_drawn_index) {
-    float flat[8] = {0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+    float flat[8] = {0.5F, 0.5F, 0.5F, 0.5F, 0.5F, 0.5F, 0.5F, 0.5F};
     for (uint64_t seed = 0; seed < 64; seed++) {
         bt_rng rng;
         bt_rng_seed(&rng, seed);
@@ -308,7 +308,7 @@ BT_TEST(fuzzkill_ga, flat_landscape_reports_full_stagnation) {
     feats[3] = bt_ga_feat(BT_GA_TONE_HUYEN, 0, 0, 0, BT_GA_NUC_EH, BT_GA_CODA_M);
     float *lengths = malloc(4 * sizeof *lengths);
     for (int i = 0; i < 4; i++) {
-        lengths[i] = 2.5f;
+        lengths[i] = 2.5F;
     }
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
@@ -322,9 +322,9 @@ BT_TEST(fuzzkill_ga, flat_landscape_reports_full_stagnation) {
     params.elite = 2;
     params.swap = 0.2;
     params.replace = 0.1;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     bt_ga_run_outcome *outcome = bt_ga_run(&env, &params);
     for (size_t i = 1; i < outcome->per_gen_count; i++) {
         BT_CHECK(outcome->per_gen_best[i - 1] == outcome->per_gen_best[i]);
@@ -346,26 +346,26 @@ BT_TEST(fuzzkill_ga, run_trajectory_is_pinned_for_reproducible_inputs) {
     feats[4] = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_EH, BT_GA_CODA_M);
     feats[5] = bt_ga_feat(BT_GA_TONE_NANG, 0, 0, 0, BT_GA_NUC_OH, BT_GA_CODA_N);
     float *lengths = malloc(6 * sizeof *lengths);
-    lengths[0] = 3.0f;
-    lengths[1] = 4.0f;
-    lengths[2] = 5.0f;
-    lengths[3] = 3.0f;
-    lengths[4] = 4.0f;
-    lengths[5] = 5.0f;
+    lengths[0] = 3.0F;
+    lengths[1] = 4.0F;
+    lengths[2] = 5.0F;
+    lengths[3] = 3.0F;
+    lengths[4] = 4.0F;
+    lengths[5] = 5.0F;
     bt_ga_pair_weight *cooc = malloc(2 * sizeof *cooc);
     cooc[0].i = 0;
     cooc[0].j = 1;
-    cooc[0].w = 0.5f;
+    cooc[0].w = 0.5F;
     cooc[1].i = 1;
     cooc[1].j = 2;
-    cooc[1].w = 0.25f;
+    cooc[1].w = 0.25F;
     bt_ga_pair_weight *adj = malloc(2 * sizeof *adj);
     adj[0].i = 0;
     adj[0].j = 2;
-    adj[0].w = 0.5f;
+    adj[0].w = 0.5F;
     adj[1].i = 1;
     adj[1].j = 2;
-    adj[1].w = 1.0f;
+    adj[1].w = 1.0F;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_build_env(6, lengths, 6, feats, 6, 3, cooc, 2, adj, 2, &env, err)) {
@@ -378,18 +378,18 @@ BT_TEST(fuzzkill_ga, run_trajectory_is_pinned_for_reproducible_inputs) {
     params.elite = 2;
     params.swap = 0.2;
     params.replace = 0.1;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     bt_ga_run_outcome *outcome = bt_ga_run(&env, &params);
     uint32_t want_best[3] = {4, 0, 3};
     BT_CHECK(memcmp(outcome->best, want_best, sizeof want_best) == 0);
     BT_CHECK_EQ((long long)outcome->per_gen_count, 26LL);
     for (size_t i = 0; i < 4; i++) {
-        BT_CHECK_F64_NEAR(outcome->per_gen_best[i], 0.39664584f, 0.0);
+        BT_CHECK_F64_NEAR(outcome->per_gen_best[i], 0.39664584F, 0.0);
     }
     for (size_t i = 4; i < 26; i++) {
-        BT_CHECK_F64_NEAR(outcome->per_gen_best[i], 0.39602083f, 0.0);
+        BT_CHECK_F64_NEAR(outcome->per_gen_best[i], 0.39602083F, 0.0);
     }
     BT_CHECK_EQ((long long)outcome->best_generation, 4LL);
     BT_CHECK_EQ((long long)outcome->stagnation_tail, 21LL);
@@ -506,32 +506,32 @@ static bt_ga_env *boundary_env(void) {
     feats[4] = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_EH, BT_GA_CODA_M);
     feats[5] = bt_ga_feat(BT_GA_TONE_NANG, 0, 0, 0, BT_GA_NUC_OH, BT_GA_CODA_N);
     float *lengths = malloc(6 * sizeof *lengths);
-    lengths[0] = 3.0f;
-    lengths[1] = 4.0f;
-    lengths[2] = 5.0f;
-    lengths[3] = 3.0f;
-    lengths[4] = 4.0f;
-    lengths[5] = 5.0f;
+    lengths[0] = 3.0F;
+    lengths[1] = 4.0F;
+    lengths[2] = 5.0F;
+    lengths[3] = 3.0F;
+    lengths[4] = 4.0F;
+    lengths[5] = 5.0F;
     bt_ga_pair_weight *cooc = malloc(3 * sizeof *cooc);
     cooc[0].i = 0;
     cooc[0].j = 1;
-    cooc[0].w = 0.5f;
+    cooc[0].w = 0.5F;
     cooc[1].i = 1;
     cooc[1].j = 2;
-    cooc[1].w = 0.25f;
+    cooc[1].w = 0.25F;
     cooc[2].i = 2;
     cooc[2].j = 3;
-    cooc[2].w = 0.1f;
+    cooc[2].w = 0.1F;
     bt_ga_pair_weight *adj = malloc(3 * sizeof *adj);
     adj[0].i = 0;
     adj[0].j = 2;
-    adj[0].w = 0.5f;
+    adj[0].w = 0.5F;
     adj[1].i = 1;
     adj[1].j = 3;
-    adj[1].w = 1.0f;
+    adj[1].w = 1.0F;
     adj[2].i = 3;
     adj[2].j = 2;
-    adj[2].w = 0.75f;
+    adj[2].w = 0.75F;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_build_env(6, lengths, 6, feats, 6, 4, cooc, 3, adj, 3, env, err)) {
@@ -548,9 +548,9 @@ static bt_ga_params boundary_params(uint64_t seed, double swap, double replace) 
     params.elite = 1;
     params.swap = swap;
     params.replace = replace;
-    params.w_conf = 1.0f;
-    params.w_flow = 0.5f;
-    params.w_cplx = 0.1f;
+    params.w_conf = 1.0F;
+    params.w_flow = 0.5F;
+    params.w_cplx = 0.1F;
     return params;
 }
 

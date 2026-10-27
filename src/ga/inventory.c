@@ -624,11 +624,12 @@ int bt_ga_render(const char *spelling, bt_ga_nucleus nucleus, bt_ga_coda coda, b
         if (*r < 0x80) {
             cp = *r;
         } else {
-            if ((*r & 0xE0) == 0xC0) {
-                cp = ((uint32_t)(*r & 0x1F) << 6) | (r[1] & 0x3F);
+            if ((*r & 0xE0U) == 0xC0U) {
+                cp = ((uint32_t)(*r & 0x1FU) << 6U) | (uint32_t)(r[1] & 0x3FU);
                 width = 2;
             } else {
-                cp = ((uint32_t)(*r & 0x0F) << 12) | (((uint32_t)r[1] & 0x3F) << 6) | (r[2] & 0x3F);
+                cp = ((uint32_t)(*r & 0x0FU) << 12U) | (((uint32_t)(r[1] & 0x3FU)) << 6U) |
+                     (uint32_t)(r[2] & 0x3FU);
                 width = 3;
             }
         }
