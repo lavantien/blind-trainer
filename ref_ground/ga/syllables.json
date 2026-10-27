@@ -1,0 +1,4917 @@
+{
+  "cases": [
+    {
+      "orbit": "edge",
+      "letters": "AB",
+      "syllable": "tầm",
+      "frequency": 1643
+    },
+    {
+      "orbit": "edge",
+      "letters": "AD",
+      "syllable": "tác",
+      "frequency": 1836
+    },
+    {
+      "orbit": "edge",
+      "letters": "AE",
+      "syllable": "hổ",
+      "frequency": 1846
+    },
+    {
+      "orbit": "edge",
+      "letters": "AF",
+      "syllable": "địa",
+      "frequency": 1797
+    },
+    {
+      "orbit": "edge",
+      "letters": "AG",
+      "syllable": "cả",
+      "frequency": 1858
+    },
+    {
+      "orbit": "edge",
+      "letters": "AH",
+      "syllable": "hiện",
+      "frequency": 1976
+    },
+    {
+      "orbit": "edge",
+      "letters": "AJ",
+      "syllable": "hò",
+      "frequency": 1863
+    },
+    {
+      "orbit": "edge",
+      "letters": "AK",
+      "syllable": "hỗ",
+      "frequency": 1828
+    },
+    {
+      "orbit": "edge",
+      "letters": "AL",
+      "syllable": "san",
+      "frequency": 1847
+    },
+    {
+      "orbit": "edge",
+      "letters": "AM",
+      "syllable": "bàng",
+      "frequency": 1664
+    },
+    {
+      "orbit": "edge",
+      "letters": "AN",
+      "syllable": "mỏ",
+      "frequency": 1927
+    },
+    {
+      "orbit": "edge",
+      "letters": "AO",
+      "syllable": "như",
+      "frequency": 1935
+    },
+    {
+      "orbit": "edge",
+      "letters": "AP",
+      "syllable": "thờ",
+      "frequency": 1847
+    },
+    {
+      "orbit": "edge",
+      "letters": "AR",
+      "syllable": "sứ",
+      "frequency": 1917
+    },
+    {
+      "orbit": "edge",
+      "letters": "AS",
+      "syllable": "mờ",
+      "frequency": 1907
+    },
+    {
+      "orbit": "edge",
+      "letters": "AT",
+      "syllable": "cu",
+      "frequency": 1853
+    },
+    {
+      "orbit": "edge",
+      "letters": "AU",
+      "syllable": "đâm",
+      "frequency": 1945
+    },
+    {
+      "orbit": "edge",
+      "letters": "AV",
+      "syllable": "chìm",
+      "frequency": 1927
+    },
+    {
+      "orbit": "edge",
+      "letters": "AW",
+      "syllable": "sờ",
+      "frequency": 1887
+    },
+    {
+      "orbit": "edge",
+      "letters": "AX",
+      "syllable": "chứa",
+      "frequency": 1910
+    },
+    {
+      "orbit": "edge",
+      "letters": "BA",
+      "syllable": "ẩm",
+      "frequency": 1463
+    },
+    {
+      "orbit": "edge",
+      "letters": "BD",
+      "syllable": "dạng",
+      "frequency": 2047
+    },
+    {
+      "orbit": "edge",
+      "letters": "BE",
+      "syllable": "rực",
+      "frequency": 1949
+    },
+    {
+      "orbit": "edge",
+      "letters": "BF",
+      "syllable": "hỗn",
+      "frequency": 2106
+    },
+    {
+      "orbit": "edge",
+      "letters": "BG",
+      "syllable": "nát",
+      "frequency": 2189
+    },
+    {
+      "orbit": "edge",
+      "letters": "BH",
+      "syllable": "sắc",
+      "frequency": 2214
+    },
+    {
+      "orbit": "edge",
+      "letters": "BJ",
+      "syllable": "kiếp",
+      "frequency": 2052
+    },
+    {
+      "orbit": "edge",
+      "letters": "BK",
+      "syllable": "sơ",
+      "frequency": 2058
+    },
+    {
+      "orbit": "edge",
+      "letters": "BL",
+      "syllable": "bám",
+      "frequency": 2102
+    },
+    {
+      "orbit": "edge",
+      "letters": "BN",
+      "syllable": "mì",
+      "frequency": 2187
+    },
+    {
+      "orbit": "edge",
+      "letters": "BO",
+      "syllable": "đạm",
+      "frequency": 2162
+    },
+    {
+      "orbit": "edge",
+      "letters": "BP",
+      "syllable": "chua",
+      "frequency": 2040
+    },
+    {
+      "orbit": "edge",
+      "letters": "BQ",
+      "syllable": "trộm",
+      "frequency": 1560
+    },
+    {
+      "orbit": "edge",
+      "letters": "BR",
+      "syllable": "vỗ",
+      "frequency": 2207
+    },
+    {
+      "orbit": "edge",
+      "letters": "BS",
+      "syllable": "bẩn",
+      "frequency": 2074
+    },
+    {
+      "orbit": "edge",
+      "letters": "BT",
+      "syllable": "bỏng",
+      "frequency": 2112
+    },
+    {
+      "orbit": "edge",
+      "letters": "BU",
+      "syllable": "bực",
+      "frequency": 2142
+    },
+    {
+      "orbit": "edge",
+      "letters": "BV",
+      "syllable": "sẽ",
+      "frequency": 2153
+    },
+    {
+      "orbit": "edge",
+      "letters": "BW",
+      "syllable": "thụ",
+      "frequency": 2111
+    },
+    {
+      "orbit": "edge",
+      "letters": "BX",
+      "syllable": "bật",
+      "frequency": 2234
+    },
+    {
+      "orbit": "edge",
+      "letters": "DA",
+      "syllable": "đỗ",
+      "frequency": 1524
+    },
+    {
+      "orbit": "edge",
+      "letters": "DB",
+      "syllable": "bất",
+      "frequency": 1892
+    },
+    {
+      "orbit": "edge",
+      "letters": "DF",
+      "syllable": "hiển",
+      "frequency": 2223
+    },
+    {
+      "orbit": "edge",
+      "letters": "DG",
+      "syllable": "ưa",
+      "frequency": 2373
+    },
+    {
+      "orbit": "edge",
+      "letters": "DH",
+      "syllable": "rừng",
+      "frequency": 2317
+    },
+    {
+      "orbit": "edge",
+      "letters": "DJ",
+      "syllable": "phí",
+      "frequency": 2200
+    },
+    {
+      "orbit": "edge",
+      "letters": "DK",
+      "syllable": "ngân",
+      "frequency": 2236
+    },
+    {
+      "orbit": "edge",
+      "letters": "DL",
+      "syllable": "vịnh",
+      "frequency": 2230
+    },
+    {
+      "orbit": "edge",
+      "letters": "DM",
+      "syllable": "sườn",
+      "frequency": 1977
+    },
+    {
+      "orbit": "edge",
+      "letters": "DN",
+      "syllable": "sự",
+      "frequency": 2326
+    },
+    {
+      "orbit": "edge",
+      "letters": "DO",
+      "syllable": "chim",
+      "frequency": 2282
+    },
+    {
+      "orbit": "edge",
+      "letters": "DP",
+      "syllable": "khe",
+      "frequency": 2162
+    },
+    {
+      "orbit": "edge",
+      "letters": "DQ",
+      "syllable": "thí",
+      "frequency": 1477
+    },
+    {
+      "orbit": "edge",
+      "letters": "DR",
+      "syllable": "khả",
+      "frequency": 2433
+    },
+    {
+      "orbit": "edge",
+      "letters": "DS",
+      "syllable": "lệ",
+      "frequency": 2221
+    },
+    {
+      "orbit": "edge",
+      "letters": "DT",
+      "syllable": "u",
+      "frequency": 2343
+    },
+    {
+      "orbit": "edge",
+      "letters": "DU",
+      "syllable": "dị",
+      "frequency": 2303
+    },
+    {
+      "orbit": "edge",
+      "letters": "DV",
+      "syllable": "lê",
+      "frequency": 2288
+    },
+    {
+      "orbit": "edge",
+      "letters": "DW",
+      "syllable": "nha",
+      "frequency": 2314
+    },
+    {
+      "orbit": "edge",
+      "letters": "DX",
+      "syllable": "em",
+      "frequency": 2329
+    },
+    {
+      "orbit": "edge",
+      "letters": "EA",
+      "syllable": "êm",
+      "frequency": 1490
+    },
+    {
+      "orbit": "edge",
+      "letters": "EB",
+      "syllable": "trân",
+      "frequency": 1914
+    },
+    {
+      "orbit": "edge",
+      "letters": "EF",
+      "syllable": "ấn",
+      "frequency": 2207
+    },
+    {
+      "orbit": "edge",
+      "letters": "EG",
+      "syllable": "ngũ",
+      "frequency": 2364
+    },
+    {
+      "orbit": "edge",
+      "letters": "EH",
+      "syllable": "khô",
+      "frequency": 2363
+    },
+    {
+      "orbit": "edge",
+      "letters": "EJ",
+      "syllable": "cỏ",
+      "frequency": 2111
+    },
+    {
+      "orbit": "edge",
+      "letters": "EK",
+      "syllable": "bà",
+      "frequency": 2231
+    },
+    {
+      "orbit": "edge",
+      "letters": "EL",
+      "syllable": "tết",
+      "frequency": 2157
+    },
+    {
+      "orbit": "edge",
+      "letters": "EM",
+      "syllable": "linh",
+      "frequency": 1926
+    },
+    {
+      "orbit": "edge",
+      "letters": "EN",
+      "syllable": "đỉnh",
+      "frequency": 2256
+    },
+    {
+      "orbit": "edge",
+      "letters": "EO",
+      "syllable": "mịn",
+      "frequency": 2297
+    },
+    {
+      "orbit": "edge",
+      "letters": "EP",
+      "syllable": "nằm",
+      "frequency": 2143
+    },
+    {
+      "orbit": "edge",
+      "letters": "EQ",
+      "syllable": "chấn",
+      "frequency": 1506
+    },
+    {
+      "orbit": "edge",
+      "letters": "ER",
+      "syllable": "phim",
+      "frequency": 2343
+    },
+    {
+      "orbit": "edge",
+      "letters": "ES",
+      "syllable": "xã",
+      "frequency": 2302
+    },
+    {
+      "orbit": "edge",
+      "letters": "ET",
+      "syllable": "đợt",
+      "frequency": 2409
+    },
+    {
+      "orbit": "edge",
+      "letters": "EU",
+      "syllable": "hả",
+      "frequency": 2322
+    },
+    {
+      "orbit": "edge",
+      "letters": "EV",
+      "syllable": "chìa",
+      "frequency": 2287
+    },
+    {
+      "orbit": "edge",
+      "letters": "EW",
+      "syllable": "cán",
+      "frequency": 2316
+    },
+    {
+      "orbit": "edge",
+      "letters": "EX",
+      "syllable": "chắc",
+      "frequency": 2344
+    },
+    {
+      "orbit": "edge",
+      "letters": "FA",
+      "syllable": "đập",
+      "frequency": 1528
+    },
+    {
+      "orbit": "edge",
+      "letters": "FB",
+      "syllable": "lạp",
+      "frequency": 1888
+    },
+    {
+      "orbit": "edge",
+      "letters": "FD",
+      "syllable": "sốc",
+      "frequency": 2045
+    },
+    {
+      "orbit": "edge",
+      "letters": "FE",
+      "syllable": "cò",
+      "frequency": 1960
+    },
+    {
+      "orbit": "edge",
+      "letters": "FG",
+      "syllable": "mẽ",
+      "frequency": 2482
+    },
+    {
+      "orbit": "edge",
+      "letters": "FH",
+      "syllable": "nàng",
+      "frequency": 2627
+    },
+    {
+      "orbit": "edge",
+      "letters": "FJ",
+      "syllable": "ơn",
+      "frequency": 2233
+    },
+    {
+      "orbit": "edge",
+      "letters": "FK",
+      "syllable": "tìm",
+      "frequency": 2373
+    },
+    {
+      "orbit": "edge",
+      "letters": "FM",
+      "syllable": "vạch",
+      "frequency": 1924
+    },
+    {
+      "orbit": "edge",
+      "letters": "FN",
+      "syllable": "bệnh",
+      "frequency": 2499
+    },
+    {
+      "orbit": "edge",
+      "letters": "FO",
+      "syllable": "đếm",
+      "frequency": 2386
+    },
+    {
+      "orbit": "edge",
+      "letters": "FP",
+      "syllable": "tĩnh",
+      "frequency": 2204
+    },
+    {
+      "orbit": "edge",
+      "letters": "FQ",
+      "syllable": "rồng",
+      "frequency": 1510
+    },
+    {
+      "orbit": "edge",
+      "letters": "FR",
+      "syllable": "vẽ",
+      "frequency": 2545
+    },
+    {
+      "orbit": "edge",
+      "letters": "FS",
+      "syllable": "đặt",
+      "frequency": 2473
+    },
+    {
+      "orbit": "edge",
+      "letters": "FT",
+      "syllable": "trá",
+      "frequency": 2501
+    },
+    {
+      "orbit": "edge",
+      "letters": "FU",
+      "syllable": "ho",
+      "frequency": 2352
+    },
+    {
+      "orbit": "edge",
+      "letters": "FV",
+      "syllable": "chợt",
+      "frequency": 2436
+    },
+    {
+      "orbit": "edge",
+      "letters": "FW",
+      "syllable": "mòn",
+      "frequency": 2489
+    },
+    {
+      "orbit": "edge",
+      "letters": "FX",
+      "syllable": "sức",
+      "frequency": 2469
+    },
+    {
+      "orbit": "edge",
+      "letters": "GA",
+      "syllable": "trú",
+      "frequency": 1553
+    },
+    {
+      "orbit": "edge",
+      "letters": "GB",
+      "syllable": "ừ",
+      "frequency": 1880
+    },
+    {
+      "orbit": "edge",
+      "letters": "GD",
+      "syllable": "xạ",
+      "frequency": 2128
+    },
+    {
+      "orbit": "edge",
+      "letters": "GE",
+      "syllable": "mảng",
+      "frequency": 2111
+    },
+    {
+      "orbit": "edge",
+      "letters": "GF",
+      "syllable": "lợn",
+      "frequency": 2196
+    },
+    {
+      "orbit": "edge",
+      "letters": "GH",
+      "syllable": "kia",
+      "frequency": 2684
+    },
+    {
+      "orbit": "edge",
+      "letters": "GJ",
+      "syllable": "ẩn",
+      "frequency": 2185
+    },
+    {
+      "orbit": "edge",
+      "letters": "GK",
+      "syllable": "bọ",
+      "frequency": 2326
+    },
+    {
+      "orbit": "edge",
+      "letters": "GL",
+      "syllable": "lúa",
+      "frequency": 2240
+    },
+    {
+      "orbit": "edge",
+      "letters": "GM",
+      "syllable": "ổ",
+      "frequency": 1865
+    },
+    {
+      "orbit": "edge",
+      "letters": "GN",
+      "syllable": "tạp",
+      "frequency": 2672
+    },
+    {
+      "orbit": "edge",
+      "letters": "GO",
+      "syllable": "bàn",
+      "frequency": 2370
+    },
+    {
+      "orbit": "edge",
+      "letters": "GP",
+      "syllable": "rốt",
+      "frequency": 2194
+    },
+    {
+      "orbit": "edge",
+      "letters": "GQ",
+      "syllable": "độn",
+      "frequency": 1541
+    },
+    {
+      "orbit": "edge",
+      "letters": "GR",
+      "syllable": "phe",
+      "frequency": 2557
+    },
+    {
+      "orbit": "edge",
+      "letters": "GS",
+      "syllable": "nữa",
+      "frequency": 2392
+    },
+    {
+      "orbit": "edge",
+      "letters": "GT",
+      "syllable": "cũ",
+      "frequency": 2591
+    },
+    {
+      "orbit": "edge",
+      "letters": "GU",
+      "syllable": "hút",
+      "frequency": 2263
+    },
+    {
+      "orbit": "edge",
+      "letters": "GV",
+      "syllable": "đề",
+      "frequency": 2440
+    },
+    {
+      "orbit": "edge",
+      "letters": "GW",
+      "syllable": "cho",
+      "frequency": 2410
+    },
+    {
+      "orbit": "edge",
+      "letters": "HA",
+      "syllable": "đất",
+      "frequency": 1475
+    },
+    {
+      "orbit": "edge",
+      "letters": "HB",
+      "syllable": "xông",
+      "frequency": 1933
+    },
+    {
+      "orbit": "edge",
+      "letters": "HD",
+      "syllable": "nhắm",
+      "frequency": 2041
+    },
+    {
+      "orbit": "edge",
+      "letters": "HE",
+      "syllable": "ồ",
+      "frequency": 2079
+    },
+    {
+      "orbit": "edge",
+      "letters": "HF",
+      "syllable": "múa",
+      "frequency": 2162
+    },
+    {
+      "orbit": "edge",
+      "letters": "HG",
+      "syllable": "sót",
+      "frequency": 2395
+    },
+    {
+      "orbit": "edge",
+      "letters": "HJ",
+      "syllable": "sam",
+      "frequency": 2081
+    },
+    {
+      "orbit": "edge",
+      "letters": "HK",
+      "syllable": "niên",
+      "frequency": 2419
+    },
+    {
+      "orbit": "edge",
+      "letters": "HL",
+      "syllable": "vẻ",
+      "frequency": 2222
+    },
+    {
+      "orbit": "edge",
+      "letters": "HM",
+      "syllable": "bố",
+      "frequency": 1896
+    },
+    {
+      "orbit": "edge",
+      "letters": "HN",
+      "syllable": "mức",
+      "frequency": 2457
+    },
+    {
+      "orbit": "edge",
+      "letters": "HO",
+      "syllable": "mạc",
+      "frequency": 2432
+    },
+    {
+      "orbit": "edge",
+      "letters": "HP",
+      "syllable": "hầm",
+      "frequency": 2138
+    },
+    {
+      "orbit": "edge",
+      "letters": "HQ",
+      "syllable": "lọt",
+      "frequency": 1483
+    },
+    {
+      "orbit": "edge",
+      "letters": "HS",
+      "syllable": "vẫn",
+      "frequency": 2411
+    },
+    {
+      "orbit": "edge",
+      "letters": "HT",
+      "syllable": "tiệc",
+      "frequency": 2534
+    },
+    {
+      "orbit": "edge",
+      "letters": "HU",
+      "syllable": "lúc",
+      "frequency": 2334
+    },
+    {
+      "orbit": "edge",
+      "letters": "HV",
+      "syllable": "hơn",
+      "frequency": 2373
+    },
+    {
+      "orbit": "edge",
+      "letters": "HW",
+      "syllable": "gạt",
+      "frequency": 2325
+    },
+    {
+      "orbit": "edge",
+      "letters": "HX",
+      "syllable": "rút",
+      "frequency": 2462
+    },
+    {
+      "orbit": "edge",
+      "letters": "JA",
+      "syllable": "chùa",
+      "frequency": 1510
+    },
+    {
+      "orbit": "edge",
+      "letters": "JB",
+      "syllable": "thà",
+      "frequency": 1785
+    },
+    {
+      "orbit": "edge",
+      "letters": "JD",
+      "syllable": "thèm",
+      "frequency": 2084
+    },
+    {
+      "orbit": "edge",
+      "letters": "JE",
+      "syllable": "hòn",
+      "frequency": 2128
+    },
+    {
+      "orbit": "edge",
+      "letters": "JF",
+      "syllable": "vũ",
+      "frequency": 2330
+    },
+    {
+      "orbit": "edge",
+      "letters": "JG",
+      "syllable": "ghé",
+      "frequency": 2439
+    },
+    {
+      "orbit": "edge",
+      "letters": "JH",
+      "syllable": "đỡ",
+      "frequency": 2402
+    },
+    {
+      "orbit": "edge",
+      "letters": "JK",
+      "syllable": "rửa",
+      "frequency": 2424
+    },
+    {
+      "orbit": "edge",
+      "letters": "JL",
+      "syllable": "mồm",
+      "frequency": 2182
+    },
+    {
+      "orbit": "edge",
+      "letters": "JM",
+      "syllable": "rể",
+      "frequency": 1906
+    },
+    {
+      "orbit": "edge",
+      "letters": "JN",
+      "syllable": "đưa",
+      "frequency": 2475
+    },
+    {
+      "orbit": "edge",
+      "letters": "JO",
+      "syllable": "nón",
+      "frequency": 2418
+    },
+    {
+      "orbit": "edge",
+      "letters": "JQ",
+      "syllable": "hồ",
+      "frequency": 1566
+    },
+    {
+      "orbit": "edge",
+      "letters": "JR",
+      "syllable": "thăm",
+      "frequency": 2478
+    },
+    {
+      "orbit": "edge",
+      "letters": "JS",
+      "syllable": "đinh",
+      "frequency": 2291
+    },
+    {
+      "orbit": "edge",
+      "letters": "JT",
+      "syllable": "sữa",
+      "frequency": 2380
+    },
+    {
+      "orbit": "edge",
+      "letters": "JU",
+      "syllable": "âm",
+      "frequency": 2379
+    },
+    {
+      "orbit": "edge",
+      "letters": "JV",
+      "syllable": "chốt",
+      "frequency": 2486
+    },
+    {
+      "orbit": "edge",
+      "letters": "JW",
+      "syllable": "mi",
+      "frequency": 2327
+    },
+    {
+      "orbit": "edge",
+      "letters": "JX",
+      "syllable": "triết",
+      "frequency": 2445
+    },
+    {
+      "orbit": "edge",
+      "letters": "KA",
+      "syllable": "sân",
+      "frequency": 1497
+    },
+    {
+      "orbit": "edge",
+      "letters": "KB",
+      "syllable": "cỡ",
+      "frequency": 1859
+    },
+    {
+      "orbit": "edge",
+      "letters": "KD",
+      "syllable": "bát",
+      "frequency": 2072
+    },
+    {
+      "orbit": "edge",
+      "letters": "KE",
+      "syllable": "dù",
+      "frequency": 2078
+    },
+    {
+      "orbit": "edge",
+      "letters": "KF",
+      "syllable": "dặn",
+      "frequency": 2305
+    },
+    {
+      "orbit": "edge",
+      "letters": "KG",
+      "syllable": "chí",
+      "frequency": 2471
+    },
+    {
+      "orbit": "edge",
+      "letters": "KH",
+      "syllable": "thật",
+      "frequency": 2527
+    },
+    {
+      "orbit": "edge",
+      "letters": "KJ",
+      "syllable": "đứng",
+      "frequency": 2098
+    },
+    {
+      "orbit": "edge",
+      "letters": "KL",
+      "syllable": "tân",
+      "frequency": 2215
+    },
+    {
+      "orbit": "edge",
+      "letters": "KM",
+      "syllable": "nhốt",
+      "frequency": 1906
+    },
+    {
+      "orbit": "edge",
+      "letters": "KN",
+      "syllable": "đổ",
+      "frequency": 2519
+    },
+    {
+      "orbit": "edge",
+      "letters": "KO",
+      "syllable": "nhì",
+      "frequency": 2405
+    },
+    {
+      "orbit": "edge",
+      "letters": "KP",
+      "syllable": "chế",
+      "frequency": 2176
+    },
+    {
+      "orbit": "edge",
+      "letters": "KQ",
+      "syllable": "nhắc",
+      "frequency": 1587
+    },
+    {
+      "orbit": "edge",
+      "letters": "KR",
+      "syllable": "công",
+      "frequency": 2532
+    },
+    {
+      "orbit": "edge",
+      "letters": "KS",
+      "syllable": "chàng",
+      "frequency": 2444
+    },
+    {
+      "orbit": "edge",
+      "letters": "KT",
+      "syllable": "rộng",
+      "frequency": 2532
+    },
+    {
+      "orbit": "edge",
+      "letters": "KV",
+      "syllable": "chết",
+      "frequency": 2385
+    },
+    {
+      "orbit": "edge",
+      "letters": "KW",
+      "syllable": "bùn",
+      "frequency": 2437
+    },
+    {
+      "orbit": "edge",
+      "letters": "KX",
+      "syllable": "chó",
+      "frequency": 2516
+    },
+    {
+      "orbit": "edge",
+      "letters": "LA",
+      "syllable": "phố",
+      "frequency": 1527
+    },
+    {
+      "orbit": "edge",
+      "letters": "LB",
+      "syllable": "lẻ",
+      "frequency": 1885
+    },
+    {
+      "orbit": "edge",
+      "letters": "LD",
+      "syllable": "khung",
+      "frequency": 2018
+    },
+    {
+      "orbit": "edge",
+      "letters": "LE",
+      "syllable": "hết",
+      "frequency": 1993
+    },
+    {
+      "orbit": "edge",
+      "letters": "LG",
+      "syllable": "nên",
+      "frequency": 2505
+    },
+    {
+      "orbit": "edge",
+      "letters": "LH",
+      "syllable": "tâm",
+      "frequency": 2488
+    },
+    {
+      "orbit": "edge",
+      "letters": "LJ",
+      "syllable": "tố",
+      "frequency": 2254
+    },
+    {
+      "orbit": "edge",
+      "letters": "LK",
+      "syllable": "dùng",
+      "frequency": 2399
+    },
+    {
+      "orbit": "edge",
+      "letters": "LM",
+      "syllable": "nếp",
+      "frequency": 1904
+    },
+    {
+      "orbit": "edge",
+      "letters": "LN",
+      "syllable": "lứa",
+      "frequency": 2536
+    },
+    {
+      "orbit": "edge",
+      "letters": "LO",
+      "syllable": "ban",
+      "frequency": 2378
+    },
+    {
+      "orbit": "edge",
+      "letters": "LP",
+      "syllable": "đem",
+      "frequency": 2149
+    },
+    {
+      "orbit": "edge",
+      "letters": "LQ",
+      "syllable": "the",
+      "frequency": 1486
+    },
+    {
+      "orbit": "edge",
+      "letters": "LR",
+      "syllable": "bì",
+      "frequency": 2470
+    },
+    {
+      "orbit": "edge",
+      "letters": "LS",
+      "syllable": "lật",
+      "frequency": 2392
+    },
+    {
+      "orbit": "edge",
+      "letters": "LT",
+      "syllable": "ngõ",
+      "frequency": 2516
+    },
+    {
+      "orbit": "edge",
+      "letters": "LU",
+      "syllable": "độc",
+      "frequency": 2419
+    },
+    {
+      "orbit": "edge",
+      "letters": "LV",
+      "syllable": "chưa",
+      "frequency": 2412
+    },
+    {
+      "orbit": "edge",
+      "letters": "LW",
+      "syllable": "lá",
+      "frequency": 2314
+    },
+    {
+      "orbit": "edge",
+      "letters": "LX",
+      "syllable": "ngữ",
+      "frequency": 2469
+    },
+    {
+      "orbit": "edge",
+      "letters": "MA",
+      "syllable": "cúp",
+      "frequency": 1515
+    },
+    {
+      "orbit": "edge",
+      "letters": "MD",
+      "syllable": "nỗ",
+      "frequency": 2016
+    },
+    {
+      "orbit": "edge",
+      "letters": "ME",
+      "syllable": "cổ",
+      "frequency": 1958
+    },
+    {
+      "orbit": "edge",
+      "letters": "MF",
+      "syllable": "mở",
+      "frequency": 2183
+    },
+    {
+      "orbit": "edge",
+      "letters": "MG",
+      "syllable": "ảnh",
+      "frequency": 2280
+    },
+    {
+      "orbit": "edge",
+      "letters": "MH",
+      "syllable": "mụ",
+      "frequency": 2197
+    },
+    {
+      "orbit": "edge",
+      "letters": "MJ",
+      "syllable": "thắt",
+      "frequency": 2022
+    },
+    {
+      "orbit": "edge",
+      "letters": "MK",
+      "syllable": "cẩn",
+      "frequency": 2153
+    },
+    {
+      "orbit": "edge",
+      "letters": "ML",
+      "syllable": "lừa",
+      "frequency": 2149
+    },
+    {
+      "orbit": "edge",
+      "letters": "MN",
+      "syllable": "hét",
+      "frequency": 2297
+    },
+    {
+      "orbit": "edge",
+      "letters": "MO",
+      "syllable": "ư",
+      "frequency": 2224
+    },
+    {
+      "orbit": "edge",
+      "letters": "MP",
+      "syllable": "thả",
+      "frequency": 2105
+    },
+    {
+      "orbit": "edge",
+      "letters": "MQ",
+      "syllable": "mầm",
+      "frequency": 1532
+    },
+    {
+      "orbit": "edge",
+      "letters": "MR",
+      "syllable": "chỉ",
+      "frequency": 2226
+    },
+    {
+      "orbit": "edge",
+      "letters": "MS",
+      "syllable": "dịch",
+      "frequency": 2154
+    },
+    {
+      "orbit": "edge",
+      "letters": "MT",
+      "syllable": "xứng",
+      "frequency": 2131
+    },
+    {
+      "orbit": "edge",
+      "letters": "MU",
+      "syllable": "phi",
+      "frequency": 2104
+    },
+    {
+      "orbit": "edge",
+      "letters": "MV",
+      "syllable": "tổ",
+      "frequency": 2216
+    },
+    {
+      "orbit": "edge",
+      "letters": "MW",
+      "syllable": "mũ",
+      "frequency": 2101
+    },
+    {
+      "orbit": "edge",
+      "letters": "MX",
+      "syllable": "sông",
+      "frequency": 2183
+    },
+    {
+      "orbit": "edge",
+      "letters": "NA",
+      "syllable": "lũ",
+      "frequency": 1542
+    },
+    {
+      "orbit": "edge",
+      "letters": "NB",
+      "syllable": "thủ",
+      "frequency": 1949
+    },
+    {
+      "orbit": "edge",
+      "letters": "ND",
+      "syllable": "chín",
+      "frequency": 2046
+    },
+    {
+      "orbit": "edge",
+      "letters": "NE",
+      "syllable": "ha",
+      "frequency": 2033
+    },
+    {
+      "orbit": "edge",
+      "letters": "NF",
+      "syllable": "nâng",
+      "frequency": 2251
+    },
+    {
+      "orbit": "edge",
+      "letters": "NG",
+      "syllable": "củ",
+      "frequency": 2359
+    },
+    {
+      "orbit": "edge",
+      "letters": "NH",
+      "syllable": "lãm",
+      "frequency": 2687
+    },
+    {
+      "orbit": "edge",
+      "letters": "NJ",
+      "syllable": "hôm",
+      "frequency": 2260
+    },
+    {
+      "orbit": "edge",
+      "letters": "NK",
+      "syllable": "cha",
+      "frequency": 2355
+    },
+    {
+      "orbit": "edge",
+      "letters": "NL",
+      "syllable": "tung",
+      "frequency": 2232
+    },
+    {
+      "orbit": "edge",
+      "letters": "NM",
+      "syllable": "rảnh",
+      "frequency": 1837
+    },
+    {
+      "orbit": "edge",
+      "letters": "NO",
+      "syllable": "túc",
+      "frequency": 2391
+    },
+    {
+      "orbit": "edge",
+      "letters": "NP",
+      "syllable": "ngô",
+      "frequency": 2077
+    },
+    {
+      "orbit": "edge",
+      "letters": "NQ",
+      "syllable": "đỏ",
+      "frequency": 1600
+    },
+    {
+      "orbit": "edge",
+      "letters": "NR",
+      "syllable": "chả",
+      "frequency": 2647
+    },
+    {
+      "orbit": "edge",
+      "letters": "NS",
+      "syllable": "lưng",
+      "frequency": 2319
+    },
+    {
+      "orbit": "edge",
+      "letters": "NU",
+      "syllable": "thử",
+      "frequency": 2293
+    },
+    {
+      "orbit": "edge",
+      "letters": "NV",
+      "syllable": "học",
+      "frequency": 2469
+    },
+    {
+      "orbit": "edge",
+      "letters": "NW",
+      "syllable": "chút",
+      "frequency": 2419
+    },
+    {
+      "orbit": "edge",
+      "letters": "NX",
+      "syllable": "thâm",
+      "frequency": 2412
+    },
+    {
+      "orbit": "edge",
+      "letters": "OA",
+      "syllable": "tắc",
+      "frequency": 1520
+    },
+    {
+      "orbit": "edge",
+      "letters": "OB",
+      "syllable": "làm",
+      "frequency": 1955
+    },
+    {
+      "orbit": "edge",
+      "letters": "OD",
+      "syllable": "sang",
+      "frequency": 2019
+    },
+    {
+      "orbit": "edge",
+      "letters": "OE",
+      "syllable": "khỉ",
+      "frequency": 2022
+    },
+    {
+      "orbit": "edge",
+      "letters": "OF",
+      "syllable": "sánh",
+      "frequency": 2175
+    },
+    {
+      "orbit": "edge",
+      "letters": "OG",
+      "syllable": "dựa",
+      "frequency": 2466
+    },
+    {
+      "orbit": "edge",
+      "letters": "OH",
+      "syllable": "mạn",
+      "frequency": 2663
+    },
+    {
+      "orbit": "edge",
+      "letters": "OJ",
+      "syllable": "mẻ",
+      "frequency": 2164
+    },
+    {
+      "orbit": "edge",
+      "letters": "OK",
+      "syllable": "xếp",
+      "frequency": 2346
+    },
+    {
+      "orbit": "edge",
+      "letters": "OL",
+      "syllable": "gồm",
+      "frequency": 2241
+    },
+    {
+      "orbit": "edge",
+      "letters": "OM",
+      "syllable": "ném",
+      "frequency": 1957
+    },
+    {
+      "orbit": "edge",
+      "letters": "ON",
+      "syllable": "dư",
+      "frequency": 2609
+    },
+    {
+      "orbit": "edge",
+      "letters": "OP",
+      "syllable": "dì",
+      "frequency": 2108
+    },
+    {
+      "orbit": "edge",
+      "letters": "OQ",
+      "syllable": "hẹp",
+      "frequency": 1537
+    },
+    {
+      "orbit": "edge",
+      "letters": "OR",
+      "syllable": "hang",
+      "frequency": 2613
+    },
+    {
+      "orbit": "edge",
+      "letters": "OS",
+      "syllable": "hứa",
+      "frequency": 2319
+    },
+    {
+      "orbit": "edge",
+      "letters": "OT",
+      "syllable": "mừng",
+      "frequency": 2583
+    },
+    {
+      "orbit": "edge",
+      "letters": "OU",
+      "syllable": "nam",
+      "frequency": 2245
+    },
+    {
+      "orbit": "edge",
+      "letters": "OW",
+      "syllable": "khắc",
+      "frequency": 2426
+    },
+    {
+      "orbit": "edge",
+      "letters": "OX",
+      "syllable": "mẹ",
+      "frequency": 2567
+    },
+    {
+      "orbit": "edge",
+      "letters": "PA",
+      "syllable": "cốc",
+      "frequency": 1527
+    },
+    {
+      "orbit": "edge",
+      "letters": "PB",
+      "syllable": "nhịp",
+      "frequency": 1914
+    },
+    {
+      "orbit": "edge",
+      "letters": "PD",
+      "syllable": "chà",
+      "frequency": 2028
+    },
+    {
+      "orbit": "edge",
+      "letters": "PE",
+      "syllable": "tấn",
+      "frequency": 2042
+    },
+    {
+      "orbit": "edge",
+      "letters": "PF",
+      "syllable": "nhi",
+      "frequency": 2241
+    },
+    {
+      "orbit": "edge",
+      "letters": "PG",
+      "syllable": "bấm",
+      "frequency": 2461
+    },
+    {
+      "orbit": "edge",
+      "letters": "PH",
+      "syllable": "đĩa",
+      "frequency": 2429
+    },
+    {
+      "orbit": "edge",
+      "letters": "PK",
+      "syllable": "ít",
+      "frequency": 2375
+    },
+    {
+      "orbit": "edge",
+      "letters": "PL",
+      "syllable": "vì",
+      "frequency": 2235
+    },
+    {
+      "orbit": "edge",
+      "letters": "PM",
+      "syllable": "nghi",
+      "frequency": 1906
+    },
+    {
+      "orbit": "edge",
+      "letters": "PN",
+      "syllable": "dỗ",
+      "frequency": 2403
+    },
+    {
+      "orbit": "edge",
+      "letters": "PO",
+      "syllable": "trắc",
+      "frequency": 2390
+    },
+    {
+      "orbit": "edge",
+      "letters": "PQ",
+      "syllable": "đê",
+      "frequency": 1465
+    },
+    {
+      "orbit": "edge",
+      "letters": "PR",
+      "syllable": "óc",
+      "frequency": 2433
+    },
+    {
+      "orbit": "edge",
+      "letters": "PS",
+      "syllable": "lỡ",
+      "frequency": 2419
+    },
+    {
+      "orbit": "edge",
+      "letters": "PT",
+      "syllable": "vị",
+      "frequency": 2454
+    },
+    {
+      "orbit": "edge",
+      "letters": "PU",
+      "syllable": "đẻ",
+      "frequency": 2381
+    },
+    {
+      "orbit": "edge",
+      "letters": "PV",
+      "syllable": "cửa",
+      "frequency": 2395
+    },
+    {
+      "orbit": "edge",
+      "letters": "PW",
+      "syllable": "hàng",
+      "frequency": 2377
+    },
+    {
+      "orbit": "edge",
+      "letters": "PX",
+      "syllable": "bè",
+      "frequency": 2365
+    },
+    {
+      "orbit": "edge",
+      "letters": "QB",
+      "syllable": "đệ",
+      "frequency": 1594
+    },
+    {
+      "orbit": "edge",
+      "letters": "QD",
+      "syllable": "điền",
+      "frequency": 1788
+    },
+    {
+      "orbit": "edge",
+      "letters": "QE",
+      "syllable": "bản",
+      "frequency": 1819
+    },
+    {
+      "orbit": "edge",
+      "letters": "QF",
+      "syllable": "đàng",
+      "frequency": 1845
+    },
+    {
+      "orbit": "edge",
+      "letters": "QG",
+      "syllable": "sửa",
+      "frequency": 1908
+    },
+    {
+      "orbit": "edge",
+      "letters": "QH",
+      "syllable": "trì",
+      "frequency": 1898
+    },
+    {
+      "orbit": "edge",
+      "letters": "QJ",
+      "syllable": "tượng",
+      "frequency": 1829
+    },
+    {
+      "orbit": "edge",
+      "letters": "QK",
+      "syllable": "khi",
+      "frequency": 1894
+    },
+    {
+      "orbit": "edge",
+      "letters": "QL",
+      "syllable": "hộp",
+      "frequency": 1856
+    },
+    {
+      "orbit": "edge",
+      "letters": "QM",
+      "syllable": "ép",
+      "frequency": 1744
+    },
+    {
+      "orbit": "edge",
+      "letters": "QN",
+      "syllable": "tử",
+      "frequency": 1943
+    },
+    {
+      "orbit": "edge",
+      "letters": "QO",
+      "syllable": "lạc",
+      "frequency": 1846
+    },
+    {
+      "orbit": "edge",
+      "letters": "QP",
+      "syllable": "hiếp",
+      "frequency": 1940
+    },
+    {
+      "orbit": "edge",
+      "letters": "QR",
+      "syllable": "rách",
+      "frequency": 1908
+    },
+    {
+      "orbit": "edge",
+      "letters": "QS",
+      "syllable": "nhờ",
+      "frequency": 1913
+    },
+    {
+      "orbit": "edge",
+      "letters": "QT",
+      "syllable": "mập",
+      "frequency": 1942
+    },
+    {
+      "orbit": "edge",
+      "letters": "QU",
+      "syllable": "mật",
+      "frequency": 1907
+    },
+    {
+      "orbit": "edge",
+      "letters": "QV",
+      "syllable": "cử",
+      "frequency": 1971
+    },
+    {
+      "orbit": "edge",
+      "letters": "QW",
+      "syllable": "lam",
+      "frequency": 1909
+    },
+    {
+      "orbit": "edge",
+      "letters": "QX",
+      "syllable": "ben",
+      "frequency": 1946
+    },
+    {
+      "orbit": "edge",
+      "letters": "RA",
+      "syllable": "chia",
+      "frequency": 1545
+    },
+    {
+      "orbit": "edge",
+      "letters": "RB",
+      "syllable": "nụ",
+      "frequency": 1965
+    },
+    {
+      "orbit": "edge",
+      "letters": "RD",
+      "syllable": "giả",
+      "frequency": 1996
+    },
+    {
+      "orbit": "edge",
+      "letters": "RE",
+      "syllable": "củng",
+      "frequency": 2010
+    },
+    {
+      "orbit": "edge",
+      "letters": "RF",
+      "syllable": "mục",
+      "frequency": 2250
+    },
+    {
+      "orbit": "edge",
+      "letters": "RG",
+      "syllable": "lắm",
+      "frequency": 2411
+    },
+    {
+      "orbit": "edge",
+      "letters": "RJ",
+      "syllable": "hồn",
+      "frequency": 2202
+    },
+    {
+      "orbit": "edge",
+      "letters": "RK",
+      "syllable": "đầm",
+      "frequency": 2232
+    },
+    {
+      "orbit": "edge",
+      "letters": "RL",
+      "syllable": "chắn",
+      "frequency": 2156
+    },
+    {
+      "orbit": "edge",
+      "letters": "RM",
+      "syllable": "lãng",
+      "frequency": 1907
+    },
+    {
+      "orbit": "edge",
+      "letters": "RN",
+      "syllable": "bò",
+      "frequency": 2579
+    },
+    {
+      "orbit": "edge",
+      "letters": "RO",
+      "syllable": "đã",
+      "frequency": 2400
+    },
+    {
+      "orbit": "edge",
+      "letters": "RP",
+      "syllable": "trò",
+      "frequency": 2166
+    },
+    {
+      "orbit": "edge",
+      "letters": "RQ",
+      "syllable": "tí",
+      "frequency": 1499
+    },
+    {
+      "orbit": "edge",
+      "letters": "RS",
+      "syllable": "xen",
+      "frequency": 2335
+    },
+    {
+      "orbit": "edge",
+      "letters": "RT",
+      "syllable": "bã",
+      "frequency": 2515
+    },
+    {
+      "orbit": "edge",
+      "letters": "RU",
+      "syllable": "bọn",
+      "frequency": 2265
+    },
+    {
+      "orbit": "edge",
+      "letters": "RV",
+      "syllable": "nè",
+      "frequency": 2487
+    },
+    {
+      "orbit": "edge",
+      "letters": "RW",
+      "syllable": "thập",
+      "frequency": 2354
+    },
+    {
+      "orbit": "edge",
+      "letters": "RX",
+      "syllable": "đảng",
+      "frequency": 2395
+    },
+    {
+      "orbit": "edge",
+      "letters": "SA",
+      "syllable": "trên",
+      "frequency": 1541
+    },
+    {
+      "orbit": "edge",
+      "letters": "SB",
+      "syllable": "tra",
+      "frequency": 1938
+    },
+    {
+      "orbit": "edge",
+      "letters": "SD",
+      "syllable": "búp",
+      "frequency": 2072
+    },
+    {
+      "orbit": "edge",
+      "letters": "SE",
+      "syllable": "tờ",
+      "frequency": 2063
+    },
+    {
+      "orbit": "edge",
+      "letters": "SF",
+      "syllable": "bông",
+      "frequency": 2224
+    },
+    {
+      "orbit": "edge",
+      "letters": "SG",
+      "syllable": "rỡ",
+      "frequency": 2510
+    },
+    {
+      "orbit": "edge",
+      "letters": "SH",
+      "syllable": "gấp",
+      "frequency": 2552
+    },
+    {
+      "orbit": "edge",
+      "letters": "SJ",
+      "syllable": "nhũng",
+      "frequency": 2126
+    },
+    {
+      "orbit": "edge",
+      "letters": "SK",
+      "syllable": "đá",
+      "frequency": 2288
+    },
+    {
+      "orbit": "edge",
+      "letters": "SL",
+      "syllable": "ruột",
+      "frequency": 2206
+    },
+    {
+      "orbit": "edge",
+      "letters": "SM",
+      "syllable": "họp",
+      "frequency": 1916
+    },
+    {
+      "orbit": "edge",
+      "letters": "SN",
+      "syllable": "vòng",
+      "frequency": 2642
+    },
+    {
+      "orbit": "edge",
+      "letters": "SO",
+      "syllable": "vệ",
+      "frequency": 2440
+    },
+    {
+      "orbit": "edge",
+      "letters": "SP",
+      "syllable": "chụp",
+      "frequency": 2063
+    },
+    {
+      "orbit": "edge",
+      "letters": "SQ",
+      "syllable": "trưa",
+      "frequency": 1510
+    },
+    {
+      "orbit": "edge",
+      "letters": "SR",
+      "syllable": "tha",
+      "frequency": 2643
+    },
+    {
+      "orbit": "edge",
+      "letters": "ST",
+      "syllable": "chở",
+      "frequency": 2611
+    },
+    {
+      "orbit": "edge",
+      "letters": "SU",
+      "syllable": "cấm",
+      "frequency": 2260
+    },
+    {
+      "orbit": "edge",
+      "letters": "SV",
+      "syllable": "để",
+      "frequency": 2532
+    },
+    {
+      "orbit": "edge",
+      "letters": "SX",
+      "syllable": "sĩ",
+      "frequency": 2429
+    },
+    {
+      "orbit": "edge",
+      "letters": "TA",
+      "syllable": "trần",
+      "frequency": 1513
+    },
+    {
+      "orbit": "edge",
+      "letters": "TB",
+      "syllable": "hấp",
+      "frequency": 1939
+    },
+    {
+      "orbit": "edge",
+      "letters": "TD",
+      "syllable": "nổ",
+      "frequency": 1993
+    },
+    {
+      "orbit": "edge",
+      "letters": "TE",
+      "syllable": "ả",
+      "frequency": 2090
+    },
+    {
+      "orbit": "edge",
+      "letters": "TF",
+      "syllable": "thị",
+      "frequency": 2240
+    },
+    {
+      "orbit": "edge",
+      "letters": "TG",
+      "syllable": "lớn",
+      "frequency": 2412
+    },
+    {
+      "orbit": "edge",
+      "letters": "TH",
+      "syllable": "lục",
+      "frequency": 2770
+    },
+    {
+      "orbit": "edge",
+      "letters": "TJ",
+      "syllable": "no",
+      "frequency": 2130
+    },
+    {
+      "orbit": "edge",
+      "letters": "TK",
+      "syllable": "phần",
+      "frequency": 2257
+    },
+    {
+      "orbit": "edge",
+      "letters": "TL",
+      "syllable": "ngâm",
+      "frequency": 2190
+    },
+    {
+      "orbit": "edge",
+      "letters": "TM",
+      "syllable": "dục",
+      "frequency": 1886
+    },
+    {
+      "orbit": "edge",
+      "letters": "TO",
+      "syllable": "bắt",
+      "frequency": 2416
+    },
+    {
+      "orbit": "edge",
+      "letters": "TP",
+      "syllable": "bù",
+      "frequency": 2160
+    },
+    {
+      "orbit": "edge",
+      "letters": "TQ",
+      "syllable": "tri",
+      "frequency": 1496
+    },
+    {
+      "orbit": "edge",
+      "letters": "TR",
+      "syllable": "đính",
+      "frequency": 2558
+    },
+    {
+      "orbit": "edge",
+      "letters": "TS",
+      "syllable": "mổ",
+      "frequency": 2348
+    },
+    {
+      "orbit": "edge",
+      "letters": "TU",
+      "syllable": "mọc",
+      "frequency": 2251
+    },
+    {
+      "orbit": "edge",
+      "letters": "TV",
+      "syllable": "cờ",
+      "frequency": 2420
+    },
+    {
+      "orbit": "edge",
+      "letters": "TW",
+      "syllable": "cú",
+      "frequency": 2335
+    },
+    {
+      "orbit": "edge",
+      "letters": "TX",
+      "syllable": "lấp",
+      "frequency": 2450
+    },
+    {
+      "orbit": "edge",
+      "letters": "UA",
+      "syllable": "hiệp",
+      "frequency": 1492
+    },
+    {
+      "orbit": "edge",
+      "letters": "UB",
+      "syllable": "nhị",
+      "frequency": 1744
+    },
+    {
+      "orbit": "edge",
+      "letters": "UD",
+      "syllable": "dốc",
+      "frequency": 2052
+    },
+    {
+      "orbit": "edge",
+      "letters": "UE",
+      "syllable": "trọ",
+      "frequency": 2078
+    },
+    {
+      "orbit": "edge",
+      "letters": "UF",
+      "syllable": "trà",
+      "frequency": 2235
+    },
+    {
+      "orbit": "edge",
+      "letters": "UG",
+      "syllable": "phù",
+      "frequency": 2526
+    },
+    {
+      "orbit": "edge",
+      "letters": "UH",
+      "syllable": "minh",
+      "frequency": 2512
+    },
+    {
+      "orbit": "edge",
+      "letters": "UJ",
+      "syllable": "chữ",
+      "frequency": 2146
+    },
+    {
+      "orbit": "edge",
+      "letters": "UL",
+      "syllable": "mạch",
+      "frequency": 2254
+    },
+    {
+      "orbit": "edge",
+      "letters": "UM",
+      "syllable": "bồ",
+      "frequency": 1877
+    },
+    {
+      "orbit": "edge",
+      "letters": "UN",
+      "syllable": "vụ",
+      "frequency": 2532
+    },
+    {
+      "orbit": "edge",
+      "letters": "UO",
+      "syllable": "anh",
+      "frequency": 2453
+    },
+    {
+      "orbit": "edge",
+      "letters": "UP",
+      "syllable": "thơ",
+      "frequency": 2218
+    },
+    {
+      "orbit": "edge",
+      "letters": "UQ",
+      "syllable": "và",
+      "frequency": 1515
+    },
+    {
+      "orbit": "edge",
+      "letters": "UR",
+      "syllable": "động",
+      "frequency": 2606
+    },
+    {
+      "orbit": "edge",
+      "letters": "US",
+      "syllable": "nghề",
+      "frequency": 2452
+    },
+    {
+      "orbit": "edge",
+      "letters": "UT",
+      "syllable": "dừa",
+      "frequency": 2495
+    },
+    {
+      "orbit": "edge",
+      "letters": "UV",
+      "syllable": "dưa",
+      "frequency": 2537
+    },
+    {
+      "orbit": "edge",
+      "letters": "UW",
+      "syllable": "nền",
+      "frequency": 2393
+    },
+    {
+      "orbit": "edge",
+      "letters": "UX",
+      "syllable": "chậm",
+      "frequency": 2557
+    },
+    {
+      "orbit": "edge",
+      "letters": "VA",
+      "syllable": "diễn",
+      "frequency": 1525
+    },
+    {
+      "orbit": "edge",
+      "letters": "VB",
+      "syllable": "ngư",
+      "frequency": 1954
+    },
+    {
+      "orbit": "edge",
+      "letters": "VD",
+      "syllable": "thu",
+      "frequency": 2057
+    },
+    {
+      "orbit": "edge",
+      "letters": "VE",
+      "syllable": "có",
+      "frequency": 2084
+    },
+    {
+      "orbit": "edge",
+      "letters": "VF",
+      "syllable": "dặm",
+      "frequency": 2277
+    },
+    {
+      "orbit": "edge",
+      "letters": "VG",
+      "syllable": "tình",
+      "frequency": 2495
+    },
+    {
+      "orbit": "edge",
+      "letters": "VH",
+      "syllable": "nở",
+      "frequency": 2652
+    },
+    {
+      "orbit": "edge",
+      "letters": "VJ",
+      "syllable": "đấm",
+      "frequency": 2118
+    },
+    {
+      "orbit": "edge",
+      "letters": "VK",
+      "syllable": "rác",
+      "frequency": 2377
+    },
+    {
+      "orbit": "edge",
+      "letters": "VL",
+      "syllable": "vợ",
+      "frequency": 2201
+    },
+    {
+      "orbit": "edge",
+      "letters": "VM",
+      "syllable": "cà",
+      "frequency": 1943
+    },
+    {
+      "orbit": "edge",
+      "letters": "VN",
+      "syllable": "ngụ",
+      "frequency": 2663
+    },
+    {
+      "orbit": "edge",
+      "letters": "VP",
+      "syllable": "lập",
+      "frequency": 2164
+    },
+    {
+      "orbit": "edge",
+      "letters": "VQ",
+      "syllable": "tế",
+      "frequency": 1536
+    },
+    {
+      "orbit": "edge",
+      "letters": "VR",
+      "syllable": "rung",
+      "frequency": 2635
+    },
+    {
+      "orbit": "edge",
+      "letters": "VS",
+      "syllable": "điểm",
+      "frequency": 2411
+    },
+    {
+      "orbit": "edge",
+      "letters": "VT",
+      "syllable": "chất",
+      "frequency": 2550
+    },
+    {
+      "orbit": "edge",
+      "letters": "VU",
+      "syllable": "chợ",
+      "frequency": 2323
+    },
+    {
+      "orbit": "edge",
+      "letters": "VW",
+      "syllable": "ra",
+      "frequency": 2293
+    },
+    {
+      "orbit": "edge",
+      "letters": "VX",
+      "syllable": "vĩnh",
+      "frequency": 2606
+    },
+    {
+      "orbit": "edge",
+      "letters": "WA",
+      "syllable": "khổ",
+      "frequency": 1582
+    },
+    {
+      "orbit": "edge",
+      "letters": "WB",
+      "syllable": "tiềm",
+      "frequency": 1909
+    },
+    {
+      "orbit": "edge",
+      "letters": "WD",
+      "syllable": "hương",
+      "frequency": 2125
+    },
+    {
+      "orbit": "edge",
+      "letters": "WE",
+      "syllable": "dung",
+      "frequency": 2110
+    },
+    {
+      "orbit": "edge",
+      "letters": "WF",
+      "syllable": "ràng",
+      "frequency": 2296
+    },
+    {
+      "orbit": "edge",
+      "letters": "WG",
+      "syllable": "nạ",
+      "frequency": 2521
+    },
+    {
+      "orbit": "edge",
+      "letters": "WH",
+      "syllable": "mê",
+      "frequency": 2495
+    },
+    {
+      "orbit": "edge",
+      "letters": "WJ",
+      "syllable": "bờ",
+      "frequency": 2152
+    },
+    {
+      "orbit": "edge",
+      "letters": "WK",
+      "syllable": "khép",
+      "frequency": 2290
+    },
+    {
+      "orbit": "edge",
+      "letters": "WL",
+      "syllable": "dò",
+      "frequency": 2259
+    },
+    {
+      "orbit": "edge",
+      "letters": "WM",
+      "syllable": "nghị",
+      "frequency": 1946
+    },
+    {
+      "orbit": "edge",
+      "letters": "WN",
+      "syllable": "sàn",
+      "frequency": 2549
+    },
+    {
+      "orbit": "edge",
+      "letters": "WO",
+      "syllable": "tủ",
+      "frequency": 2475
+    },
+    {
+      "orbit": "edge",
+      "letters": "WP",
+      "syllable": "hề",
+      "frequency": 2150
+    },
+    {
+      "orbit": "edge",
+      "letters": "WQ",
+      "syllable": "cản",
+      "frequency": 1582
+    },
+    {
+      "orbit": "edge",
+      "letters": "WR",
+      "syllable": "tôm",
+      "frequency": 2516
+    },
+    {
+      "orbit": "edge",
+      "letters": "WT",
+      "syllable": "chè",
+      "frequency": 2559
+    },
+    {
+      "orbit": "edge",
+      "letters": "WU",
+      "syllable": "cứ",
+      "frequency": 2284
+    },
+    {
+      "orbit": "edge",
+      "letters": "WV",
+      "syllable": "dinh",
+      "frequency": 2485
+    },
+    {
+      "orbit": "edge",
+      "letters": "WX",
+      "syllable": "thự",
+      "frequency": 2613
+    },
+    {
+      "orbit": "edge",
+      "letters": "XA",
+      "syllable": "sắm",
+      "frequency": 1486
+    },
+    {
+      "orbit": "edge",
+      "letters": "XB",
+      "syllable": "bóng",
+      "frequency": 1895
+    },
+    {
+      "orbit": "edge",
+      "letters": "XD",
+      "syllable": "sổ",
+      "frequency": 1976
+    },
+    {
+      "orbit": "edge",
+      "letters": "XE",
+      "syllable": "ấm",
+      "frequency": 2030
+    },
+    {
+      "orbit": "edge",
+      "letters": "XF",
+      "syllable": "kín",
+      "frequency": 2267
+    },
+    {
+      "orbit": "edge",
+      "letters": "XH",
+      "syllable": "tiệm",
+      "frequency": 2760
+    },
+    {
+      "orbit": "edge",
+      "letters": "XJ",
+      "syllable": "lạ",
+      "frequency": 2173
+    },
+    {
+      "orbit": "edge",
+      "letters": "XK",
+      "syllable": "vấn",
+      "frequency": 2354
+    },
+    {
+      "orbit": "edge",
+      "letters": "XL",
+      "syllable": "gặp",
+      "frequency": 2252
+    },
+    {
+      "orbit": "edge",
+      "letters": "XM",
+      "syllable": "rõ",
+      "frequency": 1827
+    },
+    {
+      "orbit": "edge",
+      "letters": "XN",
+      "syllable": "trở",
+      "frequency": 2665
+    },
+    {
+      "orbit": "edge",
+      "letters": "XO",
+      "syllable": "là",
+      "frequency": 2392
+    },
+    {
+      "orbit": "edge",
+      "letters": "XP",
+      "syllable": "mông",
+      "frequency": 2212
+    },
+    {
+      "orbit": "edge",
+      "letters": "XQ",
+      "syllable": "điển",
+      "frequency": 1581
+    },
+    {
+      "orbit": "edge",
+      "letters": "XR",
+      "syllable": "khí",
+      "frequency": 2632
+    },
+    {
+      "orbit": "edge",
+      "letters": "XS",
+      "syllable": "va",
+      "frequency": 2309
+    },
+    {
+      "orbit": "edge",
+      "letters": "XT",
+      "syllable": "mặt",
+      "frequency": 2583
+    },
+    {
+      "orbit": "edge",
+      "letters": "XU",
+      "syllable": "cước",
+      "frequency": 2281
+    },
+    {
+      "orbit": "edge",
+      "letters": "XV",
+      "syllable": "sếp",
+      "frequency": 2274
+    },
+    {
+      "orbit": "edge",
+      "letters": "XW",
+      "syllable": "gốc",
+      "frequency": 2338
+    },
+    {
+      "orbit": "corner",
+      "letters": "AB",
+      "syllable": "tiếc",
+      "frequency": 1414
+    },
+    {
+      "orbit": "corner",
+      "letters": "AD",
+      "syllable": "cùng",
+      "frequency": 1007
+    },
+    {
+      "orbit": "corner",
+      "letters": "AF",
+      "syllable": "móng",
+      "frequency": 979
+    },
+    {
+      "orbit": "corner",
+      "letters": "AG",
+      "syllable": "trí",
+      "frequency": 1603
+    },
+    {
+      "orbit": "corner",
+      "letters": "AH",
+      "syllable": "tả",
+      "frequency": 1740
+    },
+    {
+      "orbit": "corner",
+      "letters": "AI",
+      "syllable": "viện",
+      "frequency": 1044
+    },
+    {
+      "orbit": "corner",
+      "letters": "AK",
+      "syllable": "dứt",
+      "frequency": 1591
+    },
+    {
+      "orbit": "corner",
+      "letters": "AL",
+      "syllable": "hận",
+      "frequency": 1668
+    },
+    {
+      "orbit": "corner",
+      "letters": "AN",
+      "syllable": "xác",
+      "frequency": 1262
+    },
+    {
+      "orbit": "corner",
+      "letters": "AO",
+      "syllable": "gan",
+      "frequency": 1715
+    },
+    {
+      "orbit": "corner",
+      "letters": "AP",
+      "syllable": "vùng",
+      "frequency": 1671
+    },
+    {
+      "orbit": "corner",
+      "letters": "AQ",
+      "syllable": "nhở",
+      "frequency": 1326
+    },
+    {
+      "orbit": "corner",
+      "letters": "AS",
+      "syllable": "ngờ",
+      "frequency": 1742
+    },
+    {
+      "orbit": "corner",
+      "letters": "AT",
+      "syllable": "mát",
+      "frequency": 1773
+    },
+    {
+      "orbit": "corner",
+      "letters": "AU",
+      "syllable": "ngủ",
+      "frequency": 1592
+    },
+    {
+      "orbit": "corner",
+      "letters": "AV",
+      "syllable": "nhã",
+      "frequency": 1671
+    },
+    {
+      "orbit": "corner",
+      "letters": "AW",
+      "syllable": "bạn",
+      "frequency": 1708
+    },
+    {
+      "orbit": "corner",
+      "letters": "AX",
+      "syllable": "be",
+      "frequency": 1805
+    },
+    {
+      "orbit": "corner",
+      "letters": "BA",
+      "syllable": "thợ",
+      "frequency": 1480
+    },
+    {
+      "orbit": "corner",
+      "letters": "BD",
+      "syllable": "kẻ",
+      "frequency": 1008
+    },
+    {
+      "orbit": "corner",
+      "letters": "BE",
+      "syllable": "hô",
+      "frequency": 1439
+    },
+    {
+      "orbit": "corner",
+      "letters": "BF",
+      "syllable": "kính",
+      "frequency": 1030
+    },
+    {
+      "orbit": "corner",
+      "letters": "BG",
+      "syllable": "tiễn",
+      "frequency": 1634
+    },
+    {
+      "orbit": "corner",
+      "letters": "BH",
+      "syllable": "trễ",
+      "frequency": 1699
+    },
+    {
+      "orbit": "corner",
+      "letters": "BI",
+      "syllable": "lầm",
+      "frequency": 980
+    },
+    {
+      "orbit": "corner",
+      "letters": "BK",
+      "syllable": "bảng",
+      "frequency": 1521
+    },
+    {
+      "orbit": "corner",
+      "letters": "BL",
+      "syllable": "y",
+      "frequency": 1601
+    },
+    {
+      "orbit": "corner",
+      "letters": "BO",
+      "syllable": "bột",
+      "frequency": 1684
+    },
+    {
+      "orbit": "corner",
+      "letters": "BP",
+      "syllable": "hẳn",
+      "frequency": 1500
+    },
+    {
+      "orbit": "corner",
+      "letters": "BR",
+      "syllable": "độ",
+      "frequency": 1464
+    },
+    {
+      "orbit": "corner",
+      "letters": "BS",
+      "syllable": "ống",
+      "frequency": 1653
+    },
+    {
+      "orbit": "corner",
+      "letters": "BT",
+      "syllable": "cộng",
+      "frequency": 1603
+    },
+    {
+      "orbit": "corner",
+      "letters": "BU",
+      "syllable": "xí",
+      "frequency": 1500
+    },
+    {
+      "orbit": "corner",
+      "letters": "BV",
+      "syllable": "miền",
+      "frequency": 1520
+    },
+    {
+      "orbit": "corner",
+      "letters": "BW",
+      "syllable": "tần",
+      "frequency": 1600
+    },
+    {
+      "orbit": "corner",
+      "letters": "BX",
+      "syllable": "tỏ",
+      "frequency": 1635
+    },
+    {
+      "orbit": "corner",
+      "letters": "DA",
+      "syllable": "ghế",
+      "frequency": 1284
+    },
+    {
+      "orbit": "corner",
+      "letters": "DB",
+      "syllable": "ôn",
+      "frequency": 1125
+    },
+    {
+      "orbit": "corner",
+      "letters": "DE",
+      "syllable": "đức",
+      "frequency": 1253
+    },
+    {
+      "orbit": "corner",
+      "letters": "DG",
+      "syllable": "vẹn",
+      "frequency": 1425
+    },
+    {
+      "orbit": "corner",
+      "letters": "DH",
+      "syllable": "lượt",
+      "frequency": 1447
+    },
+    {
+      "orbit": "corner",
+      "letters": "DK",
+      "syllable": "nhựa",
+      "frequency": 1390
+    },
+    {
+      "orbit": "corner",
+      "letters": "DL",
+      "syllable": "ủng",
+      "frequency": 1457
+    },
+    {
+      "orbit": "corner",
+      "letters": "DN",
+      "syllable": "hạt",
+      "frequency": 1188
+    },
+    {
+      "orbit": "corner",
+      "letters": "DO",
+      "syllable": "rèn",
+      "frequency": 1459
+    },
+    {
+      "orbit": "corner",
+      "letters": "DP",
+      "syllable": "sản",
+      "frequency": 1354
+    },
+    {
+      "orbit": "corner",
+      "letters": "DQ",
+      "syllable": "vành",
+      "frequency": 1223
+    },
+    {
+      "orbit": "corner",
+      "letters": "DR",
+      "syllable": "to",
+      "frequency": 1287
+    },
+    {
+      "orbit": "corner",
+      "letters": "DS",
+      "syllable": "lò",
+      "frequency": 1439
+    },
+    {
+      "orbit": "corner",
+      "letters": "DT",
+      "syllable": "rắc",
+      "frequency": 1471
+    },
+    {
+      "orbit": "corner",
+      "letters": "DU",
+      "syllable": "hạnh",
+      "frequency": 1438
+    },
+    {
+      "orbit": "corner",
+      "letters": "DV",
+      "syllable": "giản",
+      "frequency": 1349
+    },
+    {
+      "orbit": "corner",
+      "letters": "DW",
+      "syllable": "buôn",
+      "frequency": 1428
+    },
+    {
+      "orbit": "corner",
+      "letters": "DX",
+      "syllable": "thẳng",
+      "frequency": 1503
+    },
+    {
+      "orbit": "corner",
+      "letters": "EB",
+      "syllable": "môn",
+      "frequency": 1334
+    },
+    {
+      "orbit": "corner",
+      "letters": "ED",
+      "syllable": "viêm",
+      "frequency": 970
+    },
+    {
+      "orbit": "corner",
+      "letters": "EF",
+      "syllable": "dự",
+      "frequency": 1011
+    },
+    {
+      "orbit": "corner",
+      "letters": "EG",
+      "syllable": "chạm",
+      "frequency": 1691
+    },
+    {
+      "orbit": "corner",
+      "letters": "EH",
+      "syllable": "viễn",
+      "frequency": 1784
+    },
+    {
+      "orbit": "corner",
+      "letters": "EI",
+      "syllable": "mã",
+      "frequency": 960
+    },
+    {
+      "orbit": "corner",
+      "letters": "EK",
+      "syllable": "sàng",
+      "frequency": 1552
+    },
+    {
+      "orbit": "corner",
+      "letters": "EL",
+      "syllable": "an",
+      "frequency": 1674
+    },
+    {
+      "orbit": "corner",
+      "letters": "EN",
+      "syllable": "đám",
+      "frequency": 1329
+    },
+    {
+      "orbit": "corner",
+      "letters": "EO",
+      "syllable": "bạc",
+      "frequency": 1746
+    },
+    {
+      "orbit": "corner",
+      "letters": "EP",
+      "syllable": "cập",
+      "frequency": 1599
+    },
+    {
+      "orbit": "corner",
+      "letters": "EQ",
+      "syllable": "cột",
+      "frequency": 1434
+    },
+    {
+      "orbit": "corner",
+      "letters": "ES",
+      "syllable": "nhân",
+      "frequency": 1801
+    },
+    {
+      "orbit": "corner",
+      "letters": "ET",
+      "syllable": "mưa",
+      "frequency": 1678
+    },
+    {
+      "orbit": "corner",
+      "letters": "EU",
+      "syllable": "trợ",
+      "frequency": 1761
+    },
+    {
+      "orbit": "corner",
+      "letters": "EV",
+      "syllable": "già",
+      "frequency": 1605
+    },
+    {
+      "orbit": "corner",
+      "letters": "EW",
+      "syllable": "mềm",
+      "frequency": 1734
+    },
+    {
+      "orbit": "corner",
+      "letters": "EX",
+      "syllable": "bắp",
+      "frequency": 1744
+    },
+    {
+      "orbit": "corner",
+      "letters": "FA",
+      "syllable": "mụn",
+      "frequency": 1301
+    },
+    {
+      "orbit": "corner",
+      "letters": "FB",
+      "syllable": "chép",
+      "frequency": 1157
+    },
+    {
+      "orbit": "corner",
+      "letters": "FE",
+      "syllable": "cớm",
+      "frequency": 1315
+    },
+    {
+      "orbit": "corner",
+      "letters": "FG",
+      "syllable": "nhặt",
+      "frequency": 1370
+    },
+    {
+      "orbit": "corner",
+      "letters": "FH",
+      "syllable": "sóc",
+      "frequency": 1488
+    },
+    {
+      "orbit": "corner",
+      "letters": "FK",
+      "syllable": "món",
+      "frequency": 1406
+    },
+    {
+      "orbit": "corner",
+      "letters": "FL",
+      "syllable": "móc",
+      "frequency": 1365
+    },
+    {
+      "orbit": "corner",
+      "letters": "FN",
+      "syllable": "muôn",
+      "frequency": 1124
+    },
+    {
+      "orbit": "corner",
+      "letters": "FO",
+      "syllable": "thậm",
+      "frequency": 1401
+    },
+    {
+      "orbit": "corner",
+      "letters": "FP",
+      "syllable": "sơn",
+      "frequency": 1392
+    },
+    {
+      "orbit": "corner",
+      "letters": "FQ",
+      "syllable": "đa",
+      "frequency": 1150
+    },
+    {
+      "orbit": "corner",
+      "letters": "FR",
+      "syllable": "thì",
+      "frequency": 1330
+    },
+    {
+      "orbit": "corner",
+      "letters": "FS",
+      "syllable": "kế",
+      "frequency": 1453
+    },
+    {
+      "orbit": "corner",
+      "letters": "FT",
+      "syllable": "ba",
+      "frequency": 1379
+    },
+    {
+      "orbit": "corner",
+      "letters": "FU",
+      "syllable": "việc",
+      "frequency": 1409
+    },
+    {
+      "orbit": "corner",
+      "letters": "FV",
+      "syllable": "tận",
+      "frequency": 1358
+    },
+    {
+      "orbit": "corner",
+      "letters": "FW",
+      "syllable": "thọ",
+      "frequency": 1385
+    },
+    {
+      "orbit": "corner",
+      "letters": "FX",
+      "syllable": "tất",
+      "frequency": 1461
+    },
+    {
+      "orbit": "corner",
+      "letters": "GA",
+      "syllable": "ồn",
+      "frequency": 1553
+    },
+    {
+      "orbit": "corner",
+      "letters": "GB",
+      "syllable": "gìn",
+      "frequency": 1351
+    },
+    {
+      "orbit": "corner",
+      "letters": "GD",
+      "syllable": "xả",
+      "frequency": 943
+    },
+    {
+      "orbit": "corner",
+      "letters": "GE",
+      "syllable": "càng",
+      "frequency": 1471
+    },
+    {
+      "orbit": "corner",
+      "letters": "GF",
+      "syllable": "vân",
+      "frequency": 969
+    },
+    {
+      "orbit": "corner",
+      "letters": "GH",
+      "syllable": "bể",
+      "frequency": 1845
+    },
+    {
+      "orbit": "corner",
+      "letters": "GI",
+      "syllable": "băn",
+      "frequency": 993
+    },
+    {
+      "orbit": "corner",
+      "letters": "GK",
+      "syllable": "kê",
+      "frequency": 1574
+    },
+    {
+      "orbit": "corner",
+      "letters": "GN",
+      "syllable": "mỏng",
+      "frequency": 1280
+    },
+    {
+      "orbit": "corner",
+      "letters": "GO",
+      "syllable": "dễ",
+      "frequency": 1783
+    },
+    {
+      "orbit": "corner",
+      "letters": "GP",
+      "syllable": "đích",
+      "frequency": 1600
+    },
+    {
+      "orbit": "corner",
+      "letters": "GQ",
+      "syllable": "tóc",
+      "frequency": 1287
+    },
+    {
+      "orbit": "corner",
+      "letters": "GR",
+      "syllable": "sử",
+      "frequency": 1490
+    },
+    {
+      "orbit": "corner",
+      "letters": "GS",
+      "syllable": "võ",
+      "frequency": 1863
+    },
+    {
+      "orbit": "corner",
+      "letters": "GT",
+      "syllable": "hư",
+      "frequency": 1778
+    },
+    {
+      "orbit": "corner",
+      "letters": "GV",
+      "syllable": "bổ",
+      "frequency": 1601
+    },
+    {
+      "orbit": "corner",
+      "letters": "GW",
+      "syllable": "kem",
+      "frequency": 1880
+    },
+    {
+      "orbit": "corner",
+      "letters": "GX",
+      "syllable": "bị",
+      "frequency": 1874
+    },
+    {
+      "orbit": "corner",
+      "letters": "HA",
+      "syllable": "ác",
+      "frequency": 1488
+    },
+    {
+      "orbit": "corner",
+      "letters": "HB",
+      "syllable": "lộ",
+      "frequency": 1340
+    },
+    {
+      "orbit": "corner",
+      "letters": "HD",
+      "syllable": "bụng",
+      "frequency": 984
+    },
+    {
+      "orbit": "corner",
+      "letters": "HE",
+      "syllable": "ngựa",
+      "frequency": 1499
+    },
+    {
+      "orbit": "corner",
+      "letters": "HF",
+      "syllable": "thép",
+      "frequency": 1004
+    },
+    {
+      "orbit": "corner",
+      "letters": "HG",
+      "syllable": "giật",
+      "frequency": 1631
+    },
+    {
+      "orbit": "corner",
+      "letters": "HI",
+      "syllable": "à",
+      "frequency": 992
+    },
+    {
+      "orbit": "corner",
+      "letters": "HK",
+      "syllable": "ức",
+      "frequency": 1556
+    },
+    {
+      "orbit": "corner",
+      "letters": "HL",
+      "syllable": "triển",
+      "frequency": 1699
+    },
+    {
+      "orbit": "corner",
+      "letters": "HN",
+      "syllable": "cam",
+      "frequency": 1348
+    },
+    {
+      "orbit": "corner",
+      "letters": "HO",
+      "syllable": "lực",
+      "frequency": 1652
+    },
+    {
+      "orbit": "corner",
+      "letters": "HP",
+      "syllable": "kể",
+      "frequency": 1528
+    },
+    {
+      "orbit": "corner",
+      "letters": "HQ",
+      "syllable": "vờ",
+      "frequency": 1340
+    },
+    {
+      "orbit": "corner",
+      "letters": "HR",
+      "syllable": "đốt",
+      "frequency": 1463
+    },
+    {
+      "orbit": "corner",
+      "letters": "HT",
+      "syllable": "dữ",
+      "frequency": 1700
+    },
+    {
+      "orbit": "corner",
+      "letters": "HU",
+      "syllable": "nhắn",
+      "frequency": 1681
+    },
+    {
+      "orbit": "corner",
+      "letters": "HV",
+      "syllable": "bế",
+      "frequency": 1512
+    },
+    {
+      "orbit": "corner",
+      "letters": "HW",
+      "syllable": "ta",
+      "frequency": 1719
+    },
+    {
+      "orbit": "corner",
+      "letters": "IA",
+      "syllable": "chị",
+      "frequency": 1290
+    },
+    {
+      "orbit": "corner",
+      "letters": "IB",
+      "syllable": "cơn",
+      "frequency": 1122
+    },
+    {
+      "orbit": "corner",
+      "letters": "IE",
+      "syllable": "lô",
+      "frequency": 1227
+    },
+    {
+      "orbit": "corner",
+      "letters": "IG",
+      "syllable": "trúc",
+      "frequency": 1397
+    },
+    {
+      "orbit": "corner",
+      "letters": "IH",
+      "syllable": "nhỏ",
+      "frequency": 1431
+    },
+    {
+      "orbit": "corner",
+      "letters": "IK",
+      "syllable": "chẽ",
+      "frequency": 1377
+    },
+    {
+      "orbit": "corner",
+      "letters": "IL",
+      "syllable": "tù",
+      "frequency": 1445
+    },
+    {
+      "orbit": "corner",
+      "letters": "IN",
+      "syllable": "ngắn",
+      "frequency": 1192
+    },
+    {
+      "orbit": "corner",
+      "letters": "IO",
+      "syllable": "săn",
+      "frequency": 1434
+    },
+    {
+      "orbit": "corner",
+      "letters": "IP",
+      "syllable": "cự",
+      "frequency": 1342
+    },
+    {
+      "orbit": "corner",
+      "letters": "IQ",
+      "syllable": "tang",
+      "frequency": 1221
+    },
+    {
+      "orbit": "corner",
+      "letters": "IR",
+      "syllable": "ấp",
+      "frequency": 1301
+    },
+    {
+      "orbit": "corner",
+      "letters": "IS",
+      "syllable": "mắn",
+      "frequency": 1472
+    },
+    {
+      "orbit": "corner",
+      "letters": "IT",
+      "syllable": "ứng",
+      "frequency": 1440
+    },
+    {
+      "orbit": "corner",
+      "letters": "IU",
+      "syllable": "gần",
+      "frequency": 1325
+    },
+    {
+      "orbit": "corner",
+      "letters": "IV",
+      "syllable": "hồng",
+      "frequency": 1339
+    },
+    {
+      "orbit": "corner",
+      "letters": "IW",
+      "syllable": "am",
+      "frequency": 1432
+    },
+    {
+      "orbit": "corner",
+      "letters": "IX",
+      "syllable": "mồ",
+      "frequency": 1475
+    },
+    {
+      "orbit": "corner",
+      "letters": "KA",
+      "syllable": "phòng",
+      "frequency": 1445
+    },
+    {
+      "orbit": "corner",
+      "letters": "KB",
+      "syllable": "ngốc",
+      "frequency": 1342
+    },
+    {
+      "orbit": "corner",
+      "letters": "KD",
+      "syllable": "đe",
+      "frequency": 1045
+    },
+    {
+      "orbit": "corner",
+      "letters": "KE",
+      "syllable": "tống",
+      "frequency": 1480
+    },
+    {
+      "orbit": "corner",
+      "letters": "KF",
+      "syllable": "thưa",
+      "frequency": 951
+    },
+    {
+      "orbit": "corner",
+      "letters": "KG",
+      "syllable": "nửa",
+      "frequency": 1700
+    },
+    {
+      "orbit": "corner",
+      "letters": "KH",
+      "syllable": "im",
+      "frequency": 1785
+    },
+    {
+      "orbit": "corner",
+      "letters": "KI",
+      "syllable": "khắp",
+      "frequency": 971
+    },
+    {
+      "orbit": "corner",
+      "letters": "KL",
+      "syllable": "đủ",
+      "frequency": 1728
+    },
+    {
+      "orbit": "corner",
+      "letters": "KN",
+      "syllable": "đồ",
+      "frequency": 1355
+    },
+    {
+      "orbit": "corner",
+      "letters": "KO",
+      "syllable": "hắn",
+      "frequency": 1800
+    },
+    {
+      "orbit": "corner",
+      "letters": "KQ",
+      "syllable": "trị",
+      "frequency": 1283
+    },
+    {
+      "orbit": "corner",
+      "letters": "KR",
+      "syllable": "che",
+      "frequency": 1438
+    },
+    {
+      "orbit": "corner",
+      "letters": "KS",
+      "syllable": "ví",
+      "frequency": 1758
+    },
+    {
+      "orbit": "corner",
+      "letters": "KT",
+      "syllable": "giảm",
+      "frequency": 1777
+    },
+    {
+      "orbit": "corner",
+      "letters": "KU",
+      "syllable": "gà",
+      "frequency": 1788
+    },
+    {
+      "orbit": "corner",
+      "letters": "KW",
+      "syllable": "phổ",
+      "frequency": 1797
+    },
+    {
+      "orbit": "corner",
+      "letters": "KX",
+      "syllable": "lung",
+      "frequency": 1873
+    },
+    {
+      "orbit": "corner",
+      "letters": "LA",
+      "syllable": "lắc",
+      "frequency": 1524
+    },
+    {
+      "orbit": "corner",
+      "letters": "LB",
+      "syllable": "cúm",
+      "frequency": 1351
+    },
+    {
+      "orbit": "corner",
+      "letters": "LD",
+      "syllable": "ám",
+      "frequency": 991
+    },
+    {
+      "orbit": "corner",
+      "letters": "LE",
+      "syllable": "mơ",
+      "frequency": 1388
+    },
+    {
+      "orbit": "corner",
+      "letters": "LF",
+      "syllable": "chân",
+      "frequency": 969
+    },
+    {
+      "orbit": "corner",
+      "letters": "LH",
+      "syllable": "chôn",
+      "frequency": 1864
+    },
+    {
+      "orbit": "corner",
+      "letters": "LI",
+      "syllable": "thô",
+      "frequency": 968
+    },
+    {
+      "orbit": "corner",
+      "letters": "LK",
+      "syllable": "cứng",
+      "frequency": 1600
+    },
+    {
+      "orbit": "corner",
+      "letters": "LN",
+      "syllable": "tệ",
+      "frequency": 1349
+    },
+    {
+      "orbit": "corner",
+      "letters": "LO",
+      "syllable": "sở",
+      "frequency": 1777
+    },
+    {
+      "orbit": "corner",
+      "letters": "LP",
+      "syllable": "cô",
+      "frequency": 1553
+    },
+    {
+      "orbit": "corner",
+      "letters": "LQ",
+      "syllable": "bình",
+      "frequency": 1311
+    },
+    {
+      "orbit": "corner",
+      "letters": "LR",
+      "syllable": "sẻ",
+      "frequency": 1475
+    },
+    {
+      "orbit": "corner",
+      "letters": "LS",
+      "syllable": "gì",
+      "frequency": 1875
+    },
+    {
+      "orbit": "corner",
+      "letters": "LT",
+      "syllable": "dám",
+      "frequency": 1804
+    },
+    {
+      "orbit": "corner",
+      "letters": "LV",
+      "syllable": "thân",
+      "frequency": 1538
+    },
+    {
+      "orbit": "corner",
+      "letters": "LW",
+      "syllable": "chức",
+      "frequency": 1889
+    },
+    {
+      "orbit": "corner",
+      "letters": "LX",
+      "syllable": "xứ",
+      "frequency": 1911
+    },
+    {
+      "orbit": "corner",
+      "letters": "NA",
+      "syllable": "tích",
+      "frequency": 1468
+    },
+    {
+      "orbit": "corner",
+      "letters": "ND",
+      "syllable": "ca",
+      "frequency": 1011
+    },
+    {
+      "orbit": "corner",
+      "letters": "NE",
+      "syllable": "bí",
+      "frequency": 1473
+    },
+    {
+      "orbit": "corner",
+      "letters": "NF",
+      "syllable": "xe",
+      "frequency": 1045
+    },
+    {
+      "orbit": "corner",
+      "letters": "NG",
+      "syllable": "cuộc",
+      "frequency": 1561
+    },
+    {
+      "orbit": "corner",
+      "letters": "NH",
+      "syllable": "mệnh",
+      "frequency": 1677
+    },
+    {
+      "orbit": "corner",
+      "letters": "NI",
+      "syllable": "sạn",
+      "frequency": 994
+    },
+    {
+      "orbit": "corner",
+      "letters": "NK",
+      "syllable": "ngừa",
+      "frequency": 1553
+    },
+    {
+      "orbit": "corner",
+      "letters": "NL",
+      "syllable": "ờ",
+      "frequency": 1601
+    },
+    {
+      "orbit": "corner",
+      "letters": "NO",
+      "syllable": "trộn",
+      "frequency": 1566
+    },
+    {
+      "orbit": "corner",
+      "letters": "NP",
+      "syllable": "chỗ",
+      "frequency": 1557
+    },
+    {
+      "orbit": "corner",
+      "letters": "NR",
+      "syllable": "xử",
+      "frequency": 1460
+    },
+    {
+      "orbit": "corner",
+      "letters": "NS",
+      "syllable": "nề",
+      "frequency": 1656
+    },
+    {
+      "orbit": "corner",
+      "letters": "NT",
+      "syllable": "đẳng",
+      "frequency": 1637
+    },
+    {
+      "orbit": "corner",
+      "letters": "NU",
+      "syllable": "xanh",
+      "frequency": 1628
+    },
+    {
+      "orbit": "corner",
+      "letters": "NV",
+      "syllable": "kiên",
+      "frequency": 1541
+    },
+    {
+      "orbit": "corner",
+      "letters": "NW",
+      "syllable": "góc",
+      "frequency": 1571
+    },
+    {
+      "orbit": "corner",
+      "letters": "NX",
+      "syllable": "mù",
+      "frequency": 1685
+    },
+    {
+      "orbit": "corner",
+      "letters": "OA",
+      "syllable": "mà",
+      "frequency": 1440
+    },
+    {
+      "orbit": "corner",
+      "letters": "OB",
+      "syllable": "liệt",
+      "frequency": 1389
+    },
+    {
+      "orbit": "corner",
+      "letters": "OD",
+      "syllable": "sụp",
+      "frequency": 988
+    },
+    {
+      "orbit": "corner",
+      "letters": "OE",
+      "syllable": "đình",
+      "frequency": 1524
+    },
+    {
+      "orbit": "corner",
+      "letters": "OF",
+      "syllable": "tấm",
+      "frequency": 1007
+    },
+    {
+      "orbit": "corner",
+      "letters": "OG",
+      "syllable": "gã",
+      "frequency": 1665
+    },
+    {
+      "orbit": "corner",
+      "letters": "OH",
+      "syllable": "cụ",
+      "frequency": 1909
+    },
+    {
+      "orbit": "corner",
+      "letters": "OI",
+      "syllable": "bề",
+      "frequency": 956
+    },
+    {
+      "orbit": "corner",
+      "letters": "OK",
+      "syllable": "gia",
+      "frequency": 1551
+    },
+    {
+      "orbit": "corner",
+      "letters": "OL",
+      "syllable": "đậm",
+      "frequency": 1655
+    },
+    {
+      "orbit": "corner",
+      "letters": "ON",
+      "syllable": "chẩn",
+      "frequency": 1291
+    },
+    {
+      "orbit": "corner",
+      "letters": "OP",
+      "syllable": "trùm",
+      "frequency": 1558
+    },
+    {
+      "orbit": "corner",
+      "letters": "OQ",
+      "syllable": "ô",
+      "frequency": 1382
+    },
+    {
+      "orbit": "corner",
+      "letters": "OR",
+      "syllable": "sống",
+      "frequency": 1607
+    },
+    {
+      "orbit": "corner",
+      "letters": "OS",
+      "syllable": "mặn",
+      "frequency": 1890
+    },
+    {
+      "orbit": "corner",
+      "letters": "OU",
+      "syllable": "sư",
+      "frequency": 1697
+    },
+    {
+      "orbit": "corner",
+      "letters": "OV",
+      "syllable": "bác",
+      "frequency": 1588
+    },
+    {
+      "orbit": "corner",
+      "letters": "OX",
+      "syllable": "nhỉ",
+      "frequency": 1907
+    },
+    {
+      "orbit": "corner",
+      "letters": "PA",
+      "syllable": "bó",
+      "frequency": 1538
+    },
+    {
+      "orbit": "corner",
+      "letters": "PB",
+      "syllable": "vặt",
+      "frequency": 1358
+    },
+    {
+      "orbit": "corner",
+      "letters": "PD",
+      "syllable": "vàng",
+      "frequency": 1054
+    },
+    {
+      "orbit": "corner",
+      "letters": "PE",
+      "syllable": "lạm",
+      "frequency": 1400
+    },
+    {
+      "orbit": "corner",
+      "letters": "PF",
+      "syllable": "ngọn",
+      "frequency": 991
+    },
+    {
+      "orbit": "corner",
+      "letters": "PG",
+      "syllable": "bức",
+      "frequency": 1674
+    },
+    {
+      "orbit": "corner",
+      "letters": "PH",
+      "syllable": "vừa",
+      "frequency": 1916
+    },
+    {
+      "orbit": "corner",
+      "letters": "PI",
+      "syllable": "lót",
+      "frequency": 1012
+    },
+    {
+      "orbit": "corner",
+      "letters": "PL",
+      "syllable": "gi",
+      "frequency": 1769
+    },
+    {
+      "orbit": "corner",
+      "letters": "PN",
+      "syllable": "tựa",
+      "frequency": 1326
+    },
+    {
+      "orbit": "corner",
+      "letters": "PO",
+      "syllable": "phun",
+      "frequency": 1762
+    },
+    {
+      "orbit": "corner",
+      "letters": "PQ",
+      "syllable": "xi",
+      "frequency": 1339
+    },
+    {
+      "orbit": "corner",
+      "letters": "PR",
+      "syllable": "ân",
+      "frequency": 1478
+    },
+    {
+      "orbit": "corner",
+      "letters": "PS",
+      "syllable": "lông",
+      "frequency": 1773
+    },
+    {
+      "orbit": "corner",
+      "letters": "PT",
+      "syllable": "rạp",
+      "frequency": 1768
+    },
+    {
+      "orbit": "corner",
+      "letters": "PU",
+      "syllable": "nghỉ",
+      "frequency": 1723
+    },
+    {
+      "orbit": "corner",
+      "letters": "PW",
+      "syllable": "go",
+      "frequency": 1772
+    },
+    {
+      "orbit": "corner",
+      "letters": "PX",
+      "syllable": "ga",
+      "frequency": 1851
+    },
+    {
+      "orbit": "corner",
+      "letters": "QA",
+      "syllable": "gác",
+      "frequency": 1485
+    },
+    {
+      "orbit": "corner",
+      "letters": "QD",
+      "syllable": "ma",
+      "frequency": 986
+    },
+    {
+      "orbit": "corner",
+      "letters": "QE",
+      "syllable": "nhằm",
+      "frequency": 1446
+    },
+    {
+      "orbit": "corner",
+      "letters": "QF",
+      "syllable": "mốc",
+      "frequency": 1043
+    },
+    {
+      "orbit": "corner",
+      "letters": "QG",
+      "syllable": "chủ",
+      "frequency": 1527
+    },
+    {
+      "orbit": "corner",
+      "letters": "QH",
+      "syllable": "trốn",
+      "frequency": 1627
+    },
+    {
+      "orbit": "corner",
+      "letters": "QI",
+      "syllable": "cóc",
+      "frequency": 1069
+    },
+    {
+      "orbit": "corner",
+      "letters": "QK",
+      "syllable": "bá",
+      "frequency": 1475
+    },
+    {
+      "orbit": "corner",
+      "letters": "QL",
+      "syllable": "gam",
+      "frequency": 1614
+    },
+    {
+      "orbit": "corner",
+      "letters": "QO",
+      "syllable": "nho",
+      "frequency": 1703
+    },
+    {
+      "orbit": "corner",
+      "letters": "QP",
+      "syllable": "án",
+      "frequency": 1507
+    },
+    {
+      "orbit": "corner",
+      "letters": "QR",
+      "syllable": "chữa",
+      "frequency": 1452
+    },
+    {
+      "orbit": "corner",
+      "letters": "QS",
+      "syllable": "tụ",
+      "frequency": 1664
+    },
+    {
+      "orbit": "corner",
+      "letters": "QT",
+      "syllable": "rồ",
+      "frequency": 1701
+    },
+    {
+      "orbit": "corner",
+      "letters": "QU",
+      "syllable": "cứt",
+      "frequency": 1618
+    },
+    {
+      "orbit": "corner",
+      "letters": "QV",
+      "syllable": "nô",
+      "frequency": 1553
+    },
+    {
+      "orbit": "corner",
+      "letters": "QW",
+      "syllable": "buộc",
+      "frequency": 1702
+    },
+    {
+      "orbit": "corner",
+      "letters": "QX",
+      "syllable": "giám",
+      "frequency": 1703
+    },
+    {
+      "orbit": "corner",
+      "letters": "RB",
+      "syllable": "pha",
+      "frequency": 1319
+    },
+    {
+      "orbit": "corner",
+      "letters": "RD",
+      "syllable": "gõ",
+      "frequency": 1001
+    },
+    {
+      "orbit": "corner",
+      "letters": "RF",
+      "syllable": "ăn",
+      "frequency": 950
+    },
+    {
+      "orbit": "corner",
+      "letters": "RG",
+      "syllable": "ghi",
+      "frequency": 1739
+    },
+    {
+      "orbit": "corner",
+      "letters": "RH",
+      "syllable": "phụ",
+      "frequency": 1816
+    },
+    {
+      "orbit": "corner",
+      "letters": "RI",
+      "syllable": "hàn",
+      "frequency": 1016
+    },
+    {
+      "orbit": "corner",
+      "letters": "RK",
+      "syllable": "phúc",
+      "frequency": 1632
+    },
+    {
+      "orbit": "corner",
+      "letters": "RL",
+      "syllable": "thua",
+      "frequency": 1664
+    },
+    {
+      "orbit": "corner",
+      "letters": "RN",
+      "syllable": "dập",
+      "frequency": 1331
+    },
+    {
+      "orbit": "corner",
+      "letters": "RO",
+      "syllable": "trực",
+      "frequency": 1774
+    },
+    {
+      "orbit": "corner",
+      "letters": "RP",
+      "syllable": "giận",
+      "frequency": 1567
+    },
+    {
+      "orbit": "corner",
+      "letters": "RQ",
+      "syllable": "nắng",
+      "frequency": 1285
+    },
+    {
+      "orbit": "corner",
+      "letters": "RS",
+      "syllable": "gục",
+      "frequency": 1751
+    },
+    {
+      "orbit": "corner",
+      "letters": "RT",
+      "syllable": "bia",
+      "frequency": 1704
+    },
+    {
+      "orbit": "corner",
+      "letters": "RU",
+      "syllable": "định",
+      "frequency": 1609
+    },
+    {
+      "orbit": "corner",
+      "letters": "RV",
+      "syllable": "đúng",
+      "frequency": 1614
+    },
+    {
+      "orbit": "corner",
+      "letters": "RW",
+      "syllable": "khóc",
+      "frequency": 1806
+    },
+    {
+      "orbit": "corner",
+      "letters": "RX",
+      "syllable": "đặc",
+      "frequency": 1834
+    },
+    {
+      "orbit": "corner",
+      "letters": "SA",
+      "syllable": "bơ",
+      "frequency": 1441
+    },
+    {
+      "orbit": "corner",
+      "letters": "SB",
+      "syllable": "phép",
+      "frequency": 1317
+    },
+    {
+      "orbit": "corner",
+      "letters": "SD",
+      "syllable": "hè",
+      "frequency": 968
+    },
+    {
+      "orbit": "corner",
+      "letters": "SE",
+      "syllable": "khử",
+      "frequency": 1440
+    },
+    {
+      "orbit": "corner",
+      "letters": "SF",
+      "syllable": "cắn",
+      "frequency": 969
+    },
+    {
+      "orbit": "corner",
+      "letters": "SG",
+      "syllable": "dính",
+      "frequency": 1633
+    },
+    {
+      "orbit": "corner",
+      "letters": "SI",
+      "syllable": "cơm",
+      "frequency": 1010
+    },
+    {
+      "orbit": "corner",
+      "letters": "SK",
+      "syllable": "bỗng",
+      "frequency": 1540
+    },
+    {
+      "orbit": "corner",
+      "letters": "SL",
+      "syllable": "trừ",
+      "frequency": 1648
+    },
+    {
+      "orbit": "corner",
+      "letters": "SN",
+      "syllable": "trẻ",
+      "frequency": 1382
+    },
+    {
+      "orbit": "corner",
+      "letters": "SO",
+      "syllable": "cắm",
+      "frequency": 1744
+    },
+    {
+      "orbit": "corner",
+      "letters": "SP",
+      "syllable": "long",
+      "frequency": 1587
+    },
+    {
+      "orbit": "corner",
+      "letters": "SQ",
+      "syllable": "nước",
+      "frequency": 1353
+    },
+    {
+      "orbit": "corner",
+      "letters": "SR",
+      "syllable": "xưa",
+      "frequency": 1556
+    },
+    {
+      "orbit": "corner",
+      "letters": "ST",
+      "syllable": "ham",
+      "frequency": 1686
+    },
+    {
+      "orbit": "corner",
+      "letters": "SU",
+      "syllable": "dĩ",
+      "frequency": 1650
+    },
+    {
+      "orbit": "corner",
+      "letters": "SV",
+      "syllable": "trạm",
+      "frequency": 1550
+    },
+    {
+      "orbit": "corner",
+      "letters": "SW",
+      "syllable": "vết",
+      "frequency": 1581
+    },
+    {
+      "orbit": "corner",
+      "letters": "TA",
+      "syllable": "đèn",
+      "frequency": 1534
+    },
+    {
+      "orbit": "corner",
+      "letters": "TB",
+      "syllable": "tức",
+      "frequency": 1344
+    },
+    {
+      "orbit": "corner",
+      "letters": "TD",
+      "syllable": "rắn",
+      "frequency": 1028
+    },
+    {
+      "orbit": "corner",
+      "letters": "TE",
+      "syllable": "vi",
+      "frequency": 1447
+    },
+    {
+      "orbit": "corner",
+      "letters": "TF",
+      "syllable": "bẻ",
+      "frequency": 989
+    },
+    {
+      "orbit": "corner",
+      "letters": "TG",
+      "syllable": "sút",
+      "frequency": 1715
+    },
+    {
+      "orbit": "corner",
+      "letters": "TH",
+      "syllable": "ngu",
+      "frequency": 1913
+    },
+    {
+      "orbit": "corner",
+      "letters": "TI",
+      "syllable": "chú",
+      "frequency": 995
+    },
+    {
+      "orbit": "corner",
+      "letters": "TK",
+      "syllable": "hà",
+      "frequency": 1568
+    },
+    {
+      "orbit": "corner",
+      "letters": "TL",
+      "syllable": "da",
+      "frequency": 1679
+    },
+    {
+      "orbit": "corner",
+      "letters": "TN",
+      "syllable": "kề",
+      "frequency": 1332
+    },
+    {
+      "orbit": "corner",
+      "letters": "TP",
+      "syllable": "ngọt",
+      "frequency": 1553
+    },
+    {
+      "orbit": "corner",
+      "letters": "TQ",
+      "syllable": "mình",
+      "frequency": 1291
+    },
+    {
+      "orbit": "corner",
+      "letters": "TR",
+      "syllable": "ớt",
+      "frequency": 1441
+    },
+    {
+      "orbit": "corner",
+      "letters": "TS",
+      "syllable": "ích",
+      "frequency": 1911
+    },
+    {
+      "orbit": "corner",
+      "letters": "TU",
+      "syllable": "giữa",
+      "frequency": 1677
+    },
+    {
+      "orbit": "corner",
+      "letters": "TV",
+      "syllable": "su",
+      "frequency": 1508
+    },
+    {
+      "orbit": "corner",
+      "letters": "TX",
+      "syllable": "mớ",
+      "frequency": 1854
+    },
+    {
+      "orbit": "corner",
+      "letters": "UA",
+      "syllable": "đế",
+      "frequency": 1451
+    },
+    {
+      "orbit": "corner",
+      "letters": "UB",
+      "syllable": "ốm",
+      "frequency": 1298
+    },
+    {
+      "orbit": "corner",
+      "letters": "UD",
+      "syllable": "mua",
+      "frequency": 1011
+    },
+    {
+      "orbit": "corner",
+      "letters": "UE",
+      "syllable": "dọc",
+      "frequency": 1458
+    },
+    {
+      "orbit": "corner",
+      "letters": "UF",
+      "syllable": "me",
+      "frequency": 992
+    },
+    {
+      "orbit": "corner",
+      "letters": "UH",
+      "syllable": "tô",
+      "frequency": 1851
+    },
+    {
+      "orbit": "corner",
+      "letters": "UI",
+      "syllable": "tồn",
+      "frequency": 1021
+    },
+    {
+      "orbit": "corner",
+      "letters": "UK",
+      "syllable": "hèn",
+      "frequency": 1499
+    },
+    {
+      "orbit": "corner",
+      "letters": "UN",
+      "syllable": "bùng",
+      "frequency": 1292
+    },
+    {
+      "orbit": "corner",
+      "letters": "UO",
+      "syllable": "phế",
+      "frequency": 1885
+    },
+    {
+      "orbit": "corner",
+      "letters": "UP",
+      "syllable": "phản",
+      "frequency": 1576
+    },
+    {
+      "orbit": "corner",
+      "letters": "UQ",
+      "syllable": "mộ",
+      "frequency": 1219
+    },
+    {
+      "orbit": "corner",
+      "letters": "UR",
+      "syllable": "lỏng",
+      "frequency": 1461
+    },
+    {
+      "orbit": "corner",
+      "letters": "US",
+      "syllable": "xa",
+      "frequency": 1920
+    },
+    {
+      "orbit": "corner",
+      "letters": "UT",
+      "syllable": "bả",
+      "frequency": 1768
+    },
+    {
+      "orbit": "corner",
+      "letters": "UV",
+      "syllable": "tràn",
+      "frequency": 1568
+    },
+    {
+      "orbit": "corner",
+      "letters": "UW",
+      "syllable": "cỗ",
+      "frequency": 1715
+    },
+    {
+      "orbit": "corner",
+      "letters": "UX",
+      "syllable": "mãn",
+      "frequency": 1876
+    },
+    {
+      "orbit": "corner",
+      "letters": "VA",
+      "syllable": "tê",
+      "frequency": 1475
+    },
+    {
+      "orbit": "corner",
+      "letters": "VB",
+      "syllable": "hung",
+      "frequency": 1369
+    },
+    {
+      "orbit": "corner",
+      "letters": "VD",
+      "syllable": "mắc",
+      "frequency": 942
+    },
+    {
+      "orbit": "corner",
+      "letters": "VE",
+      "syllable": "don",
+      "frequency": 1472
+    },
+    {
+      "orbit": "corner",
+      "letters": "VF",
+      "syllable": "chi",
+      "frequency": 970
+    },
+    {
+      "orbit": "corner",
+      "letters": "VG",
+      "syllable": "hiểm",
+      "frequency": 1794
+    },
+    {
+      "orbit": "corner",
+      "letters": "VH",
+      "syllable": "bến",
+      "frequency": 1745
+    },
+    {
+      "orbit": "corner",
+      "letters": "VI",
+      "syllable": "dạ",
+      "frequency": 989
+    },
+    {
+      "orbit": "corner",
+      "letters": "VL",
+      "syllable": "in",
+      "frequency": 1788
+    },
+    {
+      "orbit": "corner",
+      "letters": "VN",
+      "syllable": "bền",
+      "frequency": 1390
+    },
+    {
+      "orbit": "corner",
+      "letters": "VO",
+      "syllable": "xúc",
+      "frequency": 1760
+    },
+    {
+      "orbit": "corner",
+      "letters": "VQ",
+      "syllable": "thở",
+      "frequency": 1350
+    },
+    {
+      "orbit": "corner",
+      "letters": "VR",
+      "syllable": "mỡ",
+      "frequency": 1486
+    },
+    {
+      "orbit": "corner",
+      "letters": "VS",
+      "syllable": "lũng",
+      "frequency": 1848
+    },
+    {
+      "orbit": "corner",
+      "letters": "VT",
+      "syllable": "vỡ",
+      "frequency": 1780
+    },
+    {
+      "orbit": "corner",
+      "letters": "VU",
+      "syllable": "bồn",
+      "frequency": 1702
+    },
+    {
+      "orbit": "corner",
+      "letters": "VW",
+      "syllable": "phím",
+      "frequency": 1716
+    },
+    {
+      "orbit": "corner",
+      "letters": "VX",
+      "syllable": "nắm",
+      "frequency": 1870
+    },
+    {
+      "orbit": "corner",
+      "letters": "WA",
+      "syllable": "sa",
+      "frequency": 1485
+    },
+    {
+      "orbit": "corner",
+      "letters": "WB",
+      "syllable": "manh",
+      "frequency": 1352
+    },
+    {
+      "orbit": "corner",
+      "letters": "WD",
+      "syllable": "tàn",
+      "frequency": 959
+    },
+    {
+      "orbit": "corner",
+      "letters": "WE",
+      "syllable": "khứ",
+      "frequency": 1426
+    },
+    {
+      "orbit": "corner",
+      "letters": "WF",
+      "syllable": "bé",
+      "frequency": 988
+    },
+    {
+      "orbit": "corner",
+      "letters": "WG",
+      "syllable": "phục",
+      "frequency": 1656
+    },
+    {
+      "orbit": "corner",
+      "letters": "WH",
+      "syllable": "vong",
+      "frequency": 1907
+    },
+    {
+      "orbit": "corner",
+      "letters": "WI",
+      "syllable": "hụt",
+      "frequency": 960
+    },
+    {
+      "orbit": "corner",
+      "letters": "WK",
+      "syllable": "so",
+      "frequency": 1505
+    },
+    {
+      "orbit": "corner",
+      "letters": "WL",
+      "syllable": "sợ",
+      "frequency": 1606
+    },
+    {
+      "orbit": "corner",
+      "letters": "WN",
+      "syllable": "tỉnh",
+      "frequency": 1297
+    },
+    {
+      "orbit": "corner",
+      "letters": "WP",
+      "syllable": "nhẫn",
+      "frequency": 1593
+    },
+    {
+      "orbit": "corner",
+      "letters": "WQ",
+      "syllable": "vở",
+      "frequency": 1339
+    },
+    {
+      "orbit": "corner",
+      "letters": "WR",
+      "syllable": "tò",
+      "frequency": 1427
+    },
+    {
+      "orbit": "corner",
+      "letters": "WS",
+      "syllable": "vớ",
+      "frequency": 1922
+    },
+    {
+      "orbit": "corner",
+      "letters": "WU",
+      "syllable": "lặp",
+      "frequency": 1660
+    },
+    {
+      "orbit": "corner",
+      "letters": "WV",
+      "syllable": "mô",
+      "frequency": 1561
+    },
+    {
+      "orbit": "corner",
+      "letters": "WX",
+      "syllable": "trả",
+      "frequency": 1913
+    },
+    {
+      "orbit": "corner",
+      "letters": "XA",
+      "syllable": "nghe",
+      "frequency": 1489
+    },
+    {
+      "orbit": "corner",
+      "letters": "XB",
+      "syllable": "phút",
+      "frequency": 1357
+    },
+    {
+      "orbit": "corner",
+      "letters": "XD",
+      "syllable": "lăng",
+      "frequency": 1017
+    },
+    {
+      "orbit": "corner",
+      "letters": "XE",
+      "syllable": "xỉ",
+      "frequency": 1524
+    },
+    {
+      "orbit": "corner",
+      "letters": "XF",
+      "syllable": "nó",
+      "frequency": 971
+    },
+    {
+      "orbit": "corner",
+      "letters": "XG",
+      "syllable": "thùng",
+      "frequency": 1579
+    },
+    {
+      "orbit": "corner",
+      "letters": "XI",
+      "syllable": "tim",
+      "frequency": 993
+    },
+    {
+      "orbit": "corner",
+      "letters": "XK",
+      "syllable": "tớ",
+      "frequency": 1630
+    },
+    {
+      "orbit": "corner",
+      "letters": "XL",
+      "syllable": "nhóc",
+      "frequency": 1584
+    },
+    {
+      "orbit": "corner",
+      "letters": "XN",
+      "syllable": "thổ",
+      "frequency": 1289
+    },
+    {
+      "orbit": "corner",
+      "letters": "XO",
+      "syllable": "hợp",
+      "frequency": 1696
+    },
+    {
+      "orbit": "corner",
+      "letters": "XP",
+      "syllable": "đang",
+      "frequency": 1528
+    },
+    {
+      "orbit": "corner",
+      "letters": "XQ",
+      "syllable": "cố",
+      "frequency": 1254
+    },
+    {
+      "orbit": "corner",
+      "letters": "XR",
+      "syllable": "tròn",
+      "frequency": 1414
+    },
+    {
+      "orbit": "corner",
+      "letters": "XT",
+      "syllable": "đọc",
+      "frequency": 1681
+    },
+    {
+      "orbit": "corner",
+      "letters": "XU",
+      "syllable": "gỗ",
+      "frequency": 1616
+    },
+    {
+      "orbit": "corner",
+      "letters": "XV",
+      "syllable": "vĩ",
+      "frequency": 1566
+    },
+    {
+      "orbit": "corner",
+      "letters": "XW",
+      "syllable": "bóp",
+      "frequency": 1825
+    }
+  ],
+  "pool_size": 1600,
+  "seed": 20261012,
+  "best_fitness": 0.55821705,
+  "freq_sha256": "11609bd494b8a4a9487ecdfda4237e5b7552500c0e9b77aa918a21ce04b657db",
+  "syllables_sha256": "c79c850a102aebf27215dea1b418b6faefffa2caf4dc646674dbe33dd7c0b4bb"
+}
