@@ -9,10 +9,10 @@
 #include "common/strbuf.h"
 
 const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[12] = {
-    {"cherry", "edge", 551},   {"cherry", "corner", 328}, {"cherry", "flips", 25},
-    {"cherry", "twists", 20},  {"cherry", "parity", 26},  {"cherry", "ltct", 8},
-    {"eggins", "edge", 71},    {"eggins", "corner", 38},  {"eggins", "flips", 0},
-    {"eggins", "twists", 5},   {"eggins", "parity", 2},   {"eggins", "ltct", 3},
+    {"cherry", "edge", 551},  {"cherry", "corner", 328}, {"cherry", "flips", 25},
+    {"cherry", "twists", 20}, {"cherry", "parity", 26},  {"cherry", "ltct", 8},
+    {"eggins", "edge", 71},   {"eggins", "corner", 38},  {"eggins", "flips", 0},
+    {"eggins", "twists", 5},  {"eggins", "parity", 2},   {"eggins", "ltct", 3},
 };
 
 const size_t VERIFY_SHEET_PIN_COUNT = 12;
