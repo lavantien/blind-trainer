@@ -448,10 +448,10 @@ void bt_view_drill_set_pending(bt_case case_id) {
     BT_TRACE_EXIT("app.drill_set_pending");
 }
 
-static void pick_and_install(bt_app_ctx *ctx, bt_drill_app_state *app) {
+static void pick_and_install(bt_app_ctx *ctx, bt_drill_app_state *app, int use_pending) {
     bt_case picked;
     int has = 0;
-    if (app->has_pending) {
+    if (use_pending && app->has_pending) {
         picked = app->pending;
         app->has_pending = 0;
         has = 1;
@@ -470,7 +470,7 @@ static void pick_and_install(bt_app_ctx *ctx, bt_drill_app_state *app) {
 
 void bt_view_drill_enter_state(bt_app_ctx *ctx, bt_drill_app_state *app) {
     BT_TRACE_ENTER("app.drill_enter_state");
-    pick_and_install(ctx, app);
+    pick_and_install(ctx, app, 1);
     ctx->drill_phase = BT_DRILL_CARD;
     bt_view_drill_net_sync(&ctx->net, &app->session);
     app->last_phase = BT_DRILL_CARD;
@@ -565,7 +565,7 @@ void bt_view_drill_key(bt_app_ctx *ctx, bt_drill_app_state *app, int key) {
         bt_app_save_stores(ctx);
         app->session.rate_step += 1;
         if (app->session.rate_step > 1) {
-            pick_and_install(ctx, app);
+            pick_and_install(ctx, app, 0);
             app->seed += 1;
             ctx->drill_phase = BT_DRILL_CARD;
             bt_view_drill_enter_phase(ctx, app, BT_DRILL_CARD);

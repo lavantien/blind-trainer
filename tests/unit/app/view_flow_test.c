@@ -169,3 +169,32 @@ BT_TEST(view_flow, drill_pending_case_is_consumed_once) {
     BT_CHECK(!app->has_pending);
     bt_app_ctx_free(&ctx);
 }
+
+BT_TEST(view_flow, rate_repick_ignores_pending_and_reruns_drill_enter) {
+    bt_app_ctx ctx;
+    fill_flow_ctx(&ctx, "rate-pending");
+    bt_drill_app_state *app = bt_view_drill_app();
+    bt_view_drill_app_init(app);
+    app->seed = 20261012;
+    bt_view_drill_enter_state(&ctx, app);
+    bt_view_drill_key(&ctx, app, KEY_SPACE);
+    for (int rep = 0; rep < 4; rep++) {
+        bt_view_drill_key(&ctx, app, KEY_SPACE);
+    }
+    BT_CHECK(ctx.drill_phase == BT_DRILL_RATE);
+    bt_case pending;
+    memset(&pending, 0, sizeof pending);
+    pending.orbit = BT_ORBIT_CORNER;
+    pending.t1 = bt_scheme_sticker_of(BT_ORBIT_CORNER, 'A');
+    pending.t2 = bt_scheme_sticker_of(BT_ORBIT_CORNER, 'B');
+    bt_view_drill_set_pending(pending);
+    bt_view_drill_key(&ctx, app, KEY_ONE);
+    bt_view_drill_key(&ctx, app, KEY_THREE);
+    BT_CHECK(ctx.drill_phase == BT_DRILL_CARD);
+    BT_CHECK(app->has_pending == 1);
+    BT_CHECK(app->session.has_pin && app->session.pin.orbit == BT_ORBIT_EDGE);
+    bt_view_drill_enter_state(&ctx, app);
+    BT_CHECK(app->has_pending == 0);
+    BT_CHECK(app->session.pin.orbit == BT_ORBIT_CORNER);
+    bt_app_ctx_free(&ctx);
+}
