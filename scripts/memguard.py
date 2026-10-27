@@ -349,8 +349,11 @@ def selftest(sleeper_path):
             fail(f"selftest pidfile sleeper pid {tree_sleeper.pid} died before the kill fixture")
             return 5
         no_kill = monitor([live], 1, kill=False)
-        if no_kill["code"] != 3 or winproc.pid_alive(tree_sleeper.pid):
+        if no_kill["code"] != 3:
             fail(f"selftest breach without -Kill returned {no_kill['code']}")
+            return 5
+        if not winproc.pid_alive(tree_sleeper.pid):
+            fail(f"selftest breach without -Kill touched pid {tree_sleeper.pid}")
             return 5
         TOOL.out(f"memguard selftest ok: breach without -Kill left pid {tree_sleeper.pid} alive")
         live = winproc.process_row(tree_sleeper.pid)

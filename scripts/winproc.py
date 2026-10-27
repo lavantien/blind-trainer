@@ -2,7 +2,6 @@ import ctypes
 import sys
 from ctypes import wintypes
 
-TH32CS_SNAPPROCESS = 0x2
 PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 PROCESS_VM_READ = 0x10
 STILL_ACTIVE = 259
@@ -10,15 +9,14 @@ DOTNET_FILETIME_OFFSET = 504911232000000000
 PATH_BUFFER_WCHARS = 1024
 
 
-class PROCESSENTRY32W(ctypes.Structure):
+class PROCESS_BASIC_INFORMATION(ctypes.Structure):
     _fields_ = [
-        ("dwSize", wintypes.DWORD),
-        ("cntUsage", wintypes.DWORD),
-        ("th32ProcessID", wintypes.DWORD),
-        ("th32ParentProcessID", wintypes.DWORD),
-        ("pcPriClassBase", ctypes.c_long),
-        ("dwFlags", wintypes.DWORD),
-        ("szExeFile", ctypes.c_wchar * 260),
+        ("Reserved1", ctypes.c_void_p * 2),
+        ("PebBaseAddress", ctypes.c_void_p),
+        ("Reserved2", ctypes.c_void_p * 2),
+        ("UniqueProcessId", ctypes.c_void_p),
+        ("InheritedFromUniqueProcessId", ctypes.c_void_p),
+        ("Reserved3", ctypes.c_void_p),
     ]
 
 
@@ -59,33 +57,62 @@ def _psapi():
         return _kernel32()
 
 
-def snapshot_processes():
-    """returns a list of dicts: pid, ppid, exe (basename) for every live process."""
+def _ntdll():
+    if sys.platform != "win32":
+        raise OSError("winproc helpers are windows only")
+    return ctypes.WinDLL("ntdll")
+
+
+def _pid_ppid(pid):
     k32 = _kernel32()
-    k32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
-    k32.CreateToolhelp32Snapshot.argtypes = [wintypes.DWORD, wintypes.DWORD]
-    snap = k32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
-    if snap == wintypes.HANDLE(-1).value or snap is None:
-        raise ctypes.WinError(ctypes.get_last_error())
-    entry = PROCESSENTRY32W()
-    entry.dwSize = ctypes.sizeof(PROCESSENTRY32W)
-    rows = []
+    ntdll = _ntdll()
+    handle = _open(pid, PROCESS_QUERY_LIMITED_INFORMATION)
+    if not handle:
+        return 0
     try:
-        k32.Process32FirstW.argtypes = [wintypes.HANDLE, ctypes.POINTER(PROCESSENTRY32W)]
-        k32.Process32NextW.argtypes = [wintypes.HANDLE, ctypes.POINTER(PROCESSENTRY32W)]
-        ok = k32.Process32FirstW(snap, ctypes.byref(entry))
-        while ok:
-            rows.append(
-                {
-                    "pid": int(entry.th32ProcessID),
-                    "ppid": int(entry.th32ParentProcessID),
-                    "exe": entry.szExeFile,
-                }
-            )
-            entry.dwSize = ctypes.sizeof(PROCESSENTRY32W)
-            ok = k32.Process32NextW(snap, ctypes.byref(entry))
+        info = PROCESS_BASIC_INFORMATION()
+        retlen = wintypes.ULONG(0)
+        status = ntdll.NtQueryInformationProcess(
+            handle, 0, ctypes.byref(info), ctypes.sizeof(info), ctypes.byref(retlen)
+        )
+        if status != 0 or info.InheritedFromUniqueProcessId is None:
+            return 0
+        return int(info.InheritedFromUniqueProcessId)
     finally:
-        k32.CloseHandle(snap)
+        k32.CloseHandle(handle)
+
+
+def snapshot_processes():
+    """returns a list of dicts: pid, ppid, exe (basename) for every enumerable process."""
+    psapi = _psapi()
+    psapi.EnumProcesses.argtypes = [
+        ctypes.POINTER(wintypes.DWORD),
+        wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+    ]
+    capacity = 1024
+    while True:
+        pids = (wintypes.DWORD * capacity)()
+        needed = wintypes.DWORD(0)
+        if not psapi.EnumProcesses(pids, ctypes.sizeof(pids), ctypes.byref(needed)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        count = needed.value // ctypes.sizeof(wintypes.DWORD)
+        if count < capacity:
+            break
+        capacity *= 2
+    rows = []
+    for index in range(count):
+        pid = int(pids[index])
+        if pid == 0:
+            continue
+        path = pid_exe_path(pid)
+        rows.append(
+            {
+                "pid": pid,
+                "ppid": _pid_ppid(pid),
+                "exe": path.rsplit("\\", 1)[-1].rsplit("/", 1)[-1] if path else "",
+            }
+        )
     return rows
 
 
