@@ -505,3 +505,27 @@ BT_TEST(ga, config_ga_params_rejects_foreign_tournament_and_null_sections) {
         bt_json_free(cfg);
     }
 }
+
+BT_TEST(ga, run_survives_an_empty_pool) {
+    bt_ga_env env;
+    char err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_env(0, NULL, NULL, 0, 0, NULL, 0, NULL, 0, &env, err)) {
+        BT_ABORT("build_env: %s", err);
+    }
+    bt_ga_params params;
+    params.seed = 1;
+    params.population = 4;
+    params.generations = 0;
+    params.elite = 1;
+    params.swap = 0.0;
+    params.replace = 0.0;
+    params.w_conf = 1.0f;
+    params.w_flow = 0.5f;
+    params.w_cplx = 0.1f;
+    bt_ga_run_outcome *outcome = bt_ga_run(&env, &params);
+    BT_CHECK_EQ((long long)outcome->best_count, 0LL);
+    BT_CHECK_EQ((long long)outcome->per_gen_count, 1LL);
+    BT_CHECK_EQ((unsigned long long)outcome->evaluations, 4ULL);
+    bt_ga_run_outcome_free(outcome);
+    bt_ga_env_free(&env);
+}

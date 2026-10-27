@@ -3,6 +3,7 @@
 #include "common/bt_trace.h"
 
 #include "common/config.h"
+#include "common/space.h"
 #include "ga/features.h"
 
 #include <stdio.h>
@@ -43,17 +44,30 @@ static char *bt_ga_read_file(const char *path, size_t *len, char err[BT_GA_ERR_M
 }
 
 static char *bt_ga_trim(char *text) {
-    while (*text == ' ' || *text == '\t' || *text == '\r' || *text == '\n' || *text == '\v' ||
-           *text == '\f') {
-        text++;
-    }
     size_t len = strlen(text);
-    while (len > 0 && (text[len - 1] == ' ' || text[len - 1] == '\t' || text[len - 1] == '\r' ||
-                       text[len - 1] == '\n' || text[len - 1] == '\v' || text[len - 1] == '\f')) {
-        len--;
+    size_t at = 0;
+    while (at < len) {
+        size_t space = bt_space_len(text, at, len);
+        if (space == 0) {
+            break;
+        }
+        at += space;
     }
-    text[len] = '\0';
-    return text;
+    size_t end = len;
+    while (end > at) {
+        size_t start = end - 1;
+        while (start > at && ((unsigned char)text[start] & 0xC0U) == 0x80U) {
+            start--;
+        }
+        if (bt_space_len(text, start, end) != end - start) {
+            break;
+        }
+        end = start;
+    }
+    if (end < len) {
+        text[end] = '\0';
+    }
+    return text + at;
 }
 
 static void bt_ga_strset_push(bt_ga_strset *set, const char *text) {
@@ -199,15 +213,23 @@ static int bt_ga_freqs_has(const bt_ga_freqs *freqs, const char *key) {
 }
 
 static int bt_ga_parse_u64(const char *text, uint64_t *out) {
-    if (text[0] == '\0') {
+    const char *digits = text;
+    if (digits[0] == '+') {
+        digits++;
+    }
+    if (digits[0] == '\0') {
         return 0;
     }
     uint64_t value = 0;
-    for (const char *p = text; *p != '\0'; p++) {
+    for (const char *p = digits; *p != '\0'; p++) {
         if (*p < '0' || *p > '9') {
             return 0;
         }
-        value = value * 10 + (uint64_t)(*p - '0');
+        uint64_t digit = (uint64_t)(*p - '0');
+        if (value > (UINT64_MAX - digit) / 10) {
+            return 0;
+        }
+        value = value * 10 + digit;
     }
     *out = value;
     return 1;

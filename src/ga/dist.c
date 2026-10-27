@@ -63,6 +63,13 @@ static int bt_ga_dist_parse_cases(const bt_json_value *array, bt_ga_case_row **r
             *count = 0;
             return 0;
         }
+        if (strlen(orbit->as.string) >= sizeof(*rows)[i].orbit ||
+            strlen(letters->as.string) >= sizeof(*rows)[i].letters) {
+            free(*rows);
+            *rows = NULL;
+            *count = 0;
+            return 0;
+        }
         snprintf((*rows)[i].orbit, sizeof(*rows)[i].orbit, "%s", orbit->as.string);
         snprintf((*rows)[i].letters, sizeof(*rows)[i].letters, "%s", letters->as.string);
         if (!bt_ga_dist_integer(item, "count", &(*rows)[i].count)) {

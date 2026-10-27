@@ -186,10 +186,10 @@ static void bt_ga_random_individual(bt_rng *rng, size_t pool_size, size_t case_c
     for (size_t i = 0; i < pool_size; i++) {
         scratch[i] = (uint32_t)i;
     }
-    for (size_t i = pool_size - 1; i >= 1; i--) {
-        size_t j = (size_t)bt_rng_below(rng, (uint64_t)i + 1);
-        uint32_t tmp = scratch[i];
-        scratch[i] = scratch[j];
+    for (size_t i = pool_size; i > 1; i--) {
+        size_t j = (size_t)bt_rng_below(rng, (uint64_t)i);
+        uint32_t tmp = scratch[i - 1];
+        scratch[i - 1] = scratch[j];
         scratch[j] = tmp;
     }
     for (size_t g = 0; g < case_count; g++) {

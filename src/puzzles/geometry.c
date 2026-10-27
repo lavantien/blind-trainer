@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "common/bt_trace.h"
+#include "common/space.h"
 
 void bt_pz_error_set(bt_pz_error *err, bt_pz_error_kind kind, const char *token, size_t len) {
     BT_TRACE_ENTER("bt_pz_error_set");
@@ -129,44 +130,6 @@ bool bt_pz_alg_is_empty(const void *alg) {
     return empty;
 }
 
-static size_t bt_pz_space_len(const char *text, size_t at, size_t len) {
-    if (at >= len) {
-        return 0;
-    }
-    const unsigned char *p = (const unsigned char *)text + at;
-    size_t avail = len - at;
-    if (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == 0x0BU || *p == 0x0CU) {
-        return 1;
-    }
-    if (avail < 2) {
-        return 0;
-    }
-    if (p[0] == 0xC2U && (p[1] == 0x85U || p[1] == 0xA0U)) {
-        return 2;
-    }
-    if (avail < 3) {
-        return 0;
-    }
-    if (p[0] == 0xE1U && p[1] == 0x9AU && p[2] == 0x80U) {
-        return 3;
-    }
-    if (p[0] == 0xE2U && p[1] == 0x80U) {
-        if (p[2] >= 0x80U && p[2] <= 0x8AU) {
-            return 3;
-        }
-        if (p[2] == 0xA8U || p[2] == 0xA9U || p[2] == 0xAFU) {
-            return 3;
-        }
-    }
-    if (p[0] == 0xE2U && p[1] == 0x81U && p[2] == 0x9FU) {
-        return 3;
-    }
-    if (p[0] == 0xE3U && p[1] == 0x80U && p[2] == 0x80U) {
-        return 3;
-    }
-    return 0;
-}
-
 bool bt_pz_alg_default_parse(const bt_pz_engine *eng, const char *text, size_t len, void *alg,
                              bt_pz_error *err) {
     BT_TRACE_ENTER("bt_pz_alg_default_parse");
@@ -177,16 +140,16 @@ bool bt_pz_alg_default_parse(const bt_pz_engine *eng, const char *text, size_t l
     _Alignas(max_align_t) uint8_t scratch[BT_PZ_MAX_MOVE_BYTES];
     size_t at = 0;
     while (at < len) {
-        size_t space = bt_pz_space_len(text, at, len);
+        size_t space = bt_space_len(text, at, len);
         while (space > 0) {
             at += space;
-            space = bt_pz_space_len(text, at, len);
+            space = bt_space_len(text, at, len);
         }
         if (at >= len) {
             break;
         }
         size_t start = at;
-        while (at < len && bt_pz_space_len(text, at, len) == 0) {
+        while (at < len && bt_space_len(text, at, len) == 0) {
             at++;
         }
         if (!eng->parse_move(eng, text + start, at - start, scratch, err)) {

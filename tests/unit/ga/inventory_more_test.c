@@ -176,3 +176,32 @@ BT_TEST(inventory_more, pool_top_k_reads_only_whole_numbers_from_the_hub) {
         bt_json_free(config);
     }
 }
+
+BT_TEST(inventory_more, loaders_trim_unicode_whitespace_and_parse_u64_like_rust) {
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("more-align", dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/words.txt", dir);
+    write_file(path, "\xc2\xa0ma\xc2\xa0\n");
+    bt_ga_strset set;
+    char err[BT_GA_ERR_MAX];
+    if (!bt_ga_load_wordlist(path, &set, err)) {
+        BT_ABORT("load failed: %s", err);
+    }
+    BT_CHECK_EQ((long long)set.count, 1LL);
+    BT_CHECK(bt_ga_strset_contains(&set, "ma"));
+    bt_ga_strset_free(&set);
+    snprintf(path, BT_PATH_MAX, "%s/freqs.tsv", dir);
+    write_file(path, "1\t\xc2\xa0+12\xc2\xa0\tma\n2\t18446744073709551615\tla\n");
+    bt_ga_freqs freqs;
+    if (!bt_ga_load_syllable_frequencies(path, &freqs, err)) {
+        BT_ABORT("load failed: %s", err);
+    }
+    BT_CHECK_EQ((unsigned long long)bt_ga_freqs_get(&freqs, "ma"), 12ULL);
+    BT_CHECK_EQ((unsigned long long)bt_ga_freqs_get(&freqs, "la"), 18446744073709551615ULL);
+    bt_ga_freqs_free(&freqs);
+    write_file(path, "1\t18446744073709551616\tma\n");
+    BT_CHECK(!bt_ga_load_syllable_frequencies(path, &freqs, err));
+    BT_CHECK(strstr(err, "row 1") != NULL);
+    bt_ga_scratch_remove("more-align");
+}
