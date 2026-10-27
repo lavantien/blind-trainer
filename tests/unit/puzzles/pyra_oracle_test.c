@@ -494,6 +494,26 @@ BT_TEST(pyra_oracle, random_algs_round_trip) {
     }
 }
 
+static size_t pyra_pack_alg(const char *src, char out[512]) {
+    size_t at = 0;
+    for (const char *scan = src; *scan != '\0' && at + 1 < 512; scan++) {
+        out[at] = *scan == '(' || *scan == ')' ? ' ' : *scan;
+        at++;
+    }
+    out[at] = '\0';
+    return at;
+}
+
+BT_TEST(pyra_oracle, pack_alg_column_is_bounded) {
+    char long_column[600];
+    memset(long_column, 'U', sizeof long_column - 1);
+    long_column[sizeof long_column - 1] = '\0';
+    char alg[512];
+    size_t len = pyra_pack_alg(long_column, alg);
+    BT_CHECK(len < 512);
+    BT_CHECK_EQ(alg[len], 0);
+}
+
 BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
     char *text = pz_read_pack("pyraminx_l4e.tsv");
     size_t rows = 0;
@@ -506,18 +526,14 @@ BT_TEST(pyra_oracle, pack_rows_pass_tier1) {
     bool is_header = false;
     while (pz_pack_rows_next(&walker, fields, 8, &field_count, &is_header)) {
         if (is_header) {
+            BT_CHECK(field_count >= 2);
             BT_CHECK(strcmp(fields[0], "case_key") == 0);
             BT_CHECK(strcmp(fields[1], "alg") == 0);
             continue;
         }
         BT_CHECK(field_count >= 2);
         char alg[512];
-        size_t alg_at = 0;
-        for (char *scan = fields[1]; *scan != '\0'; scan++) {
-            alg[alg_at] = *scan == '(' || *scan == ')' ? ' ' : *scan;
-            alg_at++;
-        }
-        alg[alg_at] = '\0';
+        pyra_pack_alg(fields[1], alg);
         if (!tier1_ok(alg)) {
             BT_ABORT("tier1 failed for row %s", fields[0]);
         }
