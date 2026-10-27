@@ -170,14 +170,14 @@ BT_TEST(fuzzkill_ga, build_env_rejects_mismatched_tables) {
     bt_ga_features *feats = malloc(2 * sizeof *feats);
     feats[0] = f0;
     feats[1] = f1;
-    BT_CHECK(bt_ga_build_env(2, lengths, feats, 2, 2, NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(bt_ga_build_env(2, lengths, 2, feats, 2, 2, NULL, 0, NULL, 0, &env, err));
     bt_ga_env_free(&env);
     lengths = malloc(2 * sizeof *lengths);
     lengths[0] = 3.0f;
     lengths[1] = 4.0f;
     feats = malloc(1 * sizeof *feats);
     feats[0] = f0;
-    BT_CHECK(!bt_ga_build_env(2, lengths, feats, 1, 2, NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(!bt_ga_build_env(2, lengths, 2, feats, 1, 2, NULL, 0, NULL, 0, &env, err));
     free(lengths);
     free(feats);
 }
@@ -199,7 +199,7 @@ BT_TEST(fuzzkill_ga, fitness_parts_weights_are_pinned) {
     adj[0].w = 2.0f;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(2, lengths, feats, 2, 2, cooc, 1, adj, 1, &env, err)) {
+    if (!bt_ga_build_env(2, lengths, 2, feats, 2, 2, cooc, 1, adj, 1, &env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     BT_CHECK_EQ(env.conf_table[1], 0.70f);
@@ -312,7 +312,7 @@ BT_TEST(fuzzkill_ga, flat_landscape_reports_full_stagnation) {
     }
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(4, lengths, feats, 4, 2, NULL, 0, NULL, 0, &env, err)) {
+    if (!bt_ga_build_env(4, lengths, 4, feats, 4, 2, NULL, 0, NULL, 0, &env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     bt_ga_params params;
@@ -368,7 +368,7 @@ BT_TEST(fuzzkill_ga, run_trajectory_is_pinned_for_reproducible_inputs) {
     adj[1].w = 1.0f;
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(6, lengths, feats, 6, 3, cooc, 2, adj, 2, &env, err)) {
+    if (!bt_ga_build_env(6, lengths, 6, feats, 6, 3, cooc, 2, adj, 2, &env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     bt_ga_params params;
@@ -531,7 +531,7 @@ static bt_ga_env *boundary_env(void) {
     adj[2].w = 0.75f;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(6, lengths, feats, 6, 4, cooc, 3, adj, 3, env, err)) {
+    if (!bt_ga_build_env(6, lengths, 6, feats, 6, 4, cooc, 3, adj, 3, env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     return env;

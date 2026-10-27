@@ -39,9 +39,9 @@ typedef struct {
     size_t adj_count;
 } bt_ga_env;
 
-int bt_ga_build_env(size_t pool_size, float *lengths, bt_ga_features *feats, size_t table_count,
-                    size_t case_count, bt_ga_pair_weight *cooc, size_t cooc_count,
-                    bt_ga_pair_weight *adj, size_t adj_count, bt_ga_env *out,
+int bt_ga_build_env(size_t pool_size, float *lengths, size_t lengths_count, bt_ga_features *feats,
+                    size_t feats_count, size_t case_count, bt_ga_pair_weight *cooc,
+                    size_t cooc_count, bt_ga_pair_weight *adj, size_t adj_count, bt_ga_env *out,
                     char err[BT_GA_ERR_MAX]);
 void bt_ga_env_free(bt_ga_env *env);
 

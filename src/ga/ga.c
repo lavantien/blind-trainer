@@ -9,9 +9,9 @@
 
 #define BT_GA_GENE_MAX UINT32_MAX
 
-int bt_ga_build_env(size_t pool_size, float *lengths, bt_ga_features *feats, size_t table_count,
-                    size_t case_count, bt_ga_pair_weight *cooc, size_t cooc_count,
-                    bt_ga_pair_weight *adj, size_t adj_count, bt_ga_env *out,
+int bt_ga_build_env(size_t pool_size, float *lengths, size_t lengths_count, bt_ga_features *feats,
+                    size_t feats_count, size_t case_count, bt_ga_pair_weight *cooc,
+                    size_t cooc_count, bt_ga_pair_weight *adj, size_t adj_count, bt_ga_env *out,
                     char err[BT_GA_ERR_MAX]) {
     BT_TRACE_ENTER("ga.build_env");
     out->pool_size = pool_size;
@@ -24,16 +24,22 @@ int bt_ga_build_env(size_t pool_size, float *lengths, bt_ga_features *feats, siz
     out->adj_count = adj_count;
     out->conf_table = NULL;
     out->flow_table = NULL;
-    if (table_count != pool_size) {
+    if (lengths_count != pool_size || feats_count != pool_size) {
         snprintf(err, BT_GA_ERR_MAX, "pool feature or length table size mismatch");
-        BT_TRACE_FAIL("ga.build_env", "table count %zu does not match pool %zu", table_count,
-                      pool_size);
+        BT_TRACE_FAIL("ga.build_env", "table counts %zu and %zu do not match pool %zu",
+                      lengths_count, feats_count, pool_size);
         return 0;
     }
     if (pool_size < case_count) {
         snprintf(err, BT_GA_ERR_MAX, "pool %zu smaller than case count %zu", pool_size, case_count);
         BT_TRACE_FAIL("ga.build_env", "pool %zu smaller than case count %zu", pool_size,
                       case_count);
+        return 0;
+    }
+    if (pool_size != 0 && (pool_size > SIZE_MAX / pool_size ||
+                           pool_size * pool_size > SIZE_MAX / sizeof *out->conf_table)) {
+        snprintf(err, BT_GA_ERR_MAX, "pool table allocation failed");
+        BT_TRACE_FAIL("ga.build_env", "table bytes overflow for pool %zu", pool_size);
         return 0;
     }
     out->conf_table = malloc(pool_size * pool_size * sizeof *out->conf_table);
@@ -43,7 +49,7 @@ int bt_ga_build_env(size_t pool_size, float *lengths, bt_ga_features *feats, siz
         free(out->flow_table);
         out->conf_table = NULL;
         out->flow_table = NULL;
-        snprintf(err, BT_GA_ERR_MAX, "pool feature or length table size mismatch");
+        snprintf(err, BT_GA_ERR_MAX, "pool table allocation failed");
         BT_TRACE_FAIL("ga.build_env", "table allocation failed");
         return 0;
     }

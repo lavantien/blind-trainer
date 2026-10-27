@@ -40,8 +40,8 @@ static bt_ga_env *env_fixture_texts(size_t case_count, const char *const *texts,
     adj[0].w = 0.5f;
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(text_count, lengths, feats, text_count, case_count, cooc, 2, adj, 1, env,
-                         err)) {
+    if (!bt_ga_build_env(text_count, lengths, text_count, feats, text_count, case_count, cooc, 2,
+                         adj, 1, env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     return env;
@@ -308,7 +308,7 @@ BT_TEST(ga, build_env_rejects_undersized_pools) {
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
     BT_CHECK(
-        !bt_ga_build_env(2, lengths, feats, 2, bt_ga_case_count(), NULL, 0, NULL, 0, &env, err));
+        !bt_ga_build_env(2, lengths, 2, feats, 2, bt_ga_case_count(), NULL, 0, NULL, 0, &env, err));
     free(lengths);
 }
 
@@ -509,7 +509,7 @@ BT_TEST(ga, config_ga_params_rejects_foreign_tournament_and_null_sections) {
 BT_TEST(ga, run_survives_an_empty_pool) {
     bt_ga_env env;
     char err[BT_GA_ERR_MAX];
-    if (!bt_ga_build_env(0, NULL, NULL, 0, 0, NULL, 0, NULL, 0, &env, err)) {
+    if (!bt_ga_build_env(0, NULL, 0, NULL, 0, 0, NULL, 0, NULL, 0, &env, err)) {
         BT_ABORT("build_env: %s", err);
     }
     bt_ga_params params;
@@ -528,4 +528,25 @@ BT_TEST(ga, run_survives_an_empty_pool) {
     BT_CHECK_EQ((unsigned long long)outcome->evaluations, 4ULL);
     bt_ga_run_outcome_free(outcome);
     bt_ga_env_free(&env);
+}
+
+BT_TEST(ga, build_env_rejects_disagreeing_table_counts) {
+    bt_ga_features feats[2];
+    feats[0] = bt_ga_feat(BT_GA_TONE_NGANG, 0, 0, 0, BT_GA_NUC_A, BT_GA_CODA_OPEN);
+    feats[1] = feats[0];
+    float lengths[2] = {1.0f, 1.0f};
+    bt_ga_env env;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_build_env(2, lengths, 2, feats, 1, 0, NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(strstr(err, "size mismatch") != NULL);
+    BT_CHECK(!bt_ga_build_env(2, lengths, 1, feats, 2, 0, NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(strstr(err, "size mismatch") != NULL);
+}
+
+BT_TEST(ga, build_env_rejects_pool_squared_table_overflow) {
+    bt_ga_env env;
+    char err[BT_GA_ERR_MAX];
+    size_t huge = (size_t)1 << 31;
+    BT_CHECK(!bt_ga_build_env(huge, NULL, huge, NULL, huge, 0, NULL, 0, NULL, 0, &env, err));
+    BT_CHECK(strstr(err, "allocation failed") != NULL);
 }
