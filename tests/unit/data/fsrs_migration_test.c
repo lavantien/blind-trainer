@@ -105,8 +105,7 @@ BT_TEST(fsrs_migration, migration_vectors_replay_exactly_at_every_prefix) {
         }
         if (history_count == history_cap) {
             history_cap = history_cap == 0 ? 16 : history_cap * 2;
-            bt_review_entry *grown =
-                realloc(history, history_cap * sizeof *grown);
+            bt_review_entry *grown = realloc(history, history_cap * sizeof *grown);
             if (grown == NULL) {
                 BT_ABORT("history growth failed");
             }

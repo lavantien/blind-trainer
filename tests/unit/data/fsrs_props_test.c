@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define WEIGHTS_TEXT                                                                                                   \
-    "[0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, "  \
+#define WEIGHTS_TEXT                                                                                               \
+    "[0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, " \
     "0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621]"
 
 static const double DEFAULT_WEIGHTS[BT_FSRS_WEIGHT_COUNT] = {
@@ -280,8 +280,7 @@ BT_TEST(fsrs_props, same_day_reviews_scale_stability_without_retrievability_inpu
         {bt_fsrs_memory_review(state, BT_GRADE_EASY, 0.0, &cfg), BT_GRADE_EASY},
     };
     for (int i = 0; i < 4; i++) {
-        double scale =
-            exp(cfg.weights[17] * (((double)cases[i].grade) - 3.0 + cfg.weights[18]));
+        double scale = exp(cfg.weights[17] * (((double)cases[i].grade) - 3.0 + cfg.weights[18]));
         BT_CHECK(fabs(cases[i].memory.stability - state.stability * scale) < 1e-9);
     }
 }
@@ -493,13 +492,12 @@ BT_TEST(fsrs_props, random_walks_keep_state_finite_and_in_bounds) {
     bt_rng rng;
     bt_rng_seed(&rng, 20261014);
     for (int trial = 0; trial < 64; trial++) {
-        bt_fsrs_memory state =
-            bt_fsrs_memory_initial((bt_grade)(1 + bt_rng_below(&rng, 4)), &cfg);
+        bt_fsrs_memory state = bt_fsrs_memory_initial((bt_grade)(1 + bt_rng_below(&rng, 4)), &cfg);
         size_t rounds = 1 + (size_t)bt_rng_below(&rng, 39);
         for (size_t i = 0; i < rounds; i++) {
             double elapsed = (double)bt_rng_below(&rng, 3650);
-            state = bt_fsrs_memory_review(state, (bt_grade)(1 + bt_rng_below(&rng, 4)), elapsed,
-                                          &cfg);
+            state =
+                bt_fsrs_memory_review(state, (bt_grade)(1 + bt_rng_below(&rng, 4)), elapsed, &cfg);
             BT_CHECK(isfinite(state.stability));
             BT_CHECK(state.stability > 0.0);
             BT_CHECK(state.difficulty >= 1.0 && state.difficulty <= 10.0);
