@@ -610,14 +610,39 @@ void bt_view_case_drill_enter(bt_app_ctx *ctx) {
     BT_TRACE_EXIT("app.case_drill_enter");
 }
 
+void bt_view_case_drill_frame(bt_app_ctx *ctx, bt_view_case_drill_app_state *app, const int *keys,
+                              int count) {
+    BT_TRACE_ENTER("app.case_drill_frame");
+    for (int i = 0; i < count; i++) {
+        bt_grade rating;
+        int is_space = keys[i] == KEY_SPACE;
+        int is_rating = bt_view_rating_of(keys[i], &rating);
+        if (!is_space && !is_rating) {
+            continue;
+        }
+        if (is_space && ctx->case_drill_phase != BT_CASE_DRILL_SHOW) {
+            continue;
+        }
+        if (is_rating && ctx->case_drill_phase != BT_CASE_DRILL_GRADE) {
+            continue;
+        }
+        bt_view_case_drill_key(ctx, app, keys[i]);
+        break;
+    }
+    BT_TRACE_EXIT("app.case_drill_frame");
+}
+
 void bt_view_case_drill_update(bt_app_ctx *ctx) {
     BT_TRACE_ENTER("app.case_drill_update");
     bt_view_case_drill_app_state *app = bt_view_case_drill_app();
     int keys[5] = {KEY_SPACE, KEY_ONE, KEY_TWO, KEY_THREE, KEY_FOUR};
+    int pressed[5];
+    int pressed_count = 0;
     for (int i = 0; i < 5; i++) {
         if (IsKeyPressed(keys[i])) {
-            bt_view_case_drill_key(ctx, app, keys[i]);
+            pressed[pressed_count++] = keys[i];
         }
     }
+    bt_view_case_drill_frame(ctx, app, pressed, pressed_count);
     BT_TRACE_EXIT("app.case_drill_update");
 }

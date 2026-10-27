@@ -82,6 +82,8 @@ void bt_view_case_drill_set_pending(const bt_drill_case *queue, size_t count);
 void bt_view_case_drill_cards_enter(bt_app_ctx *ctx);
 void bt_view_case_drill_enter_state(bt_app_ctx *ctx, bt_view_case_drill_app_state *app);
 void bt_view_case_drill_key(bt_app_ctx *ctx, bt_view_case_drill_app_state *app, int key);
+void bt_view_case_drill_frame(bt_app_ctx *ctx, bt_view_case_drill_app_state *app, const int *keys,
+                              int count);
 void bt_view_case_drill_enter(bt_app_ctx *ctx);
 void bt_view_case_drill_update(bt_app_ctx *ctx);
 

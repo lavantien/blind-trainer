@@ -298,6 +298,26 @@ BT_TEST(views_case_drill, d_on_the_letters_list_after_leaving_the_repo_never_ope
     bt_app_ctx_free(&ctx);
 }
 
+BT_TEST(views_case_drill, two_rating_keys_in_one_frame_grade_once) {
+    bt_app_ctx ctx = drill_fixture("sameframe");
+    open_algs(&ctx);
+    walk_to_case(&ctx, "cll.1");
+    open_case_drill(&ctx);
+    bt_view_case_drill_app_state *app = bt_view_case_drill_app();
+    bt_view_case_drill_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.case_drill_phase == BT_CASE_DRILL_GRADE);
+    int frame_keys[2] = {KEY_ONE + 2, KEY_FOUR};
+    bt_view_case_drill_frame(&ctx, app, frame_keys, 2);
+    BT_CHECK_EQ(app->session.done, (size_t)1);
+    BT_CHECK_EQ(ctx.stores.solves.count, (size_t)0);
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    const bt_card *card = bt_case_cards_get(&app->cards.cards, &key);
+    BT_CHECK(card != NULL);
+    BT_CHECK_EQ(card->reps, (unsigned int)1);
+    bt_app_ctx_free(&ctx);
+}
+
 BT_TEST(views_case_drill, a_failed_cards_load_reports_on_entry_and_blocks_grading) {
     bt_app_ctx ctx = drill_fixture("loadfail");
     {
