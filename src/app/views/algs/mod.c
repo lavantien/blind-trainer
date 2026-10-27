@@ -2,6 +2,7 @@
 
 #include "app/views/algs/browse.h"
 #include "app/views/algs/detail.h"
+#include "app/boot.h"
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
 #include "app/views/frame.h"
@@ -394,8 +395,7 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
     }
     if (drill && app->browser.selected < app->browser.filtered_count) {
         bt_view_drill_set_pending(app->browser.filtered[app->browser.selected]);
-        bt_app_request_state(ctx, BT_APP_DRILL);
-        bt_app_apply_pending(ctx);
+        bt_app_transition_frame(ctx);
     }
     if (app->query_focused) {
         int code = GetCharPressed();
@@ -435,7 +435,7 @@ void bt_view_case_drill_open_request(bt_app_ctx *ctx) {
     }
     bt_view_case_drill_set_pending(queue, count);
     bt_app_request_state(ctx, BT_APP_CASE_DRILL);
-    bt_app_apply_pending(ctx);
+    bt_app_transition_frame(ctx);
     BT_TRACE_EXIT("app.case_drill_open_request");
 }
 
@@ -487,7 +487,7 @@ void bt_view_algs_key(bt_app_ctx *ctx, int key) {
         if (drill && app->browser.selected < app->browser.filtered_count) {
             bt_view_drill_set_pending(app->browser.filtered[app->browser.selected]);
             bt_app_request_state(ctx, BT_APP_DRILL);
-            bt_app_apply_pending(ctx);
+            bt_app_transition_frame(ctx);
         }
         BT_TRACE_EXIT("app.algs_key");
         return;

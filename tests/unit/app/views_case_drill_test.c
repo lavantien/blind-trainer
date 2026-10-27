@@ -67,9 +67,6 @@ static void open_algs(bt_app_ctx *ctx) {
 
 static void open_case_drill(bt_app_ctx *ctx) {
     bt_view_algs_key(ctx, KEY_D);
-    if (ctx->state == BT_APP_CASE_DRILL) {
-        bt_view_case_drill_enter(ctx);
-    }
 }
 
 static void walk_to_case(bt_app_ctx *ctx, const char *case_key) {
@@ -221,7 +218,6 @@ BT_TEST(views_case_drill, letters_d_keeps_the_3bld_drill_and_the_3bld_arm_stays_
     BT_CHECK(!bt_view_algs_repo()->repo_focused);
     open_case_drill(&ctx);
     BT_CHECK(ctx.state == BT_APP_DRILL);
-    bt_view_drill_enter(&ctx);
     bt_drill_app_state *drill = bt_view_drill_app();
     BT_CHECK(drill->session.has_pin);
 

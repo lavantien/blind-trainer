@@ -1,5 +1,6 @@
 #include "app/views/case_drill.h"
 
+#include "app/boot.h"
 #include "app/views/drill.h"
 
 #include "common/bt_trace.h"
@@ -525,7 +526,7 @@ void bt_view_case_drill_enter_state(bt_app_ctx *ctx, bt_view_case_drill_app_stat
     BT_TRACE_ENTER("app.case_drill_enter_state");
     if (app->pending.count == 0) {
         bt_app_request_state(ctx, BT_APP_ALGS);
-        bt_app_apply_pending(ctx);
+        bt_app_transition_frame(ctx);
         BT_TRACE_EXIT("app.case_drill_enter_state");
         return;
     }
@@ -599,7 +600,7 @@ void bt_view_case_drill_key(bt_app_ctx *ctx, bt_view_case_drill_app_state *app, 
         ctx->case_drill_phase = BT_CASE_DRILL_SHOW;
     } else {
         bt_app_request_state(ctx, BT_APP_ALGS);
-        bt_app_apply_pending(ctx);
+        bt_app_transition_frame(ctx);
     }
     BT_TRACE_EXIT("app.case_drill_key");
 }
