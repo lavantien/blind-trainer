@@ -175,6 +175,51 @@ BT_TEST(policy_lexer, masking_preserves_byte_length_with_multibyte_content) {
     policy_masked_free(&masked);
 }
 
+BT_TEST(policy_lexer, line_comment_continues_across_a_backslash_newline_splice) {
+    const char *input = "int x = 1; // tail \\\nstill comment\nint y = 2;";
+    policy_masked masked;
+    mask_c(input, &masked);
+    BT_CHECK_EQ(masked.comment_count, 1);
+    BT_CHECK_EQ(masked.comments[0].kind, POLICY_COMMENT_LINE);
+    BT_CHECK_EQ(policy_line_of(input, masked.comments[0].start), 1);
+    BT_CHECK(input[masked.comments[0].start] == '/' && input[masked.comments[0].start + 1] == '/');
+    spaces_between("int x = 1; ", (int)(masked.comments[0].end - masked.comments[0].start),
+                   "\nint y = 2;", masked.text);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, block_comment_opener_spans_a_splice) {
+    const char *input = "int a = 1; /\\\n* block */ int b = 2;";
+    policy_masked masked;
+    mask_c(input, &masked);
+    BT_CHECK_EQ(masked.comment_count, 1);
+    BT_CHECK_EQ(masked.comments[0].kind, POLICY_COMMENT_BLOCK);
+    BT_CHECK_EQ(policy_line_of(input, masked.comments[0].start), 1);
+    spaces_between("int a = 1; ", (int)(masked.comments[0].end - masked.comments[0].start),
+                   " int b = 2;", masked.text);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, block_comment_close_spans_a_splice) {
+    const char *input = "int a = 1; /* block *\\\n/ int b = 2;";
+    policy_masked masked;
+    mask_c(input, &masked);
+    BT_CHECK_EQ(masked.comment_count, 1);
+    BT_CHECK_EQ(masked.comments[0].kind, POLICY_COMMENT_BLOCK);
+    spaces_between("int a = 1; ", (int)(masked.comments[0].end - masked.comments[0].start),
+                   " int b = 2;", masked.text);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, universal_char_escapes_are_masked) {
+    const char *input = "char a = '\\u0041'; char b = '\\U0001F600';";
+    policy_masked masked;
+    mask_c(input, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    BT_CHECK(strcmp(masked.text, "char a = '      '; char b = '          ';") == 0);
+    policy_masked_free(&masked);
+}
+
 BT_TEST(policy_lexer, line_of_counts_newlines_before_the_offset) {
     const char *text = "ab\ncd\nef";
     BT_CHECK_EQ(policy_line_of(text, 0), 1);

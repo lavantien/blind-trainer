@@ -78,7 +78,31 @@ static void push_span(policy_masked *out, size_t start, size_t end, policy_comme
     out->comment_count++;
 }
 
-static size_t c_line_end(const char *text, size_t len, size_t from) {
+static int is_splice(const char *text, size_t len, size_t at) {
+    if (at >= len || text[at] != '\\') {
+        return 0;
+    }
+    if (at + 1 < len && text[at + 1] == '\n') {
+        return 1;
+    }
+    return at + 2 < len && text[at + 1] == '\r' && text[at + 2] == '\n';
+}
+
+static size_t skip_splices(const char *text, size_t len, size_t at) {
+    while (is_splice(text, len, at)) {
+        at += text[at + 1] == '\r' ? 3 : 2;
+    }
+    return at;
+}
+
+static int newline_spliced(const char *text, size_t at) {
+    if (at >= 1 && text[at - 1] == '\\') {
+        return 1;
+    }
+    return at >= 2 && text[at - 1] == '\r' && text[at - 2] == '\\';
+}
+
+static size_t plain_line_end(const char *text, size_t len, size_t from) {
     for (size_t at = from; at < len; at++) {
         if (text[at] == '\n') {
             return at;
@@ -87,13 +111,26 @@ static size_t c_line_end(const char *text, size_t len, size_t from) {
     return len;
 }
 
-static size_t c_block_end(const char *text, size_t len, size_t start) {
-    size_t j = start + 2;
-    while (j + 1 < len) {
-        if (text[j] == '*' && text[j + 1] == '/') {
-            return j + 2;
+static size_t c_line_end(const char *text, size_t len, size_t from) {
+    for (size_t at = from; at < len; at++) {
+        if (text[at] == '\n' && !newline_spliced(text, at)) {
+            return at;
+        }
+    }
+    return len;
+}
+
+static size_t c_block_end(const char *text, size_t len, size_t star) {
+    size_t j = skip_splices(text, len, star + 1);
+    while (j < len) {
+        if (text[j] == '*') {
+            size_t k = skip_splices(text, len, j + 1);
+            if (k < len && text[k] == '/') {
+                return k + 1;
+            }
         }
         j++;
+        j = skip_splices(text, len, j);
     }
     return len;
 }
@@ -128,7 +165,18 @@ static size_t c_char_close(const char *text, size_t len, size_t start) {
         if (j >= len) {
             return POLICY_LEXER_NONE;
         }
-        if (text[j] == 'x') {
+        if (text[j] == 'u' || text[j] == 'U') {
+            int want = text[j] == 'u' ? 4 : 8;
+            j++;
+            int seen = 0;
+            while (seen < want && j < len && lex_is_hex_digit((unsigned char)text[j])) {
+                j++;
+                seen++;
+            }
+            if (seen != want) {
+                return POLICY_LEXER_NONE;
+            }
+        } else if (text[j] == 'x') {
             j++;
             while (j < len && lex_is_hex_digit((unsigned char)text[j])) {
                 j++;
@@ -213,19 +261,22 @@ void policy_mask_source(const char *text, size_t len, policy_lang lang, policy_m
     while (i < len) {
         unsigned char byte = (unsigned char)text[i];
         if (lang == POLICY_LANG_C) {
-            if (byte == '/' && i + 1 < len && text[i + 1] == '/') {
-                size_t end = c_line_end(text, len, i + 2);
-                push_span(out, i, end, POLICY_COMMENT_LINE);
-                memset(masked + i, ' ', end - i);
-                i = end;
-                continue;
-            }
-            if (byte == '/' && i + 1 < len && text[i + 1] == '*') {
-                size_t end = c_block_end(text, len, i);
-                push_span(out, i, end, POLICY_COMMENT_BLOCK);
-                memset(masked + i, ' ', end - i);
-                i = end;
-                continue;
+            if (byte == '/') {
+                size_t after = skip_splices(text, len, i + 1);
+                if (after < len && text[after] == '/') {
+                    size_t end = c_line_end(text, len, after + 1);
+                    push_span(out, i, end, POLICY_COMMENT_LINE);
+                    memset(masked + i, ' ', end - i);
+                    i = end;
+                    continue;
+                }
+                if (after < len && text[after] == '*') {
+                    size_t end = c_block_end(text, len, after);
+                    push_span(out, i, end, POLICY_COMMENT_BLOCK);
+                    memset(masked + i, ' ', end - i);
+                    i = end;
+                    continue;
+                }
             }
             if (byte == '"') {
                 size_t close = c_string_close(text, len, i);
@@ -250,7 +301,7 @@ void policy_mask_source(const char *text, size_t len, policy_lang lang, policy_m
             }
         } else {
             if (byte == '#') {
-                size_t end = c_line_end(text, len, i + 1);
+                size_t end = plain_line_end(text, len, i + 1);
                 push_span(out, i, end, POLICY_COMMENT_HASH);
                 memset(masked + i, ' ', end - i);
                 i = end;
