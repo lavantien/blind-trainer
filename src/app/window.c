@@ -90,9 +90,9 @@ void bt_app_poll_input(bt_ui_input *input) {
     } else if (wheel < 0.0F) {
         input->wheel = -1;
     }
-    input->escape = IsKeyPressed(KEY_ESCAPE);
-    input->enter = IsKeyPressed(KEY_ENTER);
-    input->backspace = IsKeyPressed(KEY_BACKSPACE);
+    input->escape = IsKeyPressed(KEY_ESCAPE) ? 1 : 0;
+    input->enter = IsKeyPressed(KEY_ENTER) ? 1 : 0;
+    input->backspace = IsKeyPressed(KEY_BACKSPACE) ? 1 : 0;
     input->char_count = 0;
     int code = GetCharPressed();
     while (code != 0 && input->char_count < BT_UI_INPUT_CHARS) {
