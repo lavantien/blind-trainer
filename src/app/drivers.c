@@ -284,8 +284,8 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
             key_vk = bt_app_driver_vk_of(keys.key);
             key_char = (unsigned char)keys.ch;
             if (key_vk != 0) {
-                int sent = bt_app_driver_key_down(hwnd, key_vk)
-                           && (key_char == 0 || bt_app_driver_key_char(hwnd, key_char));
+                int sent = bt_app_driver_key_down(hwnd, key_vk) &&
+                           (key_char == 0 || bt_app_driver_key_char(hwnd, key_char));
                 if (!sent) {
                     BT_TRACE_FAIL("app.usage_loop", "key %u down not delivered", key_vk);
                 }
@@ -303,7 +303,7 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
         }
     }
     BT_TRACE_EXIT("app.usage_loop");
-    return code >= 0 ? code : 0;
+    return code >= 0 ? code : 1;
 }
 
 static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
@@ -332,6 +332,7 @@ static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
     }
     BT_APP_STATE_TABLE[ctx->state].enter(ctx);
     bt_app_apply_pending(ctx);
+    SetExitKey(KEY_NULL);
     int code = usage_loop(ctx, &tour);
     bt_usage_tour_free(&tour);
     driver_teardown(ctx, &book);

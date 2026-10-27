@@ -242,6 +242,7 @@ int bt_app_apply_pending(bt_app_ctx *ctx) {
     if (ctx->pending != ctx->state) {
         ctx->state = ctx->pending;
         ctx->transitioned = 1;
+        ctx->input_focus = 0;
     }
     ctx->has_pending = 0;
     BT_TRACE_EXIT("app.apply_pending");

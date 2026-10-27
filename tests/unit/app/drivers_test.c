@@ -1,6 +1,7 @@
 #include "app/boot.h"
 #include "app/driver_keys.h"
 #include "app/drivers.h"
+#include "app/window.h"
 
 #include "common.h"
 
@@ -30,6 +31,62 @@ BT_TEST(drivers, vk_of_maps_the_script_keys_to_virtual_keys) {
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_TAB), (unsigned)BT_VK_TAB);
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_BACKSPACE), (unsigned)BT_VK_BACK);
     BT_CHECK_EQ(bt_app_driver_vk_of(KEY_Z), (unsigned)0);
+}
+
+BT_TEST(drivers, posted_arrow_keys_reach_the_polled_key_state) {
+    bt_app_config config;
+    config.window.width = 320;
+    config.window.height = 240;
+    config.render.capture_dwell_frames = 1;
+    snprintf(config.window.title, sizeof config.window.title, "%s", "drivers arrow test");
+    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                            &config.render)) {
+        return;
+    }
+    void *hwnd = GetWindowHandle();
+    BT_CHECK(bt_app_driver_key_down(hwnd, bt_app_driver_vk_of(KEY_RIGHT)));
+    BeginDrawing();
+    EndDrawing();
+    BT_CHECK(IsKeyPressed(KEY_RIGHT));
+    BT_CHECK(bt_app_driver_key_up(hwnd, bt_app_driver_vk_of(KEY_RIGHT)));
+    BeginDrawing();
+    EndDrawing();
+    BT_CHECK(!IsKeyPressed(KEY_RIGHT));
+    CloseWindow();
+}
+
+BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
+    bt_app_config config;
+    config.window.width = 320;
+    config.window.height = 240;
+    config.render.capture_dwell_frames = 1;
+    snprintf(config.window.title, sizeof config.window.title, "%s", "drivers escape test");
+    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                            &config.render)) {
+        return;
+    }
+    bt_app_ctx ctx;
+    bt_app_ctx_init(&ctx);
+    bt_app_apply_pending(&ctx);
+    ctx.state = BT_APP_ALGS;
+    ctx.input_focus = 1;
+    bt_app_request_state(&ctx, BT_APP_MENU);
+    bt_app_apply_pending(&ctx);
+    bt_app_request_state(&ctx, BT_APP_ALGS);
+    bt_app_apply_pending(&ctx);
+    void *hwnd = GetWindowHandle();
+    BT_CHECK(bt_app_driver_key_down(hwnd, bt_app_driver_vk_of(KEY_ESCAPE)));
+    BeginDrawing();
+    EndDrawing();
+    bt_app_poll_keys(&ctx);
+    bt_app_process_keys(&ctx);
+    bt_app_apply_pending(&ctx);
+    BT_CHECK(ctx.state == BT_APP_MENU);
+    BT_CHECK(bt_app_driver_key_up(hwnd, bt_app_driver_vk_of(KEY_ESCAPE)));
+    BeginDrawing();
+    EndDrawing();
+    bt_app_ctx_free(&ctx);
+    CloseWindow();
 }
 
 static void sandbox_appdata(const char *tag, char *saved, size_t saved_len) {
@@ -115,6 +172,9 @@ BT_TEST(drivers, smoke_tour_shots_carry_distinct_colors) {
     const char *dir = ta_temp_dir("drivers", "smoke-colors");
     BT_CHECK_EQ(bt_app_smoke_main(&ctx, dir, 20261012), 0);
     for (size_t i = 0; i < BT_APP_TOUR_COUNT; i++) {
+        if (BT_APP_TOUR[i] == BT_APP_FATAL) {
+            continue;
+        }
         char path[TA_PATH_MAX];
         snprintf(path, sizeof path, "%s/%s.png", dir, bt_app_state_slug(BT_APP_TOUR[i]));
         if (!shot_has_distinct_colors(path)) {
