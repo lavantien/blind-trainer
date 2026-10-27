@@ -1,8 +1,11 @@
 #include "puzzles/pyra.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "common/bt_trace.h"
+
+enum { BT_PYRA_TEXT_MAX = 48 };
 
 static const size_t CYCLES[4][4][3] = {
     {{0, 9, 18}, {1, 10, 19}, {2, 11, 20}, {3, 12, 21}},
@@ -172,13 +175,27 @@ void bt_pyra_invert_alg(const void *alg, void *out) {
     BT_TRACE_EXIT("bt_pyra_invert_alg");
 }
 
+static bool pyra_move_in_range(bt_pyra_move mv) {
+    bool in_range = (mv.vertex <= BT_PYRA_VERTEX_B && mv.layers <= BT_PYRA_LAYERS_TIP &&
+                     mv.sense <= BT_PYRA_SENSE_COUNTER) != 0;
+    return in_range;
+}
+
 bool bt_pyra_apply_alg(bt_pyra_state *state, const void *alg, bt_pz_error *err) {
     BT_TRACE_ENTER("bt_pyra_apply_alg");
-    (void)err;
     bt_pz_engine eng = bt_pyra_engine();
     size_t len = bt_pz_alg_len(alg);
     for (size_t i = 0; i < len; i++) {
         bt_pyra_move mv = *(const bt_pyra_move *)bt_pz_alg_at(&eng, alg, i);
+        if (!pyra_move_in_range(mv)) {
+            char text[BT_PYRA_TEXT_MAX];
+            snprintf(text, sizeof text, "vertex %u layers %u sense %u", mv.vertex, mv.layers,
+                     mv.sense);
+            bt_pz_error_set(err, BT_PZ_ERR_APPLY, text, strlen(text));
+            BT_TRACE_FAIL("bt_pyra_apply_alg", "move rejected: %s", text);
+            BT_TRACE_EXIT("bt_pyra_apply_alg");
+            return false;
+        }
         size_t depth = mv.layers == BT_PYRA_LAYERS_TWIN ? 4 : 1;
         for (size_t cycle = 0; cycle < depth; cycle++) {
             spin_cycle(state->facelets, CYCLES[mv.vertex][cycle], mv.sense);

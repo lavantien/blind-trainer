@@ -383,6 +383,34 @@ BT_TEST(pyra_oracle, apply_always_succeeds) {
     bt_pz_alg_destroy(alg);
 }
 
+BT_TEST(pyra_oracle, apply_rejects_hand_built_out_of_range_fields) {
+    bt_pz_engine eng = bt_pyra_engine();
+    const bt_pyra_move illegal[4] = {
+        {4, 0, 0},
+        {255, 1, 1},
+        {0, 2, 0},
+        {1, 0, 2},
+    };
+    for (size_t i = 0; i < 4; i++) {
+        void *alg = bt_pz_alg_create();
+        bt_pz_alg_push(&eng, alg, &illegal[i]);
+        bt_pyra_state state;
+        bt_pyra_solved_state(&state);
+        bt_pz_error err;
+        BT_CHECK(!bt_pyra_apply_alg(&state, alg, &err));
+        BT_CHECK_EQ(err.kind, (int)BT_PZ_ERR_APPLY);
+        bt_strbuf message;
+        bt_strbuf_init(&message, 64);
+        bt_pz_error_message(&err, &message);
+        BT_CHECK(strstr(message.data, "vertex 4") != NULL ||
+                 strstr(message.data, "vertex 255") != NULL ||
+                 strstr(message.data, "vertex 0") != NULL ||
+                 strstr(message.data, "vertex 1") != NULL);
+        bt_strbuf_free(&message);
+        bt_pz_alg_destroy(alg);
+    }
+}
+
 static uint64_t xorshift(uint64_t *seed) {
     uint64_t x = *seed;
     x ^= x << 13U;
