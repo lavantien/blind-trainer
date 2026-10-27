@@ -86,5 +86,20 @@ void bt_view_algs_refresh(const char *query, bt_view_algs_browser *browser);
 void bt_view_algs_enter(bt_app_ctx *ctx);
 void bt_view_algs_update(bt_app_ctx *ctx);
 void bt_view_algs_read_query(bt_app_ctx *ctx, const char *text);
+void bt_view_algs_key(bt_app_ctx *ctx, int key);
+void bt_view_case_drill_open_request(bt_app_ctx *ctx);
+
+void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
+                       float window_w, float window_h);
+void bt_view_algs_row_draw(bt_app_ctx *ctx);
+
+typedef struct {
+    bt_algs_style style;
+    char text[BT_ALGS_TEXT_MAX];
+    bt_theme_color color;
+} bt_view_algs_detail_line;
+
+size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
+                                 bt_view_algs_detail_line out[BT_ALGS_ROWS_MAX * 2]);
 
 #endif

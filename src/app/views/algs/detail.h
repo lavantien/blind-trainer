@@ -50,4 +50,8 @@ void bt_view_repo_detail_lines(const bt_repo_browser *browser, const bt_override
                                const bt_view_override_draft *draft, bt_detail_line *out, size_t cap,
                                size_t *count);
 
+bt_overrides *bt_view_algs_overrides(void);
+bt_view_override_draft *bt_view_algs_draft(void);
+void bt_view_algs_override_enter(bt_app_ctx *ctx);
+
 #endif

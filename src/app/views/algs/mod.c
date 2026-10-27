@@ -1,6 +1,10 @@
 #include "app/views/algs/mod.h"
 
+#include "app/views/algs/browse.h"
+#include "app/views/algs/detail.h"
+#include "app/views/case_drill.h"
 #include "app/views/drill.h"
+#include "app/views/frame.h"
 #include "app/window.h"
 #include "common/space.h"
 
@@ -332,6 +336,9 @@ void bt_view_algs_enter(bt_app_ctx *ctx) {
     if (app->browser.filtered_count > 0) {
         bt_view_algs_highlight(&ctx->net, &app->browser.filtered[0]);
     }
+    bt_repo_enter(&ctx->stores, bt_view_algs_repo());
+    bt_view_algs_override_enter(ctx);
+    bt_view_case_drill_cards_enter(ctx);
     BT_TRACE_EXIT("app.algs_enter");
 }
 
@@ -409,4 +416,245 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
         bt_view_algs_refresh(app->query, &app->browser);
     }
     BT_TRACE_EXIT("app.algs_update");
+}
+
+void bt_view_case_drill_open_request(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.case_drill_open_request");
+    bt_repo_browser *repo = bt_view_algs_repo();
+    bt_view_case_drill_app_state *drill = bt_view_case_drill_app();
+    bt_drill_case queue[BT_CASE_DRILL_QUEUE_MAX];
+    size_t count = 0;
+    if (!repo->repo_focused) {
+        BT_TRACE_EXIT("app.case_drill_open_request");
+        return;
+    }
+    if (!bt_case_drill_request(repo, bt_view_algs_overrides(), &drill->cards, bt_views_now_day(),
+                               queue, &count)) {
+        BT_TRACE_EXIT("app.case_drill_open_request");
+        return;
+    }
+    bt_view_case_drill_set_pending(queue, count);
+    bt_app_request_state(ctx, BT_APP_CASE_DRILL);
+    bt_app_apply_pending(ctx);
+    BT_TRACE_EXIT("app.case_drill_open_request");
+}
+
+void bt_view_algs_key(bt_app_ctx *ctx, int key) {
+    BT_TRACE_ENTER("app.algs_key");
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_repo_browser *repo = bt_view_algs_repo();
+    if (app->query_focused && !ctx->input_focus) {
+        app->query_focused = 0;
+    }
+    int typing = app->query_focused;
+    int step = 0;
+    int drill = 0;
+    int deeper = 0;
+    int shallower = 0;
+    if (key == KEY_SLASH && !typing) {
+        app->query_focused = 1;
+        ctx->input_focus = 1;
+        BT_TRACE_EXIT("app.algs_key");
+        return;
+    }
+    if (key == KEY_DOWN || (key == KEY_N && !typing)) {
+        step = 1;
+    } else if (key == KEY_UP || (key == KEY_P && !typing)) {
+        step = -1;
+    } else if (key == KEY_RIGHT) {
+        deeper = 1;
+    } else if (key == KEY_LEFT) {
+        shallower = 1;
+    } else if ((key == KEY_ENTER || key == KEY_D) && !typing) {
+        drill = 1;
+    }
+    if (deeper) {
+        bt_repo_deeper(repo);
+    }
+    if (shallower) {
+        bt_repo_shallower(repo);
+    }
+    if (bt_repo_browser_letters_focused(repo)) {
+        if (step != 0 && app->browser.filtered_count > 0) {
+            long long len = (long long)app->browser.filtered_count;
+            long long current = (long long)app->browser.selected;
+            long long next = ((current + step) % len + len) % len;
+            app->browser.selected = (size_t)next;
+        }
+        if (app->browser.filtered_count > 0) {
+            bt_view_algs_highlight(&ctx->net, &app->browser.filtered[app->browser.selected]);
+        }
+        if (drill && app->browser.selected < app->browser.filtered_count) {
+            bt_view_drill_set_pending(app->browser.filtered[app->browser.selected]);
+            bt_app_request_state(ctx, BT_APP_DRILL);
+            bt_app_apply_pending(ctx);
+        }
+        BT_TRACE_EXIT("app.algs_key");
+        return;
+    }
+    if (step != 0) {
+        bt_repo_move(repo, step);
+    }
+    if (drill) {
+        bt_view_case_drill_open_request(ctx);
+    }
+    BT_TRACE_EXIT("app.algs_key");
+}
+
+static void push_detail(bt_view_algs_detail_line *out, size_t cap, size_t *count,
+                        bt_algs_style style, const char *text, bt_theme_color color) {
+    if (*count >= cap) {
+        return;
+    }
+    out[*count].style = style;
+    snprintf(out[*count].text, BT_ALGS_TEXT_MAX, "%s", text);
+    out[*count].color = color;
+    (*count)++;
+}
+
+size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
+                                 bt_view_algs_detail_line out[BT_ALGS_ROWS_MAX * 2]) {
+    BT_TRACE_ENTER("app.algs_detail_lines");
+    size_t cap = BT_ALGS_ROWS_MAX * 2;
+    size_t count = 0;
+    char text[BT_ALGS_TEXT_MAX];
+    snprintf(text, sizeof text, "%zu of %zu cases match", browser->filtered_count,
+             browser->all_count);
+    push_detail(out, cap, &count, BT_ALGS_STYLE_MICRO, text, bt_theme_text_muted());
+    if (browser->filtered_count == 0 || browser->selected >= browser->filtered_count) {
+        push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, "no case matches the query",
+                    bt_theme_text_muted());
+        BT_TRACE_EXIT("app.algs_detail_lines");
+        return count;
+    }
+    const bt_case *case_id = &browser->filtered[browser->selected];
+    char letters[3];
+    bt_view_algs_letters_of(case_id, letters);
+    push_detail(out, cap, &count, BT_ALGS_STYLE_FOCAL, letters, bt_theme_text_primary());
+    char position[BT_ALGS_TEXT_MAX];
+    bt_view_case_position(case_id, position);
+    int covered = bt_view_algs_covered(corpus, case_id);
+    snprintf(text, sizeof text, "%s %s covered %s", bt_view_algs_orbit_word(case_id->orbit),
+             position, covered ? "yes" : "no");
+    push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, text,
+                covered ? bt_theme_ok() : bt_theme_danger());
+    const bt_corpus_row *rows[BT_ALGS_ROWS_MAX];
+    size_t row_count = bt_view_algs_case_rows(corpus, case_id, rows);
+    if (row_count == 0) {
+        push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, "no vendor algs", bt_theme_text_muted());
+    }
+    for (size_t i = 0; i < row_count; i++) {
+        const bt_corpus_row *row = rows[i];
+        if (i == 0) {
+            bt_expanded_list units;
+            bt_expanded_list_init(&units);
+            if (bt_decompose_verified(row->commutator, &row->alg, &units)) {
+                for (size_t unit = 0; unit < units.count; unit++) {
+                    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+                    size_t span_count = bt_view_algs_mechanic_spans(&units, spans);
+                    (void)span_count;
+                    break;
+                }
+                push_detail(out, cap, &count, BT_ALGS_STYLE_ALG, "", bt_theme_text_primary());
+                bt_expanded_list_free(&units);
+            } else {
+                bt_expanded_list_free(&units);
+                push_detail(out, cap, &count, BT_ALGS_STYLE_ALG, row->alg_text,
+                            bt_theme_text_primary());
+                if (row->commutator[0] != '\0') {
+                    snprintf(text, sizeof text, "commutator %s", row->commutator);
+                    push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, text, bt_theme_text_muted());
+                }
+            }
+            char expand[BT_ALGS_TEXT_MAX];
+            if (bt_view_algs_pair_expand_rows(row, expand)) {
+                push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, expand, bt_theme_text_muted());
+            }
+        } else {
+            push_detail(out, cap, &count, BT_ALGS_STYLE_MUTED, row->alg_text,
+                        bt_theme_text_muted());
+        }
+        bt_view_algs_meta_line(row, text);
+        push_detail(out, cap, &count, BT_ALGS_STYLE_SMALL, text, bt_theme_text_muted());
+        snprintf(text, sizeof text, "recon %s video %s", row->recon_link, row->youtube_link);
+        push_detail(out, cap, &count, BT_ALGS_STYLE_MICRO, text, bt_theme_text_muted());
+    }
+    BT_TRACE_EXIT("app.algs_detail_lines");
+    return count;
+}
+
+void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
+                       float window_w, float window_h) {
+    BT_TRACE_ENTER("app.view_algs_draw");
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    bt_view_frame_draw(
+        font_bold, font_regular, window_w, window_h, "algs",
+        "type letters to search, arrows select, left right browse packs, o edits a "
+        "case, enter saves, tab cancels, x deletes the override, d drills, esc menu");
+    bt_view_frame_draw(
+        font_bold, font_regular, window_w, window_h, "algs",
+        "type letters to search, arrows select, left right browse packs, o edits a "
+        "case, enter saves, tab cancels, x deletes the override, d drills, esc menu");
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_repo_browser *repo = bt_view_algs_repo();
+    bt_app_config config;
+    bt_app_config_defaults(&config);
+    config.window.width = (unsigned)window_w;
+    config.window.height = (unsigned)window_h;
+    size_t capacity = bt_view_algs_list_capacity(&config);
+    float y = metrics.content_y;
+    if (bt_repo_browser_letters_focused(repo)) {
+        bt_view_case_row rows[BT_ALGS_ROWS_MAX];
+        size_t count = bt_view_algs_list_rows(&app->browser, capacity, rows);
+        for (size_t i = 0; i < count; i++) {
+            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
+                             rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
+            y += theme->font_body * theme->root_rem * 1.5F;
+        }
+        bt_view_algs_detail_line lines[BT_ALGS_ROWS_MAX * 2];
+        size_t detail_count = bt_view_algs_detail_lines(&ctx->vendor_corpus, &app->browser, lines);
+        float detail_x = metrics.content_x + metrics.content_w * 0.4F;
+        float detail_y = metrics.content_y;
+        for (size_t i = 0; i < detail_count; i++) {
+            bt_app_draw_text(font_regular, lines[i].text, detail_x, detail_y, theme->font_small,
+                             lines[i].color);
+            detail_y += theme->font_small * theme->root_rem * 1.5F;
+        }
+    } else {
+        bt_repo_list_row rows[BT_REPO_LIST_MAX];
+        size_t count = bt_repo_list_rows(repo, BT_REPO_LIST_MAX, rows);
+        for (size_t i = 0; i < count; i++) {
+            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
+                             rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
+            y += theme->font_body * theme->root_rem * 1.5F;
+        }
+        bt_detail_line lines[BT_DETAIL_LINES_MAX];
+        size_t detail_count = 0;
+        bt_view_repo_detail_lines(repo, bt_view_algs_overrides(), bt_view_algs_draft(), lines,
+                                  BT_DETAIL_LINES_MAX, &detail_count);
+        float detail_x = metrics.content_x + metrics.content_w * 0.4F;
+        float detail_y = metrics.content_y;
+        for (size_t i = 0; i < detail_count; i++) {
+            float size = lines[i].kind == BT_DETAIL_TITLE ? theme->font_title : theme->font_small;
+            bt_app_draw_text(font_regular, lines[i].text, detail_x, detail_y, size,
+                             lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger()
+                                                             : bt_theme_text_muted());
+            detail_y += size * theme->root_rem * 1.5F;
+        }
+    }
+    BT_TRACE_EXIT("app.view_algs_draw");
+}
+
+void bt_view_algs_row_draw(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.view_algs_row_draw");
+    const bt_app_font_book *book = bt_app_fonts_current();
+    if (book == NULL) {
+        BT_TRACE_FAIL("app.view_algs_row_draw", "fonts not loaded");
+        BT_TRACE_EXIT("app.view_algs_row_draw");
+        return;
+    }
+    bt_view_algs_draw(ctx, book->regular, book->bold, (float)GetScreenWidth(),
+                      (float)GetScreenHeight());
+    BT_TRACE_EXIT("app.view_algs_row_draw");
 }

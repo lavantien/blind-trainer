@@ -8,6 +8,7 @@
 #include "core/expand.h"
 #include "data/db.h"
 #include "data/notation.h"
+#include "data/paths.h"
 #include "puzzles/fto.h"
 #include "puzzles/mega.h"
 #include "puzzles/nxn.h"
@@ -315,4 +316,44 @@ void bt_view_repo_detail_lines(const bt_repo_browser *browser, const bt_override
         push_line(out, cap, count, BT_DETAIL_WARN, draft->error);
     }
     BT_TRACE_EXIT("app.algs_repo_detail_lines");
+}
+
+static bt_overrides shared_overrides;
+static bt_view_override_draft shared_draft;
+static int overrides_initialized;
+
+bt_overrides *bt_view_algs_overrides(void) {
+    BT_TRACE_ENTER("app.algs_overrides");
+    if (!overrides_initialized) {
+        bt_overrides_init(&shared_overrides);
+        overrides_initialized = 1;
+    }
+    BT_TRACE_EXIT("app.algs_overrides");
+    return &shared_overrides;
+}
+
+bt_view_override_draft *bt_view_algs_draft(void) {
+    BT_TRACE_ENTER("app.algs_draft");
+    if (!overrides_initialized) {
+        bt_view_algs_overrides();
+        bt_view_override_draft_default(&shared_draft);
+    }
+    BT_TRACE_EXIT("app.algs_draft");
+    return &shared_draft;
+}
+
+void bt_view_algs_override_enter(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.algs_override_enter");
+    bt_overrides *store = bt_view_algs_overrides();
+    bt_overrides_free(store);
+    bt_overrides_init(store);
+    bt_db db;
+    bt_db_error err;
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(ctx->paths.user_root, db_path);
+    if (bt_db_open_at(db_path, &db, &err) == 0) {
+        bt_repo_user_load_all(&db, store, &err);
+        bt_db_close(&db);
+    }
+    BT_TRACE_EXIT("app.algs_override_enter");
 }

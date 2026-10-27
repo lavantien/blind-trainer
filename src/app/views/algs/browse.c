@@ -496,3 +496,20 @@ size_t bt_repo_count_kind(const bt_repo_node *node, bt_repo_kind kind) {
     BT_TRACE_EXIT("app.repo_count_kind");
     return count;
 }
+
+static bt_repo_browser *shared_repo_browser;
+
+bt_repo_browser *bt_view_algs_repo(void) {
+    BT_TRACE_ENTER("app.algs_repo");
+    if (shared_repo_browser == NULL) {
+        shared_repo_browser = malloc(sizeof *shared_repo_browser);
+        if (shared_repo_browser == NULL) {
+            BT_TRACE_FAIL("app.algs_repo", "out of memory");
+            BT_TRACE_EXIT("app.algs_repo");
+            return NULL;
+        }
+        bt_repo_browser_default(shared_repo_browser);
+    }
+    BT_TRACE_EXIT("app.algs_repo");
+    return shared_repo_browser;
+}
