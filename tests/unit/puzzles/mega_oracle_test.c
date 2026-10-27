@@ -297,7 +297,10 @@ BT_TEST(mega_oracle, pinned_tokens_parse_format_and_round_trip) {
 BT_TEST(mega_oracle, rejects_tokens_outside_the_pinned_grammar) {
     for (size_t i = 0; i < sizeof REJECTED_TOKENS / sizeof REJECTED_TOKENS[0]; i++) {
         bt_mega_move move;
-        BT_CHECK(!bt_mega_parse_move(REJECTED_TOKENS[i], strlen(REJECTED_TOKENS[i]), &move, NULL));
+        bt_pz_error err;
+        BT_CHECK(!bt_mega_parse_move(REJECTED_TOKENS[i], strlen(REJECTED_TOKENS[i]), &move, &err));
+        BT_CHECK_EQ(err.kind, (int)BT_PZ_ERR_PARSE);
+        BT_CHECK_EQ(err.token, REJECTED_TOKENS[i]);
     }
 }
 

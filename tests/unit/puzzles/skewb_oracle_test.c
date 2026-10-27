@@ -633,7 +633,10 @@ BT_TEST(skewb_oracle, rejects_garbage_and_cube_face_tokens) {
     };
     for (size_t i = 0; i < sizeof tokens / sizeof tokens[0]; i++) {
         bt_skewb_move move;
-        BT_CHECK(!bt_skewb_parse_move(tokens[i], strlen(tokens[i]), &move, NULL));
+        bt_pz_error err;
+        BT_CHECK(!bt_skewb_parse_move(tokens[i], strlen(tokens[i]), &move, &err));
+        BT_CHECK_EQ(err.kind, (int)BT_PZ_ERR_PARSE);
+        BT_CHECK_EQ(err.token, tokens[i]);
     }
     bt_skewb skewb = bt_skewb_new();
     bt_pz_error err;
