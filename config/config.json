@@ -24,6 +24,34 @@
         -80.0,
         80.0
       ]
+    },
+    "fonts": {
+      "codepoint_ranges": [
+        [
+          32,
+          126
+        ],
+        [
+          160,
+          255
+        ],
+        [
+          258,
+          259
+        ],
+        [
+          272,
+          273
+        ],
+        [
+          416,
+          432
+        ],
+        [
+          7840,
+          7929
+        ]
+      ]
     }
   },
   "ga": {
@@ -239,17 +267,46 @@
     "test_timeout_secs": 120,
     "src_deps": {
       "core": [],
-      "scheme": ["core"],
-      "data": ["core", "scheme"],
-      "puzzles": ["core"],
-      "ga": ["core", "scheme", "data"],
-      "app": ["core", "scheme", "data", "puzzles", "ga"]
+      "scheme": [
+        "core"
+      ],
+      "data": [
+        "core",
+        "scheme"
+      ],
+      "puzzles": [
+        "core"
+      ],
+      "ga": [
+        "core",
+        "scheme",
+        "data"
+      ],
+      "app": [
+        "core",
+        "scheme",
+        "data",
+        "puzzles",
+        "ga"
+      ]
     },
     "tool_deps": {
-      "gendata": ["data", "scheme", "puzzles"],
-      "verify": ["data", "puzzles"],
-      "ga-run": ["ga"],
-      "memofreq": ["scheme", "data"],
+      "gendata": [
+        "data",
+        "scheme",
+        "puzzles"
+      ],
+      "verify": [
+        "data",
+        "puzzles"
+      ],
+      "ga-run": [
+        "ga"
+      ],
+      "memofreq": [
+        "scheme",
+        "data"
+      ],
       "mutate": [],
       "mutants-gate": [],
       "policy": [],
