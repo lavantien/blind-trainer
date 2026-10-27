@@ -208,6 +208,82 @@ BT_TEST(digest, digest_corpus_walks_vendor_sheets_in_canonical_order) {
     tdg_rm_rf(root);
 }
 
+static void tdg_write_bytes(const char *path, const unsigned char *bytes, size_t len) {
+    char parent[TDG_PATH_MAX];
+    snprintf(parent, sizeof parent, "%s", path);
+    char *slash = strrchr(parent, '/');
+    char *back = strrchr(parent, '\\');
+    char *cut = back > slash ? back : slash;
+    if (cut != NULL) {
+        *cut = '\0';
+        tdg_mkdir_p(parent);
+    }
+    FILE *file = fopen(path, "wb");
+    if (file == NULL) {
+        BT_ABORT("cannot open %s", path);
+    }
+    if (fwrite(bytes, 1, len, file) != len) {
+        BT_ABORT("short write on %s", path);
+    }
+    fclose(file);
+}
+
+BT_TEST(digest, digest_corpus_covers_bytes_past_an_embedded_nul) {
+    char root[TDG_PATH_MAX];
+    tdg_scratch("nulwalk", root);
+    unsigned char *texts[BT_DIGEST_FILES];
+    size_t text_lens[BT_DIGEST_FILES];
+    size_t slot = 0;
+    for (size_t index = 0; index < BT_SOLVER_VENDOR_COUNT; index++) {
+        for (size_t sheet_at = 0; sheet_at < BT_SHEET_CLASS_COUNT; sheet_at++) {
+            size_t data_rows = 1;
+            char text[8192];
+            size_t used =
+                (size_t)snprintf(text, sizeof text,
+                                 "Position\tAlg\tCommutator\tReconstruction Link\tYoutube Link\n");
+            for (size_t row = 0; row < data_rows; row++) {
+                used += (size_t)snprintf(text + used, sizeof text - used,
+                                         "p%zu-%zu-%zu\tR U R' U'\t\t\t\n", index, sheet_at, row);
+            }
+            char path[TDG_PATH_MAX];
+            snprintf(path, sizeof path, "%s/%s/%s.tsv", root, bt_solver_dir(WALK_SOLVERS[index]),
+                     bt_sheet_class_file(WALK_SHEETS[sheet_at]));
+            if (index == 0 && sheet_at == 0) {
+                const unsigned char tail[] = {'\0', 't', 'a', 'i', 'l'};
+                size_t full_len = used + sizeof tail;
+                texts[slot] = malloc(full_len);
+                BT_CHECK(texts[slot] != NULL);
+                memcpy(texts[slot], text, used);
+                memcpy(texts[slot] + used, tail, sizeof tail);
+                text_lens[slot] = full_len;
+                tdg_write_bytes(path, texts[slot], full_len);
+            } else {
+                tdg_write_file(path, text);
+                texts[slot] = malloc(used + 1);
+                BT_CHECK(texts[slot] != NULL);
+                memcpy(texts[slot], text, used + 1);
+                text_lens[slot] = used;
+            }
+            slot += 1;
+        }
+    }
+    bt_corpus_digest digest;
+    char err[BT_DIGEST_ERR_MAX];
+    int rc = bt_digest_corpus(root, &digest, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    char want[BT_DIGEST_SHA256_HEX_LEN];
+    bt_digest_corpus_sha256_hex((const unsigned char *const *)texts, text_lens, BT_DIGEST_FILES,
+                                want);
+    BT_CHECK_EQ(digest.sha256, want);
+    bt_digest_sha256_hex(texts[0], text_lens[0], want);
+    BT_CHECK_EQ(digest.files[0].sha256, want);
+    BT_CHECK_EQ(digest.files[0].rows, 1);
+    for (size_t at = 0; at < BT_DIGEST_FILES; at++) {
+        free(texts[at]);
+    }
+    tdg_rm_rf(root);
+}
+
 BT_TEST(digest, digest_corpus_reports_a_missing_sheet) {
     char root[TDG_PATH_MAX];
     tdg_scratch("miss", root);

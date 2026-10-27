@@ -39,7 +39,7 @@ void bt_digest_corpus_sha256_hex(const unsigned char *const *parts, const size_t
     BT_TRACE_EXIT("digest.corpus_sha256_hex");
 }
 
-static char *read_sheet(const char *path, char *err, size_t err_len) {
+static char *read_sheet(const char *path, size_t *out_len, char *err, size_t err_len) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
         snprintf(err, err_len, "read %s: %s", path, strerror(errno));
@@ -65,6 +65,7 @@ static char *read_sheet(const char *path, char *err, size_t err_len) {
     size_t got = fread(text, 1, (size_t)size, file);
     fclose(file);
     text[got] = '\0';
+    *out_len = got;
     return text;
 }
 
@@ -81,7 +82,8 @@ int bt_digest_corpus(const char *root, bt_corpus_digest *out, char *err, size_t 
             char path[BT_DIGEST_ERR_MAX];
             snprintf(path, sizeof path, "%s/%s/%s.tsv", root, bt_solver_dir(solver),
                      bt_sheet_class_file(sheet));
-            char *text = read_sheet(path, err, err_len);
+            size_t text_len = 0;
+            char *text = read_sheet(path, &text_len, err, err_len);
             if (text == NULL) {
                 BT_TRACE_EXIT("digest.corpus");
                 return 1;
@@ -105,9 +107,9 @@ int bt_digest_corpus(const char *root, bt_corpus_digest *out, char *err, size_t 
             snprintf(entry->sheet, sizeof entry->sheet, "%s", bt_sheet_class_file(sheet));
             entry->rows = count;
             unsigned char digest[32];
-            bt_sha256(text, strlen(text), digest);
+            bt_sha256(text, text_len, digest);
             bt_sha256_hex(digest, entry->sha256);
-            bt_sha256_update(&ctx, text, strlen(text));
+            bt_sha256_update(&ctx, text, text_len);
             out->rows += count;
             free(text);
             slot += 1;
