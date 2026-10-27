@@ -3,7 +3,9 @@
 #include "app/views/memo.h"
 #include "app/views/net_view.h"
 #include "app/views/replay.h"
+#include "app/views/settings.h"
 #include "app/views/state.h"
+#include "app/views/stats.h"
 #include "app/window.h"
 #include "common/bt_trace.h"
 
@@ -75,6 +77,8 @@ int bt_app_main(int argc, char **argv) {
     bt_view_drill_app_free(bt_view_drill_app());
     bt_view_memo_app_free(bt_view_memo_app());
     bt_view_replay_app_free();
+    bt_view_stats_app_free(bt_view_stats_app());
+    bt_view_settings_app_free(bt_view_settings_app());
     BT_TRACE_EXIT("app.main");
     return 0;
 }
