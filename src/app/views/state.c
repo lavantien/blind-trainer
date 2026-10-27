@@ -203,6 +203,9 @@ void bt_app_views_load_syllables(bt_app_views *views, const bt_app_runtime_paths
         if (syllable->as.string[0] == '\0') {
             continue;
         }
+        if (strlen(letters->as.string) != 2) {
+            continue;
+        }
         if (syllable_upsert(&views->syllables, orbit->as.string, letters->as.string,
                             syllable->as.string) != 0) {
             bt_syllable_book_free(&views->syllables);

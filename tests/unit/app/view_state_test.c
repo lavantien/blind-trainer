@@ -157,3 +157,14 @@ BT_TEST(view_state, shared_views_reuse_and_reset) {
     BT_CHECK(fresh->net.frozen == 0);
     bt_app_views_dispose_shared();
 }
+
+BT_TEST(view_state, load_syllables_skips_keys_whose_letters_are_not_two) {
+    bt_app_views *views = views_with_data_ga(
+        "{\"cases\":[{\"orbit\":\"edge\",\"letters\":\"ABX\",\"syllable\":\"z\"},"
+        "{\"orbit\":\"edge\",\"letters\":\"A\",\"syllable\":\"w\"},"
+        "{\"orbit\":\"edge\",\"letters\":\"AB\",\"syllable\":\"tả\"}]}");
+    BT_CHECK(views->syllables.loaded == 1);
+    BT_CHECK(views->syllables.count == 1);
+    BT_CHECK(strcmp(bt_syllable_book_for(&views->syllables, "edge", "AB"), "tả") == 0);
+    bt_app_views_dispose_shared();
+}
