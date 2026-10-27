@@ -28,8 +28,12 @@ static size_t load_rows(const char *file, bt_pairs_row *rows, size_t cap) {
             continue;
         }
         char *cols[3];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 3), (size_t)3);
-        BT_CHECK(count < cap);
+        if (bt_tsv_split(line, cols, 3) != 3) {
+            BT_ABORT("row must have 3 columns: %s", line);
+        }
+        if (count >= cap) {
+            BT_ABORT("pairs dump row budget exceeded");
+        }
         rows[count].t1 = (uint8_t)bt_test_parse_int(cols[0]);
         rows[count].t2 = (uint8_t)bt_test_parse_int(cols[1]);
         snprintf(rows[count].letters, 3, "%s", cols[2]);

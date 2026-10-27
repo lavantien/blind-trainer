@@ -52,8 +52,12 @@ static void load_simcheck(void) {
             continue;
         }
         char *cols[8];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 8), (size_t)8);
-        BT_CHECK(g_sim_count < ORACLE_ROWS_MAX);
+        if (bt_tsv_split(line, cols, 8) != 8) {
+            BT_ABORT("simcheck row width: %s", line);
+        }
+        if (g_sim_count >= ORACLE_ROWS_MAX) {
+            BT_ABORT("simcheck row budget exceeded");
+        }
         bt_simcheck_row *row = &g_sim[g_sim_count++];
         snprintf(row->solver, sizeof row->solver, "%s", cols[0]);
         snprintf(row->sheet, sizeof row->sheet, "%s", cols[1]);
@@ -79,7 +83,9 @@ static void load_rows(void) {
             continue;
         }
         char *cols[5];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 5), (size_t)5);
+        if (bt_tsv_split(line, cols, 5) != 5) {
+            BT_ABORT("rows row width: %s", line);
+        }
         bt_simcheck_row *match = NULL;
         for (size_t i = 0; i < g_sim_count && match == NULL; i++) {
             if (strcmp(g_sim[i].solver, cols[0]) == 0 && strcmp(g_sim[i].sheet, cols[1]) == 0 &&
@@ -87,13 +93,14 @@ static void load_rows(void) {
                 match = &g_sim[i];
             }
         }
-        BT_CHECK(match != NULL);
         if (match == NULL) {
-            continue;
+            BT_ABORT("simcheck row missing for %s", line);
         }
         match->used = true;
         BT_CHECK_EQ(match->position, cols[3]);
-        BT_CHECK(g_row_count < ORACLE_ROWS_MAX);
+        if (g_row_count >= ORACLE_ROWS_MAX) {
+            BT_ABORT("rows row budget exceeded");
+        }
         bt_oracle_row *row = &g_rows[g_row_count++];
         snprintf(row->solver, sizeof row->solver, "%s", cols[0]);
         snprintf(row->sheet, sizeof row->sheet, "%s", cols[1]);
@@ -326,6 +333,9 @@ BT_TEST(classifier_oracle, twist_pair_positions_and_signed_deltas_match_simcheck
             signed_value[at_out++] = tail[0];
             tail++;
             while (*tail >= '0' && *tail <= '9') {
+                if (at_out + 1 >= sizeof signed_value) {
+                    BT_ABORT("twist value too long in %s", row->note);
+                }
                 signed_value[at_out++] = *tail++;
             }
             signed_value[at_out] = '\0';

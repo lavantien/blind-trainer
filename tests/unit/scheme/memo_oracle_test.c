@@ -37,8 +37,12 @@ static void mo_load_simcheck(void) {
             continue;
         }
         char *cols[8];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 8), (size_t)8);
-        BT_CHECK(mo_sim_count < MO_SIM_MAX);
+        if (bt_tsv_split(line, cols, 8) != 8) {
+            BT_ABORT("simcheck row width: %s", line);
+        }
+        if (mo_sim_count >= MO_SIM_MAX) {
+            BT_ABORT("simcheck row budget exceeded");
+        }
         mo_sim_row *row = &mo_sim[mo_sim_count++];
         snprintf(row->solver, sizeof row->solver, "%s", cols[0]);
         snprintf(row->sheet, sizeof row->sheet, "%s", cols[1]);
@@ -63,7 +67,12 @@ static void mo_sticker_of_name_init(char names[48][8], uint8_t stickers[48]) {
             continue;
         }
         char *cols[8];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 8), (size_t)8);
+        if (bt_tsv_split(line, cols, 8) != 8) {
+            BT_ABORT("position_map row width: %s", line);
+        }
+        if (count >= 48) {
+            BT_ABORT("position_map row budget exceeded");
+        }
         snprintf(names[count], 8, "%s", cols[3]);
         stickers[count] = (uint8_t)bt_test_parse_int(cols[1]);
         count++;
@@ -109,7 +118,9 @@ static void mo_alg_of_row(const char *solver, const char *sheet, long long rowid
     }
     bt_test_lines_end(&lines);
     char *cols[8];
-    BT_CHECK(bt_tsv_split(kept, cols, 8) >= 2);
+    if (bt_tsv_split(kept, cols, 8) < 2) {
+        BT_ABORT("sheet row width: %s", kept);
+    }
     mo_parse_alg(cols[1], alg);
 }
 
@@ -516,6 +527,9 @@ static int mo_twist_sign(const char *note, const char *tag) {
     signed_value[len++] = at[0];
     at++;
     while (*at >= '0' && *at <= '9') {
+        if (len + 1 >= sizeof signed_value) {
+            BT_ABORT("twist value too long in %s", note);
+        }
         signed_value[len++] = *at++;
     }
     signed_value[len] = '\0';

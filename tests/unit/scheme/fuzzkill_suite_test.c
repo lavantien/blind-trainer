@@ -26,14 +26,19 @@ static void fk_load_rows(void) {
     bt_test_ref_path(path, "rows.tsv");
     bt_test_lines lines;
     bt_test_lines_begin(&lines, path);
-    char *line;
+    char *line = bt_test_lines_next(&lines);
+    BT_CHECK(line != NULL);
     while ((line = bt_test_lines_next(&lines)) != NULL) {
         if (*line == '\0') {
             continue;
         }
         char *cols[5];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 5), (size_t)5);
-        BT_CHECK(fk_row_count < FK_ROWS_MAX);
+        if (bt_tsv_split(line, cols, 5) != 5) {
+            BT_ABORT("rows row width: %s", line);
+        }
+        if (fk_row_count >= FK_ROWS_MAX) {
+            BT_ABORT("rows row budget exceeded");
+        }
         fk_row *row = &fk_rows[fk_row_count++];
         snprintf(row->sheet, sizeof row->sheet, "%s", cols[1]);
         snprintf(row->alg, sizeof row->alg, "%s", cols[4]);

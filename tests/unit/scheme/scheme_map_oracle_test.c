@@ -34,7 +34,9 @@ BT_TEST(scheme_map, position_map_tsv_matches_scheme_all_48) {
             continue;
         }
         char *cols[8];
-        BT_CHECK_EQ(bt_tsv_split(line, cols, 8), (size_t)8);
+        if (bt_tsv_split(line, cols, 8) != 8) {
+            BT_ABORT("row must have 8 columns: %s", line);
+        }
         bt_orbit orbit = BT_ORBIT_CORNER;
         if (strcmp(cols[0], "corner") == 0) {
             orbit = BT_ORBIT_CORNER;
@@ -43,9 +45,16 @@ BT_TEST(scheme_map, position_map_tsv_matches_scheme_all_48) {
         } else {
             BT_ABORT("unknown orbit token: %s", cols[0]);
         }
-        uint8_t sticker = (uint8_t)bt_test_parse_int(cols[1]);
+        long long sticker_raw = bt_test_parse_int(cols[1]);
+        if (sticker_raw < 0 || sticker_raw >= 48) {
+            BT_ABORT("sticker out of range: %s", cols[1]);
+        }
+        uint8_t sticker = (uint8_t)sticker_raw;
         BT_CHECK(strlen(cols[2]) == 1);
         char letter = cols[2][0];
+        if (letter < 'A' || letter > 'X') {
+            BT_ABORT("letter out of range: %s", cols[2]);
+        }
         const char *name = cols[3];
         uint8_t face = (uint8_t)bt_test_parse_int(cols[4]);
         uint8_t row = (uint8_t)bt_test_parse_int(cols[5]);
@@ -62,6 +71,9 @@ BT_TEST(scheme_map, position_map_tsv_matches_scheme_all_48) {
 
         BT_CHECK(sticker >= bt_scheme_orbit_lo(orbit));
         BT_CHECK(sticker < bt_scheme_orbit_hi(orbit));
+        if (rows >= 48) {
+            BT_ABORT("position_map row budget exceeded");
+        }
         pieces[sticker] = piece;
         letters_seen[letter - 'A'] = true;
         names_seen[rows] = name;
