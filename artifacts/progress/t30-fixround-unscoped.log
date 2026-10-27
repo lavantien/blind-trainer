@@ -1,0 +1,170 @@
+2026-10-27T22:13:45 [entry] test-unit tools
+2026-10-27T22:13:45 [skip] compile src\common\bt_harness.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\bt_trace.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\config.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\fsrs_math.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\json.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\paths.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\rng.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\sha256.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\space.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\strbuf.c up to date
+2026-10-27T22:13:45 [skip] compile src\common\when.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\alg.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\analysis.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\cube.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\expand.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\lib.c up to date
+2026-10-27T22:13:45 [skip] compile src\core\moves.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\commutator.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\corpus.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\db.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\digest.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\fsrs.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\import.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\migrations_embedded.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\notation.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\paths.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_algs.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_cards.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_seeds.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_settings.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_solves.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_srs.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\repo_user.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\hashing.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\mod.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\normalizer.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\parse.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\registry.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\seedpack\rulings.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\srs.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\tsv.c up to date
+2026-10-27T22:13:45 [skip] compile src\data\verify.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\fto.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\geometry.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\lib.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\mega.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\nxn.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\pyra.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\skewb.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\sq1.c up to date
+2026-10-27T22:13:45 [skip] compile src\puzzles\tier1.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\classifier.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\lib.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\memo.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\pairs.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\scheme.c up to date
+2026-10-27T22:13:45 [skip] compile src\scheme\scramble.c up to date
+2026-10-27T22:13:45 [skip] compile tests\unit\tools\fixtures\fx_main.c up to date
+2026-10-27T22:13:45 [skip] compile tests\unit\tools\fixtures\fx_target.c up to date
+2026-10-27T22:13:45 [skip] compile tests\unit\tools\fixtures\stub_clang.c up to date
+2026-10-27T22:13:45 [skip] compile tests\unit\tools\gendata_audit_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_build_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_determinism_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_hash_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_lib_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_manifest_pins_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_model_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_out_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_scoring_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_synth_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_vendor_pins_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\gendata_when_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\jobwrap_ceiling_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\jobwrap_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\mutants_gate_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\mutate_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\sleeper_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\verify_lib_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\verify_packs_report_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\verify_packs_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\visual_diff_lib_test.c up to date
+2026-10-27T22:13:46 [skip] compile tests\unit\tools\visual_diff_selftest_test.c up to date
+2026-10-27T22:13:46 [skip] compile tools\gendata\audit.c up to date
+2026-10-27T22:13:46 [skip] compile tools\gendata\lib.c up to date
+2026-10-27T22:13:46 [skip] compile tools\gendata\main.c up to date
+2026-10-27T22:13:46 [skip] compile tools\gendata\model.c up to date
+2026-10-27T22:13:46 [skip] compile tools\gendata\out.c up to date
+2026-10-27T22:13:47 [skip] compile tools\gendata\synth.c up to date
+2026-10-27T22:13:47 [skip] compile tools\jobwrap\ffi.c up to date
+2026-10-27T22:13:47 [skip] compile tools\jobwrap\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\jobwrap\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutants-gate\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutants-gate\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutants-gate\tests.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\buildcmd.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\engine.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\fs.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\ledger.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\operators.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\report.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\scratch.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\spawn.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\tests.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\tests_ops.c up to date
+2026-10-27T22:13:47 [skip] compile tools\mutate\token.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\comments.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\constants.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\fsutil.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\lexer.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\selftest.c up to date
+2026-10-27T22:13:47 [skip] compile tools\policy\sloc.c up to date
+2026-10-27T22:13:47 [skip] compile tools\sleeper\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\sleeper\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_bigcube.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_bld.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_cfop.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_fto.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_mega.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_nxn.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_pyra.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_skewb.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\ev_sq1.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\verify\packs.c up to date
+2026-10-27T22:13:47 [skip] compile tools\visual-diff\fs.c up to date
+2026-10-27T22:13:47 [skip] compile tools\visual-diff\lib.c up to date
+2026-10-27T22:13:47 [skip] compile tools\visual-diff\main.c up to date
+2026-10-27T22:13:47 [skip] compile tools\visual-diff\selftest.c up to date
+2026-10-27T22:13:47 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-27T22:13:54 [repro] 298 object timestamps zeroed
+2026-10-27T22:13:54 [compile] 161 compiled, 161 ok
+2026-10-27T22:13:55 [skip] link jobwrap.exe up to date
+2026-10-27T22:13:55 [skip] link mutants-gate.exe up to date
+2026-10-27T22:13:55 [skip] link policy.exe up to date
+2026-10-27T22:13:55 [skip] link sleeper.exe up to date
+2026-10-27T22:13:55 [skip] link visual-diff.exe up to date
+2026-10-27T22:13:57 [fail] link verify.exe lld-link: error: undefined symbol: main
+>>> referenced by D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78
+>>> referenced by D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+2026-10-27T22:13:57 [fail] link tools_memofreq_lib_test.exe ms_every_table_and_new_is_the_identity)
+>>> referenced 1 more times
+
+lld-link: error: undefined symbol: bt_mf_draw_counts_clone
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+
+lld-link: error: undefined symbol: bt_mf_draw_counts_merge
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+
+lld-link: error: undefined symbol: bt_mf_draw_counts_free
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced by C:\Users\lavantien\dev\github\blind-trainer\build\obj\70dcf3245464\tests\unit\tools\memofreq_lib_test.obj:(bt_test_memofreq_lib_merge_sums_every_table_and_new_is_the_identity)
+>>> referenced 3 more times
+
+lld-link: error: too many errors emitted, stopping now (use /errorlimit:0 to see all errors)
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+2026-10-27T22:13:57 [fail] test-build BtError: 2 of 41 links failed
