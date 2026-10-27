@@ -20,7 +20,7 @@ int bt_app_window_open(unsigned int width, unsigned int height, const char *titl
     if (render != NULL && render->target_fps > 0) {
         SetTargetFPS((int)render->target_fps);
     }
-    int ready = IsWindowReady();
+    int ready = IsWindowReady() ? 1 : 0;
     if (!ready) {
         BT_TRACE_FAIL("app.window_open", "window %ux%u not ready", width, height);
     }
