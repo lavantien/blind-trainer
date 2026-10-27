@@ -243,6 +243,76 @@ BT_TEST(jobwrap, command_line_rejects_over_budget_payloads) {
     BT_CHECK(bt_jobwrap_quote_argument(huge, line, BT_JOBWRAP_CMDLINE_MAX) != 0);
 }
 
+BT_TEST(jobwrap, command_line_joins_at_the_exact_cap_without_overflow) {
+    wchar_t tail[64];
+    tail[0] = L'a';
+    for (size_t at = 1; at < 62; at++) {
+        tail[at] = L'b';
+    }
+    tail[62] = L'\0';
+    const wchar_t *exact[] = {
+        tail,
+    };
+    wchar_t out[64];
+    BT_CHECK_EQ(bt_jobwrap_command_line(exact, 1, out, 64), 0);
+    BT_CHECK_EQ(wcslen(out), 62U);
+    wchar_t second[64];
+    second[0] = L'c';
+    for (size_t at = 1; at < 61; at++) {
+        second[at] = L'b';
+    }
+    second[61] = L'\0';
+    const wchar_t *joined[] = {
+        L"a",
+        second,
+    };
+    wchar_t guard_out[65];
+    guard_out[64] = L'Z';
+    BT_CHECK_EQ(bt_jobwrap_command_line(joined, 2, guard_out, 64), 0);
+    BT_CHECK_EQ(wcslen(guard_out), 63U);
+    BT_CHECK_EQ(guard_out[63], L'\0');
+    BT_CHECK_EQ(guard_out[64], L'Z');
+}
+
+BT_TEST(jobwrap, command_line_rejects_one_over_the_cap_with_multiple_arguments) {
+    wchar_t second[64];
+    second[0] = L'c';
+    for (size_t at = 1; at < 62; at++) {
+        second[at] = L'b';
+    }
+    second[62] = L'\0';
+    const wchar_t *joined[] = {
+        L"a",
+        second,
+    };
+    wchar_t out[65];
+    out[64] = L'Z';
+    BT_CHECK(bt_jobwrap_command_line(joined, 2, out, 64) != 0);
+    BT_CHECK_EQ(out[64], L'Z');
+    wchar_t wide_tail[BT_JOBWRAP_CMDLINE_MAX];
+    for (size_t at = 0; at < BT_JOBWRAP_CMDLINE_MAX - 3; at++) {
+        wide_tail[at] = L'b';
+    }
+    wide_tail[BT_JOBWRAP_CMDLINE_MAX - 3] = L'\0';
+    const wchar_t *wide_joined[] = {
+        L"a",
+        wide_tail,
+    };
+    wchar_t wide_out[BT_JOBWRAP_CMDLINE_MAX];
+    BT_CHECK_EQ(bt_jobwrap_command_line(wide_joined, 2, wide_out, BT_JOBWRAP_CMDLINE_MAX), 0);
+    BT_CHECK_EQ(wcslen(wide_out), BT_JOBWRAP_CMDLINE_MAX - 1U);
+    wchar_t over_tail[BT_JOBWRAP_CMDLINE_MAX];
+    for (size_t at = 0; at < BT_JOBWRAP_CMDLINE_MAX - 2; at++) {
+        over_tail[at] = L'b';
+    }
+    over_tail[BT_JOBWRAP_CMDLINE_MAX - 2] = L'\0';
+    const wchar_t *over_joined[] = {
+        L"a",
+        over_tail,
+    };
+    BT_CHECK(bt_jobwrap_command_line(over_joined, 2, wide_out, BT_JOBWRAP_CMDLINE_MAX) != 0);
+}
+
 BT_TEST(jobwrap, dotnet_ticks_anchor_at_known_epochs) {
     BT_CHECK_EQ(bt_jobwrap_dotnet_ticks(0), 504911232000000000ULL);
     BT_CHECK_EQ(bt_jobwrap_dotnet_ticks(116444736000000000ULL), 621355968000000000ULL);
@@ -308,6 +378,43 @@ BT_TEST(jobwrap, pid_dir_resolves_absolute_and_repo_relative) {
     config = config_of("{\"memguard\":{\"pid_dir\":\"  \"}}");
     BT_CHECK(bt_jobwrap_pid_dir_from(config, out, err, sizeof err) != 0);
     BT_CHECK_EQ(strcmp(err, "config value invalid: memguard.pid_dir"), 0);
+    bt_json_free(config);
+}
+
+BT_TEST(jobwrap, pid_dir_blank_check_covers_unicode_whitespace) {
+    char out[BT_PATH_MAX];
+    char err[BT_JOBWRAP_ERR_MAX];
+    bt_json_value *config = config_of("{\"memguard\":{\"pid_dir\":\"\xc2\xa0\"}}");
+    BT_CHECK(bt_jobwrap_pid_dir_from(config, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config value invalid: memguard.pid_dir"), 0);
+    bt_json_free(config);
+    config = config_of("{\"memguard\":{\"pid_dir\":\"\xe3\x80\x80\"}}");
+    BT_CHECK(bt_jobwrap_pid_dir_from(config, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config value invalid: memguard.pid_dir"), 0);
+    bt_json_free(config);
+    config = config_of("{\"memguard\":{\"pid_dir\":\"\xc2\xa0x\xe2\x80\x8a\"}}");
+    BT_CHECK_EQ(bt_jobwrap_pid_dir_from(config, out, err, sizeof err), 0);
+    bt_json_free(config);
+}
+
+BT_TEST(jobwrap, pid_dir_joins_like_a_rust_path_push) {
+    char out[BT_PATH_MAX];
+    char err[BT_JOBWRAP_ERR_MAX];
+    char root[BT_PATH_MAX];
+    bt_jobwrap_workspace_root(root);
+    char expected[BT_PATH_MAX];
+    bt_json_value *config = config_of("{\"memguard\":{\"pid_dir\":\"C:temp\"}}");
+    BT_CHECK_EQ(bt_jobwrap_pid_dir_from(config, out, err, sizeof err), 0);
+    BT_CHECK_EQ(strcmp(out, "C:temp"), 0);
+    bt_json_free(config);
+    config = config_of("{\"memguard\":{\"pid_dir\":\"/tmp/pids\"}}");
+    snprintf(expected, sizeof expected, "%2.2s/tmp/pids", root);
+    BT_CHECK_EQ(bt_jobwrap_pid_dir_from(config, out, err, sizeof err), 0);
+    BT_CHECK_EQ(strcmp(out, expected), 0);
+    bt_json_free(config);
+    config = config_of("{\"memguard\":{\"pid_dir\":\"\\\\\\\\server\\\\\\\\share\\\\\\\\pids\"}}");
+    BT_CHECK_EQ(bt_jobwrap_pid_dir_from(config, out, err, sizeof err), 0);
+    BT_CHECK_EQ(strcmp(out, "\\\\server\\\\share\\\\pids"), 0);
     bt_json_free(config);
 }
 

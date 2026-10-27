@@ -220,7 +220,8 @@ int bt_jobwrap_command_line(const wchar_t *const payload[], size_t count, wchar_
             return -1;
         }
         size_t len = wcslen(quoted);
-        if (used + len + 1 > cap) {
+        size_t space = at > 0 ? 1 : 0;
+        if (used + space + len + 1 > cap) {
             BT_TRACE_FAIL("jobwrap.command_line", "line too long at %zu", at);
             BT_TRACE_EXIT("jobwrap.command_line");
             return -1;
@@ -326,6 +327,59 @@ int bt_jobwrap_per_process_bytes(const bt_json_value *config, unsigned long long
     return 0;
 }
 
+static int is_ws_codepoint(unsigned int codepoint) {
+    return (codepoint >= 0x09 && codepoint <= 0x0D) || codepoint == 0x20 || codepoint == 0x85 ||
+           codepoint == 0xA0 || codepoint == 0x1680 ||
+           (codepoint >= 0x2000 && codepoint <= 0x200A) || codepoint == 0x2028 ||
+           codepoint == 0x2029 || codepoint == 0x202F || codepoint == 0x205F || codepoint == 0x3000;
+}
+
+static unsigned int utf8_codepoint_at(const char *raw, size_t *at) {
+    unsigned char lead = (unsigned char)raw[*at];
+    if (lead < 0x80) {
+        (*at)++;
+        return lead;
+    }
+    size_t extra = 0;
+    unsigned int codepoint = 0;
+    if ((lead & 0xE0) == 0xC0) {
+        extra = 1;
+        codepoint = lead & 0x1F;
+    } else if ((lead & 0xF0) == 0xE0) {
+        extra = 2;
+        codepoint = lead & 0x0F;
+    } else if ((lead & 0xF8) == 0xF0) {
+        extra = 3;
+        codepoint = lead & 0x07;
+    } else {
+        (*at)++;
+        return 0xFFFD;
+    }
+    for (size_t step = 1; step <= extra; step++) {
+        unsigned char cont = (unsigned char)raw[*at + step];
+        if ((cont & 0xC0) != 0x80) {
+            (*at)++;
+            return 0xFFFD;
+        }
+        codepoint = (codepoint << 6) | (cont & 0x3F);
+    }
+    *at += extra + 1;
+    return codepoint;
+}
+
+static int dir_text_is_blank(const char *raw) {
+    if (raw[0] == '\0') {
+        return 1;
+    }
+    size_t at = 0;
+    while (raw[at] != '\0') {
+        if (is_ws_codepoint(utf8_codepoint_at(raw, &at)) == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 int bt_jobwrap_pid_dir_from(const bt_json_value *config, char out[BT_PATH_MAX], char *err,
                             size_t err_cap) {
     BT_TRACE_ENTER("jobwrap.pid_dir_from");
@@ -337,21 +391,24 @@ int bt_jobwrap_pid_dir_from(const bt_json_value *config, char out[BT_PATH_MAX], 
         return -1;
     }
     const char *raw = value->as.string;
-    int blank = 1;
-    for (const char *cursor = raw; *cursor != '\0'; cursor++) {
-        if (isspace((unsigned char)*cursor) == 0) {
-            blank = 0;
-        }
-    }
-    if (blank != 0) {
+    if (dir_text_is_blank(raw) != 0) {
         snprintf(err, err_cap, "config value invalid: memguard.pid_dir");
         BT_TRACE_FAIL("jobwrap.pid_dir_from", "value blank");
         BT_TRACE_EXIT("jobwrap.pid_dir_from");
         return -1;
     }
-    int absolute = raw[0] == '/' || raw[0] == '\\' || (raw[0] != '\0' && raw[1] == ':');
-    if (absolute != 0) {
+    int has_prefix = (raw[0] != '\0' && raw[1] == ':') || (raw[0] == '\\' && raw[1] == '\\');
+    int has_root = raw[0] == '/' || raw[0] == '\\';
+    if (has_prefix != 0) {
         snprintf(out, BT_PATH_MAX, "%s", raw);
+    } else if (has_root != 0) {
+        char root[BT_PATH_MAX];
+        bt_paths_workspace_root(root);
+        if (root[1] == ':') {
+            snprintf(out, BT_PATH_MAX, "%2.2s%s", root, raw);
+        } else {
+            snprintf(out, BT_PATH_MAX, "%s", raw);
+        }
     } else {
         char root[BT_PATH_MAX];
         bt_paths_workspace_root(root);
