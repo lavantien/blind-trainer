@@ -57,9 +57,11 @@ int bt_usage_fully_covered(const bt_corpus *corpus, const bt_cube *scramble) {
 int bt_usage_covered_seed(const bt_corpus *corpus, uint64_t base, uint64_t attempts,
                           uint64_t *out) {
     BT_TRACE_ENTER("app.usage_covered_seed");
-    uint64_t limit = attempts == UINT64_MAX - base ? attempts : attempts;
-    for (uint64_t at = 0; at < limit; at++) {
-        uint64_t seed = base + at;
+    uint64_t end = base + attempts;
+    if (end < base) {
+        end = UINT64_MAX;
+    }
+    for (uint64_t seed = base; seed < end; seed++) {
         bt_cube scramble;
         bt_scheme_random_state(seed, &scramble);
         if (bt_usage_fully_covered(corpus, &scramble)) {

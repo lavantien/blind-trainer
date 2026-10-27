@@ -1313,6 +1313,46 @@ def tgt_verify_algs_selftest(args):
     return code
 
 
+def _screenshots_steps(hub):
+    artifacts = REPO_ROOT / "artifacts"
+    usage_user = artifacts / "usage-user"
+    absent = artifacts / "usage-absent-config.json"
+    shots = REPO_ROOT / "docs" / "screenshots"
+    base = child_env(hub)
+    tour_env = dict(base)
+    tour_env["APPDATA"] = str(usage_user)
+    fatal_env = dict(base)
+    fatal_env["BT_CONFIG"] = str(absent)
+    return [
+        (["--usage", str(shots)], tour_env, usage_user),
+        (["--fatal-shot", str(shots)], fatal_env, None),
+    ]
+
+
+def tgt_screenshots(args):
+    """regenerate every usage shot and the fatal screen"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("screenshots")
+    code = tgt_build([])
+    if code != 0:
+        return code
+    shots = REPO_ROOT / "docs" / "screenshots"
+    if shots.is_dir():
+        for png in shots.glob("*.png"):
+            png.unlink()
+    shots.mkdir(parents=True, exist_ok=True)
+    exe = REPO_ROOT / dirs_cfg(hub)["bin"] / build_cfg(hub).get("app_exe", "bt-app.exe")
+    code = 0
+    for argv, env, wipe in _screenshots_steps(hub):
+        if wipe is not None and wipe.is_dir():
+            shutil.rmtree(wipe)
+        step = run_policy_exe(exe, argv, "screenshots", logger, env=env)
+        code = code or step
+    logger.exit("screenshots", code)
+    return code
+
+
 def tgt_clean(args):
     """remove artifacts and recreate the keep file"""
     logger = Logger()
