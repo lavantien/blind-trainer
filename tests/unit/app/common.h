@@ -57,7 +57,7 @@ static unsigned ta_dir_counter(void) {
     return counter;
 }
 
-static const char *ta_temp_dir(const char *suite, const char *tag) {
+[[maybe_unused]] static const char *ta_temp_dir(const char *suite, const char *tag) {
     static char dir[TA_PATH_MAX];
     const char *base = getenv("TEMP");
     snprintf(dir, sizeof dir, "%s/bt-app-%s-tests/%s-%d-%u", base ? base : ".", suite, tag,
@@ -67,7 +67,7 @@ static const char *ta_temp_dir(const char *suite, const char *tag) {
     return dir;
 }
 
-static void ta_write_file(const char *path, const char *text) {
+[[maybe_unused]] static void ta_write_file(const char *path, const char *text) {
     char parent[TA_PATH_MAX];
     snprintf(parent, sizeof parent, "%s", path);
     char *slash = strrchr(parent, '/');
