@@ -24,4 +24,31 @@ static void vd_util_write_config(const char *root, char out[VD_UTIL_PATH_MAX], u
     vd_util_write(out, text);
 }
 
+static int vd_util_redirect_stdout(const char *path) {
+    fflush(stdout);
+#ifdef _WIN32
+    int saved = _dup(1);
+#else
+    int saved = dup(1);
+#endif
+    if (saved < 0) {
+        return -1;
+    }
+    if (freopen(path, "wb", stdout) == NULL) {
+        return -1;
+    }
+    return saved;
+}
+
+static void vd_util_restore_stdout(int saved) {
+    fflush(stdout);
+#ifdef _WIN32
+    _dup2(saved, 1);
+    _close(saved);
+#else
+    dup2(saved, 1);
+    close(saved);
+#endif
+}
+
 #endif

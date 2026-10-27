@@ -500,6 +500,70 @@ BT_TEST(visual_diff_lib, parse_cli_routes_selftest_mode) {
     BT_CHECK(strcmp(cli.workdir, "wd") == 0);
 }
 
+BT_TEST(visual_diff_lib, raylib_log_level_reads_config_with_warning_default) {
+    char err[BTVD_ERR_MAX];
+    int level = -1;
+    bt_json_value *missing = parse_config("{\"visual\": {\"tolerance\": 0}}");
+    BT_CHECK_EQ(btvd_raylib_log_level_from(missing, &level, err, sizeof err), 0);
+    BT_CHECK_EQ(level, LOG_WARNING);
+    bt_json_free(missing);
+    bt_json_value *none = parse_config("{\"visual\": {\"raylib_log_level\": \"none\"}}");
+    BT_CHECK_EQ(btvd_raylib_log_level_from(none, &level, err, sizeof err), 0);
+    BT_CHECK_EQ(level, LOG_NONE);
+    bt_json_free(none);
+    bt_json_value *info = parse_config("{\"visual\": {\"raylib_log_level\": \"info\"}}");
+    BT_CHECK_EQ(btvd_raylib_log_level_from(info, &level, err, sizeof err), 0);
+    BT_CHECK_EQ(level, LOG_INFO);
+    bt_json_free(info);
+    bt_json_value *error_level = parse_config("{\"visual\": {\"raylib_log_level\": \"error\"}}");
+    BT_CHECK_EQ(btvd_raylib_log_level_from(error_level, &level, err, sizeof err), 0);
+    BT_CHECK_EQ(level, LOG_ERROR);
+    bt_json_free(error_level);
+    bt_json_value *bad = parse_config("{\"visual\": {\"raylib_log_level\": \"loud\"}}");
+    BT_CHECK_EQ(btvd_raylib_log_level_from(bad, &level, err, sizeof err), -1);
+    BT_CHECK(strcmp(err, "config visual.raylib_log_level must be one of all, trace, "
+                         "debug, info, warning, error, fatal, none") == 0);
+    bt_json_free(bad);
+}
+
+BT_TEST(visual_diff_lib, run_selftest_stdout_carries_only_report_lines) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("run-stdout", root);
+    char capture[VD_UTIL_PATH_MAX];
+    vd_util_join(capture, root, "stdout.txt");
+    char workdir[VD_UTIL_PATH_MAX];
+    snprintf(workdir, sizeof workdir, "%s", root);
+    char *argv[] = {"--selftest", workdir};
+    btvd_env env;
+    vd_util_env_for(&env, root, NULL, argv, 2);
+    char err[BTVD_ERR_MAX];
+    int saved = vd_util_redirect_stdout(capture);
+    BT_CHECK(saved >= 0);
+    int rc = btvd_run(&env, err, sizeof err);
+    vd_util_restore_stdout(saved);
+    BT_CHECK_EQ(rc, 0);
+    FILE *file = fopen(capture, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        char text[8192] = {0};
+        fread(text, 1, sizeof text - 1, file);
+        fclose(file);
+        char *line = strtok(text, "\n");
+        int saw_summary = 0;
+        while (line != NULL) {
+            BT_CHECK(strncmp(line, "INFO:", 5) != 0);
+            BT_CHECK(strncmp(line, "TRACE:", 6) != 0);
+            BT_CHECK(strncmp(line, "DEBUG:", 6) != 0);
+            if (strcmp(line, "selftest: 4/4 checks passed") == 0) {
+                saw_summary = 1;
+            }
+            line = strtok(NULL, "\n");
+        }
+        BT_CHECK_EQ(saw_summary, 1);
+    }
+    vd_util_rm_rf(root);
+}
+
 BT_TEST(visual_diff_lib, parse_cli_rejects_selftest_without_single_workdir) {
     btvd_cli cli;
     char *bare[] = {"--selftest"};

@@ -739,6 +739,36 @@ int btvd_visual_cfg_from(const bt_json_value *config, uint16_t *tolerance, char 
     return 0;
 }
 
+int btvd_raylib_log_level_from(const bt_json_value *config, int *level, char *err, size_t err_len) {
+    BT_TRACE_ENTER("visual_diff.raylib_log_level_from");
+    static const struct {
+        const char *name;
+        int level;
+    } levels[] = {
+        {"all", LOG_ALL},         {"trace", LOG_TRACE}, {"debug", LOG_DEBUG}, {"info", LOG_INFO},
+        {"warning", LOG_WARNING}, {"error", LOG_ERROR}, {"fatal", LOG_FATAL}, {"none", LOG_NONE},
+    };
+    *level = LOG_WARNING;
+    const char *raw = NULL;
+    if (bt_config_str(config, "visual.raylib_log_level", &raw) != 0) {
+        BT_TRACE_EXIT("visual_diff.raylib_log_level_from");
+        return 0;
+    }
+    for (size_t at = 0; at < sizeof levels / sizeof levels[0]; at++) {
+        if (strcmp(raw, levels[at].name) == 0) {
+            *level = levels[at].level;
+            BT_TRACE_EXIT("visual_diff.raylib_log_level_from");
+            return 0;
+        }
+    }
+    snprintf(err, err_len,
+             "config visual.raylib_log_level must be one of all, trace, "
+             "debug, info, warning, error, fatal, none");
+    BT_TRACE_FAIL("visual_diff.raylib_log_level_from", "unknown level %s", raw);
+    BT_TRACE_EXIT("visual_diff.raylib_log_level_from");
+    return -1;
+}
+
 int btvd_artifacts_root_from(const char *env_value, const bt_json_value *config, const char *root,
                              char *out, size_t out_len) {
     BT_TRACE_ENTER("visual_diff.artifacts_root_from");
@@ -792,6 +822,7 @@ static void trace_from_config(const bt_json_value *config) {
 
 int btvd_run(const btvd_env *env, char *err, size_t err_len) {
     BT_TRACE_ENTER("visual_diff.run");
+    SetTraceLogLevel(LOG_WARNING);
     btvd_cli cli;
     if (btvd_parse_cli(env->argv, env->argc, &cli) != 0) {
         snprintf(err, err_len, "%s", BTVD_USAGE_TEXT);
@@ -812,6 +843,14 @@ int btvd_run(const btvd_env *env, char *err, size_t err_len) {
         return -1;
     }
     trace_from_config(config);
+    int log_level = LOG_WARNING;
+    if (btvd_raylib_log_level_from(config, &log_level, err, err_len) != 0) {
+        bt_json_free(config);
+        bt_trace_shutdown();
+        BT_TRACE_EXIT("visual_diff.run");
+        return -1;
+    }
+    SetTraceLogLevel(log_level);
     uint16_t tolerance = 0;
     if (btvd_visual_cfg_from(config, &tolerance, err, err_len) != 0) {
         bt_json_free(config);

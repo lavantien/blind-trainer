@@ -121,6 +121,7 @@ void btvd_config_path_from(const char *env_value, const char *root, char out[BT_
 bt_json_value *btvd_read_config(const char *path, char *err, size_t err_len);
 int btvd_visual_cfg_from(const bt_json_value *config, uint16_t *tolerance, char *err,
                          size_t err_len);
+int btvd_raylib_log_level_from(const bt_json_value *config, int *level, char *err, size_t err_len);
 int btvd_artifacts_root_from(const char *env_value, const bt_json_value *config, const char *root,
                              char *out, size_t out_len);
 

@@ -1,0 +1,19 @@
+item 4 red evidence, 2026-10-27 21:34-21:35 local
+
+pre-fix stdout: every exe run interleaved raylib INFO TraceLog lines ahead of the
+report lines, see t30-green4.log and the previous session's visual-selftest target run
+(22 INFO FILEIO and IMAGE lines before "identical.png: expected ok, got ok").
+
+test-first red: t30-fix4-red.log records the compile failure
+use of undeclared identifier 'btvd_raylib_log_level_from' for the new mapping test,
+the stdout capture test asserts no line starts with INFO:, TRACE:, or DEBUG: and that
+the summary line survives.
+
+post-fix: t30-fix4-green.log 2 passed 0 failed, and the rebuilt exe prints only:
+identical.png: expected ok, got ok
+over.png: expected over, got over
+missing.png: expected missing-baseline, got missing-baseline
+at-tolerance.png: expected ok, got ok
+selftest: 4/4 checks passed
+config visual section carries raylib_log_level warning, selftest mode uses the warning
+default because its workdir config is written by the tool itself and carries no level.
