@@ -1,0 +1,26 @@
+== selftest baseline: 3 passed 0 failed (bt.py release-verify-selftest)
+== inflate roundtrip ==
+PROBE manifest failures=0
+== real python zipfile deflate ==
+PROBE real_zip check_zip rc=0 count=4 err=-
+PROBE real_zip extract rc=0 extracted=4 err=-
+PROBE real_zip roundtrip blind-trainer.exe same=1
+PROBE real_zip roundtrip config/config.json same=1
+PROBE real_zip roundtrip assets/fonts/main.ttf same=1
+PROBE real_zip roundtrip assets/fonts/bold.ttf same=1
+== divergences ==
+PROBE root blind-trainer rc=-1 root=- err=staging dir blind-trainer has no folder name
+PROBE root out/dist/blind-trainer rc=0 root=blind-trainer err=-
+PROBE root out/dist/blind-trainer/ rc=-1 root=- err=staging dir out/dist/blind-trainer/ has no folder name
+PROBE root / rc=-1 root=- err=staging dir / has no folder name
+PROBE root a/b/ rc=-1 root=- err=staging dir a/b/ has no folder name
+PROBE root staging\ rc=-1 root=- err=staging dir staging\ has no folder name
+PROBE store_bad_crc check_zip rc=0 count=3 err=-
+PROBE store_bad_crc extract rc=0 extracted=3 err=-
+PROBE empty_name check_zip rc=0 count=3 err=-
+PROBE empty_name extract rc=0 extracted=3 err=-
+PROBE shot_priority rc=-1 err=unexpected file stray.txt in shots dir
+== held ==
+PROBE bad_deflate check_zip rc=-1 err=zip entry blind-trainer\blind-trainer.exe unreadable: inflate: bad block type
+PROBE crc32_123456789=cbf43926
+PROBE crc32_empty=00000000
