@@ -3,6 +3,7 @@
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/paths.h"
+#include "data/paths.h"
 
 #include <direct.h>
 #include <process.h>
@@ -53,6 +54,20 @@ BT_TEST(config, from_json_reads_the_section_and_defaults_the_seed) {
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(config.smoke_seed, 99);
     bt_json_free(pinned);
+}
+
+BT_TEST(config, committed_render_section_holds_no_capture_dwell_frames) {
+    char path[BT_PATH_MAX];
+    bt_data_config_path(path);
+    bt_json_value *value = NULL;
+    char error[192];
+    BT_CHECK_EQ(bt_app_load_config_value(path, &value, error, sizeof error), 0);
+    const bt_json_value *render = bt_json_get(bt_json_get(value, "app"), "render");
+    BT_CHECK(render != NULL && render->type == BT_JSON_OBJECT);
+    BT_CHECK(bt_json_get(render, "capture_dwell_frames") == NULL);
+    BT_CHECK(bt_json_get(render, "target_fps") != NULL);
+    BT_CHECK(bt_json_get(render, "vsync") != NULL);
+    bt_json_free(value);
 }
 
 BT_TEST(config, from_json_rejects_malformed_and_missing_sections) {

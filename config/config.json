@@ -55,8 +55,7 @@
     },
     "render": {
       "target_fps": 60,
-      "vsync": false,
-      "capture_dwell_frames": 12
+      "vsync": false
     }
   },
   "ga": {

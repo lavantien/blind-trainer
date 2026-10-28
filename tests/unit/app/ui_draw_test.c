@@ -18,7 +18,6 @@ enum {
 static int open_config_window(bt_app_config *config) {
     config->window.width = 640;
     config->window.height = 480;
-    config->render.capture_dwell_frames = DRAW_DWELL_FRAMES;
     snprintf(config->window.title, sizeof config->window.title, "%s", "ui draw test");
     return bt_app_window_open(config->window.width, config->window.height, config->window.title,
                               &config->render);

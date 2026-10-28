@@ -80,7 +80,7 @@ BT_TEST(window, probe_screenshot_captures_the_window_dims) {
     bt_app_config config = load_config();
     BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
                                 &config.render));
-    for (unsigned frame = 0; frame < config.render.capture_dwell_frames; frame++) {
+    for (unsigned frame = 0; frame < BT_WINDOW_CAPTURE_DWELL_FRAMES; frame++) {
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
         DrawRectangle(40, 40, 200, 80, bt_app_color(bt_theme_accent()));

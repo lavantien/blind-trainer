@@ -37,7 +37,6 @@ BT_TEST(drivers, posted_arrow_keys_reach_the_polled_key_state) {
     bt_app_config config;
     config.window.width = 320;
     config.window.height = 240;
-    config.render.capture_dwell_frames = 1;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers arrow test");
     if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
                             &config.render)) {
@@ -59,7 +58,6 @@ BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
     bt_app_config config;
     config.window.width = 320;
     config.window.height = 240;
-    config.render.capture_dwell_frames = 1;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers escape test");
     if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
                             &config.render)) {
@@ -93,7 +91,6 @@ BT_TEST(drivers, escape_keeps_the_window_open_while_close_still_works) {
     bt_app_config config;
     config.window.width = 320;
     config.window.height = 240;
-    config.render.capture_dwell_frames = 1;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers close test");
     if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
                             &config.render)) {

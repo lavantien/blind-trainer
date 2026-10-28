@@ -27,7 +27,6 @@ typedef struct {
 typedef struct {
     unsigned int target_fps;
     int vsync;
-    unsigned int capture_dwell_frames;
 } bt_app_render_cfg;
 
 typedef struct {

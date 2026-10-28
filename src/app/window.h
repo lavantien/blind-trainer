@@ -9,6 +9,8 @@
 
 #include "raylib.h"
 
+#define BT_WINDOW_CAPTURE_DWELL_FRAMES 12
+
 typedef struct {
     const void *regular;
     const void *bold;
