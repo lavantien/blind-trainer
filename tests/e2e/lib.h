@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #define BT_E2E_ERROR_MAX 1024
-#define BT_E2E_NAME_MAX 256
 #define BT_E2E_PARSE_USAGE 1
 
 typedef struct {
@@ -42,6 +41,8 @@ int bt_e2e_window_dims_from(const bt_json_value *value, bt_e2e_window_dims *out,
                             size_t error_cap);
 int bt_e2e_settings_from(const bt_json_value *value, bt_e2e_settings *out, char *error,
                          size_t error_cap);
+int bt_e2e_deadline_from(unsigned long long timeout_secs, unsigned long long now_ms,
+                         unsigned long long *out);
 void bt_e2e_config_path_from(const char *env_value, const char *root, char out[BT_PATH_MAX]);
 void bt_e2e_out_dir_from(const char *env_value, const bt_json_value *value, const char *root,
                          char out[BT_PATH_MAX]);
@@ -49,14 +50,13 @@ int bt_e2e_clean_pngs(const char *dir, char *error, size_t error_cap);
 int bt_e2e_png_names(const char *dir, char ***out_names, size_t *out_count, char *error,
                      size_t error_cap);
 void bt_e2e_free_names(char **names, size_t count);
-int bt_e2e_expected_names(const char *const *shots, size_t shots_count,
-                          char names[][BT_E2E_NAME_MAX], size_t *out_count);
+int bt_e2e_expected_names(const char *const *shots, size_t shots_count, char ***out_names,
+                          size_t *out_count);
 void bt_e2e_classify(const char *const *found, size_t found_count, const char *const *expected,
-                     size_t expected_count, char missing[][BT_E2E_NAME_MAX],
-                     size_t *missing_count, char unexpected[][BT_E2E_NAME_MAX],
-                     size_t *unexpected_count);
+                     size_t expected_count, char ***out_missing, size_t *missing_count,
+                     char ***out_unexpected, size_t *unexpected_count);
 bt_e2e_shot_verdict bt_e2e_check_shot(const char *path, bt_e2e_window_dims dims, char *reason,
                                       size_t reason_cap);
-void bt_e2e_tail(const unsigned char *bytes, size_t len, char *out, size_t out_cap);
+char *bt_e2e_tail(const unsigned char *bytes, size_t len);
 
 #endif

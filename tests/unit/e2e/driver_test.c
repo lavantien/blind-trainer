@@ -4,6 +4,7 @@
 #include "common/paths.h"
 #include "e2e/lib.h"
 #include "e2e/png.h"
+#include "e2e/proc.h"
 
 #include <direct.h>
 #include <process.h>
@@ -11,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <wchar.h>
 
 enum {
     TD_PATH_MAX = 1024,
@@ -231,12 +233,12 @@ BT_TEST(driver, e2e_settings_names_the_missing_or_malformed_key) {
 
 BT_TEST(driver, expected_names_appends_png_to_each_slug) {
     const char *shots[] = {"menu", "drill", "fatal"};
-    char names[3][BT_E2E_NAME_MAX];
+    char **names = NULL;
     size_t count = 0;
-    BT_CHECK_EQ(bt_e2e_expected_names(shots, 3, names, &count), 0);
+    BT_CHECK_EQ(bt_e2e_expected_names(shots, 3, &names, &count), 0);
     BT_CHECK_EQ(count, (size_t)3);
     for (size_t i = 0; i < 3; i++) {
-        char expected[BT_E2E_NAME_MAX];
+        char expected[64];
         snprintf(expected, sizeof expected, "%s.png", shots[i]);
         int found = 0;
         for (size_t j = 0; j < count; j++) {
@@ -246,21 +248,21 @@ BT_TEST(driver, expected_names_appends_png_to_each_slug) {
         }
         BT_CHECK_EQ(found, 1);
     }
+    bt_e2e_free_names(names, count);
 }
 
 BT_TEST(driver, classify_splits_missing_and_unexpected) {
     const char *shots[] = {"menu", "drill", "memo"};
-    char expected[3][BT_E2E_NAME_MAX];
+    char **expected = NULL;
     size_t expected_count = 0;
-    BT_CHECK_EQ(bt_e2e_expected_names(shots, 3, expected, &expected_count), 0);
+    BT_CHECK_EQ(bt_e2e_expected_names(shots, 3, &expected, &expected_count), 0);
     const char *found[] = {"menu.png", "drill.png", "stray.png"};
-    const char *expected_ptrs[3] = {expected[0], expected[1], expected[2]};
-    char missing[3][BT_E2E_NAME_MAX];
-    char unexpected[3][BT_E2E_NAME_MAX];
+    char **missing = NULL;
+    char **unexpected = NULL;
     size_t missing_count = 0;
     size_t unexpected_count = 0;
-    bt_e2e_classify(found, 3, expected_ptrs, expected_count, missing, &missing_count, unexpected,
-                    &unexpected_count);
+    bt_e2e_classify(found, 3, (const char *const *)expected, expected_count, &missing,
+                    &missing_count, &unexpected, &unexpected_count);
     int memo_missing = 0;
     int menu_missing = 0;
     for (size_t i = 0; i < missing_count; i++) {
@@ -275,6 +277,9 @@ BT_TEST(driver, classify_splits_missing_and_unexpected) {
     BT_CHECK_EQ(menu_missing, 0);
     BT_CHECK_EQ(unexpected_count, (size_t)1);
     BT_CHECK_EQ(strcmp(unexpected[0], "stray.png"), 0);
+    bt_e2e_free_names(missing, missing_count);
+    bt_e2e_free_names(unexpected, unexpected_count);
+    bt_e2e_free_names(expected, expected_count);
 }
 
 BT_TEST(driver, clean_pngs_removes_only_png_files) {
@@ -342,8 +347,208 @@ BT_TEST(driver, tail_keeps_last_lines) {
     for (int line = 1; line <= 50; line++) {
         len += (size_t)snprintf((char *)text + len, sizeof text - len, "line %d\n", line);
     }
-    char tailed[512];
-    bt_e2e_tail(text, len, tailed, sizeof tailed);
+    char *tailed = bt_e2e_tail(text, len);
+    BT_CHECK(tailed != NULL);
     BT_CHECK(strncmp(tailed, "line 31", 7) == 0);
     BT_CHECK(strcmp(tailed + strlen(tailed) - 7, "line 50") == 0);
+    free(tailed);
+}
+
+BT_TEST(driver, tail_tracks_more_than_512_lines) {
+    unsigned char *text = malloc(16384);
+    size_t len = 0;
+    for (int line = 1; line <= 600; line++) {
+        len += (size_t)snprintf((char *)text + len, 16384 - len, "line %d\n", line);
+    }
+    char *tailed = bt_e2e_tail(text, len);
+    BT_CHECK(tailed != NULL);
+    BT_CHECK(strncmp(tailed, "line 581", 8) == 0);
+    BT_CHECK(strcmp(tailed + strlen(tailed) - strlen("line 600"), "line 600") == 0);
+    free(tailed);
+    free(text);
+}
+
+BT_TEST(driver, tail_keeps_long_lines_uncut) {
+    size_t line_len = 900;
+    unsigned char *text = malloc(30 * (line_len + 2) + 1);
+    size_t len = 0;
+    for (int line = 0; line < 30; line++) {
+        memset(text + len, 'a' + line % 26, line_len);
+        len += line_len;
+        text[len] = '\n';
+        len += 1;
+    }
+    char *tailed = bt_e2e_tail(text, len);
+    BT_CHECK(tailed != NULL);
+    BT_CHECK_EQ(strlen(tailed), 20 * (line_len + 1) - 1);
+    BT_CHECK(memchr(tailed, '\0', 20 * (line_len + 1) - 1) == NULL);
+    free(tailed);
+    free(text);
+}
+
+BT_TEST(driver, png_walk_rejects_probe_inputs) {
+    const char *dir = td_temp_dir("pngwalk");
+    bt_e2e_window_dims dims = {3, 2};
+    char path[TD_PATH_MAX];
+    unsigned char probe[128];
+    char reason[BT_E2E_ERROR_MAX];
+    unsigned int width = 0;
+    unsigned int height = 0;
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    snprintf(path, sizeof path, "%s\\header_only.png", dir);
+    td_write_file(path, probe, 24);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    probe[8] = 0x7F;
+    probe[9] = 0xFF;
+    probe[10] = 0xFF;
+    probe[11] = 0xFF;
+    snprintf(path, sizeof path, "%s\\bogus_len.png", dir);
+    td_write_file(path, probe, 24);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    snprintf(path, sizeof path, "%s\\truncated.png", dir);
+    td_write_file(path, probe, 40);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    snprintf(path, sizeof path, "%s\\signature_only.png", dir);
+    td_write_file(path, probe, 8);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    probe[45] = (unsigned char)(probe[45] ^ 0xFFU);
+    snprintf(path, sizeof path, "%s\\corrupt_idat.png", dir);
+    td_write_file(path, probe, sizeof TD_PNG_3X2);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    probe[sizeof TD_PNG_3X2 - 3] = (unsigned char)(probe[sizeof TD_PNG_3X2 - 3] ^ 0xFFU);
+    snprintf(path, sizeof path, "%s\\corrupt_iend.png", dir);
+    td_write_file(path, probe, sizeof TD_PNG_3X2);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    probe[33] = (unsigned char)(probe[33] ^ 0xFFU);
+    snprintf(path, sizeof path, "%s\\corrupt_idat_data.png", dir);
+    td_write_file(path, probe, sizeof TD_PNG_3X2);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_FAIL);
+
+    memcpy(probe, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    probe[8] = 0;
+    probe[9] = 0;
+    probe[10] = 0;
+    probe[11] = 12;
+    snprintf(path, sizeof path, "%s\\short_ihdr.png", dir);
+    td_write_file(path, probe, sizeof TD_PNG_3X2);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), -1);
+
+    snprintf(path, sizeof path, "%s\\valid.png", dir);
+    td_write_file(path, TD_PNG_3X2, sizeof TD_PNG_3X2);
+    BT_CHECK_EQ(bt_png_dims(path, &width, &height), 0);
+    BT_CHECK_EQ(width, 3U);
+    BT_CHECK_EQ(height, 2U);
+    BT_CHECK_EQ(bt_e2e_check_shot(path, dims, reason, sizeof reason), BT_E2E_SHOT_OK);
+}
+
+BT_TEST(driver, expected_names_dedups_and_sorts_like_a_set) {
+    const char *shots[] = {"zz", "menu", "menu", "aa", "drill"};
+    char **names = NULL;
+    size_t count = 0;
+    BT_CHECK_EQ(bt_e2e_expected_names(shots, 5, &names, &count), 0);
+    BT_CHECK_EQ(count, (size_t)4);
+    BT_CHECK_EQ(strcmp(names[0], "aa.png"), 0);
+    BT_CHECK_EQ(strcmp(names[1], "drill.png"), 0);
+    BT_CHECK_EQ(strcmp(names[2], "menu.png"), 0);
+    BT_CHECK_EQ(strcmp(names[3], "zz.png"), 0);
+    bt_e2e_free_names(names, count);
+}
+
+BT_TEST(driver, expected_names_keeps_long_slugs_whole) {
+    char slug[301];
+    memset(slug, 'q', 300);
+    slug[300] = '\0';
+    const char *shots[] = {slug};
+    char **names = NULL;
+    size_t count = 0;
+    BT_CHECK_EQ(bt_e2e_expected_names(shots, 1, &names, &count), 0);
+    BT_CHECK_EQ(count, (size_t)1);
+    BT_CHECK_EQ(strlen(names[0]), (size_t)304);
+    char expected[306];
+    snprintf(expected, sizeof expected, "%s.png", slug);
+    BT_CHECK_EQ(strcmp(names[0], expected), 0);
+    bt_e2e_free_names(names, count);
+}
+
+BT_TEST(driver, classify_dedups_missing_names) {
+    const char *expected[] = {"menu.png", "menu.png", "drill.png"};
+    const char *found[] = {"menu.png"};
+    char **missing = NULL;
+    char **unexpected = NULL;
+    size_t missing_count = 0;
+    size_t unexpected_count = 0;
+    bt_e2e_classify(found, 1, expected, 3, &missing, &missing_count, &unexpected,
+                    &unexpected_count);
+    BT_CHECK_EQ(missing_count, (size_t)1);
+    if (missing_count == 1) {
+        BT_CHECK_EQ(strcmp(missing[0], "drill.png"), 0);
+    }
+    BT_CHECK_EQ(unexpected_count, (size_t)0);
+    bt_e2e_free_names(missing, missing_count);
+    bt_e2e_free_names(unexpected, unexpected_count);
+}
+
+BT_TEST(driver, deadline_from_fails_loudly_on_overflow) {
+    unsigned long long deadline = 0;
+    BT_CHECK_EQ(bt_e2e_deadline_from(180ULL, 1000ULL, &deadline), 0);
+    BT_CHECK_EQ(deadline, 181000ULL);
+    BT_CHECK_EQ(bt_e2e_deadline_from(18446744073709551615ULL, 1000ULL, &deadline), 1);
+}
+
+BT_TEST(driver, env_block_grows_past_32768_and_keeps_overrides) {
+    char filler[3200];
+    for (int i = 0; i < 16; i++) {
+        char name[32];
+        snprintf(name, sizeof name, "ADV21_PAD_%02d", i);
+        memset(filler, 'x', 2900);
+        filler[2900] = '\0';
+        char entry[3200];
+        snprintf(entry, sizeof entry, "%s=%s", name, filler);
+        BT_CHECK_EQ(_putenv(entry), 0);
+    }
+    const char *pairs[] = {"ADV21_OVERRIDE=1", NULL};
+    wchar_t *block = NULL;
+    BT_CHECK_EQ(bt_e2e_env_block(pairs, 1, &block), 0);
+    BT_CHECK(block != NULL);
+    if (block != NULL) {
+        int override_seen = 0;
+        int pad15_seen = 0;
+        for (const wchar_t *cursor = block; *cursor != L'\0';
+             cursor += wcslen(cursor) + 1) {
+            if (wcscmp(cursor, L"ADV21_OVERRIDE=1") == 0) {
+                override_seen = 1;
+            }
+            if (wcsncmp(cursor, L"ADV21_PAD_15=", 13) == 0) {
+                pad15_seen = 1;
+            }
+        }
+        BT_CHECK_EQ(override_seen, 1);
+        BT_CHECK_EQ(pad15_seen, 1);
+    }
+    free(block);
+    for (int i = 0; i < 16; i++) {
+        char entry[32];
+        snprintf(entry, sizeof entry, "ADV21_PAD_%02d=", i);
+        BT_CHECK_EQ(_putenv(entry), 0);
+    }
+    BT_CHECK_EQ(_putenv("ADV21_OVERRIDE="), 0);
 }

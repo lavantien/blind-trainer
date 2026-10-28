@@ -41,19 +41,21 @@ static void parent_dir(const char *child_path, char result[BT_PATH_MAX]) {
 }
 
 static int smoke_failed(const bt_e2e_smoke_run *run, char *error, size_t error_cap) {
-    char stdout_tail[2048];
-    char stderr_tail[2048];
-    bt_e2e_tail(run->stdout_bytes, run->stdout_len, stdout_tail, sizeof stdout_tail);
-    bt_e2e_tail(run->stderr_bytes, run->stderr_len, stderr_tail, sizeof stderr_tail);
+    char *stdout_tail = bt_e2e_tail(run->stdout_bytes, run->stdout_len);
+    char *stderr_tail = bt_e2e_tail(run->stderr_bytes, run->stderr_len);
     if (run->has_code) {
         snprintf(error, error_cap,
                  "smoke run failed with exit code %ld\nstdout tail:\n%s\nstderr tail:\n%s",
-                 run->code, stdout_tail, stderr_tail);
+                 run->code, stdout_tail != NULL ? stdout_tail : "",
+                 stderr_tail != NULL ? stderr_tail : "");
     } else {
         snprintf(error, error_cap,
                  "smoke process terminated without exit code\nstdout tail:\n%s\nstderr tail:\n%s",
-                 stdout_tail, stderr_tail);
+                 stdout_tail != NULL ? stdout_tail : "",
+                 stderr_tail != NULL ? stderr_tail : "");
     }
+    free(stdout_tail);
+    free(stderr_tail);
     return -1;
 }
 
@@ -91,10 +93,11 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
-    long neg_exit = 0;
-    if (bt_e2e_neg_config_exit_from(config, &neg_exit, error, error_cap) != 0) {
+    unsigned long long deadline = 0;
+    if (bt_e2e_deadline_from(settings.timeout_secs, bt_e2e_now_ms(), &deadline) != 0) {
         bt_json_free(config);
         bt_e2e_free_settings(&settings);
+        snprintf(error, error_cap, "config e2e.timeout_secs overflows the deadline");
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
@@ -105,15 +108,24 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     } else {
         bt_e2e_out_dir_from(getenv("BT_ARTIFACTS"), config, root, out_dir);
     }
+    char app_exe[BT_PATH_MAX];
+    const bt_json_value *app_exe_value =
+        bt_json_get(bt_json_get(config, "build"), "app_exe");
+    if (app_exe_value != NULL && app_exe_value->type == BT_JSON_STRING) {
+        snprintf(app_exe, BT_PATH_MAX, "%s", app_exe_value->as.string);
+    } else {
+        snprintf(app_exe, BT_PATH_MAX, "bt-app.exe");
+    }
     char binary[BT_PATH_MAX];
     if (args.has_binary) {
         snprintf(binary, BT_PATH_MAX, "%s", args.binary);
     } else {
-        bt_paths_join(root, "build/bin", binary);
-        bt_paths_join(binary, "bt-app.exe", binary);
+        char bin_dir[BT_PATH_MAX];
+        bt_paths_join(root, "build/bin", bin_dir);
+        bt_paths_join(bin_dir, app_exe, binary);
     }
-    bt_json_free(config);
     if (!bt_e2e_file_exists(binary)) {
+        bt_json_free(config);
         bt_e2e_free_settings(&settings);
         snprintf(error, error_cap, "release binary missing: %s", binary);
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
@@ -124,14 +136,15 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     printf("out dir: %s\n", out_dir);
     printf("window: %ux%u\n", dims.width, dims.height);
     if (bt_e2e_clean_pngs(out_dir, error, error_cap) != 0) {
+        bt_json_free(config);
         bt_e2e_free_settings(&settings);
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
-    unsigned long long deadline = bt_e2e_now_ms() + settings.timeout_secs * 1000ULL;
     bt_e2e_smoke_run run;
     if (bt_e2e_run_smoke(binary, out_dir, NULL, 0, deadline, &run, error, error_cap) != 0) {
+        bt_json_free(config);
         bt_e2e_free_settings(&settings);
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
@@ -140,6 +153,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     if (!run.has_code || run.code != 0) {
         smoke_failed(&run, error, error_cap);
         bt_e2e_smoke_run_free(&run);
+        bt_json_free(config);
         bt_e2e_free_settings(&settings);
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
@@ -149,35 +163,29 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     char **found = NULL;
     size_t found_count = 0;
     if (bt_e2e_png_names(out_dir, &found, &found_count, error, error_cap) != 0) {
+        bt_json_free(config);
         bt_e2e_free_settings(&settings);
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
-    char(*expected)[BT_E2E_NAME_MAX] =
-        malloc(settings.shots_count * sizeof *expected);
+    char **expected = NULL;
     size_t expected_count = 0;
     if (bt_e2e_expected_names((const char *const *)settings.shots, settings.shots_count,
-                              expected, &expected_count) != 0) {
-        free(expected);
+                              &expected, &expected_count) != 0) {
+        bt_json_free(config);
         bt_e2e_free_names(found, found_count);
         bt_e2e_free_settings(&settings);
         BT_TRACE_FAIL("e2e.real_main", "expected names failed");
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
-    const char **expected_ptrs =
-        malloc((expected_count > 0 ? expected_count : 1) * sizeof *expected_ptrs);
-    for (size_t i = 0; i < expected_count; i++) {
-        expected_ptrs[i] = expected[i];
-    }
-    size_t max_rows = expected_count > found_count ? expected_count : found_count;
-    char(*missing)[BT_E2E_NAME_MAX] = malloc((max_rows + 1) * sizeof *missing);
-    char(*unexpected)[BT_E2E_NAME_MAX] = malloc((max_rows + 1) * sizeof *unexpected);
+    char **missing = NULL;
+    char **unexpected = NULL;
     size_t missing_count = 0;
     size_t unexpected_count = 0;
-    bt_e2e_classify((const char *const *)found, found_count, expected_ptrs, expected_count,
-                    missing, &missing_count, unexpected, &unexpected_count);
+    bt_e2e_classify((const char *const *)found, found_count, (const char *const *)expected,
+                    expected_count, &missing, &missing_count, &unexpected, &unexpected_count);
     size_t failures = 0;
     for (size_t i = 0; i < missing_count; i++) {
         printf("FAIL %s: missing screenshot\n", missing[i]);
@@ -210,30 +218,40 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     }
     printf("%zu shots expected, %zu found, %zu failed\n", expected_count, found_count,
            failures);
-    free(expected_ptrs);
-    free(missing);
-    free(unexpected);
-    free(expected);
+    bt_e2e_free_names(missing, missing_count);
+    bt_e2e_free_names(unexpected, unexpected_count);
+    bt_e2e_free_names(expected, expected_count);
     bt_e2e_free_names(found, found_count);
     bt_e2e_free_settings(&settings);
     if (failures > 0) {
+        bt_json_free(config);
         BT_TRACE_FAIL("e2e.real_main", "%zu shot failures", failures);
         BT_TRACE_EXIT("e2e.real_main");
         return 1;
     }
+    long neg_exit = 0;
+    if (bt_e2e_neg_config_exit_from(config, &neg_exit, error, error_cap) != 0) {
+        bt_json_free(config);
+        BT_TRACE_FAIL("e2e.real_main", "%s", error);
+        BT_TRACE_EXIT("e2e.real_main");
+        return -1;
+    }
+    bt_json_free(config);
     char parent[BT_PATH_MAX];
     parent_dir(out_dir, parent);
+    char neg_root[BT_PATH_MAX];
+    bt_paths_join(parent, "e2e-neg", neg_root);
     char neg_dir[BT_PATH_MAX];
-    bt_paths_join(parent, "e2e-neg", neg_dir);
-    bt_paths_join(neg_dir, "shots", neg_dir);
+    bt_paths_join(neg_root, "shots", neg_dir);
     if (bt_e2e_clean_pngs(neg_dir, error, error_cap) != 0) {
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
+    char artifacts_dir[BT_PATH_MAX];
+    bt_paths_join(root, "artifacts", artifacts_dir);
     char neg_config[BT_PATH_MAX];
-    bt_paths_join(root, "artifacts", neg_config);
-    bt_paths_join(neg_config, "e2e-neg-config.json", neg_config);
+    bt_paths_join(artifacts_dir, "e2e-neg-config.json", neg_config);
     wchar_t neg_config_w[BT_E2E_PATH_WMAX];
     if (bt_e2e_utf8_to_wide(neg_config, neg_config_w, BT_E2E_PATH_WMAX) == 0) {
         _wremove(neg_config_w);
@@ -253,16 +271,15 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         if (neg_run.code == neg_exit) {
             printf("ok missing-config smoke exit %ld\n", neg_run.code);
         } else {
-            char stdout_tail[2048];
-            char stderr_tail[2048];
-            bt_e2e_tail(neg_run.stdout_bytes, neg_run.stdout_len, stdout_tail,
-                        sizeof stdout_tail);
-            bt_e2e_tail(neg_run.stderr_bytes, neg_run.stderr_len, stderr_tail,
-                        sizeof stderr_tail);
+            char *stdout_tail = bt_e2e_tail(neg_run.stdout_bytes, neg_run.stdout_len);
+            char *stderr_tail = bt_e2e_tail(neg_run.stderr_bytes, neg_run.stderr_len);
             snprintf(error, error_cap,
                      "smoke with a missing config exited %ld, expected %ld\nstdout tail:\n"
                      "%s\nstderr tail:\n%s",
-                     neg_run.code, neg_exit, stdout_tail, stderr_tail);
+                     neg_run.code, neg_exit, stdout_tail != NULL ? stdout_tail : "",
+                     stderr_tail != NULL ? stderr_tail : "");
+            free(stdout_tail);
+            free(stderr_tail);
             verdict = -1;
         }
     } else {

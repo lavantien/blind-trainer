@@ -82,14 +82,14 @@ int bt_e2e_read_config(const char *path, bt_json_value **out, char *error, size_
     *out = NULL;
     wchar_t path_w[BT_E2E_PATH_WMAX];
     if (wide_of(path, path_w, BT_E2E_PATH_WMAX) != 0) {
-        snprintf(error, error_cap, "cannot read config %s", path);
+        snprintf(error, error_cap, "cannot read config %s: %s", path, strerror(errno));
         BT_TRACE_FAIL("e2e.read_config", "utf8 conversion failed");
         BT_TRACE_EXIT("e2e.read_config");
         return 1;
     }
     FILE *file = _wfopen(path_w, L"rb");
     if (file == NULL) {
-        snprintf(error, error_cap, "cannot read config %s", path);
+        snprintf(error, error_cap, "cannot read config %s: %s", path, strerror(errno));
         BT_TRACE_FAIL("e2e.read_config", "cannot open %s", path);
         BT_TRACE_EXIT("e2e.read_config");
         return 1;
@@ -100,12 +100,19 @@ int bt_e2e_read_config(const char *path, bt_json_value **out, char *error, size_
     char *text = malloc(size > 0 ? (size_t)size + 1 : 1);
     if (text == NULL) {
         fclose(file);
-        snprintf(error, error_cap, "cannot read config %s", path);
+        snprintf(error, error_cap, "cannot read config %s: %s", path, strerror(errno));
         BT_TRACE_FAIL("e2e.read_config", "allocation failed");
         BT_TRACE_EXIT("e2e.read_config");
         return 1;
     }
     size_t read_len = fread(text, 1, (size_t)size, file);
+    if (read_len != (size_t)size) {
+        free(text);
+        snprintf(error, error_cap, "cannot read config %s: %s", path, strerror(errno));
+        BT_TRACE_FAIL("e2e.read_config", "short read on %s", path);
+        BT_TRACE_EXIT("e2e.read_config");
+        return 1;
+    }
     fclose(file);
     text[read_len] = '\0';
     bt_json_error json_error;
@@ -253,12 +260,13 @@ void bt_e2e_out_dir_from(const char *env_value, const bt_json_value *value, cons
             relative = artifacts->as.string;
         }
     }
+    char base[BT_PATH_MAX];
     if (bt_paths_is_absolute(relative)) {
-        snprintf(out, BT_PATH_MAX, "%s", relative);
+        snprintf(base, BT_PATH_MAX, "%s", relative);
     } else {
-        bt_paths_join(root, relative, out);
+        bt_paths_join(root, relative, base);
     }
-    bt_paths_join(out, "e2e", out);
+    bt_paths_join(base, "e2e", out);
     BT_TRACE_EXIT("e2e.out_dir_from");
 }
 
@@ -347,20 +355,17 @@ int bt_e2e_png_names(const char *dir, char ***out_names, size_t *out_count, char
         if (dot == NULL || _wcsicmp(dot, L".png") != 0) {
             continue;
         }
-        char name_utf8[BT_E2E_NAME_MAX];
-        if (bt_e2e_wide_to_utf8(entry.name, name_utf8, BT_E2E_NAME_MAX) != 0) {
+        char *name_utf8 = NULL;
+        if (bt_e2e_wide_to_utf8_alloc(entry.name, &name_utf8) != 0) {
             continue;
         }
         char **grown = realloc(names, (count + 1) * sizeof(char *));
         if (grown == NULL) {
+            free(name_utf8);
             break;
         }
         names = grown;
-        names[count] = malloc(strlen(name_utf8) + 1);
-        if (names[count] == NULL) {
-            break;
-        }
-        strcpy(names[count], name_utf8);
+        names[count] = name_utf8;
         count += 1;
     } while (_wfindnext64(handle, &entry) == 0);
     _findclose(handle);
@@ -380,30 +385,87 @@ void bt_e2e_free_names(char **names, size_t count) {
     BT_TRACE_EXIT("e2e.free_names");
 }
 
-int bt_e2e_expected_names(const char *const *shots, size_t shots_count,
-                          char names[][BT_E2E_NAME_MAX], size_t *out_count) {
+static int push_name_copy(char ***rows, size_t *count, const char *name) {
+    char **grown = realloc(*rows, (*count + 1) * sizeof(char *));
+    if (grown == NULL) {
+        return -1;
+    }
+    *rows = grown;
+    char *copy = malloc(strlen(name) + 1);
+    if (copy == NULL) {
+        return -1;
+    }
+    strcpy(copy, name);
+    (*rows)[*count] = copy;
+    *count += 1;
+    return 0;
+}
+
+int bt_e2e_expected_names(const char *const *shots, size_t shots_count, char ***out_names,
+                          size_t *out_count) {
     BT_TRACE_ENTER("e2e.expected_names");
-    if (shots_count > 4096) {
-        BT_TRACE_FAIL("e2e.expected_names", "too many shots");
-        BT_TRACE_EXIT("e2e.expected_names");
-        return 1;
-    }
+    *out_names = NULL;
+    *out_count = 0;
+    char **names = NULL;
+    size_t count = 0;
     for (size_t i = 0; i < shots_count; i++) {
-        snprintf(names[i], BT_E2E_NAME_MAX, "%s.png", shots[i]);
+        char *name = malloc(strlen(shots[i]) + 5);
+        if (name == NULL) {
+            bt_e2e_free_names(names, count);
+            BT_TRACE_FAIL("e2e.expected_names", "allocation failed");
+            BT_TRACE_EXIT("e2e.expected_names");
+            return 1;
+        }
+        strcpy(name, shots[i]);
+        strcat(name, ".png");
+        char **grown = realloc(names, (count + 1) * sizeof(char *));
+        if (grown == NULL) {
+            free(name);
+            bt_e2e_free_names(names, count);
+            BT_TRACE_FAIL("e2e.expected_names", "allocation failed");
+            BT_TRACE_EXIT("e2e.expected_names");
+            return 1;
+        }
+        names = grown;
+        names[count] = name;
+        count += 1;
     }
-    *out_count = shots_count;
+    qsort(names, count, sizeof(char *), name_cmp);
+    size_t unique = 0;
+    for (size_t i = 0; i < count; i++) {
+        if (i > 0 && strcmp(names[i], names[i - 1]) == 0) {
+            continue;
+        }
+        names[unique] = names[i];
+        unique += 1;
+    }
+    for (size_t i = unique; i < count; i++) {
+        names[i] = NULL;
+    }
+    *out_names = names;
+    *out_count = unique;
     BT_TRACE_EXIT("e2e.expected_names");
     return 0;
 }
 
 void bt_e2e_classify(const char *const *found, size_t found_count, const char *const *expected,
-                     size_t expected_count, char missing[][BT_E2E_NAME_MAX],
-                     size_t *missing_count, char unexpected[][BT_E2E_NAME_MAX],
-                     size_t *unexpected_count) {
+                     size_t expected_count, char ***out_missing, size_t *missing_count,
+                     char ***out_unexpected, size_t *unexpected_count) {
     BT_TRACE_ENTER("e2e.classify");
+    *out_missing = NULL;
     *missing_count = 0;
+    *out_unexpected = NULL;
     *unexpected_count = 0;
     for (size_t i = 0; i < expected_count; i++) {
+        int duplicate = 0;
+        for (size_t j = 0; j < i; j++) {
+            if (strcmp(expected[j], expected[i]) == 0) {
+                duplicate = 1;
+            }
+        }
+        if (duplicate) {
+            continue;
+        }
         int present = 0;
         for (size_t j = 0; j < found_count; j++) {
             if (strcmp(found[j], expected[i]) == 0) {
@@ -411,11 +473,19 @@ void bt_e2e_classify(const char *const *found, size_t found_count, const char *c
             }
         }
         if (!present) {
-            snprintf(missing[*missing_count], BT_E2E_NAME_MAX, "%s", expected[i]);
-            *missing_count += 1;
+            push_name_copy(out_missing, missing_count, expected[i]);
         }
     }
     for (size_t i = 0; i < found_count; i++) {
+        int duplicate = 0;
+        for (size_t j = 0; j < i; j++) {
+            if (strcmp(found[j], found[i]) == 0) {
+                duplicate = 1;
+            }
+        }
+        if (duplicate) {
+            continue;
+        }
         int known = 0;
         for (size_t j = 0; j < expected_count; j++) {
             if (strcmp(expected[j], found[i]) == 0) {
@@ -423,8 +493,7 @@ void bt_e2e_classify(const char *const *found, size_t found_count, const char *c
             }
         }
         if (!known) {
-            snprintf(unexpected[*unexpected_count], BT_E2E_NAME_MAX, "%s", found[i]);
-            *unexpected_count += 1;
+            push_name_copy(out_unexpected, unexpected_count, found[i]);
         }
     }
     BT_TRACE_EXIT("e2e.classify");
@@ -472,14 +541,28 @@ bt_e2e_shot_verdict bt_e2e_check_shot(const char *path, bt_e2e_window_dims dims,
     return BT_E2E_SHOT_OK;
 }
 
-void bt_e2e_tail(const unsigned char *bytes, size_t len, char *out, size_t out_cap) {
+int bt_e2e_deadline_from(unsigned long long timeout_secs, unsigned long long now_ms,
+                         unsigned long long *out) {
+    BT_TRACE_ENTER("e2e.deadline_from");
+    if (timeout_secs > (18446744073709551615ULL - now_ms) / 1000ULL) {
+        BT_TRACE_FAIL("e2e.deadline_from", "timeout %llu overflows the deadline", timeout_secs);
+        BT_TRACE_EXIT("e2e.deadline_from");
+        return 1;
+    }
+    *out = now_ms + timeout_secs * 1000ULL;
+    BT_TRACE_EXIT("e2e.deadline_from");
+    return 0;
+}
+
+char *bt_e2e_tail(const unsigned char *bytes, size_t len) {
     BT_TRACE_ENTER("e2e.tail");
     const char *text = (const char *)bytes;
-    size_t line_starts[512];
-    size_t line_lens[512];
+    size_t *line_starts = NULL;
+    size_t *line_lens = NULL;
     size_t line_count = 0;
+    size_t line_cap = 0;
     size_t at = 0;
-    while (at <= len && line_count < 512) {
+    while (at <= len) {
         size_t start = at;
         while (at < len && text[at] != '\n') {
             at += 1;
@@ -489,6 +572,23 @@ void bt_e2e_tail(const unsigned char *bytes, size_t len, char *out, size_t out_c
             line_len -= 1;
         }
         if (line_len > 0 || at < len) {
+            if (line_count == line_cap) {
+                size_t grown_cap = line_cap < 64 ? 64 : line_cap * 2;
+                size_t *grown_starts = realloc(line_starts, grown_cap * sizeof *grown_starts);
+                size_t *grown_lens = realloc(line_lens, grown_cap * sizeof *grown_lens);
+                if (grown_starts == NULL || grown_lens == NULL) {
+                    free(grown_starts);
+                    free(grown_lens);
+                    free(line_starts);
+                    free(line_lens);
+                    BT_TRACE_FAIL("e2e.tail", "allocation failed");
+                    BT_TRACE_EXIT("e2e.tail");
+                    return NULL;
+                }
+                line_starts = grown_starts;
+                line_lens = grown_lens;
+                line_cap = grown_cap;
+            }
             line_starts[line_count] = start;
             line_lens[line_count] = line_len;
             line_count += 1;
@@ -500,17 +600,30 @@ void bt_e2e_tail(const unsigned char *bytes, size_t len, char *out, size_t out_c
     }
     size_t keep = line_count < 20 ? line_count : 20;
     size_t first = line_count - keep;
-    size_t used = 0;
-    out[0] = '\0';
+    size_t total = 0;
     for (size_t i = first; i < line_count; i++) {
-        if (i > first && used + 1 < out_cap) {
+        total += line_lens[i] + 1;
+    }
+    char *out = malloc(total > 0 ? total : 1);
+    if (out == NULL) {
+        free(line_starts);
+        free(line_lens);
+        BT_TRACE_FAIL("e2e.tail", "allocation failed");
+        BT_TRACE_EXIT("e2e.tail");
+        return NULL;
+    }
+    size_t used = 0;
+    for (size_t i = first; i < line_count; i++) {
+        if (i > first) {
             out[used] = '\n';
             used += 1;
         }
-        size_t copy = line_lens[i] < out_cap - used - 1 ? line_lens[i] : out_cap - used - 1;
-        memcpy(out + used, text + line_starts[i], copy);
-        used += copy;
+        memcpy(out + used, text + line_starts[i], line_lens[i]);
+        used += line_lens[i];
     }
     out[used] = '\0';
+    free(line_starts);
+    free(line_lens);
     BT_TRACE_EXIT("e2e.tail");
+    return out;
 }
