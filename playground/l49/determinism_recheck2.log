@@ -1,0 +1,6 @@
+[determinism] usage tour into run1
+[determinism] run1 exit: 0
+[determinism] usage tour into run2
+[determinism] run2 exit: 0
+[determinism] identical: 19  differing: 0  of 19
+[determinism] VERDICT: PASS (byte-identical tours)

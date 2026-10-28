@@ -565,6 +565,25 @@ void bt_view_solve_update(bt_app_ctx *ctx) {
     BT_TRACE_EXIT("app.solve_update");
 }
 
+static float draw_text_block(const void *font, const char *text, float x, float y, float size,
+                             bt_theme_color color) {
+    const char *at = text;
+    while (*at != '\0') {
+        const char *newline = strchr(at, '\n');
+        size_t len = newline != NULL ? (size_t)(newline - at) : strlen(at);
+        char line[BT_SOLVE_TEXT_MAX];
+        if (len >= sizeof line) {
+            len = sizeof line - 1;
+        }
+        memcpy(line, at, len);
+        line[len] = '\0';
+        bt_app_draw_text(font, line, x, y, size, color);
+        y += size;
+        at = newline != NULL ? newline + 1 : at + len;
+    }
+    return y;
+}
+
 void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
                         float window_w, float window_h) {
     BT_TRACE_ENTER("app.view_solve_draw");
@@ -601,11 +620,11 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
                          ? bt_theme_ok()
                          : bt_theme_danger());
     y += theme->font_heading * theme->root_rem + gap;
-    bt_app_draw_text(font_regular, parts.splits, x, y, theme->font_heading * theme->root_rem,
-                     bt_theme_text_primary());
+    y = draw_text_block(font_regular, parts.splits, x, y, theme->font_heading * theme->root_rem,
+                        bt_theme_text_primary());
     y += theme->font_small * theme->root_rem + gap;
-    bt_app_draw_text(font_regular, parts.broken, x, y, theme->font_small * theme->root_rem,
-                     bt_theme_danger());
+    y = draw_text_block(font_regular, parts.broken, x, y, theme->font_small * theme->root_rem,
+                        bt_theme_danger());
     y += theme->font_small * theme->root_rem + gap;
     bt_app_draw_text(font_regular, bt_view_solve_hint_text(ctx->solve_phase), x, y,
                      theme->font_small * theme->root_rem, bt_theme_text_muted());

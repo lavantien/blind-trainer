@@ -1,0 +1,27 @@
+[l49] repo: C:\Users\lavantien\dev\github\blind-trainer
+[l49] docs shots after wipe: 0
+[l49] usage-user wiped
+[l49] usage step: C:\Users\lavantien\dev\github\blind-trainer\build\bin\bt-app.exe --usage C:\Users\lavantien\dev\github\blind-trainer\docs\screenshots  APPDATA=C:\Users\lavantien\dev\github\blind-trainer\artifacts\usage-user BT_CONFIG=C:\Users\lavantien\dev\github\blind-trainer\config\config.json BT_REF_GROUND=ref_ground BT_ARTIFACTS=artifacts
+[l49] usage exit: 0
+[l49] fatal step: C:\Users\lavantien\dev\github\blind-trainer\build\bin\bt-app.exe --fatal-shot C:\Users\lavantien\dev\github\blind-trainer\docs\screenshots  BT_CONFIG=C:\Users\lavantien\dev\github\blind-trainer\artifacts\usage-absent-config.json
+[l49] fatal exit: 0
+[l49] shot: algs-search.png 73266 14:12:03
+[l49] shot: algs.png 75162 14:12:01
+[l49] shot: case-drill-grade.png 50818 14:12:05
+[l49] shot: case-drill-show.png 49274 14:12:04
+[l49] shot: drill-card.png 58780 14:11:43
+[l49] shot: drill-rate-a.png 55058 14:11:45
+[l49] shot: drill-rate-b.png 55050 14:11:46
+[l49] shot: drill-reps.png 54421 14:11:44
+[l49] shot: fatal.png 44659 14:12:08
+[l49] shot: memo-intro.png 54481 14:11:46
+[l49] shot: memo-recall.png 49293 14:11:54
+[l49] shot: memo-review.png 52678 14:11:55
+[l49] shot: memo-stream.png 48296 14:11:49
+[l49] shot: menu.png 58156 14:11:43
+[l49] shot: settings.png 53579 14:12:07
+[l49] shot: solve-exec.png 52781 14:12:00
+[l49] shot: solve-memo.png 56164 14:11:58
+[l49] shot: solve-ready.png 52897 14:11:55
+[l49] shot: solve-review.png 58179 14:12:01
+[l49] shot: stats.png 52130 14:12:06

@@ -1,5 +1,4 @@
 import struct
-import subprocess
 import sys
 import zlib
 from pathlib import Path
@@ -84,26 +83,15 @@ FLOOR = 400
 
 
 def main():
-    old_dir = Path(__file__).parent / "old"
-    old_dir.mkdir(exist_ok=True)
     failures = 0
     for name, regions in SHOTS.items():
-        rel = f"docs/screenshots/{name}"
-        old = old_dir / name
-        if not old.is_file():
-            blob = subprocess.run(
-                ["git", "-C", str(REPO), "show", f"HEAD:{rel}"],
-                capture_output=True, check=True,
-            ).stdout
-            old.write_bytes(blob)
-        new_path = REPO / rel
+        path = REPO / "docs" / "screenshots" / name
         for at, (x0, y0, x1, y1) in enumerate(regions):
-            o = lit(old, x0, y0, x1, y1)
-            n = lit(new_path, x0, y0, x1, y1)
-            ok = n >= FLOOR and n > o * 4
+            n = lit(path, x0, y0, x1, y1)
+            ok = n >= FLOOR
             if not ok:
                 failures += 1
-            print(f"{name} region{at} ({x0},{y0},{x1},{y1}) old={o} new={n} floor={FLOOR} "
+            print(f"{name} region{at} ({x0},{y0},{x1},{y1}) lit={n} floor={FLOOR} "
                   f"{'OK' if ok else 'FAIL'}")
     print(f"verify_shots: {'PASS' if failures == 0 else 'FAIL'} ({failures} failures)")
     return 1 if failures else 0

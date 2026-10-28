@@ -1,0 +1,10 @@
+[determinism] usage tour into run1
+[determinism] run1 exit: 0
+[determinism] usage tour into run2
+[determinism] run2 exit: 0
+[determinism] DIFFER: drill-card.png
+[determinism] DIFFER: drill-rate-a.png
+[determinism] DIFFER: drill-rate-b.png
+[determinism] DIFFER: drill-reps.png
+[determinism] identical: 15  differing: 4  of 19
+[determinism] VERDICT: FAIL (nondeterministic shots)

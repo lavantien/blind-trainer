@@ -14,6 +14,7 @@
 enum {
     DRAW_DWELL_FRAMES = 6,
     DRAW_TEXT_LIT_FLOOR = 400,
+    DRAW_BANDS_MAX = 16,
 };
 
 static int open_window(bt_app_config *config) {
@@ -61,6 +62,42 @@ static long long lit_pixels(const char *path, int x0, int y0, int x1, int y1) {
     UnloadImageColors(pixels);
     UnloadImage(image);
     return lit;
+}
+
+static size_t lit_row_bands(const char *path, int x0, int x1, int y0, int y1, int out[][2],
+                            size_t max) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    size_t bands = 0;
+    int run_start = -1;
+    for (int y = y0; y < y1 && y < image.height; y++) {
+        int lit = 0;
+        for (int x = x0; x < x1 && x < image.width && !lit; x++) {
+            Color pixel = pixels[y * image.width + x];
+            lit = pixel.r != 0 || pixel.g != 0 || pixel.b != 0;
+        }
+        if (lit && run_start < 0) {
+            run_start = y;
+        }
+        if (!lit && run_start >= 0 && bands < max) {
+            out[bands][0] = run_start;
+            out[bands][1] = y - 1;
+            bands++;
+            run_start = -1;
+        }
+    }
+    if (run_start >= 0 && bands < max) {
+        out[bands][0] = run_start;
+        out[bands][1] = (y1 < image.height ? y1 : image.height) - 1;
+        bands++;
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return bands;
 }
 
 static int draw_and_capture(void (*draw)(bt_app_ctx *), bt_app_ctx *ctx, const char *dir,
@@ -171,6 +208,57 @@ BT_TEST(view_draw_b, solve_renders_pixels) {
     BT_CHECK(draw_and_capture(draw_solve, &ctx, dir, "solve.png"));
     BT_CHECK(region_variance(path, 60, 140, 230, 380) > 20);
     BT_CHECK(lit_pixels(path, 310, 95, 630, 460) >= DRAW_TEXT_LIT_FLOOR);
+    bt_app_ctx_free(&ctx);
+    CloseWindow();
+}
+
+BT_TEST(view_draw_b, solve_review_hint_draws_clear_of_the_splits_block) {
+    bt_app_config config;
+    bt_app_config_defaults(&config);
+    config.window.width = 1280;
+    config.window.height = 800;
+    snprintf(config.window.title, sizeof config.window.title, "%s", "l49 review test");
+    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title, NULL)) {
+        return;
+    }
+    bt_app_ctx ctx;
+    bt_app_ctx_init(&ctx);
+    ctx.state = BT_APP_SOLVE;
+    ctx.has_stores = 1;
+    memset(&ctx.stores, 0, sizeof ctx.stores);
+    ctx.stores.settings.memo_cadence_ms = 800;
+    bt_srs_store_init(&ctx.stores.srs);
+    bt_solve_log_init(&ctx.stores.solves);
+    bt_user_algs_init(&ctx.stores.user_algs);
+    bt_str_list_init(&ctx.stores.seeds.hidden);
+    bt_str_list_init(&ctx.stores.seeds.warnings);
+    snprintf(ctx.paths.user_root, sizeof ctx.paths.user_root, "%s",
+             ta_temp_dir("view_draw_b", "solve_review"));
+    bt_view_solve_app_state *app = bt_view_solve_app();
+    bt_syllable_book book;
+    bt_syllable_book_init(&book);
+    bt_view_solve_rebuild(&app->session, 7, &book, NULL);
+    ctx.solve_phase = BT_SOLVE_READY;
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    bt_view_solve_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.solve_phase == BT_SOLVE_REVIEW);
+    char dir[BT_PATH_MAX];
+    snprintf(dir, sizeof dir, "%s", ta_temp_dir("view_draw_b", "review_shot"));
+    BT_CHECK(draw_and_capture(draw_solve, &ctx, dir, "solve_review.png"));
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/solve_review.png", dir);
+    int bands[DRAW_BANDS_MAX][2];
+    size_t count = lit_row_bands(path, 590, 1260, 92, 780, bands, DRAW_BANDS_MAX);
+    BT_CHECK(count >= 3);
+    if (count >= 2) {
+        int last = (int)count - 1;
+        int height = bands[last][1] - bands[last][0] + 1;
+        int gap = bands[last][0] - bands[last - 1][1] - 1;
+        BT_CHECK(height <= 20);
+        BT_CHECK(gap >= 20);
+    }
+    bt_syllable_book_free(&book);
     bt_app_ctx_free(&ctx);
     CloseWindow();
 }

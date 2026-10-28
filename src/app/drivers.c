@@ -284,9 +284,7 @@ static int usage_loop(bt_app_ctx *ctx, bt_usage_tour *tour) {
             key_vk = bt_app_driver_vk_of(keys.key);
             key_char = (unsigned char)keys.ch;
             if (key_vk != 0) {
-                int sent = bt_app_driver_key_down(hwnd, key_vk) &&
-                           (key_char == 0 || bt_app_driver_key_char(hwnd, key_char));
-                if (!sent) {
+                if (!bt_app_driver_key_down(hwnd, key_vk)) {
                     BT_TRACE_FAIL("app.usage_loop", "key %u down not delivered", key_vk);
                 }
                 key_phase = 2;
@@ -312,6 +310,7 @@ static int usage_run(bt_app_ctx *ctx, const char *dir, int fatal) {
         bt_app_ctx_free(ctx);
         return 1;
     }
+    bt_app_views_shared()->net.frozen = 1;
     bt_app_font_book book;
     if (!open_window_and_fonts(ctx, &book)) {
         bt_app_ctx_free(ctx);

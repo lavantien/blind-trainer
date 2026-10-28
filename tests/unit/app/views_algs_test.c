@@ -1,3 +1,4 @@
+#include "app/boot.h"
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
@@ -9,6 +10,7 @@ enum {
     KEY_SLASH = 47,
     KEY_D = 68,
     KEY_DOWN = 264,
+    KEY_BACKSPACE = 259,
 };
 
 static bt_app_ctx algs_ctx(const char *tag) {
@@ -76,6 +78,59 @@ BT_TEST(views_algs, algs_search_routes_the_selected_case_into_drill) {
     BT_CHECK(drill->session.side_a.case_id.orbit == edge_case('A', 'B').orbit);
     BT_CHECK(drill->session.side_a.case_id.t1 == edge_case('A', 'B').t1);
     BT_CHECK(drill->session.side_a.case_id.t2 == edge_case('A', 'B').t2);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_algs, typed_chars_filter_the_list_through_the_production_frame) {
+    bt_app_ctx ctx = algs_ctx("querywire");
+    covered_corpus(&ctx);
+    bt_view_algs_read_query(&ctx, "");
+    bt_view_algs_enter(&ctx);
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    size_t all = app->browser.all_count;
+    BT_CHECK_EQ(app->browser.filtered_count, all);
+
+    bt_view_algs_detail_line *lines = NULL;
+    size_t line_count = bt_view_algs_detail_lines(&ctx.vendor_corpus, &app->browser, &lines);
+    BT_CHECK(line_count > 0);
+    char before[BT_ALGS_TEXT_MAX];
+    snprintf(before, sizeof before, "%s", lines[0].text);
+    free(lines);
+
+    int slash[1] = {KEY_SLASH};
+    bt_view_algs_frame(&ctx, slash, 1);
+    BT_CHECK(app->query_focused);
+
+    int typed[1] = {'b'};
+    bt_view_algs_frame(&ctx, typed, 1);
+    bt_view_algs_refresh(app->query, &app->browser);
+    BT_CHECK(strcmp(app->query, "b") == 0);
+    BT_CHECK(app->browser.filtered_count > 0);
+    BT_CHECK(app->browser.filtered_count < all);
+
+    lines = NULL;
+    line_count = bt_view_algs_detail_lines(&ctx.vendor_corpus, &app->browser, &lines);
+    BT_CHECK(line_count > 0);
+    BT_CHECK(strcmp(lines[0].text, before) != 0);
+    free(lines);
+
+    int back[1] = {KEY_BACKSPACE};
+    bt_view_algs_frame(&ctx, back, 1);
+    bt_view_algs_refresh(app->query, &app->browser);
+    BT_CHECK_EQ(app->query[0], '\0');
+    BT_CHECK_EQ(app->browser.filtered_count, all);
+
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.chars[0] = 'b';
+    input.char_count = 1;
+    bt_app_frame_input_set(&input);
+    bt_view_algs_update(&ctx);
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(strcmp(app->query, "b") == 0);
+    BT_CHECK(app->browser.filtered_count > 0);
+    BT_CHECK(app->browser.filtered_count < all);
+
     bt_app_ctx_free(&ctx);
 }
 

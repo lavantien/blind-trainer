@@ -1,11 +1,11 @@
-solve-ready.png region0 (570,200,1280,500) old=4 new=841 floor=400 OK
-solve-memo.png region0 (570,200,1280,500) old=3 new=2080 floor=400 OK
-solve-exec.png region0 (570,200,1280,500) old=5 new=725 floor=400 OK
-solve-review.png region0 (570,200,1280,500) old=12 new=2836 floor=400 OK
-algs.png region0 (25,100,500,700) old=13 new=4763 floor=400 OK
-algs.png region1 (530,100,1260,700) old=0 new=2998 floor=400 OK
-algs-search.png region0 (25,100,500,700) old=12 new=4782 floor=400 OK
-algs-search.png region1 (530,100,1260,700) old=0 new=923 floor=400 OK
-case-drill-show.png region0 (25,92,900,210) old=1 new=1362 floor=400 OK
-case-drill-grade.png region0 (25,92,900,230) old=1 new=1963 floor=400 OK
+solve-ready.png region0 (570,200,1280,500) lit=841 floor=400 OK
+solve-memo.png region0 (570,200,1280,500) lit=2080 floor=400 OK
+solve-exec.png region0 (570,200,1280,500) lit=725 floor=400 OK
+solve-review.png region0 (570,200,1280,500) lit=2853 floor=400 OK
+algs.png region0 (25,100,500,700) lit=4763 floor=400 OK
+algs.png region1 (530,100,1260,700) lit=2998 floor=400 OK
+algs-search.png region0 (25,100,500,700) lit=5039 floor=400 OK
+algs-search.png region1 (530,100,1260,700) lit=2466 floor=400 OK
+case-drill-show.png region0 (25,92,900,210) lit=1362 floor=400 OK
+case-drill-grade.png region0 (25,92,900,230) lit=1963 floor=400 OK
 verify_shots: PASS (0 failures)

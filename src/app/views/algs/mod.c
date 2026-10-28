@@ -399,19 +399,14 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
         app->query_focused = 0;
     }
     if (!app->query_focused && draft->has_case) {
-        int code = GetCharPressed();
-        while (code > 0) {
-            size_t len = strlen(draft->text);
-            if (len + 1 < sizeof draft->text) {
-                draft->text[len] = (char)code;
-                draft->text[len + 1] = 0;
-            }
-            code = GetCharPressed();
-        }
-        if (IsKeyPressed(KEY_BACKSPACE)) {
-            size_t len = strlen(draft->text);
-            if (len > 0) {
-                draft->text[len - 1] = 0;
+        const bt_ui_input *frame = bt_app_frame_input();
+        if (frame != NULL) {
+            for (int i = 0; i < frame->char_count; i++) {
+                size_t len = strlen(draft->text);
+                if (len + 1 < sizeof draft->text) {
+                    draft->text[len] = (char)frame->chars[i];
+                    draft->text[len + 1] = 0;
+                }
             }
         }
     }
@@ -427,12 +422,13 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
         }
     }
     if (app->query_focused) {
-        int code = GetCharPressed();
-        while (code > 0) {
-            if (count < (int)(sizeof keys / sizeof keys[0])) {
-                keys[count++] = code;
+        const bt_ui_input *frame = bt_app_frame_input();
+        if (frame != NULL) {
+            for (int i = 0; i < frame->char_count; i++) {
+                if (count < (int)(sizeof keys / sizeof keys[0])) {
+                    keys[count++] = frame->chars[i];
+                }
             }
-            code = GetCharPressed();
         }
         bt_view_algs_frame(ctx, keys, count);
         bt_view_algs_refresh(app->query, &app->browser);
@@ -908,6 +904,23 @@ int bt_view_algs_frame(bt_app_ctx *ctx, const int *keys, int count) {
                 if (len + 1 < sizeof draft->text) {
                     draft->text[len] = (char)key;
                     draft->text[len + 1] = '\0';
+                }
+                continue;
+            }
+        }
+        if (typing && !draft->has_case) {
+            if (key == KEY_BACKSPACE) {
+                size_t len = strlen(app->query);
+                if (len > 0) {
+                    app->query[len - 1] = '\0';
+                }
+                continue;
+            }
+            if (key >= 32 && key < 127 && key != KEY_SLASH) {
+                size_t len = strlen(app->query);
+                if (len + 1 < sizeof app->query) {
+                    app->query[len] = (char)key;
+                    app->query[len + 1] = '\0';
                 }
                 continue;
             }
