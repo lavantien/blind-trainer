@@ -1,5 +1,6 @@
 #include "release-verify/exec.h"
 #include "release-verify/lib.h"
+#include "release-verify/png.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -10,6 +11,7 @@
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/paths.h"
+#include "sqlite3.h"
 #include "unit/tools/release_verify_test_util.h"
 #include "unit/tools/spawn_util.h"
 
@@ -612,4 +614,196 @@ BT_TEST(release_verify, run_fails_the_whole_tool_when_the_zip_is_tampered) {
 BT_TEST(release_verify, run_reports_the_spawn_failure_when_the_packaged_exe_is_not_runnable) {
     const char *run_flag[] = {"--run", NULL};
     BT_CHECK_EQ(run_dist("run-spawn", run_flag), BT_RV_EXIT_FAIL);
+}
+
+BT_TEST(release_verify, run_maps_every_parse_error_to_the_usage_line) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("run-unknown-flag", dir);
+    char config[BT_PATH_MAX];
+    rv_util_join(config, dir, "verify-config.json");
+    rv_util_write(config, FULL_CONFIG_JSON);
+    const char *argv[] = {"staging", "dist.zip", "--wat", NULL};
+    bt_rv_env env = env_for(dir, config, argv);
+    int code = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_run(&env, &code, err, sizeof err) != 0);
+    BT_CHECK_EQ(err, BT_RV_USAGE_LINE);
+}
+
+BT_TEST(release_verify, check_shot_dir_reports_missing_before_unexpected) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("shots-priority", dir);
+    char path[BT_PATH_MAX];
+    rv_util_join(path, dir, "menu.png");
+    rv_util_write_png(path, 1280, 800);
+    rv_util_join(path, dir, "stray.txt");
+    rv_util_write(path, "");
+    bt_rv_release_cfg cfg;
+    two_shot_cfg(&cfg);
+    size_t count = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_check_shot_dir(dir, &cfg, 1280, 800, &count, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "missing") != NULL && strstr(err, "drill.png") != NULL);
+    BT_CHECK(strstr(err, "unexpected") == NULL);
+}
+
+BT_TEST(release_verify, check_shot_dir_names_the_windows_error_on_an_absent_dir) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("shots-absent-err", dir);
+    char none[BT_PATH_MAX];
+    rv_util_join(none, dir, "none");
+    bt_rv_release_cfg cfg;
+    two_shot_cfg(&cfg);
+    size_t count = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_check_shot_dir(none, &cfg, 1280, 800, &count, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "cannot read shots dir") != NULL);
+    BT_CHECK(strstr(err, ": 2") != NULL);
+}
+
+BT_TEST(release_verify, zip_root_from_accepts_a_bare_final_component_and_trailing_separator) {
+    char root[BT_PATH_MAX];
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK_EQ(bt_rv_zip_root_from("blind-trainer", root, err, sizeof err), 0);
+    BT_CHECK_EQ(root, "blind-trainer");
+    BT_CHECK_EQ(bt_rv_zip_root_from("out/dist/blind-trainer/", root, err, sizeof err), 0);
+    BT_CHECK_EQ(root, "blind-trainer");
+    BT_CHECK_EQ(bt_rv_zip_root_from("a/b/", root, err, sizeof err), 0);
+    BT_CHECK_EQ(root, "b");
+    BT_CHECK_EQ(bt_rv_zip_root_from("staging\\", root, err, sizeof err), 0);
+    BT_CHECK_EQ(root, "staging");
+    BT_CHECK(bt_rv_zip_root_from("/", root, err, sizeof err) != 0);
+    BT_CHECK(bt_rv_zip_root_from("a/..", root, err, sizeof err) != 0);
+}
+
+BT_TEST(release_verify, png_row0_filters_apply_with_zero_neighbors) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("png-row0", dir);
+    char path[BT_PATH_MAX];
+    unsigned int width = 0;
+    unsigned int height = 0;
+    unsigned char *raw = NULL;
+    size_t raw_len = 0;
+    char err[BT_RV_ERR_MAX];
+
+    static const unsigned char sub_enc[4] = {10, 5, 5, 5};
+    static const unsigned char sub_want[4] = {10, 15, 20, 25};
+    rv_util_join(path, dir, "sub.png");
+    rv_util_write_png_row0(path, 4, 1, sub_enc);
+    BT_CHECK_EQ(bt_rv_png_raw(path, &width, &height, &raw, &raw_len, err, sizeof err), 0);
+    BT_CHECK_EQ(width, 4U);
+    BT_CHECK_EQ(height, 1U);
+    BT_CHECK_EQ(raw_len, 5U);
+    BT_CHECK(memcmp(raw + 1, sub_want, sizeof sub_want) == 0);
+    free(raw);
+
+    static const unsigned char avg_enc[4] = {10, 4, 4, 4};
+    static const unsigned char avg_want[4] = {10, 9, 8, 8};
+    rv_util_join(path, dir, "average.png");
+    rv_util_write_png_row0(path, 4, 3, avg_enc);
+    BT_CHECK_EQ(bt_rv_png_raw(path, &width, &height, &raw, &raw_len, err, sizeof err), 0);
+    BT_CHECK(memcmp(raw + 1, avg_want, sizeof avg_want) == 0);
+    free(raw);
+
+    static const unsigned char paeth_enc[4] = {10, 5, 5, 5};
+    static const unsigned char paeth_want[4] = {10, 15, 20, 25};
+    rv_util_join(path, dir, "paeth.png");
+    rv_util_write_png_row0(path, 4, 4, paeth_enc);
+    BT_CHECK_EQ(bt_rv_png_raw(path, &width, &height, &raw, &raw_len, err, sizeof err), 0);
+    BT_CHECK(memcmp(raw + 1, paeth_want, sizeof paeth_want) == 0);
+    free(raw);
+}
+
+static int apply_migrations(const char *db_path, const char *root, char *err, size_t err_cap) {
+    char pattern[BT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/db/migrations/*.sql", root);
+    char files[32][BT_PATH_MAX];
+    size_t file_count = 0;
+    WIN32_FIND_DATAA found;
+    HANDLE scan = FindFirstFileA(pattern, &found);
+    if (scan == INVALID_HANDLE_VALUE) {
+        snprintf(err, err_cap, "no migrations under %s/db/migrations", root);
+        return -1;
+    }
+    do {
+        snprintf(files[file_count], BT_PATH_MAX, "%s/db/migrations/%s", root, found.cFileName);
+        file_count++;
+    } while (FindNextFileA(scan, &found) && file_count < 32);
+    FindClose(scan);
+    sqlite3 *conn = NULL;
+    if (sqlite3_open(db_path, &conn) != SQLITE_OK) {
+        snprintf(err, err_cap, "cannot open %s: %s", db_path, sqlite3_errmsg(conn));
+        sqlite3_close(conn);
+        return -1;
+    }
+    for (size_t at = 0; at < file_count; at++) {
+        FILE *file = fopen(files[at], "rb");
+        if (file == NULL) {
+            snprintf(err, err_cap, "cannot read %s", files[at]);
+            sqlite3_close(conn);
+            return -1;
+        }
+        fseek(file, 0, SEEK_END);
+        long size = ftell(file);
+        fseek(file, 0, SEEK_SET);
+        char *text = malloc((size_t)size + 1);
+        if (text == NULL || fread(text, 1, (size_t)size, file) != (size_t)size) {
+            free(text);
+            fclose(file);
+            snprintf(err, err_cap, "cannot read %s", files[at]);
+            sqlite3_close(conn);
+            return -1;
+        }
+        fclose(file);
+        text[size] = '\0';
+        char *exec_err = NULL;
+        if (sqlite3_exec(conn, text, NULL, NULL, &exec_err) != SQLITE_OK) {
+            snprintf(err, err_cap, "migration %s failed: %s", files[at],
+                     exec_err != NULL ? exec_err : "unknown");
+            sqlite3_free(exec_err);
+            free(text);
+            sqlite3_close(conn);
+            return -1;
+        }
+        sqlite3_free(exec_err);
+        free(text);
+        char pragma[64];
+        snprintf(pragma, sizeof pragma, "PRAGMA user_version = %zu", at + 1);
+        if (sqlite3_exec(conn, pragma, NULL, NULL, NULL) != SQLITE_OK) {
+            snprintf(err, err_cap, "pragma failed after %s", files[at]);
+            sqlite3_close(conn);
+            return -1;
+        }
+    }
+    sqlite3_close(conn);
+    return 0;
+}
+
+BT_TEST(release_verify, db_stage_accepts_a_real_migrated_database) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("db-real", dir);
+    char app_dir[BT_PATH_MAX];
+    snprintf(app_dir, sizeof app_dir, "%s/appdata/%s", dir, BT_APP_DIR_NAME);
+    rv_util_mkdir_p(app_dir);
+    char db_path[BT_PATH_MAX];
+    rv_util_join(db_path, app_dir, BT_RV_DB_FILE_FALLBACK);
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK_EQ(apply_migrations(db_path, root, err, sizeof err), 0);
+    bt_rv_release_cfg cfg;
+    parse_cfg(FULL_CONFIG_JSON, &cfg);
+    BT_CHECK_EQ(bt_rv_db_stage(dir, &cfg, err, sizeof err), 0);
+}
+
+BT_TEST(release_verify, run_cleans_the_temp_work_root_after_a_failed_run) {
+    const char *run_flag[] = {"--run", NULL};
+    BT_CHECK_EQ(run_dist("run-clean", run_flag), BT_RV_EXIT_FAIL);
+    char temp[BT_PATH_MAX];
+    GetTempPathA(sizeof temp, temp);
+    char pattern[BT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%sbt-release-verify-run/%lu-*", temp, GetCurrentProcessId());
+    WIN32_FIND_DATAA found;
+    HANDLE scan = FindFirstFileA(pattern, &found);
+    BT_CHECK(scan == INVALID_HANDLE_VALUE);
 }

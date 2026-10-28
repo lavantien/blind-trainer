@@ -56,6 +56,89 @@ class ReleaseVerifyPlanTests(unittest.TestCase):
         self.assertEqual(bt.tgt_dist([]), 2)
 
 
+class ReleaseVerifyTimeoutTests(unittest.TestCase):
+    def test_timeout_covers_every_scenario_plus_overhead(self):
+        hub = bt.load_hub()
+        scenarios = 4
+        overhead = bt.RELEASE_OVERHEAD_SECS
+        timeout = bt.release_verify_timeout(hub)
+        self.assertEqual(timeout, overhead + scenarios * hub["release"]["run_timeout_secs"])
+
+    def test_timeout_scales_with_a_longer_configured_scenario_clock(self):
+        hub = bt.load_hub()
+        hub["release"]["run_timeout_secs"] = 600
+        self.assertEqual(
+            bt.release_verify_timeout(hub), bt.RELEASE_OVERHEAD_SECS + 4 * 600
+        )
+
+
+class ReleaseVerifyInvokeTests(unittest.TestCase):
+    def test_invoke_echoes_stage_lines_and_uses_the_computed_timeout(self):
+        hub = bt.load_hub()
+        calls = []
+        original = bt.run_policy_exe
+
+        def capture(exe, argv, label, logger, env=None, echo=False, timeout=300):
+            calls.append({"exe": exe, "argv": list(argv), "label": label, "echo": echo,
+                          "timeout": timeout})
+            return 0
+
+        bt.run_policy_exe = capture
+        try:
+            code = bt.release_verify_invoke("X:/bin/release-verify.exe", ["a", "b"], hub,
+                                            bt.Logger())
+        finally:
+            bt.run_policy_exe = original
+        self.assertEqual(code, 0)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["label"], "release-verify")
+        self.assertTrue(calls[0]["echo"])
+        self.assertEqual(calls[0]["timeout"], bt.release_verify_timeout(hub))
+        self.assertEqual(calls[0]["argv"], ["a", "b"])
+
+
+class RunPolicyExeTreeKillTests(unittest.TestCase):
+    def test_a_timeout_kills_the_stub_and_its_descendant(self):
+        import ctypes
+        import time
+
+        kernel32 = ctypes.windll.kernel32
+
+        def alive(pid):
+            handle = kernel32.OpenProcess(0x1000, False, pid)
+            if not handle:
+                return False
+            code = ctypes.c_ulong()
+            kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            kernel32.CloseHandle(handle)
+            return code.value == 259
+
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = Path(tmp) / "stub.py"
+            pid_file = Path(tmp) / "child.pid"
+            stub.write_text(
+                "import subprocess, sys, time\n"
+                f"child = subprocess.Popen([sys.executable, '-c', "
+                f"'import os, time; open(r\"{pid_file}\", \"w\").write(str(os.getpid())); time.sleep(60)'])\n"
+                "time.sleep(30)\n",
+                encoding="utf-8",
+            )
+            logger = bt.Logger()
+            started = time.monotonic()
+            code = bt.run_policy_exe(sys.executable, [str(stub)], "tree-kill-probe", logger,
+                                     timeout=3)
+            elapsed = time.monotonic() - started
+            self.assertEqual(code, 2)
+            self.assertLess(elapsed, 25)
+            self.assertTrue(pid_file.exists())
+            child_pid = int(pid_file.read_text(encoding="utf-8").strip())
+            deadline = time.monotonic() + 10
+            while alive(child_pid) and time.monotonic() < deadline:
+                time.sleep(0.2)
+            self.assertFalse(alive(child_pid),
+                             f"descendant pid {child_pid} survived the timeout kill")
+
+
 class ReleaseStageExeTests(unittest.TestCase):
     def test_stage_copies_the_app_exe_under_the_release_name(self):
         with tempfile.TemporaryDirectory() as tmp:

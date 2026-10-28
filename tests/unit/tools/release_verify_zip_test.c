@@ -8,6 +8,7 @@
 #include "common/bt_harness.h"
 #include "common/paths.h"
 #include "unit/tools/release_verify_test_util.h"
+#include "unit/tools/spawn_util.h"
 
 #define ZIP_TEST_EXE "blind-trainer.exe"
 #define ZIP_TEST_CONFIG "config/config.json"
@@ -27,15 +28,26 @@ typedef struct {
     size_t len;
 } zip_entry;
 
-static void zip_test_write(const char *path, const zip_entry *entries, size_t count) {
-    rv_zip_entry flat[64];
+static void zip_test_flatten(const zip_entry *entries, size_t count, rv_zip_entry *flat) {
     static const unsigned char empty[1] = {0};
     for (size_t at = 0; at < count && at < 64; at++) {
         flat[at].name = entries[at].name;
         flat[at].data = entries[at].len > 0 ? entries[at].data : empty;
         flat[at].len = entries[at].len;
     }
+}
+
+static void zip_test_write(const char *path, const zip_entry *entries, size_t count) {
+    rv_zip_entry flat[64];
+    zip_test_flatten(entries, count, flat);
     rv_util_write_zip(path, flat, count);
+}
+
+static void zip_test_write_stored_bad_crc(const char *path, const zip_entry *entries, size_t count,
+                                          size_t bad_crc_at) {
+    rv_zip_entry flat[64];
+    zip_test_flatten(entries, count, flat);
+    rv_util_write_zip_stored_bad_crc(path, flat, count, bad_crc_at);
 }
 
 static void make_staging(const char *dir) {
@@ -344,4 +356,104 @@ BT_TEST(release_verify, extract_zip_rejects_parent_escape_entries) {
     char evil_path[BT_PATH_MAX];
     rv_util_join(evil_path, dir, "evil.txt");
     BT_CHECK(!rv_util_exists(evil_path));
+}
+
+BT_TEST(release_verify, check_and_extract_reject_a_tampered_stored_crc) {
+    char staging_dir[BT_PATH_MAX];
+    rv_util_scratch("zip-store-crc", staging_dir);
+    make_staging(staging_dir);
+    char zip[BT_PATH_MAX];
+    rv_util_join(zip, staging_dir, "store-crc.zip");
+    const zip_entry entries[] = {
+        {0, "blind-trainer\\blind-trainer.exe", EXE_BYTES, sizeof EXE_BYTES - 1},
+        {0, "blind-trainer\\config\\config.json", CONFIG_BYTES, sizeof CONFIG_BYTES - 1},
+        {0, "blind-trainer/assets/fonts/main.ttf", FONT_MAIN, sizeof FONT_MAIN - 1},
+        {0, "blind-trainer/assets/fonts/bold.ttf", FONT_BOLD, sizeof FONT_BOLD - 1},
+    };
+    zip_test_write_stored_bad_crc(zip, entries, sizeof entries / sizeof entries[0], 2);
+    bt_rv_file_set set;
+    BT_CHECK_EQ(staged_set(staging_dir, &set), 0);
+    size_t seen = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(check_zip_on(zip, ZIP_TEST_ROOT, &set, &seen, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "crc") != NULL);
+    bt_rv_file_set_free(&set);
+    char dest[BT_PATH_MAX];
+    rv_util_join(dest, staging_dir, "dest");
+    size_t extracted = 0;
+    BT_CHECK(bt_rv_extract_zip(zip, dest, ZIP_TEST_ROOT, &extracted, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "crc") != NULL);
+}
+
+BT_TEST(release_verify, check_and_extract_reject_an_empty_entry_name) {
+    char staging_dir[BT_PATH_MAX];
+    rv_util_scratch("zip-empty-name", staging_dir);
+    make_staging(staging_dir);
+    char zip[BT_PATH_MAX];
+    rv_util_join(zip, staging_dir, "empty-name.zip");
+    static const unsigned char junk[] = "junk";
+    const zip_entry entries[] = {
+        {0, "blind-trainer\\blind-trainer.exe", EXE_BYTES, sizeof EXE_BYTES - 1},
+        {0, "blind-trainer\\config\\config.json", CONFIG_BYTES, sizeof CONFIG_BYTES - 1},
+        {0, "blind-trainer/assets/fonts/main.ttf", FONT_MAIN, sizeof FONT_MAIN - 1},
+        {0, "blind-trainer/assets/fonts/bold.ttf", FONT_BOLD, sizeof FONT_BOLD - 1},
+        {0, "", junk, sizeof junk - 1},
+    };
+    zip_test_write(zip, entries, sizeof entries / sizeof entries[0]);
+    bt_rv_file_set set;
+    BT_CHECK_EQ(staged_set(staging_dir, &set), 0);
+    size_t seen = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(check_zip_on(zip, ZIP_TEST_ROOT, &set, &seen, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "unexpected zip entry") != NULL);
+    bt_rv_file_set_free(&set);
+    char dest[BT_PATH_MAX];
+    rv_util_join(dest, staging_dir, "dest");
+    size_t extracted = 0;
+    BT_CHECK(bt_rv_extract_zip(zip, dest, ZIP_TEST_ROOT, &extracted, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "unsafe zip entry") != NULL);
+}
+
+#define ZIP_TEST_PROBE_BYTES 65536
+
+BT_TEST(release_verify, check_and_extract_round_trip_a_python_zipfile_deflate_archive) {
+    char staging_dir[BT_PATH_MAX];
+    rv_util_scratch("zip-python-deflate", staging_dir);
+    make_staging(staging_dir);
+    unsigned char *probe = malloc(ZIP_TEST_PROBE_BYTES);
+    BT_CHECK(probe != NULL);
+    if (probe == NULL) {
+        return;
+    }
+    for (size_t at = 0; at < ZIP_TEST_PROBE_BYTES; at++) {
+        probe[at] = (unsigned char)((at * 31 + 7) & 0xFF);
+    }
+    char probe_path[BT_PATH_MAX];
+    rv_util_join(probe_path, staging_dir, "assets/fonts/probe.bin");
+    rv_util_write_bytes(probe_path, probe, ZIP_TEST_PROBE_BYTES);
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    char zip[BT_PATH_MAX];
+    snprintf(zip, sizeof zip, "%s/tests/unit/tools/fixtures/release_verify_deflate.zip", root);
+    bt_rv_file_set set;
+    BT_CHECK_EQ(staged_set(staging_dir, &set), 0);
+    size_t seen = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK_EQ(check_zip_on(zip, ZIP_TEST_ROOT, &set, &seen, err, sizeof err), 0);
+    BT_CHECK_EQ(seen, 5U);
+    bt_rv_file_set_free(&set);
+    char dest[BT_PATH_MAX];
+    rv_util_join(dest, staging_dir, "dest");
+    size_t extracted = 0;
+    BT_CHECK_EQ(bt_rv_extract_zip(zip, dest, ZIP_TEST_ROOT, &extracted, err, sizeof err), 0);
+    BT_CHECK_EQ(extracted, 5U);
+    char out_path[BT_PATH_MAX];
+    rv_util_join(out_path, dest, "assets/fonts/probe.bin");
+    unsigned char *out = NULL;
+    size_t out_len = 0;
+    BT_CHECK_EQ(rv_util_file_bytes(out_path, &out, &out_len), 0);
+    BT_CHECK_EQ(out_len, (size_t)ZIP_TEST_PROBE_BYTES);
+    BT_CHECK(memcmp(out, probe, ZIP_TEST_PROBE_BYTES) == 0);
+    free(out);
+    free(probe);
 }

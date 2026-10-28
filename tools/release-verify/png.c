@@ -98,17 +98,19 @@ static int rv_unfilter(unsigned char *raw, size_t raw_len, unsigned int width, u
     return 0;
 }
 
-int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height, char *err,
-                    size_t err_cap) {
-    BT_TRACE_ENTER("rv.png_check");
+static int rv_png_decode(const char *path, unsigned int *width, unsigned int *height,
+                         unsigned char **raw_out, size_t *raw_len_out, char *err, size_t err_cap) {
+    BT_TRACE_ENTER("rv.png_decode");
     *width = 0;
     *height = 0;
+    *raw_out = NULL;
+    *raw_len_out = 0;
     err[0] = '\0';
     FILE *file = fopen(path, "rb");
     if (file == NULL) {
         snprintf(err, err_cap, "cannot read file");
-        BT_TRACE_FAIL("rv.png_check", "%s", err);
-        BT_TRACE_EXIT("rv.png_check");
+        BT_TRACE_FAIL("rv.png_decode", "%s", err);
+        BT_TRACE_EXIT("rv.png_decode");
         return -1;
     }
     size_t cap = (size_t)1 << 20U;
@@ -122,8 +124,8 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
                 free(bytes);
                 fclose(file);
                 snprintf(err, err_cap, "out of memory");
-                BT_TRACE_FAIL("rv.png_check", "%s", err);
-                BT_TRACE_EXIT("rv.png_check");
+                BT_TRACE_FAIL("rv.png_decode", "%s", err);
+                BT_TRACE_EXIT("rv.png_decode");
                 return -1;
             }
             bytes = grown;
@@ -138,8 +140,8 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
     if (len < 8 || memcmp(bytes, RV_PNG_SIGNATURE, 8) != 0) {
         free(bytes);
         snprintf(err, err_cap, "not a png");
-        BT_TRACE_FAIL("rv.png_check", "%s", err);
-        BT_TRACE_EXIT("rv.png_check");
+        BT_TRACE_FAIL("rv.png_decode", "%s", err);
+        BT_TRACE_EXIT("rv.png_decode");
         return -1;
     }
     int have_header = 0;
@@ -166,7 +168,7 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
             break;
         }
         if (!have_header) {
-            if (chunk_len != 13 || memcmp(type, "IHDR", 4) != 0) {
+            if (chunk_len != RV_IHDR_LEN || memcmp(type, "IHDR", 4) != 0) {
                 snprintf(err, err_cap, "first chunk is not ihdr");
                 failed = 1;
                 break;
@@ -212,24 +214,39 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
         failed = 1;
     }
     if (!failed) {
-        unsigned char *raw = NULL;
-        size_t raw_len = 0;
-        if (bt_rv_inflate_zlib(idat, idat_len, &raw, &raw_len, err, err_cap) != 0) {
+        if (bt_rv_inflate_zlib(idat, idat_len, raw_out, raw_len_out, err, err_cap) != 0) {
             failed = 1;
-        } else {
-            if (rv_unfilter(raw, raw_len, *width, *height, channels, err, err_cap) != 0) {
-                failed = 1;
-            }
-            free(raw);
+        } else if (rv_unfilter(*raw_out, *raw_len_out, *width, *height, channels, err, err_cap) !=
+                   0) {
+            free(*raw_out);
+            *raw_out = NULL;
+            *raw_len_out = 0;
+            failed = 1;
         }
     }
     free(idat);
     free(bytes);
     if (failed) {
-        BT_TRACE_FAIL("rv.png_check", "%s %s", path, err);
-        BT_TRACE_EXIT("rv.png_check");
+        BT_TRACE_FAIL("rv.png_decode", "%s %s", path, err);
+        BT_TRACE_EXIT("rv.png_decode");
         return -1;
     }
-    BT_TRACE_EXIT("rv.png_check");
+    BT_TRACE_EXIT("rv.png_decode");
+    return 0;
+}
+
+int bt_rv_png_raw(const char *path, unsigned int *width, unsigned int *height,
+                  unsigned char **raw, size_t *raw_len, char *err, size_t err_cap) {
+    return rv_png_decode(path, width, height, raw, raw_len, err, err_cap);
+}
+
+int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height, char *err,
+                    size_t err_cap) {
+    unsigned char *raw = NULL;
+    size_t raw_len = 0;
+    if (rv_png_decode(path, width, height, &raw, &raw_len, err, err_cap) != 0) {
+        return -1;
+    }
+    free(raw);
     return 0;
 }

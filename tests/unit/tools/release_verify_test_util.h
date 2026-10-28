@@ -117,34 +117,109 @@ typedef struct {
     size_t len;
 } rv_zip_entry;
 
-static inline void rv_util_zip_append_local(FILE *file, const rv_zip_entry *entry,
-                                            uint32_t *crc_out, uint32_t *offset_out) {
-    uint32_t crc = bt_rv_crc32(entry->data, entry->len);
+typedef struct {
+    unsigned char *data;
+    size_t len;
+    size_t cap;
+    unsigned long bits;
+    int cnt;
+} rv_bitwriter;
+
+static inline void rv_bits_put_lsb(rv_bitwriter *writer, unsigned code, int nbits) {
+    for (int at = 0; at < nbits; at++) {
+        writer->bits |= (unsigned long)((code >> at) & 1U) << writer->cnt;
+        writer->cnt++;
+        if (writer->cnt == 8) {
+            writer->data[writer->len++] = (unsigned char)(writer->bits & 0xFFU);
+            writer->bits >>= 8;
+            writer->cnt = 0;
+        }
+    }
+}
+
+static inline void rv_bits_put(rv_bitwriter *writer, unsigned code, int nbits) {
+    for (int at = nbits - 1; at >= 0; at--) {
+        writer->bits |= (unsigned long)((code >> at) & 1U) << writer->cnt;
+        writer->cnt++;
+        if (writer->cnt == 8) {
+            writer->data[writer->len++] = (unsigned char)(writer->bits & 0xFFU);
+            writer->bits >>= 8;
+            writer->cnt = 0;
+        }
+    }
+}
+
+static inline void rv_fixed_lit(rv_bitwriter *writer, int symbol) {
+    if (symbol < 144) {
+        rv_bits_put(writer, (unsigned)(0x30 + symbol), 8);
+    } else if (symbol < 256) {
+        rv_bits_put(writer, (unsigned)(0x190 + symbol - 144), 9);
+    } else if (symbol < 280) {
+        rv_bits_put(writer, (unsigned)(symbol - 256), 7);
+    } else {
+        rv_bits_put(writer, (unsigned)(0xC0 + symbol - 280), 8);
+    }
+}
+
+static inline size_t rv_util_deflate_fixed(const unsigned char *data, size_t len,
+                                           unsigned char *out, size_t cap) {
+    rv_bitwriter writer = {.data = out, .len = 0, .cap = cap, .bits = 0, .cnt = 0};
+    rv_bits_put_lsb(&writer, 3U, 3);
+    for (size_t at = 0; at < len; at++) {
+        rv_fixed_lit(&writer, data[at]);
+    }
+    rv_fixed_lit(&writer, 256);
+    if (writer.cnt > 0) {
+        out[writer.len++] = (unsigned char)(writer.bits & 0xFFU);
+    }
+    return writer.len;
+}
+
+static inline void rv_util_zip_append_local(FILE *file, const rv_zip_entry *entry, int deflate,
+                                            uint32_t crc_xor, uint32_t *crc_out,
+                                            uint32_t *offset_out, uint32_t *csize_out) {
+    uint32_t crc = bt_rv_crc32(entry->data, entry->len) ^ crc_xor;
     long offset = ftell(file);
+    unsigned char *payload = (unsigned char *)entry->data;
+    size_t payload_len = entry->len;
+    unsigned char *deflated = NULL;
+    if (deflate) {
+        deflated = malloc(entry->len * 2 + 64);
+        if (deflated == NULL) {
+            bt_harness_fail(__FILE__, __LINE__, "out of memory");
+            return;
+        }
+        payload_len = rv_util_deflate_fixed(entry->data, entry->len, deflated, entry->len * 2 + 64);
+        payload = deflated;
+    }
     unsigned char head[30];
     memset(head, 0, sizeof head);
     uint32_t sig = 0x04034b50;
     memcpy(head + 0, &sig, 4);
     uint16_t version = 20;
     memcpy(head + 4, &version, 2);
-    uint16_t method = 0;
+    uint16_t method = deflate ? 8 : 0;
     memcpy(head + 8, &method, 2);
-    uint32_t csize = (uint32_t)entry->len;
+    uint32_t csize = (uint32_t)payload_len;
     memcpy(head + 14, &crc, 4);
     memcpy(head + 18, &csize, 4);
-    memcpy(head + 22, &csize, 4);
+    uint32_t usize = (uint32_t)entry->len;
+    memcpy(head + 22, &usize, 4);
     uint16_t name_len = (uint16_t)strlen(entry->name);
     memcpy(head + 26, &name_len, 2);
     fwrite(head, 1, sizeof head, file);
     fwrite(entry->name, 1, name_len, file);
-    if (entry->len > 0) {
-        fwrite(entry->data, 1, entry->len, file);
+    if (payload_len > 0) {
+        fwrite(payload, 1, payload_len, file);
     }
+    free(deflated);
     *crc_out = crc;
     *offset_out = (uint32_t)offset;
+    *csize_out = csize;
 }
 
-static inline void rv_util_write_zip(const char *path, const rv_zip_entry *entries, size_t count) {
+static inline void rv_util_write_zip_mode(const char *path, const rv_zip_entry *entries,
+                                          size_t count, int deflate, long crc_flip_at) {
     FILE *file = fopen(path, "wb");
     if (file == NULL) {
         bt_harness_fail(__FILE__, __LINE__, "cannot write zip %s", path);
@@ -152,8 +227,11 @@ static inline void rv_util_write_zip(const char *path, const rv_zip_entry *entri
     }
     uint32_t crcs[64];
     uint32_t offsets[64];
+    uint32_t csizes[64];
     for (size_t at = 0; at < count; at++) {
-        rv_util_zip_append_local(file, &entries[at], &crcs[at], &offsets[at]);
+        uint32_t crc_xor = (long)at == crc_flip_at ? 1U : 0U;
+        rv_util_zip_append_local(file, &entries[at], deflate, crc_xor, &crcs[at], &offsets[at],
+                                 &csizes[at]);
     }
     long cd_start = ftell(file);
     for (size_t at = 0; at < count; at++) {
@@ -164,10 +242,12 @@ static inline void rv_util_write_zip(const char *path, const rv_zip_entry *entri
         uint16_t version = 20;
         memcpy(head + 4, &version, 2);
         memcpy(head + 6, &version, 2);
-        uint32_t csize = (uint32_t)entries[at].len;
+        uint16_t method = deflate ? 8 : 0;
+        memcpy(head + 10, &method, 2);
         memcpy(head + 16, &crcs[at], 4);
-        memcpy(head + 20, &csize, 4);
-        memcpy(head + 24, &csize, 4);
+        memcpy(head + 20, &csizes[at], 4);
+        uint32_t usize = (uint32_t)entries[at].len;
+        memcpy(head + 24, &usize, 4);
         uint16_t name_len = (uint16_t)strlen(entries[at].name);
         memcpy(head + 28, &name_len, 2);
         uint32_t offset = offsets[at];
@@ -189,6 +269,15 @@ static inline void rv_util_write_zip(const char *path, const rv_zip_entry *entri
     memcpy(eocd + 16, &cd_start32, 4);
     fwrite(eocd, 1, sizeof eocd, file);
     fclose(file);
+}
+
+static inline void rv_util_write_zip(const char *path, const rv_zip_entry *entries, size_t count) {
+    rv_util_write_zip_mode(path, entries, count, 1, -1);
+}
+
+static inline void rv_util_write_zip_stored_bad_crc(const char *path, const rv_zip_entry *entries,
+                                                    size_t count, size_t bad_crc_at) {
+    rv_util_write_zip_mode(path, entries, count, 0, (long)bad_crc_at);
 }
 
 static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t height) {
@@ -272,6 +361,130 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
     fwrite(head, 1, 8, file);
     fwrite(ihdr, 1, 13, file);
     uint32_t crc = bt_rv_crc32(type_and_data, 17);
+    unsigned char crc_be[4];
+    crc_be[0] = (unsigned char)(crc >> 24U);
+    crc_be[1] = (unsigned char)(crc >> 16U);
+    crc_be[2] = (unsigned char)(crc >> 8U);
+    crc_be[3] = (unsigned char)crc;
+    fwrite(crc_be, 1, 4, file);
+
+    unsigned char idat_head[8];
+    uint32_t idat_len32 = (uint32_t)idat_len;
+    idat_head[0] = (unsigned char)(idat_len32 >> 24U);
+    idat_head[1] = (unsigned char)(idat_len32 >> 16U);
+    idat_head[2] = (unsigned char)(idat_len32 >> 8U);
+    idat_head[3] = (unsigned char)idat_len32;
+    memcpy(idat_head + 4, "IDAT", 4);
+    fwrite(idat_head, 1, 8, file);
+    fwrite(idat, 1, idat_len, file);
+    unsigned char *type_and_idat = malloc(idat_len + 4);
+    memcpy(type_and_idat, "IDAT", 4);
+    memcpy(type_and_idat + 4, idat, idat_len);
+    uint32_t idat_crc = bt_rv_crc32(type_and_idat, idat_len + 4);
+    free(type_and_idat);
+    free(idat);
+    crc_be[0] = (unsigned char)(idat_crc >> 24U);
+    crc_be[1] = (unsigned char)(idat_crc >> 16U);
+    crc_be[2] = (unsigned char)(idat_crc >> 8U);
+    crc_be[3] = (unsigned char)idat_crc;
+    fwrite(crc_be, 1, 4, file);
+
+    unsigned char iend_head[8];
+    iend_head[0] = 0;
+    iend_head[1] = 0;
+    iend_head[2] = 0;
+    iend_head[3] = 0;
+    memcpy(iend_head + 4, "IEND", 4);
+    fwrite(iend_head, 1, 8, file);
+    unsigned char iend_tail[4];
+    memcpy(iend_tail, "IEND", 4);
+    uint32_t iend_crc = bt_rv_crc32(iend_tail, 4);
+    crc_be[0] = (unsigned char)(iend_crc >> 24U);
+    crc_be[1] = (unsigned char)(iend_crc >> 16U);
+    crc_be[2] = (unsigned char)(iend_crc >> 8U);
+    crc_be[3] = (unsigned char)iend_crc;
+    fwrite(crc_be, 1, 4, file);
+    fclose(file);
+}
+
+static inline void rv_util_write_png_row0(const char *path, uint32_t width,
+                                          unsigned char filter_byte, const unsigned char *enc) {
+    size_t raw_len = (size_t)width + 1;
+    size_t block_count = (raw_len + 65534) / 65535;
+    size_t idat_len = 2 + block_count * 5 + raw_len + 4;
+    unsigned char *idat = malloc(idat_len);
+    if (idat == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "out of memory for %s", path);
+        return;
+    }
+    unsigned char *raw = malloc(raw_len);
+    if (raw == NULL) {
+        free(idat);
+        bt_harness_fail(__FILE__, __LINE__, "out of memory for %s", path);
+        return;
+    }
+    raw[0] = filter_byte;
+    memcpy(raw + 1, enc, width);
+    size_t at = 0;
+    idat[at++] = 0x78;
+    idat[at++] = 0x01;
+    size_t remaining = raw_len;
+    const unsigned char *cursor = raw;
+    while (remaining > 0) {
+        size_t take = remaining > 65535 ? 65535 : remaining;
+        idat[at++] = remaining - take == 0 ? 1 : 0;
+        uint16_t len16 = (uint16_t)take;
+        memcpy(idat + at, &len16, 2);
+        at += 2;
+        uint16_t nlen16 = (uint16_t)~take;
+        memcpy(idat + at, &nlen16, 2);
+        at += 2;
+        memcpy(idat + at, cursor, take);
+        at += take;
+        cursor += take;
+        remaining -= take;
+    }
+    uint32_t adler = rv_util_adler32(raw, raw_len);
+    idat[at++] = (unsigned char)(adler >> 24U);
+    idat[at++] = (unsigned char)(adler >> 16U);
+    idat[at++] = (unsigned char)(adler >> 8U);
+    idat[at++] = (unsigned char)adler;
+    free(raw);
+
+    FILE *file = fopen(path, "wb");
+    if (file == NULL) {
+        free(idat);
+        bt_harness_fail(__FILE__, __LINE__, "cannot write png %s", path);
+        return;
+    }
+    static const unsigned char signature[8] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
+    fwrite(signature, 1, 8, file);
+    unsigned char ihdr[13];
+    ihdr[0] = (unsigned char)(width >> 24U);
+    ihdr[1] = (unsigned char)(width >> 16U);
+    ihdr[2] = (unsigned char)(width >> 8U);
+    ihdr[3] = (unsigned char)width;
+    ihdr[4] = 0;
+    ihdr[5] = 0;
+    ihdr[6] = 0;
+    ihdr[7] = 1;
+    ihdr[8] = 8;
+    ihdr[9] = 0;
+    ihdr[10] = 0;
+    ihdr[11] = 0;
+    ihdr[12] = 0;
+    unsigned char ihdr_full[17];
+    memcpy(ihdr_full, "IHDR", 4);
+    memcpy(ihdr_full + 4, ihdr, 13);
+    unsigned char ihdr_head[8];
+    ihdr_head[0] = 0;
+    ihdr_head[1] = 0;
+    ihdr_head[2] = 0;
+    ihdr_head[3] = 13;
+    memcpy(ihdr_head + 4, "IHDR", 4);
+    fwrite(ihdr_head, 1, 8, file);
+    fwrite(ihdr, 1, 13, file);
+    uint32_t crc = bt_rv_crc32(ihdr_full, 17);
     unsigned char crc_be[4];
     crc_be[0] = (unsigned char)(crc >> 24U);
     crc_be[1] = (unsigned char)(crc >> 16U);
