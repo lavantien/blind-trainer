@@ -7,6 +7,7 @@
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const char *const TIP_WORDS[6] = {"", "x", "x2", "x'", "z", "z'"};
 static const char *const TWIST_WORDS[4] = {"", "y", "y2", "y'"};
@@ -131,7 +132,7 @@ int verify_nxn_tier1_nonempty(const bt_pz_nxn *engine, const char *alg_text, cha
     void *alg = bt_pz_alg_create();
     if (alg == NULL || !eng.parse_alg(&eng, alg_text, strlen(alg_text), alg, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -152,7 +153,7 @@ int verify_nxn_tier1_nonempty(const bt_pz_nxn *engine, const char *alg_text, cha
     bt_tier1_status status = bt_verify_tier1(&eng, alg_text, &tier1_err);
     if (status != BT_TIER1_OK) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_tier1_error_message(&tier1_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -172,7 +173,7 @@ verify_tier2 verify_nxn_tier2_cll(const bt_pz_nxn *engine, const verify_nxn_rota
     void *alg = bt_pz_alg_create();
     if (alg == NULL || !eng.parse_alg(&eng, alg_text, strlen(alg_text), alg, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         verify_tier2 fail = verify_tier2_fail(sb.data);
         bt_strbuf_free(&sb);
@@ -187,7 +188,7 @@ verify_tier2 verify_nxn_tier2_cll(const bt_pz_nxn *engine, const verify_nxn_rota
     bt_pz_nxn_solved_state(engine, &base);
     if (!bt_pz_nxn_apply_alg(engine, &base, inverse, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         verify_tier2 fail = verify_tier2_fail(sb.data);
         bt_strbuf_free(&sb);
@@ -201,7 +202,7 @@ verify_tier2 verify_nxn_tier2_cll(const bt_pz_nxn *engine, const verify_nxn_rota
         bt_pz_nxn_state turned = base;
         if (!bt_pz_nxn_apply_alg(engine, &turned, rotations->items[at], &pz_err)) {
             bt_strbuf sb;
-            bt_strbuf_init(&sb, 64);
+            bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
             bt_pz_error_message(&pz_err, &sb);
             verify_tier2 fail = verify_tier2_fail(sb.data);
             bt_strbuf_free(&sb);
@@ -223,7 +224,7 @@ verify_tier2 verify_nxn_tier2_cll(const bt_pz_nxn *engine, const verify_nxn_rota
         bt_pz_nxn_state turned = base;
         if (!bt_pz_nxn_apply_alg(engine, &turned, rotations->items[at], &pz_err)) {
             bt_strbuf sb;
-            bt_strbuf_init(&sb, 64);
+            bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
             bt_pz_error_message(&pz_err, &sb);
             verify_tier2 fail = verify_tier2_fail(sb.data);
             bt_strbuf_free(&sb);

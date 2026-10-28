@@ -8,6 +8,7 @@
 #include "common/json.h"
 #include "common/strbuf.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const char *const BIGCUBE_HONESTY =
     "wing permutation parity is invisible through facelets, two swapped dedges and four wings in "
@@ -283,7 +284,7 @@ static void tier1_step(const bt_pz_nxn *engine, const char *alg, size_t size,
     void *alg_ptr = bt_pz_alg_create();
     if (alg_ptr == NULL || !eng.parse_alg(&eng, alg, strlen(alg), alg_ptr, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, sizeof err, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -299,7 +300,7 @@ static void tier1_step(const bt_pz_nxn *engine, const char *alg, size_t size,
             return;
         }
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_tier1_error_message(&tier1_err, &sb);
         snprintf(err, sizeof err, "%s", sb.data);
         bt_strbuf_free(&sb);

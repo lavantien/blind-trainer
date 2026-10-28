@@ -7,6 +7,7 @@
 #include "common/strbuf.h"
 #include "puzzles/fto.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const char *const FTO_HONESTY =
     "fto l4t tags name source-sheet case families (Last Layer, Last Three Edges, bar shapes), "
@@ -29,7 +30,7 @@ void verify_fto_verify_l4t(const bt_seed_rows *rows, verify_section_result *out)
                 outcome.tier1_ok = true;
             } else {
                 bt_strbuf sb;
-                bt_strbuf_init(&sb, 64);
+                bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
                 bt_tier1_error_message(&tier1_err, &sb);
                 snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", sb.data);
                 bt_strbuf_free(&sb);

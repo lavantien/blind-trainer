@@ -16,7 +16,7 @@
 #include "verify/ev_skewb.h"
 #include "verify/ev_sq1.h"
 
-const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[21] = {
+const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[] = {
     {"twoby2_cll.tsv", "2x2", "cll", "cll", 42},
     {"skewb_sarah.tsv", "skewb", "sarah_intermediate", "sarah", 15},
     {"pyraminx_l4e.tsv", "pyraminx", "l4e", "l4e", 35},
@@ -40,7 +40,8 @@ const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[21] = {
     {"cfop_f2l.tsv", "oh", "cfop", "f2l", 164},
 };
 
-const size_t VERIFY_PACK_PIN_COUNT = 21;
+const size_t VERIFY_PACK_PIN_COUNT =
+    sizeof VERIFY_PACK_EXPECTED_ROWS / sizeof VERIFY_PACK_EXPECTED_ROWS[0];
 
 int verify_puzzle_for_event(const char *event, verify_puzzle *out, char *err, size_t err_len) {
     BT_TRACE_ENTER("packs.puzzle_for_event");

@@ -203,7 +203,7 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
         outcome.position_match = position_match;
         outcome.pass = (bool)(outcome.verify_ok && qtm_match && position_match);
         verify_sheet_summary *summary = NULL;
-        for (size_t sheet_at = 0; sheet_at < 12; sheet_at++) {
+        for (size_t sheet_at = 0; sheet_at < BT_DIGEST_FILES; sheet_at++) {
             if (strcmp(out->sheets[sheet_at].solver, outcome.solver) == 0 &&
                 strcmp(out->sheets[sheet_at].sheet, outcome.sheet) == 0) {
                 summary = &out->sheets[sheet_at];
@@ -284,7 +284,7 @@ void verify_report_audit(const verify_report *report, size_t simcheck_total, ver
     for (size_t at = 0; at < VERIFY_SHEET_PIN_COUNT; at++) {
         const verify_sheet_pin *pin = &VERIFY_SHEET_EXPECTED_ROWS[at];
         const verify_sheet_summary *summary = NULL;
-        for (size_t sheet_at = 0; sheet_at < 12; sheet_at++) {
+        for (size_t sheet_at = 0; sheet_at < BT_DIGEST_FILES; sheet_at++) {
             if (strcmp(report->sheets[sheet_at].solver, pin->solver) == 0 &&
                 strcmp(report->sheets[sheet_at].sheet, pin->sheet) == 0) {
                 summary = &report->sheets[sheet_at];
@@ -316,7 +316,7 @@ void verify_render_markdown(const verify_report *report, bt_strbuf *out) {
     bt_strbuf_append_str(
         out, "| solver | sheet | rows | passed | failed | qtm agreed | position agreed |\n");
     bt_strbuf_append_str(out, "| --- | --- | --- | --- | --- | --- | --- |\n");
-    for (size_t at = 0; at < 12; at++) {
+    for (size_t at = 0; at < BT_DIGEST_FILES; at++) {
         const verify_sheet_summary *sheet = &report->sheets[at];
         bt_strbuf_appendf(out, "| %s | %s | %zu | %zu | %zu | %zu | %zu |\n", sheet->solver,
                           sheet->sheet, sheet->rows, sheet->passed, sheet->failed,
@@ -394,7 +394,7 @@ int verify_report_to_json(const verify_report *report, bt_json_value **out) {
     bt_json_object_set(root, "simcheck_matched",
                        bt_json_new_integer((long long)report->simcheck_matched));
     bt_json_value *sheets = bt_json_new_array();
-    for (size_t at = 0; at < 12; at++) {
+    for (size_t at = 0; at < BT_DIGEST_FILES; at++) {
         const verify_sheet_summary *sheet = &report->sheets[at];
         bt_json_value *entry = bt_json_new_object();
         bt_json_object_set(entry, "solver", bt_json_new_string(sheet->solver));

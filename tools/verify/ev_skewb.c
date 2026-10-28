@@ -8,6 +8,7 @@
 #include "data/notation.h"
 #include "puzzles/skewb.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const char *const SKEWB_HONESTY =
     "skewb sarah tags name method stages and repeat across rows holding one shared alg (R' F R "
@@ -33,7 +34,7 @@ void verify_skewb_verify_sarah(const bt_seed_rows *rows, verify_section_result *
                 outcome.tier1_ok = true;
             } else {
                 bt_strbuf sb;
-                bt_strbuf_init(&sb, 64);
+                bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
                 bt_tier1_error_message(&tier1_err, &sb);
                 snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", sb.data);
                 bt_strbuf_free(&sb);

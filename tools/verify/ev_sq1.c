@@ -7,11 +7,14 @@
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/strbuf.h"
+#include "verify/lib.h"
 
 static const uint8_t TOP_CORNERS[4] = {0, 2, 4, 6};
 static const uint8_t BOTTOM_CORNERS[4] = {9, 11, 13, 15};
 static const uint8_t TOP_EDGES[4] = {1, 3, 5, 7};
 static const uint8_t BOTTOM_EDGES[4] = {8, 10, 12, 14};
+
+enum { VERIFY_SQ1_DEBUG_MAX = 64 };
 
 int verify_sq1_start_case(const char *alg_text, verify_sq1_case *out, char *err, size_t err_len) {
     BT_TRACE_ENTER("ev_sq1.start_case");
@@ -20,7 +23,7 @@ int verify_sq1_start_case(const char *alg_text, verify_sq1_case *out, char *err,
     bt_pz_engine eng = bt_pz_sq1_engine();
     if (alg == NULL || !eng.parse_alg(&eng, alg_text, strlen(alg_text), alg, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -42,7 +45,7 @@ int verify_sq1_start_case(const char *alg_text, verify_sq1_case *out, char *err,
     bt_pz_sq1_solved_state(&state);
     if (!bt_pz_sq1_apply_alg(&state, inverse, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -398,10 +401,10 @@ verify_tier2 verify_sq1_cubeshape_tier2(const verify_sq1_case *case_,
         BT_TRACE_EXIT("ev_sq1.cubeshape_tier2");
         return verify_tier2_pass();
     }
-    char want_top[64];
-    char want_bottom[64];
-    char got_top[64];
-    char got_bottom[64];
+    char want_top[VERIFY_SQ1_DEBUG_MAX];
+    char want_bottom[VERIFY_SQ1_DEBUG_MAX];
+    char got_top[VERIFY_SQ1_DEBUG_MAX];
+    char got_bottom[VERIFY_SQ1_DEBUG_MAX];
     debug_bytes(top_key->key, top_key->key_len, want_top, sizeof want_top);
     debug_bytes(bottom_key->key, bottom_key->key_len, want_bottom, sizeof want_bottom);
     debug_bytes(observed[0], case_->class_lens[0], got_top, sizeof got_top);

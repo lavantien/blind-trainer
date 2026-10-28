@@ -354,7 +354,7 @@ static char *trim_span(char *text, size_t *len) {
 int verify_bld_parse_pair(const char *spec, char sep, char out[2][VERIFY_BLD_NAME_MAX], char *err,
                           size_t err_len) {
     BT_TRACE_ENTER("ev_bld.parse_pair");
-    char copy[128];
+    char copy[VERIFY_BLD_TEXT_MAX];
     snprintf(copy, sizeof copy, "%s", spec);
     char *parts[3];
     size_t count = 0;
@@ -387,7 +387,7 @@ int verify_bld_parse_pair(const char *spec, char sep, char out[2][VERIFY_BLD_NAM
 int verify_bld_parity_swaps(const char *swaps, char edge[2][VERIFY_BLD_NAME_MAX],
                             char corner[2][VERIFY_BLD_NAME_MAX], char *err, size_t err_len) {
     BT_TRACE_ENTER("ev_bld.parity_swaps");
-    char copy[128];
+    char copy[VERIFY_BLD_TEXT_MAX];
     snprintf(copy, sizeof copy, "%s", swaps);
     char *parts[3];
     size_t count = 0;
@@ -579,7 +579,7 @@ static int oldpoch_case(const char *front_json, const verify_bld_state_audit *au
         return 1;
     }
     char kind[VERIFY_BLD_KIND_MAX];
-    char swaps[128];
+    char swaps[VERIFY_BLD_TEXT_MAX];
     bool has_kind = text_field(fields, "kind", kind, sizeof kind);
     bool has_swaps = text_field(fields, "swaps", swaps, sizeof swaps);
     if (has_kind && strcmp(kind, "parity") == 0 && has_swaps) {
@@ -612,7 +612,7 @@ static int oldpoch_case(const char *front_json, const verify_bld_state_audit *au
             rc = 1;
         }
     } else if (has_kind && strcmp(kind, "corner twist") == 0) {
-        char twists[128];
+        char twists[VERIFY_BLD_TEXT_MAX];
         if (!text_field(fields, "twists", twists, sizeof twists)) {
             snprintf(err, err_len, "%s", "corner twist row names no twists");
             rc = 1;
@@ -716,7 +716,7 @@ static int m2_case(const char *front_json, const verify_bld_state_audit *audit,
             rc = 1;
         }
     } else if (has_kind && strcmp(kind, "buffer edge flip") == 0) {
-        char flips[128];
+        char flips[VERIFY_BLD_TEXT_MAX];
         if (!text_field(fields, "flips", flips, sizeof flips)) {
             snprintf(err, err_len, "%s", "flip row names no flips");
             rc = 1;
@@ -786,7 +786,7 @@ static int style_case(const char *front_json, const verify_bld_state_audit *audi
         BT_TRACE_EXIT("ev_bld.style_case");
         return 1;
     }
-    char position[128];
+    char position[VERIFY_BLD_TEXT_MAX];
     int rc = 0;
     if (!text_field(fields, "position", position, sizeof position)) {
         snprintf(err, err_len, "%s", "style row names no position");
@@ -808,7 +808,7 @@ static int style_case(const char *front_json, const verify_bld_state_audit *audi
             }
         }
     } else {
-        char copy[128];
+        char copy[VERIFY_BLD_TEXT_MAX];
         snprintf(copy, sizeof copy, "%s", position);
         size_t count = 0;
         char *parts[3];

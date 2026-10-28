@@ -9,14 +9,15 @@
 #include "common/paths.h"
 #include "common/strbuf.h"
 
-const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[12] = {
+const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[BT_DIGEST_FILES] = {
     {"cherry", "edge", 551},  {"cherry", "corner", 328}, {"cherry", "flips", 25},
     {"cherry", "twists", 20}, {"cherry", "parity", 26},  {"cherry", "ltct", 8},
     {"eggins", "edge", 71},   {"eggins", "corner", 38},  {"eggins", "flips", 0},
     {"eggins", "twists", 5},  {"eggins", "parity", 2},   {"eggins", "ltct", 3},
 };
 
-const size_t VERIFY_SHEET_PIN_COUNT = 12;
+const size_t VERIFY_SHEET_PIN_COUNT =
+    sizeof VERIFY_SHEET_EXPECTED_ROWS / sizeof VERIFY_SHEET_EXPECTED_ROWS[0];
 
 void verify_artifacts_dir_from(const char *raw_value, const char *workspace_root,
                                char out[BT_PATH_MAX]) {
@@ -88,6 +89,8 @@ const verify_sim_row *verify_sim_map_get(const verify_sim_map *map, bt_solver so
     return NULL;
 }
 
+enum { VERIFY_DECIMAL_RADIX = 10 };
+
 static bool parse_index(const char *text, size_t *out) {
     const char *cursor = text;
     if (*cursor == '+') {
@@ -101,10 +104,10 @@ static bool parse_index(const char *text, size_t *out) {
         if (*cursor < '0' || *cursor > '9') {
             return false;
         }
-        if (value > (SIZE_MAX - (size_t)(*cursor - '0')) / 10) {
+        if (value > (SIZE_MAX - (size_t)(*cursor - '0')) / VERIFY_DECIMAL_RADIX) {
             return false;
         }
-        value = value * 10 + (size_t)(*cursor - '0');
+        value = value * VERIFY_DECIMAL_RADIX + (size_t)(*cursor - '0');
     }
     *out = value;
     return true;
@@ -123,10 +126,10 @@ static bool parse_qtm(const char *text, uint32_t *out) {
         if (*cursor < '0' || *cursor > '9') {
             return false;
         }
-        if (value > (UINT64_MAX - (uint64_t)(*cursor - '0')) / 10) {
+        if (value > (UINT64_MAX - (uint64_t)(*cursor - '0')) / VERIFY_DECIMAL_RADIX) {
             return false;
         }
-        value = value * 10 + (uint64_t)(*cursor - '0');
+        value = value * VERIFY_DECIMAL_RADIX + (uint64_t)(*cursor - '0');
     }
     if (value > UINT32_MAX) {
         return false;

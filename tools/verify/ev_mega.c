@@ -7,6 +7,7 @@
 #include "common/json.h"
 #include "common/strbuf.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const char *const MEGA_HONESTY =
     "4lll stage predicates are necessary conditions on the start state, the cubeskills case "
@@ -122,7 +123,7 @@ int verify_mega_case_state(const char *alg_text, bt_mega_state *state, char *err
     bt_pz_engine eng = bt_mega_engine();
     if (alg == NULL || !eng.parse_alg(&eng, alg_text, strlen(alg_text), alg, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -143,7 +144,7 @@ int verify_mega_case_state(const char *alg_text, bt_mega_state *state, char *err
     bt_mega_solved_state(state);
     if (!bt_mega_apply_alg(state, inverse, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -239,7 +240,7 @@ void verify_mega_verify_4lll(const bt_seed_rows *rows, verify_section_result *ou
                 outcome.tier1_ok = true;
             } else {
                 bt_strbuf sb;
-                bt_strbuf_init(&sb, 64);
+                bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
                 bt_tier1_error_message(&tier1_err, &sb);
                 snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", sb.data);
                 bt_strbuf_free(&sb);

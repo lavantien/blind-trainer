@@ -58,7 +58,7 @@ typedef struct {
     size_t corpus_rows;
     size_t simcheck_total;
     size_t simcheck_matched;
-    verify_sheet_summary sheets[12];
+    verify_sheet_summary sheets[BT_DIGEST_FILES];
     verify_report_row_outcome *rows;
     size_t row_count;
     verify_report_row_outcome *failures;

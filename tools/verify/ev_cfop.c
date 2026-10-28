@@ -9,6 +9,8 @@
 
 static const uint8_t U_BAND_POSITIONS[9] = {0, 1, 2, 3, 24, 25, 26, 27, 48};
 
+enum { VERIFY_CFOP_TOKEN_MAX = 16 };
+
 static size_t face_of_code(uint8_t code) {
     if (code < 24) {
         return code / 4;
@@ -69,14 +71,20 @@ static bool u_uniform(const bt_cube *state) {
     return true;
 }
 
-static const char *const ROTATION_TIPS[6] = {"", "x", "x2", "x'", "z", "z'"};
-static const char *const ROTATION_TWISTS[4] = {"", "y", "y2", "y'"};
+static const char *const ROTATION_TIPS[] = {"", "x", "x2", "x'", "z", "z'"};
+static const char *const ROTATION_TWISTS[] = {"", "y", "y2", "y'"};
 
-static size_t rotations(bt_alg out[24]) {
+enum {
+    VERIFY_CFOP_ROTATION_TIPS = sizeof ROTATION_TIPS / sizeof ROTATION_TIPS[0],
+    VERIFY_CFOP_ROTATION_TWISTS = sizeof ROTATION_TWISTS / sizeof ROTATION_TWISTS[0],
+    VERIFY_CFOP_ROTATION_COUNT = VERIFY_CFOP_ROTATION_TIPS * VERIFY_CFOP_ROTATION_TWISTS,
+};
+
+static size_t rotations(bt_alg out[VERIFY_CFOP_ROTATION_COUNT]) {
     size_t count = 0;
-    char word[16];
-    for (size_t tip = 0; tip < 6; tip++) {
-        for (size_t twist = 0; twist < 4; twist++) {
+    char word[VERIFY_CFOP_TOKEN_MAX];
+    for (size_t tip = 0; tip < VERIFY_CFOP_ROTATION_TIPS; tip++) {
+        for (size_t twist = 0; twist < VERIFY_CFOP_ROTATION_TWISTS; twist++) {
             if (ROTATION_TIPS[tip][0] == '\0') {
                 snprintf(word, sizeof word, "%s", ROTATION_TWISTS[twist]);
             } else if (ROTATION_TWISTS[twist][0] == '\0') {
@@ -94,8 +102,8 @@ static size_t rotations(bt_alg out[24]) {
     return count;
 }
 
-static size_t rotated_states(const bt_cube *state, bt_cube out[24]) {
-    bt_alg words[24];
+static size_t rotated_states(const bt_cube *state, bt_cube out[VERIFY_CFOP_ROTATION_COUNT]) {
+    bt_alg words[VERIFY_CFOP_ROTATION_COUNT];
     size_t count = rotations(words);
     for (size_t at = 0; at < count; at++) {
         out[at] = *state;
@@ -314,7 +322,7 @@ int verify_cfop_rewrite_to_fixed(const char *alg_text, char *out, size_t out_len
         if (token[0] == '\0') {
             continue;
         }
-        char letter[16];
+        char letter[VERIFY_CFOP_TOKEN_MAX];
         char suffix[8];
         if (split_suffix(token, letter, sizeof letter, suffix, sizeof suffix) != 0) {
             snprintf(out, out_len, "token %s holds no canonical move", token);
@@ -354,10 +362,10 @@ int verify_cfop_rewrite_to_fixed(const char *alg_text, char *out, size_t out_len
             BT_TRACE_EXIT("ev_cfop.rewrite_to_fixed");
             return 1;
         }
-        char matched[16] = {0};
+        char matched[VERIFY_CFOP_TOKEN_MAX] = {0};
         for (size_t cand_at = 0; cand_at < candidate_count && matched[0] == '\0'; cand_at++) {
             for (size_t suf_at = 0; suf_at < 4 && matched[0] == '\0'; suf_at++) {
-                char fixed[16];
+                char fixed[VERIFY_CFOP_TOKEN_MAX];
                 snprintf(fixed, sizeof fixed, "%s%s", candidates[cand_at], MOVE_SUFFIXES[suf_at]);
                 if (frame_len == 0) {
                     snprintf(probe_text, sizeof probe_text, "%s", fixed);
@@ -421,7 +429,7 @@ verify_tier2 verify_cfop_stage_outcome(verify_cfop_stage stage, const bt_cube *s
         BT_TRACE_EXIT("ev_cfop.stage_outcome");
         return verify_tier2_fail("start state is already solved");
     }
-    bt_cube frames[24];
+    bt_cube frames[VERIFY_CFOP_ROTATION_COUNT];
     size_t frame_count = rotated_states(state, frames);
     bool any_f2l = false;
     bool any_u_uniform = false;

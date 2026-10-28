@@ -81,7 +81,7 @@ typedef struct {
     size_t rows;
 } verify_pack_pin;
 
-extern const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[21];
+extern const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[];
 extern const size_t VERIFY_PACK_PIN_COUNT;
 
 void verify_nspec_text(const bt_nspec *n, char *out, size_t out_len);

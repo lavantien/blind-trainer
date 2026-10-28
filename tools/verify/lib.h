@@ -7,10 +7,12 @@
 
 #include "common/paths.h"
 #include "data/corpus.h"
+#include "data/digest.h"
 
 #define VERIFY_SIMCHECK_HEADER "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote"
 #define VERIFY_SIM_POSITION_MAX 128
 #define VERIFY_ERR_MAX 256
+#define VERIFY_ERR_STRBUF_INIT 64
 #define VERIFY_LINE_MAX 512
 
 typedef struct {
@@ -37,7 +39,7 @@ typedef struct {
     size_t rows;
 } verify_sheet_pin;
 
-extern const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[12];
+extern const verify_sheet_pin VERIFY_SHEET_EXPECTED_ROWS[BT_DIGEST_FILES];
 extern const size_t VERIFY_SHEET_PIN_COUNT;
 
 void verify_sim_map_init(verify_sim_map *map);

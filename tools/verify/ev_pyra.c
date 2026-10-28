@@ -6,6 +6,7 @@
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 #include "puzzles/tier1.h"
+#include "verify/lib.h"
 
 static const size_t TIP_LOCALS[3] = {0, 4, 8};
 static const size_t EDGE_LOCALS[3] = {1, 3, 6};
@@ -116,7 +117,7 @@ int verify_pyra_case_state(const char *alg_text, bt_pyra_state *state, char *err
     bt_pz_engine eng = bt_pyra_engine();
     if (alg == NULL || !eng.parse_alg(&eng, alg_text, strlen(alg_text), alg, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -137,7 +138,7 @@ int verify_pyra_case_state(const char *alg_text, bt_pyra_state *state, char *err
     bt_pyra_solved_state(state);
     if (!bt_pyra_apply_alg(state, inverse, &pz_err)) {
         bt_strbuf sb;
-        bt_strbuf_init(&sb, 64);
+        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
         bt_pz_error_message(&pz_err, &sb);
         snprintf(err, err_len, "%s", sb.data);
         bt_strbuf_free(&sb);
@@ -170,7 +171,7 @@ void verify_pyra_verify_l4e(const bt_seed_rows *rows, verify_section_result *out
                 outcome.tier1_ok = true;
             } else {
                 bt_strbuf sb;
-                bt_strbuf_init(&sb, 64);
+                bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
                 bt_tier1_error_message(&tier1_err, &sb);
                 snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", sb.data);
                 bt_strbuf_free(&sb);
