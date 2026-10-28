@@ -1,0 +1,33 @@
+src/app/boot.c:3:1: error: code should be clang-formatted [-Wclang-format-violations]
+#include "app/views/algs/mod.h"
+^
+src/app/smoke.c:75:47: error: code should be clang-formatted [-Wclang-format-violations]
+        if (!file_written(tour->shots[i].path)
+                                              ^
+src/app/smoke.c:76:15: error: code should be clang-formatted [-Wclang-format-violations]
+            || !path_matches_slug_png(tour->shots[i].path, tour->shots[i].state)) {
+              ^
+src/app/usage.c:34:19: error: code should be clang-formatted [-Wclang-format-violations]
+    size_t count = bt_corpus_rows_for_position(corpus, bt_view_sheet_of(case_id->orbit), position,
+                  ^
+src/app/usage.c:34:99: error: code should be clang-formatted [-Wclang-format-violations]
+    size_t count = bt_corpus_rows_for_position(corpus, bt_view_sheet_of(case_id->orbit), position,
+                                                                                                  ^
+src/app/usage.c:90:84: error: code should be clang-formatted [-Wclang-format-violations]
+void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions,
+                                                                                   ^
+src/app/usage.c:342:86: error: code should be clang-formatted [-Wclang-format-violations]
+            snprintf(tour->shot.path, sizeof tour->shot.path, "%s/%s.png", tour->dir,
+                                                                                     ^
+src/app/views/fatal.c:43:49: error: code should be clang-formatted [-Wclang-format-violations]
+        bt_app_draw_text(font_regular, lines[i], metrics.content_x
+                                                ^
+src/app/views/fatal.c:43:67: error: code should be clang-formatted [-Wclang-format-violations]
+        bt_app_draw_text(font_regular, lines[i], metrics.content_x
+                                                                  ^
+src/app/views/fatal.c:44:91: error: code should be clang-formatted [-Wclang-format-violations]
+                                                     + (metrics.content_w - box.x) / 2.0F,
+                                                                                          ^
+src/app/views/fatal.c:45:35: error: code should be clang-formatted [-Wclang-format-violations]
+                         y, small, bt_theme_text_muted());
+                                  ^

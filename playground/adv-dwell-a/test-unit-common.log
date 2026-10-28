@@ -1,0 +1,27 @@
+2026-10-28T09:32:03 [entry] test-unit common
+2026-10-28T09:32:03 [skip] compile src\common\bt_harness.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\bt_trace.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\config.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\fsrs_math.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\json.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\paths.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\rng.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\sha256.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\space.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\strbuf.c up to date
+2026-10-28T09:32:03 [skip] compile src\common\when.c up to date
+2026-10-28T09:32:03 [skip] compile tests\unit\common\bt_harness_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\bt_trace_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\config_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\fsrs_math_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\json_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\paths_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\rng_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\sha256_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\strbuf_test.c up to date
+2026-10-28T09:32:04 [skip] compile tests\unit\common\when_test.c up to date
+2026-10-28T09:32:04 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-28T09:32:07 [repro] 207 object timestamps zeroed
+2026-10-28T09:32:07 [compile] 185 compiled, 185 ok
+2026-10-28T09:32:09 [summary] 10 passed, 0 failed
+2026-10-28T09:32:09 [exit] test-unit code=0
