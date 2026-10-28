@@ -110,3 +110,32 @@ BT_TEST(gendata_lib, synth_params_hash_pins_the_rust_era_golden) {
                 0);
     bt_json_free(config);
 }
+
+BT_TEST(gendata_lib, synth_params_hash_pins_the_serde_float_boundaries) {
+    static const char *configs[] = {
+        "{\"synth\": {\"penalty_other\": 1e16}}",
+        "{\"synth\": {\"penalty_other\": 0.0000001}}",
+        "{\"synth\": {\"penalty_other\": 1e15}}",
+        "{\"synth\": {\"penalty_other\": 0.00001}}",
+        "{\"synth\": {\"penalty_other\": 2.0}}",
+    };
+    static const char *want[] = {
+        "8e683253ae420f8782e9267dc2edbb6c097be6d0930a69ce727b9a9a2b683923",
+        "a10be46815cfbd0750cbf2c957c0b4049839a5e8b9bb0e4c4a208025ee1ee448",
+        "4ac6f9c2f3d4e16793a9a2581bc5343e05b6ae2b4c79e0e2956c6f95c5004f77",
+        "ddb980121d4e27abeb2cc00361dd48770263ce70468518257185281e1304b7fe",
+        "9cb8f5ee5cb14649a813b0a8aba3e4dd8a0fb7ef11f6be3dfc515bb970f9c842",
+    };
+    for (size_t i = 0; i < 5; i++) {
+        bt_json_error jerr;
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(configs[i], strlen(configs[i]), &config, &jerr), 0);
+        char hash[65];
+        char err[96];
+        BT_CHECK_EQ(bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err,
+                                              sizeof err),
+                    0);
+        BT_CHECK_EQ(strcmp(hash, want[i]), 0);
+        bt_json_free(config);
+    }
+}

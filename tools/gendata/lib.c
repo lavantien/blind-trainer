@@ -21,6 +21,13 @@ const char *bt_gd_crate_id(void) {
     return "bt-gendata";
 }
 
+enum {
+    GD_SERDE_F64_PRECISION_MAX = 17,
+    GD_SERDE_F64_FIXED_CEILING = 15,
+    GD_SERDE_F64_FIXED_FLOOR = -5,
+    GD_SERDE_DIGITS_MAX = 40,
+};
+
 typedef struct {
     const char *key;
     size_t index;
@@ -83,51 +90,119 @@ static int serde_string(const char *text, bt_strbuf *out) {
     return bt_strbuf_append(out, "\"", 1);
 }
 
-static int serde_float(double value, bt_strbuf *out) {
-    if (!isfinite(value)) {
-        return -1;
-    }
+static int serde_shortest_digits(double value, char digits[GD_SERDE_DIGITS_MAX],
+                                 size_t *digits_count, int *exp10) {
     char buffer[64];
-    for (int precision = 1; precision <= 17; precision++) {
+    for (int precision = 1; precision <= GD_SERDE_F64_PRECISION_MAX; precision++) {
         snprintf(buffer, sizeof buffer, "%.*g", precision, value);
         if (strtod(buffer, NULL) == value) {
             break;
         }
     }
-    char normalized[64];
-    size_t at = 0;
-    bool seen_dot = false;
-    bool seen_exponent = false;
-    for (size_t i = 0; i < strlen(buffer); i++) {
-        char c = buffer[i];
-        if (c == 'e' || c == 'E') {
-            seen_exponent = true;
-            normalized[at++] = 'e';
-            if (i + 1 < strlen(buffer) && (buffer[i + 1] == '+' || buffer[i + 1] == '-')) {
-                if (buffer[i + 1] == '-') {
-                    normalized[at++] = '-';
-                }
-                i++;
+    char raw[GD_SERDE_DIGITS_MAX];
+    size_t raw_count = 0;
+    int int_digits = 0;
+    bool seen_point = false;
+    const char *cursor = buffer;
+    if (*cursor == '-') {
+        cursor++;
+    }
+    while (*cursor != '\0' && *cursor != 'e' && *cursor != 'E') {
+        if (*cursor >= '0' && *cursor <= '9') {
+            if (raw_count < GD_SERDE_DIGITS_MAX) {
+                raw[raw_count] = *cursor;
+                raw_count++;
             }
-            i++;
-            while (i + 1 < strlen(buffer) && buffer[i] == '0') {
-                i++;
+            if (!seen_point) {
+                int_digits++;
             }
-            for (size_t rest = i; rest < strlen(buffer); rest++) {
-                normalized[at++] = buffer[rest];
-            }
+        } else if (*cursor == '.') {
+            seen_point = true;
+        }
+        cursor++;
+    }
+    size_t first = raw_count;
+    for (size_t i = 0; i < raw_count; i++) {
+        if (raw[i] != '0') {
+            first = i;
             break;
         }
-        if (c == '.') {
-            seen_dot = true;
+    }
+    if (first == raw_count) {
+        digits[0] = '0';
+        *digits_count = 1;
+        *exp10 = 0;
+        return 0;
+    }
+    size_t last = raw_count;
+    while (last > first + 1 && raw[last - 1] == '0') {
+        last--;
+    }
+    for (size_t i = first; i < last; i++) {
+        digits[i - first] = raw[i];
+    }
+    *digits_count = last - first;
+    if (*cursor == 'e' || *cursor == 'E') {
+        *exp10 = (int)strtol(cursor + 1, NULL, 10);
+    } else {
+        *exp10 = int_digits - 1 - (int)first;
+    }
+    return 0;
+}
+
+static int serde_append_zeros(bt_strbuf *out, int count) {
+    for (int i = 0; i < count; i++) {
+        if (bt_strbuf_append_str(out, "0") != 0) {
+            return -1;
         }
-        normalized[at++] = c;
     }
-    if (!seen_dot && !seen_exponent) {
-        normalized[at++] = '.';
-        normalized[at++] = '0';
+    return 0;
+}
+
+static int serde_float(double value, bt_strbuf *out) {
+    if (!isfinite(value)) {
+        return -1;
     }
-    return bt_strbuf_append(out, normalized, at);
+    char digits[GD_SERDE_DIGITS_MAX];
+    size_t count = 0;
+    int exp10 = 0;
+    serde_shortest_digits(fabs(value), digits, &count, &exp10);
+    if (signbit(value) && bt_strbuf_append_str(out, "-") != 0) {
+        return -1;
+    }
+    int n = (int)count;
+    if (exp10 >= n - 1 && exp10 <= GD_SERDE_F64_FIXED_CEILING) {
+        if (bt_strbuf_append(out, digits, count) != 0 ||
+            serde_append_zeros(out, exp10 - n + 1) != 0 || bt_strbuf_append_str(out, ".0") != 0) {
+            return -1;
+        }
+        return 0;
+    }
+    if (exp10 >= 0 && exp10 <= GD_SERDE_F64_FIXED_CEILING) {
+        if (bt_strbuf_append(out, digits, (size_t)exp10 + 1) != 0 ||
+            bt_strbuf_append_str(out, ".") != 0 ||
+            bt_strbuf_append(out, digits + exp10 + 1, count - ((size_t)exp10 + 1)) != 0) {
+            return -1;
+        }
+        return 0;
+    }
+    if (exp10 >= GD_SERDE_F64_FIXED_FLOOR && exp10 <= -1) {
+        if (bt_strbuf_append_str(out, "0.") != 0 || serde_append_zeros(out, -exp10 - 1) != 0 ||
+            bt_strbuf_append(out, digits, count) != 0) {
+            return -1;
+        }
+        return 0;
+    }
+    if (bt_strbuf_append(out, digits, 1) != 0) {
+        return -1;
+    }
+    if (n > 1 && (bt_strbuf_append_str(out, ".") != 0 ||
+                  bt_strbuf_append(out, digits + 1, count - 1) != 0)) {
+        return -1;
+    }
+    char tail[16];
+    snprintf(tail, sizeof tail, "e%+03d", exp10);
+    return bt_strbuf_append_str(out, tail) == 0 ? 0 : -1;
 }
 
 static int serde_value(const bt_json_value *value, bt_strbuf *out) {
