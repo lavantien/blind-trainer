@@ -6,14 +6,11 @@ tests/visual/baselines/ holds the 10 reference PNGs for visual regression: menu.
 
 ## capture recipe
 
-From a clean workspace:
-
 ```sh
-make e2e
-make baselines
+python bt.py baselines
 ```
 
-`make e2e` builds the release exe, runs the headless flow suite, then e2e-smoke drives the exe through the `--smoke` tour via bt-e2e with APPDATA sandboxed to artifacts/e2e-user, writing the 10 fresh PNGs into artifacts/e2e. `make baselines` copies artifacts/e2e/*.png over the files in this directory. The shot list and window size come from the `e2e` and `app.window` config sections.
+The target builds the release exe and the bt-e2e driver, drives the exe through the `--smoke` tour with APPDATA sandboxed to artifacts/e2e-user, writes the 10 fresh PNGs into artifacts/e2e, captures a second time, requires both captures byte-identical by sha256, and only then updates this directory through visual-diff `--update`. The shot list and window size come from the `e2e` and `app.window` config sections.
 
 ## determinism inputs
 
@@ -24,13 +21,13 @@ The smoke tour is seeded and fixed-size, so a recapture on the same inputs repro
 | seed | config `app.smoke_seed` |
 | window size | config `app.window` (width and height) |
 | fonts | assets/fonts |
-| tour and shot order | the `--smoke` implementation in crates/bt-app |
+| tour and shot order | the `--smoke` implementation in src/app |
 
 Change any of these, or the rendering they feed, and the baselines must be recaptured with the recipe above.
 
 ## comparison contract
 
-`make visual` runs its own selftest first, then bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance; on a mismatch it re-renders via e2e-smoke and re-diffs once, exiting 3 for an infra flake that passed the second run and 2 for a regression that failed both, with the verdict appended to artifacts/visual/report.md.
+`python bt.py visual` runs its own selftest first, then bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance; on a mismatch it re-renders via e2e-smoke and re-diffs once, exiting 4 when the re-render itself fails, 3 for an infra flake that passed the second run and 2 for a regression that failed both, with the verdict appended to artifacts/visual/report.md.
 
 ## capture log
 
@@ -39,3 +36,4 @@ Change any of these, or the rendering they feed, and the baselines must be recap
 | 303dec0 | 2026-10-15 | 20261012 | 1280x800 | first capture under the stage 1 wiring: sandboxed e2e-smoke via bt-e2e, shot list from the e2e config section |
 | 3e8f5ce | 2026-10-16 | 20261012 | 1280x800 | stage 5 single refresh: replay shot listed in e2e.shots after solve, case drill shot from the wave c tours, menu algs row text and stats due block from the seeded event repos |
 | fb2383e | 2026-10-18 | 20261012 | 1280x800 | drill.png only: net pulse frozen at a fixed factor in smoke mode (44067cc), refresh captured after the freeze over 2 green 10/10 visual runs, other 9 shots byte-identical |
+| 6f198b4 | 2026-10-28 | 20261012 | 1280x800 | c23 raylib port recapture, all 10 pngs replaced after a byte-identical double capture |
