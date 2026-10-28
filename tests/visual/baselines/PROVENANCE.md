@@ -22,6 +22,7 @@ The smoke tour is seeded and fixed-size, so a recapture on the same inputs repro
 | window size | config `app.window` (width and height) |
 | fonts | assets/fonts |
 | tour and shot order | the `--smoke` implementation in src/app |
+| shot dwell | the smoke dwell constant in src/app/smoke.h, hardcoded at 0.5 like the rust twin |
 
 Change any of these, or the rendering they feed, and the baselines must be recaptured with the recipe above.
 
