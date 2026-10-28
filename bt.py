@@ -1646,6 +1646,109 @@ def tgt_e2e(args):
     return tgt_e2e_smoke(args)
 
 
+def release_version_arg(args):
+    return args[0][2:] if args and args[0].startswith("v=") else ""
+
+
+def release_dist_paths(hub):
+    artifacts = REPO_ROOT / hub.get("paths", {}).get("artifacts", "artifacts")
+    dist_root = artifacts / "dist"
+    return dist_root, dist_root / hub.get("release", {}).get("staging_dir", "blind-trainer")
+
+
+def release_zip_path(dist_root, version):
+    import scripts.dist as dist
+
+    return dist.zip_path(dist_root, version)
+
+
+def release_verify_plan(hub, version):
+    dist_root, staging = release_dist_paths(hub)
+    zip_path = release_zip_path(dist_root, version)
+    return staging, zip_path, [str(staging), str(zip_path), "--run"]
+
+
+def release_stage_exe(bin_dir, app_name, release_name):
+    app = bin_dir / app_name
+    if not app.is_file():
+        raise BtError(f"{app} missing, run python bt.py build first")
+    target = bin_dir / release_name
+    shutil.copy2(app, target)
+    return target
+
+
+def _ensure_release_verify(hub, logger):
+    build_scope(hub, logger, "tools", only="release_verify")
+    exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "release-verify.exe"
+    if not exe.is_file():
+        raise BtError(f"release-verify.exe missing after build: {exe}")
+    return exe
+
+
+def tgt_release_verify(args):
+    """byte-check the dist zip and run the packaged exe: python bt.py release-verify v=<tag>"""
+    hub = load_hub()
+    logger = Logger()
+    version = release_version_arg(args)
+    if not version:
+        print("usage: python bt.py release-verify v=<tag>")
+        return 2
+    logger.entry("release-verify", f"v={version}")
+    try:
+        exe = _ensure_release_verify(hub, logger)
+        _, _, argv = release_verify_plan(hub, version)
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("release-verify-build", f"{type(e).__name__}: {e}")
+        return 1
+    return run_policy_exe(exe, argv, "release-verify", logger, env=child_env(hub))
+
+
+def tgt_release_verify_selftest(args):
+    """the release-verify unit suite"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("release-verify-selftest")
+    try:
+        build_scope(hub, logger, "tools", only="release_verify")
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("release-verify-selftest-build", f"{type(e).__name__}: {e}")
+        return 1
+    suites = [s for s in discover_test_suites(REPO_ROOT) if "release_verify" in s["stem"]]
+    results = run_suite_exes(hub, suites)
+    code, line = aggregate_results(results)
+    logger.line("summary", line)
+    logger.exit("release-verify-selftest", code)
+    return code
+
+
+def tgt_dist(args):
+    """build the app, stage and verify the dist zip: python bt.py dist v=<tag>"""
+    hub = load_hub()
+    logger = Logger()
+    version = release_version_arg(args)
+    if not version:
+        print("usage: python bt.py dist v=<tag>")
+        return 2
+    logger.entry("dist", f"v={version}")
+    try:
+        build_scope(hub, logger, "app")
+        bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+        staged_exe = release_stage_exe(
+            bin_dir,
+            build_cfg(hub).get("app_exe", "bt-app.exe"),
+            hub.get("release", {}).get("exe", "blind-trainer.exe"),
+        )
+        logger.line("stage", f"{staged_exe.name} staged for dist")
+        python = build_cfg(hub)["tools"].get("python", "") or sys.executable
+        run([python, REPO_ROOT / "scripts" / "dist.py", "-Version", version], "dist-stage",
+            env=child_env(hub))
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("dist", f"{type(e).__name__}: {e}")
+        return 1
+    logger.exit("dist", 0)
+    return tgt_release_verify([f"v={version}"])
+
+
 def tgt_clean(args):
     """remove artifacts and recreate the keep file"""
     logger = Logger()
