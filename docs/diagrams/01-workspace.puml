@@ -32,27 +32,28 @@ package "tools" {
 component "tests\nunit, fuzz, e2e, visual\npython suite over bt.py" as tests
 component "bt.py\nbuild, test, and gate driver" as driver
 component "vendor\nraylib 6.2, sqlite 3.54.1\nsha pinned by scripts/vendor.py" as vendor
+core -> common
 scheme -> core
 data -> core
 data -> scheme
-puzzles -> core
-ga -> core
-ga -> scheme
-ga -> data
+puzzles -> common
+ga -> common
 app -> core
 app -> scheme
 app -> data
 app -> puzzles
-app -> ga
+gendata -> core
 gendata -> data
 gendata -> scheme
-gendata -> puzzles
+verify -> core
 verify -> data
 verify -> puzzles
+garun -> data
 garun -> ga
+garun -> scheme
+memofreq -> data
 memofreq -> ga
 memofreq -> scheme
-memofreq -> data
 app -> vendor
 data -> vendor
 driver ..> app : compiles and links
@@ -63,8 +64,10 @@ gate ..> driver : outcomes verdict
 policy ..> core : scans sources
 visual ..> tests : diffs baselines
 note bottom of common
-  common underlies every
-  src area and tool
+  the solid arrows are the
+  measured include graph,
+  the config hub declares a
+  wider build closure
 end note
 note bottom of app
   the usage and smoke tours

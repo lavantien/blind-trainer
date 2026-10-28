@@ -5,25 +5,32 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-component "ref_ground corpus\nsolver sheets, sha256 pinned" as corpus
-component "corpus loader\nrows with solver, sheet\ncontent hashes" as loader
-component "data/vendor\nmanifest, cases, specials" as vendor
+component "ref_ground corpus sheets\nsolver and sheet tsv" as sheets
+component "corpus load\ninto memory at boot" as corpus
+component "app views\ndrill cards, solve replay" as views
 component "ref_ground packs\ntsv plus registry.json" as packs
-component "seedpack loader\nparse, normalize\nrulings on expected failures" as seedpack
-component "sqlite user db\nnumbered migrations\nbackup before each step" as db
+component "seedpack loader\nseeds rows at boot" as seedpack
+component "sqlite user db\nnumbered migrations" as db
 component "repos\nalgs, seeds, cards, srs\nsolves, settings, user" as repos
 component "fsrs scheduler\n19 weights, request retention\ninterval clamp" as fsrs
-corpus -> loader
-loader -> vendor
+component "gendata\nsynthesis and manifest" as gendata
+component "data/vendor\nmanifest, cases, specials" as vendor
+component "verify reports\ncorpus and packs" as reports
+sheets -> corpus
+corpus -> views
 packs -> seedpack
 seedpack -> db
-vendor -> db
 db -> repos
 repos -> fsrs
+gendata -> vendor
+vendor ..> reports : cross-check
 note bottom of db
   blind-trainer.db lives in the
-  user dir, legacy json imports
-  once and renames to .migrated
+  user dir, the db backs up once
+  before the first pending
+  migration of a run when tables
+  exist, legacy json imports
+  after the migrations
 end note
 note bottom of fsrs
   ratings 1 to 4 map to again,
