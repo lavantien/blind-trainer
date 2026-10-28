@@ -6,70 +6,70 @@ skinparam roundCorner 6
 skinparam componentStyle rectangle
 skinparam packageStyle frame
 skinparam ArrowColor #2f3439
-package "crates" {
-  component "bt-core\n3x3 permutation model\nsticker permutation, analysis\nstd only" as core
-  component "bt-scheme\nSpeffz map, classifier\nmemo generator, scrambles" as scheme
-  component "bt-data\npaths, corpus, seedpack\nrepo per store over SQLite\nFSRS-5, notation" as data
-  component "bt-puzzles\nnxn sq1 pyra skewb mega fto\nGeometry trait, std only" as puzzles
-  component "bt-app\nAppLogicPlugin game flow\nPresentationPlugin ui\nsmoke tour, case drill, replay" as app
-  component "bt-ga\nsyllable evolution" as ga
+skinparam NoteBackgroundColor #f4f5f6
+package "src areas" {
+  component "common\ntrace, harness, json\npaths, rng, sha256, strbuf" as common
+  component "core\nalg parse, cube state\nmoves, expand, analysis" as core
+  component "scheme\nspeffz map, classifier\nmemo tokens, scrambles" as scheme
+  component "data\ncorpus, seedpack, sqlite\nrepos, fsrs, notation" as data
+  component "puzzles\nnxn sq1 pyra skewb mega fto\ngeometry engines, tier 1" as puzzles
+  component "ga\nsyllable evolution" as ga
+  component "app\nwindow, drivers, views\nusage and smoke tours" as app
 }
 package "tools" {
-  component "bt-gendata\nvendor synth + ga output" as gendata
-  component "bt-verify\nper-event tier report\nfail closed" as verify
-  component "bt-visual-diff\npng diff + selftest" as visual
-  component "bt-policy\ncomments, constants\nsloc cap" as policy
-  component "bt-mutants-gate\noutcomes merge\nallowlist adjudication" as gate
-  component "bt-release-verify\nzip byte compare\npackaged exe stages" as relver
-  component "bt-jobwrap\njob object memory ceiling\nargv quoting" as jobwrap
-  component "bt-memofreq\nletter frequency table" as memofreq
-  component "bt-ga-run\nga batch driver" as garun
-  component "bt-sleeper\nmemguard fixture" as sleeper
+  component "gendata\nvendor build, synthesis" as gendata
+  component "verify\ncorpus and packs reports" as verify
+  component "ga-run\nga batch driver" as garun
+  component "memofreq\nletter frequency table" as memofreq
+  component "mutate\nmutation engine" as mutate
+  component "mutants-gate\nallowlist adjudication" as gate
+  component "policy\ncomments, constants, sloc" as policy
+  component "visual-diff\npng diff, selftest" as visual
+  component "release-verify\nzip byte compare\npackaged exe stages" as relver
+  component "jobwrap\njob object memory ceiling" as jobwrap
+  component "sleeper\nmemguard fixture" as sleeper
 }
-component "tests/e2e\nbt-e2e process harness\nshots + missing config gate" as e2e
+component "tests\nunit, fuzz, e2e, visual\npython suite over bt.py" as tests
+component "bt.py\nbuild, test, and gate driver" as driver
+component "vendor\nraylib 6.2, sqlite 3.54.1\nsha pinned by scripts/vendor.py" as vendor
+scheme -> core
 data -> core
 data -> scheme
-scheme -> core
-ga -> data
+puzzles -> core
+ga -> core
 ga -> scheme
-puzzles ..> core : dev, n=3 cross-check
-app -> data
+ga -> data
 app -> core
 app -> scheme
+app -> data
 app -> puzzles
-app ..> ga : syllables.json
+app -> ga
 gendata -> data
-gendata -> core
 gendata -> scheme
-garun -> data
+gendata -> puzzles
+verify -> data
+verify -> puzzles
 garun -> ga
-garun -> scheme
-memofreq -> data
 memofreq -> ga
 memofreq -> scheme
-verify -> data
-verify -> core
-verify -> scheme
-verify -> puzzles
-verify -> gendata
-relver -> data
-e2e ..> app : runs blind-trainer.exe
-gate ..> data : allowlist.tsv
+memofreq -> data
+app -> vendor
+data -> vendor
+driver ..> app : compiles and links
+driver ..> tests : builds and runs
+driver ..> verify : gate
+mutate ..> tests : replays unit suites
+gate ..> driver : outcomes verdict
 policy ..> core : scans sources
-note bottom of puzzles
-  engines pin their grammar
-  to the pack token set
-  and reject drift
+visual ..> tests : diffs baselines
+note bottom of common
+  common underlies every
+  src area and tool
 end note
 note bottom of app
-  headless e2e drives complete
-  flows on AppLogicPlugin
-  through MinimalPlugins
-end note
-note bottom of data
-  ref_ground corpus tsv
-  plus packs tsv + registry
-  feed seed_alg rows with
-  content hashes
+  the usage and smoke tours
+  drive real view flows
+  headless for the gallery
+  and the visual baselines
 end note
 @enduml

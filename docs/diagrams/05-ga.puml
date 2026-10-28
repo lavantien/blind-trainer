@@ -5,25 +5,26 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "letter pairs\ncorpus letters from\nbt-memofreq counts" as letters
-rectangle "perceptual features\nfingertrick friendly shapes\nshared letter overlap" as features
-rectangle "seed syllable pool\ninitial words per letter pair" as pool
-rectangle "fitness\nfrequency weight times\npronounceability score" as fitness
-rectangle "crossover and mutation\nelitist retention" as evolve
-rectangle "write syllables.json\nvendor manifest hash\nparams hash caching" as write
-rectangle "consumed by memo generator\nand drill card text" as consumed
-letters -> features
-features -> pool
-pool -> fitness
-fitness -> evolve
-evolve -> fitness : generation budget left\nand fitness target unmet
-evolve -> write : budget spent or target met
-write -> consumed
-note bottom of write
-  fingertrick scoring ranks synth
-  algs by regrip and rotation
-  penalties, the params hash skips
-  regeneration when the model
-  and config are unchanged.
+component "letter pairs\nedge and corner space" as pairs
+component "memofreq monte carlo\nseeded sampling" as freq_tool
+component "data/ga/freq.json\npair frequencies" as freq
+component "inventory\nsyllable pool" as inventory
+component "features\nconfusion, flow\ncomplexity weights" as features
+component "evolution\npopulation, generations\nelite, tournament" as evolve
+component "data/ga/syllables.json\none syllable per edge pair" as syllables
+component "ga-run\nga batch driver" as garun
+pairs -> freq_tool
+freq_tool -> freq
+pairs -> inventory
+freq -> features
+inventory -> features
+features -> evolve
+evolve -> syllables
+garun -> evolve
+note bottom of evolve
+  seeded and deterministic,
+  knobs live in the ga section
+  of the config hub,
+  python bt.py ga regenerates
 end note
 @enduml

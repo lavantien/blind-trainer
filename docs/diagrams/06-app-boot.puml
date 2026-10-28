@@ -5,29 +5,26 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "parse args\n--smoke --usage --fatal-shot\nusage error exits 2" as args
-rectangle "RuntimePaths from_env\nexe adjacent config fonts\nBT_REF_GROUND, APPDATA user root" as paths
-rectangle "read config hub\nsingle json source\nmissing sections fatal" as readcfg
-rectangle "config readable and valid?" as valid
-rectangle "Stores load_with_packs\nopen db, run migrations\nimport legacy json once" as stores
-rectangle "corpus load plus user overlay\nseed packs by registry" as corpus
-rectangle "warnings for degraded packs\nevent hidden from browser" as warnings
-rectangle "AppState machine\nBootstrap to Menu then\nDrill Memo Solve Algs Replay\nCaseDrill Stats Settings Fatal" as machine
-rectangle "FatalReason with context\nstate to Fatal" as fatal
-rectangle "exit map\n0 ok, 1 boot stuck or verify\n2 usage, 3 state stuck" as exitmap
-args -> paths
-paths -> readcfg
-readcfg -> valid
-valid -> stores : yes
-valid -> fatal : no
-stores -> corpus
-corpus -> warnings
-warnings -> machine
-fatal -> exitmap
-note bottom of machine
-  AppExit reaches the process
-  exit code, the e2e harness
-  gates the missing config path
-  on every smoke run.
+component "argv\nsmoke, usage, fatal-shot\none flag max" as argv
+component "config hub\nconfig.json via BT_CONFIG" as config
+component "runtime paths\nref_ground, vendor, user dir" as paths
+component "stores open\nsqlite migrations\nlegacy import" as stores
+component "state machine\nmenu first\nraylib window and fonts" as machine
+component "fatal screen\nconfig unreadable or\nvendor sheets unreadable" as fatal
+component "menu warning\nvendor directory missing\napp runs on user data" as warn
+argv -> config
+config -> paths
+paths -> stores
+stores -> machine
+config -> fatal
+paths -> warn
+note bottom of argv
+  a flag violation prints the
+  reason and exits 2, each flag
+  takes the output directory
+end note
+note bottom of fatal
+  keys are ignored, fix the
+  reported path and restart
 end note
 @enduml

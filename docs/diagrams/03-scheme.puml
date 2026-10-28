@@ -5,28 +5,31 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "Speffz letter map\nedge and corner slots\nbuffer UF and UFR fixed" as map
-rectangle "pair space\nbuffer to target as\nfloating interchange slots" as pairs
-rectangle "classifier\ncommutator class per pair\ninterchange and insertion" as classifier
-rectangle "pair has vendor alg?" as has
-rectangle "corpus row pinned\ncontent hash recorded" as corpus
-rectangle "synthesis engine\ndecompose into\ninterchange + insert" as synth
-rectangle "verify synth result\nagainst reference simulator" as verifysynth
-rectangle "memo generator\nletters to syllables\nfrom syllables.json" as memo
-rectangle "seeded scramble\nbuild_occ occupancy" as scramble
+component "speffz map\none letter per sticker\nA to X per orbit" as map
+component "pair space\nedge and corner pairs\nfloating buffer orders" as pairs
+component "seeded scramble\ndeterministic from the seed" as scramble
+component "classifier\ntrace blocks, defects\nclasses 3style flip twist\nparity ltct" as classifier
+component "memo generation\nper orbit tokens" as memo
+component "synthesis (gendata)\ncommutators for uncovered\npairs, fingertrick scored" as synth
+component "data/vendor/cases.json\nalgs per pair and defect" as cases
+component "drill cards\nside A and side B" as drill
 map -> pairs
+scramble -> classifier
 pairs -> classifier
-classifier -> has
-has -> corpus : yes
-has -> synth : no
-synth -> verifysynth
-corpus -> memo
-verifysynth -> memo
-memo -> scramble
-note bottom of scramble
-  scramble generation is deterministic
-  from the seed, the memo stream is
-  reproducible for e2e and the
-  drill and memo smoke shots.
+classifier -> memo
+pairs -> synth
+synth -> cases
+cases -> drill
+note bottom of memo
+  edges stream syllables from
+  data/ga/syllables.json, corners
+  stream image words, bare
+  letters when uncovered
+end note
+note bottom of classifier
+  defects come from the
+  emulated state itself,
+  flips twists and parity
+  feed the residue lines
 end note
 @enduml

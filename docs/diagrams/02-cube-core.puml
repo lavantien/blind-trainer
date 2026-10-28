@@ -5,30 +5,29 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "tokenize alg text\nU D L R F B M E S x y z\nwide w, digit prefixes, 2, '" as tokenize
-rectangle "parse into Move tokens\nface, quarter, depth, rotation" as parse
-rectangle "expand word to single turns\ncommutator (g)2 groups\nand -> chains flattened" as expand
-rectangle "apply to Cube\nsticker permutation\nplus centers fixed" as apply
-rectangle "token reachable?" as reachable
-rectangle "analysis\nedge flips per pair\ncorner twist per slot\ncenter fixed predicate" as analysis
-rectangle "predicates\nsolved, permutation equality\n3style target exchange" as predicates
-rectangle "reject\nwith token context" as reject
-tokenize -> parse
+component "alg text\nsiGN dialect" as text
+component "bt_alg_parse\nrejects unknown tokens\ncarries the bad token back" as parse
+component "bt_expand\nrepeats, commutators\ngroups, depth capped" as expand
+component "bt_move stream\nface, wide, inner\nslice, rotation turns" as moves
+component "bt_cube apply\nocc 54 sticker map\ninverse is the transpose" as cube
+component "bt_summarize\ncycles, edge flips\ncorner twists" as summary
+component "lengths and checks\nqtm, htm\ncenters fixed" as checks
+text -> parse
 parse -> expand
-expand -> apply
-apply -> reachable
-reachable -> analysis : yes
-reachable -> reject : no
-analysis -> predicates
-note bottom of tokenize
-  the scanner freezes on
-  malformed input and the fuzz
-  target pins every reject
+expand -> moves
+moves -> cube
+cube -> summary
+summary -> checks
+note bottom of cube
+  solved means occ i equals i,
+  the letter to sticker map
+  is equality tested against
+  ref_ground/position_map.tsv
 end note
-note bottom of predicates
-  bt-core stays the 3x3 engine for
-  3bld, cfop and oh verification.
-  bt-puzzles cross-checks n=3
-  agreement in dev-only tests.
+note bottom of checks
+  only face turns keep centers
+  fixed, every vendor alg is
+  checked center fixed after
+  full cancellation
 end note
 @enduml

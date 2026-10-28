@@ -5,26 +5,30 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "ref_ground corpus tsv\ncherry eggins workbooks\nunder the gpl carve-out" as tsv
-rectangle "ref_ground packs tsv\nregistry pinned\nrulings recorded" as packs
-rectangle "seedpack loader\nnormalize commas parens\n(g)2 repeats, -> chains\ncanonical content hash" as loader
-rectangle "SQLite db\nuser_version migrations\nbackup before migrate\nlegacy json to .migrated" as db
-database "seed_alg\nuser_alg\ncard\nfsrs_state\nreview_log" as tables
-rectangle "effective alg\nuser row overrides seed\ndelete reverts to seed" as overlay
-rectangle "bt-verify tiers\ntier 1 mechanical\ntier 2 structural stage\nfail closed on drift" as verify
-rectangle "FSRS-5 scheduler\npinned weights\nstability difficulty\ninterval clamp from config" as fsrs
-tsv -> loader
-packs -> loader
-loader -> db
-db -> tables
-tables -> overlay
-overlay --> verify
-overlay --> fsrs
-fsrs --> tables : review_log append
-note bottom of verify
-  repo gates fail on any tier 1\nfailure, row count drift or\nhash drift, the app degrades\nwith boot warnings instead
+component "ref_ground corpus\nsolver sheets, sha256 pinned" as corpus
+component "corpus loader\nrows with solver, sheet\ncontent hashes" as loader
+component "data/vendor\nmanifest, cases, specials" as vendor
+component "ref_ground packs\ntsv plus registry.json" as packs
+component "seedpack loader\nparse, normalize\nrulings on expected failures" as seedpack
+component "sqlite user db\nnumbered migrations\nbackup before each step" as db
+component "repos\nalgs, seeds, cards, srs\nsolves, settings, user" as repos
+component "fsrs scheduler\n19 weights, request retention\ninterval clamp" as fsrs
+corpus -> loader
+loader -> vendor
+packs -> seedpack
+seedpack -> db
+vendor -> db
+db -> repos
+repos -> fsrs
+note bottom of db
+  blind-trainer.db lives in the
+  user dir, legacy json imports
+  once and renames to .migrated
 end note
-note right of tables
-  3bld pairs map onto the same\ncard table as every event\nso one scheduler drives\nall drilling
+note bottom of fsrs
+  ratings 1 to 4 map to again,
+  hard, good, easy, the math is
+  pinned by reference vectors
+  under ref_ground/fsrs
 end note
 @enduml

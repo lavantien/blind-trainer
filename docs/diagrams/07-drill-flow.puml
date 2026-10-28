@@ -5,33 +5,30 @@ skinparam defaultFontSize 12
 skinparam roundCorner 6
 skinparam ArrowColor #2f3439
 skinparam NoteBackgroundColor #f4f5f6
-rectangle "due selection\ncards with due_day <= today\nper event and method" as due
-rectangle "DrillPhase Card\nshow pair letters\norbit word for 3bld" as card
-rectangle "space reveals\nthe answer" as reveal
-rectangle "DrillPhase Reps\nalternate A side and B side\nreps from config clamp" as reps
-rectangle "execute alg\ncommutator spans highlighted\nin the net view" as execute
-rectangle "DrillPhase Rate\nkeys 1 to 4 grade" as rate
-rectangle "again or hard?" as grade
-rectangle "stability reset path\ninterval to the floor\nlapse count grows" as reset
-rectangle "stability growth\ndifficulty adjusts\ninterval clamped by config" as growth
-rectangle "fsrs_state write\nreview_log append\ndue_day computed" as write
-rectangle "next due card\nloop until session ends" as next
+component "due selection\ndue or new pairs first" as due
+component "card\nletters, orbit, position\nmemo token, both algs" as card
+component "prepare\nside B applied to the\nsolved cube" as prepare
+component "reps\nspace executes the shown alg\nsplits recorded, A B alternate" as reps
+component "rate A then B\n1 again, 2 hard\n3 good, 4 easy" as rate
+component "fsrs write\nper position\nsides schedule apart" as fsrs
+component "next pair\nloads automatically" as next
 due -> card
-card -> reveal
-reveal -> reps
-reps -> execute
-execute -> rate
-rate -> grade
-grade -> reset : lapse
-grade -> growth : good or easy
-reset -> write
-growth -> write
-write -> next
-next -> due : next card
-note bottom of next
-  the same loop drives CaseDrill
-  for every repository event,
-  3bld keeps its letters and
-  orbit word display.
+card -> prepare
+prepare -> reps
+reps -> rate
+rate -> fsrs
+fsrs -> next
+next -> due
+note bottom of card
+  the same loop drives the
+  case drill over repository
+  nodes, reveal with space,
+  grade 1 to 4 into fsrs
+end note
+note bottom of reps
+  the drill reps setting
+  controls the rep count,
+  esc aborts to the menu
+  writing nothing
 end note
 @enduml
