@@ -9,8 +9,8 @@
 static const unsigned char BT_PNG_SIGNATURE[8] = {137, 80, 78, 71, 13, 10, 26, 10};
 
 static unsigned int read_be32(const unsigned char *bytes) {
-    return ((unsigned int)bytes[0] << 24) | ((unsigned int)bytes[1] << 16) |
-           ((unsigned int)bytes[2] << 8) | (unsigned int)bytes[3];
+    return ((unsigned)bytes[0] << 24U) | ((unsigned)bytes[1] << 16U) |
+           ((unsigned)bytes[2] << 8U) | (unsigned)bytes[3];
 }
 
 int bt_png_dims(const char *path, unsigned int *width, unsigned int *height) {

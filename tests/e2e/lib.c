@@ -154,13 +154,13 @@ int bt_e2e_window_dims_from(const bt_json_value *value, bt_e2e_window_dims *out,
     }
     unsigned long long width = 0;
     unsigned long long height = 0;
-    if (!value_is_u64(bt_json_get(section, "width"), &width) || width > 4294967295ull) {
+    if (!value_is_u64(bt_json_get(section, "width"), &width) || width > 4294967295ULL) {
         snprintf(error, error_cap, "config app.window.width must be an unsigned integer");
         BT_TRACE_FAIL("e2e.window_dims_from", "%s", error);
         BT_TRACE_EXIT("e2e.window_dims_from");
         return 1;
     }
-    if (!value_is_u64(bt_json_get(section, "height"), &height) || height > 4294967295ull) {
+    if (!value_is_u64(bt_json_get(section, "height"), &height) || height > 4294967295ULL) {
         snprintf(error, error_cap, "config app.window.height must be an unsigned integer");
         BT_TRACE_FAIL("e2e.window_dims_from", "%s", error);
         BT_TRACE_EXIT("e2e.window_dims_from");

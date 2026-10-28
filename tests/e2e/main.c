@@ -30,10 +30,10 @@ static void trace_from_config(void) {
     bt_trace_install_crash_handler();
 }
 
-static void parent_dir(const char *path, char out[BT_PATH_MAX]) {
-    snprintf(out, BT_PATH_MAX, "%s", path);
-    char *slash = strrchr(out, '/');
-    char *back = strrchr(out, '\\');
+static void parent_dir(const char *child_path, char result[BT_PATH_MAX]) {
+    snprintf(result, BT_PATH_MAX, "%s", child_path);
+    char *slash = strrchr(result, '/');
+    char *back = strrchr(result, '\\');
     char *cut = back > slash ? back : slash;
     if (cut != NULL) {
         *cut = '\0';
@@ -129,7 +129,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
-    unsigned long long deadline = bt_e2e_now_ms() + settings.timeout_secs * 1000ull;
+    unsigned long long deadline = bt_e2e_now_ms() + settings.timeout_secs * 1000ULL;
     bt_e2e_smoke_run run;
     if (bt_e2e_run_smoke(binary, out_dir, NULL, 0, deadline, &run, error, error_cap) != 0) {
         bt_e2e_free_settings(&settings);
@@ -166,13 +166,18 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
     }
+    const char **expected_ptrs =
+        malloc((expected_count > 0 ? expected_count : 1) * sizeof *expected_ptrs);
+    for (size_t i = 0; i < expected_count; i++) {
+        expected_ptrs[i] = expected[i];
+    }
     size_t max_rows = expected_count > found_count ? expected_count : found_count;
     char(*missing)[BT_E2E_NAME_MAX] = malloc((max_rows + 1) * sizeof *missing);
     char(*unexpected)[BT_E2E_NAME_MAX] = malloc((max_rows + 1) * sizeof *unexpected);
     size_t missing_count = 0;
     size_t unexpected_count = 0;
-    bt_e2e_classify((const char *const *)found, found_count, (const char *const *)expected,
-                    expected_count, missing, &missing_count, unexpected, &unexpected_count);
+    bt_e2e_classify((const char *const *)found, found_count, expected_ptrs, expected_count,
+                    missing, &missing_count, unexpected, &unexpected_count);
     size_t failures = 0;
     for (size_t i = 0; i < missing_count; i++) {
         printf("FAIL %s: missing screenshot\n", missing[i]);
@@ -182,6 +187,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         printf("FAIL %s: unexpected screenshot\n", unexpected[i]);
         failures += 1;
     }
+    const char *shots_root = out_dir;
     for (size_t i = 0; i < expected_count; i++) {
         int is_missing = 0;
         for (size_t j = 0; j < missing_count; j++) {
@@ -192,10 +198,10 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         if (is_missing) {
             continue;
         }
-        char path[BT_PATH_MAX];
-        bt_paths_join(out_dir, expected[i], path);
+        char dest[BT_PATH_MAX];
+        bt_paths_join(shots_root, expected[i], dest);
         char reason[BT_E2E_ERROR_MAX];
-        if (bt_e2e_check_shot(path, dims, reason, sizeof reason) == BT_E2E_SHOT_OK) {
+        if (bt_e2e_check_shot(dest, dims, reason, sizeof reason) == BT_E2E_SHOT_OK) {
             printf("ok %s\n", expected[i]);
         } else {
             printf("FAIL %s: %s\n", expected[i], reason);
@@ -204,6 +210,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     }
     printf("%zu shots expected, %zu found, %zu failed\n", expected_count, found_count,
            failures);
+    free(expected_ptrs);
     free(missing);
     free(unexpected);
     free(expected);
@@ -281,9 +288,9 @@ int wmain(int argc, wchar_t **argv) {
         return 2;
     }
     for (int i = 0; i < argc; i++) {
-        utf8_argv[i] = calloc(BT_E2E_PATH_WMAX * 3, 1);
+        utf8_argv[i] = calloc((size_t)BT_E2E_PATH_WMAX * 3, 1);
         if (utf8_argv[i] == NULL ||
-            bt_e2e_wide_to_utf8(argv[i], utf8_argv[i], BT_E2E_PATH_WMAX * 3) != 0) {
+            bt_e2e_wide_to_utf8(argv[i], utf8_argv[i], (size_t)BT_E2E_PATH_WMAX * 3) != 0) {
             fprintf(stderr, "bt-e2e: argument conversion failed\n");
             bt_trace_shutdown();
             return 2;

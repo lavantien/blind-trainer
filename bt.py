@@ -938,6 +938,8 @@ def in_lint_area(file, area):
         return True
     if rel.startswith(f"tests/unit/{area}/"):
         return True
+    if area == "e2e" and rel.startswith("tests/e2e/"):
+        return True
     if rel.startswith(f"tools/{area}/"):
         return True
     return False
@@ -1408,9 +1410,7 @@ def tgt_e2e_smoke(args):
     env = {**os.environ, "APPDATA": str(user_dir)}
     driver = bin_dir / build_cfg(hub)["e2e_exe"]
     app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
-    code = run_policy_exe(driver, [str(app), str(out_dir)], "e2e-smoke", logger, env=env)
-    logger.exit("e2e-smoke", code)
-    return code
+    return run_policy_exe(driver, [str(app), str(out_dir)], "e2e-smoke", logger, env=env)
 
 
 def tgt_e2e(args):
@@ -1433,9 +1433,7 @@ def tgt_e2e(args):
             return 1
     code = run_policy_exe(jobwrap, ["--anchor", "e2e", "--", str(suite)], "e2e", logger)
     if code != 0:
-        logger.exit("e2e", code)
         return code
-    logger.exit("e2e", 0)
     return tgt_e2e_smoke(args)
 
 

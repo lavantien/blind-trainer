@@ -14,7 +14,7 @@ typedef struct {
     size_t *len;
 } bt_e2e_reader;
 
-static unsigned __stdcall read_pipe(void *raw) {
+static DWORD WINAPI read_pipe(LPVOID raw) {
     bt_e2e_reader *reader = raw;
     unsigned char chunk[4096];
     for (;;) {
@@ -201,8 +201,8 @@ int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const 
     CloseHandle(stderr_write);
     bt_e2e_reader stdout_reader = {stdout_read, &out->stdout_bytes, &out->stdout_len};
     bt_e2e_reader stderr_reader = {stderr_read, &out->stderr_bytes, &out->stderr_len};
-    uintptr_t stdout_thread = _beginthreadex(NULL, 0, read_pipe, &stdout_reader, 0, NULL);
-    uintptr_t stderr_thread = _beginthreadex(NULL, 0, read_pipe, &stderr_reader, 0, NULL);
+    HANDLE stdout_thread = CreateThread(NULL, 0, read_pipe, &stdout_reader, 0, NULL);
+    HANDLE stderr_thread = CreateThread(NULL, 0, read_pipe, &stderr_reader, 0, NULL);
     int timed_out = 0;
     int wait_failed = 0;
     for (;;) {
@@ -222,15 +222,13 @@ int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const 
         }
     }
     DWORD exit_code = 0;
-    if (!timed_out && !wait_failed) {
-        if (!GetExitCodeProcess(process.hProcess, &exit_code)) {
-            wait_failed = 1;
-        }
+    if (!timed_out && !wait_failed && !GetExitCodeProcess(process.hProcess, &exit_code)) {
+        wait_failed = 1;
     }
-    WaitForSingleObject((HANDLE)stdout_thread, INFINITE);
-    WaitForSingleObject((HANDLE)stderr_thread, INFINITE);
-    CloseHandle((HANDLE)stdout_thread);
-    CloseHandle((HANDLE)stderr_thread);
+    WaitForSingleObject(stdout_thread, INFINITE);
+    WaitForSingleObject(stderr_thread, INFINITE);
+    CloseHandle(stdout_thread);
+    CloseHandle(stderr_thread);
     CloseHandle(stdout_read);
     CloseHandle(stderr_read);
     CloseHandle(process.hThread);
