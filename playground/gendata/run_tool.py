@@ -21,7 +21,15 @@ flags = [
 ]
 linker = ["-fuse-ld=lld-link", "-Xlinker", "/SUBSYSTEM:CONSOLE", "-Xlinker", "/OPT:REF",
           "-Xlinker", "/OPT:ICF", "-Xlinker", "/DEBUG:NONE", "-Xlinker", "/brepro"]
-obj_root = next((root / "build/obj").iterdir())
+obj_dirs = sorted(d for d in (root / "build/obj").iterdir() if d.is_dir())
+if len(obj_dirs) != 1:
+    sys.stderr.write(
+        "ambiguous build/obj roots, refusing to guess: "
+        + ", ".join(d.name for d in obj_dirs)
+        + "\n"
+    )
+    raise SystemExit(2)
+obj_root = obj_dirs[0]
 
 tool_sources = sorted((root / "tools/gendata").glob("*.c"))
 out_dir = root / "build/test-tmp/gdverify"
@@ -38,12 +46,14 @@ def compile_one(source):
     return source.name, obj, proc
 
 
+print(f"[stage] compile {len(tool_sources)} gendata sources")
 with ThreadPoolExecutor(max_workers=8) as pool:
     builds = list(pool.map(compile_one, tool_sources))
 for name, _, proc in builds:
     if proc.returncode != 0:
         sys.stderr.write(f"[compile-fail] {name}\n{proc.stdout}{proc.stderr}")
         raise SystemExit(2)
+print("[stage] compile done")
 
 closure = []
 for area in ("common", "core", "scheme", "data", "puzzles"):
@@ -51,6 +61,7 @@ for area in ("common", "core", "scheme", "data", "puzzles"):
 sqlite = sorted((obj_root / "vendor").rglob("sqlite3.obj"))
 
 exe = out_dir / "gendata.exe"
+print(f"[stage] link {exe.name} against {len(closure) + len(sqlite)} closure objects")
 argv = [str(clang), *flags, *linker, *[str(obj) for _, obj, _ in builds], *map(str, closure),
         *map(str, sqlite), "-o", str(exe)]
 proc = subprocess.run(argv, cwd=root, capture_output=True, text=True)
@@ -62,7 +73,9 @@ env = dict(os.environ)
 env["BT_CONFIG"] = str(root / "playground/gendata/regen_config.json")
 env["BT_REF_GROUND"] = str(root / "ref_ground")
 env["BT_ARTIFACTS"] = str(root / "artifacts")
+print(f"[stage] run {exe} with BT_CONFIG {env['BT_CONFIG']}")
 run = subprocess.run([str(exe)], cwd=root, capture_output=True, text=True, env=env)
+print("[stage] run done")
 sys.stdout.write(run.stdout)
 sys.stderr.write(run.stderr)
 print(f"[{run.returncode}] gendata")

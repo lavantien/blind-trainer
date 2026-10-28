@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
-golden_dir = root / "data/vendor"
+golden_dir = root / "ref_ground/vendor"
 regen_dir = root / "playground/gendata/regen"
 
 
