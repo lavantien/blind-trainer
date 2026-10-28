@@ -13,6 +13,8 @@
 #include "scheme/pairs.h"
 #include "scheme/scheme.h"
 
+enum { GD_SYNTH_ALPHABET_MAX = 27 };
+
 typedef struct {
     bt_move *items;
     size_t len;
@@ -88,7 +90,7 @@ static size_t face_turns(bt_move out[18]) {
     return at;
 }
 
-static size_t single_turns(bt_move out[27]) {
+static size_t single_turns(bt_move out[GD_SYNTH_ALPHABET_MAX]) {
     size_t count = face_turns(out);
     static const uint8_t slices[3] = {BT_SLICE_M, BT_SLICE_E, BT_SLICE_S};
     static const uint8_t quarters[3] = {1, 2, 3};
@@ -466,11 +468,11 @@ static int hits_push(bt_gd_synth_hits *hits, const bt_alg *alg, const char *comm
 
 static int search_with(const uint8_t target[54], uint8_t buffer, const bt_gd_synth_limits *limits,
                        bool wide, bt_gd_synth_hits *hits) {
-    bt_move setup_alphabet[27];
+    bt_move setup_alphabet[GD_SYNTH_ALPHABET_MAX];
     size_t setup_alphabet_len = wide ? single_turns(setup_alphabet) : face_turns(setup_alphabet);
-    bt_move insert_alphabet[27];
+    bt_move insert_alphabet[GD_SYNTH_ALPHABET_MAX];
     size_t insert_alphabet_len = wide ? single_turns(insert_alphabet) : face_turns(insert_alphabet);
-    bt_move interchanges[27];
+    bt_move interchanges[GD_SYNTH_ALPHABET_MAX];
     size_t interchanges_len = single_turns(interchanges);
     bt_gd_budget budget = {.left = limits->node_budget};
     bt_gd_move_vec *setups = NULL;
@@ -508,7 +510,7 @@ static int search_with(const uint8_t target[54], uint8_t buffer, const bt_gd_syn
             continue;
         }
         size_t targets[2] = {slots[1], slots[2]};
-        bt_move usable[27];
+        bt_move usable[GD_SYNTH_ALPHABET_MAX];
         size_t usable_len = 0;
         for (size_t i = 0; i < interchanges_len; i++) {
             uint8_t table[54];
