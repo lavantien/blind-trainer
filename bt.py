@@ -1284,11 +1284,64 @@ def tgt_mutants_gate_selftest(args):
     )
 
 
+def visual_pair_dirs(hub):
+    shots = REPO_ROOT / "artifacts" / "e2e"
+    bases = REPO_ROOT / hub.get("paths", {}).get("baselines", "tests/visual/baselines")
+    return shots, bases
+
+
+def visual_report_path(hub):
+    artifacts = hub.get("paths", {}).get("artifacts", "artifacts")
+    return REPO_ROOT / artifacts / "visual" / "report.md"
+
+
+def visual_retry_outcome(rerender_code, second_code):
+    if rerender_code != 0:
+        return 4, "infra error, re-render failed"
+    if second_code == 0:
+        return 3, "infra flake, second run passed"
+    return 2, "regression, both runs mismatched"
+
+
+def visual_append_verdict(report_path, verdict):
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(report_path, "a", encoding="utf-8") as handle:
+        handle.write(f"\nverdict: {verdict}\n")
+
+
+def png_hashes(directory):
+    if not directory.is_dir():
+        return {}
+    return {
+        png.name: hashlib.sha256(png.read_bytes()).hexdigest()
+        for png in sorted(directory.glob("*.png"))
+    }
+
+
+def capture_diffs(first, second):
+    drift = []
+    for name in sorted(set(first) | set(second)):
+        if name not in first:
+            drift.append(f"{name} missing from first capture")
+        elif name not in second:
+            drift.append(f"{name} missing from second capture")
+        elif first[name] != second[name]:
+            drift.append(f"{name} hash differs between captures")
+    return drift
+
+
+def _ensure_visual_diff(hub, logger):
+    build_scope(hub, logger, "tools", only="visual_diff")
+    exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "visual-diff.exe"
+    if not exe.is_file():
+        raise BtError(f"visual-diff.exe missing after build: {exe}")
+    return exe
+
+
 def tgt_visual_diff(args):
     """diff e2e shots against the committed baselines"""
     hub = load_hub()
-    shots = REPO_ROOT / "artifacts" / "e2e"
-    bases = REPO_ROOT / hub.get("paths", {}).get("baselines", "tests/visual/baselines")
+    shots, bases = visual_pair_dirs(hub)
     return tool_run(
         hub, "visual-diff-build", "visual-diff.exe", [shots, bases], "visual-diff"
     )
@@ -1304,6 +1357,83 @@ def tgt_visual_selftest(args):
         ["--selftest", workdir],
         "visual-selftest",
     )
+
+
+def tgt_visual(args):
+    """visual selftest then the diff with one re-render retry"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("visual")
+    try:
+        exe = _ensure_visual_diff(hub, logger)
+        shots, bases = visual_pair_dirs(hub)
+        report = visual_report_path(hub)
+        workdir = REPO_ROOT / "artifacts" / "visual-selftest"
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("visual", f"{type(e).__name__}: {e}")
+        return 1
+    code = run_policy_exe(exe, ["--selftest", str(workdir)], "visual-selftest", logger)
+    if code != 0:
+        logger.exit("visual", code)
+        return code
+    code = run_policy_exe(exe, [str(shots), str(bases)], "visual-diff", logger, echo=True)
+    if code == 0:
+        logger.exit("visual", 0)
+        return 0
+    print("visual: mismatch, re-rendering and re-diffing once", flush=True)
+    rerender = tgt_e2e_smoke(args)
+    second = (
+        run_policy_exe(exe, [str(shots), str(bases)], "visual-diff", logger, echo=True)
+        if rerender == 0
+        else None
+    )
+    code, verdict = visual_retry_outcome(rerender, second)
+    visual_append_verdict(report, verdict)
+    logger.exit("visual", code)
+    return code
+
+
+def tgt_baselines(args):
+    """recapture the committed baselines from two byte-identical smoke captures"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("baselines")
+    try:
+        user_dir = REPO_ROOT / "artifacts" / "e2e-user"
+        if user_dir.is_dir():
+            shutil.rmtree(user_dir)
+        build_scope(hub, logger, "app")
+        build_scope(hub, logger, "e2e")
+        driver, app, out_dir, user_dir, env = _e2e_smoke_plan(hub)
+        for path in (out_dir, user_dir):
+            path.mkdir(parents=True, exist_ok=True)
+        exe = _ensure_visual_diff(hub, logger)
+        _, bases = visual_pair_dirs(hub)
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("baselines", f"{type(e).__name__}: {e}")
+        return 1
+    captures = []
+    for pass_at in (1, 2):
+        label = f"baselines-capture-{pass_at}"
+        code = run_policy_exe(
+            driver, [str(app), str(out_dir)], label, logger, env=env, echo=True
+        )
+        if code != 0:
+            logger.exit("baselines", code)
+            return code
+        captures.append(png_hashes(out_dir))
+        logger.line("hash", f"capture {pass_at} hashed {len(captures[-1])} pngs")
+    drift = capture_diffs(captures[0], captures[1])
+    if drift:
+        for line in drift:
+            logger.fail("baselines", line)
+        logger.exit("baselines", 1)
+        return 1
+    code = run_policy_exe(
+        exe, ["--update", str(out_dir), str(bases)], "baselines-update", logger, echo=True
+    )
+    logger.exit("baselines", code)
+    return code
 
 
 def tgt_gen_data(args):
@@ -1393,6 +1523,16 @@ def build_scope(hub, logger, area, only=None):
     link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries, only=only)
 
 
+def _e2e_smoke_plan(hub):
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+    out_dir = REPO_ROOT / "artifacts" / "e2e"
+    user_dir = REPO_ROOT / "artifacts" / "e2e-user"
+    env = {**os.environ, "APPDATA": str(user_dir)}
+    driver = bin_dir / build_cfg(hub)["e2e_exe"]
+    app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
+    return driver, app, out_dir, user_dir, env
+
+
 def tgt_e2e_smoke(args):
     """sandboxed smoke tour over the release exe"""
     hub = load_hub()
@@ -1401,14 +1541,9 @@ def tgt_e2e_smoke(args):
     try:
         build_scope(hub, logger, "app")
         build_scope(hub, logger, "e2e")
-        bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
-        out_dir = REPO_ROOT / "artifacts" / "e2e"
-        user_dir = REPO_ROOT / "artifacts" / "e2e-user"
+        driver, app, out_dir, user_dir, env = _e2e_smoke_plan(hub)
         for path in (out_dir, user_dir):
             path.mkdir(parents=True, exist_ok=True)
-        env = {**os.environ, "APPDATA": str(user_dir)}
-        driver = bin_dir / build_cfg(hub)["e2e_exe"]
-        app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("e2e-smoke", f"{type(e).__name__}: {e}")
         return 1
