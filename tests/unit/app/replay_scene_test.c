@@ -162,8 +162,8 @@ BT_TEST(replay, cells_cover_every_slot_once_and_match_engine_ids) {
         if (cell->row == 1 && cell->col == 1) {
             BT_CHECK_EQ(cell->slot, bt_center_id((bt_face)cell->face));
         } else if (cell->row % 2 == 0 && cell->col % 2 == 0) {
-            BT_CHECK_EQ(cell->slot,
-                        bt_corner_id((bt_face)cell->face, bt_replay_corner_pos(cell->row, cell->col)));
+            BT_CHECK_EQ(cell->slot, bt_corner_id((bt_face)cell->face,
+                                                 bt_replay_corner_pos(cell->row, cell->col)));
         } else {
             BT_CHECK_EQ(cell->slot,
                         bt_edge_id((bt_face)cell->face, bt_replay_edge_pos(cell->row, cell->col)));
@@ -419,16 +419,15 @@ BT_TEST(replay, cfg_sanitizes_reversed_and_out_of_range_values) {
 }
 
 BT_TEST(replay, cfg_reads_the_hub_section_and_falls_back_to_defaults) {
-    bt_json_value *hub = fixture_json(
-        "{\"app\":{\"replay\":{"
-        "\"secs_per_move\":0.25,"
-        "\"yaw_deg\":30.0,"
-        "\"pitch_deg\":20.0,"
-        "\"distance\":8.0,"
-        "\"zoom_min\":4.0,"
-        "\"zoom_max\":10.0,"
-        "\"pitch_clamp_deg\":[-70.0,70.0]"
-        "}}}");
+    bt_json_value *hub = fixture_json("{\"app\":{\"replay\":{"
+                                      "\"secs_per_move\":0.25,"
+                                      "\"yaw_deg\":30.0,"
+                                      "\"pitch_deg\":20.0,"
+                                      "\"distance\":8.0,"
+                                      "\"zoom_min\":4.0,"
+                                      "\"zoom_max\":10.0,"
+                                      "\"pitch_clamp_deg\":[-70.0,70.0]"
+                                      "}}}");
     bt_replay_cfg parsed;
     bt_replay_cfg_from(hub, &parsed);
     bt_json_free(hub);
