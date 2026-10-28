@@ -414,7 +414,9 @@ BT_TEST(release_verify, check_and_extract_reject_an_empty_entry_name) {
     BT_CHECK(strstr(err, "unsafe zip entry") != NULL);
 }
 
-#define ZIP_TEST_PROBE_BYTES 65536
+enum {
+    ZIP_TEST_PROBE_BYTES = 65536,
+};
 
 BT_TEST(release_verify, check_and_extract_round_trip_a_python_zipfile_deflate_archive) {
     char staging_dir[BT_PATH_MAX];
@@ -426,7 +428,7 @@ BT_TEST(release_verify, check_and_extract_round_trip_a_python_zipfile_deflate_ar
         return;
     }
     for (size_t at = 0; at < ZIP_TEST_PROBE_BYTES; at++) {
-        probe[at] = (unsigned char)((at * 31 + 7) & 0xFF);
+        probe[at] = (unsigned char)(((unsigned)at * 31U + 7U) & 0xFFU);
     }
     char probe_path[BT_PATH_MAX];
     rv_util_join(probe_path, staging_dir, "assets/fonts/probe.bin");

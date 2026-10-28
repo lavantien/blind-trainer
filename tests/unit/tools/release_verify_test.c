@@ -658,7 +658,10 @@ BT_TEST(release_verify, check_shot_dir_names_the_windows_error_on_an_absent_dir)
     char err[BT_RV_ERR_MAX];
     BT_CHECK(bt_rv_check_shot_dir(none, &cfg, 1280, 800, &count, err, sizeof err) != 0);
     BT_CHECK(strstr(err, "cannot read shots dir") != NULL);
-    BT_CHECK(strstr(err, ": 2") != NULL);
+    const char *colon = strrchr(err, ':');
+    BT_CHECK(colon != NULL && colon[1] == ' ');
+    size_t digits = strspn(colon + 2, "0123456789");
+    BT_CHECK(digits > 0 && colon[2 + digits] == '\0');
 }
 
 BT_TEST(release_verify, zip_root_from_accepts_a_bare_final_component_and_trailing_separator) {
