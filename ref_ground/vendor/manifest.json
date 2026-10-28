@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-10-15T15:17:45Z",
+  "generator": "bt-gendata",
+  "synth_params_sha256": "dead579f6d96481fa46f82680b33d19b301de595daebb0fcae7707fe4b339106",
+  "corpus_sha256": "c80bd14c67682ff163d85ff368829faf3e2c724cda23fd6a062c1c3a54b3475d",
+  "corpus_rows": 1077,
+  "corpus_files": [
+    {
+      "solver": "cherry",
+      "sheet": "edge",
+      "rows": 551,
+      "sha256": "477c72888c2069afa0d6a45454e4d659257c77cfa027951b5e9a9cf5571a4f4d"
+    },
+    {
+      "solver": "cherry",
+      "sheet": "corner",
+      "rows": 328,
+      "sha256": "92450153e09c1c29cba076d12b544efabfa61414b67c062aa938ace27215d587"
+    },
+    {
+      "solver": "cherry",
+      "sheet": "flips",
+      "rows": 25,
+      "sha256": "c910c068bb3ebce81b44c5c67ec826fbfaf254f681a3e7bd653b93a193e1b5c5"
+    },
+    {
+      "solver": "cherry",
+      "sheet": "twists",
+      "rows": 20,
+      "sha256": "6b0ef1d623aacd3ed234ed300350d7ddecaf06ebc3d93bba17f9f8586ed2eec7"
+    },
+    {
+      "solver": "cherry",
+      "sheet": "parity",
+      "rows": 26,
+      "sha256": "2917e3bd66e1a960da2b4c6b5ba090f50763a55d90f1ae4ad6e57da1173310b1"
+    },
+    {
+      "solver": "cherry",
+      "sheet": "ltct",
+      "rows": 8,
+      "sha256": "c31d2f6aad6b537e92af78499609207418a4494e634fc112d5a85b0b6e5ab843"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "edge",
+      "rows": 71,
+      "sha256": "2c1f3f8c359ef6e4597e35f9dd684437cbda0ab35891bbb4c5ed42897a3b586b"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "corner",
+      "rows": 38,
+      "sha256": "85da28a6ff763710283d66c8e465b00908e2d69bd02ad37fa97c6cbbbe9c28c8"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "flips",
+      "rows": 0,
+      "sha256": "2117ea9677fe2de40cbed25a772e7c44f76e9d34860c337693c08046601d2116"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "twists",
+      "rows": 5,
+      "sha256": "c06eb4d136785fed40262b134298bd9c22d12bf154efbd50eee098a74f4356dc"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "parity",
+      "rows": 2,
+      "sha256": "df2390f411e93d986765fb50b47ffc6a1dc87a4968969e22dbe2151d5fd7be70"
+    },
+    {
+      "solver": "eggins",
+      "sheet": "ltct",
+      "rows": 3,
+      "sha256": "9575be7a7eb15c3a7e306faf29ce9d5b1c8d6e39eb7451bd63060d449151260a"
+    }
+  ],
+  "rows_in_pair_space": 796,
+  "rows_other_buffer": 192,
+  "cases": {
+    "path": "cases.json",
+    "sha256": "fecefb09a6b6e462a6e4fdf29bbafd42e2d91d6a0cc6a87eaa69743880b5fa9b",
+    "entries": 818,
+    "edge": {
+      "total": 440,
+      "covered": 440,
+      "uncovered": 0
+    },
+    "corner": {
+      "total": 378,
+      "covered": 377,
+      "uncovered": 1
+    }
+  },
+  "specials": {
+    "path": "specials.json",
+    "sha256": "627d2bdeac98061ebdf56252677b07ecc5a68832565021196ef5e62a644348df",
+    "entries": 89,
+    "counts": [
+      {
+        "solver": "cherry",
+        "class": "flips",
+        "rows": 25
+      },
+      {
+        "solver": "cherry",
+        "class": "twists",
+        "rows": 20
+      },
+      {
+        "solver": "cherry",
+        "class": "parity",
+        "rows": 26
+      },
+      {
+        "solver": "cherry",
+        "class": "ltct",
+        "rows": 8
+      },
+      {
+        "solver": "eggins",
+        "class": "flips",
+        "rows": 0
+      },
+      {
+        "solver": "eggins",
+        "class": "twists",
+        "rows": 5
+      },
+      {
+        "solver": "eggins",
+        "class": "parity",
+        "rows": 2
+      },
+      {
+        "solver": "eggins",
+        "class": "ltct",
+        "rows": 3
+      }
+    ]
+  }
+}
