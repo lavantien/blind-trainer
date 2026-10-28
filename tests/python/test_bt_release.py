@@ -116,10 +116,12 @@ class RunPolicyExeTreeKillTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             stub = Path(tmp) / "stub.py"
             pid_file = Path(tmp) / "child.pid"
+            pid_arg = pid_file.as_posix()
             stub.write_text(
                 "import subprocess, sys, time\n"
                 f"child = subprocess.Popen([sys.executable, '-c', "
-                f"'import os, time; open(r\"{pid_file}\", \"w\").write(str(os.getpid())); time.sleep(60)'])\n"
+                f"'import os, time; open(\\\"{pid_arg}\\\", \\\"w\\\").write(str(os.getpid())); "
+                f"time.sleep(60)'])\n"
                 "time.sleep(30)\n",
                 encoding="utf-8",
             )
