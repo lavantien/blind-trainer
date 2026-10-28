@@ -1,0 +1,9 @@
+ok core_alg alg.parses_every_token_kind
+ok core_alg alg.parses_and_canonicalizes_suffixes
+ok core_alg alg.empty_and_whitespace_parse_to_empty
+ok core_alg alg.metrics
+ok core_alg alg.inverse_format
+ok core_alg alg.rejects_garbage_tokens
+ok core_alg alg.parse_error_carries_the_token
+ok core_alg alg.splits_unicode_whitespace
+suite core_alg: 8 passed, 0 failed

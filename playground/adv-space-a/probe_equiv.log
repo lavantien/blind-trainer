@@ -1,0 +1,331 @@
+probe_equiv: enter old_whitespace_len vs bt_space_len
+phase exhaustive: enter
+phase exhaustive3: 1/256 lead bytes
+phase exhaustive3: 2/256 lead bytes
+phase exhaustive3: 3/256 lead bytes
+phase exhaustive3: 4/256 lead bytes
+phase exhaustive3: 5/256 lead bytes
+phase exhaustive3: 6/256 lead bytes
+phase exhaustive3: 7/256 lead bytes
+phase exhaustive3: 8/256 lead bytes
+phase exhaustive3: 9/256 lead bytes
+phase exhaustive3: 10/256 lead bytes
+phase exhaustive3: 11/256 lead bytes
+phase exhaustive3: 12/256 lead bytes
+phase exhaustive3: 13/256 lead bytes
+phase exhaustive3: 14/256 lead bytes
+phase exhaustive3: 15/256 lead bytes
+phase exhaustive3: 16/256 lead bytes
+phase exhaustive3: 17/256 lead bytes
+phase exhaustive3: 18/256 lead bytes
+phase exhaustive3: 19/256 lead bytes
+phase exhaustive3: 20/256 lead bytes
+phase exhaustive3: 21/256 lead bytes
+phase exhaustive3: 22/256 lead bytes
+phase exhaustive3: 23/256 lead bytes
+phase exhaustive3: 24/256 lead bytes
+phase exhaustive3: 25/256 lead bytes
+phase exhaustive3: 26/256 lead bytes
+phase exhaustive3: 27/256 lead bytes
+phase exhaustive3: 28/256 lead bytes
+phase exhaustive3: 29/256 lead bytes
+phase exhaustive3: 30/256 lead bytes
+phase exhaustive3: 31/256 lead bytes
+phase exhaustive3: 32/256 lead bytes
+phase exhaustive3: 33/256 lead bytes
+phase exhaustive3: 34/256 lead bytes
+phase exhaustive3: 35/256 lead bytes
+phase exhaustive3: 36/256 lead bytes
+phase exhaustive3: 37/256 lead bytes
+phase exhaustive3: 38/256 lead bytes
+phase exhaustive3: 39/256 lead bytes
+phase exhaustive3: 40/256 lead bytes
+phase exhaustive3: 41/256 lead bytes
+phase exhaustive3: 42/256 lead bytes
+phase exhaustive3: 43/256 lead bytes
+phase exhaustive3: 44/256 lead bytes
+phase exhaustive3: 45/256 lead bytes
+phase exhaustive3: 46/256 lead bytes
+phase exhaustive3: 47/256 lead bytes
+phase exhaustive3: 48/256 lead bytes
+phase exhaustive3: 49/256 lead bytes
+phase exhaustive3: 50/256 lead bytes
+phase exhaustive3: 51/256 lead bytes
+phase exhaustive3: 52/256 lead bytes
+phase exhaustive3: 53/256 lead bytes
+phase exhaustive3: 54/256 lead bytes
+phase exhaustive3: 55/256 lead bytes
+phase exhaustive3: 56/256 lead bytes
+phase exhaustive3: 57/256 lead bytes
+phase exhaustive3: 58/256 lead bytes
+phase exhaustive3: 59/256 lead bytes
+phase exhaustive3: 60/256 lead bytes
+phase exhaustive3: 61/256 lead bytes
+phase exhaustive3: 62/256 lead bytes
+phase exhaustive3: 63/256 lead bytes
+phase exhaustive3: 64/256 lead bytes
+phase exhaustive3: 65/256 lead bytes
+phase exhaustive3: 66/256 lead bytes
+phase exhaustive3: 67/256 lead bytes
+phase exhaustive3: 68/256 lead bytes
+phase exhaustive3: 69/256 lead bytes
+phase exhaustive3: 70/256 lead bytes
+phase exhaustive3: 71/256 lead bytes
+phase exhaustive3: 72/256 lead bytes
+phase exhaustive3: 73/256 lead bytes
+phase exhaustive3: 74/256 lead bytes
+phase exhaustive3: 75/256 lead bytes
+phase exhaustive3: 76/256 lead bytes
+phase exhaustive3: 77/256 lead bytes
+phase exhaustive3: 78/256 lead bytes
+phase exhaustive3: 79/256 lead bytes
+phase exhaustive3: 80/256 lead bytes
+phase exhaustive3: 81/256 lead bytes
+phase exhaustive3: 82/256 lead bytes
+phase exhaustive3: 83/256 lead bytes
+phase exhaustive3: 84/256 lead bytes
+phase exhaustive3: 85/256 lead bytes
+phase exhaustive3: 86/256 lead bytes
+phase exhaustive3: 87/256 lead bytes
+phase exhaustive3: 88/256 lead bytes
+phase exhaustive3: 89/256 lead bytes
+phase exhaustive3: 90/256 lead bytes
+phase exhaustive3: 91/256 lead bytes
+phase exhaustive3: 92/256 lead bytes
+phase exhaustive3: 93/256 lead bytes
+phase exhaustive3: 94/256 lead bytes
+phase exhaustive3: 95/256 lead bytes
+phase exhaustive3: 96/256 lead bytes
+phase exhaustive3: 97/256 lead bytes
+phase exhaustive3: 98/256 lead bytes
+phase exhaustive3: 99/256 lead bytes
+phase exhaustive3: 100/256 lead bytes
+phase exhaustive3: 101/256 lead bytes
+phase exhaustive3: 102/256 lead bytes
+phase exhaustive3: 103/256 lead bytes
+phase exhaustive3: 104/256 lead bytes
+phase exhaustive3: 105/256 lead bytes
+phase exhaustive3: 106/256 lead bytes
+phase exhaustive3: 107/256 lead bytes
+phase exhaustive3: 108/256 lead bytes
+phase exhaustive3: 109/256 lead bytes
+phase exhaustive3: 110/256 lead bytes
+phase exhaustive3: 111/256 lead bytes
+phase exhaustive3: 112/256 lead bytes
+phase exhaustive3: 113/256 lead bytes
+phase exhaustive3: 114/256 lead bytes
+phase exhaustive3: 115/256 lead bytes
+phase exhaustive3: 116/256 lead bytes
+phase exhaustive3: 117/256 lead bytes
+phase exhaustive3: 118/256 lead bytes
+phase exhaustive3: 119/256 lead bytes
+phase exhaustive3: 120/256 lead bytes
+phase exhaustive3: 121/256 lead bytes
+phase exhaustive3: 122/256 lead bytes
+phase exhaustive3: 123/256 lead bytes
+phase exhaustive3: 124/256 lead bytes
+phase exhaustive3: 125/256 lead bytes
+phase exhaustive3: 126/256 lead bytes
+phase exhaustive3: 127/256 lead bytes
+phase exhaustive3: 128/256 lead bytes
+phase exhaustive3: 129/256 lead bytes
+phase exhaustive3: 130/256 lead bytes
+phase exhaustive3: 131/256 lead bytes
+phase exhaustive3: 132/256 lead bytes
+phase exhaustive3: 133/256 lead bytes
+phase exhaustive3: 134/256 lead bytes
+phase exhaustive3: 135/256 lead bytes
+phase exhaustive3: 136/256 lead bytes
+phase exhaustive3: 137/256 lead bytes
+phase exhaustive3: 138/256 lead bytes
+phase exhaustive3: 139/256 lead bytes
+phase exhaustive3: 140/256 lead bytes
+phase exhaustive3: 141/256 lead bytes
+phase exhaustive3: 142/256 lead bytes
+phase exhaustive3: 143/256 lead bytes
+phase exhaustive3: 144/256 lead bytes
+phase exhaustive3: 145/256 lead bytes
+phase exhaustive3: 146/256 lead bytes
+phase exhaustive3: 147/256 lead bytes
+phase exhaustive3: 148/256 lead bytes
+phase exhaustive3: 149/256 lead bytes
+phase exhaustive3: 150/256 lead bytes
+phase exhaustive3: 151/256 lead bytes
+phase exhaustive3: 152/256 lead bytes
+phase exhaustive3: 153/256 lead bytes
+phase exhaustive3: 154/256 lead bytes
+phase exhaustive3: 155/256 lead bytes
+phase exhaustive3: 156/256 lead bytes
+phase exhaustive3: 157/256 lead bytes
+phase exhaustive3: 158/256 lead bytes
+phase exhaustive3: 159/256 lead bytes
+phase exhaustive3: 160/256 lead bytes
+phase exhaustive3: 161/256 lead bytes
+phase exhaustive3: 162/256 lead bytes
+phase exhaustive3: 163/256 lead bytes
+phase exhaustive3: 164/256 lead bytes
+phase exhaustive3: 165/256 lead bytes
+phase exhaustive3: 166/256 lead bytes
+phase exhaustive3: 167/256 lead bytes
+phase exhaustive3: 168/256 lead bytes
+phase exhaustive3: 169/256 lead bytes
+phase exhaustive3: 170/256 lead bytes
+phase exhaustive3: 171/256 lead bytes
+phase exhaustive3: 172/256 lead bytes
+phase exhaustive3: 173/256 lead bytes
+phase exhaustive3: 174/256 lead bytes
+phase exhaustive3: 175/256 lead bytes
+phase exhaustive3: 176/256 lead bytes
+phase exhaustive3: 177/256 lead bytes
+phase exhaustive3: 178/256 lead bytes
+phase exhaustive3: 179/256 lead bytes
+phase exhaustive3: 180/256 lead bytes
+phase exhaustive3: 181/256 lead bytes
+phase exhaustive3: 182/256 lead bytes
+phase exhaustive3: 183/256 lead bytes
+phase exhaustive3: 184/256 lead bytes
+phase exhaustive3: 185/256 lead bytes
+phase exhaustive3: 186/256 lead bytes
+phase exhaustive3: 187/256 lead bytes
+phase exhaustive3: 188/256 lead bytes
+phase exhaustive3: 189/256 lead bytes
+phase exhaustive3: 190/256 lead bytes
+phase exhaustive3: 191/256 lead bytes
+phase exhaustive3: 192/256 lead bytes
+phase exhaustive3: 193/256 lead bytes
+phase exhaustive3: 194/256 lead bytes
+phase exhaustive3: 195/256 lead bytes
+phase exhaustive3: 196/256 lead bytes
+phase exhaustive3: 197/256 lead bytes
+phase exhaustive3: 198/256 lead bytes
+phase exhaustive3: 199/256 lead bytes
+phase exhaustive3: 200/256 lead bytes
+phase exhaustive3: 201/256 lead bytes
+phase exhaustive3: 202/256 lead bytes
+phase exhaustive3: 203/256 lead bytes
+phase exhaustive3: 204/256 lead bytes
+phase exhaustive3: 205/256 lead bytes
+phase exhaustive3: 206/256 lead bytes
+phase exhaustive3: 207/256 lead bytes
+phase exhaustive3: 208/256 lead bytes
+phase exhaustive3: 209/256 lead bytes
+phase exhaustive3: 210/256 lead bytes
+phase exhaustive3: 211/256 lead bytes
+phase exhaustive3: 212/256 lead bytes
+phase exhaustive3: 213/256 lead bytes
+phase exhaustive3: 214/256 lead bytes
+phase exhaustive3: 215/256 lead bytes
+phase exhaustive3: 216/256 lead bytes
+phase exhaustive3: 217/256 lead bytes
+phase exhaustive3: 218/256 lead bytes
+phase exhaustive3: 219/256 lead bytes
+phase exhaustive3: 220/256 lead bytes
+phase exhaustive3: 221/256 lead bytes
+phase exhaustive3: 222/256 lead bytes
+phase exhaustive3: 223/256 lead bytes
+phase exhaustive3: 224/256 lead bytes
+phase exhaustive3: 225/256 lead bytes
+phase exhaustive3: 226/256 lead bytes
+phase exhaustive3: 227/256 lead bytes
+phase exhaustive3: 228/256 lead bytes
+phase exhaustive3: 229/256 lead bytes
+phase exhaustive3: 230/256 lead bytes
+phase exhaustive3: 231/256 lead bytes
+phase exhaustive3: 232/256 lead bytes
+phase exhaustive3: 233/256 lead bytes
+phase exhaustive3: 234/256 lead bytes
+phase exhaustive3: 235/256 lead bytes
+phase exhaustive3: 236/256 lead bytes
+phase exhaustive3: 237/256 lead bytes
+phase exhaustive3: 238/256 lead bytes
+phase exhaustive3: 239/256 lead bytes
+phase exhaustive3: 240/256 lead bytes
+phase exhaustive3: 241/256 lead bytes
+phase exhaustive3: 242/256 lead bytes
+phase exhaustive3: 243/256 lead bytes
+phase exhaustive3: 244/256 lead bytes
+phase exhaustive3: 245/256 lead bytes
+phase exhaustive3: 246/256 lead bytes
+phase exhaustive3: 247/256 lead bytes
+phase exhaustive3: 248/256 lead bytes
+phase exhaustive3: 249/256 lead bytes
+phase exhaustive3: 250/256 lead bytes
+phase exhaustive3: 251/256 lead bytes
+phase exhaustive3: 252/256 lead bytes
+phase exhaustive3: 253/256 lead bytes
+phase exhaustive3: 254/256 lead bytes
+phase exhaustive3: 255/256 lead bytes
+phase exhaustive3: 256/256 lead bytes
+phase exhaustive: exit checks=33685249 mismatches=0
+phase families: enter
+phase families: exit checks=40223509 mismatches=0
+phase random: enter seed=0x9E3779B97F4A7C15
+phase random: 1048576 iterations
+phase random: exit checks=57852258 mismatches=0
+phase guard: enter
+phase guard: lead C0 done cases=196608
+phase guard: lead C1 done cases=393216
+phase guard: lead C2 done cases=589824
+phase guard: lead C3 done cases=786432
+phase guard: lead C4 done cases=983040
+phase guard: lead C5 done cases=1179648
+phase guard: lead C6 done cases=1376256
+phase guard: lead C7 done cases=1572864
+phase guard: lead C8 done cases=1769472
+phase guard: lead C9 done cases=1966080
+phase guard: lead CA done cases=2162688
+phase guard: lead CB done cases=2359296
+phase guard: lead CC done cases=2555904
+phase guard: lead CD done cases=2752512
+phase guard: lead CE done cases=2949120
+phase guard: lead CF done cases=3145728
+phase guard: lead D0 done cases=3342336
+phase guard: lead D1 done cases=3538944
+phase guard: lead D2 done cases=3735552
+phase guard: lead D3 done cases=3932160
+phase guard: lead D4 done cases=4128768
+phase guard: lead D5 done cases=4325376
+phase guard: lead D6 done cases=4521984
+phase guard: lead D7 done cases=4718592
+phase guard: lead D8 done cases=4915200
+phase guard: lead D9 done cases=5111808
+phase guard: lead DA done cases=5308416
+phase guard: lead DB done cases=5505024
+phase guard: lead DC done cases=5701632
+phase guard: lead DD done cases=5898240
+phase guard: lead DE done cases=6094848
+phase guard: lead DF done cases=6291456
+phase guard: lead E0 done cases=6488064
+phase guard: lead E1 done cases=6684672
+phase guard: lead E2 done cases=6881280
+phase guard: lead E3 done cases=7077888
+phase guard: lead E4 done cases=7274496
+phase guard: lead E5 done cases=7471104
+phase guard: lead E6 done cases=7667712
+phase guard: lead E7 done cases=7864320
+phase guard: lead E8 done cases=8060928
+phase guard: lead E9 done cases=8257536
+phase guard: lead EA done cases=8454144
+phase guard: lead EB done cases=8650752
+phase guard: lead EC done cases=8847360
+phase guard: lead ED done cases=9043968
+phase guard: lead EE done cases=9240576
+phase guard: lead EF done cases=9437184
+phase guard: lead F0 done cases=9633792
+phase guard: lead F1 done cases=9830400
+phase guard: lead F2 done cases=10027008
+phase guard: lead F3 done cases=10223616
+phase guard: lead F4 done cases=10420224
+phase guard: lead F5 done cases=10616832
+phase guard: lead F6 done cases=10813440
+phase guard: lead F7 done cases=11010048
+phase guard: lead F8 done cases=11206656
+phase guard: lead F9 done cases=11403264
+phase guard: lead FA done cases=11599872
+phase guard: lead FB done cases=11796480
+phase guard: lead FC done cases=11993088
+phase guard: lead FD done cases=12189696
+phase guard: lead FE done cases=12386304
+phase guard: lead FF done cases=12582912
+phase guard: exit cases=12582912 checksum=2099 guard_page_intact=yes
+probe_equiv: exit checks=57852258 mismatches=0
