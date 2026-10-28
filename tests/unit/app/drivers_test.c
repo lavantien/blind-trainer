@@ -35,6 +35,7 @@ BT_TEST(drivers, vk_of_maps_the_script_keys_to_virtual_keys) {
 
 BT_TEST(drivers, posted_arrow_keys_reach_the_polled_key_state) {
     bt_app_config config;
+    bt_app_config_defaults(&config);
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers arrow test");
@@ -56,6 +57,7 @@ BT_TEST(drivers, posted_arrow_keys_reach_the_polled_key_state) {
 
 BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
     bt_app_config config;
+    bt_app_config_defaults(&config);
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers escape test");
@@ -89,6 +91,7 @@ BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
 
 BT_TEST(drivers, escape_keeps_the_window_open_while_close_still_works) {
     bt_app_config config;
+    bt_app_config_defaults(&config);
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers close test");
@@ -110,6 +113,19 @@ BT_TEST(drivers, escape_keeps_the_window_open_while_close_still_works) {
     EndDrawing();
     BT_CHECK(WindowShouldClose());
     CloseWindow();
+}
+
+BT_TEST(drivers, window_config_setup_initializes_the_render_fields_the_window_consumes) {
+    bt_app_config config;
+    bt_app_config reference;
+    memset(&config, 0xA5, sizeof config);
+    bt_app_config_defaults(&config);
+    bt_app_config_defaults(&reference);
+    config.window.width = 320;
+    config.window.height = 240;
+    snprintf(config.window.title, sizeof config.window.title, "%s", "drivers config pin");
+    BT_CHECK_EQ(config.render.target_fps, reference.render.target_fps);
+    BT_CHECK_EQ(config.render.vsync, reference.render.vsync);
 }
 
 static void sandbox_appdata(const char *tag, char *saved, size_t saved_len) {
