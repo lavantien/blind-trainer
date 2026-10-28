@@ -1160,7 +1160,7 @@ def ensure_tool_exes(hub, logger, build_label, names):
     return exes
 
 
-def run_policy_exe(exe, argv, label, logger, env=None):
+def run_policy_exe(exe, argv, label, logger, env=None, echo=False):
     try:
         proc = run([exe, *argv], label, check=False, timeout=300, env=env)
     except subprocess.TimeoutExpired as e:
@@ -1171,6 +1171,8 @@ def run_policy_exe(exe, argv, label, logger, env=None):
         tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
         if tail:
             print(tail, flush=True)
+    elif echo and proc.stdout:
+        print(proc.stdout, flush=True)
     logger.exit(label, proc.returncode)
     return proc.returncode
 
@@ -1399,18 +1401,19 @@ def tgt_e2e_smoke(args):
     try:
         build_scope(hub, logger, "app")
         build_scope(hub, logger, "e2e")
+        bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+        out_dir = REPO_ROOT / "artifacts" / "e2e"
+        user_dir = REPO_ROOT / "artifacts" / "e2e-user"
+        for path in (out_dir, user_dir):
+            path.mkdir(parents=True, exist_ok=True)
+        env = {**os.environ, "APPDATA": str(user_dir)}
+        driver = bin_dir / build_cfg(hub)["e2e_exe"]
+        app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("e2e-smoke", f"{type(e).__name__}: {e}")
         return 1
-    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
-    out_dir = REPO_ROOT / "artifacts" / "e2e"
-    user_dir = REPO_ROOT / "artifacts" / "e2e-user"
-    for path in (out_dir, user_dir):
-        path.mkdir(parents=True, exist_ok=True)
-    env = {**os.environ, "APPDATA": str(user_dir)}
-    driver = bin_dir / build_cfg(hub)["e2e_exe"]
-    app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
-    return run_policy_exe(driver, [str(app), str(out_dir)], "e2e-smoke", logger, env=env)
+    return run_policy_exe(driver, [str(app), str(out_dir)], "e2e-smoke", logger, env=env,
+                          echo=True)
 
 
 def tgt_e2e(args):
@@ -1421,17 +1424,18 @@ def tgt_e2e(args):
     try:
         build_scope(hub, logger, "app", only="e2e")
         build_scope(hub, logger, "tools", only="jobwrap")
+        bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+        jobwrap = bin_dir / "jobwrap.exe"
+        suite = bin_dir / "app_e2e_test.exe"
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("e2e", f"{type(e).__name__}: {e}")
         return 1
-    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
-    jobwrap = bin_dir / "jobwrap.exe"
-    suite = bin_dir / "app_e2e_test.exe"
     for exe in (jobwrap, suite):
         if not exe.is_file():
             logger.fail("e2e", f"missing exe after build: {exe}")
             return 1
-    code = run_policy_exe(jobwrap, ["--anchor", "e2e", "--", str(suite)], "e2e", logger)
+    code = run_policy_exe(jobwrap, ["--anchor", "e2e", "--", str(suite)], "e2e", logger,
+                          echo=True)
     if code != 0:
         return code
     return tgt_e2e_smoke(args)
