@@ -1,0 +1,29 @@
+2026-10-28T11:22:25 [entry] release-verify v=adv12b-nostaging
+2026-10-28T11:22:25 [skip] compile src\common\bt_harness.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\bt_trace.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\config.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\fsrs_math.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\json.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\paths.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\rng.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\sha256.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\space.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\strbuf.c up to date
+2026-10-28T11:22:25 [skip] compile src\common\when.c up to date
+2026-10-28T11:22:25 [skip] compile tests\unit\tools\release_verify_exec_test.c up to date
+2026-10-28T11:22:25 [skip] compile tests\unit\tools\release_verify_test.c up to date
+2026-10-28T11:22:25 [skip] compile tests\unit\tools\release_verify_zip_test.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\exec.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\inflate.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\lib.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\main.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\png.c up to date
+2026-10-28T11:22:25 [skip] compile tools\release-verify\zip.c up to date
+2026-10-28T11:22:25 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-28T11:22:27 [repro] 209 object timestamps zeroed
+2026-10-28T11:22:27 [compile] 188 compiled, 188 ok
+2026-10-28T11:22:27 [skip] link release-verify.exe up to date
+2026-10-28T11:22:27 [entry] release-verify C:\Users\lavantien\dev\github\blind-trainer\build\bin\release-verify.exe C:\Users\lavantien\dev\github\blind-trainer\artifacts\dist\blind-trainer C:\Users\lavantien\dev\github\blind-trainer\artifacts\dist\blind-trainer-adv12b-nostaging-windows-x64.zip --run
+2026-10-28T11:22:27 [exit] release-verify code=1 dt=0.012s
+fail: zip check: cannot open zip: cannot open C:\Users\lavantien\dev\github\blind-trainer\artifacts\dist\blind-trainer-adv12b-nostaging-windows-x64.zip: No such file or directory
+2026-10-28T11:22:27 [exit] release-verify code=1

@@ -1,0 +1,12 @@
+{
+  "release": {
+    "staging_dir": "blind-trainer",
+    "exe": "blind-trainer.exe",
+    "config_file": "config/config.json",
+    "fonts_dir": "assets/fonts",
+    "run_timeout_secs": 2,
+    "neg_config_exit": 1,
+    "usage_exit": 2
+  },
+  "e2e": {"shots": []}
+}

@@ -1,0 +1,11 @@
+2026-10-28T11:16:09 [entry] dist v=adv12b-probe1
+2026-10-28T11:16:13 [compile] 188 compiled, 188 ok
+2026-10-28T11:16:15 [stage] blind-trainer.exe staged for dist
+2026-10-28T11:16:15 [entry] dist-stage C:\Users\lavantien\AppData\Local\Programs\Python\Python314\python.exe C:\Users\lavantien\dev\github\blind-trainer\scripts\dist.py -Version adv12b-probe1
+2026-10-28T11:16:15 [exit] dist-stage code=0 dt=0.373s
+2026-10-28T11:16:15 [exit] dist code=0
+2026-10-28T11:16:15 [entry] release-verify v=adv12b-probe1
+2026-10-28T11:16:18 [compile] 188 compiled, 188 ok
+2026-10-28T11:16:19 [entry] release-verify C:\Users\lavantien\dev\github\blind-trainer\build\bin\release-verify.exe C:\Users\lavantien\dev\github\blind-trainer\artifacts\dist\blind-trainer C:\Users\lavantien\dev\github\blind-trainer\artifacts\dist\blind-trainer-adv12b-probe1-windows-x64.zip --run
+2026-10-28T11:16:31 [exit] release-verify code=0 dt=12.509s
+2026-10-28T11:16:31 [exit] release-verify code=0

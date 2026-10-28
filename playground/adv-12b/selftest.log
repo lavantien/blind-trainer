@@ -1,0 +1,27 @@
+2026-10-28T11:20:34 [entry] release-verify-selftest
+2026-10-28T11:20:34 [skip] compile src\common\bt_harness.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\bt_trace.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\config.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\fsrs_math.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\json.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\paths.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\rng.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\sha256.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\space.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\strbuf.c up to date
+2026-10-28T11:20:34 [skip] compile src\common\when.c up to date
+2026-10-28T11:20:34 [skip] compile tests\unit\tools\release_verify_exec_test.c up to date
+2026-10-28T11:20:34 [skip] compile tests\unit\tools\release_verify_test.c up to date
+2026-10-28T11:20:34 [skip] compile tests\unit\tools\release_verify_zip_test.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\exec.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\inflate.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\lib.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\main.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\png.c up to date
+2026-10-28T11:20:34 [skip] compile tools\release-verify\zip.c up to date
+2026-10-28T11:20:34 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-28T11:20:36 [repro] 209 object timestamps zeroed
+2026-10-28T11:20:36 [compile] 188 compiled, 188 ok
+2026-10-28T11:20:36 [skip] link release-verify.exe up to date
+2026-10-28T11:20:40 [summary] 3 passed, 0 failed
+2026-10-28T11:20:40 [exit] release-verify-selftest code=0
