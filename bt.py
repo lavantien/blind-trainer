@@ -1300,7 +1300,17 @@ def visual_retry_outcome(rerender_code, second_code):
         return 4, "infra error, re-render failed"
     if second_code == 0:
         return 3, "infra flake, second run passed"
+    if second_code != 1:
+        return 4, f"infra error, second diff exited {second_code}"
     return 2, "regression, both runs mismatched"
+
+
+def visual_diff_gate(code):
+    if code == 0:
+        return 0, None
+    if code == 1:
+        return 1, None
+    return 4, f"infra error, diff exited {code}"
 
 
 def visual_append_verdict(report_path, verdict):
@@ -1330,6 +1340,29 @@ def capture_diffs(first, second):
     return drift
 
 
+def expected_shot_names(hub):
+    return [f"{slug}.png" for slug in hub.get("e2e", {}).get("shots", [])]
+
+
+def shot_set_drift(expected, found):
+    drift = []
+    if not expected:
+        drift.append("config e2e.shots lists no shots")
+    if not found:
+        drift.append("no pngs found")
+    for name in sorted(set(expected) - set(found)):
+        drift.append(f"{name} missing from the set")
+    for name in sorted(set(found) - set(expected)):
+        drift.append(f"{name} unexpected")
+    return drift
+
+
+def reset_e2e_sandbox(user_dir):
+    if user_dir.is_dir():
+        shutil.rmtree(user_dir)
+    return user_dir
+
+
 def _ensure_visual_diff(hub, logger):
     build_scope(hub, logger, "tools", only="visual_diff")
     exe = REPO_ROOT / dirs_cfg(hub)["bin"] / "visual-diff.exe"
@@ -1343,19 +1376,22 @@ def tgt_visual_diff(args):
     hub = load_hub()
     shots, bases = visual_pair_dirs(hub)
     return tool_run(
-        hub, "visual-diff-build", "visual-diff.exe", [shots, bases], "visual-diff"
+        hub, "visual-diff-build", "visual-diff.exe", [shots, bases], "visual-diff",
+        env=child_env(hub)
     )
 
 
 def tgt_visual_selftest(args):
     """prove the diff passes identical and catches drift"""
+    hub = load_hub()
     workdir = REPO_ROOT / "artifacts" / "visual-selftest"
     return tool_run(
-        load_hub(),
+        hub,
         "visual-diff-build",
         "visual-diff.exe",
         ["--selftest", workdir],
         "visual-selftest",
+        env=child_env(hub),
     )
 
 
@@ -1369,28 +1405,58 @@ def tgt_visual(args):
         shots, bases = visual_pair_dirs(hub)
         report = visual_report_path(hub)
         workdir = REPO_ROOT / "artifacts" / "visual-selftest"
+        drift = shot_set_drift(
+            expected_shot_names(hub), set(png_hashes(shots)) | set(png_hashes(bases))
+        )
+        if drift:
+            for line in drift:
+                logger.fail("visual", line)
+            logger.exit("visual", 4)
+            return 4
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("visual", f"{type(e).__name__}: {e}")
         return 1
-    code = run_policy_exe(exe, ["--selftest", str(workdir)], "visual-selftest", logger)
-    if code != 0:
+    try:
+        code = run_policy_exe(
+            exe, ["--selftest", str(workdir)], "visual-selftest", logger,
+            env=child_env(hub)
+        )
+        if code != 0:
+            logger.exit("visual", code)
+            return code
+        code = run_policy_exe(
+            exe, [str(shots), str(bases)], "visual-diff", logger, echo=True,
+            env=child_env(hub)
+        )
+        gate, verdict = visual_diff_gate(code)
+        if gate != 1:
+            if verdict is not None:
+                logger.fail("visual", verdict)
+                visual_append_verdict(report, verdict)
+            logger.exit("visual", gate)
+            return gate
+        print("visual: mismatch, re-rendering and re-diffing once", flush=True)
+        _, _, _, user_dir, _ = _e2e_smoke_plan(hub)
+        reset_e2e_sandbox(user_dir)
+        rerender = tgt_e2e_smoke(args)
+        second = (
+            run_policy_exe(
+                exe, [str(shots), str(bases)], "visual-diff", logger, echo=True,
+                env=child_env(hub)
+            )
+            if rerender == 0
+            else None
+        )
+        code, verdict = visual_retry_outcome(rerender, second)
+        visual_append_verdict(report, verdict)
         logger.exit("visual", code)
         return code
-    code = run_policy_exe(exe, [str(shots), str(bases)], "visual-diff", logger, echo=True)
-    if code == 0:
-        logger.exit("visual", 0)
-        return 0
-    print("visual: mismatch, re-rendering and re-diffing once", flush=True)
-    rerender = tgt_e2e_smoke(args)
-    second = (
-        run_policy_exe(exe, [str(shots), str(bases)], "visual-diff", logger, echo=True)
-        if rerender == 0
-        else None
-    )
-    code, verdict = visual_retry_outcome(rerender, second)
-    visual_append_verdict(report, verdict)
-    logger.exit("visual", code)
-    return code
+    except OSError as e:
+        verdict = f"infra error, spawn failed: {e}"
+        logger.fail("visual", verdict)
+        visual_append_verdict(report, verdict)
+        logger.exit("visual", 4)
+        return 4
 
 
 def tgt_baselines(args):
@@ -1400,8 +1466,7 @@ def tgt_baselines(args):
     logger.entry("baselines")
     try:
         user_dir = REPO_ROOT / "artifacts" / "e2e-user"
-        if user_dir.is_dir():
-            shutil.rmtree(user_dir)
+        reset_e2e_sandbox(user_dir)
         build_scope(hub, logger, "app")
         build_scope(hub, logger, "e2e")
         driver, app, out_dir, user_dir, env = _e2e_smoke_plan(hub)
@@ -1424,13 +1489,15 @@ def tgt_baselines(args):
         captures.append(png_hashes(out_dir))
         logger.line("hash", f"capture {pass_at} hashed {len(captures[-1])} pngs")
     drift = capture_diffs(captures[0], captures[1])
+    drift += shot_set_drift(expected_shot_names(hub), set(captures[1]))
     if drift:
         for line in drift:
             logger.fail("baselines", line)
         logger.exit("baselines", 1)
         return 1
     code = run_policy_exe(
-        exe, ["--update", str(out_dir), str(bases)], "baselines-update", logger, echo=True
+        exe, ["--update", str(out_dir), str(bases)], "baselines-update", logger,
+        echo=True, env=child_env(hub)
     )
     logger.exit("baselines", code)
     return code
@@ -1443,12 +1510,15 @@ def tgt_gen_data(args):
 
 def tgt_memofreq(args):
     """memo pair frequency monte carlo"""
-    return tool_run(load_hub(), "memofreq-build", "memofreq.exe", [], "memofreq")
+    hub = load_hub()
+    return tool_run(hub, "memofreq-build", "memofreq.exe", [], "memofreq",
+                    env=child_env(hub))
 
 
 def tgt_ga(args):
     """run the syllable optimizer into data/ga/"""
-    return tool_run(load_hub(), "ga-run-build", "ga-run.exe", [], "ga")
+    hub = load_hub()
+    return tool_run(hub, "ga-run-build", "ga-run.exe", [], "ga", env=child_env(hub))
 
 
 def tgt_verify_algs(args):
@@ -1527,7 +1597,7 @@ def _e2e_smoke_plan(hub):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
     out_dir = REPO_ROOT / "artifacts" / "e2e"
     user_dir = REPO_ROOT / "artifacts" / "e2e-user"
-    env = {**os.environ, "APPDATA": str(user_dir)}
+    env = {**child_env(hub), "APPDATA": str(user_dir)}
     driver = bin_dir / build_cfg(hub)["e2e_exe"]
     app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
     return driver, app, out_dir, user_dir, env

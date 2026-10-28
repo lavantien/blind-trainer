@@ -1,4 +1,5 @@
 import hashlib
+import os
 import sys
 import tempfile
 import unittest
@@ -46,12 +47,58 @@ class VisualRetryOutcomeTests(unittest.TestCase):
             bt.visual_retry_outcome(0, 0), (3, "infra flake, second run passed")
         )
 
-    def test_second_pass_mismatch_is_a_regression(self):
+    def test_second_pass_pixel_mismatch_is_a_regression(self):
         self.assertEqual(
             bt.visual_retry_outcome(0, 1), (2, "regression, both runs mismatched")
         )
+
+    def test_second_pass_usage_error_is_infra_not_regression(self):
+        code, verdict = bt.visual_retry_outcome(0, 2)
+        self.assertEqual(code, 4)
+        self.assertIn("second diff exited 2", verdict)
+
+
+class VisualDiffGateTests(unittest.TestCase):
+    def test_green_diff_short_circuits_to_zero(self):
+        self.assertEqual(bt.visual_diff_gate(0), (0, None))
+
+    def test_pixel_mismatch_asks_for_the_retry(self):
+        self.assertEqual(bt.visual_diff_gate(1), (1, None))
+
+    def test_usage_or_infra_exit_fails_fast_without_retry(self):
+        for code in (2, 3):
+            gate, verdict = bt.visual_diff_gate(code)
+            self.assertEqual(gate, 4)
+            self.assertIn(f"diff exited {code}", verdict)
+
+
+class ShotSetConformanceTests(unittest.TestCase):
+    def test_expected_names_wrap_every_config_slug(self):
+        hub = bt.load_hub()
+        expected = bt.expected_shot_names(hub)
+        self.assertEqual(len(expected), len(hub["e2e"]["shots"]))
+        for slug in hub["e2e"]["shots"]:
+            self.assertIn(f"{slug}.png", expected)
+
+    def test_matching_sets_report_no_drift(self):
+        self.assertEqual(bt.shot_set_drift(["menu.png"], ["menu.png"]), [])
+
+    def test_missing_and_unexpected_names_are_listed_sorted(self):
+        drift = bt.shot_set_drift(
+            ["menu.png", "drill.png"], ["menu.png", "algs.png"]
+        )
+        self.assertEqual(drift, ["drill.png missing from the set", "algs.png unexpected"])
+
+    def test_an_empty_expected_list_is_drift(self):
         self.assertEqual(
-            bt.visual_retry_outcome(0, 2), (2, "regression, both runs mismatched")
+            bt.shot_set_drift([], ["menu.png"]),
+            ["config e2e.shots lists no shots", "menu.png unexpected"],
+        )
+
+    def test_an_empty_found_set_is_drift(self):
+        self.assertEqual(
+            bt.shot_set_drift(["menu.png"], []),
+            ["no pngs found", "menu.png missing from the set"],
         )
 
 
@@ -135,6 +182,36 @@ class SmokePlanTests(unittest.TestCase):
         self.assertEqual(out_dir, bt.REPO_ROOT / "artifacts" / "e2e")
         self.assertEqual(user_dir, bt.REPO_ROOT / "artifacts" / "e2e-user")
         self.assertEqual(env["APPDATA"], str(user_dir))
+
+    def test_plan_pins_the_bt_child_env_over_foreign_values(self):
+        hub = bt.load_hub()
+        names = ("BT_CONFIG", "BT_ARTIFACTS", "BT_REF_GROUND")
+        old = {name: os.environ.get(name) for name in names}
+        os.environ["BT_CONFIG"] = "Z:/foreign/config.json"
+        os.environ["BT_ARTIFACTS"] = "Z:/foreign/artifacts"
+        os.environ["BT_REF_GROUND"] = "Z:/foreign/ref"
+        try:
+            _, _, _, _, env = bt._e2e_smoke_plan(hub)
+        finally:
+            for name, value in old.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+        self.assertEqual(env["BT_CONFIG"], str(bt.REPO_ROOT / "config/config.json"))
+        self.assertEqual(env["BT_ARTIFACTS"], hub["paths"]["artifacts"])
+        self.assertEqual(env["BT_REF_GROUND"], hub["paths"]["ref_ground"])
+
+
+class SandboxResetTests(unittest.TestCase):
+    def test_reset_removes_the_sandbox_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sandbox = Path(tmp) / "e2e-user"
+            sandbox.mkdir()
+            (sandbox / "store.db").write_bytes(b"x")
+            self.assertEqual(bt.reset_e2e_sandbox(sandbox), sandbox)
+            self.assertFalse(sandbox.exists())
+            self.assertEqual(bt.reset_e2e_sandbox(sandbox), sandbox)
 
 
 if __name__ == "__main__":
