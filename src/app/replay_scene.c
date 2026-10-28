@@ -5,12 +5,7 @@
 #include <math.h>
 
 const bt_replay_i3 BT_REPLAY_FACE_NORMALS[6] = {
-    {0, 1, 0},
-    {-1, 0, 0},
-    {0, 0, 1},
-    {1, 0, 0},
-    {0, 0, -1},
-    {0, -1, 0},
+    {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, {1, 0, 0}, {0, 0, -1}, {0, -1, 0},
 };
 
 static const uint8_t BT_REPLAY_FACE_AXIS[6] = {1, 0, 2, 0, 2, 1};
@@ -119,7 +114,8 @@ const bt_replay_cell *bt_replay_cell_at(bt_replay_i3 pos, bt_replay_i3 normal) {
     for (size_t i = 0; i < BT_REPLAY_CELL_COUNT; i++) {
         const bt_replay_cell *cell = &cells_table[i];
         if (cell->pos.x == pos.x && cell->pos.y == pos.y && cell->pos.z == pos.z &&
-            cell->normal.x == normal.x && cell->normal.y == normal.y && cell->normal.z == normal.z) {
+            cell->normal.x == normal.x && cell->normal.y == normal.y &&
+            cell->normal.z == normal.z) {
             BT_TRACE_EXIT("app.replay_cell_at");
             return cell;
         }
@@ -279,7 +275,8 @@ bt_replay_i3 bt_replay_rotate(bt_replay_i3 v, bt_axis axis, uint8_t times) {
     return out;
 }
 
-const bt_replay_cell *bt_replay_turned_cell(const bt_replay_cell *cell, const bt_replay_turn *turn) {
+const bt_replay_cell *bt_replay_turned_cell(const bt_replay_cell *cell,
+                                            const bt_replay_turn *turn) {
     BT_TRACE_ENTER("app.replay_turned_cell");
     const bt_replay_cell *out;
     if (!bt_replay_turn_rotates(turn, cell->pos)) {
@@ -463,21 +460,21 @@ bt_replay_orbit bt_replay_apply_drag_delta(bt_replay_orbit orbit, const bt_repla
     BT_TRACE_ENTER("app.replay_apply_drag_delta");
     bt_replay_orbit out;
     out.yaw_deg = bt_replay_wrap_yaw(orbit.yaw_deg + dx_px * BT_REPLAY_DRAG_DEG_PER_PX);
-    out.pitch_deg =
-        clampf(orbit.pitch_deg + dy_px * BT_REPLAY_DRAG_DEG_PER_PX, cfg->pitch_clamp_deg[0],
-               cfg->pitch_clamp_deg[1]);
+    out.pitch_deg = clampf(orbit.pitch_deg + dy_px * BT_REPLAY_DRAG_DEG_PER_PX,
+                           cfg->pitch_clamp_deg[0], cfg->pitch_clamp_deg[1]);
     out.distance = clampf(orbit.distance, cfg->zoom_min, cfg->zoom_max);
     BT_TRACE_EXIT("app.replay_apply_drag_delta");
     return out;
 }
 
-bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg *cfg, float notches) {
+bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg *cfg,
+                                     float notches) {
     BT_TRACE_ENTER("app.replay_apply_zoom");
     bt_replay_orbit out;
     out.yaw_deg = orbit.yaw_deg;
     out.pitch_deg = orbit.pitch_deg;
-    out.distance =
-        clampf(orbit.distance - notches * BT_REPLAY_ZOOM_UNITS_PER_NOTCH, cfg->zoom_min, cfg->zoom_max);
+    out.distance = clampf(orbit.distance - notches * BT_REPLAY_ZOOM_UNITS_PER_NOTCH, cfg->zoom_min,
+                          cfg->zoom_max);
     BT_TRACE_EXIT("app.replay_apply_zoom");
     return out;
 }
@@ -554,7 +551,8 @@ bool bt_replay_playback_current_turn(const bt_replay_playback *playback, bt_repl
     return true;
 }
 
-float bt_replay_playback_current_progress(const bt_replay_playback *playback, double secs_per_move) {
+float bt_replay_playback_current_progress(const bt_replay_playback *playback,
+                                          double secs_per_move) {
     BT_TRACE_ENTER("app.replay_playback_current_progress");
     float progress;
     if (bt_replay_playback_finished(playback)) {
