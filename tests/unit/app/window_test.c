@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BT_WINDOW_CAPTURE_DWELL_FRAMES 12
+enum { BT_WINDOW_CAPTURE_DWELL_FRAMES = 12 };
 
 static void ref_ground(char out[BT_PATH_MAX]) {
     const char *raw = getenv("BT_REF_GROUND");
