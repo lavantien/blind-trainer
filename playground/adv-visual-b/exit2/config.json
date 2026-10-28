@@ -1,0 +1,403 @@
+{
+  "app": {
+    "window": {
+      "width": 1280,
+      "height": 800,
+      "title": "blind trainer"
+    },
+    "memo": {
+      "cadence_ms": 800,
+      "mode": "per-orbit"
+    },
+    "drill": {
+      "reps": 6
+    },
+    "smoke_seed": 20261012,
+    "replay": {
+      "secs_per_move": 0.5,
+      "yaw_deg": 45.0,
+      "pitch_deg": 30.0,
+      "distance": 6.0,
+      "zoom_min": 3.5,
+      "zoom_max": 12.0,
+      "pitch_clamp_deg": [
+        -80.0,
+        80.0
+      ]
+    },
+    "fonts": {
+      "codepoint_ranges": [
+        [
+          32,
+          126
+        ],
+        [
+          160,
+          255
+        ],
+        [
+          258,
+          259
+        ],
+        [
+          272,
+          273
+        ],
+        [
+          416,
+          432
+        ],
+        [
+          7840,
+          7929
+        ]
+      ]
+    },
+    "render": {
+      "target_fps": 60,
+      "vsync": false,
+      "capture_dwell_frames": 12
+    }
+  },
+  "ga": {
+    "seed": 20261012,
+    "population": 200,
+    "generations": 500,
+    "elite": 2,
+    "tournament": 2,
+    "pool_top_k": 1600,
+    "weights": {
+      "confusion": 1.0,
+      "flow": 0.5,
+      "complexity": 0.1
+    },
+    "mutation": {
+      "swap": 0.15,
+      "replace": 0.05
+    }
+  },
+  "memofreq": {
+    "samples": 200000,
+    "seed": 20261012
+  },
+  "srs": {
+    "fsrs": {
+      "weights": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "request_retention": 0.9,
+      "interval_clamp_days": [
+        1,
+        365
+      ]
+    }
+  },
+  "verify": {
+    "max_qtm": 24
+  },
+  "synth": {
+    "max_setup": 3,
+    "max_insert": 4,
+    "node_budget": 50000000,
+    "scoring": {
+      "preferred": [
+        "U",
+        "D",
+        "R"
+      ],
+      "preferred_edge": [
+        "U",
+        "D",
+        "R",
+        "M",
+        "E",
+        "S"
+      ],
+      "penalty_other": 2.0,
+      "weight_len": 1.0,
+      "weight_subset": 2.0,
+      "weight_regrip": 1.5,
+      "weight_finger": 0.5,
+      "finger_cost": {
+        "U": [
+          0.2,
+          0.2
+        ],
+        "D": [
+          0.2,
+          0.2
+        ],
+        "L": [
+          0.4,
+          0.4
+        ],
+        "R": [
+          0.4,
+          0.4
+        ],
+        "F": [
+          0.8,
+          0.8
+        ],
+        "B": [
+          0.8,
+          0.8
+        ]
+      }
+    }
+  },
+  "visual": {
+    "tolerance": 48,
+    "raylib_log_level": "warning"
+  },
+  "fuzz": {
+    "seed": 20261012,
+    "runs": 5000,
+    "secs": 30
+  },
+  "mutants": {
+    "workers": 1,
+    "timeout_secs": 120,
+    "scratch_root": "",
+    "ledger": "artifacts/mutants/ledger.tsv"
+  },
+  "policy": {
+    "small_literal_allow": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "literal_recurrence": 4,
+    "exempt_ext": [
+      ".rs",
+      ".ps1"
+    ]
+  },
+  "sloc": {
+    "max_file_lines": 1000
+  },
+  "job": {
+    "per_process_bytes": 4294967296
+  },
+  "memguard": {
+    "cap_bytes": 8589934592,
+    "pid_dir": "artifacts/progress/pids"
+  },
+  "disk": {
+    "scratch_stale_hours": 6,
+    "free_floor_gb": 20
+  },
+  "e2e": {
+    "shots": [
+      "menu",
+      "drill",
+      "memo",
+      "solve",
+      "replay",
+      "algs",
+      "case-drill",
+      "stats",
+      "settings",
+      "fatal"
+    ],
+    "timeout_secs": 180
+  },
+  "release": {
+    "staging_dir": "blind-trainer",
+    "exe": "blind-trainer.exe",
+    "config_file": "config/config.json",
+    "fonts_dir": "assets/fonts",
+    "run_timeout_secs": 300,
+    "neg_config_exit": 1,
+    "usage_exit": 2
+  },
+  "paths": {
+    "ref_ground": "ref_ground",
+    "ref_doc": "ref_doc",
+    "packs": "ref_ground/packs",
+    "data_vendor": "data/vendor",
+    "data_ga": "data/ga",
+    "artifacts": "playground/adv-visual-b/exit2/art",
+    "baselines": "playground/adv-visual-b/exit2/base",
+    "fonts": "assets/fonts",
+    "db_file": "blind-trainer.db"
+  },
+  "build": {
+    "target": "x86_64-pc-windows-msvc",
+    "std": "c23",
+    "cflags": [
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-ffp-contract=off",
+      "-g0",
+      "-D_CRT_SECURE_NO_WARNINGS"
+    ],
+    "release_flags": [
+      "-O2",
+      "-DNDEBUG"
+    ],
+    "link_flags": [
+      "/SUBSYSTEM:CONSOLE",
+      "/OPT:REF",
+      "/OPT:ICF",
+      "/DEBUG:NONE",
+      "/brepro"
+    ],
+    "jobs": 0,
+    "test_timeout_secs": 300,
+    "src_deps": {
+      "core": [],
+      "scheme": [
+        "core"
+      ],
+      "data": [
+        "core",
+        "scheme"
+      ],
+      "puzzles": [
+        "core"
+      ],
+      "ga": [
+        "core",
+        "scheme",
+        "data"
+      ],
+      "app": [
+        "core",
+        "scheme",
+        "data",
+        "puzzles",
+        "ga"
+      ]
+    },
+    "tool_deps": {
+      "gendata": [
+        "data",
+        "scheme",
+        "puzzles"
+      ],
+      "verify": [
+        "data",
+        "puzzles"
+      ],
+      "ga-run": [
+        "ga"
+      ],
+      "memofreq": [
+        "ga",
+        "scheme",
+        "data"
+      ],
+      "mutate": [],
+      "mutants-gate": [],
+      "policy": [],
+      "visual-diff": [],
+      "release-verify": [],
+      "jobwrap": [],
+      "sleeper": []
+    },
+    "hello_exe": "bt-hello.exe",
+    "app_exe": "bt-app.exe",
+    "e2e_exe": "bt-e2e.exe",
+    "dirs": {
+      "root": "build",
+      "bin": "build/bin",
+      "obj": "build/obj",
+      "gen": "build/gen",
+      "vendor": "build/vendor",
+      "downloads": "build/vendor-downloads",
+      "staging": "build/vendor-staging",
+      "env": "build/env.json",
+      "vendor_lock": "build/vendor.lock",
+      "test_tmp": "build/test-tmp"
+    },
+    "tools": {
+      "clang": "",
+      "clang_format": "",
+      "clang_tidy": "",
+      "llvm_cov": "",
+      "llvm_ar": "",
+      "python": "",
+      "nvcc": ""
+    },
+    "vendor": {
+      "raylib": {
+        "ref": "6.2",
+        "url": "https://github.com/raysan5/raylib/archive/refs/tags/6.2.zip",
+        "sha256": "7a0bc2d6ad385f244fac2947f9584520b654fb4fb7d6575856247f323cecb63a",
+        "archive_root": "raylib-6.2",
+        "destination": "vendor/raylib"
+      },
+      "sqlite": {
+        "ref": "3.54.1",
+        "url": "https://sqlite.org/2026/sqlite-amalgamation-3540100.zip",
+        "sha3_256": "92281c86e2957f9b9305890f9ac04204caa7b677cc868dc326d942689df28e30",
+        "archive_root": "",
+        "destination": "vendor/sqlite",
+        "files": [
+          "sqlite3.c",
+          "sqlite3.h"
+        ]
+      }
+    },
+    "raylib_build": {
+      "source_dir": "vendor/raylib/src",
+      "include_dirs": [
+        "vendor/raylib/src",
+        "vendor/raylib/src/external/glfw/include"
+      ],
+      "defines": [
+        "PLATFORM_DESKTOP=1"
+      ],
+      "extra_flags": [
+        "-fno-fast-math"
+      ],
+      "obj_dir": "build/obj/vendor/raylib",
+      "lib": "build/vendor/raylib.lib",
+      "system_libs": [
+        "opengl32",
+        "gdi32",
+        "user32",
+        "shell32",
+        "winmm"
+      ],
+      "tools": [
+        "visual-diff"
+      ],
+      "src_areas": [
+        "app"
+      ]
+    }
+  },
+  "trace": {
+    "ring_bytes": 65536,
+    "max_threads": 8,
+    "line_max": 256
+  }
+}

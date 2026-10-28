@@ -1,0 +1,15 @@
+binary: build\bin\bt-app.exe
+out dir: playground\adv-visual-b\shots30
+window: 1280x800
+ok algs.png
+ok case-drill.png
+ok drill.png
+ok fatal.png
+ok memo.png
+ok menu.png
+ok replay.png
+ok settings.png
+ok solve.png
+ok stats.png
+10 shots expected, 10 found, 0 failed
+ok missing-config smoke exit 1
