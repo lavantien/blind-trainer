@@ -37,7 +37,6 @@
         "mode": "per-orbit"
       },
       "render": {
-        "capture_dwell_frames": 12,
         "target_fps": 60,
         "vsync": false
       },
@@ -82,6 +81,7 @@
         "vendor": "build/vendor",
         "vendor_lock": "build/vendor.lock"
       },
+      "e2e_exe": "bt-e2e.exe",
       "hello_exe": "bt-hello.exe",
       "jobs": 0,
       "link_flags": [
@@ -150,7 +150,7 @@
       },
       "std": "c23",
       "target": "x86_64-pc-windows-msvc",
-      "test_timeout_secs": 120,
+      "test_timeout_secs": 300,
       "tool_deps": {
         "ga-run": [
           "ga"
