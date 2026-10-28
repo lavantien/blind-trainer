@@ -1,0 +1,10 @@
+round 1: dims1=0 3x2 verdict=0 reason=[] dims2=0 3x2
+round 2: dims1=0 3x2 verdict=0 reason=[] dims2=0 3x2
+round 3: dims1=0 3x2 verdict=0 reason=[] dims2=0 3x2
+byte 33 flipped: PASS reason-empty
+byte 40 flipped: PASS reason-empty
+byte 47 flipped: PASS reason-empty
+byte 54 flipped: PASS reason-empty
+byte 61 flipped: PASS reason-empty
+byte 68 flipped: PASS reason-empty
+restored verdict=0

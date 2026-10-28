@@ -1,0 +1,15 @@
+binary: build\bin\bt-app.exe
+out dir: artifacts\e2e
+window: 1280x800
+ok menu.png
+ok drill.png
+ok memo.png
+ok solve.png
+ok replay.png
+ok algs.png
+ok case-drill.png
+ok stats.png
+ok settings.png
+ok fatal.png
+10 shots expected, 10 found, 0 failed
+ok missing-config smoke exit 1

@@ -1,0 +1,7 @@
+ok app_e2e_test e2e.bootstrap_reaches_menu_headless
+ok app_e2e_test e2e.fatal_on_missing_config_shows_reason
+ok app_e2e_test e2e.nav_intents_drive_state_machine
+ok app_e2e_test e2e.per_orbit_mode_survives_reload
+ok app_e2e_test e2e.save_stores_persists_into_the_db
+ok app_e2e_test e2e.settings_mutation_persists_across_reload
+suite app_e2e_test: 6 passed, 0 failed

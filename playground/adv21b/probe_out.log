@@ -1,0 +1,47 @@
+tail-600-lines: [line 493
+line 494
+line 495
+line 496
+line 497
+line 498
+line 499
+line 500
+line 501
+line 502
+line 503
+line 504
+line 505
+line 506
+line 507
+line 508
+line 509
+line 510
+line 511
+line 512]
+tail-empty: []
+tail-no-newline: [a
+b
+c]
+tail-crlf: [a
+b
+c]
+tail-only-newlines: [
+
+
+
+]
+tail-huge-line: [xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
+tail-binary: [&Edƒ¢Áàÿ=\{š¹Ø÷5Ts’±Ðï-LkŠ©Èç%Dc‚¡Àßþ<[z™¸×ö4Sr‘°Ïî,Kj‰¨Çæ$Cb ¿Þý;Zy˜·Öõ3Rq¯Îí+Jiˆ§Æå#Ba€Ÿ¾Ýü:Yx—¶Õô2Qp®Íì*Ih‡¦Åä"A`ž½Üû9Xw–µÔó1PoŽ­Ìë
+)Hg†¥Äã!@_~¼Ûú8Wv•´Óò0On¬Ëê	(Gf…¤Ãâ ?^}œ»Úù7Vu”³Òñ/NmŒ«Êé'Fe„£Âá]
+shot-header-only: verdict=0 reason=[&Edƒ¢Áàÿ=\{š¹Ø÷5Ts’±Ðï-LkŠ©Èç%Dc‚¡Àßþ<[z™¸×ö4Sr‘°Ïî,Kj‰¨Çæ$Cb ¿Þý;Zy˜·Öõ3Rq¯Îí+Jiˆ§Æå#Ba€Ÿ¾Ýü:Yx—¶Õô2Qp®Íì*Ih‡¦Åä"A`ž½Üû9Xw–µÔó1PoŽ­Ìë
+)Hg†¥Äã!@_~¼Ûú8Wv•´Óò0On¬Ëê	(Gf…¤Ãâ ?^}œ»Úù7Vu”³Òñ/NmŒ«Êé'Fe„£Âá] png_dims=0 3x2
+shot-bogus-ihdr-len: verdict=0 reason=[&Edƒ¢Áàÿ=\{š¹Ø÷5Ts’±Ðï-LkŠ©Èç%Dc‚¡Àßþ<[z™¸×ö4Sr‘°Ïî,Kj‰¨Çæ$Cb ¿Þý;Zy˜·Öõ3Rq¯Îí+Jiˆ§Æå#Ba€Ÿ¾Ýü:Yx—¶Õô2Qp®Íì*Ih‡¦Åä"A`ž½Üû9Xw–µÔó1PoŽ­Ìë
+)Hg†¥Äã!@_~¼Ûú8Wv•´Óò0On¬Ëê	(Gf…¤Ãâ ?^}œ»Úù7Vu”³Òñ/NmŒ«Êé'Fe„£Âá] png_dims=0 3x2
+shot-truncated-at-40: verdict=0 reason=[&Edƒ¢Áàÿ=\{š¹Ø÷5Ts’±Ðï-LkŠ©Èç%Dc‚¡Àßþ<[z™¸×ö4Sr‘°Ïî,Kj‰¨Çæ$Cb ¿Þý;Zy˜·Öõ3Rq¯Îí+Jiˆ§Æå#Ba€Ÿ¾Ýü:Yx—¶Õô2Qp®Íì*Ih‡¦Åä"A`ž½Üû9Xw–µÔó1PoŽ­Ìë
+)Hg†¥Äã!@_~¼Ûú8Wv•´Óò0On¬Ëê	(Gf…¤Ãâ ?^}œ»Úù7Vu”³Òñ/NmŒ«Êé'Fe„£Âá] png_dims=0 3x2
+shot-valid: verdict=0 reason=[&Edƒ¢Áàÿ=\{š¹Ø÷5Ts’±Ðï-LkŠ©Èç%Dc‚¡Àßþ<[z™¸×ö4Sr‘°Ïî,Kj‰¨Çæ$Cb ¿Þý;Zy˜·Öõ3Rq¯Îí+Jiˆ§Æå#Ba€Ÿ¾Ýü:Yx—¶Õô2Qp®Íì*Ih‡¦Åä"A`ž½Üû9Xw–µÔó1PoŽ­Ìë
+)Hg†¥Äã!@_~¼Ûú8Wv•´Óò0On¬Ëê	(Gf…¤Ãâ ?^}œ»Úù7Vu”³Òñ/NmŒ«Êé'Fe„£Âá] png_dims=0 3x2
+shot-signature-only: verdict=1 reason=[not a png] png_dims=-1 0x0
+shot-corrupt-idat: verdict=0 reason=[not a png] png_dims=0 3x2
+classify-dups: missing=0 unexpected=0
+expected-names-long-slug: rc=0 count=1 len=255 expected-len=304
