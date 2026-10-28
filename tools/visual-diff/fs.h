@@ -14,6 +14,7 @@ int btvd_fs_list_names(const char *dir, btvd_strvec *names, char *err, size_t er
 unsigned char *btvd_fs_read_bytes(const char *path, size_t *len_out, char *err, size_t err_len);
 int btvd_fs_write_bytes(const char *path, const void *data, size_t len, char *err, size_t err_len);
 int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len);
+int btvd_fs_replace(const char *from, const char *to, char *err, size_t err_len);
 int btvd_fs_remove(const char *path, char *err, size_t err_len);
 FILE *btvd_fs_open(const char *path, const char *mode);
 int btvd_fs_spawn_wait(const char *exe, char *const *argv, size_t argc);

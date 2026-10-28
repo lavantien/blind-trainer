@@ -179,6 +179,21 @@ int btvd_fs_remove(const char *path, char *err, size_t err_len) {
     return 0;
 }
 
+int btvd_fs_replace(const char *from, const char *to, char *err, size_t err_len) {
+    BT_TRACE_ENTER("visual_diff.fs_replace");
+    wchar_t wide_from[BT_PATH_MAX];
+    wchar_t wide_to[BT_PATH_MAX];
+    if (widen(from, wide_from, BT_PATH_MAX) != 0 || widen(to, wide_to, BT_PATH_MAX) != 0 ||
+        MoveFileExW(wide_from, wide_to, MOVEFILE_REPLACE_EXISTING) == 0) {
+        snprintf(err, err_len, "cannot replace %s", to);
+        BT_TRACE_FAIL("visual_diff.fs_replace", "%s error %lu", err, GetLastError());
+        BT_TRACE_EXIT("visual_diff.fs_replace");
+        return -1;
+    }
+    BT_TRACE_EXIT("visual_diff.fs_replace");
+    return 0;
+}
+
 #else
 
 int btvd_fs_is_dir(const char *path) {
@@ -263,6 +278,18 @@ int btvd_fs_remove(const char *path, char *err, size_t err_len) {
     return 0;
 }
 
+int btvd_fs_replace(const char *from, const char *to, char *err, size_t err_len) {
+    BT_TRACE_ENTER("visual_diff.fs_replace");
+    if (rename(from, to) != 0) {
+        snprintf(err, err_len, "cannot replace %s", to);
+        BT_TRACE_FAIL("visual_diff.fs_replace", "%s", err);
+        BT_TRACE_EXIT("visual_diff.fs_replace");
+        return -1;
+    }
+    BT_TRACE_EXIT("visual_diff.fs_replace");
+    return 0;
+}
+
 #endif
 
 unsigned char *btvd_fs_read_bytes(const char *path, size_t *len_out, char *err, size_t err_len) {
@@ -332,6 +359,14 @@ int btvd_fs_write_bytes(const char *path, const void *data, size_t len, char *er
 
 int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len) {
     BT_TRACE_ENTER("visual_diff.fs_copy");
+    char tmp[BT_PATH_MAX];
+    int wrote = snprintf(tmp, sizeof tmp, "%s.tmp", to);
+    if (wrote < 0 || (size_t)wrote >= sizeof tmp) {
+        snprintf(err, err_len, "path too long for %s", to);
+        BT_TRACE_FAIL("visual_diff.fs_copy", "%s", err);
+        BT_TRACE_EXIT("visual_diff.fs_copy");
+        return -1;
+    }
     FILE *src = btvd_fs_open(from, "rb");
     if (src == NULL) {
         snprintf(err, err_len, "cannot read %s", from);
@@ -339,10 +374,10 @@ int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len) {
         BT_TRACE_EXIT("visual_diff.fs_copy");
         return -1;
     }
-    FILE *dst = btvd_fs_open(to, "wb");
+    FILE *dst = btvd_fs_open(tmp, "wb");
     if (dst == NULL) {
         fclose(src);
-        snprintf(err, err_len, "cannot write %s", to);
+        snprintf(err, err_len, "cannot write %s", tmp);
         BT_TRACE_FAIL("visual_diff.fs_copy", "%s", err);
         BT_TRACE_EXIT("visual_diff.fs_copy");
         return -1;
@@ -351,9 +386,10 @@ int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len) {
     size_t got;
     while ((got = fread(buffer, 1, sizeof buffer, src)) > 0) {
         if (fwrite(buffer, 1, got, dst) != got) {
-            snprintf(err, err_len, "short write on %s", to);
+            snprintf(err, err_len, "short write on %s", tmp);
             fclose(src);
             fclose(dst);
+            btvd_fs_remove(tmp, NULL, 0);
             BT_TRACE_FAIL("visual_diff.fs_copy", "%s", err);
             BT_TRACE_EXIT("visual_diff.fs_copy");
             return -1;
@@ -364,6 +400,13 @@ int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len) {
     fclose(dst);
     if (broken) {
         snprintf(err, err_len, "read failed on %s", from);
+        btvd_fs_remove(tmp, NULL, 0);
+        BT_TRACE_FAIL("visual_diff.fs_copy", "%s", err);
+        BT_TRACE_EXIT("visual_diff.fs_copy");
+        return -1;
+    }
+    if (btvd_fs_replace(tmp, to, err, err_len) != 0) {
+        btvd_fs_remove(tmp, NULL, 0);
         BT_TRACE_FAIL("visual_diff.fs_copy", "%s", err);
         BT_TRACE_EXIT("visual_diff.fs_copy");
         return -1;
