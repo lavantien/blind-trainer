@@ -36,3 +36,24 @@ tools/mutate/scratch.c	64	slot name capacity of the scratch sweep, pinned by the
 tools/mutate/tests.c	60000	clang compile timeout of the mutate selftest spawns
 src/ga/features.c	1.0	identity confusion and flow penalty unit terms of the ga feature model, pinned by features and fuzzkill tests
 src/ga/ga.c	0.0	floating accumulation identity of the ga fitness sums, pinned by the trajectory tests
+src/app/net.c	0.08	ink shade and face stroke ratio of the net view, pinned by the net tests
+src/app/net.c	2.0	face stroke floor and gap terms of the net geometry, pinned by the net tests
+src/app/replay_scene.c	0.0	elapsed and cadence zero guards of the replay playback, pinned by the replay scene tests
+src/app/smoke.c	0.0	waited and stuck counter resets of the smoke tour, pinned by the smoke tests
+src/app/theme.c	1.0	body font and panel padding unit terms of the theme table, pinned by the theme tests
+src/app/theme.c	0.15	palette and panel shade terms of the theme, pinned by the theme tests
+src/app/theme.c	0.20	palette and panel raised shade terms of the theme, pinned by the theme tests
+src/app/theme.c	0.35	palette accent and danger shade terms of the theme, pinned by the theme tests
+src/app/theme.c	0.55	palette interchange and setup shade terms of the theme, pinned by the theme tests
+src/app/theme.c	0.85	palette shade term of the theme, pinned by the theme tests
+src/app/theme.c	0.90	palette band shade term of the theme, pinned by the theme tests
+src/app/theme.c	0.95	palette light shade terms of the theme, pinned by the theme tests
+src/app/usage.c	0.0	waited resets and clock guards of the usage tour, pinned by the usage tests
+src/app/usage_script.c	0.1	scripted elapse step of the usage tour, pinned by the usage script tests
+src/app/views/case_drill.c	12	megaminx face count of the case drill engine lists, pinned by the case drill tests
+src/app/views/drill.c	0.0	rep clock and split resets of the drill session, pinned by the drill tests
+src/app/views/replay.c	0.0	stillness guards and plane origins of the replay renderer, pinned by the replay scene tests
+src/app/views/solve.c	0.0	session clock and cadence guards of the solve flow, pinned by the solve tests
+src/app/views/solve.c	1000.0	milliseconds per second conversions of the solve records, pinned by the solve tests
+src/app/views/stats.c	0.0	empty stats guards and layout inits of the stats view, pinned by the stats tests
+src/app/views/stats.c	1000.0	milliseconds per second conversions of the stats formatting, pinned by the stats tests
