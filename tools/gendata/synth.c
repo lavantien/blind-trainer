@@ -154,6 +154,7 @@ static int setups_by_depth(const bt_move *alphabet, size_t alphabet_len, size_t 
                 next = grown;
                 vec_clone(&frontier[p], &next[next_count]);
                 if (vec_push(&next[next_count], alphabet[a]) != 0) {
+                    vec_free(&next[next_count]);
                     goto fail;
                 }
                 next_count++;

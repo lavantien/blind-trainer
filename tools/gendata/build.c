@@ -69,6 +69,9 @@ static int verdict_strings(const bt_verdict *verdict, char ***problems, size_t *
     *problem_count = verdict->problem_count;
     *problems = *problem_count > 0 ? malloc(*problem_count * sizeof(char *)) : NULL;
     if (*problems == NULL && *problem_count > 0) {
+        *problem_count = 0;
+        *note_count = 0;
+        BT_TRACE_FAIL("gd.build.verdict_strings", "problem strings allocation failed");
         return -1;
     }
     for (size_t i = 0; i < verdict->problem_count; i++) {
@@ -79,6 +82,11 @@ static int verdict_strings(const bt_verdict *verdict, char ***problems, size_t *
     *note_count = verdict->note_count;
     *notes = *note_count > 0 ? malloc(*note_count * sizeof(char *)) : NULL;
     if (*notes == NULL && *note_count > 0) {
+        bt_gd_string_list_free(*problems, *problem_count);
+        *problems = NULL;
+        *problem_count = 0;
+        *note_count = 0;
+        BT_TRACE_FAIL("gd.build.verdict_strings", "note strings allocation failed");
         return -1;
     }
     for (size_t i = 0; i < verdict->note_count; i++) {
@@ -125,6 +133,10 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
     memset(out, 0, sizeof *out);
     out->cases.count = 0;
     out->cases.cases = malloc(BT_GD_TOTAL_CASES * sizeof(bt_gd_case_entry));
+    if (out->cases.cases == NULL) {
+        BT_TRACE_FAIL("gd.build.build", "cases table allocation failed");
+        return;
+    }
     for (int o = 0; o < 2; o++) {
         bt_orbit orbit = o == 0 ? BT_ORBIT_EDGE : BT_ORBIT_CORNER;
         bt_case enumerated[BT_PAIRS_MAX];
@@ -157,7 +169,10 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
         char **notes = NULL;
         size_t note_count = 0;
         bool strings_owned = false;
-        verdict_strings(&verdict, &problems, &problem_count, &notes, &note_count);
+        if (verdict_strings(&verdict, &problems, &problem_count, &notes, &note_count) != 0) {
+            bt_verdict_free(&verdict);
+            goto next_row;
+        }
         if (!ok) {
             bt_strbuf joined;
             bt_strbuf_init(&joined, 0);
