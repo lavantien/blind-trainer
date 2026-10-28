@@ -72,8 +72,8 @@ int bt_smoke_finish(const bt_smoke_tour *tour) {
     BT_TRACE_ENTER("app.smoke_finish");
     int all_written = tour->shot_count == BT_APP_TOUR_COUNT;
     for (size_t i = 0; all_written && i < tour->shot_count; i++) {
-        if (!file_written(tour->shots[i].path)
-            || !path_matches_slug_png(tour->shots[i].path, tour->shots[i].state)) {
+        if (!file_written(tour->shots[i].path) ||
+            !path_matches_slug_png(tour->shots[i].path, tour->shots[i].state)) {
             all_written = 0;
         }
     }

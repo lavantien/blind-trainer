@@ -40,9 +40,9 @@ void bt_view_fatal_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     float y = metrics.content_y + (metrics.content_h - total) / 2.0F;
     for (size_t i = 0; i < count; i++) {
         Vector2 box = MeasureTextEx(regular, lines[i], small, 1.0F);
-        bt_app_draw_text(font_regular, lines[i], metrics.content_x
-                                                     + (metrics.content_w - box.x) / 2.0F,
-                         y, small, bt_theme_text_muted());
+        bt_app_draw_text(font_regular, lines[i],
+                         metrics.content_x + (metrics.content_w - box.x) / 2.0F, y, small,
+                         bt_theme_text_muted());
         y += small + gap;
     }
     BT_TRACE_EXIT("app.view_fatal_draw");

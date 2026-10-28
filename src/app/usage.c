@@ -31,8 +31,8 @@ const char *bt_usage_covered_alg_text(const bt_corpus *corpus, const bt_case *ca
     char position[256];
     bt_view_case_position(case_id, position);
     size_t found[8];
-    size_t count = bt_corpus_rows_for_position(corpus, bt_view_sheet_of(case_id->orbit), position,
-                                               found, 8);
+    size_t count =
+        bt_corpus_rows_for_position(corpus, bt_view_sheet_of(case_id->orbit), position, found, 8);
     if (count == 0) {
         BT_TRACE_EXIT("app.usage_covered_alg_text");
         return NULL;
@@ -87,8 +87,7 @@ static int dir_exists_or_made(const char *dir) {
     return -1;
 }
 
-void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions,
-                               size_t count) {
+void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions, size_t count) {
     BT_TRACE_ENTER("app.usage_tour_set_actions");
     free(tour->actions);
     tour->actions = NULL;
@@ -339,8 +338,7 @@ int bt_usage_step(bt_usage_tour *tour, bt_app_ctx *ctx, int fonts_ready, float d
             tour->elapse_left = action->secs;
             break;
         case BT_USAGE_ACT_SHOT:
-            snprintf(tour->shot.path, sizeof tour->shot.path, "%s/%s.png", tour->dir,
-                     action->name);
+            snprintf(tour->shot.path, sizeof tour->shot.path, "%s/%s.png", tour->dir, action->name);
             tour->mode = BT_USAGE_MODE_SHOT;
             tour->shot.clock = -BT_USAGE_DWELL_SECS;
             tour->shot.taken = 0;
