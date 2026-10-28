@@ -82,7 +82,7 @@ A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves, plus 
 
 16. ![case drill show](docs/screenshots/case-drill-show.png)
 
-    a repository case drill card after space reveals it
+    a repository case drill card with the alg hidden
 
 17. ![case drill grade](docs/screenshots/case-drill-grade.png)
 
