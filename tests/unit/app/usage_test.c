@@ -91,8 +91,7 @@ static void step(bt_usage_tour *tour, bt_app_ctx *ctx, bt_usage_key_request *key
 BT_TEST(usage, covered_alg_text_reads_the_first_vendor_row) {
     bt_corpus corpus = corpus_of("UF-UB-UR", "R2 U' S R2 S' R2 U R2");
     bt_case pinned = bt_usage_pinned_case();
-    BT_CHECK(strcmp(bt_usage_covered_alg_text(&corpus, &pinned),
-                    "R2 U' S R2 S' R2 U R2") == 0);
+    BT_CHECK(strcmp(bt_usage_covered_alg_text(&corpus, &pinned), "R2 U' S R2 S' R2 U R2") == 0);
     bt_corpus empty;
     bt_corpus_init(&empty);
     BT_CHECK(bt_usage_covered_alg_text(&empty, &pinned) == NULL);
