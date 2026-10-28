@@ -18,9 +18,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 enum { BT_CASE_DRILL_QUEUE_INIT_CAP = 16 };
-#include <string.h>
 
 static const char *const CUBE_FACES[6] = {"U", "L", "F", "R", "B", "D"};
 static const char *const SKEWB_FACES[6] = {"U", "F", "R", "L", "B", "D"};
