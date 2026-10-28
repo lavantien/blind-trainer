@@ -127,11 +127,34 @@ BT_TEST(visual_diff_selftest, write_config_round_trips_tolerance_from_workdir) {
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_write_selftest_config(dir, err, sizeof err), 0);
     char config[VD_UTIL_PATH_MAX];
-    vd_util_join(config, dir, "config.json");
+    vd_util_join(config, dir, "visual-diff-selftest-config.json");
     BT_CHECK(vd_util_is_file(config));
     uint16_t tolerance = 0;
     BT_CHECK_EQ(btvd_tolerance_from_config(dir, &tolerance, err, sizeof err), 0);
     BT_CHECK_EQ(tolerance, BTVD_SELFTEST_TOLERANCE);
+    vd_util_rm_rf(dir);
+}
+
+BT_TEST(visual_diff_selftest, write_config_never_touches_a_workdir_config_json) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("config-clobber", dir);
+    char sentinel[VD_UTIL_PATH_MAX];
+    vd_util_join(sentinel, dir, "config.json");
+    vd_util_write(sentinel, "{\"sentinel\": true}");
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_write_selftest_config(dir, err, sizeof err), 0);
+    size_t len = 0;
+    char read_err[BTVD_ERR_MAX];
+    unsigned char *bytes = btvd_fs_read_bytes(sentinel, &len, read_err, sizeof read_err);
+    BT_CHECK(bytes != NULL);
+    if (bytes != NULL) {
+        BT_CHECK_EQ(len, strlen("{\"sentinel\": true}"));
+        BT_CHECK(memcmp(bytes, "{\"sentinel\": true}", len) == 0);
+        free(bytes);
+    }
+    char unique[VD_UTIL_PATH_MAX];
+    vd_util_join(unique, dir, "visual-diff-selftest-config.json");
+    BT_CHECK(vd_util_is_file(unique));
     vd_util_rm_rf(dir);
 }
 
@@ -280,7 +303,7 @@ BT_TEST(visual_diff_selftest, run_selftest_passes_and_leaves_only_workdir_state)
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_run_selftest(dir, err, sizeof err), 0);
     char probe[VD_UTIL_PATH_MAX];
-    vd_util_join(probe, dir, "config.json");
+    vd_util_join(probe, dir, "visual-diff-selftest-config.json");
     BT_CHECK(vd_util_is_file(probe));
     vd_util_join(probe, dir, "screenshots/identical.png");
     BT_CHECK(vd_util_is_file(probe));

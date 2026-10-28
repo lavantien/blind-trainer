@@ -879,7 +879,7 @@ BT_TEST(visual_diff_lib, run_selftest_mode_ignores_env_config_and_passes) {
     char err[BTVD_ERR_MAX];
     BT_CHECK_EQ(btvd_run(&env, err, sizeof err), 0);
     char probe[VD_UTIL_PATH_MAX];
-    vd_util_join(probe, root, "config.json");
+    vd_util_join(probe, root, "visual-diff-selftest-config.json");
     BT_CHECK(vd_util_is_file(probe));
     vd_util_join(probe, root, "screenshots/missing.png");
     BT_CHECK(vd_util_is_file(probe));

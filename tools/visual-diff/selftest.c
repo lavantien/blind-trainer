@@ -88,7 +88,7 @@ int btvd_selftest_exit_code(const btvd_selftest_checks *checks) {
 }
 
 static void config_file(const char *workdir, char out[BT_PATH_MAX]) {
-    snprintf(out, BT_PATH_MAX, "%s/config.json", workdir);
+    snprintf(out, BT_PATH_MAX, "%s/visual-diff-selftest-config.json", workdir);
 }
 
 static void write_png_image(const char *path, Image image) {
