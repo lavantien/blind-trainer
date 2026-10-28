@@ -689,7 +689,8 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         bt_view_case_row rows[BT_ALGS_ROWS_MAX];
         size_t count = bt_view_algs_list_rows(&app->browser, capacity, rows);
         for (size_t i = 0; i < count; i++) {
-            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
+            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y,
+                             theme->font_body * theme->root_rem,
                              rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
             y += theme->font_body * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
@@ -701,8 +702,8 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         for (size_t i = 0; i < detail_count; i++) {
             float font_size = theme->font_small;
             bt_view_algs_style_metrics(detail_lines[i].style, &font_size, NULL);
-            bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y, font_size,
-                             detail_lines[i].color);
+            bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y,
+                             font_size * theme->root_rem, detail_lines[i].color);
             detail_y += font_size * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
         free(detail_lines);
@@ -710,7 +711,8 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         bt_repo_list_row rows[BT_REPO_LIST_MAX];
         size_t count = bt_repo_list_rows(repo, BT_REPO_LIST_MAX, rows);
         for (size_t i = 0; i < count; i++) {
-            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
+            bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y,
+                             theme->font_body * theme->root_rem,
                              rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
             y += theme->font_body * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
@@ -722,9 +724,9 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         float detail_y = metrics.content_y;
         for (size_t i = 0; i < detail_count; i++) {
             float size = lines[i].kind == BT_DETAIL_TITLE ? theme->font_title : theme->font_small;
-            bt_app_draw_text(font_regular, lines[i].text, detail_x, detail_y, size,
-                             lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger()
-                                                             : bt_theme_text_muted());
+            bt_app_draw_text(
+                font_regular, lines[i].text, detail_x, detail_y, size * theme->root_rem,
+                lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger() : bt_theme_text_muted());
             detail_y += size * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
     }

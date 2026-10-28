@@ -587,24 +587,28 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
                            theme->drill_net_width_pct * metrics.content_w, metrics.content_h);
     float x = metrics.content_x + theme->drill_net_width_pct * metrics.content_w + gap * 2.0F;
     float y = metrics.content_y;
-    bt_app_draw_text(font_regular, phase, x, y, theme->font_small, bt_theme_text_muted());
+    bt_app_draw_text(font_regular, phase, x, y, theme->font_small * theme->root_rem,
+                     bt_theme_text_muted());
     y += theme->font_focal * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, focal, x, y, theme->font_focal, bt_theme_text_primary());
+    bt_app_draw_text(font_bold, focal, x, y, theme->font_focal * theme->root_rem,
+                     bt_theme_text_primary());
     y += theme->font_focal * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, timer, x, y, theme->font_heading, bt_theme_text_primary());
+    bt_app_draw_text(font_bold, timer, x, y, theme->font_heading * theme->root_rem,
+                     bt_theme_text_primary());
     y += theme->font_title * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, parts.result, x, y, theme->font_title,
+    bt_app_draw_text(font_bold, parts.result, x, y, theme->font_title * theme->root_rem,
                      parts.result[0] != '\0' && strcmp(parts.result, "solved") == 0
                          ? bt_theme_ok()
                          : bt_theme_danger());
     y += theme->font_heading * theme->root_rem + gap;
-    bt_app_draw_text(font_regular, parts.splits, x, y, theme->font_heading,
+    bt_app_draw_text(font_regular, parts.splits, x, y, theme->font_heading * theme->root_rem,
                      bt_theme_text_primary());
     y += theme->font_small * theme->root_rem + gap;
-    bt_app_draw_text(font_regular, parts.broken, x, y, theme->font_small, bt_theme_danger());
+    bt_app_draw_text(font_regular, parts.broken, x, y, theme->font_small * theme->root_rem,
+                     bt_theme_danger());
     y += theme->font_small * theme->root_rem + gap;
     bt_app_draw_text(font_regular, bt_view_solve_hint_text(ctx->solve_phase), x, y,
-                     theme->font_small, bt_theme_text_muted());
+                     theme->font_small * theme->root_rem, bt_theme_text_muted());
     BT_TRACE_EXIT("app.view_solve_draw");
 }
 

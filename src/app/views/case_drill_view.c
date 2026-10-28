@@ -175,12 +175,12 @@ void bt_view_case_drill_draw(const bt_app_ctx *ctx, const void *font_regular, co
     for (size_t i = 0; i < count; i++) {
         bt_theme_color color = lines[i].danger ? bt_theme_danger() : bt_theme_text_muted();
         if (i == 0) {
-            bt_app_draw_text(font_bold, lines[i].text, metrics.content_x, y, theme->font_title,
-                             bt_theme_text_primary());
+            bt_app_draw_text(font_bold, lines[i].text, metrics.content_x, y,
+                             theme->font_title * theme->root_rem, bt_theme_text_primary());
             y += theme->font_title * theme->root_rem + theme->spacing_rem * theme->root_rem;
         } else {
-            bt_app_draw_text(font_regular, lines[i].text, metrics.content_x, y, theme->font_small,
-                             color);
+            bt_app_draw_text(font_regular, lines[i].text, metrics.content_x, y,
+                             theme->font_small * theme->root_rem, color);
             y += theme->font_small * theme->root_rem + theme->spacing_rem * theme->root_rem * 0.5F;
         }
     }

@@ -1,3 +1,4 @@
+#include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/case_drill_view.h"
 #include "app/views/net_view.h"
@@ -12,6 +13,7 @@
 
 enum {
     DRAW_DWELL_FRAMES = 6,
+    DRAW_TEXT_LIT_FLOOR = 400,
 };
 
 static int open_window(bt_app_config *config) {
@@ -40,6 +42,25 @@ static long long region_variance(const char *path, int x0, int y0, int x1, int y
     UnloadImageColors(pixels);
     UnloadImage(image);
     return variance;
+}
+
+static long long lit_pixels(const char *path, int x0, int y0, int x1, int y1) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return -1;
+    }
+    Color *pixels = LoadImageColors(image);
+    long long lit = 0;
+    for (int y = y0; y < y1 && y < image.height; y++) {
+        for (int x = x0; x < x1 && x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            lit += pixel.r != 0 || pixel.g != 0 || pixel.b != 0;
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return lit;
 }
 
 static int draw_and_capture(void (*draw)(bt_app_ctx *), bt_app_ctx *ctx, const char *dir,
@@ -94,6 +115,42 @@ static void draw_case_drill(bt_app_ctx *ctx) {
     bt_view_case_drill_row_draw(ctx);
 }
 
+static bt_corpus_row pair_row(void) {
+    bt_corpus_row row;
+    memset(&row, 0, sizeof row);
+    row.solver = BT_SOLVER_CHERRY;
+    row.sheet = BT_SHEET_EDGE;
+    row.rowid = 1;
+    row.position = _strdup("UF-UB-UR");
+    char err_token[64];
+    if (!bt_alg_parse("R2 U' S R2 S' R2 U R2", &row.alg, err_token, sizeof err_token)) {
+        BT_ABORT("fixture alg: %s", err_token);
+    }
+    row.alg_text = _strdup("R2 U' S R2 S' R2 U R2");
+    row.commutator = _strdup("R2 U':[S,R2]");
+    row.recon_link = _strdup("");
+    row.youtube_link = _strdup("https://example.test/recon");
+    return row;
+}
+
+static void seed_algs_ctx(bt_app_ctx *ctx) {
+    ctx->state = BT_APP_ALGS;
+    ctx->has_stores = 1;
+    memset(&ctx->stores, 0, sizeof ctx->stores);
+    bt_srs_store_init(&ctx->stores.srs);
+    bt_solve_log_init(&ctx->stores.solves);
+    bt_user_algs_init(&ctx->stores.user_algs);
+    bt_str_list_init(&ctx->stores.seeds.hidden);
+    bt_str_list_init(&ctx->stores.seeds.warnings);
+    snprintf(ctx->paths.user_root, sizeof ctx->paths.user_root, "%s",
+             ta_temp_dir("view_draw_b", "algs"));
+    bt_corpus_row row = pair_row();
+    bt_corpus_row *heap = malloc(sizeof row);
+    memcpy(heap, &row, sizeof row);
+    bt_corpus_from_rows(heap, 1, &ctx->vendor_corpus);
+    ctx->has_corpus = 1;
+}
+
 BT_TEST(view_draw_b, solve_renders_pixels) {
     bt_app_config config;
     if (!open_window(&config)) {
@@ -113,6 +170,7 @@ BT_TEST(view_draw_b, solve_renders_pixels) {
     snprintf(path, sizeof path, "%s/solve.png", dir);
     BT_CHECK(draw_and_capture(draw_solve, &ctx, dir, "solve.png"));
     BT_CHECK(region_variance(path, 60, 140, 230, 380) > 20);
+    BT_CHECK(lit_pixels(path, 310, 95, 630, 460) >= DRAW_TEXT_LIT_FLOOR);
     bt_app_ctx_free(&ctx);
     CloseWindow();
 }
@@ -124,11 +182,15 @@ BT_TEST(view_draw_b, algs_renders_pixels) {
     }
     bt_app_ctx ctx;
     bt_app_ctx_init(&ctx);
-    ctx.state = BT_APP_ALGS;
+    seed_algs_ctx(&ctx);
     bt_view_algs_enter(&ctx);
     char dir[BT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s", ta_temp_dir("view_draw_b", "algs"));
     BT_CHECK(draw_and_capture(draw_algs, &ctx, dir, "algs.png"));
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/algs.png", dir);
+    BT_CHECK(lit_pixels(path, 25, 95, 250, 460) >= DRAW_TEXT_LIT_FLOOR);
+    BT_CHECK(lit_pixels(path, 265, 95, 630, 460) >= DRAW_TEXT_LIT_FLOOR);
     bt_app_ctx_free(&ctx);
     CloseWindow();
 }
@@ -156,6 +218,9 @@ BT_TEST(view_draw_b, case_drill_renders_pixels) {
     char drill_dir[BT_PATH_MAX];
     snprintf(drill_dir, sizeof drill_dir, "%s", ta_temp_dir("view_draw_b", "case_drill"));
     BT_CHECK(draw_and_capture(draw_case_drill, &ctx, drill_dir, "case_drill.png"));
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/case_drill.png", drill_dir);
+    BT_CHECK(lit_pixels(path, 25, 92, 430, 200) >= DRAW_TEXT_LIT_FLOOR);
     bt_app_ctx_free(&ctx);
     CloseWindow();
 }
