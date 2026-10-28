@@ -324,6 +324,7 @@
     },
     "hello_exe": "bt-hello.exe",
     "app_exe": "bt-app.exe",
+    "e2e_exe": "bt-e2e.exe",
     "dirs": {
       "root": "build",
       "bin": "build/bin",

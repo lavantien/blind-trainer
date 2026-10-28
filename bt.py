@@ -508,12 +508,13 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
                 if test_area != "tools" or len(parts) < 2 or parts[1] not in tools_needed:
                     continue
             if rel.startswith("tests/"):
-                if not rel.startswith("tests/unit/"):
-                    continue
-                area_parts = rel.split("/")
-                if len(area_parts) < 3 or area_parts[2] != test_area:
-                    continue
-                if only is not None and only not in Path(rel).stem:
+                if rel.startswith("tests/unit/"):
+                    area_parts = rel.split("/")
+                    if len(area_parts) < 3 or area_parts[2] != test_area:
+                        continue
+                    if only is not None and only not in Path(rel).stem:
+                        continue
+                elif not (test_area == "e2e" and rel.startswith("tests/e2e/")):
                     continue
             elif rel.startswith("src/") and not rel.startswith("src/common/"):
                 area_parts = rel.split("/")
@@ -624,6 +625,12 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
     ]
     tools_dir = root / "tools"
     tool_dirs = [d for d in sorted(tools_dir.glob("*")) if d.is_dir()]
+    e2e_dir = root / "tests" / "e2e"
+    e2e_objects = (
+        [objs_by_source[s] for s in sorted(e2e_dir.glob("*.c")) if s in objs_by_source]
+        if e2e_dir.is_dir()
+        else []
+    )
     if tools_dir.is_dir():
         for tool_dir in tool_dirs:
             tool_sources = sorted(tool_dir.glob("*.c"))
@@ -645,6 +652,16 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
                     f"link {tool_dir.name}.exe",
                     (bin_dir / f"{tool_dir.name}.exe", objects, libs),
                 ))
+    if e2e_objects:
+        extra_lib, libs = (None, ()) if src_lib is None else src_lib
+        objects = [*src_objects, *e2e_objects, *vendor_objects]
+        if extra_lib is not None:
+            objects.append(extra_lib)
+        links.append(
+            (
+                f"link {cfg['e2e_exe']}",
+                (bin_dir / cfg["e2e_exe"], objects, libs),
+            ))
     for suite in discover_test_suites(root):
         test_obj = objs_by_source.get(suite["source"])
         main_obj = obj_root / "gen" / f"{suite['exe_name']}_main.obj"
@@ -665,9 +682,19 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
                 ]
                 if tool_dir.name in raylib:
                     extra_lib, libs = raylib[tool_dir.name]
+        suite_e2e_objects = []
+        if suite["area"] == "e2e" and e2e_objects:
+            suite_e2e_objects = [obj for obj in e2e_objects if "main.obj" not in obj.name]
         if src_lib is not None:
             extra_lib, libs = src_lib
-        objects = [*src_objects, *suite_tool_objects, test_obj, main_obj, *vendor_objects]
+        objects = [
+            *src_objects,
+            *suite_tool_objects,
+            *suite_e2e_objects,
+            test_obj,
+            main_obj,
+            *vendor_objects,
+        ]
         if extra_lib is not None:
             objects.append(extra_lib)
         links.append(
@@ -1351,6 +1378,65 @@ def tgt_screenshots(args):
         code = code or step
     logger.exit("screenshots", code)
     return code
+
+
+def build_scope(hub, logger, area, only=None):
+    compiler = [resolve_tool("clang", hub)]
+    generated = generate_stage(hub, REPO_ROOT)
+    obj_root, entries = compile_stage(
+        hub, REPO_ROOT, compiler, logger, extra=generated, test_area=area, only=only
+    )
+    link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries, only=only)
+
+
+def tgt_e2e_smoke(args):
+    """sandboxed smoke tour over the release exe"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("e2e-smoke")
+    try:
+        build_scope(hub, logger, "app")
+        build_scope(hub, logger, "e2e")
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("e2e-smoke", f"{type(e).__name__}: {e}")
+        return 1
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+    out_dir = REPO_ROOT / "artifacts" / "e2e"
+    user_dir = REPO_ROOT / "artifacts" / "e2e-user"
+    for path in (out_dir, user_dir):
+        path.mkdir(parents=True, exist_ok=True)
+    env = {**os.environ, "APPDATA": str(user_dir)}
+    driver = bin_dir / build_cfg(hub)["e2e_exe"]
+    app = bin_dir / build_cfg(hub).get("app_exe", "bt-app.exe")
+    code = run_policy_exe(driver, [str(app), str(out_dir)], "e2e-smoke", logger, env=env)
+    logger.exit("e2e-smoke", code)
+    return code
+
+
+def tgt_e2e(args):
+    """headless flow suite then the smoke tour"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("e2e")
+    try:
+        build_scope(hub, logger, "app", only="e2e")
+        build_scope(hub, logger, "tools", only="jobwrap")
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("e2e", f"{type(e).__name__}: {e}")
+        return 1
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
+    jobwrap = bin_dir / "jobwrap.exe"
+    suite = bin_dir / "app_e2e_test.exe"
+    for exe in (jobwrap, suite):
+        if not exe.is_file():
+            logger.fail("e2e", f"missing exe after build: {exe}")
+            return 1
+    code = run_policy_exe(jobwrap, ["--anchor", "e2e", "--", str(suite)], "e2e", logger)
+    if code != 0:
+        logger.exit("e2e", code)
+        return code
+    logger.exit("e2e", 0)
+    return tgt_e2e_smoke(args)
 
 
 def tgt_clean(args):
