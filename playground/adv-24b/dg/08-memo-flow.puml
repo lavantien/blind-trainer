@@ -1,0 +1,30 @@
+@startuml 08-memo-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+component "seed\nshown at intro" as seed
+component "scramble\ndeterministic" as scramble
+component "pairs\nclassified per orbit" as pairs
+component "tokens\nsyllables, image words\nor per orbit by mode" as tokens
+component "stream\ncadence ms per token\nfocal over the recent ones" as stream
+component "recall\nall tokens hidden" as recall
+component "review\nfull memo, residue lines\nparity, flips, twists" as review
+component "rate 1 to 4\nevery streamed pair\ninto fsrs" as rate
+component "next scramble" as next
+seed -> scramble
+scramble -> pairs
+pairs -> tokens
+tokens -> stream
+stream -> recall
+recall -> review
+review -> rate
+rate -> next
+next -> scramble
+note bottom of stream
+  r replays the stream,
+  space advances each phase
+end note
+@enduml

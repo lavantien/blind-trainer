@@ -1,0 +1,33 @@
+help                     show this help
+doctor                   probe the toolchain and write build/env.json
+setup                    verify the required toolchain and report optional probes
+build                    compile and link every c unit, test exe, and the hello smoke exe
+check                    compile every translation unit without linking
+fmt                      clang-format dry run over every c and h file
+fmt-fix                  clang-format in place
+lint                     clang-tidy over every c file, or one area: python bt.py lint <area>
+test                     run every unit test exe and the python suite
+test-unit                run one area's unit tests: python bt.py test-unit <area> [--only substring]
+policy                   selftest then the zero-comment, constants-hub, and sloc scans
+policy-selftest          prove bt-policy detects planted comments, literals, and cap breaches
+fuzz                     run every fuzz_*_test suite exe in plainloop mode, harness bodies keep the early-return, exit-at-bound applies only under a libFuzzer driver
+mutants                  mutate area sources against their unit suites: python bt.py mutants [area...]
+mutants-gate             adjudicate mutation survivors in artifacts/mutants/outcomes.json against the allowlist
+mutants-gate-selftest    the mutants gate selftest over planted outcomes
+visual-diff              diff e2e shots against the committed baselines
+visual-selftest          prove the diff passes identical and catches drift
+visual                   visual selftest then the diff with one re-render retry
+baselines                recapture the committed baselines from two byte-identical smoke captures
+gen-data                 build data/vendor from ref_ground and synthesize uncovered pairs
+memofreq                 memo pair frequency monte carlo
+ga                       run the syllable optimizer into data/ga/
+verify-algs              verify every vendor alg and pack row, write the verify and packs reports
+verify-algs-selftest     run every verify_* unit suite with the ref ground and config env
+screenshots              regenerate every usage shot and the fatal screen
+e2e-smoke                sandboxed smoke tour over the release exe
+e2e                      headless flow suite then the smoke tour
+release-verify           byte-check the dist zip and run the packaged exe: python bt.py release-verify v=<tag>
+release-verify-selftest  the release-verify unit suite
+dist                     build the app, stage and verify the dist zip: python bt.py dist v=<tag>
+clean                    remove artifacts and recreate the keep file
+clean-c                  remove the c build tree

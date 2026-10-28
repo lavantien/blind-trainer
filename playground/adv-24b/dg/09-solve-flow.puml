@@ -1,0 +1,30 @@
+@startuml 09-solve-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+component "scramble seed\npair count shown" as seed
+component "memo clock\ntoken stream with a\nfocal counter" as memo
+component "exec clock\nexecution phase" as exec
+component "corpus replay\nmemo applied against the\nvendor corpus on the cube" as verify
+component "solved or failed\nbroken pairs listed" as outcome
+component "solve log\nmemo, exec, total splits" as log
+component "3d replay\nv at the review\nanimated layer turns" as replay
+seed -> memo
+memo -> exec
+exec -> verify
+verify -> outcome
+outcome -> log
+log -> replay
+note bottom of verify
+  the replay runs the streamed
+  pairs through the recorded
+  floating buffers, it is not
+  a key press capture
+end note
+note bottom of replay
+  drag to orbit, wheel zoom,\nr resets the camera,\nspace pauses, v returns
+end note
+@enduml

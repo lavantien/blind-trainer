@@ -1,0 +1,34 @@
+@startuml 07-drill-flow
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+component "due selection\ndue or new pairs first" as due
+component "card\nletters, orbit, position\nmemo token, both algs" as card
+component "prepare\nside B applied to the\nsolved cube" as prepare
+component "reps\nspace executes the shown alg\nsplits recorded, A B alternate" as reps
+component "rate A then B\n1 again, 2 hard\n3 good, 4 easy" as rate
+component "fsrs write\nper position\nsides schedule apart" as fsrs
+component "next pair\nloads automatically" as next
+due -> card
+card -> prepare
+prepare -> reps
+reps -> rate
+rate -> fsrs
+fsrs -> next
+next -> due
+note bottom of card
+  the same loop drives the
+  case drill over repository
+  nodes, reveal with space,
+  grade 1 to 4 into fsrs
+end note
+note bottom of reps
+  the drill reps setting
+  controls the rep count,
+  esc aborts to the menu
+  writing nothing
+end note
+@enduml

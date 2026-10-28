@@ -1,0 +1,30 @@
+@startuml 05-ga
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+component "letter pairs\nedge and corner space" as pairs
+component "memofreq monte carlo\nseeded sampling" as freq_tool
+component "data/ga/freq.json\npair frequencies" as freq
+component "inventory\nsyllable pool" as inventory
+component "features\nconfusion, flow\ncomplexity weights" as features
+component "evolution\npopulation, generations\nelite, tournament" as evolve
+component "data/ga/syllables.json\none syllable per edge pair" as syllables
+component "ga-run\nga batch driver" as garun
+pairs -> freq_tool
+freq_tool -> freq
+pairs -> inventory
+freq -> features
+inventory -> features
+features -> evolve
+evolve -> syllables
+garun -> evolve
+note bottom of evolve
+  seeded and deterministic,
+  knobs live in the ga section
+  of the config hub,
+  python bt.py ga regenerates
+end note
+@enduml

@@ -1,0 +1,30 @@
+@startuml 06-app-boot
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+component "argv\nsmoke, usage, fatal-shot\none flag max" as argv
+component "config hub\nconfig.json via BT_CONFIG" as config
+component "runtime paths\nref_ground, vendor, user dir" as paths
+component "stores open\nsqlite migrations\nlegacy import" as stores
+component "state machine\nmenu first\nraylib window and fonts" as machine
+component "fatal screen\nconfig unreadable or\nvendor sheets unreadable" as fatal
+component "menu warning\nvendor directory missing\napp runs on user data" as warn
+argv -> config
+config -> paths
+paths -> stores
+stores -> machine
+config -> fatal
+paths -> warn
+note bottom of argv
+  a flag violation prints the
+  reason and exits 2, each flag
+  takes the output directory
+end note
+note bottom of fatal
+  keys are ignored, fix the
+  reported path and restart
+end note
+@enduml

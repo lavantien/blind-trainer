@@ -1,0 +1,42 @@
+@startuml 10-verification-chain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 12
+skinparam roundCorner 6
+skinparam ArrowColor #2f3439
+skinparam NoteBackgroundColor #f4f5f6
+rectangle "1 test\nevery unit exe\nplus the python suite" as s1
+rectangle "2 fmt\nclang-format dry run" as s2
+rectangle "3 lint\nclang-tidy per area" as s3
+rectangle "4 policy\nzero comments\nconstants hub, sloc cap" as s4
+rectangle "5 check\ncompile without link" as s5
+rectangle "6 build\napp, tools, test exes" as s6
+rectangle "7 fuzz\nplainloop runs over\ncommitted corpora" as s7
+rectangle "8 mutants\nmutate areas against\ntheir unit suites" as s8
+rectangle "9 mutants-gate\nsurvivors adjudicated\nagainst the allowlist" as s9
+rectangle "10 e2e\nflow suite then the\nsandboxed smoke tour" as s10
+rectangle "11 visual\ndiff against baselines\nwith one re-render retry" as s11
+rectangle "12 verify-algs\ncorpus and packs reports\nfail closed" as s12
+s1 -> s2
+s2 -> s3
+s3 -> s4
+s4 -> s5
+s5 -> s6
+s6 -> s7
+s7 -> s8
+s8 -> s9
+s9 -> s10
+s10 -> s11
+s11 -> s12
+note bottom of s9
+  a survivor leaves only with a
+  justified allowlist row, stale
+  rows also fail the gate
+end note
+note bottom of s12
+  release adds dist then
+  release-verify: zip byte
+  compare and the packaged
+  exe stages
+end note
+@enduml
