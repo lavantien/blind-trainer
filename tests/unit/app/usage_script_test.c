@@ -39,7 +39,8 @@ static int name_before(const bt_usage_action *g_actions, size_t count, const cha
     return 0;
 }
 
-static size_t position(const bt_usage_action *g_actions, size_t count, int (*pred)(const bt_usage_action *)) {
+static size_t position(const bt_usage_action *g_actions, size_t count,
+                       int (*pred)(const bt_usage_action *)) {
     for (size_t i = 0; i < count; i++) {
         if (pred(&g_actions[i])) {
             return i;
@@ -106,10 +107,25 @@ BT_TEST(usage_script, shots_are_unique_and_complete) {
     BT_CHECK(strcmp(names[0], "menu") == 0);
     BT_CHECK(strcmp(names[total - 1], "settings") == 0);
     const char *expected[] = {
-        "algs",           "algs-search", "case-drill-grade", "case-drill-show", "drill-card",
-        "drill-rate-a",   "drill-rate-b", "drill-reps",       "menu",            "memo-intro",
-        "memo-recall",    "memo-review", "memo-stream",       "settings",        "solve-exec",
-        "solve-memo",     "solve-ready", "solve-review",      "stats",
+        "algs",
+        "algs-search",
+        "case-drill-grade",
+        "case-drill-show",
+        "drill-card",
+        "drill-rate-a",
+        "drill-rate-b",
+        "drill-reps",
+        "menu",
+        "memo-intro",
+        "memo-recall",
+        "memo-review",
+        "memo-stream",
+        "settings",
+        "solve-exec",
+        "solve-memo",
+        "solve-ready",
+        "solve-review",
+        "stats",
     };
     BT_CHECK_EQ(total, sizeof expected / sizeof expected[0]);
     for (size_t i = 0; i < total; i++) {
@@ -133,14 +149,14 @@ BT_TEST(usage_script, never_issues_two_presses_back_to_back) {
 
 BT_TEST(usage_script, sequences_each_phase_before_its_shot) {
     size_t count = fill_script();
-    BT_CHECK(position(g_actions, count, is_wait_drill_rate)
-             < position(g_actions, count, is_shot_drill_rate_a));
-    BT_CHECK(position(g_actions, count, is_wait_memo_review)
-             < position(g_actions, count, is_shot_memo_review));
-    BT_CHECK(position(g_actions, count, is_pick_solve_seed)
-             < position(g_actions, count, is_nav_open_solve));
-    BT_CHECK(position(g_actions, count, is_nav_open_stats)
-             > position(g_actions, count, is_shot_solve_review));
+    BT_CHECK(position(g_actions, count, is_wait_drill_rate) <
+             position(g_actions, count, is_shot_drill_rate_a));
+    BT_CHECK(position(g_actions, count, is_wait_memo_review) <
+             position(g_actions, count, is_shot_memo_review));
+    BT_CHECK(position(g_actions, count, is_pick_solve_seed) <
+             position(g_actions, count, is_nav_open_solve));
+    BT_CHECK(position(g_actions, count, is_nav_open_stats) >
+             position(g_actions, count, is_shot_solve_review));
 }
 
 BT_TEST(usage_script, the_case_drill_leg_drives_the_repo_and_all_four_grade_keys) {
