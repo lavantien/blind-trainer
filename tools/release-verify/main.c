@@ -15,7 +15,7 @@ static void trace_from_config(void) {
     bt_json_value *config = NULL;
     FILE *file = fopen(path, "rb");
     if (file != NULL) {
-        char text[1 << 16];
+        char text[1U << 16U];
         size_t len = fread(text, 1, sizeof text - 1, file);
         fclose(file);
         text[len] = '\0';

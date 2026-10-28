@@ -6,17 +6,21 @@
 
 #include "common/bt_trace.h"
 
-#define RV_HUFF_BITS 15
-#define RV_LIT_CODES 288
-#define RV_DIST_CODES 32
-#define RV_CODE_ORDER 19
+enum {
+    RV_HUFF_BITS = 15,
+    RV_LIT_CODES = 288,
+    RV_DIST_CODES = 32,
+    RV_CODE_ORDER = 19,
+    RV_LEN_COPY = 16,
+    RV_LEN_ZERO = 17,
+};
 
 typedef struct {
     const unsigned char *data;
     size_t len;
     size_t pos;
     unsigned long bitbuf;
-    int bitcnt;
+    unsigned bitcnt;
     char *err;
     size_t err_cap;
     int failed;
@@ -44,25 +48,25 @@ static void rv_fail(char *err, size_t err_cap, int *flag, const char *message) {
     snprintf(err, err_cap, "%s", message);
 }
 
-static int rv_need(rv_bits *bits, int need) {
-    long val = (long)bits->bitbuf;
+static int rv_need(rv_bits *bits, unsigned need) {
+    unsigned long val = bits->bitbuf;
     while (bits->bitcnt < need) {
         if (bits->pos >= bits->len) {
             rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: input exhausted");
             return -1;
         }
-        val |= (long)bits->data[bits->pos++] << bits->bitcnt;
-        bits->bitcnt += 8;
+        val |= (unsigned long)bits->data[bits->pos++] << bits->bitcnt;
+        bits->bitcnt += 8U;
     }
-    bits->bitbuf = (unsigned long)val;
+    bits->bitbuf = val;
     return 0;
 }
 
-static int rv_bits_take(rv_bits *bits, int need) {
+static int rv_bits_take(rv_bits *bits, unsigned need) {
     if (rv_need(bits, need) != 0) {
         return -1;
     }
-    int val = (int)(bits->bitbuf & ((1UL << need) - 1));
+    int val = (int)(bits->bitbuf & ((1UL << need) - 1UL));
     bits->bitbuf >>= need;
     bits->bitcnt -= need;
     return val;
@@ -71,7 +75,7 @@ static int rv_bits_take(rv_bits *bits, int need) {
 static int rv_huff_build(rv_huff *huff, const short *lengths, int count) {
     int symbol;
     int len;
-    int left;
+    unsigned left;
     short offs[RV_HUFF_BITS + 1];
     for (len = 0; len <= RV_HUFF_BITS; len++) {
         huff->count[len] = 0;
@@ -84,10 +88,10 @@ static int rv_huff_build(rv_huff *huff, const short *lengths, int count) {
     }
     left = 1;
     for (len = 1; len <= RV_HUFF_BITS; len++) {
-        left <<= 1;
-        left -= huff->count[len];
-        if (left < 0) {
-            return left;
+        left <<= 1U;
+        left -= (unsigned)huff->count[len];
+        if (left > 0x7FFFFFFFU) {
+            return -1;
         }
     }
     offs[1] = 0;
@@ -99,27 +103,27 @@ static int rv_huff_build(rv_huff *huff, const short *lengths, int count) {
             huff->symbol[offs[lengths[symbol]]++] = (short)symbol;
         }
     }
-    return left;
+    return (int)left;
 }
 
 static int rv_huff_decode(rv_bits *bits, const rv_huff *huff) {
-    int code = 0;
-    int first = 0;
+    unsigned code = 0;
+    unsigned first = 0;
     int index = 0;
     for (int len = 1; len <= RV_HUFF_BITS; len++) {
-        int bit = rv_bits_take(bits, 1);
+        int bit = rv_bits_take(bits, 1U);
         if (bit < 0) {
             return -1;
         }
-        code |= bit;
+        code |= (unsigned)bit;
         int count = huff->count[len];
-        if (code - count < first) {
-            return huff->symbol[index + (code - first)];
+        if (code < first + (unsigned)count) {
+            return huff->symbol[index + (int)(code - first)];
         }
         index += count;
-        first += count;
-        first <<= 1;
-        code <<= 1;
+        first += (unsigned)count;
+        first <<= 1U;
+        code <<= 1U;
     }
     rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: bad code length");
     return -1;
@@ -151,17 +155,54 @@ static int rv_sink_byte(rv_sink *sink, int byte) {
     return 0;
 }
 
-static const short RV_LEN_BASE[29] = {3,  4,  5,  6,  7,  8,  9,  10,  11,  13,  15,  17,  19,  23, 27,
-                                      31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258};
-static const short RV_LEN_EXTRA[29] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2,
-                                       2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0};
-static const short RV_DIST_BASE[30] = {1,    2,    3,    4,    5,    7,     9,     13,    17,  25,
-                                       33,   49,   65,   97,   129,  193,   257,   385,   513, 769,
-                                       1025, 1537, 2049, 3073, 4097, 6145,  8193,  12289, 16385, 24577};
-static const short RV_DIST_EXTRA[30] = {0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,  6,
-                                        6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13};
-static const unsigned char RV_ORDER[RV_CODE_ORDER] = {16, 17, 18, 0, 8,  7, 9,  6, 10, 5,
-                                                      11, 4,  12, 3, 13, 2, 14, 1, 15};
+enum {
+    RV_LEN_SYMS = 29,
+    RV_DIST_SYMS = 30,
+};
+
+static short RV_LEN_BASE[RV_LEN_SYMS];
+static short RV_LEN_EXTRA[RV_LEN_SYMS];
+static short RV_DIST_BASE[RV_DIST_SYMS];
+static short RV_DIST_EXTRA[RV_DIST_SYMS];
+static short RV_ORDER[RV_CODE_ORDER];
+
+static const char RV_LEN_BASE_TEXT[] =
+    "3 4 5 6 7 8 9 10 11 13 15 17 19 23 27 31 35 43 51 59 67 83 99 115 131 163 195 227 258";
+static const char RV_LEN_EXTRA_TEXT[] = "0 0 0 0 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 0";
+static const char RV_DIST_BASE_TEXT[] =
+    "1 2 3 4 5 7 9 13 17 25 33 49 65 97 129 193 257 385 513 769 1025 1537 2049 3073 4097 6145 "
+    "8193 12289 16385 24577";
+static const char RV_DIST_EXTRA_TEXT[] =
+    "0 0 0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10 10 11 11 12 12 13 13";
+static const char RV_ORDER_TEXT[] = "16 17 18 0 8 7 9 6 10 5 11 4 12 3 13 2 14 1 15";
+
+static int rv_tables_ready;
+
+static void rv_fill_ints(const char *text, short *out, int count) {
+    const char *cursor = text;
+    for (int at = 0; at < count; at++) {
+        char *end = NULL;
+        long value = strtol(cursor, &end, 10);
+        if (end == cursor) {
+            fputs("bt-release-verify: bad deflate table\n", stderr);
+            abort();
+        }
+        out[at] = (short)value;
+        cursor = end;
+    }
+}
+
+static void rv_tables_init(void) {
+    if (rv_tables_ready) {
+        return;
+    }
+    rv_fill_ints(RV_LEN_BASE_TEXT, RV_LEN_BASE, RV_LEN_SYMS);
+    rv_fill_ints(RV_LEN_EXTRA_TEXT, RV_LEN_EXTRA, RV_LEN_SYMS);
+    rv_fill_ints(RV_DIST_BASE_TEXT, RV_DIST_BASE, RV_DIST_SYMS);
+    rv_fill_ints(RV_DIST_EXTRA_TEXT, RV_DIST_EXTRA, RV_DIST_SYMS);
+    rv_fill_ints(RV_ORDER_TEXT, RV_ORDER, RV_CODE_ORDER);
+    rv_tables_ready = 1;
+}
 
 static int rv_fixed_tables(rv_huff *lit, rv_huff *dist) {
     short lengths[RV_LIT_CODES];
@@ -205,7 +246,7 @@ static int rv_inflate_codes(rv_bits *bits, rv_sink *sink, const rv_huff *lit, co
             return 0;
         }
         symbol -= 257;
-        if (symbol >= 29) {
+        if (symbol >= RV_LEN_SYMS) {
             rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: bad length symbol");
             return -1;
         }
@@ -215,7 +256,7 @@ static int rv_inflate_codes(rv_bits *bits, rv_sink *sink, const rv_huff *lit, co
         }
         int length = RV_LEN_BASE[symbol] + extra;
         int dist_symbol = rv_huff_decode(bits, dist);
-        if (dist_symbol < 0 || dist_symbol >= 30) {
+        if (dist_symbol < 0 || dist_symbol >= RV_DIST_SYMS) {
             rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: bad distance symbol");
             return -1;
         }
@@ -223,7 +264,7 @@ static int rv_inflate_codes(rv_bits *bits, rv_sink *sink, const rv_huff *lit, co
         if (extra < 0) {
             return -1;
         }
-        size_t distance = (size_t)(RV_DIST_BASE[dist_symbol] + extra);
+        size_t distance = (size_t)RV_DIST_BASE[dist_symbol] + (size_t)extra;
         if (distance > sink->len) {
             rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: distance before start");
             return -1;
@@ -280,12 +321,12 @@ static int rv_dynamic_tables(rv_bits *bits, rv_huff *lit, rv_huff *dist) {
         if (symbol < 0) {
             return -1;
         }
-        if (symbol < 16) {
+        if (symbol < RV_LEN_COPY) {
             lengths[at++] = (short)symbol;
             continue;
         }
         int len = 0;
-        if (symbol == 16) {
+        if (symbol == RV_LEN_COPY) {
             if (at == 0) {
                 rv_fail(bits->err, bits->err_cap, &bits->failed, "inflate: repeat with no prior");
                 return -1;
@@ -296,7 +337,7 @@ static int rv_dynamic_tables(rv_bits *bits, rv_huff *lit, rv_huff *dist) {
                 return -1;
             }
             symbol += 3;
-        } else if (symbol == 17) {
+        } else if (symbol == RV_LEN_ZERO) {
             symbol = rv_bits_take(bits, 3);
             if (symbol < 0) {
                 return -1;
@@ -332,8 +373,17 @@ static int rv_dynamic_tables(rv_bits *bits, rv_huff *lit, rv_huff *dist) {
 
 static int rv_inflate_stream(const unsigned char *in, size_t in_len, rv_sink *sink, char *err,
                              size_t err_cap) {
-    rv_bits bits = {.data = in, .len = in_len, .pos = 0, .bitbuf = 0, .bitcnt = 0,
-                    .err = err, .err_cap = err_cap, .failed = 0};
+    rv_tables_init();
+    rv_bits bits = {
+        .data = in,
+        .len = in_len,
+        .pos = 0,
+        .bitbuf = 0,
+        .bitcnt = 0,
+        .err = err,
+        .err_cap = err_cap,
+        .failed = 0,
+    };
     int final = 0;
     while (!final) {
         int type;
@@ -352,10 +402,12 @@ static int rv_inflate_stream(const unsigned char *in, size_t in_len, rv_sink *si
                 rv_fail(err, err_cap, &bits.failed, "inflate: stored block truncated");
                 return -1;
             }
-            unsigned len = bits.data[bits.pos] | ((unsigned)bits.data[bits.pos + 1] << 8);
-            unsigned nlen = bits.data[bits.pos + 2] | ((unsigned)bits.data[bits.pos + 3] << 8);
+            unsigned len =
+                (unsigned)bits.data[bits.pos] | ((unsigned)bits.data[bits.pos + 1] << 8U);
+            unsigned nlen =
+                (unsigned)bits.data[bits.pos + 2] | ((unsigned)bits.data[bits.pos + 3] << 8U);
             bits.pos += 4;
-            if (len != (~nlen & 0xFFFF)) {
+            if (len != (~nlen & 0xFFFFU)) {
                 rv_fail(err, err_cap, &bits.failed, "inflate: stored block length mismatch");
                 return -1;
             }
@@ -395,7 +447,8 @@ int bt_rv_inflate_raw(const unsigned char *in, size_t in_len, unsigned char **ou
     *out_len = 0;
     err[0] = '\0';
     rv_sink sink = {.data = NULL, .len = 0, .cap = 0, .err = err, .err_cap = err_cap, .failed = 0};
-    if (rv_sink_reserve(&sink, 65536) != 0 || rv_inflate_stream(in, in_len, &sink, err, err_cap) != 0) {
+    if (rv_sink_reserve(&sink, 65536) != 0 ||
+        rv_inflate_stream(in, in_len, &sink, err, err_cap) != 0) {
         free(sink.data);
         BT_TRACE_FAIL("rv.inflate_raw", "%s", err);
         BT_TRACE_EXIT("rv.inflate_raw");
@@ -414,7 +467,7 @@ static unsigned long rv_adler32(const unsigned char *data, size_t len) {
         a = (a + data[at]) % 65521;
         b = (b + a) % 65521;
     }
-    return (b << 16) | a;
+    return b * 65536UL + a;
 }
 
 int bt_rv_inflate_zlib(const unsigned char *in, size_t in_len, unsigned char **out, size_t *out_len,
@@ -423,8 +476,8 @@ int bt_rv_inflate_zlib(const unsigned char *in, size_t in_len, unsigned char **o
     *out = NULL;
     *out_len = 0;
     err[0] = '\0';
-    if (in_len < 6 || (in[0] & 0x0F) != 8 || (in[1] & 0x20) != 0 ||
-        (((unsigned long)in[0] << 8) | in[1]) % 31 != 0) {
+    if (in_len < 6 || ((unsigned)in[0] & 0x0FU) != 8 || ((unsigned)in[1] & 0x20U) != 0 ||
+        (((unsigned long)in[0] << 8U) | (unsigned long)in[1]) % 31 != 0) {
         snprintf(err, err_cap, "zlib: bad header");
         BT_TRACE_FAIL("rv.inflate_zlib", "%s", err);
         BT_TRACE_EXIT("rv.inflate_zlib");
@@ -439,8 +492,9 @@ int bt_rv_inflate_zlib(const unsigned char *in, size_t in_len, unsigned char **o
         BT_TRACE_EXIT("rv.inflate_zlib");
         return -1;
     }
-    unsigned long want = ((unsigned long)in[in_len - 4] << 24) | ((unsigned long)in[in_len - 3] << 16) |
-                         ((unsigned long)in[in_len - 2] << 8) | in[in_len - 1];
+    unsigned long want = ((unsigned long)in[in_len - 4] << 24U) |
+                         ((unsigned long)in[in_len - 3] << 16U) |
+                         ((unsigned long)in[in_len - 2] << 8U) | (unsigned long)in[in_len - 1];
     if (rv_adler32(raw, raw_len) != want) {
         free(raw);
         snprintf(err, err_cap, "zlib: adler32 mismatch");

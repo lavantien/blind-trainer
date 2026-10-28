@@ -9,9 +9,12 @@
 #include "common/bt_trace.h"
 #include "release-verify/inflate.h"
 
-#define RV_EOCD_MAX_BACK 65557
-#define RV_METHOD_STORE 0
-#define RV_METHOD_DEFLATE 8
+enum {
+    RV_EOCD_MAX_BACK = 65557,
+    RV_METHOD_STORE = 0,
+    RV_METHOD_DEFLATE = 8,
+    RV_CENTRAL_HEAD = 46,
+};
 
 typedef struct {
     char *name;
@@ -51,23 +54,23 @@ static char *rv_xstrdup(const char *text) {
 }
 
 static uint16_t rv_u16(const unsigned char *at) {
-    return (uint16_t)(at[0] | ((uint16_t)at[1] << 8));
+    return (uint16_t)((unsigned)at[0] | ((unsigned)at[1] << 8U));
 }
 
 static uint32_t rv_u32(const unsigned char *at) {
-    return (uint32_t)at[0] | ((uint32_t)at[1] << 8) | ((uint32_t)at[2] << 16) |
-           ((uint32_t)at[3] << 24);
+    return (uint32_t)at[0] | ((uint32_t)at[1] << 8U) | ((uint32_t)at[2] << 16U) |
+           ((uint32_t)at[3] << 24U);
 }
 
 uint32_t bt_rv_crc32(const unsigned char *data, size_t len) {
-    uint32_t crc = 0xFFFFFFFF;
+    uint32_t crc = 0xFFFFFFFFU;
     for (size_t at = 0; at < len; at++) {
-        crc ^= data[at];
+        crc ^= (uint32_t)data[at];
         for (int bit = 0; bit < 8; bit++) {
-            crc = (crc >> 1) ^ (0xEDB88320 & (0 - (crc & 1)));
+            crc = (crc >> 1U) ^ (0xEDB88320U & (0U - (crc & 1U)));
         }
     }
-    return crc ^ 0xFFFFFFFF;
+    return crc ^ 0xFFFFFFFFU;
 }
 
 static int rv_is_file(const char *path) {
@@ -360,7 +363,7 @@ static int rv_archive_open(const char *path, rv_archive *archive, char *err, siz
     rv_entry *entries = rv_xmalloc((count + 1) * sizeof *entries);
     size_t at = cd_offset;
     for (size_t index = 0; index < count; index++) {
-        if (at + 46 > eocd || rv_u32(bytes + at) != 0x02014b50) {
+        if (at + RV_CENTRAL_HEAD > eocd || rv_u32(bytes + at) != 0x02014b50) {
             free(bytes);
             free(entries);
             snprintf(err, err_cap, "cannot open zip: central directory truncated");
@@ -371,7 +374,7 @@ static int rv_archive_open(const char *path, rv_archive *archive, char *err, siz
         size_t name_len = rv_u16(bytes + at + 28);
         size_t extra_len = rv_u16(bytes + at + 30);
         size_t comment_len = rv_u16(bytes + at + 32);
-        if (at + 46 + name_len > eocd || name_len >= BT_PATH_MAX) {
+        if (at + RV_CENTRAL_HEAD + name_len > eocd || name_len >= BT_PATH_MAX) {
             free(bytes);
             free(entries);
             snprintf(err, err_cap, "cannot open zip: entry name out of range");
@@ -380,14 +383,14 @@ static int rv_archive_open(const char *path, rv_archive *archive, char *err, siz
             return -1;
         }
         rv_entry *entry = &entries[index];
-        memcpy(entry->name, bytes + at + 46, name_len);
+        memcpy(entry->name, bytes + at + RV_CENTRAL_HEAD, name_len);
         entry->name[name_len] = '\0';
         entry->method = rv_u16(bytes + at + 10);
         entry->crc = rv_u32(bytes + at + 16);
         entry->csize = rv_u32(bytes + at + 20);
         entry->usize = rv_u32(bytes + at + 24);
         entry->offset = rv_u32(bytes + at + 42);
-        at += 46 + name_len + extra_len + comment_len;
+        at += RV_CENTRAL_HEAD + name_len + extra_len + comment_len;
     }
     archive->bytes = bytes;
     archive->len = len;

@@ -10,9 +10,15 @@
 
 static const unsigned char RV_PNG_SIGNATURE[8] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
 
+enum {
+    RV_CHUNK_HEAD = 12,
+    RV_IHDR_LEN = 13,
+    RV_IHDR_INTERLACE_AT = 12,
+};
+
 static unsigned int rv_be32(const unsigned char *at) {
-    return ((unsigned int)at[0] << 24) | ((unsigned int)at[1] << 16) | ((unsigned int)at[2] << 8) |
-           at[3];
+    return ((unsigned int)at[0] << 24U) | ((unsigned int)at[1] << 16U) |
+           ((unsigned int)at[2] << 8U) | (unsigned int)at[3];
 }
 
 static int rv_channels_of(unsigned char color_type) {
@@ -78,7 +84,7 @@ static int rv_unfilter(unsigned char *raw, size_t raw_len, unsigned int width, u
                 row[at] = (unsigned char)(row[at] + up);
                 break;
             case 3:
-                row[at] = (unsigned char)(row[at] + ((left + up) >> 1));
+                row[at] = (unsigned char)(row[at] + (((unsigned)left + up) >> 1U));
                 break;
             case 4:
                 row[at] = (unsigned char)(row[at] + rv_paeth(left, up, up_left));
@@ -105,7 +111,7 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
         BT_TRACE_EXIT("rv.png_check");
         return -1;
     }
-    size_t cap = 1 << 20;
+    size_t cap = (size_t)1 << 20U;
     unsigned char *bytes = malloc(cap);
     size_t len = 0;
     for (;;) {
@@ -145,9 +151,9 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
     size_t idat_len = 0;
     size_t at = 8;
     int failed = 0;
-    while (at + 12 <= len && !failed) {
+    while (at + RV_CHUNK_HEAD <= len && !failed) {
         size_t chunk_len = rv_be32(bytes + at);
-        if (at + 12 + chunk_len > len) {
+        if (at + RV_CHUNK_HEAD + chunk_len > len) {
             snprintf(err, err_cap, "truncated chunk");
             failed = 1;
             break;
@@ -169,7 +175,7 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
             *height = rv_be32(data + 4);
             bit_depth = data[8];
             color_type = data[9];
-            interlace = data[12];
+            interlace = data[RV_IHDR_INTERLACE_AT];
             if (*width == 0 || *height == 0) {
                 snprintf(err, err_cap, "zero dimension");
                 failed = 1;
@@ -195,7 +201,7 @@ int bt_rv_png_check(const char *path, unsigned int *width, unsigned int *height,
         } else if (memcmp(type, "IEND", 4) == 0) {
             break;
         }
-        at += 12 + chunk_len;
+        at += RV_CHUNK_HEAD + chunk_len;
     }
     if (!failed && !have_header) {
         snprintf(err, err_cap, "ihdr chunk missing");

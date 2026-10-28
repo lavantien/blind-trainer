@@ -12,9 +12,12 @@
 #include "release-verify/zip.h"
 
 #define RV_SQLITE_MAGIC "SQLite format 3\0"
-#define RV_SQLITE_MAGIC_LEN 16
-#define RV_USER_VERSION_OFFSET 60
 #define RV_WORK_ROOT_NAME "bt-release-verify-run"
+
+enum {
+    RV_SQLITE_MAGIC_LEN = 16,
+    RV_USER_VERSION_OFFSET = 60,
+};
 
 static unsigned long rv_work_counter;
 
@@ -182,10 +185,10 @@ int bt_rv_read_db_user_version(const unsigned char *bytes, size_t len, unsigned 
         snprintf(err, err_cap, "db file is not a sqlite database");
         return -1;
     }
-    *version = ((unsigned int)bytes[RV_USER_VERSION_OFFSET] << 24) |
-               ((unsigned int)bytes[RV_USER_VERSION_OFFSET + 1] << 16) |
-               ((unsigned int)bytes[RV_USER_VERSION_OFFSET + 2] << 8) |
-               bytes[RV_USER_VERSION_OFFSET + 3];
+    *version = ((unsigned int)bytes[RV_USER_VERSION_OFFSET] << 24U) |
+               ((unsigned int)bytes[RV_USER_VERSION_OFFSET + 1] << 16U) |
+               ((unsigned int)bytes[RV_USER_VERSION_OFFSET + 2] << 8U) |
+               (unsigned int)bytes[RV_USER_VERSION_OFFSET + 3];
     return 0;
 }
 
@@ -643,8 +646,8 @@ static int rv_verify(const bt_rv_env *env, const bt_rv_parsed_args *args,
     char extract[BT_PATH_MAX];
     rv_join(extract, work, "extract");
     size_t count = 0;
-    if (rv_extract_stage(args->zip, extract, root, &count, detail, sizeof detail, err, sizeof err) !=
-        0) {
+    if (rv_extract_stage(args->zip, extract, root, &count, detail, sizeof detail, err,
+                         sizeof err) != 0) {
         code = rv_stage_ok("extract", -1, err);
         BT_TRACE_EXIT("rv.verify");
         return code;

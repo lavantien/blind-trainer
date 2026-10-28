@@ -8,8 +8,11 @@
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 
-#define BT_RV_POLL_MS 50
-#define BT_RV_KILL_WAIT_MS 10000
+enum {
+    BT_RV_POLL_MS = 50,
+    BT_RV_KILL_WAIT_MS = 10000,
+};
+
 #define BT_RV_CMDLINE_MAX (BT_PATH_MAX * 8)
 
 static void *rv_xmalloc(size_t size) {
@@ -336,8 +339,8 @@ int bt_rv_run_child(const bt_rv_child_spec *spec, unsigned long long deadline_ms
     env_wide = rv_env_block(spec);
     if (!CreatePipe(&out_read, &out_write, &inheritable, 0) ||
         !CreatePipe(&err_read, &err_write, &inheritable, 0)) {
-        snprintf(out->outcome.detail, sizeof out->outcome.detail, "cannot spawn %s: pipe failed %lu",
-                 spec->program, GetLastError());
+        snprintf(out->outcome.detail, sizeof out->outcome.detail,
+                 "cannot spawn %s: pipe failed %lu", spec->program, GetLastError());
         out->outcome.kind = BT_RV_OUTCOME_SPAWN;
         goto done;
     }
