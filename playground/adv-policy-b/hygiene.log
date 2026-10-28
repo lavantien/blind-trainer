@@ -1,0 +1,44 @@
+COMMIT c1e2557
+Raeliosol <cariyaputta@gmail.com>
+refactor(policy): centralize port-induced constants in src app views and digest
+
+ADDED_COMMENT_LINES
+NONE
+TRAILERS
+CLEAN
+FILES
+artifacts/progress/t43.md src/app/logic.c src/app/net.c src/app/replay_scene.c src/app/ui.c src/app/views/algs/browse.c src/app/views/algs/detail.c src/app/views/algs/mod.c src/app/views/case_drill.c src/app/views/case_drill.h src/app/views/drill_view.c src/app/views/frame.c src/app/views/net_view.c src/app/views/replay.c src/app/views/stats.c src/app/window.c src/data/digest.c
+
+COMMIT 3959aac
+Raeliosol <cariyaputta@gmail.com>
+refactor(policy): centralize harness constants in tools verify
+
+ADDED_COMMENT_LINES
+NONE
+TRAILERS
+CLEAN
+FILES
+tools/verify/ev_bigcube.c tools/verify/ev_bld.c tools/verify/ev_bld.h tools/verify/ev_cfop.c tools/verify/ev_fto.c tools/verify/ev_mega.c tools/verify/ev_nxn.c tools/verify/ev_pyra.c tools/verify/ev_skewb.c tools/verify/ev_sq1.c tools/verify/lib.c tools/verify/lib.h tools/verify/packs.c tools/verify/packs.h tools/verify/report.c tools/verify/report.h
+
+COMMIT afbd7eb
+Raeliosol <cariyaputta@gmail.com>
+chore(policy): allow rust mirrored structural literals in the constants allowlist
+
+ADDED_COMMENT_LINES
+NONE
+TRAILERS
+CLEAN
+FILES
+config/constants_allow.txt
+
+COMMIT ddb6eed
+Raeliosol <cariyaputta@gmail.com>
+fix(policy): replace magic key comments with named raylib keys in app tests
+
+ADDED_COMMENT_LINES
+NONE
+TRAILERS
+CLEAN
+FILES
+artifacts/progress/t43.md tests/unit/app/algs_more_test.c tests/unit/app/solve_more_test.c tests/unit/app/views_algs_test.c tests/unit/app/views_case_drill_test.c
+

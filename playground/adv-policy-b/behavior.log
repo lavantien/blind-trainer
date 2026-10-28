@@ -1,0 +1,24 @@
+SNAP_BEFORE hash prefixes are sha256 first 8 hex
+artifacts/verify/report.md 1113 11B94C42
+artifacts/verify/report.json 288951 5EEA4719
+artifacts/verify/packs.md 6521 31CA7A31
+data/ga/freq.json 14480723 11609BD4
+data/ga/syllables.json 90544 80682880
+data/ga/report.json 16910 4B0B22FC
+RUN verify.exe
+verify: 1077/1077 rows pass, report at C:\Users\lavantien\dev\github\blind-trainer/artifacts/verify/report.md
+packs: 1034/1115 rows pass or ruled, report at C:\Users\lavantien\dev\github\blind-trainer/artifacts/verify/packs.md
+verify_exit=0
+RUN memofreq.exe
+memofreq: 200000 draws seed 20261012 -> 818 cases all hit (2408836 pair events, 1112046 adjacent events), sha256 11609bd494b8a4a9487ecdfda4237e5b7552500c0e9b77aa918a21ce04b657db prefix 11609bd4, wrote C:\Users\lavantien\dev\github\blind-trainer/data/ga/freq.json
+memofreq_exit=0
+RUN ga-run.exe
+ga: seed 20261012 pool 1600 best fitness 0.558217 at gen 497 cases 818 distinct 818, wrote C:\Users\lavantien\dev\github\blind-trainer/data/ga/syllables.json
+ga_exit=0
+SNAP_AFTER
+artifacts/verify/report.md 1113 0881AFC2
+artifacts/verify/report.json 288951 FBE352CA
+artifacts/verify/packs.md 6521 31CA7A31
+data/ga/freq.json 14480723 11609BD4
+data/ga/syllables.json 90544 80682880
+data/ga/report.json 16910 4B0B22FC

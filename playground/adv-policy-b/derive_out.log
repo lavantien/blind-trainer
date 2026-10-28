@@ -1,0 +1,11 @@
+ALLOWLIST_ROWS 57
+ALLOWLIST_DUPES NONE
+DERIVED_FINDINGS
+tools/gendata/synth.c:51: literal 54 x30
+tools/gendata/synth.c:91: literal 27 x5
+DERIVED_STALE
+VALUE_SPLIT_CANDIDATES
+src/ga/ga.c: value 1000000.0 total 4 across 1000000x2, 1000000.0x2
+tools/sleeper/main.c: value 1000.0 total 4 across 1000x3, 1000.0x1
+FILES_SCANNED_CONSTANTS 318
+FILES_WALKED 556

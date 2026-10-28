@@ -1,0 +1,7 @@
+TOPLEVEL_DIRS
+__pycache__ .cargo .claude .github .ruff_cache artifacts assets build config crates data db docs fuzz mutants.out mutants.out.old mutants.out.presession-130355 PLACEHOLDER playground ref_doc ref_ground scripts src tests tools vendor
+STRAY_SOURCE_ROOTS
+bt.py
+COUNTS
+in_scope_total=555
+constants_scope=318

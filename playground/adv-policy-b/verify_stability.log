@@ -1,0 +1,21 @@
+verify: 1077/1077 rows pass, report at C:\Users\lavantien\dev\github\blind-trainer/artifacts/verify/report.md
+packs: 1034/1115 rows pass or ruled, report at C:\Users\lavantien\dev\github\blind-trainer/artifacts/verify/packs.md
+exit=0
+REPORT_MD_DIFF
+=> generated_at: 2026-10-28T01:43:37Z
+<= generated_at: 2026-10-28T01:38:58Z
+REPORT_JSON_DIFF
+json_equal_except_stamp=False
+SHEET_ORDER
+| cherry | edge | 551 | 551 | 0 | 551 | 551 |
+| cherry | corner | 328 | 328 | 0 | 328 | 328 |
+| cherry | flips | 25 | 25 | 0 | 25 | 25 |
+| cherry | twists | 20 | 20 | 0 | 20 | 20 |
+| cherry | parity | 26 | 26 | 0 | 26 | 26 |
+| cherry | ltct | 8 | 8 | 0 | 8 | 8 |
+| eggins | edge | 71 | 71 | 0 | 71 | 71 |
+| eggins | corner | 38 | 38 | 0 | 38 | 38 |
+| eggins | flips | 0 | 0 | 0 | 0 | 0 |
+| eggins | twists | 5 | 5 | 0 | 5 | 5 |
+| eggins | parity | 2 | 2 | 0 | 2 | 2 |
+| eggins | ltct | 3 | 3 | 0 | 3 | 3 |

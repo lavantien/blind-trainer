@@ -1,0 +1,31 @@
+2026-10-28T08:38:17 [entry] test-unit tools --only policy
+2026-10-28T08:38:17 [skip] compile src\common\bt_harness.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\bt_trace.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\config.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\fsrs_math.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\json.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\paths.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\rng.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\sha256.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\space.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\strbuf.c up to date
+2026-10-28T08:38:17 [skip] compile src\common\when.c up to date
+2026-10-28T08:38:17 [skip] compile tests\unit\tools\policy_comments_test.c up to date
+2026-10-28T08:38:17 [skip] compile tests\unit\tools\policy_constants_test.c up to date
+2026-10-28T08:38:17 [skip] compile tests\unit\tools\policy_lexer_test.c up to date
+2026-10-28T08:38:17 [skip] compile tests\unit\tools\policy_lib_test.c up to date
+2026-10-28T08:38:17 [skip] compile tests\unit\tools\policy_sloc_test.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\comments.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\constants.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\fsutil.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\lexer.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\lib.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\main.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\selftest.c up to date
+2026-10-28T08:38:17 [skip] compile tools\policy\sloc.c up to date
+2026-10-28T08:38:17 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-28T08:38:20 [repro] 209 object timestamps zeroed
+2026-10-28T08:38:20 [compile] 184 compiled, 184 ok
+2026-10-28T08:38:20 [skip] link policy.exe up to date
+2026-10-28T08:38:22 [summary] 5 passed, 0 failed
+2026-10-28T08:38:22 [exit] test-unit code=0
