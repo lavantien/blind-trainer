@@ -1,0 +1,12 @@
+adv-policy-a probe log 2026-10-28
+policy.exe bare: exit 1, findings tools/gendata/synth.c:51 literal 54 x30 and :91 literal 27 x5, zero stale
+policy.exe comments: exit 0
+tools_policy_lib_test.exe: 21 passed 0 failed exit 0
+bt.py test-unit app: 43 passed 0 failed exit 0
+bt.py test-unit tools --only verify: 15 passed 0 failed exit 0
+bt.py test-unit tools --only policy: 5 passed 0 failed exit 0
+bt.py policy: build blocked by locked build/bin/mutate.exe, policy.exe itself up to date and run directly
+memofreq.exe exit 0: freq.json sha256 11609BD494B8A4A9487ECDFDA4237E5B7552500C0E9B77AA918A21CE04B657DB identical to committed golden
+ga-run.exe exit 0: syllables.json sha256 80682880A1C6D39CF8F30D38627223EA1493E7296E45CE069E45D93DB29372F3 identical to committed golden
+report.json sha256 4B0B22FC3534BD3C5C0CA3540E4CAB63B43708CB5AF09DC5DF312F3EFB7B5F46 unchanged
+git status data/ga empty after both runs
