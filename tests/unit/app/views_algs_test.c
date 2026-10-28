@@ -6,6 +6,7 @@
 #include "common.h"
 
 enum {
+    KEY_SLASH = 47,
     KEY_D = 68,
     KEY_DOWN = 264,
 };
@@ -81,7 +82,7 @@ BT_TEST(views_algs, algs_search_routes_the_selected_case_into_drill) {
 BT_TEST(views_algs, arrows_keep_navigating_while_the_filter_box_is_focused) {
     bt_app_ctx ctx = algs_ctx("focusedarrows");
     bt_view_algs_enter(&ctx);
-    bt_view_algs_key(&ctx, 47 /* slash */);
+    bt_view_algs_key(&ctx, KEY_SLASH);
     BT_CHECK(bt_view_algs_app()->query_focused);
     ctx.input_focus = 1;
     bt_view_algs_key(&ctx, KEY_DOWN);
@@ -95,7 +96,7 @@ BT_TEST(views_algs, arrows_keep_navigating_while_the_filter_box_is_focused) {
 BT_TEST(views_algs, escape_releases_a_focused_text_input_before_leaving_the_view) {
     bt_app_ctx ctx = algs_ctx("escapedefocus");
     bt_view_algs_enter(&ctx);
-    bt_view_algs_key(&ctx, 47 /* slash */);
+    bt_view_algs_key(&ctx, KEY_SLASH);
     ctx.input_focus = 1;
 
     bt_app_key_event escape;

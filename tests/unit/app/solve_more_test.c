@@ -6,6 +6,7 @@
 
 enum {
     KEY_SPACE = 32,
+    KEY_V = 86,
 };
 
 static const char *COVERED_ALG = "R2 U' S R2 S' R2 U R2";
@@ -521,7 +522,7 @@ BT_TEST(solve_more, review_v_opens_the_replay_state) {
     bt_view_solve_app_state *app = bt_view_solve_app();
     finish_fast(&ctx);
     BT_CHECK(ctx.solve_phase == BT_SOLVE_REVIEW);
-    bt_view_solve_key(&ctx, app, 86 /* v */);
+    bt_view_solve_key(&ctx, app, KEY_V);
     BT_CHECK(ctx.has_pending);
     BT_CHECK_EQ(ctx.pending, BT_APP_REPLAY);
     bt_app_apply_pending(&ctx);

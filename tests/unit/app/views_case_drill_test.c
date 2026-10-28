@@ -11,6 +11,7 @@ enum {
     KEY_ONE = 49,
     KEY_FOUR = 52,
     KEY_D = 68,
+    KEY_ESCAPE = 256,
     KEY_RIGHT = 262,
     KEY_LEFT = 263,
     KEY_DOWN = 264,
@@ -168,7 +169,7 @@ BT_TEST(views_case_drill, due_sessions_cover_the_event_and_skip_recently_graded_
     grade_current(&ctx, KEY_FOUR);
     BT_CHECK(ctx.state == BT_APP_ALGS);
 
-    bt_view_algs_key(&ctx, 256 /* escape */);
+    bt_view_algs_key(&ctx, KEY_ESCAPE);
     bt_app_key_event escape;
     memset(&escape, 0, sizeof escape);
     escape.kind = BT_APP_KEY_ESCAPE;

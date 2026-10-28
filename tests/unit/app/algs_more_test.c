@@ -7,7 +7,11 @@
 #include "common.h"
 
 enum {
+    KEY_SLASH = 47,
+    KEY_O = 79,
+    KEY_X = 88,
     KEY_ENTER = 257,
+    KEY_TAB = 258,
     KEY_N = 78,
     KEY_P = 80,
     KEY_D = 68,
@@ -101,7 +105,7 @@ BT_TEST(algs_more, slash_focuses_the_filter_and_plain_keys_never_grab_it) {
     BT_CHECK(!bt_view_algs_app()->query_focused);
     bt_view_algs_key(&ctx, KEY_DOWN);
     BT_CHECK(!bt_view_algs_app()->query_focused);
-    bt_view_algs_key(&ctx, 47 /* slash */);
+    bt_view_algs_key(&ctx, KEY_SLASH);
     BT_CHECK(bt_view_algs_app()->query_focused);
     bt_app_ctx_free(&ctx);
 }
@@ -216,7 +220,7 @@ BT_TEST(algs_more, movement_keys_step_wrap_and_respect_the_typing_guard) {
     bt_view_algs_key(&ctx, KEY_P);
     BT_CHECK_EQ(app->browser.selected, total - 1);
 
-    bt_view_algs_key(&ctx, 47 /* slash */);
+    bt_view_algs_key(&ctx, KEY_SLASH);
     ctx.input_focus = 1;
     size_t before = app->browser.selected;
     bt_view_algs_key(&ctx, KEY_N);
@@ -360,14 +364,14 @@ BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
     BT_CHECK(repo->repo_focused);
     BT_CHECK(strcmp(bt_repo_browser_node(repo)->label, "cll.1") == 0);
 
-    int open_key[1] = {79 /* o */};
+    int open_key[1] = {KEY_O};
     bt_view_algs_frame(&ctx, open_key, 1);
     bt_view_override_draft *draft = bt_view_algs_draft();
     BT_CHECK(draft->has_case);
     BT_CHECK(strcmp(draft->site.case_ref.case_key, "cll.1") == 0);
     BT_CHECK(strcmp(draft->text, "R U R'") == 0);
 
-    int cancel_key[1] = {258 /* tab */};
+    int cancel_key[1] = {KEY_TAB};
     bt_view_algs_frame(&ctx, cancel_key, 1);
     BT_CHECK(!draft->has_case);
 
@@ -379,7 +383,7 @@ BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
     BT_CHECK(bt_overrides_contains(bt_view_algs_overrides(), &key));
     BT_CHECK(!draft->has_case);
 
-    int delete_key[1] = {88 /* x */};
+    int delete_key[1] = {KEY_X};
     bt_view_algs_frame(&ctx, delete_key, 1);
     BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
 
@@ -396,7 +400,7 @@ BT_TEST(algs_more, the_production_frame_browses_packs_and_edits_overrides) {
 BT_TEST(algs_more, reentering_the_algs_view_resets_the_query_focus_for_the_d_gate) {
     bt_app_ctx ctx = algs_ctx("reenter");
     install_cll_repo(&ctx);
-    int slash_key[1] = {47 /* slash */};
+    int slash_key[1] = {KEY_SLASH};
     bt_view_algs_frame(&ctx, slash_key, 1);
     BT_CHECK(bt_view_algs_app()->query_focused);
     bt_app_request_state(&ctx, BT_APP_MENU);
