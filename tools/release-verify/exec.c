@@ -388,8 +388,8 @@ int bt_rv_run_child(const bt_rv_child_spec *spec, unsigned long long deadline_ms
             break;
         }
     }
-    WaitForSingleObject(readers[0], BT_RV_KILL_WAIT_MS);
-    WaitForSingleObject(readers[1], BT_RV_KILL_WAIT_MS);
+    WaitForSingleObject(readers[0], INFINITE);
+    WaitForSingleObject(readers[1], INFINITE);
     CloseHandle(readers[0]);
     CloseHandle(readers[1]);
     CloseHandle(out_read);

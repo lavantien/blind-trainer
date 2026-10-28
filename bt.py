@@ -24,6 +24,8 @@ VENDOR_UNITS = (("vendor/sqlite/sqlite3.c", ("-DSQLITE_THREADSERIALIZED=1",)),)
 LLVM_MAJOR = "23"
 REQUIRED_TOOLS = ("clang", "clang_format", "clang_tidy", "llvm_cov")
 LINKER_FLAG = "-fuse-ld=lld-link"
+RELEASE_SCENARIOS = 4
+RELEASE_OVERHEAD_SECS = 60
 FUZZ_HARNESS = """#include <stdint.h>
 #include <stddef.h>
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
@@ -1160,21 +1162,43 @@ def ensure_tool_exes(hub, logger, build_label, names):
     return exes
 
 
-def run_policy_exe(exe, argv, label, logger, env=None, echo=False):
+def kill_process_tree(pid):
+    subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True)
+
+
+def run_policy_exe(exe, argv, label, logger, env=None, echo=False, timeout=300):
+    unit_argv = [str(part) for part in [exe, *argv]]
+    logger.entry(label, subprocess.list2cmdline(unit_argv))
+    started = time.monotonic()
+    proc = subprocess.Popen(
+        unit_argv,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env=env,
+    )
     try:
-        proc = run([exe, *argv], label, check=False, timeout=300, env=env)
-    except subprocess.TimeoutExpired as e:
-        logger.fail(label, f"timeout after {e.timeout}s: {e.cmd}")
+        out, err = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        kill_process_tree(proc.pid)
+        try:
+            proc.kill()
+        except OSError:
+            pass
+        proc.communicate()
+        logger.fail(label, f"timeout after {timeout}s: {unit_argv}")
         logger.exit(label, 2)
         return 2
-    if proc.returncode != 0:
-        tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
+    code = proc.returncode
+    output = ((err or "") + (out or ""))
+    if code != 0:
+        tail = output[-3000:].strip()
         if tail:
             print(tail, flush=True)
-    elif echo and proc.stdout:
-        print(proc.stdout, flush=True)
-    logger.exit(label, proc.returncode)
-    return proc.returncode
+    elif echo and out:
+        print(out, flush=True)
+    logger.exit(label, code, time.monotonic() - started)
+    return code
 
 
 def tool_run(hub, build_label, exe_name, argv, label, env=None):
@@ -1668,6 +1692,15 @@ def release_verify_plan(hub, version):
     return staging, zip_path, [str(staging), str(zip_path), "--run"]
 
 
+def release_verify_timeout(hub):
+    return RELEASE_OVERHEAD_SECS + RELEASE_SCENARIOS * hub["release"]["run_timeout_secs"]
+
+
+def release_verify_invoke(exe, argv, hub, logger):
+    return run_policy_exe(exe, argv, "release-verify", logger, env=child_env(hub), echo=True,
+                          timeout=release_verify_timeout(hub))
+
+
 def release_stage_exe(bin_dir, app_name, release_name):
     app = bin_dir / app_name
     if not app.is_file():
@@ -1700,7 +1733,7 @@ def tgt_release_verify(args):
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("release-verify-build", f"{type(e).__name__}: {e}")
         return 1
-    return run_policy_exe(exe, argv, "release-verify", logger, env=child_env(hub))
+    return release_verify_invoke(exe, argv, hub, logger)
 
 
 def tgt_release_verify_selftest(args):

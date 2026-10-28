@@ -61,19 +61,14 @@ static int rv_unfilter(unsigned char *raw, size_t raw_len, unsigned int width, u
         return -1;
     }
     for (unsigned int line = 0; line < height; line++) {
-        if (raw[(size_t)line * row_bytes] > 4) {
-            snprintf(err, err_cap, "bad filter byte %u", raw[(size_t)line * row_bytes]);
-            return -1;
-        }
-    }
-    for (unsigned int line = 1; line < height; line++) {
         unsigned char *row = raw + (size_t)line * row_bytes + 1;
-        unsigned char *above = raw + (size_t)(line - 1) * row_bytes + 1;
+        const unsigned char *above = line > 0 ? raw + (size_t)(line - 1) * row_bytes + 1 : NULL;
         unsigned char filter = raw[(size_t)line * row_bytes];
         for (size_t at = 0; at < stride; at++) {
             unsigned char left = at >= (size_t)channels ? row[at - channels] : 0;
-            unsigned char up = above[at];
-            unsigned char up_left = at >= (size_t)channels ? above[at - channels] : 0;
+            unsigned char up = above != NULL ? above[at] : 0;
+            unsigned char up_left =
+                above != NULL && at >= (size_t)channels ? above[at - channels] : 0;
             switch (filter) {
             case 0:
                 break;
@@ -235,8 +230,8 @@ static int rv_png_decode(const char *path, unsigned int *width, unsigned int *he
     return 0;
 }
 
-int bt_rv_png_raw(const char *path, unsigned int *width, unsigned int *height,
-                  unsigned char **raw, size_t *raw_len, char *err, size_t err_cap) {
+int bt_rv_png_raw(const char *path, unsigned int *width, unsigned int *height, unsigned char **raw,
+                  size_t *raw_len, char *err, size_t err_cap) {
     return rv_png_decode(path, width, height, raw, raw_len, err, err_cap);
 }
 

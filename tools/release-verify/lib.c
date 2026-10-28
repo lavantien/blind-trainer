@@ -306,14 +306,27 @@ int bt_rv_packaged_window_dims(const char *staging, const char *config_file, uns
 }
 
 int bt_rv_zip_root_from(const char *staging, char out[BT_PATH_MAX], char *err, size_t err_cap) {
-    const char *slash = strrchr(staging, '/');
-    const char *backslash = strrchr(staging, '\\');
-    const char *cut = slash > backslash ? slash : backslash;
-    if (cut == NULL || cut[1] == '\0') {
+    char trimmed[BT_PATH_MAX];
+    snprintf(trimmed, sizeof trimmed, "%s", staging);
+    size_t len = strlen(trimmed);
+    while (len > 0 && (trimmed[len - 1] == '/' || trimmed[len - 1] == '\\')) {
+        trimmed[--len] = '\0';
+    }
+    const char *name = trimmed;
+    if (len > 0 && !(len == 2 && trimmed[1] == ':')) {
+        const char *slash = strrchr(trimmed, '/');
+        const char *backslash = strrchr(trimmed, '\\');
+        const char *cut = slash > backslash ? slash : backslash;
+        if (cut != NULL) {
+            name = cut + 1;
+        }
+    }
+    if (name[0] == '\0' || strcmp(name, "..") == 0 || strcmp(name, ".") == 0 ||
+        (len == 2 && trimmed[1] == ':')) {
         snprintf(err, err_cap, "staging dir %s has no folder name", staging);
         return -1;
     }
-    snprintf(out, BT_PATH_MAX, "%s", cut + 1);
+    snprintf(out, BT_PATH_MAX, "%s", name);
     return 0;
 }
 
@@ -342,7 +355,7 @@ int bt_rv_check_shot_dir(const char *dir, const bt_rv_release_cfg *cfg, unsigned
     WIN32_FIND_DATAA found;
     HANDLE scan = FindFirstFileA(pattern, &found);
     if (scan == INVALID_HANDLE_VALUE) {
-        snprintf(err, err_cap, "cannot read shots dir %s", dir);
+        snprintf(err, err_cap, "cannot read shots dir %s: %lu", dir, GetLastError());
         BT_TRACE_FAIL("rv.check_shot_dir", "%s", err);
         BT_TRACE_EXIT("rv.check_shot_dir");
         return -1;
@@ -374,21 +387,6 @@ int bt_rv_check_shot_dir(const char *dir, const bt_rv_release_cfg *cfg, unsigned
     } while (FindNextFileA(scan, &found));
     FindClose(scan);
     int failed = 0;
-    for (size_t at = 0; at < name_count && !failed; at++) {
-        int matched = 0;
-        for (size_t shot = 0; shot < cfg->shot_count; shot++) {
-            char wanted[BT_RV_SHOT_NAME_MAX + 8];
-            snprintf(wanted, sizeof wanted, "%s.png", cfg->shots[shot]);
-            if (strcmp(names[at], wanted) == 0) {
-                matched = 1;
-                break;
-            }
-        }
-        if (!matched) {
-            snprintf(err, err_cap, "unexpected file %s in shots dir", names[at]);
-            failed = 1;
-        }
-    }
     for (size_t shot = 0; shot < cfg->shot_count && !failed; shot++) {
         char wanted[BT_RV_SHOT_NAME_MAX + 8];
         snprintf(wanted, sizeof wanted, "%s.png", cfg->shots[shot]);
@@ -401,6 +399,21 @@ int bt_rv_check_shot_dir(const char *dir, const bt_rv_release_cfg *cfg, unsigned
         }
         if (!matched) {
             snprintf(err, err_cap, "missing shot %s", wanted);
+            failed = 1;
+        }
+    }
+    for (size_t at = 0; at < name_count && !failed; at++) {
+        int matched = 0;
+        for (size_t shot = 0; shot < cfg->shot_count; shot++) {
+            char wanted[BT_RV_SHOT_NAME_MAX + 8];
+            snprintf(wanted, sizeof wanted, "%s.png", cfg->shots[shot]);
+            if (strcmp(names[at], wanted) == 0) {
+                matched = 1;
+                break;
+            }
+        }
+        if (!matched) {
+            snprintf(err, err_cap, "unexpected file %s in shots dir", names[at]);
             failed = 1;
         }
     }
@@ -624,6 +637,104 @@ static void rv_work_root(char out[BT_PATH_MAX]) {
              sequence);
 }
 
+static void rv_rm_rf(const char *path) {
+    char pattern[BT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/*", path);
+    WIN32_FIND_DATAA found;
+    HANDLE scan = FindFirstFileA(pattern, &found);
+    if (scan == INVALID_HANDLE_VALUE) {
+        RemoveDirectoryA(path);
+        return;
+    }
+    do {
+        if (strcmp(found.cFileName, ".") == 0 || strcmp(found.cFileName, "..") == 0) {
+            continue;
+        }
+        char child[BT_PATH_MAX];
+        snprintf(child, sizeof child, "%s/%s", path, found.cFileName);
+        if (found.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            rv_rm_rf(child);
+        } else {
+            DeleteFileA(child);
+        }
+    } while (FindNextFileA(scan, &found));
+    FindClose(scan);
+    RemoveDirectoryA(path);
+}
+
+static int rv_run_stages(const bt_rv_env *env, const bt_rv_parsed_args *args,
+                         const bt_rv_release_cfg *cfg, const char *root, const char *work,
+                         const unsigned int dims[2]) {
+    BT_TRACE_ENTER("rv.run_stages");
+    char detail[BT_RV_ERR_MAX];
+    char err[BT_RV_ERR_MAX];
+    int code = 0;
+    char extract[BT_PATH_MAX];
+    rv_join(extract, work, "extract");
+    size_t count = 0;
+    if (rv_extract_stage(args->zip, extract, root, &count, detail, sizeof detail, err,
+                         sizeof err) != 0) {
+        code = rv_stage_ok("extract", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    code = rv_stage_ok("extract", 0, detail);
+    char exe_path[BT_PATH_MAX];
+    rv_join(exe_path, extract, cfg->exe);
+    char sandbox[BT_PATH_MAX];
+    rv_join(sandbox, work, "p1");
+    size_t shot_count = 0;
+    if (bt_rv_smoke_stage(exe_path, sandbox, cfg, dims[0], dims[1], env->vars, NULL, &shot_count,
+                          err, sizeof err) != 0) {
+        code = rv_stage_ok("p1 smoke", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    snprintf(detail, sizeof detail, "exit 0, %zu shots at %ux%u", shot_count, dims[0], dims[1]);
+    code = rv_stage_ok("p1 smoke", 0, detail);
+    if (bt_rv_db_stage(sandbox, cfg, err, sizeof err) != 0) {
+        code = rv_stage_ok("p1 db", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    snprintf(detail, sizeof detail, "%s at user_version %llu", cfg->db_file,
+             BT_RV_LATEST_USER_VERSION);
+    code = rv_stage_ok("p1 db", 0, detail);
+    char packaged[BT_PATH_MAX];
+    rv_join(packaged, extract, cfg->config_file);
+    char p2[BT_PATH_MAX];
+    rv_join(p2, work, "p2");
+    shot_count = 0;
+    if (bt_rv_smoke_stage(exe_path, p2, cfg, dims[0], dims[1], env->vars, packaged, &shot_count,
+                          err, sizeof err) != 0) {
+        code = rv_stage_ok("p2 smoke", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    snprintf(detail, sizeof detail, "exit 0, %zu shots at %ux%u", shot_count, dims[0], dims[1]);
+    code = rv_stage_ok("p2 smoke", 0, detail);
+    char n1[BT_PATH_MAX];
+    rv_join(n1, work, "n1");
+    if (bt_rv_n1_stage(exe_path, extract, n1, cfg, env->vars, err, sizeof err) != 0) {
+        code = rv_stage_ok("n1 missing config", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    snprintf(detail, sizeof detail, "exit %d with the config deleted", cfg->neg_config_exit);
+    code = rv_stage_ok("n1 missing config", 0, detail);
+    char n2[BT_PATH_MAX];
+    rv_join(n2, work, "n2");
+    if (bt_rv_n2_stage(exe_path, n2, cfg, env->vars, err, sizeof err) != 0) {
+        code = rv_stage_ok("n2 usage", -1, err);
+        BT_TRACE_EXIT("rv.run_stages");
+        return code;
+    }
+    snprintf(detail, sizeof detail, "exit %d", cfg->usage_exit);
+    code = rv_stage_ok("n2 usage", 0, detail);
+    BT_TRACE_EXIT("rv.run_stages");
+    return code;
+}
+
 static int rv_verify(const bt_rv_env *env, const bt_rv_parsed_args *args,
                      const bt_rv_release_cfg *cfg, const char *root) {
     BT_TRACE_ENTER("rv.verify");
@@ -643,68 +754,8 @@ static int rv_verify(const bt_rv_env *env, const bt_rv_parsed_args *args,
     }
     char work[BT_PATH_MAX];
     rv_work_root(work);
-    char extract[BT_PATH_MAX];
-    rv_join(extract, work, "extract");
-    size_t count = 0;
-    if (rv_extract_stage(args->zip, extract, root, &count, detail, sizeof detail, err,
-                         sizeof err) != 0) {
-        code = rv_stage_ok("extract", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    code = rv_stage_ok("extract", 0, detail);
-    char exe_path[BT_PATH_MAX];
-    rv_join(exe_path, extract, cfg->exe);
-    char sandbox[BT_PATH_MAX];
-    rv_join(sandbox, work, "p1");
-    size_t shot_count = 0;
-    if (bt_rv_smoke_stage(exe_path, sandbox, cfg, dims[0], dims[1], env->vars, NULL, &shot_count,
-                          err, sizeof err) != 0) {
-        code = rv_stage_ok("p1 smoke", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    snprintf(detail, sizeof detail, "exit 0, %zu shots at %ux%u", shot_count, dims[0], dims[1]);
-    code = rv_stage_ok("p1 smoke", 0, detail);
-    if (bt_rv_db_stage(sandbox, cfg, err, sizeof err) != 0) {
-        code = rv_stage_ok("p1 db", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    snprintf(detail, sizeof detail, "%s at user_version %llu", cfg->db_file,
-             BT_RV_LATEST_USER_VERSION);
-    code = rv_stage_ok("p1 db", 0, detail);
-    char packaged[BT_PATH_MAX];
-    rv_join(packaged, extract, cfg->config_file);
-    char p2[BT_PATH_MAX];
-    rv_join(p2, work, "p2");
-    shot_count = 0;
-    if (bt_rv_smoke_stage(exe_path, p2, cfg, dims[0], dims[1], env->vars, packaged, &shot_count,
-                          err, sizeof err) != 0) {
-        code = rv_stage_ok("p2 smoke", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    snprintf(detail, sizeof detail, "exit 0, %zu shots at %ux%u", shot_count, dims[0], dims[1]);
-    code = rv_stage_ok("p2 smoke", 0, detail);
-    char n1[BT_PATH_MAX];
-    rv_join(n1, work, "n1");
-    if (bt_rv_n1_stage(exe_path, extract, n1, cfg, env->vars, err, sizeof err) != 0) {
-        code = rv_stage_ok("n1 missing config", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    snprintf(detail, sizeof detail, "exit %d with the config deleted", cfg->neg_config_exit);
-    code = rv_stage_ok("n1 missing config", 0, detail);
-    char n2[BT_PATH_MAX];
-    rv_join(n2, work, "n2");
-    if (bt_rv_n2_stage(exe_path, n2, cfg, env->vars, err, sizeof err) != 0) {
-        code = rv_stage_ok("n2 usage", -1, err);
-        BT_TRACE_EXIT("rv.verify");
-        return code;
-    }
-    snprintf(detail, sizeof detail, "exit %d", cfg->usage_exit);
-    code = rv_stage_ok("n2 usage", 0, detail);
+    code = rv_run_stages(env, args, cfg, root, work, dims);
+    rv_rm_rf(work);
     BT_TRACE_EXIT("rv.verify");
     return code;
 }
@@ -755,6 +806,7 @@ int bt_rv_run(const bt_rv_env *env, int *exit_code, char *err, size_t err_cap) {
     BT_TRACE_ENTER("rv.run");
     bt_rv_parsed_args args;
     if (bt_rv_parse_args((int)rv_argv_count(env->argv), env->argv, &args, err, err_cap) != 0) {
+        snprintf(err, err_cap, "%s", BT_RV_USAGE_LINE);
         BT_TRACE_FAIL("rv.run", "%s", err);
         BT_TRACE_EXIT("rv.run");
         return -1;

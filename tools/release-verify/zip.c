@@ -300,7 +300,7 @@ int bt_rv_normalize_entry(const char *name, const char *root, char *out, size_t 
         }
     }
     size_t len = strlen(slashed);
-    if (len == 0 || slashed[len - 1] == '/') {
+    if (len > 0 && slashed[len - 1] == '/') {
         return 0;
     }
     char prefix[BT_PATH_MAX];
@@ -423,6 +423,11 @@ static int rv_entry_bytes(const rv_archive *archive, const rv_entry *entry, unsi
         unsigned char *copy = rv_xmalloc(entry->usize);
         if (entry->usize > 0) {
             memcpy(copy, data, entry->usize);
+        }
+        if (bt_rv_crc32(copy, entry->usize) != entry->crc) {
+            free(copy);
+            snprintf(err, err_cap, "zip entry %s unreadable: crc mismatch", entry->name);
+            return -1;
         }
         *out = copy;
         *out_len = entry->usize;
