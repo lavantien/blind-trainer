@@ -98,7 +98,8 @@ static void assert_hit_matches_the_ideal_cycle(bt_orbit orbit, uint8_t t1, uint8
 }
 
 BT_TEST(gendata_synth, edge_head_pair_gets_a_verified_commutator) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_EDGE, 'A', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -111,7 +112,8 @@ BT_TEST(gendata_synth, edge_head_pair_gets_a_verified_commutator) {
 }
 
 BT_TEST(gendata_synth, corner_head_pair_gets_a_verified_commutator) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_CORNER, 'A', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -124,7 +126,8 @@ BT_TEST(gendata_synth, corner_head_pair_gets_a_verified_commutator) {
 }
 
 BT_TEST(gendata_synth, edge_tail_pair_gets_a_verified_commutator) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_EDGE, 'E', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -137,7 +140,8 @@ BT_TEST(gendata_synth, edge_tail_pair_gets_a_verified_commutator) {
 }
 
 BT_TEST(gendata_synth, corner_tail_pair_gets_a_verified_commutator) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_CORNER, 'E', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -150,7 +154,8 @@ BT_TEST(gendata_synth, corner_tail_pair_gets_a_verified_commutator) {
 }
 
 BT_TEST(gendata_synth, synthesis_is_deterministic) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_EDGE, 'A', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -175,7 +180,8 @@ BT_TEST(gendata_synth, synthesis_is_deterministic) {
 }
 
 BT_TEST(gendata_synth, best_plateau_selection_picks_the_rank_minimum) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_CORNER, 'A', 'B', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -209,7 +215,8 @@ BT_TEST(gendata_synth, best_plateau_selection_picks_the_rank_minimum) {
 }
 
 BT_TEST(gendata_synth, plateau_stays_inside_the_first_matching_setup) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_CORNER, 'A', 'K', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -239,7 +246,8 @@ BT_TEST(gendata_synth, plateau_stays_inside_the_first_matching_setup) {
 }
 
 BT_TEST(gendata_synth, scoring_flips_the_selected_alg_for_the_pinned_case) {
-    uint8_t t1, t2;
+    uint8_t t1;
+    uint8_t t2;
     case_of(BT_ORBIT_CORNER, 'A', 'K', &t1, &t2);
     bt_gd_synth_limits lim;
     limits(&lim);
@@ -335,16 +343,16 @@ BT_TEST(gendata_synth, generated_entries_fill_only_uncovered_cases) {
     size_t edge_added = 0;
     size_t corner_added = 0;
     bt_gd_synthesize(&cases, &lim, &cfg, &edge_added, &corner_added);
-    BT_CHECK_EQ(edge_added, 1u);
-    BT_CHECK_EQ(corner_added, 0u);
-    BT_CHECK_EQ(cases.cases[0].vendor_count, 1u);
+    BT_CHECK_EQ(edge_added, 1U);
+    BT_CHECK_EQ(corner_added, 0U);
+    BT_CHECK_EQ(cases.cases[0].vendor_count, 1U);
     BT_CHECK_EQ(strcmp(cases.cases[0].vendor_algs[0].solver, "cherry"), 0);
     BT_CHECK(cases.cases[0].covered);
     const bt_gd_vendor_alg *generated = &cases.cases[1].vendor_algs[0];
     BT_CHECK_EQ(strcmp(generated->solver, "generated"), 0);
     BT_CHECK_EQ(strcmp(generated->position, "UF-LF-LD"), 0);
     BT_CHECK(generated->ok);
-    BT_CHECK_EQ(generated->problem_count, 0u);
+    BT_CHECK_EQ(generated->problem_count, 0U);
     BT_CHECK(cases.cases[1].covered);
     bt_alg alg = {0};
     char bad[64];

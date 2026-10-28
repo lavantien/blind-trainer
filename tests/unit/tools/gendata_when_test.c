@@ -30,9 +30,9 @@ BT_TEST(gendata_when, known_unix_stamps_render_exactly) {
 
 BT_TEST(gendata_when, years_advance_through_leap_days) {
     char stamp[21];
-    bt_when_iso8601(2ull * 365ull * 86400ull, stamp, sizeof stamp);
+    bt_when_iso8601(2ULL * 365ULL * 86400ULL, stamp, sizeof stamp);
     BT_CHECK_EQ(strcmp(stamp, "1972-01-01T00:00:00Z"), 0);
-    bt_when_iso8601(3ull * 365ull * 86400ull, stamp, sizeof stamp);
+    bt_when_iso8601(3ULL * 365ULL * 86400ULL, stamp, sizeof stamp);
     BT_CHECK_EQ(strcmp(stamp, "1972-12-31T00:00:00Z"), 0);
 }
 

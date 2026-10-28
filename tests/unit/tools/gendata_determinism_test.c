@@ -160,13 +160,13 @@ BT_TEST(gendata_determinism, timestamp_is_the_only_varying_manifest_field) {
 BT_TEST(gendata_determinism, digest_corpus_is_stable_and_complete) {
     bt_corpus_digest dig;
     digest(&dig);
-    BT_CHECK_EQ(dig.file_count, 12u);
-    BT_CHECK_EQ(dig.rows, 1077u);
+    BT_CHECK_EQ(dig.file_count, 12U);
+    BT_CHECK_EQ(dig.rows, 1077U);
     bt_corpus_digest again;
     digest(&again);
     BT_CHECK_EQ(strcmp(dig.sha256, again.sha256), 0);
     for (size_t i = 0; i < dig.file_count; i++) {
-        BT_CHECK_EQ(strlen(dig.files[i].sha256), 64u);
+        BT_CHECK_EQ(strlen(dig.files[i].sha256), 64U);
         bool hex = true;
         for (const char *c = dig.files[i].sha256; *c != '\0'; c++) {
             if (!((*c >= '0' && *c <= '9') || (*c >= 'a' && *c <= 'f'))) {
@@ -196,9 +196,15 @@ BT_TEST(gendata_determinism, digest_corpus_tracks_file_contents) {
         snprintf(dir, sizeof dir, "%s/%s", tmp, *solver);
         bt_test_mkdirs(dir);
         for (const char *const *sheet =
-                 (const char *const[]){(const char *)"edge", (const char *)"corner",
-                                       (const char *)"flips", (const char *)"twists",
-                                       (const char *)"parity", (const char *)"ltct", NULL};
+                 (const char *const[]){
+                     (const char *)"edge",
+                     (const char *)"corner",
+                     (const char *)"flips",
+                     (const char *)"twists",
+                     (const char *)"parity",
+                     (const char *)"ltct",
+                     NULL,
+                 };
              *sheet != NULL; sheet++) {
             char src[BT_PATH_MAX];
             char dst[BT_PATH_MAX];
@@ -235,8 +241,8 @@ BT_TEST(gendata_determinism, digest_corpus_tracks_file_contents) {
     FILE *file = fopen(sheet_path, "rb");
     BT_CHECK(file != NULL);
     if (file != NULL) {
-        char *text = malloc(1 << 20);
-        size_t len = fread(text, 1, 1 << 20, file);
+        char *text = malloc(1U << 20U);
+        size_t len = fread(text, 1, 1U << 20U, file);
         text[len] = '\0';
         fclose(file);
         const char *marker = strstr(text, "U M2");

@@ -19,7 +19,7 @@ BT_TEST(gendata_audit, audit_lists_every_shortfall_on_an_empty_build) {
     char **offenders = NULL;
     size_t count = 0;
     bt_gd_audit(&built, &corpus, 3, &offenders, &count);
-    BT_CHECK_EQ(count, 12u);
+    BT_CHECK_EQ(count, 12U);
     static const char *const want[12] = {
         "corpus holds 0 rows, expected 1077",         "corpus digest counted 3 rows, expected 1077",
         "edge covered cases are 0, expected 372",     "corner covered cases are 0, expected 288",
@@ -104,7 +104,7 @@ BT_TEST(gendata_audit, audit_accepts_a_build_that_matches_every_constant) {
     char **offenders = NULL;
     size_t count = 0;
     bt_gd_audit(&built, &corpus, BT_DATA_TOTAL_ROWS, &offenders, &count);
-    BT_CHECK_EQ(count, 0u);
+    BT_CHECK_EQ(count, 0U);
     bt_gd_string_list_free(offenders, count);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);

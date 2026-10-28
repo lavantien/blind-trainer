@@ -58,7 +58,7 @@ static bt_gd_score_parts scored(const char *text, bt_orbit orbit) {
 }
 
 static void assert_close(float actual, float expected) {
-    if (!(fabsf(actual - expected) < 1e-6f)) {
+    if (!(fabsf(actual - expected) < 1e-6F)) {
         char line[96];
         snprintf(line, sizeof line, "actual %f vs expected %f", (double)actual, (double)expected);
         BT_ABORT("%s", line);
@@ -67,80 +67,80 @@ static void assert_close(float actual, float expected) {
 
 BT_TEST(gendata_scoring, right_hand_home_sequence_costs_its_length_and_finger_only) {
     bt_gd_score_parts parts = scored("R U R'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 3u);
-    BT_CHECK_EQ(parts.regrips, 0u);
-    assert_close(parts.subset, 0.0f);
-    assert_close(parts.finger, 0.4f + 0.2f + 0.4f);
-    assert_close(parts.total, 1.0f * 3.0f + 0.5f * 1.0f);
+    BT_CHECK_EQ(parts.qtm, 3U);
+    BT_CHECK_EQ(parts.regrips, 0U);
+    assert_close(parts.subset, 0.0F);
+    assert_close(parts.finger, 0.4F + 0.2F + 0.4F);
+    assert_close(parts.total, 1.0F * 3.0F + 0.5F * 1.0F);
 }
 
 BT_TEST(gendata_scoring, front_face_displaces_the_hand_and_costs_a_regrip) {
     bt_gd_score_parts parts = scored("R F R'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 3u);
-    BT_CHECK_EQ(parts.regrips, 1u);
-    assert_close(parts.subset, 2.0f);
-    assert_close(parts.finger, 0.4f + 0.8f + 0.4f);
-    assert_close(parts.total, 1.0f * 3.0f + 2.0f * 2.0f + 1.5f * 1.0f + 0.5f * 1.6f);
+    BT_CHECK_EQ(parts.qtm, 3U);
+    BT_CHECK_EQ(parts.regrips, 1U);
+    assert_close(parts.subset, 2.0F);
+    assert_close(parts.finger, 0.4F + 0.8F + 0.4F);
+    assert_close(parts.total, 1.0F * 3.0F + 2.0F * 2.0F + 1.5F * 1.0F + 0.5F * 1.6F);
 }
 
 BT_TEST(gendata_scoring, left_hand_dynamic_front_move_costs_a_regrip_on_return) {
     bt_gd_score_parts parts = scored("L F L'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.regrips, 1u);
-    assert_close(parts.subset, 6.0f);
-    assert_close(parts.total, 3.0f + 12.0f + 1.5f + 0.8f);
+    BT_CHECK_EQ(parts.regrips, 1U);
+    assert_close(parts.subset, 6.0F);
+    assert_close(parts.total, 3.0F + 12.0F + 1.5F + 0.8F);
 }
 
 BT_TEST(gendata_scoring, slice_turn_is_preferred_for_edges_and_plain_for_corners) {
     bt_gd_score_parts edge = scored("M2", BT_ORBIT_EDGE);
-    BT_CHECK_EQ(edge.qtm, 2u);
-    BT_CHECK_EQ(edge.regrips, 0u);
-    assert_close(edge.subset, 0.0f);
-    assert_close(edge.finger, 0.4f);
-    assert_close(edge.total, 2.0f + 0.2f);
+    BT_CHECK_EQ(edge.qtm, 2U);
+    BT_CHECK_EQ(edge.regrips, 0U);
+    assert_close(edge.subset, 0.0F);
+    assert_close(edge.finger, 0.4F);
+    assert_close(edge.total, 2.0F + 0.2F);
     bt_gd_score_parts corner = scored("M2", BT_ORBIT_CORNER);
-    assert_close(corner.subset, 2.0f);
-    assert_close(corner.total, 2.0f + 4.0f + 0.2f);
+    assert_close(corner.subset, 2.0F);
+    assert_close(corner.total, 2.0F + 4.0F + 0.2F);
 }
 
 BT_TEST(gendata_scoring, alternating_home_hands_never_regrips) {
     bt_gd_score_parts parts = scored("U L U' L'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 4u);
-    BT_CHECK_EQ(parts.regrips, 0u);
-    assert_close(parts.subset, 4.0f);
-    assert_close(parts.finger, 0.2f + 0.4f + 0.2f + 0.4f);
-    assert_close(parts.total, 4.0f + 8.0f + 0.5f * 1.2f);
+    BT_CHECK_EQ(parts.qtm, 4U);
+    BT_CHECK_EQ(parts.regrips, 0U);
+    assert_close(parts.subset, 4.0F);
+    assert_close(parts.finger, 0.2F + 0.4F + 0.2F + 0.4F);
+    assert_close(parts.total, 4.0F + 8.0F + 0.5F * 1.2F);
 }
 
 BT_TEST(gendata_scoring, front_displacement_charges_the_right_hand_on_its_next_turn) {
     bt_gd_score_parts parts = scored("F R U R'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 4u);
-    BT_CHECK_EQ(parts.regrips, 1u);
-    assert_close(parts.subset, 2.0f);
-    assert_close(parts.finger, 0.8f + 0.4f + 0.2f + 0.4f);
-    assert_close(parts.total, 4.0f + 4.0f + 1.5f + 0.5f * 1.8f);
+    BT_CHECK_EQ(parts.qtm, 4U);
+    BT_CHECK_EQ(parts.regrips, 1U);
+    assert_close(parts.subset, 2.0F);
+    assert_close(parts.finger, 0.8F + 0.4F + 0.2F + 0.4F);
+    assert_close(parts.total, 4.0F + 4.0F + 1.5F + 0.5F * 1.8F);
 }
 
 BT_TEST(gendata_scoring, dynamic_hand_keeps_the_previous_hand_without_charging_it) {
     bt_gd_score_parts parts = scored("L F R", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.regrips, 0u);
-    assert_close(parts.subset, 4.0f);
-    assert_close(parts.finger, 0.4f + 0.8f + 0.4f);
-    assert_close(parts.total, 3.0f + 8.0f + 0.5f * 1.6f);
+    BT_CHECK_EQ(parts.regrips, 0U);
+    assert_close(parts.subset, 4.0F);
+    assert_close(parts.finger, 0.4F + 0.8F + 0.4F);
+    assert_close(parts.total, 3.0F + 8.0F + 0.5F * 1.6F);
 }
 
 BT_TEST(gendata_scoring, consecutive_same_face_turns_are_scored_once_for_grip) {
     bt_gd_score_parts parts = scored("R R'", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 2u);
-    BT_CHECK_EQ(parts.regrips, 0u);
-    assert_close(parts.finger, 0.8f);
-    assert_close(parts.total, 2.0f + 0.4f);
+    BT_CHECK_EQ(parts.qtm, 2U);
+    BT_CHECK_EQ(parts.regrips, 0U);
+    assert_close(parts.finger, 0.8F);
+    assert_close(parts.total, 2.0F + 0.4F);
 }
 
 BT_TEST(gendata_scoring, double_turns_count_two_qtm_and_charge_the_cw_finger_lane) {
     bt_gd_score_parts parts = scored("U2", BT_ORBIT_CORNER);
-    BT_CHECK_EQ(parts.qtm, 2u);
-    assert_close(parts.finger, 0.2f);
-    assert_close(parts.total, 2.0f + 0.1f);
+    BT_CHECK_EQ(parts.qtm, 2U);
+    assert_close(parts.finger, 0.2F);
+    assert_close(parts.total, 2.0F + 0.1F);
 }
 
 BT_TEST(gendata_scoring, rotation_moves_reject_the_sequence) {
@@ -160,11 +160,11 @@ BT_TEST(gendata_scoring, empty_sequence_scores_zero) {
     reference(&cfg);
     bt_gd_score_parts parts;
     BT_CHECK(bt_gd_score(NULL, 0, BT_ORBIT_EDGE, &cfg, &parts));
-    BT_CHECK_EQ(parts.qtm, 0u);
-    BT_CHECK_EQ(parts.regrips, 0u);
-    BT_CHECK_EQ(parts.subset, 0.0f);
-    BT_CHECK_EQ(parts.finger, 0.0f);
-    BT_CHECK_EQ(parts.total, 0.0f);
+    BT_CHECK_EQ(parts.qtm, 0U);
+    BT_CHECK_EQ(parts.regrips, 0U);
+    BT_CHECK_EQ(parts.subset, 0.0F);
+    BT_CHECK_EQ(parts.finger, 0.0F);
+    BT_CHECK_EQ(parts.total, 0.0F);
 }
 
 BT_TEST(gendata_scoring, parse_rejects_a_missing_scoring_section) {
@@ -338,13 +338,13 @@ BT_TEST(gendata_scoring, parse_maps_lanes_and_costs_into_the_model) {
     const bool preferred_edge_want[9] = {true, false, false, true, false, true, true, true, true};
     BT_CHECK_EQ(memcmp(cfg.preferred, preferred_want, sizeof preferred_want), 0);
     BT_CHECK_EQ(memcmp(cfg.preferred_edge, preferred_edge_want, sizeof preferred_edge_want), 0);
-    assert_close(cfg.penalty_other, 2.0f);
-    assert_close(cfg.weight_len, 1.0f);
-    assert_close(cfg.weight_subset, 2.0f);
-    assert_close(cfg.weight_regrip, 1.5f);
-    assert_close(cfg.weight_finger, 0.5f);
-    assert_close(cfg.finger_cost[BT_FACE_F][1], 0.8f);
-    assert_close(cfg.finger_cost[BT_FACE_D][0], 0.2f);
+    assert_close(cfg.penalty_other, 2.0F);
+    assert_close(cfg.weight_len, 1.0F);
+    assert_close(cfg.weight_subset, 2.0F);
+    assert_close(cfg.weight_regrip, 1.5F);
+    assert_close(cfg.weight_finger, 0.5F);
+    assert_close(cfg.finger_cost[BT_FACE_F][1], 0.8F);
+    assert_close(cfg.finger_cost[BT_FACE_D][0], 0.2F);
 }
 
 static void random_sequence(bt_rng *rng, bt_move *out, size_t *count) {
@@ -358,15 +358,18 @@ static void random_sequence(bt_rng *rng, bt_move *out, size_t *count) {
 }
 
 static bool parts_eq(const bt_gd_score_parts *a, const bt_gd_score_parts *b) {
-    return a->qtm == b->qtm && a->regrips == b->regrips && a->subset == b->subset &&
-           a->finger == b->finger && a->total == b->total;
+    if (a->qtm != b->qtm || a->regrips != b->regrips || a->subset != b->subset ||
+        a->finger != b->finger) {
+        return false;
+    }
+    return a->total == b->total;
 }
 
 BT_TEST(gendata_scoring, score_is_deterministic_and_survives_the_format_round_trip) {
     bt_gd_scoring_cfg cfg;
     reference(&cfg);
     bt_rng rng;
-    bt_rng_seed(&rng, 0xb739d5ee4a11f208ull);
+    bt_rng_seed(&rng, 0xb739d5ee4a11f208ULL);
     for (int round = 0; round < 256; round++) {
         bt_move seq[24];
         size_t count = 0;
@@ -403,7 +406,7 @@ BT_TEST(gendata_scoring, appending_a_penalized_move_strictly_raises_the_total) {
     bt_gd_scoring_cfg cfg;
     reference(&cfg);
     bt_rng rng;
-    bt_rng_seed(&rng, 0x1c62f0aa93d74e55ull);
+    bt_rng_seed(&rng, 0x1c62f0aa93d74e55ULL);
     for (int round = 0; round < 256; round++) {
         bt_move seq[24];
         size_t count = 0;
@@ -426,10 +429,14 @@ BT_TEST(gendata_scoring, rank_order_is_total) {
     bt_gd_scoring_cfg cfg;
     reference(&cfg);
     bt_rng rng;
-    bt_rng_seed(&rng, 0x5ee4bca71d0f9316ull);
+    bt_rng_seed(&rng, 0x5ee4bca71d0f9316ULL);
     for (int round = 0; round < 64; round++) {
-        bt_move first[24], second[24], third[24];
-        size_t first_len = 0, second_len = 0, third_len = 0;
+        bt_move first[24];
+        bt_move second[24];
+        bt_move third[24];
+        size_t first_len = 0;
+        size_t second_len = 0;
+        size_t third_len = 0;
         random_sequence(&rng, first, &first_len);
         random_sequence(&rng, second, &second_len);
         random_sequence(&rng, third, &third_len);

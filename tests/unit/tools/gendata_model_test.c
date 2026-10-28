@@ -148,12 +148,12 @@ static bt_gd_manifest manifest_fixture(void) {
     manifest.generated_at = _strdup("2026-10-14T00:00:00Z");
     manifest.generator = _strdup("bt-gendata");
     manifest.synth_params_sha256 = malloc(65);
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         memcpy(manifest.synth_params_sha256 + i * 2, "34", 2);
     }
     manifest.synth_params_sha256[64] = '\0';
     manifest.corpus_sha256 = malloc(65);
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         memcpy(manifest.corpus_sha256 + i * 2, "ab", 2);
     }
     manifest.corpus_sha256[64] = '\0';
@@ -164,7 +164,7 @@ static bt_gd_manifest manifest_fixture(void) {
     manifest.corpus_files[0].sheet = _strdup("edge");
     manifest.corpus_files[0].rows = 551;
     manifest.corpus_files[0].sha256 = malloc(65);
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         memcpy(manifest.corpus_files[0].sha256 + i * 2, "cd", 2);
     }
     manifest.corpus_files[0].sha256[64] = '\0';
@@ -172,7 +172,7 @@ static bt_gd_manifest manifest_fixture(void) {
     manifest.rows_other_buffer = 60;
     manifest.cases.path = _strdup("cases.json");
     manifest.cases.sha256 = malloc(65);
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         memcpy(manifest.cases.sha256 + i * 2, "ef", 2);
     }
     manifest.cases.sha256[64] = '\0';
@@ -181,7 +181,7 @@ static bt_gd_manifest manifest_fixture(void) {
     manifest.cases.corner = (bt_gd_orbit_coverage){378, 288, 90};
     manifest.specials.path = _strdup("specials.json");
     manifest.specials.sha256 = malloc(65);
-    for (int i = 0; i < 32; i++) {
+    for (size_t i = 0; i < 32; i++) {
         memcpy(manifest.specials.sha256 + i * 2, "12", 2);
     }
     manifest.specials.sha256[64] = '\0';

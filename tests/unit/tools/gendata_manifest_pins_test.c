@@ -73,20 +73,20 @@ BT_TEST(gendata_manifest_pins, manifest_reports_the_coverage_md_numbers) {
     stamped(&built, &record);
     BT_CHECK_EQ(strcmp(record.generated_at, "2026-10-12T00:00:00Z"), 0);
     BT_CHECK_EQ(strcmp(record.generator, "bt-gendata"), 0);
-    BT_CHECK_EQ(record.corpus_rows, 1077u);
-    BT_CHECK_EQ(record.corpus_file_count, 12u);
-    BT_CHECK_EQ(record.rows_in_pair_space, 796u);
-    BT_CHECK_EQ(record.rows_other_buffer, 192u);
+    BT_CHECK_EQ(record.corpus_rows, 1077U);
+    BT_CHECK_EQ(record.corpus_file_count, 12U);
+    BT_CHECK_EQ(record.rows_in_pair_space, 796U);
+    BT_CHECK_EQ(record.rows_other_buffer, 192U);
     BT_CHECK_EQ(strcmp(record.cases.path, "cases.json"), 0);
-    BT_CHECK_EQ(record.cases.entries, 818u);
-    BT_CHECK_EQ(record.cases.edge.total, 440u);
-    BT_CHECK_EQ(record.cases.edge.covered, 372u);
-    BT_CHECK_EQ(record.cases.edge.uncovered, 68u);
-    BT_CHECK_EQ(record.cases.corner.total, 378u);
-    BT_CHECK_EQ(record.cases.corner.covered, 288u);
-    BT_CHECK_EQ(record.cases.corner.uncovered, 90u);
+    BT_CHECK_EQ(record.cases.entries, 818U);
+    BT_CHECK_EQ(record.cases.edge.total, 440U);
+    BT_CHECK_EQ(record.cases.edge.covered, 372U);
+    BT_CHECK_EQ(record.cases.edge.uncovered, 68U);
+    BT_CHECK_EQ(record.cases.corner.total, 378U);
+    BT_CHECK_EQ(record.cases.corner.covered, 288U);
+    BT_CHECK_EQ(record.cases.corner.uncovered, 90U);
     BT_CHECK_EQ(strcmp(record.specials.path, "specials.json"), 0);
-    BT_CHECK_EQ(record.specials.entries, 89u);
+    BT_CHECK_EQ(record.specials.entries, 89U);
     static const char *const want_solver[8] = {
         "cherry", "cherry", "cherry", "cherry", "eggins", "eggins", "eggins", "eggins",
     };
@@ -94,7 +94,7 @@ BT_TEST(gendata_manifest_pins, manifest_reports_the_coverage_md_numbers) {
         "flips", "twists", "parity", "ltct", "flips", "twists", "parity", "ltct",
     };
     static const size_t want_rows[8] = {25, 20, 26, 8, 0, 5, 2, 3};
-    BT_CHECK_EQ(record.specials.count_count, 8u);
+    BT_CHECK_EQ(record.specials.count_count, 8U);
     for (size_t i = 0; i < 8; i++) {
         BT_CHECK_EQ(strcmp(record.specials.counts[i].solver, want_solver[i]), 0);
         BT_CHECK_EQ(strcmp(record.specials.counts[i].class_name, want_class[i]), 0);
@@ -126,7 +126,7 @@ BT_TEST(gendata_manifest_pins, manifest_output_hashes_match_the_serialized_files
     bt_digest_sha256_hex(specials.data, specials.len, specials_sha);
     BT_CHECK_EQ(strcmp(record.cases.sha256, cases_sha), 0);
     BT_CHECK_EQ(strcmp(record.specials.sha256, specials_sha), 0);
-    BT_CHECK_EQ(strlen(record.cases.sha256), 64u);
+    BT_CHECK_EQ(strlen(record.cases.sha256), 64U);
     BT_CHECK(strcmp(record.cases.sha256, record.specials.sha256) != 0);
     bt_gd_manifest_free(&record);
     bt_strbuf_free(&cases);
@@ -197,9 +197,11 @@ BT_TEST(gendata_manifest_pins, specials_carry_classes_links_and_solver_grouping)
         if (rank > solver_rank) {
             solver_rank = rank;
         }
-        bool class_ok =
-            strcmp(entry->class_name, "flips") == 0 || strcmp(entry->class_name, "twists") == 0 ||
-            strcmp(entry->class_name, "parity") == 0 || strcmp(entry->class_name, "ltct") == 0;
+        bool class_ok = false;
+        if (strcmp(entry->class_name, "flips") == 0 || strcmp(entry->class_name, "twists") == 0 ||
+            strcmp(entry->class_name, "parity") == 0 || strcmp(entry->class_name, "ltct") == 0) {
+            class_ok = true;
+        }
         BT_CHECK(class_ok);
         BT_CHECK(entry->rowid >= 2);
         if (entry->recon_link[0] != '\0') {

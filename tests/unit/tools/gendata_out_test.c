@@ -145,7 +145,7 @@ BT_TEST(gendata_out, write_atomic_writes_into_an_existing_directory_without_temp
             BT_CHECK_EQ(strcmp(entry.name, "flat.json"), 0);
             names++;
         } while (_findnexti64(handle, &entry) == 0);
-        BT_CHECK_EQ(names, 1u);
+        BT_CHECK_EQ(names, 1U);
         _findclose(handle);
     }
     rm_tree(dir);

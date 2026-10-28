@@ -49,7 +49,7 @@ BT_TEST(gendata_vendor_pins, case_space_counts_match_coverage_md) {
     loaded(&corpus);
     bt_gd_built built;
     bt_gd_build(&corpus, &built);
-    BT_CHECK_EQ(built.cases.count, 818u);
+    BT_CHECK_EQ(built.cases.count, 818U);
     size_t edge = 0;
     size_t corner = 0;
     size_t edge_covered = 0;
@@ -70,12 +70,12 @@ BT_TEST(gendata_vendor_pins, case_space_counts_match_coverage_md) {
             }
         }
     }
-    BT_CHECK_EQ(edge, 440u);
-    BT_CHECK_EQ(corner, 378u);
-    BT_CHECK_EQ(edge_covered, 372u);
-    BT_CHECK_EQ(edge - edge_covered, 68u);
-    BT_CHECK_EQ(corner_covered, 288u);
-    BT_CHECK_EQ(corner - corner_covered, 90u);
+    BT_CHECK_EQ(edge, 440U);
+    BT_CHECK_EQ(corner, 378U);
+    BT_CHECK_EQ(edge_covered, 372U);
+    BT_CHECK_EQ(edge - edge_covered, 68U);
+    BT_CHECK_EQ(corner_covered, 288U);
+    BT_CHECK_EQ(corner - corner_covered, 90U);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
 }
@@ -127,9 +127,9 @@ BT_TEST(gendata_vendor_pins, row_flow_matches_coverage_md) {
     loaded(&corpus);
     bt_gd_built built;
     bt_gd_build(&corpus, &built);
-    BT_CHECK_EQ(built.rows_in_pair_space, 796u);
-    BT_CHECK_EQ(built.rows_other_buffer, 192u);
-    BT_CHECK_EQ(built.rows_in_pair_space + built.rows_other_buffer, 988u);
+    BT_CHECK_EQ(built.rows_in_pair_space, 796U);
+    BT_CHECK_EQ(built.rows_other_buffer, 192U);
+    BT_CHECK_EQ(built.rows_in_pair_space + built.rows_other_buffer, 988U);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
 }
@@ -145,16 +145,16 @@ BT_TEST(gendata_vendor_pins, known_case_join_carries_every_matching_row) {
     BT_CHECK_EQ(entry->t1_letter, 'A');
     BT_CHECK_EQ(entry->t2_letter, 'D');
     BT_CHECK(entry->covered);
-    BT_CHECK_EQ(entry->vendor_count, 3u);
+    BT_CHECK_EQ(entry->vendor_count, 3U);
     BT_CHECK_EQ(strcmp(entry->vendor_algs[0].solver, "cherry"), 0);
-    BT_CHECK_EQ(entry->vendor_algs[0].rowid, 2u);
+    BT_CHECK_EQ(entry->vendor_algs[0].rowid, 2U);
     BT_CHECK_EQ(strcmp(entry->vendor_algs[0].position, "UF-UB-UL"), 0);
     BT_CHECK_EQ(strcmp(entry->vendor_algs[0].alg, "U M2 U M' U2 M U M2 U'"), 0);
-    BT_CHECK_EQ(entry->vendor_algs[0].qtm, 12u);
-    BT_CHECK_EQ(entry->vendor_algs[0].htm, 9u);
+    BT_CHECK_EQ(entry->vendor_algs[0].qtm, 12U);
+    BT_CHECK_EQ(entry->vendor_algs[0].htm, 9U);
     BT_CHECK(entry->vendor_algs[0].ok);
     BT_CHECK_EQ(strcmp(entry->vendor_algs[1].solver, "cherry"), 0);
-    BT_CHECK_EQ(entry->vendor_algs[1].rowid, 3u);
+    BT_CHECK_EQ(entry->vendor_algs[1].rowid, 3U);
     BT_CHECK_EQ(strcmp(entry->vendor_algs[2].solver, "eggins"), 0);
     for (size_t i = 0; i < entry->vendor_count; i++) {
         BT_CHECK(entry->vendor_algs[i].ok);
@@ -205,7 +205,7 @@ BT_TEST(gendata_vendor_pins, specials_counts_match_coverage_md) {
     loaded(&corpus);
     bt_gd_built built;
     bt_gd_build(&corpus, &built);
-    BT_CHECK_EQ(built.specials.count, 89u);
+    BT_CHECK_EQ(built.specials.count, 89U);
     size_t counts[2][4] = {0};
     for (size_t i = 0; i < built.specials.count; i++) {
         const bt_gd_special_entry *entry = &built.specials.specials[i];
@@ -223,14 +223,14 @@ BT_TEST(gendata_vendor_pins, specials_counts_match_coverage_md) {
         BT_CHECK(class_index >= 0);
         counts[solver][class_index]++;
     }
-    BT_CHECK_EQ(counts[0][0], 25u);
-    BT_CHECK_EQ(counts[0][1], 20u);
-    BT_CHECK_EQ(counts[0][2], 26u);
-    BT_CHECK_EQ(counts[0][3], 8u);
-    BT_CHECK_EQ(counts[1][0], 0u);
-    BT_CHECK_EQ(counts[1][1], 5u);
-    BT_CHECK_EQ(counts[1][2], 2u);
-    BT_CHECK_EQ(counts[1][3], 3u);
+    BT_CHECK_EQ(counts[0][0], 25U);
+    BT_CHECK_EQ(counts[0][1], 20U);
+    BT_CHECK_EQ(counts[0][2], 26U);
+    BT_CHECK_EQ(counts[0][3], 8U);
+    BT_CHECK_EQ(counts[1][0], 0U);
+    BT_CHECK_EQ(counts[1][1], 5U);
+    BT_CHECK_EQ(counts[1][2], 2U);
+    BT_CHECK_EQ(counts[1][3], 3U);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
 }
@@ -240,12 +240,12 @@ BT_TEST(gendata_vendor_pins, every_vendor_row_and_special_verifies_ok) {
     loaded(&corpus);
     bt_gd_built built;
     bt_gd_build(&corpus, &built);
-    BT_CHECK_EQ(built.offender_count, 0u);
+    BT_CHECK_EQ(built.offender_count, 0U);
     for (size_t i = 0; i < built.cases.count; i++) {
         const bt_gd_case_entry *entry = &built.cases.cases[i];
         for (size_t a = 0; a < entry->vendor_count; a++) {
             BT_CHECK(entry->vendor_algs[a].ok);
-            BT_CHECK_EQ(entry->vendor_algs[a].problem_count, 0u);
+            BT_CHECK_EQ(entry->vendor_algs[a].problem_count, 0U);
         }
     }
     for (size_t i = 0; i < built.specials.count; i++) {
@@ -282,7 +282,7 @@ BT_TEST(gendata_vendor_pins, audit_passes_on_the_real_corpus) {
     char **offenders = NULL;
     size_t count = 0;
     bt_gd_audit(&built, &corpus, 1077, &offenders, &count);
-    BT_CHECK_EQ(count, 0u);
+    BT_CHECK_EQ(count, 0U);
     bt_gd_string_list_free(offenders, count);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
