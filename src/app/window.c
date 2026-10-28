@@ -112,12 +112,15 @@ void bt_app_poll_input(bt_ui_input *input) {
     BT_TRACE_EXIT("app.poll_input");
 }
 
+static const float BT_APP_COLOR_BYTE_SCALE = 255.0F;
+static const float BT_APP_COLOR_ROUND = 0.5F;
+
 Color bt_app_color(bt_theme_color color) {
     Color out;
-    out.r = (unsigned char)(color.red * 255.0F + 0.5F);
-    out.g = (unsigned char)(color.green * 255.0F + 0.5F);
-    out.b = (unsigned char)(color.blue * 255.0F + 0.5F);
-    out.a = (unsigned char)(color.alpha * 255.0F + 0.5F);
+    out.r = (unsigned char)(color.red * BT_APP_COLOR_BYTE_SCALE + BT_APP_COLOR_ROUND);
+    out.g = (unsigned char)(color.green * BT_APP_COLOR_BYTE_SCALE + BT_APP_COLOR_ROUND);
+    out.b = (unsigned char)(color.blue * BT_APP_COLOR_BYTE_SCALE + BT_APP_COLOR_ROUND);
+    out.a = (unsigned char)(color.alpha * BT_APP_COLOR_BYTE_SCALE + BT_APP_COLOR_ROUND);
     return out;
 }
 

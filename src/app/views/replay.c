@@ -37,20 +37,20 @@ void bt_view_replay_scene_session(bt_view_replay_scene *scene, bt_cube scramble,
     BT_TRACE_EXIT("view.replay_scene_session");
 }
 
+static float *axis_slot(Vector3 *out, bt_axis axis) {
+    if (axis == BT_AXIS_X) {
+        return &out->x;
+    }
+    if (axis == BT_AXIS_Y) {
+        return &out->y;
+    }
+    return &out->z;
+}
+
 Vector3 bt_view_replay_axis_vec(bt_axis axis) {
     BT_TRACE_ENTER("view.replay_axis_vec");
     Vector3 out = {0};
-    switch (axis) {
-    case BT_AXIS_X:
-        out.x = 1.0F;
-        break;
-    case BT_AXIS_Y:
-        out.y = 1.0F;
-        break;
-    default:
-        out.z = 1.0F;
-        break;
-    }
+    *axis_slot(&out, axis) = 1.0F;
     BT_TRACE_EXIT("view.replay_axis_vec");
     return out;
 }
@@ -162,17 +162,29 @@ Camera3D bt_view_replay_camera(const bt_view_replay_scene *scene) {
     return camera;
 }
 
+static const float BT_VIEW_REPLAY_QUARTER_DEG = 90.0F;
+
+typedef struct {
+    bt_replay_i3 normal;
+    bt_axis axis;
+    int quarters;
+} bt_view_replay_orient;
+
+static const bt_view_replay_orient BT_VIEW_REPLAY_ORIENTS[] = {
+    {{0, 1, 0}, BT_AXIS_X, -1},  {{0, -1, 0}, BT_AXIS_X, 1}, {{1, 0, 0}, BT_AXIS_Y, 1},
+    {{-1, 0, 0}, BT_AXIS_Y, -1}, {{0, 0, -1}, BT_AXIS_X, 2},
+};
+
 static void orient_sticker(bt_replay_i3 normal) {
-    if (normal.y == 1) {
-        rlRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-    } else if (normal.y == -1) {
-        rlRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-    } else if (normal.x == 1) {
-        rlRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-    } else if (normal.x == -1) {
-        rlRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-    } else if (normal.z == -1) {
-        rlRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+    for (size_t at = 0; at < sizeof BT_VIEW_REPLAY_ORIENTS / sizeof BT_VIEW_REPLAY_ORIENTS[0];
+         at++) {
+        const bt_view_replay_orient *orient = &BT_VIEW_REPLAY_ORIENTS[at];
+        if (orient->normal.x == normal.x && orient->normal.y == normal.y &&
+            orient->normal.z == normal.z) {
+            Vector3 axis = bt_view_replay_axis_vec(orient->axis);
+            rlRotatef((float)orient->quarters * BT_VIEW_REPLAY_QUARTER_DEG, axis.x, axis.y, axis.z);
+            return;
+        }
     }
 }
 

@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+enum { BT_CASE_DRILL_QUEUE_INIT_CAP = 16 };
 #include <string.h>
 
 static const char *const CUBE_FACES[6] = {"U", "L", "F", "R", "B", "D"};
@@ -114,7 +116,7 @@ size_t bt_case_drill_face_permutation(const char *event, size_t out[BT_PZ_MAX_FA
     return display.count;
 }
 
-size_t bt_case_drill_color_remap(const char *event, size_t out[16]) {
+size_t bt_case_drill_color_remap(const char *event, size_t out[BT_CASE_DRILL_REMAP_SLOTS]) {
     BT_TRACE_ENTER("app.case_drill_color_remap");
     if (strcmp(event, "sq1") == 0) {
         for (size_t i = 0; i < 8; i++) {
@@ -122,7 +124,7 @@ size_t bt_case_drill_color_remap(const char *event, size_t out[16]) {
             out[8 + i] = 5;
         }
         BT_TRACE_EXIT("app.case_drill_color_remap");
-        return 16;
+        return BT_CASE_DRILL_REMAP_SLOTS;
     }
     face_list engine = engine_faces(event);
     if (engine.count == 0) {
@@ -138,7 +140,7 @@ size_t bt_case_drill_color_remap(const char *event, size_t out[16]) {
 
 int bt_case_drill_themed_grid(const bt_pz_grid *grid, const char *event, bt_pz_grid *out) {
     BT_TRACE_ENTER("app.case_drill_themed_grid");
-    size_t remap[16];
+    size_t remap[BT_CASE_DRILL_REMAP_SLOTS];
     size_t remap_count = bt_case_drill_color_remap(event, remap);
     size_t order[BT_PZ_MAX_FACES];
     size_t order_count = bt_case_drill_face_permutation(event, order);
@@ -463,7 +465,7 @@ void bt_drill_case_queue_free(bt_drill_case_queue *queue) {
 
 int bt_drill_case_queue_push(bt_drill_case_queue *queue, const bt_drill_case *case_drill) {
     if (queue->count == queue->cap) {
-        size_t cap = queue->cap == 0 ? 16 : queue->cap * 2;
+        size_t cap = queue->cap == 0 ? BT_CASE_DRILL_QUEUE_INIT_CAP : queue->cap * 2;
         bt_drill_case *grown = realloc(queue->items, cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.case_drill_queue_push", "out of memory");
@@ -478,7 +480,7 @@ int bt_drill_case_queue_push(bt_drill_case_queue *queue, const bt_drill_case *ca
 
 int bt_drill_case_queue_set(bt_drill_case_queue *queue, const bt_drill_case *cases, size_t count) {
     if (count > queue->cap) {
-        size_t cap = queue->cap == 0 ? 16 : queue->cap;
+        size_t cap = queue->cap == 0 ? BT_CASE_DRILL_QUEUE_INIT_CAP : queue->cap;
         while (cap < count) {
             cap *= 2;
         }

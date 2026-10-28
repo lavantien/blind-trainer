@@ -17,6 +17,8 @@ static const uint8_t BT_REPLAY_FACE_AXIS[6] = {1, 0, 2, 0, 2, 1};
 static const int8_t BT_REPLAY_FACE_SIGN[6] = {1, -1, 1, 1, -1, -1};
 static const uint8_t BT_REPLAY_ROT_REF_FACE[3] = {3, 0, 2};
 
+static const double BT_REPLAY_DEG_TO_RAD = 3.14159265358979323846 / 180.0;
+
 static bt_replay_cell cells_table[BT_REPLAY_CELL_COUNT];
 static int cells_ready;
 
@@ -482,8 +484,8 @@ bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg 
 
 void bt_replay_camera_offset(const bt_replay_orbit *orbit, float out[3]) {
     BT_TRACE_ENTER("app.replay_camera_offset");
-    float yaw = orbit->yaw_deg * (float)(3.14159265358979323846 / 180.0);
-    float pitch = orbit->pitch_deg * (float)(3.14159265358979323846 / 180.0);
+    float yaw = orbit->yaw_deg * (float)BT_REPLAY_DEG_TO_RAD;
+    float pitch = orbit->pitch_deg * (float)BT_REPLAY_DEG_TO_RAD;
     float sin_yaw = sinf(yaw);
     float cos_yaw = cosf(yaw);
     float sin_pitch = sinf(pitch);

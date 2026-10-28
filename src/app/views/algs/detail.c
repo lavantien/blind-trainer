@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum { BT_ALGS_DETAIL_STRBUF_INIT = 256 };
+
 void bt_view_override_draft_default(bt_view_override_draft *draft) {
     BT_TRACE_ENTER("app.algs_draft_default");
     memset(draft, 0, sizeof *draft);
@@ -99,7 +101,7 @@ static int nxn_check(size_t n, const char *text, char *error, size_t error_len) 
     bt_tier1_status status = bt_verify_tier1(&engine, text, &err);
     if (status != BT_TIER1_OK) {
         bt_strbuf message;
-        bt_strbuf_init(&message, 256);
+        bt_strbuf_init(&message, BT_ALGS_DETAIL_STRBUF_INIT);
         bt_tier1_error_message(&err, &message);
         snprintf(error, error_len, "%s", message.data);
         free(message.data);
@@ -130,7 +132,7 @@ static int btcore_cube_check(const char *text, char *error, size_t error_len) {
     bt_alg_init(&expanded);
     if (bt_expand(text, &expanded)) {
         bt_strbuf formatted;
-        bt_strbuf_init(&formatted, 256);
+        bt_strbuf_init(&formatted, BT_ALGS_DETAIL_STRBUF_INIT);
         bt_alg_format(&expanded, &formatted);
         int verdict = nxn_check(3, formatted.data, error, error_len);
         free(formatted.data);
@@ -164,7 +166,7 @@ static int skewb_check(const char *text, char *error, size_t error_len) {
     bt_tier1_error err;
     if (bt_verify_tier1(&engine, stripped, &err) != BT_TIER1_OK) {
         bt_strbuf message;
-        bt_strbuf_init(&message, 256);
+        bt_strbuf_init(&message, BT_ALGS_DETAIL_STRBUF_INIT);
         bt_tier1_error_message(&err, &message);
         snprintf(error, error_len, "%s", message.data);
         free(message.data);
@@ -178,7 +180,7 @@ static int tier1_engine_check(bt_pz_engine engine, const char *text, char *error
     bt_tier1_error err;
     if (bt_verify_tier1(&engine, text, &err) != BT_TIER1_OK) {
         bt_strbuf message;
-        bt_strbuf_init(&message, 256);
+        bt_strbuf_init(&message, BT_ALGS_DETAIL_STRBUF_INIT);
         bt_tier1_error_message(&err, &message);
         snprintf(error, error_len, "%s", message.data);
         free(message.data);

@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static const float BT_ALGS_LINE_FACTOR = 1.5F;
+
 bt_view_list_span bt_view_list_window(size_t total, size_t selected, size_t capacity) {
     BT_TRACE_ENTER("app.algs_list_window");
     bt_view_list_span window = {0, 0};
@@ -179,7 +181,7 @@ size_t bt_view_algs_list_capacity(const bt_app_config *config) {
     const bt_theme *theme = bt_theme_table();
     float chrome = theme->root_rem * (theme->header_height_rem + 2.0F * theme->panel_padding_rem);
     float query_box = theme->root_rem * 3.0F;
-    float line = theme->root_rem * theme->font_body * 1.5F;
+    float line = theme->root_rem * theme->font_body * BT_ALGS_LINE_FACTOR;
     float available = (float)config->window.height - chrome - query_box;
     long long rows = (long long)(available / line);
     if (rows < 1) {
@@ -689,7 +691,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         for (size_t i = 0; i < count; i++) {
             bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
                              rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
-            y += theme->font_body * theme->root_rem * 1.5F;
+            y += theme->font_body * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
         bt_view_algs_detail_line *detail_lines = NULL;
         size_t detail_count =
@@ -701,7 +703,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
             bt_view_algs_style_metrics(detail_lines[i].style, &font_size, NULL);
             bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y, font_size,
                              detail_lines[i].color);
-            detail_y += font_size * theme->root_rem * 1.5F;
+            detail_y += font_size * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
         free(detail_lines);
     } else {
@@ -710,7 +712,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         for (size_t i = 0; i < count; i++) {
             bt_app_draw_text(font_regular, rows[i].label, metrics.content_x, y, theme->font_body,
                              rows[i].selected ? bt_theme_text_primary() : bt_theme_text_muted());
-            y += theme->font_body * theme->root_rem * 1.5F;
+            y += theme->font_body * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
         bt_detail_line lines[BT_DETAIL_LINES_MAX];
         size_t detail_count = 0;
@@ -723,7 +725,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
             bt_app_draw_text(font_regular, lines[i].text, detail_x, detail_y, size,
                              lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger()
                                                              : bt_theme_text_muted());
-            detail_y += size * theme->root_rem * 1.5F;
+            detail_y += size * theme->root_rem * BT_ALGS_LINE_FACTOR;
         }
     }
     BT_TRACE_EXIT("app.view_algs_draw");

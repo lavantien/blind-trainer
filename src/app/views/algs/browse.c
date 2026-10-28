@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum { BT_ALGS_BROWSE_EVENTS_MAX = 64 };
+
 static char *dup_or_empty(const char *text) {
     const char *source = text != NULL ? text : "";
     char *out = malloc(strlen(source) + 1);
@@ -222,9 +224,9 @@ bt_repo_node *bt_repo_arms(const bt_pack_entry *packs, size_t pack_count, const 
         BT_TRACE_EXIT("app.repo_arms");
         return NULL;
     }
-    const char *order[64];
-    size_t grouped_start[64];
-    size_t grouped_count[64];
+    const char *order[BT_ALGS_BROWSE_EVENTS_MAX];
+    size_t grouped_start[BT_ALGS_BROWSE_EVENTS_MAX];
+    size_t grouped_count[BT_ALGS_BROWSE_EVENTS_MAX];
     size_t event_total = 0;
     for (size_t i = 0; i < pack_count; i++) {
         if (hidden_contains(hidden, packs[i].event)) {
@@ -234,7 +236,7 @@ bt_repo_node *bt_repo_arms(const bt_pack_entry *packs, size_t pack_count, const 
         while (at < event_total && strcmp(order[at], packs[i].event) != 0) {
             at++;
         }
-        if (at == event_total && event_total < 64) {
+        if (at == event_total && event_total < BT_ALGS_BROWSE_EVENTS_MAX) {
             order[event_total] = packs[i].event;
             grouped_start[event_total] = i;
             grouped_count[event_total] = 1;
@@ -246,7 +248,7 @@ bt_repo_node *bt_repo_arms(const bt_pack_entry *packs, size_t pack_count, const 
     size_t capacity = base.arm_count;
     bt_repo_node *arms = base.arms;
     for (size_t event = 0; event < event_total; event++) {
-        const bt_pack_entry *group[64];
+        const bt_pack_entry *group[BT_ALGS_BROWSE_EVENTS_MAX];
         size_t group_count = 0;
         for (size_t i = grouped_start[event]; i < pack_count && group_count < grouped_count[event];
              i++) {

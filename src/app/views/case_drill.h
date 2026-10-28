@@ -15,6 +15,7 @@
 
 #define BT_CASE_DRILL_QUEUE_MAX 256
 #define BT_CASE_DRILL_TEXT_MAX 256
+#define BT_CASE_DRILL_REMAP_SLOTS 16
 
 typedef struct {
     bt_case_ref case_ref;
@@ -57,7 +58,7 @@ typedef struct {
 
 size_t bt_case_drill_face_color_index(const char *face);
 size_t bt_case_drill_face_permutation(const char *event, size_t out[BT_PZ_MAX_FACES]);
-size_t bt_case_drill_color_remap(const char *event, size_t out[16]);
+size_t bt_case_drill_color_remap(const char *event, size_t out[BT_CASE_DRILL_REMAP_SLOTS]);
 int bt_case_drill_themed_grid(const bt_pz_grid *grid, const char *event, bt_pz_grid *out);
 int bt_case_drill_facelets(const char *event, int has_size, long long size, const char *alg,
                            bt_pz_grid *out, char *error, size_t error_len);

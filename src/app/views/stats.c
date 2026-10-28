@@ -339,6 +339,12 @@ void bt_view_stats_enter(bt_app_ctx *ctx) {
     BT_TRACE_EXIT("app.view_stats_enter");
 }
 
+static const float BT_STATS_TEXT_SPACING = 1.0F;
+
+static float stats_center_offset(float total, float used) {
+    return (total - used) / 2.0F;
+}
+
 void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
                         const void *font_bold, float window_w, float window_h) {
     BT_TRACE_ENTER("app.view_stats_draw");
@@ -362,8 +368,8 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
     float block_w[2] = {0.0F, 0.0F};
     for (size_t i = 0; i < shown; i++) {
         float size = blocks[i].size_rem * theme->root_rem;
-        Vector2 value_box = MeasureTextEx(regular, blocks[i].value, size, 1.0F);
-        Vector2 label_box = MeasureTextEx(regular, blocks[i].label, label_h, 1.0F);
+        Vector2 value_box = MeasureTextEx(regular, blocks[i].value, size, BT_STATS_TEXT_SPACING);
+        Vector2 label_box = MeasureTextEx(regular, blocks[i].label, label_h, BT_STATS_TEXT_SPACING);
         float width = value_box.x > label_box.x ? value_box.x : label_box.x;
         size_t col = i % 2;
         if (width > block_w[col]) {
@@ -376,24 +382,26 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
     }
     size_t row_count = (shown + 1) / 2;
     float total_h = row_h * (float)row_count + row_gap * (float)(row_count - 1);
-    float y = metrics.content_y + (metrics.content_h - total_h) / 2.0F;
+    float y = metrics.content_y + stats_center_offset(metrics.content_h, total_h);
     for (size_t row = 0; row < row_count; row++) {
         float row_w = block_w[0] + block_w[1] + col_gap;
-        float x = metrics.content_x + (metrics.content_w - row_w) / 2.0F;
+        float x = metrics.content_x + stats_center_offset(metrics.content_w, row_w);
         for (size_t col = 0; col < 2; col++) {
             size_t index = row * 2 + col;
             if (index >= shown) {
                 break;
             }
             float size = blocks[index].size_rem * theme->root_rem;
-            Vector2 value_box = MeasureTextEx(regular, blocks[index].value, size, 1.0F);
-            Vector2 label_box = MeasureTextEx(regular, blocks[index].label, label_h, 1.0F);
+            Vector2 value_box =
+                MeasureTextEx(regular, blocks[index].value, size, BT_STATS_TEXT_SPACING);
+            Vector2 label_box =
+                MeasureTextEx(regular, blocks[index].label, label_h, BT_STATS_TEXT_SPACING);
             bt_app_draw_text(font_regular, blocks[index].value,
-                             x + (block_w[col] - value_box.x) / 2.0F, y, size,
+                             x + stats_center_offset(block_w[col], value_box.x), y, size,
                              bt_theme_text_primary());
             bt_app_draw_text(font_regular, blocks[index].label,
-                             x + (block_w[col] - label_box.x) / 2.0F, y + size + inner_gap, label_h,
-                             bt_theme_text_muted());
+                             x + stats_center_offset(block_w[col], label_box.x),
+                             y + size + inner_gap, label_h, bt_theme_text_muted());
             x += block_w[col] + col_gap;
         }
         y += row_h + row_gap;

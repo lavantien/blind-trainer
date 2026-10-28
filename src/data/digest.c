@@ -17,9 +17,11 @@ static const bt_sheet_class SHEET_ORDER[BT_SHEET_CLASS_COUNT] = {
     BT_SHEET_EDGE, BT_SHEET_CORNER, BT_SHEET_FLIPS, BT_SHEET_TWISTS, BT_SHEET_PARITY, BT_SHEET_LTCT,
 };
 
+enum { BT_DIGEST_SHA256_LEN = 32 };
+
 void bt_digest_sha256_hex(const void *bytes, size_t len, char out[BT_DIGEST_SHA256_HEX_LEN]) {
     BT_TRACE_ENTER("digest.sha256_hex");
-    unsigned char digest[32];
+    unsigned char digest[BT_DIGEST_SHA256_LEN];
     bt_sha256(bytes, len, digest);
     bt_sha256_hex(digest, out);
     BT_TRACE_EXIT("digest.sha256_hex");
@@ -33,7 +35,7 @@ void bt_digest_corpus_sha256_hex(const unsigned char *const *parts, const size_t
     for (size_t at = 0; at < count; at++) {
         bt_sha256_update(&ctx, parts[at], lens[at]);
     }
-    unsigned char digest[32];
+    unsigned char digest[BT_DIGEST_SHA256_LEN];
     bt_sha256_final(&ctx, digest);
     bt_sha256_hex(digest, out);
     BT_TRACE_EXIT("digest.corpus_sha256_hex");
@@ -106,7 +108,7 @@ int bt_digest_corpus(const char *root, bt_corpus_digest *out, char *err, size_t 
             snprintf(entry->solver, sizeof entry->solver, "%s", bt_solver_dir(solver));
             snprintf(entry->sheet, sizeof entry->sheet, "%s", bt_sheet_class_file(sheet));
             entry->rows = count;
-            unsigned char digest[32];
+            unsigned char digest[BT_DIGEST_SHA256_LEN];
             bt_sha256(text, text_len, digest);
             bt_sha256_hex(digest, entry->sha256);
             bt_sha256_update(&ctx, text, text_len);
@@ -115,7 +117,7 @@ int bt_digest_corpus(const char *root, bt_corpus_digest *out, char *err, size_t 
             slot += 1;
         }
     }
-    unsigned char digest[32];
+    unsigned char digest[BT_DIGEST_SHA256_LEN];
     bt_sha256_final(&ctx, digest);
     bt_sha256_hex(digest, out->sha256);
     out->file_count = slot;

@@ -17,6 +17,7 @@ enum {
     BT_APP_MEMO_CADENCE_MAX = 10000,
     BT_APP_DRILL_REPS_MIN = 1,
     BT_APP_DRILL_REPS_MAX = 100,
+    BT_APP_MESSAGE_PAD = 96,
 };
 
 static int path_exists(const char *path) {
@@ -326,7 +327,7 @@ int bt_app_boot(const bt_app_runtime_paths *paths, bt_app_booted *out, char *err
     if (path_exists(paths->vendor_root)) {
         bt_corpus_error err;
         if (bt_corpus_load(paths->vendor_root, &out->corpus, &err) != 0) {
-            char text[BT_PATH_MAX + 96];
+            char text[BT_PATH_MAX + BT_APP_MESSAGE_PAD];
             bt_corpus_error_string(&err, text, sizeof text);
             snprintf(error, error_len, "vendor corpus at %s: %s", paths->vendor_root, text);
             bt_app_booted_free(out);
@@ -338,7 +339,7 @@ int bt_app_boot(const bt_app_runtime_paths *paths, bt_app_booted *out, char *err
         bt_corpus overlaid;
         if (bt_corpus_with_overlay(&out->corpus, &out->stores.user_algs, &overlaid, &overlay_err) !=
             0) {
-            char text[BT_PATH_MAX + 96];
+            char text[BT_PATH_MAX + BT_APP_MESSAGE_PAD];
             bt_overlay_error_string(&overlay_err, text, sizeof text);
             snprintf(error, error_len, "user algs overlay: %s", text);
             bt_app_booted_free(out);
@@ -349,14 +350,14 @@ int bt_app_boot(const bt_app_runtime_paths *paths, bt_app_booted *out, char *err
         bt_corpus_free(&out->corpus);
         out->corpus = overlaid;
         if (packs == NULL) {
-            char warning[BT_PATH_MAX + 96];
+            char warning[BT_PATH_MAX + BT_APP_MESSAGE_PAD];
             snprintf(warning, sizeof warning,
                      "seed packs missing at %s, repository browser limited to 3bld",
                      paths->packs_root);
             bt_str_list_push(&out->warnings, warning);
         }
     } else {
-        char warning[BT_PATH_MAX + 96];
+        char warning[BT_PATH_MAX + BT_APP_MESSAGE_PAD];
         snprintf(warning, sizeof warning, "vendor data missing at %s, running on user data only",
                  paths->vendor_root);
         bt_str_list_push(&out->warnings, warning);

@@ -29,6 +29,8 @@ const int BT_NET_BANDS[BT_NET_BAND_COUNT][BT_NET_BAND_SLOTS] = {
 static int grid_to_sticker_ready = 0;
 static int grid_to_sticker[BT_NET_GRID_CELLS];
 
+static const float BT_NET_INK_ALPHA = 1.0F;
+
 static void build_grid_to_sticker(void) {
     for (int grid = 0; grid < BT_NET_GRID_CELLS; grid++) {
         grid_to_sticker[grid] = -1;
@@ -90,9 +92,9 @@ bt_theme_color bt_net_ink_for(bt_theme_color color) {
     float luminance = 0.2126F * linear.red + 0.7152F * linear.green + 0.0722F * linear.blue;
     bt_theme_color ink;
     if (luminance >= 0.5F) {
-        ink = (bt_theme_color){0.08F, 0.08F, 0.08F, 1.0F};
+        ink = (bt_theme_color){0.08F, 0.08F, 0.08F, BT_NET_INK_ALPHA};
     } else {
-        ink = (bt_theme_color){0.96F, 0.96F, 0.96F, 1.0F};
+        ink = (bt_theme_color){0.96F, 0.96F, 0.96F, BT_NET_INK_ALPHA};
     }
     BT_TRACE_EXIT("app.net_ink_for");
     return ink;

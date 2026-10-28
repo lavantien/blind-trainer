@@ -167,6 +167,10 @@ static Vector2 ui_measure(const struct Font *font, const char *text, float size)
     return MeasureTextEx(*(const Font *)font, text, size, 1.0F);
 }
 
+static float ui_center_offset(float total, float used) {
+    return (total - used) / 2.0F;
+}
+
 bt_ui_button_state bt_ui_button(const struct Font *font, const bt_ui_rect *rect, const char *label,
                                 const bt_ui_input *input) {
     BT_TRACE_ENTER("app.ui_button");
@@ -179,8 +183,8 @@ bt_ui_button_state bt_ui_button(const struct Font *font, const bt_ui_rect *rect,
     ui_lines(rect, bt_theme_hairline());
     float size = bt_theme_table()->font_body * bt_theme_table()->root_rem;
     Vector2 measured = ui_measure(font, label, size);
-    ui_text(font, label, rect->x + (rect->width - measured.x) / 2.0F,
-            rect->y + (rect->height - measured.y) / 2.0F, size, bt_theme_text_primary());
+    ui_text(font, label, rect->x + ui_center_offset(rect->width, measured.x),
+            rect->y + ui_center_offset(rect->height, measured.y), size, bt_theme_text_primary());
     BT_TRACE_EXIT("app.ui_button");
     return state;
 }
@@ -226,7 +230,7 @@ bt_ui_list_window bt_ui_list(const struct Font *font, const bt_ui_rect *rect,
             ui_fill(&slot, bt_theme_panel_raised());
         }
         ui_text(font, rows[row], slot.x + theme->spacing_rem * theme->root_rem,
-                slot.y + (row_height - size) / 2.0F, size, bt_theme_text_primary());
+                slot.y + ui_center_offset(row_height, size), size, bt_theme_text_primary());
         if (hovered && input->click) {
             window.selected = row;
             bt_ui_list_show(&window, row_count, visible_rows);
@@ -246,7 +250,7 @@ int bt_ui_text_field(const struct Font *font, const bt_ui_rect *rect, char *buff
     const bt_theme *theme = bt_theme_table();
     float size = theme->font_body * theme->root_rem;
     ui_text(font, buffer, rect->x + theme->spacing_rem * theme->root_rem,
-            rect->y + (rect->height - size) / 2.0F, size, bt_theme_text_primary());
+            rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
     int canceled = 0;
     if (active) {
         bt_ui_field_edit(buffer, cap, cursor, input, committed, &canceled);
@@ -355,13 +359,13 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
     }
     ui_fill(&minus, minus_hit.hovered ? bt_theme_panel_raised() : bt_theme_background());
     ui_fill(&plus, plus_hit.hovered ? bt_theme_panel_raised() : bt_theme_background());
-    ui_text(font, "-", minus.x + step_width / 2.0F, minus.y + (rect->height - size) / 2.0F, size,
-            bt_theme_text_primary());
-    ui_text(font, "+", plus.x + step_width / 2.0F, plus.y + (rect->height - size) / 2.0F, size,
-            bt_theme_text_primary());
+    ui_text(font, "-", minus.x + ui_center_offset(step_width, 0),
+            minus.y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
+    ui_text(font, "+", plus.x + ui_center_offset(step_width, 0),
+            plus.y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
     Vector2 measured = ui_measure(font, display, size);
-    ui_text(font, display, rect->x + (rect->width - measured.x) / 2.0F,
-            rect->y + (rect->height - size) / 2.0F, size, bt_theme_text_primary());
+    ui_text(font, display, rect->x + ui_center_offset(rect->width, measured.x),
+            rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
     BT_TRACE_EXIT("app.ui_number_field");
     return value;
 }

@@ -56,6 +56,10 @@ static float line_height(bt_row_style style) {
     return size_rem * bt_theme_table()->root_rem;
 }
 
+static float drill_center_offset(float total, float used) {
+    return (total - used) / 2.0F;
+}
+
 static void draw_span_line(const void *font_regular, const bt_card_content *content, float x,
                            float y) {
     Font regular = *(const Font *)font_regular;
@@ -80,7 +84,7 @@ void bt_view_drill_card_draw(const bt_card_content *content, const void *font_re
         total += line_height(content->rows[i].style);
     }
     total += gap * (float)(content->row_count - 1);
-    float cursor = y + (h - total) / 2.0F;
+    float cursor = y + drill_center_offset(h, total);
     for (size_t i = 0; i < content->row_count; i++) {
         float size_rem;
         bt_theme_color color;
@@ -128,7 +132,7 @@ void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_r
         total += sizes[i];
     }
     total += gap * 4.0F;
-    float cursor = y + (h - total) / 2.0F;
+    float cursor = y + drill_center_offset(h, total);
     for (int i = 0; i < 5; i++) {
         bt_app_draw_text(font_regular, rows[i], x, cursor, sizes[i], colors[i]);
         cursor += sizes[i] + gap;
@@ -159,7 +163,7 @@ void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_r
         total += sizes[i];
     }
     total += gap * (float)(count > 1 ? count - 1 : 0);
-    float cursor = y + (h - total) / 2.0F;
+    float cursor = y + drill_center_offset(h, total);
     for (size_t i = 0; i < count && i < 3; i++) {
         bt_app_draw_text(font_regular, lines[i], x, cursor, sizes[i], colors[i]);
         cursor += sizes[i] + gap;

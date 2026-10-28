@@ -5,13 +5,17 @@
 
 #include "raylib.h"
 
+static float net_center_offset(float total, float used) {
+    return (total - used) / 2.0F;
+}
+
 void bt_view_net_center(const bt_net_geometry *geo, float region_x, float region_y, float region_w,
                         float region_h, float *out_x, float *out_y) {
     BT_TRACE_ENTER("app.view_net_center");
     float width = bt_net_width(geo);
     float height = bt_net_height(geo);
-    *out_x = region_x + (region_w - width) / 2.0F;
-    *out_y = region_y + (region_h - height) / 2.0F;
+    *out_x = region_x + net_center_offset(region_w, width);
+    *out_y = region_y + net_center_offset(region_h, height);
     BT_TRACE_EXIT("app.view_net_center");
 }
 
@@ -27,8 +31,8 @@ static void draw_cell(const void *font_bold, const bt_net_geometry *geo, size_t 
         float size = geo->quad * 0.45F;
         Font bold = *(const Font *)font_bold;
         Vector2 box = MeasureTextEx(bold, name, size, 1.0F);
-        bt_app_draw_text(font_bold, name, x + (geo->quad - box.x) / 2.0F,
-                         y + (geo->quad - box.y) / 2.0F, size, bt_net_letter_color(face));
+        bt_app_draw_text(font_bold, name, x + net_center_offset(geo->quad, box.x),
+                         y + net_center_offset(geo->quad, box.y), size, bt_net_letter_color(face));
     }
 }
 
