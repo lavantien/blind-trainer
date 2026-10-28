@@ -55,9 +55,9 @@ BT_TEST(e2e, bootstrap_reaches_menu_headless) {
     bt_app_ctx ctx;
     headless_ctx(&ctx, &paths);
     BT_CHECK_EQ(ctx.state, BT_APP_MENU);
-    BT_CHECK_EQ(ctx.stores.settings.memo_cadence_ms, 700u);
+    BT_CHECK_EQ(ctx.stores.settings.memo_cadence_ms, 700U);
     BT_CHECK_EQ(ctx.stores.settings.memo_mode, BT_MEMO_SYLLABLES);
-    BT_CHECK_EQ(ctx.stores.settings.drill_reps, 4u);
+    BT_CHECK_EQ(ctx.stores.settings.drill_reps, 4U);
     BT_CHECK_EQ(ctx.vendor_corpus.count, (size_t)0);
     bt_app_ctx_free(&ctx);
 }
@@ -126,8 +126,8 @@ BT_TEST(e2e, save_stores_persists_into_the_db) {
     bt_settings fallback = {1, BT_MEMO_IMAGES, 1};
     BT_CHECK_EQ(bt_stores_load(paths.user_root, fallback, &fsrs, &reloaded, error, sizeof error),
                 0);
-    BT_CHECK_EQ(reloaded.settings.memo_cadence_ms, 700u);
-    BT_CHECK_EQ(reloaded.settings.drill_reps, 4u);
+    BT_CHECK_EQ(reloaded.settings.memo_cadence_ms, 700U);
+    BT_CHECK_EQ(reloaded.settings.drill_reps, 4U);
     bt_stores_free(&reloaded);
     bt_app_ctx_free(&ctx);
 }
