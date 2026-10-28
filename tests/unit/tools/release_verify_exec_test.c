@@ -30,8 +30,8 @@ static void trim_ascii(char *text) {
 }
 
 static void canonical_path(const char *in, char out[BT_PATH_MAX]) {
-    HANDLE handle = CreateFileA(in, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                                OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+    HANDLE handle = CreateFileA(in, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+                                FILE_FLAG_BACKUP_SEMANTICS, NULL);
     if (handle == INVALID_HANDLE_VALUE) {
         snprintf(out, BT_PATH_MAX, "%s", in);
         return;
@@ -52,14 +52,8 @@ static void canonical_path(const char *in, char out[BT_PATH_MAX]) {
 
 BT_TEST(release_verify, scrub_env_removes_only_bt_prefixed_vars) {
     const char *vars[] = {
-        "BT_CONFIG=x",
-        "BT_ARTIFACTS=y",
-        "bt_probe=z",
-        "PATH=p",
-        "APPDATA=a",
-        "BAT_CONFIG=b",
-        "BT=c",
-        NULL,
+        "BT_CONFIG=x", "BT_ARTIFACTS=y", "bt_probe=z", "PATH=p",
+        "APPDATA=a",   "BAT_CONFIG=b",   "BT=c",       NULL,
     };
     char **scrubbed = NULL;
     size_t count = bt_rv_scrub_env(vars, &scrubbed);

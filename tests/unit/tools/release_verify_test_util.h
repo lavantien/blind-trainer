@@ -108,7 +108,7 @@ static inline uint32_t rv_util_adler32(const unsigned char *data, size_t len) {
         a = (a + data[at]) % 65521;
         b = (b + a) % 65521;
     }
-    return (b << 16) | a;
+    return (b << 16U) | a;
 }
 
 typedef struct {
@@ -232,9 +232,9 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
         remaining -= take;
     }
     uint32_t adler = rv_util_adler32(raw, raw_len);
-    idat[at++] = (unsigned char)(adler >> 24);
-    idat[at++] = (unsigned char)(adler >> 16);
-    idat[at++] = (unsigned char)(adler >> 8);
+    idat[at++] = (unsigned char)(adler >> 24U);
+    idat[at++] = (unsigned char)(adler >> 16U);
+    idat[at++] = (unsigned char)(adler >> 8U);
     idat[at++] = (unsigned char)adler;
     free(raw);
 
@@ -247,13 +247,13 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
     static const unsigned char signature[8] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
     fwrite(signature, 1, 8, file);
     unsigned char ihdr[13];
-    ihdr[0] = (unsigned char)(width >> 24);
-    ihdr[1] = (unsigned char)(width >> 16);
-    ihdr[2] = (unsigned char)(width >> 8);
+    ihdr[0] = (unsigned char)(width >> 24U);
+    ihdr[1] = (unsigned char)(width >> 16U);
+    ihdr[2] = (unsigned char)(width >> 8U);
     ihdr[3] = (unsigned char)width;
-    ihdr[4] = (unsigned char)(height >> 24);
-    ihdr[5] = (unsigned char)(height >> 16);
-    ihdr[6] = (unsigned char)(height >> 8);
+    ihdr[4] = (unsigned char)(height >> 24U);
+    ihdr[5] = (unsigned char)(height >> 16U);
+    ihdr[6] = (unsigned char)(height >> 8U);
     ihdr[7] = (unsigned char)height;
     ihdr[8] = 8;
     ihdr[9] = 0;
@@ -273,17 +273,17 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
     fwrite(ihdr, 1, 13, file);
     uint32_t crc = bt_rv_crc32(type_and_data, 17);
     unsigned char crc_be[4];
-    crc_be[0] = (unsigned char)(crc >> 24);
-    crc_be[1] = (unsigned char)(crc >> 16);
-    crc_be[2] = (unsigned char)(crc >> 8);
+    crc_be[0] = (unsigned char)(crc >> 24U);
+    crc_be[1] = (unsigned char)(crc >> 16U);
+    crc_be[2] = (unsigned char)(crc >> 8U);
     crc_be[3] = (unsigned char)crc;
     fwrite(crc_be, 1, 4, file);
 
     unsigned char idat_head[8];
     uint32_t idat_len32 = (uint32_t)idat_len;
-    idat_head[0] = (unsigned char)(idat_len32 >> 24);
-    idat_head[1] = (unsigned char)(idat_len32 >> 16);
-    idat_head[2] = (unsigned char)(idat_len32 >> 8);
+    idat_head[0] = (unsigned char)(idat_len32 >> 24U);
+    idat_head[1] = (unsigned char)(idat_len32 >> 16U);
+    idat_head[2] = (unsigned char)(idat_len32 >> 8U);
     idat_head[3] = (unsigned char)idat_len32;
     memcpy(idat_head + 4, "IDAT", 4);
     fwrite(idat_head, 1, 8, file);
@@ -294,9 +294,9 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
     uint32_t idat_crc = bt_rv_crc32(type_and_idat, idat_len + 4);
     free(type_and_idat);
     free(idat);
-    crc_be[0] = (unsigned char)(idat_crc >> 24);
-    crc_be[1] = (unsigned char)(idat_crc >> 16);
-    crc_be[2] = (unsigned char)(idat_crc >> 8);
+    crc_be[0] = (unsigned char)(idat_crc >> 24U);
+    crc_be[1] = (unsigned char)(idat_crc >> 16U);
+    crc_be[2] = (unsigned char)(idat_crc >> 8U);
     crc_be[3] = (unsigned char)idat_crc;
     fwrite(crc_be, 1, 4, file);
 
@@ -310,9 +310,9 @@ static inline void rv_util_write_png(const char *path, uint32_t width, uint32_t 
     unsigned char iend_tail[4];
     memcpy(iend_tail, "IEND", 4);
     uint32_t iend_crc = bt_rv_crc32(iend_tail, 4);
-    crc_be[0] = (unsigned char)(iend_crc >> 24);
-    crc_be[1] = (unsigned char)(iend_crc >> 16);
-    crc_be[2] = (unsigned char)(iend_crc >> 8);
+    crc_be[0] = (unsigned char)(iend_crc >> 24U);
+    crc_be[1] = (unsigned char)(iend_crc >> 16U);
+    crc_be[2] = (unsigned char)(iend_crc >> 8U);
     crc_be[3] = (unsigned char)iend_crc;
     fwrite(crc_be, 1, 4, file);
     fclose(file);

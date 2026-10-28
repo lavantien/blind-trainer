@@ -15,7 +15,8 @@
 #define ZIP_TEST_ROOT "blind-trainer"
 
 static const unsigned char EXE_BYTES[] = "fake exe payload 0123456789";
-static const unsigned char CONFIG_BYTES[] = "{\"app\": {\"window\": {\"width\": 1280, \"height\": 800}}}";
+static const unsigned char CONFIG_BYTES[] =
+    "{\"app\": {\"window\": {\"width\": 1280, \"height\": 800}}}";
 static const unsigned char FONT_MAIN[] = "font main bytes";
 static const unsigned char FONT_BOLD[] = "font bold bytes";
 
@@ -89,10 +90,8 @@ BT_TEST(release_verify, staging_file_set_lists_exe_config_and_whole_fonts_tree) 
     bt_rv_file_set set;
     BT_CHECK_EQ(staged_set(dir, &set), 0);
     const char *wanted[] = {
-        "assets/fonts/bold.ttf",
-        "assets/fonts/condensed/italic.ttf",
-        "assets/fonts/main.ttf",
-        "blind-trainer.exe",
+        "assets/fonts/bold.ttf", "assets/fonts/condensed/italic.ttf",
+        "assets/fonts/main.ttf", "blind-trainer.exe",
         "config/config.json",
     };
     BT_CHECK_EQ(set.count, 5U);
@@ -137,18 +136,17 @@ BT_TEST(release_verify, staging_file_set_rejects_missing_layout_pieces) {
 
 BT_TEST(release_verify, normalize_entry_maps_backslashes_root_prefix_and_directory_markers) {
     char out[BT_PATH_MAX];
-    BT_CHECK_EQ(bt_rv_normalize_entry("blind-trainer\\config\\config.json", ZIP_TEST_ROOT, out,
-                                      sizeof out),
-                1);
+    BT_CHECK_EQ(
+        bt_rv_normalize_entry("blind-trainer\\config\\config.json", ZIP_TEST_ROOT, out, sizeof out),
+        1);
     BT_CHECK_EQ(out, "config/config.json");
     BT_CHECK_EQ(bt_rv_normalize_entry("blind-trainer/assets/fonts/main.ttf", ZIP_TEST_ROOT, out,
                                       sizeof out),
                 1);
     BT_CHECK_EQ(out, "assets/fonts/main.ttf");
     BT_CHECK_EQ(bt_rv_normalize_entry("blind-trainer/", ZIP_TEST_ROOT, out, sizeof out), 0);
-    BT_CHECK_EQ(bt_rv_normalize_entry("blind-trainer\\assets\\fonts\\", ZIP_TEST_ROOT, out,
-                                      sizeof out),
-                0);
+    BT_CHECK_EQ(
+        bt_rv_normalize_entry("blind-trainer\\assets\\fonts\\", ZIP_TEST_ROOT, out, sizeof out), 0);
     BT_CHECK_EQ(bt_rv_normalize_entry("other/readme.txt", ZIP_TEST_ROOT, out, sizeof out), 1);
     BT_CHECK_EQ(out, "other/readme.txt");
     BT_CHECK_EQ(bt_rv_normalize_entry(ZIP_TEST_ROOT, ZIP_TEST_ROOT, out, sizeof out), 1);

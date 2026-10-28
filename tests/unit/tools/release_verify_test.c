@@ -27,17 +27,16 @@ static const char *FULL_CONFIG_JSON =
     "  \"e2e\": {\"shots\": [\"menu\", \"drill\", \"memo\", \"solve\", \"algs\", \"stats\", \"settings\", \"fatal\"]}\n"
     "}\n";
 
-static const char *NO_EXE_CONFIG_JSON =
-    "{\n"
-    "  \"release\": {\n"
-    "    \"staging_dir\": \"artifacts/dist/blind-trainer\",\n"
-    "    \"config_file\": \"config/config.json\",\n"
-    "    \"fonts_dir\": \"assets/fonts\",\n"
-    "    \"run_timeout_secs\": 120,\n"
-    "    \"usage_exit\": 2\n"
-    "  },\n"
-    "  \"e2e\": {\"shots\": [\"menu\"]}\n"
-    "}\n";
+static const char *NO_EXE_CONFIG_JSON = "{\n"
+                                        "  \"release\": {\n"
+                                        "    \"staging_dir\": \"artifacts/dist/blind-trainer\",\n"
+                                        "    \"config_file\": \"config/config.json\",\n"
+                                        "    \"fonts_dir\": \"assets/fonts\",\n"
+                                        "    \"run_timeout_secs\": 120,\n"
+                                        "    \"usage_exit\": 2\n"
+                                        "  },\n"
+                                        "  \"e2e\": {\"shots\": [\"menu\"]}\n"
+                                        "}\n";
 
 static const char *NO_NEG_EXIT_CONFIG_JSON =
     "{\n"
@@ -52,18 +51,17 @@ static const char *NO_NEG_EXIT_CONFIG_JSON =
     "  \"e2e\": {\"shots\": [\"menu\"]}\n"
     "}\n";
 
-static const char *NO_E2E_CONFIG_JSON =
-    "{\n"
-    "  \"release\": {\n"
-    "    \"staging_dir\": \"artifacts/dist/blind-trainer\",\n"
-    "    \"exe\": \"blind-trainer.exe\",\n"
-    "    \"config_file\": \"config/config.json\",\n"
-    "    \"fonts_dir\": \"assets/fonts\",\n"
-    "    \"run_timeout_secs\": 120,\n"
-    "    \"neg_config_exit\": 1,\n"
-    "    \"usage_exit\": 2\n"
-    "  }\n"
-    "}\n";
+static const char *NO_E2E_CONFIG_JSON = "{\n"
+                                        "  \"release\": {\n"
+                                        "    \"staging_dir\": \"artifacts/dist/blind-trainer\",\n"
+                                        "    \"exe\": \"blind-trainer.exe\",\n"
+                                        "    \"config_file\": \"config/config.json\",\n"
+                                        "    \"fonts_dir\": \"assets/fonts\",\n"
+                                        "    \"run_timeout_secs\": 120,\n"
+                                        "    \"neg_config_exit\": 1,\n"
+                                        "    \"usage_exit\": 2\n"
+                                        "  }\n"
+                                        "}\n";
 
 static void parse_cfg(const char *text, bt_rv_release_cfg *cfg) {
     bt_json_value *value = NULL;
@@ -277,9 +275,9 @@ BT_TEST(release_verify, db_stage_accepts_a_fully_migrated_db_and_rejects_a_stale
     unsigned char bytes[100];
     memset(bytes, 0, sizeof bytes);
     memcpy(bytes, "SQLite format 3\0", 16);
-    bytes[60] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 24);
-    bytes[61] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 16);
-    bytes[62] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 8);
+    bytes[60] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 24U);
+    bytes[61] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 16U);
+    bytes[62] = (unsigned char)(BT_RV_LATEST_USER_VERSION >> 8U);
     bytes[63] = (unsigned char)BT_RV_LATEST_USER_VERSION;
     rv_util_write_bytes(db_path, bytes, sizeof bytes);
     bt_rv_release_cfg cfg;
@@ -306,7 +304,8 @@ BT_TEST(release_verify, release_cfg_from_names_the_missing_key_or_section) {
     BT_CHECK_EQ(err, "config release section missing");
     bt_json_free(value);
     bt_json_error json_err;
-    BT_CHECK_EQ(bt_json_parse(NO_EXE_CONFIG_JSON, strlen(NO_EXE_CONFIG_JSON), &value, &json_err), 0);
+    BT_CHECK_EQ(bt_json_parse(NO_EXE_CONFIG_JSON, strlen(NO_EXE_CONFIG_JSON), &value, &json_err),
+                0);
     BT_CHECK(bt_rv_release_cfg_from(value, &cfg, err, sizeof err) != 0);
     BT_CHECK_EQ(err, "config release.exe missing");
     bt_json_free(value);
@@ -316,8 +315,8 @@ BT_TEST(release_verify, release_cfg_from_names_the_missing_key_or_section) {
     BT_CHECK(bt_rv_release_cfg_from(value, &cfg, err, sizeof err) != 0);
     BT_CHECK_EQ(err, "config release.neg_config_exit must be an exit code integer");
     bt_json_free(value);
-    BT_CHECK_EQ(
-        bt_json_parse(NO_E2E_CONFIG_JSON, strlen(NO_E2E_CONFIG_JSON), &value, &json_err), 0);
+    BT_CHECK_EQ(bt_json_parse(NO_E2E_CONFIG_JSON, strlen(NO_E2E_CONFIG_JSON), &value, &json_err),
+                0);
     BT_CHECK(bt_rv_release_cfg_from(value, &cfg, err, sizeof err) != 0);
     BT_CHECK_EQ(err, "config e2e.shots missing");
     bt_json_free(value);
@@ -341,8 +340,9 @@ BT_TEST(release_verify, release_cfg_from_rejects_bad_value_types) {
         " \"fonts_dir\": \"f\", \"run_timeout_secs\": 120, \"neg_config_exit\": \"one\","
         " \"usage_exit\": 2}, \"e2e\": {\"shots\": [\"menu\"]}}",
     };
-    const char *needles[] = {"run_timeout_secs", "usage_exit", "e2e.shots", "run_timeout_secs",
-                             "neg_config_exit"};
+    const char *needles[] = {
+        "run_timeout_secs", "usage_exit", "e2e.shots", "run_timeout_secs", "neg_config_exit",
+    };
     for (size_t at = 0; at < sizeof cases / sizeof cases[0]; at++) {
         bt_json_value *value = NULL;
         bt_json_error json_err;
