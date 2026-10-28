@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "common/bt_trace.h"
+#include "common/space.h"
 #include "core/cube.h"
 
 void bt_alg_init(bt_alg *alg) {
@@ -216,49 +217,22 @@ bool bt_alg_parse_token(const char *token, bt_move *out) {
     return false;
 }
 
-static size_t whitespace_len(const char *s) {
-    const unsigned char *p = (const unsigned char *)s;
-    if (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == 0x0BU || *p == 0x0CU) {
-        return 1;
-    }
-    if (p[0] == 0xC2U && (p[1] == 0x85U || p[1] == 0xA0U)) {
-        return 2;
-    }
-    if (p[0] == 0xE1U && p[1] == 0x9AU && p[2] == 0x80U) {
-        return 3;
-    }
-    if (p[0] == 0xE2U && p[1] == 0x80U) {
-        if (p[2] >= 0x80U && p[2] <= 0x8AU) {
-            return 3;
-        }
-        if (p[2] == 0xA8U || p[2] == 0xA9U || p[2] == 0xAFU) {
-            return 3;
-        }
-    }
-    if (p[0] == 0xE2U && p[1] == 0x81U && p[2] == 0x9FU) {
-        return 3;
-    }
-    if (p[0] == 0xE3U && p[1] == 0x80U && p[2] == 0x80U) {
-        return 3;
-    }
-    return 0;
-}
-
 bool bt_alg_parse(const char *text, bt_alg *out, char *err_token, size_t err_token_size) {
     BT_TRACE_ENTER("bt_alg_parse");
     bt_alg_free(out);
+    size_t text_len = strlen(text);
     const char *cursor = text;
     while (*cursor != '\0') {
-        size_t ws = whitespace_len(cursor);
+        size_t ws = bt_space_len(text, (size_t)(cursor - text), text_len);
         while (ws > 0) {
             cursor += ws;
-            ws = whitespace_len(cursor);
+            ws = bt_space_len(text, (size_t)(cursor - text), text_len);
         }
         if (*cursor == '\0') {
             break;
         }
         const char *start = cursor;
-        while (*cursor != '\0' && whitespace_len(cursor) == 0) {
+        while (*cursor != '\0' && bt_space_len(text, (size_t)(cursor - text), text_len) == 0) {
             cursor++;
         }
         size_t len = (size_t)(cursor - start);

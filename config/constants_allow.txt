@@ -9,7 +9,6 @@ src/common/sha256.c	15	message schedule reach back of sha-256, pinned by nist ve
 src/common/sha256.c	16	first message schedule words of sha-256, pinned by nist vectors
 src/common/sha256.c	32	word width of the sha-256 rotation primitive, pinned by nist vectors
 src/common/sha256.c	64	message schedule block words of sha-256, pinned by nist vectors
-src/core/alg.c	128	wide move marker byte of the alg tokenizer, pinned by parse tests
 src/core/analysis.c	12	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	24	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/core/analysis.c	48	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
