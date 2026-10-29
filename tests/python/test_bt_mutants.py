@@ -97,13 +97,18 @@ class MutantsUnionWiringTests(unittest.TestCase):
     def test_union_argv_carries_every_ledger_and_one_out(self):
         plans = bt.mutants_plan(self.root, ["core", "scheme"])
         argv = bt.mutants_union_argv(plans, self.root)
-        self.assertEqual(argv[0], "union-report")
-        ledgers = [argv[i + 1] for i, token in enumerate(argv) if token == "--ledger"]
-        self.assertEqual(ledgers, [str(self.root / plan["ledger"]) for plan in plans])
         self.assertEqual(
-            argv[-2:], ["--out", str(self.root / "artifacts/mutants/outcomes.json")]
+            argv,
+            [
+                "union-report",
+                "--ledger",
+                str(self.root / plans[0]["ledger"]),
+                "--ledger",
+                str(self.root / plans[1]["ledger"]),
+                "--out",
+                str(self.root / "artifacts/mutants/outcomes.json"),
+            ],
         )
-        self.assertEqual(len(argv), 1 + 2 * len(plans) + 2)
 
     def test_run_mutants_plans_runs_each_suite_then_one_union_report(self):
         plans = bt.mutants_plan(self.root, ["core", "scheme"])
@@ -114,14 +119,29 @@ class MutantsUnionWiringTests(unittest.TestCase):
         ]
         self.assertEqual([call[0] for call in calls], ["run", "run", "union-report"])
         for call, plan in zip(calls[:2], plans):
-            self.assertEqual(call[call.index("--ledger") + 1], str(self.root / plan["ledger"]))
-            self.assertEqual(call[call.index("--exe") + 1], plan["suite"])
-            self.assertEqual(call[-len(plan["sources"]) :], plan["sources"])
-        union = calls[2]
-        self.assertEqual(union.count("--ledger"), len(plans))
-        for plan in plans:
-            self.assertIn(str(self.root / plan["ledger"]), union)
-        self.assertEqual(union[-2], "--out")
+            self.assertEqual(
+                call,
+                [
+                    "run",
+                    "--ledger",
+                    str(self.root / plan["ledger"]),
+                    "--exe",
+                    plan["suite"],
+                    *plan["sources"],
+                ],
+            )
+        self.assertEqual(
+            calls[2],
+            [
+                "union-report",
+                "--ledger",
+                str(self.root / plans[0]["ledger"]),
+                "--ledger",
+                str(self.root / plans[1]["ledger"]),
+                "--out",
+                str(self.root / "artifacts/mutants/outcomes.json"),
+            ],
+        )
         self.assertTrue((self.root / "artifacts/mutants/outcomes.json").is_file())
 
     def test_run_mutants_plans_surfaces_a_failing_union_report(self):
