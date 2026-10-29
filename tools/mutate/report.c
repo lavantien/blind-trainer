@@ -7,7 +7,7 @@
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 
-static const char *summary_for(bt_mut_status status) {
+const char *bt_mut_outcome_summary(bt_mut_status status) {
     switch (status) {
     case BT_MUT_KILLED:
         return "CaughtMutant";
@@ -36,7 +36,7 @@ static bt_json_value *span_object(size_t line, size_t col, size_t end_line, size
     return span;
 }
 
-static bt_json_value *mutant_scenario(const bt_mut_row *row, const char *function) {
+bt_json_value *bt_mut_mutant_scenario(const bt_mut_row *row, const char *function) {
     bt_json_value *payload = bt_json_new_object();
     char name[512];
     snprintf(name, sizeof name, "%s:%zu:%zu: %s %s -> %s", row->file, row->line, row->col, row->op,
@@ -107,8 +107,9 @@ int bt_mut_report(const char *ledger_path, const char *repo_root, const char *ou
             free(text);
         }
         bt_json_value *outcome = bt_json_new_object();
-        bt_json_object_set(outcome, "scenario", mutant_scenario(row, function));
-        bt_json_object_set(outcome, "summary", bt_json_new_string(summary_for(row->status)));
+        bt_json_object_set(outcome, "scenario", bt_mut_mutant_scenario(row, function));
+        bt_json_object_set(outcome, "summary",
+                           bt_json_new_string(bt_mut_outcome_summary(row->status)));
         bt_json_array_push(outcomes, outcome);
         counters[0]++;
         if (row->status == BT_MUT_KILLED) {

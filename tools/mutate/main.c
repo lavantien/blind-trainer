@@ -18,6 +18,7 @@ static void usage(void) {
     fprintf(stderr, "       mutate run [--config P] [--clang P] [--scratch D] [--ledger P] "
                     "[--timeout S] [--only ids] [--limit N] --exe NAME <glob>...\n");
     fprintf(stderr, "       mutate report [--config P] --ledger P --out P\n");
+    fprintf(stderr, "       mutate union-report [--config P] --ledger <dir-or-file>... --out P\n");
     fprintf(stderr, "       mutate selftest\n");
 }
 
@@ -426,6 +427,40 @@ int run_report(int argc, char **argv) {
     return rc;
 }
 
+int run_union_report(int argc, char **argv) {
+    const char *config_override = NULL;
+    const char *out_path = NULL;
+    bt_mut_paths inputs = {0};
+    for (int i = 2; i < argc; i++) {
+        if (strcmp(argv[i], "--config") == 0 && i + 1 < argc) {
+            config_override = argv[++i];
+        } else if (strcmp(argv[i], "--ledger") == 0 && i + 1 < argc) {
+            if (bt_mut_paths_push(&inputs, argv[++i]) != 0) {
+                bt_mut_paths_free(&inputs);
+                usage();
+                return 2;
+            }
+        } else if (strcmp(argv[i], "--out") == 0 && i + 1 < argc) {
+            out_path = argv[++i];
+        }
+    }
+    if (inputs.count == 0 || out_path == NULL) {
+        usage();
+        bt_mut_paths_free(&inputs);
+        return 2;
+    }
+    char config_path[BT_MUT_PATH_MAX];
+    char repo_root[BT_MUT_PATH_MAX];
+    resolve_config(config_override, config_path, repo_root);
+    int rc =
+        bt_mut_union_report((const char *const *)inputs.items, inputs.count, repo_root, out_path);
+    if (rc != 0) {
+        fprintf(stderr, "mutate union-report: %s\n", bt_mut_union_last_error());
+    }
+    bt_mut_paths_free(&inputs);
+    return rc;
+}
+
 static void trace_from_config(const bt_json_value *config) {
     long long ring_bytes = 65536;
     long long max_threads = 8;
@@ -480,6 +515,8 @@ int main(int argc, char **argv) {
         rc = run_run(argc, argv);
     } else if (strcmp(argv[1], "report") == 0) {
         rc = run_report(argc, argv);
+    } else if (strcmp(argv[1], "union-report") == 0) {
+        rc = run_union_report(argc, argv);
     } else {
         usage();
         rc = 2;
