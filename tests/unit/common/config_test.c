@@ -24,6 +24,12 @@ static const char *FIXTURE = "{"
                              "\"top\": 41"
                              "}";
 
+static const char *FIXTURE_ALT = "{"
+                                 "\"app\": {\"reps\": 7, \"ratio\": 0.25, \"on\": true, "
+                                 "\"title\": \"blind trainer\", \"list\": [1, 2]}, "
+                                 "\"top\": 41"
+                                 "}";
+
 static void load_fixture(void) {
     write_fixture("config_fixture.json", FIXTURE);
     char path[256];
@@ -79,9 +85,15 @@ BT_TEST(config, load_is_cached_until_reset) {
     const bt_json_value *first = bt_config_load();
     const bt_json_value *second = bt_config_load();
     BT_CHECK(first == second);
+    long long reps = 0;
+    BT_CHECK_EQ(bt_config_int(first, "app.reps", &reps), 0);
+    BT_CHECK_EQ(reps, 6);
     bt_config_reset();
+    write_fixture("config_fixture.json", FIXTURE_ALT);
     const bt_json_value *third = bt_config_load();
-    BT_CHECK(third != first);
+    BT_CHECK(third != NULL);
+    BT_CHECK_EQ(bt_config_int(third, "app.reps", &reps), 0);
+    BT_CHECK_EQ(reps, 7);
 }
 
 BT_TEST(config, try_load_rejects_missing_file_and_bad_json) {
