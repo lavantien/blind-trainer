@@ -42,6 +42,7 @@ static char g_dir[BT_MUT_PATH_MAX];
 static bt_json_value *g_config;
 static bt_mut_build g_build;
 static char g_fx_main_obj[BT_MUT_PATH_MAX];
+static char g_fx_ws_main_obj[BT_MUT_PATH_MAX];
 static char g_stub_exe[BT_MUT_PATH_MAX];
 static char g_self_exe[BT_MUT_PATH_MAX];
 static int g_ready;
@@ -70,6 +71,13 @@ static void ensure_setup(void) {
     char diag[2048];
     if (bt_mut_compile_file(&g_build, NULL, NULL, fx_main, g_fx_main_obj, diag, sizeof diag) != 0) {
         BT_ABORT("cannot compile fx_main: %s", diag);
+    }
+    char fx_ws_main[BT_MUT_PATH_MAX];
+    snprintf(fx_ws_main, BT_MUT_PATH_MAX, "%s/tests/unit/tools/fixtures/fx_ws_main.c", g_root);
+    snprintf(g_fx_ws_main_obj, BT_MUT_PATH_MAX, "%s/fx_ws_main.obj", obj_dir);
+    if (bt_mut_compile_file(&g_build, NULL, NULL, fx_ws_main, g_fx_ws_main_obj, diag,
+                            sizeof diag) != 0) {
+        BT_ABORT("cannot compile fx_ws_main: %s", diag);
     }
     char stub_src[BT_MUT_PATH_MAX];
     char stub_obj[BT_MUT_PATH_MAX];
@@ -117,6 +125,51 @@ static void engine_for(const char *slot, unsigned long long timeout_ms, const ch
 }
 
 static char g_slot_obj[BT_MUT_PATH_MAX];
+static char g_ws_slot_obj[BT_MUT_PATH_MAX];
+static char g_ws_link_paths[BT_MUT_PATH_MAX];
+static char g_ws_link_trace[BT_MUT_PATH_MAX];
+
+static void common_obj_path(const char *name, char out[BT_MUT_PATH_MAX]) {
+    char base[BT_MUT_PATH_MAX];
+    snprintf(base, sizeof base, "%s/build/obj", g_root);
+    char pattern[BT_MUT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/*", base);
+    WIN32_FIND_DATAA entry;
+    HANDLE find = FindFirstFileA(pattern, &entry);
+    BT_CHECK(find != INVALID_HANDLE_VALUE);
+    if (find == INVALID_HANDLE_VALUE) {
+        snprintf(out, BT_MUT_PATH_MAX, "%s", base);
+        return;
+    }
+    char found[BT_MUT_PATH_MAX] = "";
+    do {
+        if (!(entry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            continue;
+        }
+        if (strcmp(entry.cFileName, ".") == 0 || strcmp(entry.cFileName, "..") == 0) {
+            continue;
+        }
+        snprintf(found, sizeof found, "%s", entry.cFileName);
+    } while (FindNextFileA(find, &entry));
+    FindClose(find);
+    snprintf(out, BT_MUT_PATH_MAX, "%s/%s/src/common/%s.obj", base, found, name);
+}
+
+static void ws_fixture_target(bt_mut_target *target) {
+    memset(target, 0, sizeof *target);
+    snprintf(target->file, BT_MUT_PATH_MAX, "tests/unit/tools/fixtures/fx_ws_target.c");
+    snprintf(g_ws_slot_obj, BT_MUT_PATH_MAX, "%s/obj/fx_ws_target.obj", g_dir);
+    common_obj_path("paths", g_ws_link_paths);
+    common_obj_path("bt_trace", g_ws_link_trace);
+    static char *objs[4];
+    objs[0] = g_ws_slot_obj;
+    objs[1] = g_fx_ws_main_obj;
+    objs[2] = g_ws_link_paths;
+    objs[3] = g_ws_link_trace;
+    target->link_objs = objs;
+    target->link_obj_count = 4;
+    target->target_index = 0;
+}
 
 static void fixture_target(bt_mut_target *target) {
     memset(target, 0, sizeof *target);
@@ -304,6 +357,25 @@ BT_TEST(mutate, engine_records_survived_for_unread_code) {
     BT_CHECK_EQ(row.status, (long long)BT_MUT_SURVIVED);
     bt_mut_build_free(&engine.build);
     bt_mut_mutants_free(&list);
+}
+
+BT_TEST(mutate, engine_stages_the_suite_exe_inside_the_workspace) {
+    bt_mut_engine engine;
+    engine_for("wsstage", 60000, NULL, &engine);
+    char temp[BT_MUT_PATH_MAX];
+    GetTempPathA(BT_MUT_PATH_MAX, temp);
+    size_t len = strlen(temp);
+    while (len > 0 && (temp[len - 1] == '\\' || temp[len - 1] == '/')) {
+        len--;
+    }
+    temp[len] = '\0';
+    snprintf(engine.scratch_root, BT_MUT_PATH_MAX, "%s/bt-mut-selftest-wsstage", temp);
+    bt_mut_rmtree(engine.scratch_root);
+    bt_mut_target target;
+    ws_fixture_target(&target);
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, "zzz-none", 0, &summary), 0);
+    bt_mut_build_free(&engine.build);
 }
 
 BT_TEST(mutate, engine_records_timeout_for_a_frozen_loop) {

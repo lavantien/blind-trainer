@@ -239,6 +239,9 @@ int bt_mut_prepare_scratch(const bt_mut_engine *engine, const char *slot, const 
                            const char *text, size_t len, const bt_mut_mutant *mutant,
                            char source_out[BT_MUT_PATH_MAX], char include_out[BT_MUT_PATH_MAX]);
 
+int bt_mut_stage_run_exe(const char *repo_root, const char *test_exe, const char *slot,
+                         const char *exe, char out[BT_MUT_PATH_MAX]);
+
 int bt_mut_report(const char *ledger_path, const char *repo_root, const char *out_path);
 const char *bt_mut_outcome_summary(bt_mut_status status);
 bt_json_value *bt_mut_mutant_scenario(const bt_mut_row *row, const char *function);

@@ -460,3 +460,29 @@ BT_TEST(mutate_union, ledgers_without_rows_refuse) {
     BT_CHECK_EQ(bt_mut_union_report(inputs, 1, g_union_root, out), 1);
     BT_CHECK(strstr(bt_mut_union_last_error(), "no ledger rows") != NULL);
 }
+
+BT_TEST(mutate_stage, run_exe_lands_sanitized_inside_the_repo_build_tree) {
+    char root[BT_MUT_PATH_MAX];
+    bt_test_repo_root(root);
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/build/test-tmp/mutate-stage", root);
+    bt_test_mkdirs(dir);
+    char fake[BT_MUT_PATH_MAX];
+    snprintf(fake, BT_MUT_PATH_MAX, "%s/slot.exe", dir);
+    BT_CHECK_EQ(bt_mut_write_file(fake, "abc", 3), 0);
+    char staged[BT_MUT_PATH_MAX];
+    BT_CHECK_EQ(bt_mut_stage_run_exe(root, "fx_test", "ba:se/0", fake, staged), 0);
+    BT_CHECK(strstr(staged, "/build/bin/mutate-run/fx_test-ba_se_0.exe") != NULL);
+    char *text = NULL;
+    size_t len = 0;
+    BT_CHECK_EQ(bt_mut_read_file(staged, &text, &len), 0);
+    BT_CHECK(len == 3 && memcmp(text, "abc", 3) == 0);
+    free(text);
+    BT_CHECK_EQ(bt_mut_write_file(fake, "zyxw", 4), 0);
+    BT_CHECK_EQ(bt_mut_stage_run_exe(root, "fx_test", "ba:se/0", fake, staged), 0);
+    text = NULL;
+    BT_CHECK_EQ(bt_mut_read_file(staged, &text, &len), 0);
+    BT_CHECK(len == 4 && memcmp(text, "zyxw", 4) == 0);
+    free(text);
+    (void)remove(staged);
+}

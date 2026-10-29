@@ -404,6 +404,49 @@ void bt_mut_target_free(bt_mut_target *target) {
     target->link_obj_count = 0;
 }
 
+int bt_mut_stage_run_exe(const char *repo_root, const char *test_exe, const char *slot,
+                         const char *exe, char out[BT_MUT_PATH_MAX]) {
+    BT_TRACE_ENTER("mutate.stage_run_exe");
+#ifdef _WIN32
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, sizeof dir, "%s/build/bin/mutate-run", repo_root);
+    if (bt_mut_mkdirs(dir) != 0) {
+        engine_error("cannot create %s", dir);
+        BT_TRACE_FAIL("mutate.stage_run_exe", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.stage_run_exe");
+        return -1;
+    }
+    char safe[128];
+    size_t used = 0;
+    for (const char *cursor = slot; *cursor != '\0' && used < sizeof safe - 1; cursor++) {
+        char unit = *cursor;
+        int keep = (unit >= 'a' && unit <= 'z') || (unit >= 'A' && unit <= 'Z') ||
+                   (unit >= '0' && unit <= '9') || unit == '.' || unit == '-' || unit == '_';
+        safe[used++] = keep ? unit : '_';
+    }
+    safe[used] = '\0';
+    snprintf(out, BT_MUT_PATH_MAX, "%s/%s-%s.exe", dir, test_exe, safe);
+    if (!CopyFileA(exe, out, FALSE)) {
+        engine_error("cannot stage %s to %s", exe, out);
+        BT_TRACE_FAIL("mutate.stage_run_exe", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.stage_run_exe");
+        return -1;
+    }
+    BT_TRACE_EXIT("mutate.stage_run_exe");
+    return 0;
+#else
+    (void)repo_root;
+    (void)test_exe;
+    (void)slot;
+    (void)exe;
+    (void)out;
+    engine_error("suite exe staging requires windows");
+    BT_TRACE_FAIL("mutate.stage_run_exe", "%s", bt_mut_engine_last_error());
+    BT_TRACE_EXIT("mutate.stage_run_exe");
+    return -1;
+#endif
+}
+
 int bt_mut_prepare_scratch(const bt_mut_engine *engine, const char *slot, const char *file_rel,
                            const char *text, size_t len, const bt_mut_mutant *mutant,
                            char source_out[BT_MUT_PATH_MAX], char include_out[BT_MUT_PATH_MAX]) {
@@ -662,8 +705,16 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
         return 0;
     }
     bt_mut_proc_free(&proc);
+    char staged[BT_MUT_PATH_MAX];
+    if (bt_mut_stage_run_exe(engine->repo_root, engine->test_exe, slot, exe, staged) != 0) {
+        *verdict = BT_MUT_PENDING;
+        bt_mut_rmtree(dir);
+        BT_TRACE_FAIL("mutate.run_one", "%s", bt_mut_engine_last_error());
+        BT_TRACE_EXIT("mutate.run_one");
+        return 0;
+    }
     char exe_native[BT_MUT_PATH_MAX];
-    snprintf(exe_native, sizeof exe_native, "%s", exe);
+    snprintf(exe_native, sizeof exe_native, "%s", staged);
     for (char *cursor = exe_native; *cursor != '\0'; cursor++) {
         if (*cursor == '/') {
             *cursor = '\\';
@@ -682,6 +733,7 @@ static int run_one(const bt_mut_engine *engine, const bt_mut_target *target, con
         *verdict = BT_MUT_KILLED;
     }
     bt_mut_proc_free(&proc);
+    (void)remove(staged);
     bt_mut_rmtree(dir);
     BT_TRACE_EXIT("mutate.run_one");
     return 0;
