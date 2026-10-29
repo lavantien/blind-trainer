@@ -1028,6 +1028,32 @@ def mutants_plan(root, areas):
     return plans
 
 
+def mutants_union_argv(plans, root):
+    argv = ["union-report"]
+    for plan in plans:
+        argv += ["--ledger", str(root / plan["ledger"])]
+    argv += ["--out", str(root / "artifacts/mutants/outcomes.json")]
+    return argv
+
+
+def run_mutants_plans(mutate_argv, plans, env, root):
+    for plan in plans:
+        run(
+            [
+                *mutate_argv,
+                "run",
+                "--ledger",
+                str(root / plan["ledger"]),
+                "--exe",
+                plan["suite"],
+                *plan["sources"],
+            ],
+            f"mutate {plan['suite']}",
+            env=env,
+        )
+    run([*mutate_argv, *mutants_union_argv(plans, root)], "union outcomes", env=env)
+
+
 def run_suite_exes(hub, suites):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
     timeout = build_cfg(hub)["test_timeout_secs"]
@@ -1258,30 +1284,13 @@ def tgt_mutants(args):
     logger.entry("mutants", " ".join(args) or "all")
     try:
         areas = args or [a for a in MUTANT_AREAS if (REPO_ROOT / "src" / a).is_dir()]
-        mutate, gate = ensure_tool_exes(
-            hub, logger, "mutants-build", ("mutate.exe", "mutants-gate.exe")
-        )
+        mutate = ensure_tool_exes(hub, logger, "mutants-build", ("mutate.exe",))[0]
         plans = mutants_plan(REPO_ROOT, areas)
-        env = child_env(hub)
-        for plan in plans:
-            run(
-                [mutate, "run", "--ledger", plan["ledger"], "--exe", plan["suite"],
-                 *plan["sources"]],
-                f"mutate {plan['suite']}",
-                env=env,
-            )
-            run(
-                [mutate, "report", "--ledger", plan["ledger"], "--out", plan["outcomes"]],
-                f"report {plan['suite']}",
-                env=env,
-            )
-        merged = REPO_ROOT / "artifacts/mutants/outcomes.json"
-        inputs = [REPO_ROOT / plan["outcomes"] for plan in plans]
-        if len(inputs) > 1:
-            run([gate, "merge", merged, *inputs], "merge outcomes", env=env)
-        else:
-            shutil.copyfile(inputs[0], merged)
-            logger.line("merge", f"single ledger copied to {merged}")
+        run_mutants_plans([mutate], plans, child_env(hub), REPO_ROOT)
+        logger.line(
+            "union",
+            f"{len(plans)} suite ledgers unioned into artifacts/mutants/outcomes.json",
+        )
         logger.exit("mutants", 0)
         return 0
     except (BtError, OSError, KeyError, ValueError) as e:
