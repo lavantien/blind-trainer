@@ -52,17 +52,19 @@ class MutantsPlanTests(unittest.TestCase):
     def test_plan_sources_reach_area_subdirectories(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            plant_area(root, "app", ["menu"])
-            views = root / "src" / "app" / "views"
-            views.mkdir(parents=True)
-            (views / "drill.c").write_text("int g(void) { return 2; }\n", encoding="utf-8")
-            plan = bt.mutants_plan(root, ["app"])[0]
-            self.assertEqual(plan["sources"], ["src/app/alg.c", "src/app/views/drill.c"])
+            plant_area(root, "common", ["sha"])
+            sub = root / "src" / "common" / "seedpack"
+            sub.mkdir(parents=True)
+            (sub / "mod.c").write_text("int g(void) { return 2; }\n", encoding="utf-8")
+            plan = bt.mutants_plan(root, ["common"])[0]
+            self.assertEqual(
+                plan["sources"], ["src/common/seedpack/mod.c", "src/common/sha.c"]
+            )
 
     def test_plan_rejects_unknown_area(self):
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaises(bt.BtError):
-                bt.mutants_plan(Path(tmp), ["common"])
+                bt.mutants_plan(Path(tmp), ["vendor"])
 
     def test_plan_rejects_area_without_sources_or_suites(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -77,7 +79,7 @@ class MutantsPlanTests(unittest.TestCase):
 
     def test_mutant_areas_cover_the_domain_areas(self):
         self.assertEqual(
-            bt.MUTANT_AREAS, ("core", "scheme", "data", "puzzles", "ga", "app")
+            bt.MUTANT_AREAS, ("core", "scheme", "data", "puzzles", "ga", "common")
         )
 
 
