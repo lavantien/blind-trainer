@@ -1,0 +1,489 @@
+areas=core,scheme
+all 28 suites complete (0 pending)
+complete_files=12 incomplete_files=[]
+distinct_sites=5163
+union killed=3311 timeout=25 survived=837 unviable=990 pending_sites=0
+alg.c remap: {'fresh': 1680, 'remapped': 2960, 'obsolete': 1970, 'ambiguous': 0}
+obsolete or ambiguous alg.c rows excluded: 1970
+  obsolete ('core_analysis_pins_test', 220, 53, 'StatementDelete', 's', '', 'builderr')
+  obsolete ('core_analysis_pins_test', 221, 5, 'ConditionNegation', 'if', '!(...)', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 12, 'ComparisonSwap', '==', '!=', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 25, 'ComparisonSwap', '==', '!=', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 39, 'ComparisonSwap', '==', '!=', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 53, 'ComparisonSwap', '==', '!=', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 67, 'ComparisonSwap', '==', '!=', 'killed')
+  obsolete ('core_analysis_pins_test', 221, 70, 'NumericTweak', '0x0BU', '12U', 'survived')
+  obsolete ('core_analysis_pins_test', 221, 70, 'NumericTweak', '0x0BU', '10U', 'survived')
+  obsolete ('core_analysis_pins_test', 221, 70, 'NumericTweak', '0x0BU', '0U', 'survived')
+remapped alg.c rows ruled after the hoist (suspect verdicts): 0
+SURV src/core/alg.c	axis_char	NumericTweak	2->3	count=1	sites=97:16
+SURV src/core/alg.c	axis_char	NumericTweak	3->4	count=1	sites=96:31
+SURV src/core/alg.c	axis_char	StatementDelete	abort->	count=1	sites=100:9
+SURV src/core/alg.c	axis_char	StatementDelete	bt_trace_dump->	count=1	sites=99:9
+SURV src/core/alg.c	bt_alg_eq	NumericTweak	0->-1	count=1	sites=49:21
+SURV src/core/alg.c	bt_alg_eq	NumericTweak	0->1	count=1	sites=49:21
+SURV src/core/alg.c	bt_alg_eq	StatementDelete	equal->	count=1	sites=50:9
+SURV src/core/alg.c	bt_alg_format	NumericTweak	0->-1	count=1	sites=281:29
+SURV src/core/alg.c	bt_alg_format	NumericTweak	0->1	count=1	sites=281:29
+SURV src/core/alg.c	bt_alg_format	NumericTweak	3->2	count=1	sites=280:21
+SURV src/core/alg.c	bt_alg_format	NumericTweak	3->4	count=1	sites=280:21
+SURV src/core/alg.c	bt_alg_free	StatementDelete	alg->	count=2	sites=20:5,21:5
+SURV src/core/alg.c	bt_alg_free	StatementDelete	free->	count=1	sites=18:5
+SURV src/core/alg.c	bt_alg_inverse	StatementDelete	abort->	count=1	sites=332:13
+SURV src/core/alg.c	bt_alg_inverse	StatementDelete	bt_trace_dump->	count=1	sites=331:13
+SURV src/core/alg.c	bt_alg_parse	ComparisonSwap	!=->==	count=1	sites=241:27
+SURV src/core/alg.c	bt_alg_parse	ComparisonSwap	<-><=	count=1	sites=243:36
+SURV src/core/alg.c	bt_alg_parse	ComparisonSwap	>=->>	count=1	sites=240:17
+SURV src/core/alg.c	bt_alg_parse	ConditionNegation	if->!(...)	count=1	sites=241:13
+SURV src/core/alg.c	bt_alg_parse	NumericTweak	1->0	count=2	sites=243:55,243:82
+SURV src/core/alg.c	bt_alg_parse	NumericTweak	1->2	count=2	sites=243:55,243:82
+SURV src/core/alg.c	bt_alg_parse	NumericTweak	64->63	count=1	sites=239:20
+SURV src/core/alg.c	bt_alg_parse	NumericTweak	64->65	count=1	sites=239:20
+SURV src/core/alg.c	bt_alg_parse	StatementDelete	BT_TRACE_FAIL->	count=1	sites=257:13
+SURV src/core/alg.c	bt_alg_parse	StatementDelete	bt_alg_free->	count=4	sites=222:5,246:13,258:13,264:13
+SURV src/core/alg.c	bt_alg_parse_token	ComparisonSwap	>->>=	count=1	sites=139:13
+SURV src/core/alg.c	bt_alg_parse_token	ComparisonSwap	>=->>	count=1	sites=143:13
+SURV src/core/alg.c	bt_alg_parse_token	NumericTweak	0->1	count=1	sites=139:15
+SURV src/core/alg.c	bt_alg_push	NumericTweak	16->1	count=1	sites=26:38
+SURV src/core/alg.c	bt_alg_push	NumericTweak	16->15	count=1	sites=26:38
+SURV src/core/alg.c	bt_alg_push	NumericTweak	16->17	count=1	sites=26:38
+SURV src/core/alg.c	bt_alg_push	NumericTweak	2U->3U	count=1	sites=26:54
+SURV src/core/alg.c	bt_alg_try_parse	NumericTweak	0->-1	count=1	sites=319:45
+SURV src/core/alg.c	bt_alg_try_parse	NumericTweak	0->1	count=1	sites=319:45
+SURV src/core/alg.c	face_char	ComparisonSwap	>=->>	count=1	sites=77:14
+SURV src/core/alg.c	face_char	NumericTweak	6->7	count=2	sites=76:31,77:17
+SURV src/core/alg.c	face_char	StatementDelete	abort->	count=1	sites=80:9
+SURV src/core/alg.c	face_char	StatementDelete	bt_trace_dump->	count=1	sites=79:9
+SURV src/core/alg.c	face_index_of	NumericTweak	1->2	count=1	sites=71:17
+SURV src/core/alg.c	slice_char	NumericTweak	2->3	count=1	sites=87:17
+SURV src/core/alg.c	slice_char	NumericTweak	3->4	count=1	sites=86:31
+SURV src/core/alg.c	slice_char	StatementDelete	abort->	count=1	sites=90:9
+SURV src/core/alg.c	slice_char	StatementDelete	bt_trace_dump->	count=1	sites=89:9
+SURV src/core/analysis.c		NumericTweak	0->-1	count=12	sites=172:6,172:12,172:21,172:24,172:29,172:32,172:43,172:46,172:51,172:54,172:63,172:70
+SURV src/core/analysis.c		NumericTweak	0->1	count=12	sites=172:6,172:12,172:21,172:24,172:29,172:32,172:43,172:46,172:51,172:54,172:63,172:70
+SURV src/core/analysis.c		NumericTweak	1->2	count=6	sites=172:9,172:18,172:35,172:40,172:58,172:67
+SURV src/core/analysis.c		NumericTweak	12->13	count=1	sites=13:36
+SURV src/core/analysis.c		NumericTweak	2->3	count=1	sites=13:40
+SURV src/core/analysis.c		NumericTweak	3->0	count=5	sites=189:35,189:54,189:69,195:36,195:55
+SURV src/core/analysis.c		NumericTweak	3->1	count=5	sites=189:35,189:54,189:69,195:36,195:55
+SURV src/core/analysis.c		NumericTweak	3->2	count=5	sites=189:35,189:54,189:69,195:36,195:55
+SURV src/core/analysis.c		NumericTweak	3->4	count=7	sites=8:41,171:40,189:35,189:54,189:69,195:36,195:55
+SURV src/core/analysis.c		NumericTweak	48->49	count=1	sites=18:35
+SURV src/core/analysis.c		NumericTweak	6->7	count=1	sites=171:37
+SURV src/core/analysis.c		NumericTweak	8->9	count=1	sites=8:38
+SURV src/core/analysis.c	analysis_ensure	NumericTweak	0->1	count=2	sites=25:25,30:25
+SURV src/core/analysis.c	analysis_ensure	StatementDelete	g_analysis_ready->	count=1	sites=35:5
+SURV src/core/analysis.c	axis_priority	NumericTweak	2->3	count=1	sites=177:16
+SURV src/core/analysis.c	bt_corner_stickers	ComparisonSwap	>=->>	count=1	sites=84:16
+SURV src/core/analysis.c	bt_corner_stickers	NumericTweak	8->9	count=1	sites=84:19
+SURV src/core/analysis.c	bt_corner_stickers	StatementDelete	abort->	count=1	sites=87:9
+SURV src/core/analysis.c	bt_corner_stickers	StatementDelete	analysis_ensure->	count=1	sites=83:5
+SURV src/core/analysis.c	bt_corner_stickers	StatementDelete	bt_trace_dump->	count=1	sites=86:9
+SURV src/core/analysis.c	bt_corner_twist	ComparisonSwap	<-><=	count=1	sites=241:30
+SURV src/core/analysis.c	bt_corner_twist	ComparisonSwap	>->>=	count=1	sites=279:35
+SURV src/core/analysis.c	bt_corner_twist	NumericTweak	0->-1	count=3	sites=237:22,261:26,279:37
+SURV src/core/analysis.c	bt_corner_twist	NumericTweak	0->1	count=2	sites=237:22,261:26
+SURV src/core/analysis.c	bt_corner_twist	NumericTweak	3->0	count=1	sites=277:18
+SURV src/core/analysis.c	bt_corner_twist	NumericTweak	3->4	count=4	sites=234:18,238:21,241:32,277:18
+SURV src/core/analysis.c	bt_corner_twist	StatementDelete	abort->	count=3	sites=249:17,258:9,272:9
+SURV src/core/analysis.c	bt_corner_twist	StatementDelete	analysis_ensure->	count=1	sites=228:5
+SURV src/core/analysis.c	bt_corner_twist	StatementDelete	bt_trace_dump->	count=3	sites=248:17,257:9,271:9
+SURV src/core/analysis.c	bt_edge_flip	NumericTweak	2->3	count=1	sites=211:18
+SURV src/core/analysis.c	bt_edge_flip	StatementDelete	analysis_ensure->	count=1	sites=205:5
+SURV src/core/analysis.c	bt_edge_stickers	ComparisonSwap	>=->>	count=1	sites=96:14
+SURV src/core/analysis.c	bt_edge_stickers	NumericTweak	12->13	count=1	sites=96:17
+SURV src/core/analysis.c	bt_edge_stickers	NumericTweak	2->3	count=1	sites=101:38
+SURV src/core/analysis.c	bt_edge_stickers	StatementDelete	abort->	count=1	sites=99:9
+SURV src/core/analysis.c	bt_edge_stickers	StatementDelete	analysis_ensure->	count=1	sites=95:5
+SURV src/core/analysis.c	bt_edge_stickers	StatementDelete	bt_trace_dump->	count=1	sites=98:9
+SURV src/core/analysis.c	bt_head_sticker	StatementDelete	analysis_ensure->	count=1	sites=60:5
+SURV src/core/analysis.c	bt_piece_of	ComparisonSwap	>=->>	count=1	sites=41:17
+SURV src/core/analysis.c	bt_piece_of	NumericTweak	48->49	count=1	sites=41:20
+SURV src/core/analysis.c	bt_piece_of	StatementDelete	abort->	count=1	sites=44:9
+SURV src/core/analysis.c	bt_piece_of	StatementDelete	analysis_ensure->	count=1	sites=40:5
+SURV src/core/analysis.c	bt_piece_of	StatementDelete	bt_trace_dump->	count=1	sites=43:9
+SURV src/core/analysis.c	bt_sticker_cycles	ComparisonSwap	<-><=	count=3	sites=132:34,133:31,161:30
+SURV src/core/analysis.c	bt_sticker_cycles	ComparisonSwap	>->>=	count=2	sites=151:18,151:46
+SURV src/core/analysis.c	bt_sticker_cycles	ConditionNegation	if->!(...)	count=1	sites=133:17
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	0->-1	count=4	sites=115:21,131:28,132:29,151:20
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	0->1	count=3	sites=118:26,131:28,151:20
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	1->0	count=4	sites=148:21,151:37,152:38,153:18
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	1->2	count=3	sites=148:21,152:38,153:18
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	255->0	count=1	sites=130:27
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	255->1	count=1	sites=130:27
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	255->254	count=1	sites=130:27
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	48->47	count=3	sites=112:18,117:20,118:37
+SURV src/core/analysis.c	bt_sticker_cycles	NumericTweak	48->49	count=3	sites=112:18,116:19,117:20
+SURV src/core/analysis.c	bt_sticker_cycles	StatementDelete	entries->	count=2	sites=152:13,155:9
+SURV src/core/analysis.c	bt_sticker_cycles	StatementDelete	j->	count=1	sites=153:13
+SURV src/core/analysis.c	bt_sticker_cycles	StatementDelete	split->	count=1	sites=135:21
+SURV src/core/analysis.c	bt_summarize	ComparisonSwap	<-><=	count=2	sites=289:32,294:32
+SURV src/core/analysis.c	bt_summarize	NumericTweak	0->1	count=2	sites=290:60,295:58
+SURV src/core/analysis.c	bt_summarize	NumericTweak	12->13	count=1	sites=294:34
+SURV src/core/analysis.c	bt_summarize	NumericTweak	8->9	count=1	sites=289:34
+SURV src/core/analysis.c	bt_summarize	StatementDelete	analysis_ensure->	count=1	sites=287:5
+SURV src/core/analysis.c	bt_summarize	StatementDelete	summary->	count=1	sites=299:5
+SURV src/core/analysis.c	dot3	NumericTweak	0->1	count=1	sites=196:21
+SURV src/core/cube.c	band_of	ConditionNegation	if->!(...)	count=2	sites=40:5,43:5
+SURV src/core/cube.c	band_of	NumericTweak	0->-1	count=1	sites=41:16
+SURV src/core/cube.c	band_of	NumericTweak	1->2	count=1	sites=44:16
+SURV src/core/cube.c	band_of	NumericTweak	2->0	count=1	sites=46:12
+SURV src/core/cube.c	band_of	NumericTweak	2->1	count=1	sites=46:12
+SURV src/core/cube.c	band_of	NumericTweak	2->3	count=1	sites=46:12
+SURV src/core/cube.c	band_of	NumericTweak	48->0	count=1	sites=43:17
+SURV src/core/cube.c	band_of	NumericTweak	48->1	count=1	sites=43:17
+SURV src/core/cube.c	bt_cube_apply	NumericTweak	54->55	count=2	sites=99:19,101:18
+SURV src/core/cube.c	bt_cube_centers_fixed	NumericTweak	0->1	count=1	sites=162:21
+SURV src/core/cube.c	bt_cube_centers_fixed	NumericTweak	6->1	count=1	sites=162:28
+SURV src/core/cube.c	bt_cube_centers_fixed	NumericTweak	6->5	count=1	sites=162:28
+SURV src/core/cube.c	bt_cube_from_occ	StatementDelete	abort->	count=1	sites=91:9
+SURV src/core/cube.c	bt_cube_from_occ	StatementDelete	bt_trace_dump->	count=1	sites=90:9
+SURV src/core/cube.c	bt_cube_is_solved	NumericTweak	0->1	count=1	sites=150:21
+SURV src/core/cube.c	bt_cube_is_solved	NumericTweak	54->53	count=1	sites=150:28
+SURV src/core/cube.c	bt_cube_position_of	ComparisonSwap	<-><=	count=1	sites=128:26
+SURV src/core/cube.c	bt_cube_position_of	NumericTweak	54->55	count=1	sites=128:28
+SURV src/core/cube.c	bt_cube_try_from_occ	ComparisonSwap	>=->>	count=1	sites=53:20
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	0->-1	count=1	sites=61:21
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	0->1	count=2	sites=61:21,68:24
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	54->0	count=1	sites=61:28
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	54->1	count=3	sites=51:15,61:28,68:34
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	54->53	count=3	sites=51:15,61:28,68:34
+SURV src/core/cube.c	bt_cube_try_from_occ	NumericTweak	54->55	count=2	sites=51:15,53:23
+SURV src/core/expand.c		NumericTweak	0->-1	count=1	sites=28:16
+SURV src/core/expand.c		NumericTweak	0->1	count=2	sites=10:14,28:16
+SURV src/core/expand.c	bt_expand	StatementDelete	bt_alg_free->	count=4	sites=375:5,388:9,395:5,397:9
+SURV src/core/expand.c	bt_expand	StatementDelete	free->	count=2	sites=378:9,386:5
+SURV src/core/expand.c	bt_expand	StatementDelete	tokens->	count=1	sites=382:5
+SURV src/core/expand.c	bt_expand_cancel	StatementDelete	abort->	count=1	sites=367:13
+SURV src/core/expand.c	bt_expand_cancel	StatementDelete	bt_alg_free->	count=1	sites=348:5
+SURV src/core/expand.c	bt_expand_cancel	StatementDelete	bt_trace_dump->	count=1	sites=366:13
+SURV src/core/expand.c	expand_seq	StatementDelete	bt_alg_free->	count=14	sites=255:17,259:17,269:17,273:17,280:13,292:17,300:21,301:21,305:21,306:21,320:17,321:17,328:17,333:17
+SURV src/core/expand.c	expand_tokenize	ComparisonSwap	<-><=	count=1	sites=134:26
+SURV src/core/expand.c	expand_tokenize	ComparisonSwap	>=->>	count=1	sites=145:30
+SURV src/core/expand.c	expand_tokenize	NumericTweak	0->-1	count=1	sites=128:59
+SURV src/core/expand.c	expand_tokenize	NumericTweak	0->1	count=1	sites=128:59
+SURV src/core/expand.c	expand_tokenize	NumericTweak	1->0	count=1	sites=145:28
+SURV src/core/expand.c	expand_tokenize	NumericTweak	1->2	count=1	sites=145:28
+SURV src/core/expand.c	expand_tokenize	NumericTweak	256->255	count=1	sites=89:15
+SURV src/core/expand.c	expand_tokenize	NumericTweak	256->257	count=1	sites=89:15
+SURV src/core/expand.c	expand_unit	ComparisonSwap	>=->>	count=1	sites=190:19
+SURV src/core/expand.c	expand_unit	StatementDelete	bt_alg_free->	count=7	sites=186:9,191:13,198:13,199:13,209:9,210:9,214:5
+SURV src/core/expand.c	flush_word	NumericTweak	0->-1	count=1	sites=71:54
+SURV src/core/expand.c	flush_word	NumericTweak	0->1	count=1	sites=71:54
+SURV src/core/expand.c	parse_count_digits	ComparisonSwap	>->>=	count=1	sites=78:19
+SURV src/core/expand.c	parse_count_digits	NumericTweak	10U->11U	count=1	sites=78:42
+SURV src/core/expand.c	parse_count_digits	NumericTweak	10U->1U	count=1	sites=78:42
+SURV src/core/expand.c	parse_count_digits	NumericTweak	10U->9U	count=1	sites=78:42
+SURV src/core/expand.c	tok_push	NumericTweak	16->1	count=1	sites=42:41
+SURV src/core/expand.c	tok_push	NumericTweak	16->15	count=1	sites=42:41
+SURV src/core/expand.c	tok_push	NumericTweak	16->17	count=1	sites=42:41
+SURV src/core/expand.c	tok_push	NumericTweak	2U->3U	count=1	sites=42:60
+SURV src/core/moves.c		NumericTweak	1->0	count=3	sites=13:38,13:45,13:48
+SURV src/core/moves.c		NumericTweak	1->2	count=6	sites=13:38,13:42,13:45,13:48,13:52,13:56
+SURV src/core/moves.c		NumericTweak	2->3	count=2	sites=12:43,12:49
+SURV src/core/moves.c		NumericTweak	3->0	count=3	sites=63:38,63:81,236:69
+SURV src/core/moves.c		NumericTweak	3->1	count=3	sites=63:38,63:81,236:69
+SURV src/core/moves.c		NumericTweak	3->2	count=3	sites=63:38,63:81,236:69
+SURV src/core/moves.c		NumericTweak	3->4	count=6	sites=9:37,17:34,17:37,63:38,63:81,236:69
+SURV src/core/moves.c		NumericTweak	54->0	count=7	sites=189:42,217:42,217:63,217:80,223:43,223:74,236:52
+SURV src/core/moves.c		NumericTweak	54->1	count=7	sites=189:42,217:42,217:63,217:80,223:43,223:74,236:52
+SURV src/core/moves.c		NumericTweak	54->53	count=7	sites=189:42,217:42,217:63,217:80,223:43,223:74,236:52
+SURV src/core/moves.c		NumericTweak	54->55	count=7	sites=189:42,217:42,217:63,217:80,223:43,223:74,236:52
+SURV src/core/moves.c		NumericTweak	6->7	count=5	sites=9:34,12:31,13:32,15:30,16:31
+SURV src/core/moves.c	bt_core_init	ComparisonSwap	<-><=	count=2	sites=248:34,251:36
+SURV src/core/moves.c	bt_core_init	NumericTweak	0->-1	count=1	sites=260:47
+SURV src/core/moves.c	bt_core_init	NumericTweak	0->1	count=1	sites=260:47
+SURV src/core/moves.c	bt_core_init	NumericTweak	2->3	count=1	sites=248:36
+SURV src/core/moves.c	bt_core_init	NumericTweak	3->4	count=1	sites=257:33
+SURV src/core/moves.c	bt_core_init	NumericTweak	54->0	count=2	sites=252:26,259:22
+SURV src/core/moves.c	bt_core_init	NumericTweak	54->1	count=2	sites=252:26,259:22
+SURV src/core/moves.c	bt_core_init	NumericTweak	54->53	count=2	sites=252:26,259:22
+SURV src/core/moves.c	bt_core_init	NumericTweak	54->55	count=2	sites=252:26,259:22
+SURV src/core/moves.c	bt_core_init	NumericTweak	6->7	count=1	sites=251:38
+SURV src/core/moves.c	bt_core_init	StatementDelete	g_tables_ready->	count=1	sites=263:5
+SURV src/core/moves.c	bt_move_of_face	NumericTweak	0->-1	count=2	sites=279:42,279:45
+SURV src/core/moves.c	bt_move_of_face	NumericTweak	0->1	count=2	sites=279:42,279:45
+SURV src/core/moves.c	bt_move_of_inner	NumericTweak	0->-1	count=2	sites=291:43,291:46
+SURV src/core/moves.c	bt_move_of_inner	NumericTweak	0->1	count=2	sites=291:43,291:46
+SURV src/core/moves.c	bt_move_of_rotation	NumericTweak	0->-1	count=2	sites=295:40,295:43
+SURV src/core/moves.c	bt_move_of_rotation	NumericTweak	0->1	count=2	sites=295:40,295:43
+SURV src/core/moves.c	bt_move_of_slice	NumericTweak	0->-1	count=2	sites=287:37,287:47
+SURV src/core/moves.c	bt_move_of_slice	NumericTweak	0->1	count=2	sites=287:37,287:47
+SURV src/core/moves.c	bt_move_of_wide	NumericTweak	0->-1	count=2	sites=283:42,283:45
+SURV src/core/moves.c	bt_move_of_wide	NumericTweak	0->1	count=2	sites=283:42,283:45
+SURV src/core/moves.c	bt_move_table	ComparisonSwap	==->!=	count=5	sites=331:30,333:29,336:29,348:17,353:17
+SURV src/core/moves.c	bt_move_table	ComparisonSwap	>=->>	count=1	sites=343:30
+SURV src/core/moves.c	bt_move_table	ConditionNegation	if->!(...)	count=2	sites=332:5,335:5
+SURV src/core/moves.c	bt_move_table	NumericTweak	1->0	count=1	sites=338:22
+SURV src/core/moves.c	bt_move_table	NumericTweak	3->4	count=1	sites=338:40
+SURV src/core/moves.c	bt_move_table	StatementDelete	abort->	count=4	sites=341:9,346:9,351:9,356:9
+SURV src/core/moves.c	bt_move_table	StatementDelete	bt_trace_dump->	count=4	sites=340:9,345:9,350:9,355:9
+SURV src/core/moves.c	bt_move_table	StatementDelete	face_used->	count=2	sites=333:9,336:9
+SURV src/core/moves.c	bt_move_table	UnaryDrop	!->	count=2	sites=332:9,335:9
+SURV src/core/moves.c	bt_moves_cell_of	NumericTweak	3->0	count=1	sites=173:23
+SURV src/core/moves.c	bt_moves_cell_of	NumericTweak	3->4	count=1	sites=173:23
+SURV src/core/moves.c	bt_moves_geometry	NumericTweak	3->4	count=1	sites=24:15
+SURV src/core/moves.c	move_layer_perm	ComparisonSwap	<-><=	count=1	sites=192:38
+SURV src/core/moves.c	move_layer_perm	NumericTweak	0->1	count=1	sites=192:40
+SURV src/core/moves.c	move_layer_perm	NumericTweak	3->0	count=2	sites=198:19,203:24
+SURV src/core/moves.c	move_layer_perm	NumericTweak	3->4	count=3	sites=198:19,202:24,203:24
+SURV src/core/moves.c	move_layer_perm	NumericTweak	4U->0U	count=1	sites=192:55
+SURV src/core/moves.c	move_layer_perm	NumericTweak	4U->5U	count=1	sites=192:71
+SURV src/core/moves.c	move_power	NumericTweak	54->55	count=2	sites=229:22,233:22
+SURV src/core/moves.c	move_rot	NumericTweak	0->1	count=1	sites=70:15
+SURV src/core/moves.c	move_rot	NumericTweak	1->2	count=1	sites=75:15
+SURV src/core/moves.c	move_rot	NumericTweak	3->4	count=1	sites=64:15
+SURV src/core/moves.c	move_rot	StatementDelete	w->	count=3	sites=70:13,75:13,80:13
+SURV src/scheme/classifier.c		NumericTweak	54->0	count=2	sites=79:51,241:42
+SURV src/scheme/classifier.c		NumericTweak	54->1	count=2	sites=79:51,241:42
+SURV src/scheme/classifier.c		NumericTweak	54->53	count=2	sites=79:51,241:42
+SURV src/scheme/classifier.c		NumericTweak	54->55	count=2	sites=79:51,241:42
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	ComparisonSwap	!=->==	count=7	sites=395:74,397:35,397:74,398:32,403:66,406:27,406:74
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	ComparisonSwap	<-><=	count=1	sites=396:30
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	ComparisonSwap	==->!=	count=15	sites=394:17,395:27,395:56,402:24,402:57,403:27,403:52,404:24,404:54,405:24,405:42,405:60,405:78,406:58,407:24
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	ConditionNegation	if->!(...)	count=5	sites=394:5,397:13,402:12,404:12,407:12
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	NumericTweak	0->-1	count=1	sites=396:25
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	NumericTweak	0->1	count=4	sites=395:77,396:25,403:69,406:77
+SURV src/scheme/classifier.c	bt_scheme_classification_eq	StatementDelete	equal->	count=5	sites=395:9,399:17,403:9,405:9,408:9
+SURV src/scheme/classifier.c	bt_scheme_classify	NumericTweak	0->-1	count=1	sites=259:17
+SURV src/scheme/classifier.c	bt_scheme_classify	StatementDelete	require_cube_shaped->	count=1	sites=258:5
+SURV src/scheme/classifier.c	bt_scheme_classify_alg	NumericTweak	54->0	count=1	sites=271:17
+SURV src/scheme/classifier.c	bt_scheme_classify_alg	NumericTweak	54->1	count=1	sites=271:17
+SURV src/scheme/classifier.c	bt_scheme_classify_alg	NumericTweak	54->53	count=1	sites=271:17
+SURV src/scheme/classifier.c	bt_scheme_classify_alg	NumericTweak	54->55	count=1	sites=271:17
+SURV src/scheme/classifier.c	bt_scheme_defect_flip	ComparisonSwap	<-><=	count=1	sites=339:27
+SURV src/scheme/classifier.c	bt_scheme_defect_flip	NumericTweak	12->13	count=1	sites=339:29
+SURV src/scheme/classifier.c	bt_scheme_defect_twist	ComparisonSwap	<-><=	count=1	sites=352:27
+SURV src/scheme/classifier.c	bt_scheme_defect_twist	NumericTweak	0->-1	count=1	sites=360:12
+SURV src/scheme/classifier.c	bt_scheme_defect_twist	NumericTweak	0->1	count=1	sites=360:12
+SURV src/scheme/classifier.c	bt_scheme_defect_twist	NumericTweak	8->9	count=1	sites=352:29
+SURV src/scheme/classifier.c	bt_scheme_flipped_pieces	ComparisonSwap	<-><=	count=1	sites=366:27
+SURV src/scheme/classifier.c	bt_scheme_flipped_pieces	NumericTweak	12->11	count=1	sites=366:29
+SURV src/scheme/classifier.c	bt_scheme_flipped_pieces	NumericTweak	12->13	count=1	sites=366:29
+SURV src/scheme/classifier.c	bt_scheme_is_style_block	NumericTweak	0->1	count=1	sites=11:47
+SURV src/scheme/classifier.c	bt_scheme_is_style_block	NumericTweak	1->0	count=1	sites=12:47
+SURV src/scheme/classifier.c	bt_scheme_is_style_block	NumericTweak	2->0	count=1	sites=12:57
+SURV src/scheme/classifier.c	bt_scheme_is_style_block	NumericTweak	2->1	count=1	sites=11:57
+SURV src/scheme/classifier.c	bt_scheme_is_style_block	NumericTweak	2->3	count=1	sites=12:57
+SURV src/scheme/classifier.c	bt_scheme_is_swap_twist_block	NumericTweak	0->1	count=1	sites=43:21
+SURV src/scheme/classifier.c	bt_scheme_is_swap_twist_block	NumericTweak	2->0	count=1	sites=44:41
+SURV src/scheme/classifier.c	bt_scheme_is_swap_twist_block	StatementDelete	swap_twist->	count=1	sites=50:9
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	0->1	count=2	sites=34:49,35:37
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	1->0	count=2	sites=34:59,35:81
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	1->2	count=2	sites=34:59,35:81
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	2->0	count=2	sites=35:47,35:91
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	2->1	count=2	sites=35:47,35:91
+SURV src/scheme/classifier.c	bt_scheme_is_twist_block	NumericTweak	2->3	count=2	sites=35:47,35:91
+SURV src/scheme/classifier.c	bt_scheme_report_position	ComparisonSwap	<-><=	count=1	sites=289:30
+SURV src/scheme/classifier.c	bt_scheme_report_position	NumericTweak	0->-1	count=2	sites=288:21,294:22
+SURV src/scheme/classifier.c	bt_scheme_report_position	NumericTweak	0->1	count=1	sites=294:22
+SURV src/scheme/classifier.c	bt_scheme_report_position	NumericTweak	3->0	count=2	sites=314:44,315:46
+SURV src/scheme/classifier.c	bt_scheme_report_position	NumericTweak	3->2	count=2	sites=314:39,315:41
+SURV src/scheme/classifier.c	bt_scheme_report_position	NumericTweak	3->4	count=2	sites=314:39,315:41
+SURV src/scheme/classifier.c	bt_scheme_report_position	StatementDelete	out->	count=2	sites=295:17,301:9
+SURV src/scheme/classifier.c	bt_scheme_report_position	StatementDelete	twist_first->	count=1	sites=314:9
+SURV src/scheme/classifier.c	bt_scheme_report_position	StatementDelete	twist_second->	count=1	sites=315:9
+SURV src/scheme/classifier.c	bt_scheme_report_position	UnaryDrop	++->	count=1	sites=295:23
+SURV src/scheme/classifier.c	bt_scheme_trace	ComparisonSwap	>=->>	count=3	sites=115:21,122:21,130:34
+SURV src/scheme/classifier.c	bt_scheme_trace	NumericTweak	0->1	count=1	sites=127:29
+SURV src/scheme/classifier.c	bt_scheme_trace	NumericTweak	1->0	count=2	sites=117:45,124:45
+SURV src/scheme/classifier.c	bt_scheme_trace	NumericTweak	1->2	count=2	sites=117:45,124:45
+SURV src/scheme/classifier.c	bt_scheme_trace	NumericTweak	48->49	count=1	sites=92:18
+SURV src/scheme/classifier.c	bt_scheme_trace	NumericTweak	8->9	count=1	sites=91:56
+SURV src/scheme/classifier.c	bt_scheme_trace	StatementDelete	BT_SCHEME_ABORT->	count=3	sites=116:17,123:17,131:17
+SURV src/scheme/classifier.c	bt_scheme_trace	StatementDelete	require_cube_shaped->	count=1	sites=88:5
+SURV src/scheme/classifier.c	bt_scheme_trace_cases	ComparisonSwap	<-><=	count=1	sites=66:26
+SURV src/scheme/classifier.c	bt_scheme_trace_eq	ComparisonSwap	!=->==	count=4	sites=420:18,420:48,425:29,426:65
+SURV src/scheme/classifier.c	bt_scheme_trace_eq	ComparisonSwap	<-><=	count=1	sites=424:26
+SURV src/scheme/classifier.c	bt_scheme_trace_eq	ConditionNegation	if->!(...)	count=2	sites=420:5,425:9
+SURV src/scheme/classifier.c	bt_scheme_trace_eq	NumericTweak	0->-1	count=2	sites=424:21,426:68
+SURV src/scheme/classifier.c	bt_scheme_trace_eq	NumericTweak	0->1	count=2	sites=424:21,426:68
+SURV src/scheme/classifier.c	bt_scheme_twisted_pieces	ComparisonSwap	<-><=	count=1	sites=378:27
+SURV src/scheme/classifier.c	bt_scheme_twisted_pieces	NumericTweak	8->7	count=1	sites=378:29
+SURV src/scheme/classifier.c	bt_scheme_twisted_pieces	NumericTweak	8->9	count=1	sites=378:29
+SURV src/scheme/classifier.c	classify_traces	NumericTweak	0->-1	count=1	sites=171:17
+SURV src/scheme/classifier.c	classify_traces	NumericTweak	0->1	count=5	sites=171:17,185:46,185:66,193:49,193:71
+SURV src/scheme/classifier.c	classify_traces	NumericTweak	1->0	count=4	sites=186:46,186:66,194:49,194:71
+SURV src/scheme/classifier.c	classify_traces	NumericTweak	1->2	count=3	sites=186:46,194:49,214:57
+SURV src/scheme/classifier.c	classify_traces	StatementDelete	out->	count=1	sites=173:9
+SURV src/scheme/classifier.c	defects_of	ComparisonSwap	<-><=	count=2	sites=244:33,249:33
+SURV src/scheme/classifier.c	defects_of	NumericTweak	12->13	count=1	sites=244:35
+SURV src/scheme/classifier.c	defects_of	NumericTweak	8->9	count=1	sites=249:35
+SURV src/scheme/classifier.c	shape_sig	NumericTweak	0->-1	count=1	sites=149:17
+SURV src/scheme/classifier.c	shape_sig	NumericTweak	0->1	count=1	sites=149:17
+SURV src/scheme/classifier.c	shape_sig	StatementDelete	out->	count=2	sites=150:13,151:13
+SURV src/scheme/classifier.c	shape_sig	StatementDelete	snprintf->	count=1	sites=143:9
+SURV src/scheme/classifier.c	shape_sig	UnaryDrop	++->	count=2	sites=150:19,151:19
+SURV src/scheme/memo.c		NumericTweak	12->0	count=1	sites=33:57
+SURV src/scheme/memo.c		NumericTweak	12->1	count=1	sites=33:57
+SURV src/scheme/memo.c		NumericTweak	12->11	count=1	sites=33:57
+SURV src/scheme/memo.c		NumericTweak	12->13	count=1	sites=33:57
+SURV src/scheme/memo.c		NumericTweak	54->0	count=5	sites=47:44,59:40,214:36,237:36,241:37
+SURV src/scheme/memo.c		NumericTweak	54->1	count=5	sites=47:44,59:40,214:36,237:36,241:37
+SURV src/scheme/memo.c		NumericTweak	54->53	count=5	sites=47:44,59:40,214:36,237:36,241:37
+SURV src/scheme/memo.c		NumericTweak	54->55	count=5	sites=47:44,59:40,214:36,237:36,241:37
+SURV src/scheme/memo.c	assert_case_legal	ComparisonSwap	==->!=	count=1	sites=293:37
+SURV src/scheme/memo.c	assert_case_legal	ComparisonSwap	>=->>	count=2	sites=296:21,301:21
+SURV src/scheme/memo.c	bt_scheme_corner_succ	ComparisonSwap	<-><=	count=1	sites=107:27
+SURV src/scheme/memo.c	bt_scheme_corner_succ	NumericTweak	0->1	count=1	sites=107:22
+SURV src/scheme/memo.c	bt_scheme_corner_succ	NumericTweak	3->0	count=1	sites=106:18
+SURV src/scheme/memo.c	bt_scheme_corner_succ	NumericTweak	3->1	count=1	sites=106:18
+SURV src/scheme/memo.c	bt_scheme_corner_succ	NumericTweak	3->2	count=1	sites=106:18
+SURV src/scheme/memo.c	bt_scheme_corner_succ	NumericTweak	3->4	count=2	sites=106:18,107:29
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	ComparisonSwap	<-><=	count=1	sites=145:27
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	NumericTweak	0->1	count=1	sites=143:66
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	NumericTweak	3->0	count=1	sites=144:18
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	NumericTweak	3->1	count=1	sites=144:18
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	NumericTweak	3->2	count=1	sites=144:18
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	NumericTweak	3->4	count=3	sites=144:18,145:29,150:15
+SURV src/scheme/memo.c	bt_scheme_corner_twist_state	StatementDelete	BT_SCHEME_ABORT->	count=1	sites=151:9
+SURV src/scheme/memo.c	bt_scheme_edge_flipped	NumericTweak	0->1	count=1	sites=134:45
+SURV src/scheme/memo.c	bt_scheme_edge_flipped	NumericTweak	2->3	count=1	sites=132:18
+SURV src/scheme/memo.c	bt_scheme_edge_mate	NumericTweak	2->3	count=1	sites=123:18
+SURV src/scheme/memo.c	bt_scheme_memo	NumericTweak	54->55	count=1	sites=487:17
+SURV src/scheme/memo.c	bt_scheme_memo_occ	NumericTweak	54->53	count=1	sites=426:18
+SURV src/scheme/memo.c	bt_scheme_memo_occ	NumericTweak	54->55	count=1	sites=426:18
+SURV src/scheme/memo.c	bt_scheme_residue_class	NumericTweak	0->-1	count=3	sites=495:50,495:53,495:56
+SURV src/scheme/memo.c	bt_scheme_residue_class	NumericTweak	0->1	count=5	sites=495:50,495:53,495:56,512:40,523:32
+SURV src/scheme/memo.c	bt_scheme_residue_class	NumericTweak	1->0	count=2	sites=512:70,513:40
+SURV src/scheme/memo.c	bt_scheme_residue_class	NumericTweak	1->2	count=1	sites=512:70
+SURV src/scheme/memo.c	bt_scheme_residue_class_eq	ComparisonSwap	!=->==	count=1	sites=584:79
+SURV src/scheme/memo.c	bt_scheme_residue_class_eq	ComparisonSwap	==->!=	count=4	sites=584:26,584:43,584:57,584:71
+SURV src/scheme/memo.c	bt_scheme_residue_class_eq	NumericTweak	0->1	count=1	sites=584:82
+SURV src/scheme/memo.c	bt_scheme_walk_run	ComparisonSwap	>->>=	count=3	sites=364:19,373:33,400:24
+SURV src/scheme/memo.c	bt_scheme_walk_run	NumericTweak	0->-1	count=3	sites=360:23,361:22,369:35
+SURV src/scheme/memo.c	bt_scheme_walk_run	NumericTweak	0->1	count=3	sites=360:23,361:22,369:35
+SURV src/scheme/memo.c	bt_scheme_walk_run	NumericTweak	200->199	count=1	sites=364:21
+SURV src/scheme/memo.c	bt_scheme_walk_run	NumericTweak	200->201	count=1	sites=364:21
+SURV src/scheme/memo.c	bt_scheme_walk_run	StatementDelete	walk->	count=3	sites=369:13,384:17,405:13
+SURV src/scheme/memo.c	floating_pieces	NumericTweak	12->11	count=2	sites=34:19,40:18
+SURV src/scheme/memo.c	floating_pieces	NumericTweak	12->13	count=1	sites=34:19
+SURV src/scheme/memo.c	floating_pieces	NumericTweak	8->7	count=1	sites=37:18
+SURV src/scheme/memo.c	in_place	ComparisonSwap	>->>=	count=2	sites=70:54,77:53
+SURV src/scheme/memo.c	in_place	NumericTweak	1->0	count=2	sites=69:21,76:21
+SURV src/scheme/memo.c	in_place	NumericTweak	3->4	count=3	sites=60:19,63:23,64:22
+SURV src/scheme/memo.c	scan_piece	ComparisonSwap	<-><=	count=1	sites=320:26
+SURV src/scheme/memo.c	scan_piece	NumericTweak	3->0	count=1	sites=330:27
+SURV src/scheme/memo.c	scan_piece	NumericTweak	3->1	count=1	sites=330:27
+SURV src/scheme/memo.c	scan_piece	NumericTweak	3->2	count=1	sites=330:27
+SURV src/scheme/memo.c	scan_piece	NumericTweak	3->4	count=1	sites=330:27
+SURV src/scheme/memo.c	scan_piece	StatementDelete	walk->	count=1	sites=326:13
+SURV src/scheme/memo.c	solved_piece	NumericTweak	3->0	count=1	sites=48:19
+SURV src/scheme/memo.c	solved_piece	NumericTweak	3->1	count=1	sites=48:19
+SURV src/scheme/memo.c	solved_piece	NumericTweak	3->4	count=1	sites=48:19
+SURV src/scheme/pairs.c	bt_scheme_enumerate_cases	StatementDelete	out->	count=1	sites=20:13
+SURV src/scheme/scheme.c		NumericTweak	24->25	count=2	sites=15:37,20:39
+SURV src/scheme/scheme.c		NumericTweak	3->0	count=1	sites=64:52
+SURV src/scheme/scheme.c		NumericTweak	3->1	count=1	sites=64:52
+SURV src/scheme/scheme.c		NumericTweak	3->2	count=1	sites=64:52
+SURV src/scheme/scheme.c		NumericTweak	3->4	count=1	sites=64:52
+SURV src/scheme/scheme.c	bt_scheme_head_sticker	NumericTweak	3->0	count=3	sites=114:20,119:21,128:20
+SURV src/scheme/scheme.c	bt_scheme_head_sticker	NumericTweak	3->1	count=1	sites=128:20
+SURV src/scheme/scheme.c	bt_scheme_head_sticker	NumericTweak	3->2	count=2	sites=116:21,128:20
+SURV src/scheme/scheme.c	bt_scheme_head_sticker	NumericTweak	3->4	count=4	sites=114:20,116:21,119:21,128:20
+SURV src/scheme/scheme.c	bt_scheme_head_sticker	StatementDelete	BT_SCHEME_ABORT->	count=2	sites=110:9,145:9
+SURV src/scheme/scheme.c	bt_scheme_name_of	ComparisonSwap	<-><=	count=1	sites=59:32
+SURV src/scheme/scheme.c	bt_scheme_name_of	ComparisonSwap	>=->>	count=1	sites=56:17
+SURV src/scheme/scheme.c	bt_scheme_name_of	NumericTweak	24->1	count=1	sites=59:34
+SURV src/scheme/scheme.c	bt_scheme_name_of	NumericTweak	24->23	count=1	sites=59:34
+SURV src/scheme/scheme.c	bt_scheme_name_of	NumericTweak	24->25	count=1	sites=59:34
+SURV src/scheme/scheme.c	bt_scheme_name_of	NumericTweak	48->49	count=1	sites=56:20
+SURV src/scheme/scheme.c	bt_scheme_same_piece	ComparisonSwap	>=->>	count=2	sites=90:11,90:22
+SURV src/scheme/scheme.c	bt_scheme_same_piece	NumericTweak	3->0	count=2	sites=97:19,98:19
+SURV src/scheme/scheme.c	bt_scheme_same_piece	NumericTweak	3->4	count=2	sites=97:19,98:19
+SURV src/scheme/scheme.c	bt_scheme_same_piece	NumericTweak	48->49	count=2	sites=90:14,90:25
+SURV src/scheme/scheme.c	bt_scheme_same_piece	StatementDelete	BT_SCHEME_ABORT->	count=1	sites=91:9
+SURV src/scheme/scheme.c	face_key	ComparisonSwap	<-><=	count=1	sites=68:26
+SURV src/scheme/scheme.c	face_key	ComparisonSwap	>->>=	count=3	sites=71:16,76:16,81:16
+SURV src/scheme/scheme.c	face_key	ConditionNegation	if->!(...)	count=1	sites=81:5
+SURV src/scheme/scheme.c	face_key	NumericTweak	0->-1	count=4	sites=65:9,65:14,66:14,67:14
+SURV src/scheme/scheme.c	face_key	NumericTweak	0->1	count=4	sites=65:9,65:14,66:14,67:14
+SURV src/scheme/scheme.c	face_key	NumericTweak	1->0	count=1	sites=66:9
+SURV src/scheme/scheme.c	face_key	NumericTweak	1->2	count=1	sites=66:9
+SURV src/scheme/scheme.c	face_key	NumericTweak	3->4	count=1	sites=68:28
+SURV src/scheme/scheme.c	face_key	StatementDelete	out->	count=2	sites=65:5,66:5
+SURV src/scheme/scramble.c		NumericTweak	54->0	count=3	sites=45:38,162:45,196:54
+SURV src/scheme/scramble.c		NumericTweak	54->1	count=3	sites=45:38,162:45,196:54
+SURV src/scheme/scramble.c		NumericTweak	54->53	count=3	sites=45:38,162:45,196:54
+SURV src/scheme/scramble.c		NumericTweak	54->55	count=3	sites=45:38,162:45,196:54
+SURV src/scheme/scramble.c	bt_scheme_build_occ	NumericTweak	2->3	count=2	sites=55:27,56:27
+SURV src/scheme/scramble.c	bt_scheme_build_occ	NumericTweak	3->4	count=1	sites=70:36
+SURV src/scheme/scramble.c	bt_scheme_flip_count	ConditionNegation	if->!(...)	count=1	sites=154:9
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	ComparisonSwap	<-><=	count=2	sites=221:39,236:33
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	ComparisonSwap	>=->>	count=1	sites=209:20
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	0->-1	count=2	sites=208:22,221:28
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	0->1	count=6	sites=208:22,221:28,228:25,236:25,238:46,243:26
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	12->1	count=1	sites=228:35
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	12->11	count=3	sites=228:35,252:25,262:50
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	12->13	count=3	sites=251:23,252:25,262:50
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	2->0	count=1	sites=229:22
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	2->1	count=1	sites=229:22
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	2->3	count=1	sites=229:22
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	3->2	count=1	sites=243:33
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	48->0	count=1	sites=221:41
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	48->1	count=1	sites=221:41
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	48->47	count=1	sites=221:41
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	48->49	count=2	sites=215:22,221:41
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	54->0	count=2	sites=208:29,215:30
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	54->1	count=2	sites=208:29,215:30
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	54->53	count=2	sites=208:29,215:30
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	54->55	count=2	sites=207:15,209:23
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	8->7	count=2	sites=236:35,262:90
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	NumericTweak	8->9	count=1	sites=236:35
+SURV src/scheme/scramble.c	bt_scheme_occ_is_legal	StatementDelete	seen->	count=1	sites=213:9
+SURV src/scheme/scramble.c	bt_scheme_perm_sign	NumericTweak	0->1	count=1	sites=26:21
+SURV src/scheme/scramble.c	bt_scheme_perm_sign	NumericTweak	24->23	count=1	sites=24:15
+SURV src/scheme/scramble.c	bt_scheme_perm_sign	NumericTweak	24->25	count=1	sites=24:15
+SURV src/scheme/scramble.c	bt_scheme_piece_perm	NumericTweak	8->9	count=1	sites=185:48
+SURV src/scheme/scramble.c	bt_scheme_random_occ	ComparisonSwap	<-><=	count=4	sites=88:35,89:31,125:27,128:27
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	0->-1	count=6	sites=88:24,120:55,125:22,128:22,133:19,134:20
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	0->1	count=7	sites=88:24,125:22,128:22,131:20,132:22,133:19,134:20
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	1->0	count=2	sites=131:31,132:35
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	1->2	count=2	sites=131:31,132:35
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	12->0	count=1	sites=125:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	12->1	count=1	sites=125:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	12->11	count=3	sites=82:19,115:40,125:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	12->13	count=4	sites=82:19,84:16,89:33,125:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	3->4	count=1	sites=107:47
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	54->1	count=1	sites=86:22
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	54->55	count=1	sites=86:22
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	8->0	count=1	sites=128:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	8->1	count=2	sites=88:37,128:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	8->7	count=5	sites=83:21,88:37,100:33,115:76,128:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	8->9	count=4	sites=83:21,85:20,88:37,128:29
+SURV src/scheme/scramble.c	bt_scheme_random_occ	StatementDelete	bt_scheme_build_occ->	count=1	sites=136:5
+SURV src/scheme/scramble.c	bt_scheme_random_occ	StatementDelete	corners->	count=1	sites=129:9
+SURV src/scheme/scramble.c	bt_scheme_random_occ	StatementDelete	edges->	count=1	sites=126:9
+SURV src/scheme/scramble.c	bt_scheme_random_occ	StatementDelete	identity_occ->	count=2	sites=87:5,135:5
+SURV src/scheme/scramble.c	bt_scheme_random_occ	StatementDelete	swap_u8->	count=2	sites=131:5,132:5
+SURV src/scheme/scramble.c	bt_scheme_random_state	NumericTweak	54->55	count=1	sites=269:17
+SURV src/scheme/scramble.c	identity_occ	NumericTweak	0->1	count=1	sites=46:22
+SURV src/scheme/scramble.c	position_of_sticker	ComparisonSwap	<-><=	count=1	sites=197:31
+SURV src/scheme/scramble.c	position_of_sticker	NumericTweak	255->0	count=1	sites=202:12
+SURV src/scheme/scramble.c	position_of_sticker	NumericTweak	255->1	count=1	sites=202:12
+SURV src/scheme/scramble.c	position_of_sticker	NumericTweak	255->254	count=1	sites=202:12
+SURV src/scheme/scramble.c	position_of_sticker	NumericTweak	54->53	count=1	sites=197:33
+SURV src/scheme/scramble.c	position_of_sticker	NumericTweak	54->55	count=1	sites=197:33
+SURV src/scheme/scramble.c	slot_occupant	NumericTweak	2->1	count=1	sites=167:22
+SURV src/scheme/scramble.c	slot_occupant	NumericTweak	2->3	count=1	sites=167:22
+TIMEOUT src/core/alg.c	bt_alg_parse	StatementDelete	cursor->	count=2	sites=228:13,236:13
+TIMEOUT src/core/expand.c	expand_seq	ComparisonSwap	<-><=	count=1	sites=232:26
+TIMEOUT src/core/expand.c	expand_seq	ComparisonSwap	==->!=	count=3	sites=268:24,284:29,336:29
+TIMEOUT src/core/expand.c	expand_seq	ConditionNegation	if->!(...)	count=2	sites=284:16,336:16
+TIMEOUT src/core/expand.c	expand_tokenize	NumericTweak	1->0	count=1	sites=98:22
+TIMEOUT src/core/expand.c	expand_tokenize	StatementDelete	index->	count=1	sites=98:13
+TIMEOUT src/core/moves.c	move_compose	ComparisonSwap	<-><=	count=1	sites=218:26
+TIMEOUT src/core/moves.c	move_compose	NumericTweak	54->55	count=1	sites=218:28
+TIMEOUT src/core/moves.c	move_power	ComparisonSwap	<-><=	count=1	sites=225:26
+TIMEOUT src/core/moves.c	move_power	NumericTweak	54->53	count=2	sites=224:17,229:22
+TIMEOUT src/core/moves.c	move_power	NumericTweak	54->55	count=1	sites=225:28
+TIMEOUT src/scheme/classifier.c	bt_scheme_trace	StatementDelete	block->	count=1	sites=119:13
+TIMEOUT src/scheme/classifier.c	bt_scheme_trace	UnaryDrop	++->	count=1	sites=119:22
+TIMEOUT src/scheme/memo.c	bt_scheme_memo	NumericTweak	54->53	count=1	sites=487:17
+TIMEOUT src/scheme/memo.c	bt_scheme_walk_run	StatementDelete	BT_SCHEME_ABORT->	count=1	sites=365:13
+TIMEOUT src/scheme/memo.c	bt_scheme_walk_run	StatementDelete	spins->	count=1	sites=363:9
+TIMEOUT src/scheme/scramble.c	bt_scheme_perm_sign	StatementDelete	seen->	count=1	sites=33:13
+TIMEOUT src/scheme/scramble.c	bt_scheme_random_occ	NumericTweak	54->53	count=1	sites=86:22
+TIMEOUT src/scheme/scramble.c	identity_occ	ComparisonSwap	<-><=	count=1	sites=46:27
+TIMEOUT src/scheme/scramble.c	identity_occ	NumericTweak	54->55	count=1	sites=46:29
+wrote C:\Users\lavantien\dev\github\blind-trainer\playground\allowlist-port\union_core_scheme.json
