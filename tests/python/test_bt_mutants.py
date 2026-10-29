@@ -58,7 +58,7 @@ class MutantsPlanTests(unittest.TestCase):
             (sub / "mod.c").write_text("int g(void) { return 2; }\n", encoding="utf-8")
             plan = bt.mutants_plan(root, ["common"])[0]
             self.assertEqual(
-                plan["sources"], ["src/common/seedpack/mod.c", "src/common/sha.c"]
+                plan["sources"], ["src/common/alg.c", "src/common/seedpack/mod.c"]
             )
 
     def test_plan_rejects_unknown_area(self):
