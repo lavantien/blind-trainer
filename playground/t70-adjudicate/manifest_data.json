@@ -1,0 +1,8193 @@
+{
+ "rows": [
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_decompose",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_decompose",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_decompose",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_decompose_verified",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_decompose_verified",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_expanded_expansion",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_expanded_list_free",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_expanded_list_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_expanded_list_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "bt_expanded_list_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "flatten",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "flatten",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "flatten",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_core",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 14,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_expr",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_expr",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_slot",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 10,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parse_unit",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parts_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parts_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "parts_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "pick_orders",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "pick_orders",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "pick_orders",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 4,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 4,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "split_depth_zero",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 10,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "trim_dup",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "trim_dup",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "trim_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_expansion",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_expansion",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_expansion",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_expansion",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_free",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_free",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "unit_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "units_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "units_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/commutator.c",
+   "function": "units_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_distinct_positions",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_error_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_error_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_error_string",
+   "op": "NumericTweak",
+   "to": "191",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_error_string",
+   "op": "NumericTweak",
+   "to": "193",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_error_string",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_load",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_load",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_load",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_load",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 36,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_row_at",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_rows_for_position",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_sheet_rows",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_with_overlay",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_with_overlay",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_with_overlay",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_with_overlay",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_corpus_with_overlay",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 24,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_overlay_error_string",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_sheet_class_parse",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "bt_solver_parse",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "row_clone",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "row_clone",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "row_clone",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "row_clone",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "sheet_class_parse_n",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/corpus.c",
+   "function": "text_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "191",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "193",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "backup_file",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_begin",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_begin",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_begin",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_close",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_close",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_close",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_commit",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_commit",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_commit",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_exec",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_exec",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_exec",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_is_fresh",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_is_fresh",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_is_fresh",
+   "op": "NumericTweak",
+   "to": "95",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_is_fresh",
+   "op": "NumericTweak",
+   "to": "97",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_is_fresh",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_name",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_name",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_migration_sql",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_now_ms",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_now_ms",
+   "op": "NumericTweak",
+   "to": "1000001",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_now_ms",
+   "op": "NumericTweak",
+   "to": "1001",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_now_ms",
+   "op": "NumericTweak",
+   "to": "999",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_now_ms",
+   "op": "NumericTweak",
+   "to": "999999",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_at",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_at",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_at",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_at",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_memory",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_memory",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_memory",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_memory",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_open_memory",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_rollback",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_rollback",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_user_version",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "bt_db_user_version",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "NumericTweak",
+   "to": "8191",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "NumericTweak",
+   "to": "8193",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "copy_file_bytes",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "db_fail",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "db_fail",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "finish_open",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "finish_open",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "finish_open",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_any_table",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_any_table",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_any_table",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_parent",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_parent",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_parent",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "has_parent",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "migrate",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 15,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 3,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "mkdir_parents",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "path_exists",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "query_user_version",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "query_user_version",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/db.c",
+   "function": "query_user_version",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "NumericTweak",
+   "to": "159",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "NumericTweak",
+   "to": "161",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "bt_digest_corpus",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/digest.c",
+   "function": "read_sheet",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_config_from_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_memory_initial",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_memory_is_valid",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_memory_retrievability",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_memory_retrievability",
+   "op": "NumericTweak",
+   "to": "1.0",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_memory_review",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "bt_fsrs_next_interval_days",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "clamp_difficulty",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "clamp_difficulty",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "read_weights",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "read_weights",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "NumericTweak",
+   "to": "0.0",
+   "count": 1,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "NumericTweak",
+   "to": "1.0",
+   "count": 1,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/data/fsrs.c",
+   "function": "saturating_i64_cast",
+   "op": "NumericTweak",
+   "to": "9.2233720368547758e+18",
+   "count": 2,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 7,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 21,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 15,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 23,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 7,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 7,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "bt_import_run",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 62,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "file_exists",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "finish_renames",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "finish_renames",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "migrate_one",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "read_bytes",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "read_bytes",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "read_bytes",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "read_bytes",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/import.c",
+   "function": "read_bytes",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/migrations_embedded.c",
+   "function": "bt_db_embedded_migration_name",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/migrations_embedded.c",
+   "function": "bt_db_embedded_migration_sql",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/notation.c",
+   "function": "bt_notation_strip_rotations",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "algs_insert_sorted",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_config_path_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_db_file_name",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_db_file_name",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_db_file_name",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_load_config",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_load_config",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_load_config",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_from",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_from",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_packs_root_or_null",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_read_json",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_read_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_read_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_dir_path_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_root_from",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_root_from",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_root_from",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_root_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_user_root_from",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_from",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_from",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_vendor_root_or_null",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "255",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "NumericTweak",
+   "to": "257",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_data_write_json_atomic",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_alg_for",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_clone",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_from_json",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_from_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_from_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_from_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_from_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_load_at",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_load_at",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_load_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_remove",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_remove",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_save_at",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_save_at",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_save_at",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_save_at",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_save_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_set_entry",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_set_entry",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "bt_user_algs_set_entry",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "dup_str",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "kind_index",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 3,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "mkdir_parents_of",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "read_file_text",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "read_file_text",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "read_file_text",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "read_file_text",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "system_temp",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "system_temp",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/paths.c",
+   "function": "system_temp",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_join_key",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_load",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_load",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_load",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 14,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save_tx",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save_tx",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 14,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_save_tx",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 12,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_split_key",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_split_key",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_split_key",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_split_key",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_algs.c",
+   "function": "bt_repo_algs_split_key",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_entry",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_entry",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_entry",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_entry",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_entry",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_free",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_get",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_put",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_put",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_put",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_case_cards_put",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_load",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_load",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_load",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_load",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_save_card",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_save_card",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 10,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "bt_repo_cards_save_card",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 7,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_cards.c",
+   "function": "cards_insert_sorted",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_load_seed_rows",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_all",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_all",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_all",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_all",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_all",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 12,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 28,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_pack_tx",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 22,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_row_count",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_row_count",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "bt_seed_row_count",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "db_error",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_seeds.c",
+   "function": "text_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_load_text",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_load_text",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_load_text",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save_tx",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save_tx",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_settings.c",
+   "function": "bt_repo_settings_save_tx",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_from_json",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_from_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_from_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_from_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_from_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_load",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_load",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_push",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save_tx",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save_tx",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_solves.c",
+   "function": "bt_solve_log_save_tx",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_free_rows",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_free_rows",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_free_rows",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 11,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 14,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 3,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_insert_card",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 17,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_filtered",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_filtered",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_filtered",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_filtered",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_filtered",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 13,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 7,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 15,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_load_rows",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 42,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save_tx",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save_tx",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_repo_srs_save_tx",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_load_error_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_load_error_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_load_error_string",
+   "op": "NumericTweak",
+   "to": "39",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_load_error_string",
+   "op": "NumericTweak",
+   "to": "41",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_clone",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_from_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_from_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_from_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_get",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_get",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "bt_srs_store_set",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 3,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 9,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 14,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 20,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "card_from_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "format_option",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "format_option",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "memory_from_row",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "memory_from_row",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "memory_from_row",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "memory_from_row",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "memory_from_row",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 11,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_srs.c",
+   "function": "rows_push",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_case_ref_cmp",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_contains",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_get",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_put",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_put",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_put",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_put",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_overrides_remove",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_load_all",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 11,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_remove",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_remove",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_remove",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_remove",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_remove",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_upsert",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_upsert",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_upsert",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_upsert",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 17,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "bt_repo_user_upsert",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/repo_user.c",
+   "function": "overrides_insert_sorted",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/hashing.c",
+   "function": "bt_seedpack_row_hash",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_error_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_error_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_error_string",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_error_string",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_error_string",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_rows_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_rows_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_seed_rows_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "bt_normalized_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "bt_normalized_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "bt_normalized_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "bt_seedpack_normalize_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "build_repeated",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "canonical_tuple",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "copy_alg",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "copy_alg",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "dup_range",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_bracket_repeats",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_bracket_repeats",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_bracket_repeats",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_bracket_repeats",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_bracket_repeats",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_group_repeats",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_group_repeats",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_group_repeats",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_group_repeats",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 10,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "expand_group_repeats",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "255",
+   "count": 3,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "NumericTweak",
+   "to": "257",
+   "count": 3,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "find_group_repeat",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_auf_inner",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_auf_inner",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_auf_inner",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_auf_inner",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_prose_word",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_prose_word",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "is_prose_word",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 6,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_cube",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 16,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 20,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "notes_push",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "parse_count",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "set_error",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "set_error",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "set_error",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "set_error",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "set_error",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "str_assign",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "strip_grouping_parens",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "strip_grouping_parens",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_dup",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_dup",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_dup",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_dup",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_end_in_place",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_in_place",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_in_place",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_in_place",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "trim_start_in_place",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "ported"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_cube_token",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_int",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_int",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "valid_int",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "blank_line",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "blank_line",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "blank_line",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_load_pack",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_load_pack",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_load_pack",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_load_pack",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 8,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 20,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 23,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 20,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 12,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 13,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "bt_seedpack_parse_pack",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 69,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "dup_range",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "enrich_front_json",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 24,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "trim_range",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "trim_range",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "trim_range",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 8,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 9,
+   "origin": "zero+count+cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/parse.c",
+   "function": "valid_source_at",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_load_registry",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_load_registry",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_load_registry",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_load_registry",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_load_registry",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 9,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 10,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 9,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 17,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "bt_seedpack_parse_registry",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 59,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "read_n",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "registry_json_error",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "registry_rule",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "valid_size",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "valid_size",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "valid_size",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "valid_size",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/registry.c",
+   "function": "valid_size",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "bt_classify_failure",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "bt_classify_failure",
+   "op": "NumericTweak",
+   "to": "12",
+   "count": 1,
+   "origin": "override"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "bt_seedpack_expected_failures",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "bt_seedpack_expected_failures",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "find_ruling",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/seedpack/rulings.c",
+   "function": "find_ruling",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_clone",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_clone",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_clone",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_clone",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_review",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_review",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_review",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_card_review",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_grade_from_quality",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_replay_sm2",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_replay_sm2",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_replay_sm2",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_replay_sm2",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "bt_replay_sm2",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "card_eq_raw",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "card_eq_raw",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "push_review",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "push_review",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "push_review",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "push_review",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/srs.c",
+   "function": "push_review",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 5,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 10,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "8191",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "NumericTweak",
+   "to": "8193",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_parse_sheet",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 13,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_rows_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_rows_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "bt_tsv_rows_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "cell_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "cell_equals_trimmed",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "row_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "row_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "trim_len",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "trim_len",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "trim_len",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "trim_len",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "trim_len",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/tsv.c",
+   "function": "validate_header",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 12,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 13,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_note",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_note",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_note",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_problem",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_problem",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_problem",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_problem",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_contains_problem",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verdict_string",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify_chirality",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify_chirality",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify_chirality",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "bt_verify_chirality",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "check_in_place",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "check_in_place",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "check_swapped",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "check_swapped",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 4,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 5,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 11,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "comma_parts",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "defect_of",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "defect_of",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "expected_position",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "fail_detail",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "fail_detail",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "fail_detail",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "named_all",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "note_orientation",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "note_orientation",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "note_orientation",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "notes_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "pair_tokens",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "parse_named",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 4,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "place_rigid",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "problems_push",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "problems_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "problems_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "problems_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "residue_problems",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "residue_problems",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "residue_problems",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "signum_i32",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "signum_i32",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "signum_i32",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "signum_i32",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_name",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "slot_of",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "sticker_by_name",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_flip_pair",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_flip_pair",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_flip_pair",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_flip_pair",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_flip_pair",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_ltct",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "write"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_parity",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_parity",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_parity",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_parity",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_three_style",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_twist_pair",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_twist_pair",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_twist_pair",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_twist_pair",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/data/verify.c",
+   "function": "verify_twist_pair",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  }
+ ],
+ "test_disposed": [
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "killed": [
+    "79:17",
+    "80:25",
+    "82:17"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "76:17",
+    "83:27",
+    "87:29"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "76:5",
+    "79:5",
+    "82:5",
+    "83:9",
+    "87:13"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "86:25"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/data/seedpack/mod.c",
+   "function": "bt_nspec_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "86:25"
+   ],
+   "kept": []
+  }
+ ],
+ "unclassified": []
+}

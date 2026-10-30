@@ -7,5 +7,5 @@ gate(snapshot truth) rc=1 out= err=mutants gate: surviving mutant not in allowli
 surviving mutant not in allowlist: file=src/core/alg.c function=bt_alg_eq genre=NumericTweak replacement=1
 surviving mutant not in allowlist: file=src/core/alg.c function=bt_alg_eq genre=StatementDelete replacement=
 surviving mutant not in allowlist: file=src/scheme/classifier.
-excluded timeout=23 pending=4
+excluded timeout=26 pending=1
 EXIT merge_proof

@@ -1,0 +1,11 @@
+ENTER merge_proof areas=data
+shard 0: 4551 mutants
+shard 1: 4552 mutants
+merge rc=0 out=merged 2 inputs, 9103 mutants, wrote C:\Users\lavantien\dev\github\blind-trainer\playground\t70-adjudicate\proof_merged_data.json err=
+gate(post-retest truth) rc=0 out=survivors gated: 2999, all covered err=
+gate(snapshot truth) rc=1 out= err=mutants gate: surviving mutant not in allowlist: file=src/data/seedpack/mod.c function=bt_nspec_eq genre=ComparisonSwap replacement=!=
+surviving mutant not in allowlist: file=src/data/seedpack/mod.c function=bt_nspec_eq genre=ComparisonSwap replacement===
+surviving mutant not in allowlist: file=src/data/seedpack/mod.c function=bt_nspec_eq genre=ConditionNegation replacement=!(...)
+surviving mutant
+excluded timeout=76 pending=0
+EXIT merge_proof

@@ -802,3 +802,25 @@ BT_TEST(seedpack, a_row_dropped_from_a_pack_fails_hard_naming_the_orphan) {
     bt_db_close(&db);
     tu_remove_tree(dir);
 }
+
+BT_TEST(seedpack, nspec_eq_distinguishes_every_field) {
+    bt_nspec unset_a = {0};
+    bt_nspec unset_b = {0};
+    BT_CHECK(bt_nspec_eq(&unset_a, &unset_b));
+    bt_nspec fixed_a = {BT_NSPEC_FIXED, 4, 0, {0}};
+    bt_nspec fixed_b = {BT_NSPEC_FIXED, 4, 0, {0}};
+    BT_CHECK(bt_nspec_eq(&fixed_a, &fixed_b));
+    bt_nspec fixed_other = {BT_NSPEC_FIXED, 5, 0, {0}};
+    BT_CHECK(!bt_nspec_eq(&fixed_a, &fixed_other));
+    bt_nspec sizes_a = {BT_NSPEC_SIZES, 0, 2, {3, 5}};
+    bt_nspec sizes_b = {BT_NSPEC_SIZES, 0, 2, {3, 5}};
+    BT_CHECK(bt_nspec_eq(&sizes_a, &sizes_b));
+    bt_nspec sizes_count = {BT_NSPEC_SIZES, 0, 1, {3, 5}};
+    BT_CHECK(!bt_nspec_eq(&sizes_a, &sizes_count));
+    bt_nspec sizes_first = {BT_NSPEC_SIZES, 0, 2, {4, 5}};
+    BT_CHECK(!bt_nspec_eq(&sizes_a, &sizes_first));
+    bt_nspec sizes_second = {BT_NSPEC_SIZES, 0, 2, {3, 6}};
+    BT_CHECK(!bt_nspec_eq(&sizes_a, &sizes_second));
+    BT_CHECK(!bt_nspec_eq(&fixed_a, &sizes_a));
+    BT_CHECK(!bt_nspec_eq(&unset_a, &fixed_a));
+}

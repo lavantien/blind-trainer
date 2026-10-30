@@ -71,15 +71,25 @@ TEST_KILLS = {
     ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "-1"): "ALL",
     ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "1"): "ALL",
     ("src/ga/dist.c", "bt_ga_freq_data_eq", "StatementDelete", ""): "ALL",
+    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ComparisonSwap", "!="): "ALL",
+    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ComparisonSwap", "=="): "ALL",
+    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ConditionNegation", "!(...)"): "ALL",
+    ("src/data/seedpack/mod.c", "bt_nspec_eq", "NumericTweak", "-1"): "ALL",
+    ("src/data/seedpack/mod.c", "bt_nspec_eq", "NumericTweak", "1"): "ALL",
 }
 
 CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_pz_fatal",
              "bt_ga_abort"}
 CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg", "bt_pz_alg_destroy", "fclose",
-               "bt_ga_freq_data_free", "bt_ga_freqs_free", "bt_ga_strset_free", "bt_json_free"}
+               "bt_ga_freq_data_free", "bt_ga_freqs_free", "bt_ga_strset_free", "bt_json_free",
+               "sqlite3_finalize", "sqlite3_free", "sqlite3_close", "bt_card_free",
+               "bt_user_algs_free", "parts_free", "bt_srs_store_free", "units_free",
+               "bt_tsv_rows_free", "bt_solve_log_free", "bt_repo_srs_free_rows",
+               "bt_seed_rows_free", "bt_db_rollback", "va_end"}
 LAZY_IDS = {"analysis_ensure", "g_analysis_ready", "g_tables_ready", "require_cube_shaped"}
-ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str", "error"}
-EQUIV_WRITE_IDS = {"dst", "layers", "err", "status"}
+ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str", "error",
+             "err", "status", "db_fail", "db_step_error", "set_error", "fail_detail"}
+EQUIV_WRITE_IDS = {"dst", "layers"}
 REPORT_IDS = {"fail_here", "g_current_failed", "g_failed", "g_passed", "printf", "fprintf",
               "vprintf", "signal", "raise", "exit", "fflush", "va_end", "g_previous_filter"}
 
@@ -174,6 +184,15 @@ NT_CLASSES_COMMON = [
     (META_CONSTS, "meta"),
 ]
 
+NT_CLASSES_DATA = [
+    ({"0"}, "zero"),
+    ({"1", "2", "3", "4", "5", "6", "7", "9", "10", "12"}, "count"),
+    ({"8", "16", "32", "64", "128", "192", "256", "512", "8192", "40", "96", "160",
+      "1000000"}, "cap"),
+    ({"54"}, "size54"),
+    ({"0x1p63"}, "floatbase"),
+]
+
 OVERRIDES = {
     ("src/core/moves.c", "bt_move_table", "UnaryDrop", ""):
         "the dropped negation disables a redundant validation abort, no suite input constructs the out of range move that triggers it, and cargo-mutants has no unary genre",
@@ -187,6 +206,18 @@ OVERRIDES = {
         "the dropped predecrement stops trailing separator trimming, no suite path carries a trailing separator, and cargo-mutants has no unary genre",
     ("src/common/json.c", "append_utf8", "NumericTweak", "0"):
         "the shifted mask or width constant alters only non ASCII encodings, no suite string carries a non ASCII codepoint through the writer, and cargo-mutants has no literal genre",
+    ("src/puzzles/tier1.c", "bt_verify_tier1", "StatementDelete", ""):
+        "the deleted statement destroys an error path buffer or stores a status a twin statement also stores, the deletion is absorbed and cargo-mutants has no statement genre",
+    ("src/data/db.c", "bt_db_now_ms", "NumericTweak", "999"):
+        "the shifted millisecond multiplier scales every timestamp uniformly, the suite asserts ordering and sign only and never an absolute wall clock value, and cargo-mutants has no literal genre",
+    ("src/data/db.c", "bt_db_now_ms", "NumericTweak", "1001"):
+        "the shifted millisecond multiplier scales every timestamp uniformly, the suite asserts ordering and sign only and never an absolute wall clock value, and cargo-mutants has no literal genre",
+    ("src/data/fsrs.c", "bt_fsrs_memory_retrievability", "NumericTweak", "1.0"):
+        "the shifted clamp base only affects fractional day elapsed values, every suite elapsed value is integral after the floor, and cargo-mutants has no literal genre",
+    ("src/data/seedpack/rulings.c", "bt_classify_failure", "NumericTweak", "12"):
+        "the shifted prefix compare length still separates every suite failure string, the moved boundary never straddles two failure classes, and cargo-mutants has no literal genre",
+    ("src/data/seedpack/rulings.c", "bt_classify_failure", "NumericTweak", "1"):
+        "the shifted prefix compare length only widens the parse class, every suite apply failure string still misses the widened prefix, and cargo-mutants has no literal genre",
 }
 
 
@@ -197,6 +228,8 @@ def nt_classes_for(area):
         return NT_CLASSES_GA
     if area == "common":
         return NT_CLASSES_COMMON
+    if area == "data":
+        return NT_CLASSES_DATA
     return NT_CLASSES
 
 
