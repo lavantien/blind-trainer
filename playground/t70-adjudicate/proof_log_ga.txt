@@ -1,0 +1,11 @@
+ENTER merge_proof areas=ga
+shard 0: 1159 mutants
+shard 1: 1159 mutants
+merge rc=0 out=merged 2 inputs, 2318 mutants, wrote C:\Users\lavantien\dev\github\blind-trainer\playground\t70-adjudicate\proof_merged_ga.json err=
+gate(post-retest truth) rc=0 out=survivors gated: 624, all covered err=
+gate(snapshot truth) rc=1 out= err=mutants gate: surviving mutant not in allowlist: file=src/ga/dist.c function=bt_ga_dist_pairs_eq genre=ComparisonSwap replacement===
+surviving mutant not in allowlist: file=src/ga/dist.c function=bt_ga_dist_pairs_eq genre=ConditionNegation replacement=!(...)
+surviving mutant not in allowlist: file=src/ga/dist.c function=bt_ga_dist_pairs_eq genre=NumericTweak replacement=-1
+surviving mutant not in 
+excluded timeout=34 pending=0
+EXIT merge_proof

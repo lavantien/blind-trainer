@@ -59,10 +59,24 @@ TEST_KILLS = {
     ("src/scheme/scheme.c", "face_key", "NumericTweak", "-1"): {"65:9"},
     ("src/scheme/scheme.c", "face_key", "NumericTweak", "1"): {"65:9"},
     ("src/scheme/scheme.c", "face_key", "StatementDelete", ""): {"65:5", "66:5"},
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "ComparisonSwap", "=="): "ALL",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "ConditionNegation", "!(...)"): "ALL",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "-1"): "ALL",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "1"): "ALL",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "0"): "ALL",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "2"): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ComparisonSwap", "!="): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ComparisonSwap", "=="): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ConditionNegation", "!(...)"): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "-1"): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "1"): "ALL",
+    ("src/ga/dist.c", "bt_ga_freq_data_eq", "StatementDelete", ""): "ALL",
 }
 
-CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_pz_fatal"}
-CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg", "bt_pz_alg_destroy"}
+CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_pz_fatal",
+             "bt_ga_abort"}
+CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg", "bt_pz_alg_destroy", "fclose",
+               "bt_ga_freq_data_free", "bt_ga_freqs_free", "bt_ga_strset_free", "bt_json_free"}
 LAZY_IDS = {"analysis_ensure", "g_analysis_ready", "g_tables_ready", "require_cube_shaped"}
 ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str"}
 EQUIV_WRITE_IDS = {"dst", "layers", "err", "status"}
@@ -84,6 +98,10 @@ GENRE_TEXT = {
     "size54": "the extra or missing cell walks past the 54 cell array into memory the loop order or a later pass rewrites, layout dependent, and cargo-mutants has no literal genre",
     "cap": "suite inputs never cross the growth threshold, buffer cap, or abort budget the tweak moves, and cargo-mutants has no literal genre",
     "tableslot": "the tweak moves a static table slot or dimension, every suite state holds equal values across the affected slots or no face index reaches the added row, so the rendered output is unchanged and cargo-mutants has no literal genre",
+    "count": "the tweak moves a syllable count, a width, or an index base by one, the suite outcomes are invariant under the shift at these sites and cargo-mutants has no literal genre",
+    "utf8mask": "the shifted utf8 lead or continuation mask alters only codepoint shapes the suite strings never carry, and cargo-mutants has no literal genre",
+    "unicoderange": "the shifted codepoint range bound admits or rejects values outside every suite string, and cargo-mutants has no literal genre",
+    "floatbase": "the shifted float base or budget sits where no suite comparison outcome moves, every suite config overrides the default or runs far inside the budget, and cargo-mutants has no literal genre",
     "leq": "the admitted equality case never occurs, the compared keys are distinct by construction or the extra probe reads a terminator or a value an invariant makes unreachable",
     "eqflip": "the flipped equality guards crash paths or kind dispatch that is dead under valid inputs, or feeds hand written equality whose Rust twin is derive(PartialEq) and was never mutated",
     "bound_admit": "boundary admission on a guard whose boundary value no suite input reaches, or a budget guard where one extra spin changes no outcome",
@@ -120,6 +138,18 @@ NT_CLASSES_PUZZLES = [
     (BOUND_SET, "bound"),
 ]
 
+UTF8_MASKS = {"0x80", "0x0FU", "0x1FU", "0x3FU", "0x7FU", "0xC0U", "0xE0U", "0xF0U", "0xF8U"}
+UNICODE_RANGES = {"0x300", "0x36F", "0x800", "0x10000", "0xD800", "0xDFFF", "0x10FFFF"}
+
+NT_CLASSES_GA = [
+    ({"0"}, "zero"),
+    ({"1", "2", "3", "4", "5", "6", "7", "6U", "12U", "14", "21"}, "count"),
+    ({"64", "32", "818"}, "cap"),
+    (UTF8_MASKS, "utf8mask"),
+    (UNICODE_RANGES, "unicoderange"),
+    ({"0.0", "1000000.0"}, "floatbase"),
+]
+
 OVERRIDES = {
     ("src/core/moves.c", "bt_move_table", "UnaryDrop", ""):
         "the dropped negation disables a redundant validation abort, no suite input constructs the out of range move that triggers it, and cargo-mutants has no unary genre",
@@ -139,6 +169,8 @@ OVERRIDES = {
 def nt_classes_for(area):
     if area == "puzzles":
         return NT_CLASSES_PUZZLES
+    if area == "ga":
+        return NT_CLASSES_GA
     return NT_CLASSES
 
 

@@ -143,3 +143,92 @@ BT_TEST(dist, case_rows_reject_strings_past_the_field_caps) {
     bt_ga_freq_data_free(&data);
     bt_ga_scratch_remove("dist-test");
 }
+
+static bt_ga_freq_data freq_fixture(void) {
+    bt_ga_freq_data base = {0};
+    base.cases_count = 1;
+    base.adjacent_count = 1;
+    base.cooccurring_count = 1;
+    base.total_draws = 1000;
+    base.seed = 20261012;
+    return base;
+}
+
+static void fill_freq_fixture(bt_ga_freq_data *data, bt_ga_case_row *cases,
+                              bt_ga_pair_count *adjacent, bt_ga_pair_count *cooccurring) {
+    snprintf(cases[0].orbit, sizeof cases[0].orbit, "edge");
+    snprintf(cases[0].letters, sizeof cases[0].letters, "AB");
+    cases[0].count = 120;
+    adjacent[0].from = 0;
+    adjacent[0].to = 17;
+    adjacent[0].count = 3;
+    cooccurring[0].from = 5;
+    cooccurring[0].to = 6;
+    cooccurring[0].count = 9;
+    data->cases = cases;
+    data->adjacent = adjacent;
+    data->cooccurring = cooccurring;
+}
+
+BT_TEST(dist, freq_data_eq_distinguishes_every_field) {
+    bt_ga_case_row cases_a[1];
+    bt_ga_pair_count adjacent_a[1];
+    bt_ga_pair_count cooccurring_a[1];
+    bt_ga_freq_data a = freq_fixture();
+    fill_freq_fixture(&a, cases_a, adjacent_a, cooccurring_a);
+    bt_ga_case_row cases_b[1];
+    bt_ga_pair_count adjacent_b[1];
+    bt_ga_pair_count cooccurring_b[1];
+    bt_ga_freq_data b = freq_fixture();
+    fill_freq_fixture(&b, cases_b, adjacent_b, cooccurring_b);
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &b), 1);
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&b, &a), 1);
+    bt_ga_freq_data other = b;
+    other.cases_count = 2;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &other), 0);
+    other = b;
+    other.total_draws = 1001;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &other), 0);
+    other = b;
+    other.seed = 20261013;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &other), 0);
+    other = b;
+    other.adjacent_count = 0;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &other), 0);
+    other = b;
+    other.cooccurring_count = 0;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &other), 0);
+    bt_ga_freq_data shifted = b;
+    bt_ga_pair_count adjacent_shifted[1] = {{0, 18, 3}};
+    shifted.adjacent = adjacent_shifted;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_pair_count adjacent_from[1] = {{1, 17, 3}};
+    shifted.adjacent = adjacent_from;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_pair_count adjacent_count[1] = {{0, 17, 4}};
+    shifted.adjacent = adjacent_count;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_pair_count cooccurring_shifted[1] = {{5, 7, 9}};
+    shifted.adjacent = b.adjacent;
+    shifted.cooccurring = cooccurring_shifted;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_case_row cases_orbit[1];
+    snprintf(cases_orbit[0].orbit, sizeof cases_orbit[0].orbit, "corner");
+    snprintf(cases_orbit[0].letters, sizeof cases_orbit[0].letters, "AB");
+    cases_orbit[0].count = 120;
+    shifted.cooccurring = b.cooccurring;
+    shifted.cases = cases_orbit;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_case_row cases_letters[1];
+    snprintf(cases_letters[0].orbit, sizeof cases_letters[0].orbit, "edge");
+    snprintf(cases_letters[0].letters, sizeof cases_letters[0].letters, "AC");
+    cases_letters[0].count = 120;
+    shifted.cases = cases_letters;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+    bt_ga_case_row cases_count[1];
+    snprintf(cases_count[0].orbit, sizeof cases_count[0].orbit, "edge");
+    snprintf(cases_count[0].letters, sizeof cases_count[0].letters, "AB");
+    cases_count[0].count = 121;
+    shifted.cases = cases_count;
+    BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+}

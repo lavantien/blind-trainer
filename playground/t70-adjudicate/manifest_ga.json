@@ -1,0 +1,2210 @@
+{
+ "rows": [
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_config_memofreq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_config_memofreq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_config_memofreq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_config_memofreq",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_config_memofreq",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_integer",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_integer",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_integer",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_cases",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_parse_pairs",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_read_file",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_u32",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_u32",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_u32",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_load_freq_data",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_load_freq_data",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_load_freq_data",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_load_freq_data",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 16,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_coda_place_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_flow_penalty",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_flow_penalty",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "767",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "769",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "878",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
+   "op": "NumericTweak",
+   "to": "880",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_onset_features_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_onset_features_of",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 12,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 11,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 12,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "767",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "769",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "878",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "NumericTweak",
+   "to": "880",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_parse",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_rime_lookup",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_rime_lookup",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_rimes_table",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_rimes_table",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_tone_marked_table",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_tone_marked_table",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "1114110",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "126U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 2,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "2047",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "2049",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "247U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "249U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "55295",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "57342",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "57344",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "65535",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "NumericTweak",
+   "to": "65537",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_decode",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_valid",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_valid",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_valid",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_abort",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_abort",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_build_env",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 11,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_chrom_cmp",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_chrom_cmp",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_chrom_cmp",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_chrom_cmp",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_chrom_cmp",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_number",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_params",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_params",
+   "op": "NumericTweak",
+   "to": "-1.0",
+   "count": 1,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_params",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_params",
+   "op": "NumericTweak",
+   "to": "1.0",
+   "count": 1,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_config_params",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_draw_cuts",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_env_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_fitness",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_gene_in",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_mutate_replace",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_mutate_replace",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_mutate_replace",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_mutate_replace",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_mutate_replace",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_ox",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_ox",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 6,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "1000001.0",
+   "count": 2,
+   "origin": "floatbase"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 11,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run_alloc",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_run_outcome_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/hash.c",
+   "function": "bt_ga_sha256_hex",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/hash.c",
+   "function": "bt_ga_sha256_hex",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "22",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 5,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 16,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 22,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_inventory",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 16,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_pool",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_pool",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_pool",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_pool",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_build_pool",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_case_count",
+   "op": "NumericTweak",
+   "to": "817",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_case_count",
+   "op": "NumericTweak",
+   "to": "819",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_config_pool_top_k",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_config_pool_top_k",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_config_pool_top_k",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_cover_word",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_cover_word",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_cover_word",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_cover_word",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 4,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 4,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 4,
+   "origin": "neg"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_entry_cmp",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_get",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_get",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_get",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_has",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_freqs_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_grow_list",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_grow_list",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_grow_list",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_grow_list",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_syllable_frequencies",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 12,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_load_wordlist",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_nucleus_rime",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_onset_spellings",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 11,
+   "origin": "unary"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_parse_u64",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_parse_u64",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_parse_u64",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_pool_cmp",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_pool_cmp",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_pool_cmp",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_pool_cmp",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_pool_cmp",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_read_file",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_read_file",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_read_file",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_read_file",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_read_file",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 8,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "11U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "13U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "14U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "16U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 8,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "30U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "32U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "5U",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "62U",
+   "count": 3,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "64U",
+   "count": 3,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "NumericTweak",
+   "to": "7U",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_render",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_contains",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_contains",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_contains",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_contains",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_strset_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_tone_char",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_tone_char",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "NumericTweak",
+   "to": "193U",
+   "count": 1,
+   "origin": "utf8mask"
+  }
+ ],
+ "test_disposed": [
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "178:17",
+    "182:23",
+    "182:47",
+    "182:72"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "178:5",
+    "182:9"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "179:16",
+    "181:21",
+    "183:20"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "NumericTweak",
+   "to": "0",
+   "killed": [
+    "186:12"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "179:16",
+    "181:21",
+    "183:20"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "NumericTweak",
+   "to": "2",
+   "killed": [
+    "186:12"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "killed": [
+    "192:24",
+    "192:60",
+    "193:17"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "199:62",
+    "200:66",
+    "201:35"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "197:5",
+    "199:13"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "198:25",
+    "199:65",
+    "200:69",
+    "202:25"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "198:25",
+    "199:65",
+    "200:69",
+    "202:25"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_freq_data_eq",
+   "op": "StatementDelete",
+   "to": "",
+   "killed": [
+    "202:17"
+   ],
+   "kept": []
+  }
+ ],
+ "unclassified": []
+}
