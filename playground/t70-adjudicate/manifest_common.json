@@ -1,0 +1,4038 @@
+{
+ "rows": [
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count+meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "NumericTweak",
+   "to": "133",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "NumericTweak",
+   "to": "135",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_exit_failure",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_fail",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_fail",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_fail",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_run",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_run",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_run",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_run",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_harness_run",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 11,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "255",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "257",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "492",
+   "count": 2,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "NumericTweak",
+   "to": "494",
+   "count": 2,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/bt_harness.c",
+   "function": "bt_test_open_scratch",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_crash",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_enter",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_exit",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_fail_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 4,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_init",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_install_crash_handler",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_install_crash_handler",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_install_crash_handler",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_remove_crash_handler",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_remove_crash_handler",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_remove_crash_handler",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_shutdown",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_shutdown",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_shutdown",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_shutdown",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "claim_slot",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "claim_slot",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "emit",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "emit",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "emit",
+   "op": "NumericTweak",
+   "to": "511",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "emit",
+   "op": "NumericTweak",
+   "to": "513",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "emit",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_f64",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_f64",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_int",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_int",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_load",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_load",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_load",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_load",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_reset",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_try_load",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_try_load",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_try_load",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_try_load",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_try_load",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_value",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_value",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_value",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "bt_config_value",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/config.c",
+   "function": "read_file",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/fsrs_math.c",
+   "function": "bt_fsrs_math_init",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/fsrs_math.c",
+   "function": "bt_fsrs_math_init",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/fsrs_math.c",
+   "function": "bt_fsrs_math_init",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "override"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 13,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "11U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "127U",
+   "count": 3,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "129U",
+   "count": 4,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "13U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "17U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "191U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "193U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "19U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 13,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "2047",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "2049",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "223U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "225U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "5U",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "62U",
+   "count": 5,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "64U",
+   "count": 4,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "65535",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "65537",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "NumericTweak",
+   "to": "7U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "append_utf8",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 5,
+   "origin": "override"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 3,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_array_push",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_at",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_integer_or",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_integer_or",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_integer_or",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_new_string",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_object_set",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_object_set",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_object_set",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_object_set",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_object_set",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_parse",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_parse",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_parse",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_parse",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_parse",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_serialize",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_serialize",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_serialize",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "bt_json_serialize",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "compare_key_slots",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "compare_key_slots",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "compare_key_slots",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "compare_key_slots",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "digit_at",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "fail_at",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "fail_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "fail_here",
+   "op": "NumericTweak",
+   "to": "95",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "fail_here",
+   "op": "NumericTweak",
+   "to": "97",
+   "count": 1,
+   "origin": "meta"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "fail_here",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "hex_value",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "literal",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "literal",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_array",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_array",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_array",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_array",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_array",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escape",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "count+unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+count+unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "55295",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "56318",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "56319",
+   "count": 2,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "56320",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "56321",
+   "count": 2,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "57342",
+   "count": 2,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "NumericTweak",
+   "to": "57344",
+   "count": 2,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_escaped_codepoint",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_exponent",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_exponent",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_exponent",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_exponent",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_fraction",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_int_part",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_int_part",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_int_part",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_int_part",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_number",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_object",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 17,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 8,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 2,
+   "origin": "cap+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_string",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 9,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "parse_value",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "read_hex4",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "read_hex4",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "read_hex4",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "read_hex4",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "read_hex4",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_number",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_number",
+   "op": "NumericTweak",
+   "to": "18",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_number",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_number",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_number",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_string",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "serialize_value",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "simple_escape",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "simple_escape",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "simple_escape",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "skip_space",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "text_dup",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 5,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 4,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 9,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 11,
+   "origin": "count+utf8mask+unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 4,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 18,
+   "origin": "zero+count+utf8mask+unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "1114110",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "1114112",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "127",
+   "count": 2,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "129",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "14U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "16U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "190",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "192",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "193",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "195",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 5,
+   "origin": "count+utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "2047",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "2049",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "222",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "223",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "224",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "225",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "238",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "239",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "240",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "241",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "243",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "245",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "30U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "32U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "55295",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "55297",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "57342",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "57344",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "5U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "62U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "64U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "65535",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "65537",
+   "count": 1,
+   "origin": "unicoderange"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "6U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "7U",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "NumericTweak",
+   "to": "8U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "utf8_valid",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "value_new",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_config_path",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_config_path_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_exe_dir",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_is_absolute",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_join",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_resolve_root",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_user_root_from",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 2,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_user_root_from",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_user_root_from",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_user_root_from",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_user_root_from",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_workspace_root",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_workspace_root_from",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_workspace_root_from",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 7,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "bt_paths_write_atomic",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "join_out",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "path_is_drive_letter",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "path_is_drive_letter",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "path_is_unc_lead",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "path_is_unc_lead",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "path_is_unc_lead",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "unc_is_absolute",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "unc_is_absolute",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "unc_is_absolute",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_hex",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "sha256_block",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "sha256_block",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "sha256_block",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "sha256_block",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 23,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 4,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 15,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 20,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 14,
+   "origin": "zero+count"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "10U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "11U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "127U",
+   "count": 5,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "128U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "129U",
+   "count": 5,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "12U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "130U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "132U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "134U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "137U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "139U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "13U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "153U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "155U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "158U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "159U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "160U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "161U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "167U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "168U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "169U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "170U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "174U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "176U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "193U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "195U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 20,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "224U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "225U",
+   "count": 2,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "226U",
+   "count": 2,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "227U",
+   "count": 2,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "228U",
+   "count": 1,
+   "origin": "utf8mask"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 10,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/space.c",
+   "function": "bt_space_len",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_append",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_append",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_appendf",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "report"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_free",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_free",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "count+cap"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+cap"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 2,
+   "origin": "cap"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_init",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_join",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_join",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_join",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 5,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_reserve",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_trim",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_trim",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_tsv_split",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_tsv_split",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "bt_when_iso8601",
+   "op": "NumericTweak",
+   "to": "3601",
+   "count": 2,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "bt_when_now",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "bt_when_now",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "bt_when_now",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "count+calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero+count+calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "101",
+   "count": 1,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "1459",
+   "count": 1,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "146095",
+   "count": 2,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "146097",
+   "count": 1,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "count"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "36523",
+   "count": 1,
+   "origin": "calconst"
+  },
+  {
+   "file": "src/common/when.c",
+   "function": "civil_from_days",
+   "op": "NumericTweak",
+   "to": "36525",
+   "count": 1,
+   "origin": "calconst"
+  }
+ ],
+ "test_disposed": [],
+ "unclassified": []
+}

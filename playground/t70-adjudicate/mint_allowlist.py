@@ -78,8 +78,10 @@ CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_p
 CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg", "bt_pz_alg_destroy", "fclose",
                "bt_ga_freq_data_free", "bt_ga_freqs_free", "bt_ga_strset_free", "bt_json_free"}
 LAZY_IDS = {"analysis_ensure", "g_analysis_ready", "g_tables_ready", "require_cube_shaped"}
-ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str"}
+ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str", "error"}
 EQUIV_WRITE_IDS = {"dst", "layers", "err", "status"}
+REPORT_IDS = {"fail_here", "g_current_failed", "g_failed", "g_passed", "printf", "fprintf",
+              "vprintf", "signal", "raise", "exit", "fflush", "va_end", "g_previous_filter"}
 
 QUARTER_SET = {"1", "2", "2U", "3", "4U"}
 BOUND_SET = {"6", "8", "12", "24", "48", "255", "127", "32", "10"}
@@ -102,6 +104,9 @@ GENRE_TEXT = {
     "utf8mask": "the shifted utf8 lead or continuation mask alters only codepoint shapes the suite strings never carry, and cargo-mutants has no literal genre",
     "unicoderange": "the shifted codepoint range bound admits or rejects values outside every suite string, and cargo-mutants has no literal genre",
     "floatbase": "the shifted float base or budget sits where no suite comparison outcome moves, every suite config overrides the default or runs far inside the budget, and cargo-mutants has no literal genre",
+    "report": "the deleted statement reports a failing check, prints trace output, or installs a crash handler, clean suite runs never execute it and the harness verdicts travel through exit codes the statement does not touch",
+    "calconst": "the shifted calendar constant moves only date spans outside the suite goldens, and cargo-mutants has no literal genre",
+    "meta": "the shifted harness constant changes an exit status, directory mode, or margin no suite assertion observes, and cargo-mutants has no literal genre",
     "leq": "the admitted equality case never occurs, the compared keys are distinct by construction or the extra probe reads a terminator or a value an invariant makes unreachable",
     "eqflip": "the flipped equality guards crash paths or kind dispatch that is dead under valid inputs, or feeds hand written equality whose Rust twin is derive(PartialEq) and was never mutated",
     "bound_admit": "boundary admission on a guard whose boundary value no suite input reaches, or a budget guard where one extra spin changes no outcome",
@@ -141,6 +146,15 @@ NT_CLASSES_PUZZLES = [
 UTF8_MASKS = {"0x80", "0x0FU", "0x1FU", "0x3FU", "0x7FU", "0xC0U", "0xE0U", "0xF0U", "0xF8U"}
 UNICODE_RANGES = {"0x300", "0x36F", "0x800", "0x10000", "0xD800", "0xDFFF", "0x10FFFF"}
 
+UTF8_MASKS_COMMON = UTF8_MASKS | {
+    "0x20", "0x80U", "0x07U", "0x0BU", "0x0CU", "0x81U", "0x85U", "0x8AU", "0x9AU",
+    "0x9FU", "0xA0U", "0xA8U", "0xA9U", "0xAFU", "0xBF", "0xC2", "0xC2U", "0xDF",
+    "0xE0", "0xE0U", "0xE1U", "0xE2U", "0xE3U", "0xEF", "0xF0", "0xF4",
+}
+UNICODE_RANGES_COMMON = UNICODE_RANGES | {"0xDC00", "0xDBFF"}
+CAL_CONSTS = {"146096", "36524", "1460", "3600", "100"}
+META_CONSTS = {"0755", "134", "96"}
+
 NT_CLASSES_GA = [
     ({"0"}, "zero"),
     ({"1", "2", "3", "4", "5", "6", "7", "6U", "12U", "14", "21"}, "count"),
@@ -148,6 +162,16 @@ NT_CLASSES_GA = [
     (UTF8_MASKS, "utf8mask"),
     (UNICODE_RANGES, "unicoderange"),
     ({"0.0", "1000000.0"}, "floatbase"),
+]
+
+NT_CLASSES_COMMON = [
+    ({"0"}, "zero"),
+    ({"1", "2", "3", "4", "7", "8", "10", "17", "6U", "12U", "18U"}, "count"),
+    ({"512", "32", "64", "256", "128", "16"}, "cap"),
+    (UTF8_MASKS_COMMON, "utf8mask"),
+    (UNICODE_RANGES_COMMON, "unicoderange"),
+    (CAL_CONSTS, "calconst"),
+    (META_CONSTS, "meta"),
 ]
 
 OVERRIDES = {
@@ -171,6 +195,8 @@ def nt_classes_for(area):
         return NT_CLASSES_PUZZLES
     if area == "ga":
         return NT_CLASSES_GA
+    if area == "common":
+        return NT_CLASSES_COMMON
     return NT_CLASSES
 
 
@@ -188,6 +214,8 @@ def genre_of(family, area):
             return "error"
         if frm in EQUIV_WRITE_IDS:
             return "equiv_write"
+        if frm in REPORT_IDS:
+            return "report"
         return "write"
     if op == "NumericTweak":
         values = set(p.split("->")[0] for p in family["pairs"])

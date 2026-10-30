@@ -1,0 +1,8 @@
+ENTER merge_proof areas=common
+shard 0: 1639 mutants
+shard 1: 1640 mutants
+merge rc=0 out=merged 2 inputs, 3279 mutants, wrote C:\Users\lavantien\dev\github\blind-trainer\playground\t70-adjudicate\proof_merged_common.json err=
+gate(post-retest truth) rc=0 out=survivors gated: 1099, all covered err=
+gate(snapshot truth) rc=0 out=survivors gated: 1099, all covered err=
+excluded timeout=64 pending=0
+EXIT merge_proof
