@@ -486,3 +486,37 @@ BT_TEST(mutate_stage, run_exe_lands_sanitized_inside_the_repo_build_tree) {
     free(text);
     (void)remove(staged);
 }
+
+BT_TEST(mutate_stage, scratch_rooted_run_exe_stages_under_the_workspace) {
+    char root[BT_MUT_PATH_MAX];
+    bt_test_repo_root(root);
+    char temp[BT_MUT_PATH_MAX];
+    GetTempPathA(BT_MUT_PATH_MAX, temp);
+    size_t len = strlen(temp);
+    while (len > 0 && (temp[len - 1] == '\\' || temp[len - 1] == '/')) {
+        len--;
+    }
+    temp[len] = '\0';
+    char planted[BT_MUT_PATH_MAX];
+    snprintf(planted, BT_MUT_PATH_MAX, "%s/bt-mut-stage-unit", temp);
+    bt_mut_rmtree(planted);
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/core/0", planted);
+    bt_test_mkdirs(dir);
+    char built[BT_MUT_PATH_MAX];
+    snprintf(built, BT_MUT_PATH_MAX, "%s/core_alg_test.exe", dir);
+    BT_CHECK_EQ(bt_mut_write_file(built, "abc", 3), 0);
+    char staged[BT_MUT_PATH_MAX];
+    BT_CHECK_EQ(bt_mut_stage_run_exe(root, "core_alg_test", "core/0", built, staged), 0);
+    char expected[BT_MUT_PATH_MAX];
+    snprintf(expected, BT_MUT_PATH_MAX, "%s/build/bin/mutate-run/core_alg_test-core_0.exe", root);
+    BT_CHECK(strcmp(staged, expected) == 0);
+    BT_CHECK(strstr(staged, planted) != staged);
+    char *text = NULL;
+    size_t body_len = 0;
+    BT_CHECK_EQ(bt_mut_read_file(staged, &text, &body_len), 0);
+    BT_CHECK(body_len == 3 && memcmp(text, "abc", 3) == 0);
+    free(text);
+    (void)remove(staged);
+    bt_mut_rmtree(planted);
+}
