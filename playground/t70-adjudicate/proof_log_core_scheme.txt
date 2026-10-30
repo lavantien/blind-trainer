@@ -1,0 +1,11 @@
+ENTER merge_proof areas=core,scheme
+shard 0: 2567 mutants
+shard 1: 2568 mutants
+merge rc=0 out=merged 2 inputs, 5135 mutants, wrote C:\Users\lavantien\dev\github\blind-trainer\playground\t70-adjudicate\proof_merged_core_scheme.json err=
+gate(post-retest truth) rc=0 out=survivors gated: 763, all covered err=
+gate(snapshot truth) rc=1 out= err=mutants gate: surviving mutant not in allowlist: file=src/core/alg.c function=bt_alg_eq genre=NumericTweak replacement=-1
+surviving mutant not in allowlist: file=src/core/alg.c function=bt_alg_eq genre=NumericTweak replacement=1
+surviving mutant not in allowlist: file=src/core/alg.c function=bt_alg_eq genre=StatementDelete replacement=
+surviving mutant not in allowlist: file=src/scheme/classifier.
+excluded timeout=21 pending=7
+EXIT merge_proof

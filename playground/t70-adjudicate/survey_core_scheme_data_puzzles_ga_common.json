@@ -1,0 +1,261 @@
+{
+ "areas": [
+  "core",
+  "scheme",
+  "data",
+  "puzzles",
+  "ga",
+  "common"
+ ],
+ "suites": [
+  "common_bt_harness_test",
+  "common_bt_trace_test",
+  "common_config_test",
+  "common_fsrs_math_test",
+  "common_json_test",
+  "common_paths_test",
+  "common_rng_test",
+  "common_sha256_test",
+  "common_strbuf_test",
+  "common_when_test",
+  "core_alg_test",
+  "core_analysis_pins_test",
+  "core_analysis_sheets_test",
+  "core_analysis_test",
+  "core_cube_test",
+  "core_expand_test",
+  "core_fuzzkill_analysis_test",
+  "core_geometric_oracle_test",
+  "core_moves_test",
+  "core_notation_totality_test",
+  "core_order_pins_test",
+  "core_parse_roundtrip_test",
+  "core_qtm_oracle_test",
+  "core_ref_ground_path_test",
+  "core_vendor_cycles_test",
+  "data_commutator_corpus_test",
+  "data_commutator_test",
+  "data_corpus_more_test",
+  "data_corpus_oracle_test",
+  "data_db_test",
+  "data_digest_test",
+  "data_expand_oracle_test",
+  "data_fsrs_goldens_test",
+  "data_fsrs_migration_test",
+  "data_fsrs_props_test",
+  "data_fsrs_test",
+  "data_fuzzkill_data_test",
+  "data_import_test",
+  "data_notation_test",
+  "data_pair_alternation_test",
+  "data_paths_layer_test",
+  "data_paths_more_test",
+  "data_repo_algs_test",
+  "data_repo_cards_test",
+  "data_repo_settings_test",
+  "data_repo_solves_test",
+  "data_repo_srs_test",
+  "data_repo_user_test",
+  "data_seedpack_normalize_test",
+  "data_seedpack_test",
+  "data_srs_fsrs_test",
+  "data_srs_test",
+  "data_tsv_more_test",
+  "data_tsv_parse_test",
+  "data_verify_more_test",
+  "data_verify_oracle_test",
+  "data_verify_problem_string_test",
+  "data_verify_test",
+  "ga_dist_test",
+  "ga_features_tables_test",
+  "ga_features_test",
+  "ga_fuzzkill_ga_test",
+  "ga_ga_public_surface_test",
+  "ga_ga_test",
+  "ga_hash_test",
+  "ga_inventory_more_test",
+  "ga_inventory_test",
+  "ga_lib_test",
+  "puzzles_fto_oracle_test",
+  "puzzles_geometry_test",
+  "puzzles_mega_oracle_test",
+  "puzzles_nxn_oracle_test",
+  "puzzles_pyra_oracle_test",
+  "puzzles_skewb_oracle_test",
+  "puzzles_skewb_test",
+  "puzzles_sq1_oracle_test",
+  "puzzles_tier1_test",
+  "scheme_classifier_oracle_test",
+  "scheme_classifier_test",
+  "scheme_fuzzkill_suite_test",
+  "scheme_lib_test",
+  "scheme_memo_more_test",
+  "scheme_memo_oracle_test",
+  "scheme_memo_test",
+  "scheme_pairs_oracle_test",
+  "scheme_pairs_test",
+  "scheme_scheme_map_oracle_test",
+  "scheme_scheme_test",
+  "scheme_scramble_oracle_test",
+  "scheme_scramble_test"
+ ],
+ "row_statuses": {
+  "survived": 376565,
+  "builderr": 54110,
+  "killed": 39609,
+  "timeout": 690,
+  "pending": 2
+ },
+ "raw": {
+  "sites": 24345,
+  "union": {
+   "survived": 6246,
+   "killed": 14710,
+   "unviable": 3136,
+   "timeout": 251,
+   "pending": 2
+  }
+ },
+ "remapped": {
+  "sites": 24345,
+  "union": {
+   "survived": 6246,
+   "killed": 14710,
+   "unviable": 3136,
+   "timeout": 251,
+   "pending": 2
+  }
+ },
+ "per_area": {
+  "common": [
+   3343,
+   [
+    [
+     "killed",
+     1881
+    ],
+    [
+     "survived",
+     1099
+    ],
+    [
+     "timeout",
+     64
+    ],
+    [
+     "unviable",
+     299
+    ]
+   ]
+  ],
+  "core": [
+   2614,
+   [
+    [
+     "killed",
+     1731
+    ],
+    [
+     "pending",
+     2
+    ],
+    [
+     "survived",
+     414
+    ],
+    [
+     "timeout",
+     16
+    ],
+    [
+     "unviable",
+     451
+    ]
+   ]
+  ],
+  "data": [
+   9179,
+   [
+    [
+     "killed",
+     5246
+    ],
+    [
+     "survived",
+     3012
+    ],
+    [
+     "timeout",
+     76
+    ],
+    [
+     "unviable",
+     845
+    ]
+   ]
+  ],
+  "ga": [
+   2352,
+   [
+    [
+     "killed",
+     1374
+    ],
+    [
+     "survived",
+     655
+    ],
+    [
+     "timeout",
+     34
+    ],
+    [
+     "unviable",
+     289
+    ]
+   ]
+  ],
+  "puzzles": [
+   4308,
+   [
+    [
+     "killed",
+     2900
+    ],
+    [
+     "survived",
+     643
+    ],
+    [
+     "timeout",
+     52
+    ],
+    [
+     "unviable",
+     713
+    ]
+   ]
+  ],
+  "scheme": [
+   2549,
+   [
+    [
+     "killed",
+     1578
+    ],
+    [
+     "survived",
+     423
+    ],
+    [
+     "timeout",
+     9
+    ],
+    [
+     "unviable",
+     539
+    ]
+   ]
+  ]
+ }
+}

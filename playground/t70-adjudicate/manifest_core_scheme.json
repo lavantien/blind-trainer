@@ -1,0 +1,3219 @@
+{
+ "rows": [
+  {
+   "file": "src/core/alg.c",
+   "function": "axis_char",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "axis_char",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "axis_char",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_format",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_format",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_format",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_format",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_free",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_inverse",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse_token",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse_token",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_parse_token",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_push",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_push",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_push",
+   "op": "NumericTweak",
+   "to": "3U",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_try_parse",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_try_parse",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "face_char",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "face_char",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "face_char",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "face_index_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "slice_char",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "slice_char",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "slice_char",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 12,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 17,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 11,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 7,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "analysis_ensure",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "analysis_ensure",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "axis_priority",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_stickers",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_stickers",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_stickers",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "ported"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_corner_twist",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_flip",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_flip",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_stickers",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_stickers",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_stickers",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_edge_stickers",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_head_sticker",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_piece_of",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_piece_of",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_piece_of",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "quarter+bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "254",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "47",
+   "count": 3,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 3,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_sticker_cycles",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "write"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_summarize",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_summarize",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_summarize",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_summarize",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "bt_summarize",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/core/analysis.c",
+   "function": "dot3",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter+bound"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "quarter+bound"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "band_of",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_apply",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_centers_fixed",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+bound"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_centers_fixed",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_from_occ",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_is_solved",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_position_of",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_position_of",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 3,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/cube.c",
+   "function": "bt_cube_try_from_occ",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "bt_expand",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "bt_expand_cancel",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_seq",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 14,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "255",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
+   "op": "NumericTweak",
+   "to": "257",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_unit",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "expand_unit",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "flush_word",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "flush_word",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "parse_count_digits",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "parse_count_digits",
+   "op": "NumericTweak",
+   "to": "11U",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "parse_count_digits",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "parse_count_digits",
+   "op": "NumericTweak",
+   "to": "9U",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "tok_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "tok_push",
+   "op": "NumericTweak",
+   "to": "15",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "tok_push",
+   "op": "NumericTweak",
+   "to": "17",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/core/expand.c",
+   "function": "tok_push",
+   "op": "NumericTweak",
+   "to": "3U",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 13,
+   "origin": "quarter+size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 10,
+   "origin": "quarter+size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 6,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 7,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 7,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 5,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero+size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_core_init",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_face",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_face",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_inner",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_inner",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_rotation",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_rotation",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_slice",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_slice",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_wide",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_of_wide",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 5,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 10,
+   "origin": "crash"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_move_table",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 2,
+   "origin": "unary"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_moves_cell_of",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_moves_cell_of",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "bt_moves_geometry",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "ported"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_layer_perm",
+   "op": "NumericTweak",
+   "to": "5U",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_power",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_rot",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_rot",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_rot",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_rot",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "lazy"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify_alg",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify_alg",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify_alg",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classify_alg",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_flip",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_flip",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_twist",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_twist",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_twist",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_defect_twist",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_flipped_pieces",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_flipped_pieces",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_flipped_pieces",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_style_block",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_style_block",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_style_block",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_swap_twist_block",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_swap_twist_block",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_swap_twist_block",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_twist_block",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_twist_block",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_twist_block",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_is_twist_block",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_cases",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_twisted_pieces",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_twisted_pieces",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_twisted_pieces",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "classify_traces",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "classify_traces",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "classify_traces",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "classify_traces",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "classify_traces",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "defects_of",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "defects_of",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "defects_of",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "shape_sig",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "shape_sig",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "shape_sig",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "shape_sig",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 2,
+   "origin": "unary"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 6,
+   "origin": "bound+size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 6,
+   "origin": "bound+size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 5,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 5,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "assert_case_legal",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "assert_case_legal",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_succ",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_succ",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_succ",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_succ",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_succ",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_corner_twist_state",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_edge_flipped",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_edge_flipped",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_edge_mate",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_memo",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_memo_occ",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_memo_occ",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "NumericTweak",
+   "to": "199",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "NumericTweak",
+   "to": "201",
+   "count": 1,
+   "origin": "cap"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_walk_run",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "floating_pieces",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "floating_pieces",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "floating_pieces",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "in_place",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "in_place",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "in_place",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "scan_piece",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "solved_piece",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "solved_piece",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "solved_piece",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/pairs.c",
+   "function": "bt_scheme_enumerate_cases",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "25",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_head_sticker",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_head_sticker",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_head_sticker",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_head_sticker",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_head_sticker",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "NumericTweak",
+   "to": "23",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "NumericTweak",
+   "to": "25",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_name_of",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_same_piece",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_same_piece",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_same_piece",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_same_piece",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "bt_scheme_same_piece",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 3,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 3,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_build_occ",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_build_occ",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_flip_count",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "quarter+bound+size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 11,
+   "origin": "zero+quarter+bound+size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 3,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 3,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "47",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 2,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 2,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_occ_is_legal",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_perm_sign",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_perm_sign",
+   "op": "NumericTweak",
+   "to": "23",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_perm_sign",
+   "op": "NumericTweak",
+   "to": "25",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_piece_perm",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 4,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "quarter+bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 11,
+   "origin": "zero+bound+size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 3,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 4,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 5,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 4,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 7,
+   "origin": "write"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_state",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "identity_occ",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "NumericTweak",
+   "to": "254",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "position_of_sticker",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "size54"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "slot_occupant",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "slot_occupant",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  }
+ ],
+ "test_disposed": [
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "49:21"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "49:21"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/core/alg.c",
+   "function": "bt_alg_eq",
+   "op": "StatementDelete",
+   "to": "",
+   "killed": [
+    "50:9"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "killed": [
+    "394:17",
+    "395:27",
+    "395:56",
+    "402:24",
+    "402:57",
+    "403:27",
+    "403:52",
+    "404:24",
+    "404:54",
+    "405:24",
+    "405:42",
+    "405:60",
+    "405:78",
+    "406:58",
+    "407:24"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "395:74",
+    "397:35",
+    "397:74",
+    "398:32",
+    "403:66",
+    "406:27",
+    "406:74"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "394:5",
+    "397:13",
+    "402:12",
+    "404:12",
+    "407:12"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "396:25"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "395:77",
+    "396:25",
+    "403:69",
+    "406:77"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_classification_eq",
+   "op": "StatementDelete",
+   "to": "",
+   "killed": [
+    "395:9",
+    "399:17",
+    "403:9",
+    "405:9",
+    "408:9"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "288:21",
+    "294:22"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "0",
+   "killed": [
+    "314:44",
+    "315:46"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "2",
+   "killed": [
+    "314:39",
+    "315:41"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "4",
+   "killed": [
+    "314:39",
+    "315:41"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "StatementDelete",
+   "to": "",
+   "killed": [
+    "295:17",
+    "301:9",
+    "314:9",
+    "315:9"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "UnaryDrop",
+   "to": "",
+   "killed": [
+    "295:23"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "420:18",
+    "420:48",
+    "425:29",
+    "426:65"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_eq",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "420:5",
+    "425:9"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "424:21",
+    "426:68"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_trace_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "424:21",
+    "426:68"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "killed": [
+    "584:26",
+    "584:43",
+    "584:57",
+    "584:71"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "killed": [
+    "584:79"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/memo.c",
+   "function": "bt_scheme_residue_class_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "584:82"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "killed": [
+    "81:5"
+   ],
+   "kept": []
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "-1",
+   "killed": [
+    "65:9"
+   ],
+   "kept": [
+    "65:14",
+    "66:14",
+    "67:14"
+   ]
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "NumericTweak",
+   "to": "1",
+   "killed": [
+    "65:9"
+   ],
+   "kept": [
+    "65:14",
+    "66:14",
+    "67:14"
+   ]
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "StatementDelete",
+   "to": "",
+   "killed": [
+    "65:5",
+    "66:5"
+   ],
+   "kept": []
+  }
+ ],
+ "unclassified": []
+}
