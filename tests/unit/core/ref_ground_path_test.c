@@ -4,9 +4,11 @@
 
 #ifdef _WIN32
 #include <direct.h>
+#include <io.h>
 #include <process.h>
 #include <windows.h>
 #else
+#include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
@@ -86,14 +88,48 @@ static void tc_make_layout(char root[BT_PATH_MAX]) {
 }
 
 static void tc_layout_remove(const char *root) {
-    char cmd[BT_PATH_MAX + 32];
 #ifdef _WIN32
-    snprintf(cmd, sizeof cmd, "cmd /c rmdir /s /q \"%s\"", root);
+    char pattern[BT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s\\*", root);
+    struct _finddata_t entry;
+    intptr_t handle = _findfirst(pattern, &entry);
+    if (handle != -1) {
+        do {
+            if (strcmp(entry.name, ".") == 0 || strcmp(entry.name, "..") == 0) {
+                continue;
+            }
+            char child[BT_PATH_MAX];
+            snprintf(child, sizeof child, "%s\\%s", root, entry.name);
+            if (entry.attrib & _A_SUBDIR) {
+                tc_layout_remove(child);
+            } else {
+                remove(child);
+            }
+        } while (_findnext(handle, &entry) == 0);
+        _findclose(handle);
+    }
+    _rmdir(root);
 #else
-    snprintf(cmd, sizeof cmd, "rm -rf \"%s\"", root);
+    DIR *dir = opendir(root);
+    if (dir != NULL) {
+        struct dirent *entry;
+        while ((entry = readdir(dir)) != NULL) {
+            if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+                continue;
+            }
+            char child[BT_PATH_MAX];
+            snprintf(child, sizeof child, "%s/%s", root, entry->d_name);
+            struct stat st;
+            if (stat(child, &st) == 0 && S_ISDIR(st.st_mode)) {
+                tc_layout_remove(child);
+            } else {
+                remove(child);
+            }
+        }
+        closedir(dir);
+    }
+    rmdir(root);
 #endif
-    int rc = system(cmd);
-    (void)rc;
 }
 
 BT_TEST(rg, config_root_beats_exe_location) {
