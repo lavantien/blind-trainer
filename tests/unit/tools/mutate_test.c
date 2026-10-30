@@ -18,7 +18,7 @@ BT_TEST(mutate_driver, selftest_passes) {
     int rc = bt_spawn_capture(exe, argv, root, 110000, &code, out, sizeof out, err, sizeof err);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 0);
-    BT_CHECK(strstr(out, "suite mutate: 29 passed, 0 failed") != NULL);
+    BT_CHECK(strstr(out, "suite mutate: 30 passed, 0 failed") != NULL);
 }
 
 BT_TEST(mutate_driver, usage_without_args_exits_2) {

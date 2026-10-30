@@ -652,6 +652,7 @@ void bt_test_mutate_engine_records_killed_for_a_guarded_test(void);
 void bt_test_mutate_engine_records_survived_for_unread_code(void);
 void bt_test_mutate_engine_records_timeout_for_a_frozen_loop(void);
 void bt_test_mutate_engine_rejects_parallel_workers(void);
+void bt_test_mutate_engine_stages_the_suite_exe_inside_the_workspace(void);
 void bt_test_mutate_exe_switch_reruns_terminal_rows(void);
 void bt_test_mutate_ledger_resume_reruns_only_pending_rows(void);
 void bt_test_mutate_report_refuses_pending_rows(void);
@@ -691,6 +692,10 @@ int bt_mutate_selftest(void) {
             bt_test_mutate_engine_records_timeout_for_a_frozen_loop,
         },
         {"mutate.engine_rejects_parallel_workers", bt_test_mutate_engine_rejects_parallel_workers},
+        {
+            "mutate.engine_stages_the_suite_exe_inside_the_workspace",
+            bt_test_mutate_engine_stages_the_suite_exe_inside_the_workspace,
+        },
         {
             "mutate.exe_switch_reruns_terminal_rows",
             bt_test_mutate_exe_switch_reruns_terminal_rows,
