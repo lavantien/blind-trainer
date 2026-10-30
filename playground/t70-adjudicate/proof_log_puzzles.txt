@@ -1,0 +1,8 @@
+ENTER merge_proof areas=puzzles
+shard 0: 2128 mutants
+shard 1: 2128 mutants
+merge rc=0 out=merged 2 inputs, 4256 mutants, wrote C:\Users\lavantien\dev\github\blind-trainer\playground\t70-adjudicate\proof_merged_puzzles.json err=
+gate(post-retest truth) rc=0 out=survivors gated: 643, all covered err=
+gate(snapshot truth) rc=0 out=survivors gated: 643, all covered err=
+excluded timeout=52 pending=0
+EXIT merge_proof

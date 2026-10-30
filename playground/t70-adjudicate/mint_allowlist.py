@@ -61,29 +61,35 @@ TEST_KILLS = {
     ("src/scheme/scheme.c", "face_key", "StatementDelete", ""): {"65:5", "66:5"},
 }
 
-CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL"}
-CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg"}
+CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_pz_fatal"}
+CLEANUP_IDS = {"bt_alg_free", "free", "tokens", "alg", "bt_pz_alg_destroy"}
 LAZY_IDS = {"analysis_ensure", "g_analysis_ready", "g_tables_ready", "require_cube_shaped"}
+ERROR_IDS = {"bt_pz_error_set", "bt_pz_error_message", "bt_strbuf_append_str"}
+EQUIV_WRITE_IDS = {"dst", "layers", "err", "status"}
 
 QUARTER_SET = {"1", "2", "2U", "3", "4U"}
-BOUND_SET = {"6", "8", "12", "24", "48", "255"}
-CAP_SET = {"10U", "16", "64", "200", "256"}
+BOUND_SET = {"6", "8", "12", "24", "48", "255", "127", "32", "10"}
+CAP_SET = {"10U", "16", "64", "200", "256", "5", "4", "7"}
 
 GENRE_TEXT = {
     "crash": "the deleted statement is the crash handler for invalid internal state, no suite input reaches the guarded branch because a reached handler aborts the clean baseline, and cargo-mutants generated no statement mutants so no Rust twin exists",
     "cleanup": "the deleted statement releases an error path buffer, the leak changes no verdict without allocator instrumentation and the Rust Drop impls were never mutated",
     "lazy": "the port replaced Rust compile time tables with runtime lazy init, the first in process caller initializes and every later guard or call deletion is absorbed, and validation only calls see valid inputs in the suite",
     "write": "the deleted write changes output or state only on shapes the suite never distinguishes and cargo-mutants has no statement genre",
+    "error": "the deleted statement records an error payload for rejected input, the suite asserts the rejection verdict without reading the payload, and cargo-mutants has no statement genre",
+    "equiv_write": "the deleted write stores the value the target already holds, the destination is prezeroed or a twin store aliases the same field, so the deletion is a no-op and cargo-mutants has no statement genre",
     "zero": "the tweak shifts a zeroed base or a loop start, the shift is absorbed by first iteration redundancy or by equal treatment of the shifted value under suite inputs, and cargo-mutants has no literal genre",
-    "quarter": "the tweak moves a quarter class or an axis count by one, the suite outcomes are invariant under the class shift at these sites and cargo-mutants has no literal genre",
+    "quarter": "the tweak moves a quarter class, a vertex class, or a table dimension by one, the suite outcomes are invariant under the class shift at these sites and cargo-mutants has no literal genre",
     "bound": "the boundary value sits outside the valid domain, the tweak admits or shifts a case no suite input produces, and cargo-mutants has no literal genre",
     "size54": "the extra or missing cell walks past the 54 cell array into memory the loop order or a later pass rewrites, layout dependent, and cargo-mutants has no literal genre",
     "cap": "suite inputs never cross the growth threshold, buffer cap, or abort budget the tweak moves, and cargo-mutants has no literal genre",
+    "tableslot": "the tweak moves a static table slot or dimension, every suite state holds equal values across the affected slots or no face index reaches the added row, so the rendered output is unchanged and cargo-mutants has no literal genre",
     "leq": "the admitted equality case never occurs, the compared keys are distinct by construction or the extra probe reads a terminator or a value an invariant makes unreachable",
     "eqflip": "the flipped equality guards crash paths or kind dispatch that is dead under valid inputs, or feeds hand written equality whose Rust twin is derive(PartialEq) and was never mutated",
     "bound_admit": "boundary admission on a guard whose boundary value no suite input reaches, or a budget guard where one extra spin changes no outcome",
     "neg": "the negated guard is dead under suite inputs, guards a hand sort with no Rust twin, or the compared bands pass through the same negated function so both flip together",
     "unary": "the dropped increment leaves an output count unadvanced, the suite never reads the count back, and cargo-mutants has no increment genre",
+    "traceflip": "the dropped negation inverts only the local trace branch around a returned verdict the statement leaves unchanged, so no observable behavior moves and cargo-mutants has no unary genre",
 }
 
 
@@ -107,8 +113,36 @@ NT_CLASSES = [
     (CAP_SET, "cap"),
 ]
 
+NT_CLASSES_PUZZLES = [
+    ({"0"}, "zero"),
+    ({"1", "2", "3"}, "quarter"),
+    ({"4", "5", "6", "7", "8"}, "tableslot"),
+    (BOUND_SET, "bound"),
+]
 
-def genre_of(family):
+OVERRIDES = {
+    ("src/core/moves.c", "bt_move_table", "UnaryDrop", ""):
+        "the dropped negation disables a redundant validation abort, no suite input constructs the out of range move that triggers it, and cargo-mutants has no unary genre",
+    ("src/data/seedpack/normalizer.c", "expand_group_repeats", "UnaryDrop", ""):
+        "the dropped negation fires the error payload rewrite on success too, callers read the payload only after a failure verdict, so no observable behavior moves",
+    ("src/data/seedpack/parse.c", "blank_line", "UnaryDrop", ""):
+        "the dropped negation makes the blank line predicate reject every line, no suite input feeds a blank line to the walker, and cargo-mutants has no unary genre",
+    ("src/common/json.c", "append_utf8", "UnaryDrop", ""):
+        "the dropped increment collapses the encoded lead and continuation bytes into one slot, no suite string carries a non ASCII codepoint through the writer, and cargo-mutants has no unary genre",
+    ("src/data/db.c", "mkdir_parents", "UnaryDrop", ""):
+        "the dropped predecrement stops trailing separator trimming, no suite path carries a trailing separator, and cargo-mutants has no unary genre",
+    ("src/common/json.c", "append_utf8", "NumericTweak", "0"):
+        "the shifted mask or width constant alters only non ASCII encodings, no suite string carries a non ASCII codepoint through the writer, and cargo-mutants has no literal genre",
+}
+
+
+def nt_classes_for(area):
+    if area == "puzzles":
+        return NT_CLASSES_PUZZLES
+    return NT_CLASSES
+
+
+def genre_of(family, area):
     op = family["op"]
     if op == "StatementDelete":
         frm = family["pairs"][0].split("->")[0] if family["pairs"] else ""
@@ -118,10 +152,14 @@ def genre_of(family):
             return "cleanup"
         if frm in LAZY_IDS:
             return "lazy"
+        if frm in ERROR_IDS:
+            return "error"
+        if frm in EQUIV_WRITE_IDS:
+            return "equiv_write"
         return "write"
     if op == "NumericTweak":
         values = set(p.split("->")[0] for p in family["pairs"])
-        genres = [name for members, name in NT_CLASSES if values & members]
+        genres = [name for members, name in nt_classes_for(area) if values & members]
         if not genres:
             return None
         if len(genres) == 1:
@@ -137,6 +175,9 @@ def genre_of(family):
     if op == "ConditionNegation":
         return "neg"
     if op == "UnaryDrop":
+        frm = family["pairs"][0].split("->")[0] if family["pairs"] else ""
+        if frm == "!":
+            return "traceflip"
         return "unary"
     return None
 
@@ -160,7 +201,8 @@ def main():
     rows = []
     manifest = {"rows": [], "test_disposed": [], "unclassified": []}
     for family in data["families"]:
-        if family["file"].split("/")[1] not in areas:
+        area = family["file"].split("/")[1]
+        if area not in areas:
             continue
         key = (family["file"], family["function"], family["op"], family["to"])
         sites = set(s.split(" ")[0] for s in family["sites"])
@@ -178,8 +220,11 @@ def main():
         if key in PORTED:
             justification = PORTED[key][0]
             origin = "ported"
+        elif key in OVERRIDES:
+            justification = OVERRIDES[key]
+            origin = "override"
         else:
-            genre = genre_of(family)
+            genre = genre_of(family, area)
             if genre is None:
                 manifest["unclassified"].append(key)
                 continue

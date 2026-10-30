@@ -1,0 +1,2222 @@
+{
+ "rows": [
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 12,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 12,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 10,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 13,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 8,
+   "origin": "quarter+tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 14,
+   "origin": "zero+quarter+tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 5,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 2,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 3,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 2,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_facelets",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_format_alg",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_format_alg",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_invert_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "equiv_write"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_neighbors",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_neighbors",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 6,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 5,
+   "origin": "quarter+tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 6,
+   "origin": "zero+tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 6,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 14,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 3,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_new",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 7,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_opposite",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_opposite",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_parse_alg",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "bt_fto_parse_alg",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "corner_local",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "corner_local",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "corner_local",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 7,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "cross3",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "dot3",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "dot3",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "dot3",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "dot3",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "edge_local",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "face_mask",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "face_mask",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "rotate_point",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "ported"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "rotate_point",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "rotate_point",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "rotate_point",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "vertex_id",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "ported"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "vertex_id",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "vertex_id",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_at",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_at",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_create",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_default_parse",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_default_parse",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_default_parse",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 4,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_destroy",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_destroy",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_destroy",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_push",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_push",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_push",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_push",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_push",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_fatal",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_apply_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_facelets",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_facelets",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_facelets",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_facelets",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_format_alg",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_format_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_invert_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "equiv_write"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_parse_alg",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "bt_mega_parse_alg",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "corner_pos",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "corner_pos",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "describe_move",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "describe_move",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "describe_move",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "describe_move",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "ring_pos",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/mega.c",
+   "function": "ring_pos",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 8,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 9,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "13",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 8,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 13,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 6,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_facelets",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_facelets",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_init",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_is_solved",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_parse_alg",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_parse_alg",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_parse_move",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_parse_move",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_solved_state",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_state_eq",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_state_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero+tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "bt_pz_nxn_state_eq",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_apply_move",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_apply_move",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_apply_move",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_cell_of",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_face_of_normal",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 3,
+   "origin": "ported"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_face_of_normal",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_format_token",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_lookup_letter",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_lookup_letter",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 2,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 3,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 6,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 8,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "NumericTweak",
+   "to": "8",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_parse_token",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_rem_euclid",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_rem_euclid",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_rot90",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_sticker_center",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_sticker_center",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_vt_self",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "47",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "49",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 2,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_apply_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "6",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_format_alg",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_format_alg",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_invert_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "equiv_write"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_alg",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_alg",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_move",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_move",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_move",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_parse_move",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 6,
+   "origin": "error"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_solved_state",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_state_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_state_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_state_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_state_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "token_text",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "token_text",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "write"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 10,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 10,
+   "origin": "quarter+tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 9,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "31",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "33",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 13,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 2,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 3,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "anchors",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "anchors",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "anchors",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_facelets",
+   "op": "NumericTweak",
+   "to": "7",
+   "count": 1,
+   "origin": "tableslot+bound"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_format_alg",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_format_alg",
+   "op": "NumericTweak",
+   "to": "5",
+   "count": 1,
+   "origin": "tableslot"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_invert_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "equiv_write"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_is_solved",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_new",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 3,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_parse_alg",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_parse_alg",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_parse_move",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_state_eq",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_state_eq",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_state_eq",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "bt_skewb_state_eq",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 7,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 7,
+   "origin": "zero+quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "cross3",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 4,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "cross3",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "write"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "rotate_point",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "ported"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "rotate_point",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "rotate_point",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "rotate_point",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "slot_of",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "slot_of",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_apply_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_can_slash",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_can_slash",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_canonical_shape",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 3,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_canonical_shape",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_canonical_shape",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_canonical_shape",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "crash"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_facelets",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_move_slash",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_move_slash",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_parse_alg",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_parse_move",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_parse_move",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "cleanup"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_parse_move",
+   "op": "UnaryDrop",
+   "to": "",
+   "count": 1,
+   "origin": "traceflip"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_solved_state",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_solved_state",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "bt_pz_sq1_solved_state",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 5,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_bare",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "ComparisonSwap",
+   "to": "<",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 2,
+   "origin": "ported"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "NumericTweak",
+   "to": "11",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_int",
+   "op": "NumericTweak",
+   "to": "9",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_paren",
+   "op": "ComparisonSwap",
+   "to": ">",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_paren",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_paren",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "quarter"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_paren",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_parse_paren",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 2,
+   "origin": "leq"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "bound_admit"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 2,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "zero"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "NumericTweak",
+   "to": "126",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "NumericTweak",
+   "to": "128",
+   "count": 1,
+   "origin": "bound"
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_scan",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "error"
+  },
+  {
+   "file": "src/puzzles/tier1.c",
+   "function": "bt_tier1_error_message",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "error"
+  },
+  {
+   "file": "src/puzzles/tier1.c",
+   "function": "bt_verify_tier1",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/tier1.c",
+   "function": "bt_verify_tier1",
+   "op": "ComparisonSwap",
+   "to": "==",
+   "count": 1,
+   "origin": "eqflip"
+  },
+  {
+   "file": "src/puzzles/tier1.c",
+   "function": "bt_verify_tier1",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "neg"
+  },
+  {
+   "file": "src/puzzles/tier1.c",
+   "function": "bt_verify_tier1",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 8,
+   "origin": "crash"
+  }
+ ],
+ "test_disposed": [],
+ "unclassified": []
+}

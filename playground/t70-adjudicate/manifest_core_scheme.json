@@ -1310,7 +1310,7 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 2,
-   "origin": "unary"
+   "origin": "override"
   },
   {
    "file": "src/core/moves.c",
