@@ -84,7 +84,8 @@ bt_replay_orbit bt_replay_default_orbit(const bt_replay_cfg *cfg);
 float bt_replay_wrap_yaw(float deg);
 bt_replay_orbit bt_replay_apply_drag_delta(bt_replay_orbit orbit, const bt_replay_cfg *cfg,
                                            float dx_px, float dy_px);
-bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg *cfg, float notches);
+bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg *cfg,
+                                     float notches);
 void bt_replay_camera_offset(const bt_replay_orbit *orbit, float out[3]);
 float bt_replay_turn_progress(double elapsed_secs, double secs_per_move);
 

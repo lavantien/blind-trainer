@@ -132,9 +132,8 @@ int bt_e2e_read_config(const char *path, bt_json_value **out, char *error, size_
 int bt_e2e_neg_config_exit_from(const bt_json_value *value, long *out, char *error,
                                 size_t error_cap) {
     BT_TRACE_ENTER("e2e.neg_config_exit_from");
-    const bt_json_value *code = value != NULL ? bt_json_get(bt_json_get(value, "release"),
-                                                            "neg_config_exit")
-                                              : NULL;
+    const bt_json_value *code =
+        value != NULL ? bt_json_get(bt_json_get(value, "release"), "neg_config_exit") : NULL;
     if (code == NULL || code->type != BT_JSON_NUMBER || !code->is_integer ||
         code->integer < -2147483648LL || code->integer > 2147483647LL) {
         snprintf(error, error_cap, "config release.neg_config_exit must be an integer");
@@ -150,9 +149,8 @@ int bt_e2e_neg_config_exit_from(const bt_json_value *value, long *out, char *err
 int bt_e2e_window_dims_from(const bt_json_value *value, bt_e2e_window_dims *out, char *error,
                             size_t error_cap) {
     BT_TRACE_ENTER("e2e.window_dims_from");
-    const bt_json_value *section = value != NULL ? bt_json_get(bt_json_get(value, "app"),
-                                                               "window")
-                                                 : NULL;
+    const bt_json_value *section =
+        value != NULL ? bt_json_get(bt_json_get(value, "app"), "window") : NULL;
     if (section == NULL || section->type != BT_JSON_OBJECT) {
         snprintf(error, error_cap, "config app.window missing");
         BT_TRACE_FAIL("e2e.window_dims_from", "%s", error);
@@ -531,8 +529,8 @@ bt_e2e_shot_verdict bt_e2e_check_shot(const char *path, bt_e2e_window_dims dims,
         return BT_E2E_SHOT_FAIL;
     }
     if (width != dims.width || height != dims.height) {
-        snprintf(reason, reason_cap, "dimensions %ux%u, expected %ux%u", width, height,
-                 dims.width, dims.height);
+        snprintf(reason, reason_cap, "dimensions %ux%u, expected %ux%u", width, height, dims.width,
+                 dims.height);
         BT_TRACE_FAIL("e2e.check_shot", "%s", reason);
         BT_TRACE_EXIT("e2e.check_shot");
         return BT_E2E_SHOT_FAIL;

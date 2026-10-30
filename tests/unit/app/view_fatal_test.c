@@ -64,8 +64,7 @@ static int fatal_frame_has_variance(const bt_app_ctx *ctx, const char *path) {
     }
     bt_app_font_book book;
     char error[BT_APP_ERROR_MAX];
-    if (bt_app_fonts_load("config/config.json", NULL, NULL, 0, &book, error, sizeof error)
-        != 0) {
+    if (bt_app_fonts_load("config/config.json", NULL, NULL, 0, &book, error, sizeof error) != 0) {
         bt_app_window_close();
         return 0;
     }

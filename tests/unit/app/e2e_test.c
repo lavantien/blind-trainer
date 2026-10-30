@@ -36,8 +36,8 @@ static void headless_ctx(bt_app_ctx *ctx, const bt_app_runtime_paths *paths) {
 }
 
 static int settings_equal(const bt_settings *left, const bt_settings *right) {
-    return left->memo_cadence_ms == right->memo_cadence_ms &&
-           left->memo_mode == right->memo_mode && left->drill_reps == right->drill_reps;
+    return left->memo_cadence_ms == right->memo_cadence_ms && left->memo_mode == right->memo_mode &&
+           left->drill_reps == right->drill_reps;
 }
 
 static int file_present(const char *path) {

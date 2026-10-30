@@ -22,8 +22,8 @@ static unsigned int crc32_of(const unsigned char *data, size_t len, unsigned int
 }
 
 static unsigned int read_be32(const unsigned char *bytes) {
-    return ((unsigned)bytes[0] << 24U) | ((unsigned)bytes[1] << 16U) |
-           ((unsigned)bytes[2] << 8U) | (unsigned)bytes[3];
+    return ((unsigned)bytes[0] << 24U) | ((unsigned)bytes[1] << 16U) | ((unsigned)bytes[2] << 8U) |
+           (unsigned)bytes[3];
 }
 
 int bt_png_dims(const char *path, unsigned int *width, unsigned int *height) {

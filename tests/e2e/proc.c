@@ -78,8 +78,7 @@ static void last_error_text(char *out, size_t cap) {
     wchar_t *message = NULL;
     DWORD written = FormatMessageW(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&message, 0,
-        NULL);
+        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&message, 0, NULL);
     if (written == 0 || message == NULL || bt_e2e_wide_to_utf8(message, out, cap) != 0) {
         snprintf(out, cap, "os error %lu", GetLastError());
     }
@@ -95,8 +94,7 @@ int bt_e2e_env_block(const char *const *env_pairs, size_t env_count, wchar_t **o
     for (size_t i = 0; i < env_count; i++) {
         size_t needed = strlen(env_pairs[i]) + 1;
         pairs_w[i] = malloc(needed * sizeof(wchar_t));
-        if (pairs_w[i] == NULL ||
-            bt_e2e_utf8_to_wide(env_pairs[i], pairs_w[i], needed) != 0) {
+        if (pairs_w[i] == NULL || bt_e2e_utf8_to_wide(env_pairs[i], pairs_w[i], needed) != 0) {
             for (size_t j = 0; j < env_count; j++) {
                 free(pairs_w[j]);
             }
@@ -264,8 +262,8 @@ int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const 
         }
         creation_flags |= CREATE_UNICODE_ENVIRONMENT;
     }
-    if (!CreateProcessW(NULL, command, NULL, NULL, TRUE, creation_flags, env_block, NULL,
-                        &startup, &process)) {
+    if (!CreateProcessW(NULL, command, NULL, NULL, TRUE, creation_flags, env_block, NULL, &startup,
+                        &process)) {
         char os_error[256];
         last_error_text(os_error, sizeof os_error);
         free(env_block);

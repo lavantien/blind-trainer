@@ -83,7 +83,8 @@ static void ensure_setup(void) {
     }
     argv[count] = NULL;
     bt_mut_proc proc;
-    if (bt_mut_spawn(g_build.clang, argv, NULL, MUT_TEST_TIMEOUT_MS, &proc) != 0 || proc.exit_code != 0) {
+    if (bt_mut_spawn(g_build.clang, argv, NULL, MUT_TEST_TIMEOUT_MS, &proc) != 0 ||
+        proc.exit_code != 0) {
         bt_mut_proc_free(&proc);
         BT_ABORT("cannot link stub");
     }

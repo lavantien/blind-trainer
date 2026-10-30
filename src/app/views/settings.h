@@ -53,9 +53,9 @@ void bt_view_settings_enter(bt_app_ctx *ctx);
 void bt_view_settings_update(bt_app_ctx *ctx);
 
 void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
-                          bt_settings_widgets *widgets, const void *font_regular,
-                          const void *font_bold, float window_w, float window_h,
-                          const bt_ui_input *input);
+                           bt_settings_widgets *widgets, const void *font_regular,
+                           const void *font_bold, float window_w, float window_h,
+                           const bt_ui_input *input);
 void bt_view_settings_row_draw(bt_app_ctx *ctx);
 
 #endif

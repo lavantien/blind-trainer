@@ -67,16 +67,17 @@ static int td_file_exists(const char *path) {
 }
 
 static const unsigned char TD_PNG_3X2[] = {
-    137, 80,  78,  71,  13,  10,  26, 10,  0,   0,   0,   13,  73,  72,  68, 82,  0,   0,
-    0,   3,   0,   0,   0,   2,   8,   6,   0,   0,   0,   157, 116, 102, 26, 0,   0,   0,
-    17,  73,  68,  65, 84, 120, 156, 99,  224, 228, 228, 252, 15,  195, 12,  200, 28, 0,
-    77,  96,  6,   157, 65,  42,  41,  210, 0,   0,   0,   0,   73,  69,  78,  68,  174, 66,
-    96,  130,};
+    137, 80, 78, 71,  13,  10, 26,  10,  0,   0,   0,   13,  73,  72,  68, 82, 0,   0,  0,
+    3,   0,  0,  0,   2,   8,  6,   0,   0,   0,   157, 116, 102, 26,  0,  0,  0,   17, 73,
+    68,  65, 84, 120, 156, 99, 224, 228, 228, 252, 15,  195, 12,  200, 28, 0,  77,  96, 6,
+    157, 65, 42, 41,  210, 0,  0,   0,   0,   73,  69,  78,  68,  174, 66, 96, 130,
+};
 static const unsigned char TD_PNG_2X2[] = {
-    137, 80,  78,  71,  13,  10,  26, 10,  0,   0,   0,   13,  73, 72,  68, 82,  0,  0,  0,
-    2,   0,   0,   0,   2,   8,   6,  0,  0,  0,   114, 182, 13,  36, 0,  0,  0,  17, 73, 68,
-    65,  84, 120, 156, 99,  224, 228, 228, 252, 15,  194, 12,  48, 6,  0,  33,  246, 4, 105,
-    163, 5,   176, 172, 0,  0,  0,  0,  73,  69,  78,  68,  174, 66, 96,  130,};
+    137, 80,  78, 71,  13,  10, 26,  10,  0,   0,   0,   13,  73, 72,  68, 82, 0,   0,   0,
+    2,   0,   0,  0,   2,   8,  6,   0,   0,   0,   114, 182, 13, 36,  0,  0,  0,   17,  73,
+    68,  65,  84, 120, 156, 99, 224, 228, 228, 252, 15,  194, 12, 48,  6,  0,  33,  246, 4,
+    105, 163, 5,  176, 172, 0,  0,   0,   0,   73,  69,  78,  68, 174, 66, 96, 130,
+};
 
 static bt_json_value *td_parse(const char *text) {
     bt_json_value *value = NULL;
@@ -142,8 +143,8 @@ BT_TEST(driver, neg_config_exit_from_reads_the_release_key) {
 BT_TEST(driver, window_dims_from_reads_config_and_rejects_bad_values) {
     char error[BT_E2E_ERROR_MAX];
     bt_e2e_window_dims dims;
-    bt_json_value *ok = td_parse(
-        "{\"app\":{\"window\":{\"width\":1280,\"height\":800,\"title\":\"t\"}}}");
+    bt_json_value *ok =
+        td_parse("{\"app\":{\"window\":{\"width\":1280,\"height\":800,\"title\":\"t\"}}}");
     BT_CHECK_EQ(bt_e2e_window_dims_from(ok, &dims, error, sizeof error), 0);
     BT_CHECK_EQ(dims.width, 1280U);
     BT_CHECK_EQ(dims.height, 800U);
@@ -178,10 +179,9 @@ BT_TEST(driver, out_dir_from_prefers_env_then_config_then_default) {
 BT_TEST(driver, e2e_settings_reads_shots_and_timeout_from_config) {
     char error[BT_E2E_ERROR_MAX];
     bt_json_value *config = NULL;
-    td_parse_config(
-        "{\"e2e\":{\"shots\":[\"menu\",\"drill\",\"memo\",\"solve\",\"algs\",\"stats\","
-        "\"settings\",\"fatal\"],\"timeout_secs\":180}}",
-        &config, error, sizeof error);
+    td_parse_config("{\"e2e\":{\"shots\":[\"menu\",\"drill\",\"memo\",\"solve\",\"algs\",\"stats\","
+                    "\"settings\",\"fatal\"],\"timeout_secs\":180}}",
+                    &config, error, sizeof error);
     bt_e2e_settings settings;
     BT_CHECK_EQ(bt_e2e_settings_from(config, &settings, error, sizeof error), 0);
     BT_CHECK_EQ(settings.shots_count, (size_t)8);
@@ -532,8 +532,7 @@ BT_TEST(driver, env_block_grows_past_32768_and_keeps_overrides) {
     if (block != NULL) {
         int override_seen = 0;
         int pad15_seen = 0;
-        for (const wchar_t *cursor = block; *cursor != L'\0';
-             cursor += wcslen(cursor) + 1) {
+        for (const wchar_t *cursor = block; *cursor != L'\0'; cursor += wcslen(cursor) + 1) {
             if (wcscmp(cursor, L"ADV21_OVERRIDE=1") == 0) {
                 override_seen = 1;
             }

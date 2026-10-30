@@ -51,16 +51,14 @@ static int smoke_failed(const bt_e2e_smoke_run *run, char *error, size_t error_c
     } else {
         snprintf(error, error_cap,
                  "smoke process terminated without exit code\nstdout tail:\n%s\nstderr tail:\n%s",
-                 stdout_tail != NULL ? stdout_tail : "",
-                 stderr_tail != NULL ? stderr_tail : "");
+                 stdout_tail != NULL ? stdout_tail : "", stderr_tail != NULL ? stderr_tail : "");
     }
     free(stdout_tail);
     free(stderr_tail);
     return -1;
 }
 
-static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
-                            size_t error_cap) {
+static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error, size_t error_cap) {
     BT_TRACE_ENTER("e2e.real_main");
     bt_e2e_args args;
     if (bt_e2e_parse_args(argc, argv, &args) != 0) {
@@ -109,8 +107,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
         bt_e2e_out_dir_from(getenv("BT_ARTIFACTS"), config, root, out_dir);
     }
     char app_exe[BT_PATH_MAX];
-    const bt_json_value *app_exe_value =
-        bt_json_get(bt_json_get(config, "build"), "app_exe");
+    const bt_json_value *app_exe_value = bt_json_get(bt_json_get(config, "build"), "app_exe");
     if (app_exe_value != NULL && app_exe_value->type == BT_JSON_STRING) {
         snprintf(app_exe, BT_PATH_MAX, "%s", app_exe_value->as.string);
     } else {
@@ -171,8 +168,8 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     }
     char **expected = NULL;
     size_t expected_count = 0;
-    if (bt_e2e_expected_names((const char *const *)settings.shots, settings.shots_count,
-                              &expected, &expected_count) != 0) {
+    if (bt_e2e_expected_names((const char *const *)settings.shots, settings.shots_count, &expected,
+                              &expected_count) != 0) {
         bt_json_free(config);
         bt_e2e_free_names(found, found_count);
         bt_e2e_free_settings(&settings);
@@ -216,8 +213,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
             failures += 1;
         }
     }
-    printf("%zu shots expected, %zu found, %zu failed\n", expected_count, found_count,
-           failures);
+    printf("%zu shots expected, %zu found, %zu failed\n", expected_count, found_count, failures);
     bt_e2e_free_names(missing, missing_count);
     bt_e2e_free_names(unexpected, unexpected_count);
     bt_e2e_free_names(expected, expected_count);
@@ -260,8 +256,8 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error,
     snprintf(env_pair, sizeof env_pair, "BT_CONFIG=%s", neg_config);
     const char *env_pairs[] = {env_pair, NULL};
     bt_e2e_smoke_run neg_run;
-    if (bt_e2e_run_smoke(binary, neg_dir, env_pairs, 1, deadline, &neg_run, error,
-                         error_cap) != 0) {
+    if (bt_e2e_run_smoke(binary, neg_dir, env_pairs, 1, deadline, &neg_run, error, error_cap) !=
+        0) {
         BT_TRACE_FAIL("e2e.real_main", "%s", error);
         BT_TRACE_EXIT("e2e.real_main");
         return -1;
@@ -314,9 +310,9 @@ int wmain(int argc, wchar_t **argv) {
         }
     }
     char error[BT_E2E_ERROR_MAX];
-    int code = bt_e2e_real_main(argc > 0 ? (size_t)argc - 1 : 0,
-                                argc > 0 ? (const char *const *)utf8_argv + 1 : NULL, error,
-                                sizeof error);
+    int code =
+        bt_e2e_real_main(argc > 0 ? (size_t)argc - 1 : 0,
+                         argc > 0 ? (const char *const *)utf8_argv + 1 : NULL, error, sizeof error);
     for (int i = 0; i < argc; i++) {
         free(utf8_argv[i]);
     }

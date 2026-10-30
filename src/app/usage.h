@@ -71,14 +71,12 @@ typedef struct {
 int bt_usage_tour_init(bt_usage_tour *tour, const char *dir, uint64_t seed,
                        unsigned int cadence_ms);
 int bt_usage_fatal_init(bt_usage_tour *tour, const char *dir);
-void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions,
-                               size_t count);
+void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actions, size_t count);
 void bt_usage_tour_free(bt_usage_tour *tour);
 bt_case bt_usage_pinned_case(void);
 const char *bt_usage_covered_alg_text(const bt_corpus *corpus, const bt_case *case_id);
 int bt_usage_fully_covered(const bt_corpus *corpus, const bt_cube *scramble);
-int bt_usage_covered_seed(const bt_corpus *corpus, uint64_t base, uint64_t attempts,
-                          uint64_t *out);
+int bt_usage_covered_seed(const bt_corpus *corpus, uint64_t base, uint64_t attempts, uint64_t *out);
 int bt_usage_finish(const bt_usage_tour *tour);
 int bt_usage_step(bt_usage_tour *tour, bt_app_ctx *ctx, int fonts_ready, float dt,
                   bt_usage_key_request *key_request, char shot_request[BT_PATH_MAX],
