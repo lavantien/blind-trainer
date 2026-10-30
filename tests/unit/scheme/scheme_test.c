@@ -175,6 +175,34 @@ BT_TEST(scheme, same_piece_groups_by_face_set) {
     }
 }
 
+static void sorted_name_letters(uint8_t sticker, char out[4]) {
+    const char *name = bt_scheme_name_of(sticker);
+    size_t len = strlen(name);
+    for (size_t i = 0; i < len; i++) {
+        out[i] = name[i];
+        size_t j = i;
+        while (j > 0 && out[j - 1] > out[j]) {
+            char swap = out[j - 1];
+            out[j - 1] = out[j];
+            out[j] = swap;
+            j--;
+        }
+    }
+    out[len] = '\0';
+}
+
+BT_TEST(scheme, same_piece_agrees_with_name_letter_multisets_everywhere) {
+    for (uint8_t a = 0; a < 48; a++) {
+        for (uint8_t b = 0; b < 48; b++) {
+            char letters_a[4];
+            char letters_b[4];
+            sorted_name_letters(a, letters_a);
+            sorted_name_letters(b, letters_b);
+            BT_CHECK_EQ(bt_scheme_same_piece(a, b), strcmp(letters_a, letters_b) == 0);
+        }
+    }
+}
+
 static void run_letter_of_out_of_range(void) {
     bt_scheme_letter_of(48);
 }

@@ -119,6 +119,33 @@ BT_TEST(alg, parse_error_carries_the_token) {
     bt_alg_free(&alg);
 }
 
+BT_TEST(alg, eq_is_false_on_unequal_algs) {
+    bt_alg base;
+    bt_alg_init(&base);
+    BT_CHECK(parse_ok("R U", &base));
+    bt_alg differ_first;
+    bt_alg_init(&differ_first);
+    BT_CHECK(parse_ok("F U", &differ_first));
+    BT_CHECK(!bt_alg_eq(&base, &differ_first));
+    bt_alg differ_later;
+    bt_alg_init(&differ_later);
+    BT_CHECK(parse_ok("R F", &differ_later));
+    BT_CHECK(!bt_alg_eq(&base, &differ_later));
+    bt_alg differ_len;
+    bt_alg_init(&differ_len);
+    BT_CHECK(parse_ok("R", &differ_len));
+    BT_CHECK(!bt_alg_eq(&base, &differ_len));
+    bt_alg same;
+    bt_alg_init(&same);
+    BT_CHECK(parse_ok("R U", &same));
+    BT_CHECK(bt_alg_eq(&base, &same));
+    bt_alg_free(&base);
+    bt_alg_free(&differ_first);
+    bt_alg_free(&differ_later);
+    bt_alg_free(&differ_len);
+    bt_alg_free(&same);
+}
+
 BT_TEST(alg, splits_unicode_whitespace) {
     const char *texts[] = {
         "U\xc2\xa0"

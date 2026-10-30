@@ -267,6 +267,196 @@ BT_TEST(classifier, classify_alg_fills_qtm_and_matches_state_classification) {
     bt_alg_free(&alg);
 }
 
+static bt_classification three_style_class(void) {
+    bt_classification base = {0};
+    base.kind = BT_CLASS_THREE_STYLE;
+    base.orbit = BT_ORBIT_EDGE;
+    base.case_count = 1;
+    base.cases[0].orbit = BT_ORBIT_EDGE;
+    base.cases[0].t1 = 24;
+    base.cases[0].t2 = 25;
+    return base;
+}
+
+static bt_classification flip_pair_class(void) {
+    bt_classification base = {0};
+    base.kind = BT_CLASS_FLIP_PAIR;
+    base.first = 26;
+    base.second = 32;
+    return base;
+}
+
+static bt_classification parity_class(void) {
+    bt_classification base = {0};
+    base.kind = BT_CLASS_PARITY;
+    base.e1 = 26;
+    base.e2 = 32;
+    base.c1 = 2;
+    base.c2 = 9;
+    return base;
+}
+
+static bt_classification ltct_class(void) {
+    bt_classification base = {0};
+    base.kind = BT_CLASS_LTCT;
+    base.e1 = 26;
+    base.e2 = 32;
+    base.c1 = 2;
+    base.c2 = 9;
+    base.bracket = 12;
+    return base;
+}
+
+static bt_classification unclassified_class(void) {
+    bt_classification base = {0};
+    base.kind = BT_CLASS_UNCLASSIFIED;
+    snprintf(base.unclassified, BT_CLASS_TEXT_MAX, "edge:[5] corner:[5]");
+    return base;
+}
+
+BT_TEST(classifier, classification_eq_distinguishes_every_field) {
+    bt_classification bases[5];
+    bases[0] = three_style_class();
+    bases[1] = flip_pair_class();
+    bases[2] = flip_pair_class();
+    bases[2].kind = BT_CLASS_TWIST_PAIR;
+    bases[3] = parity_class();
+    bases[4] = unclassified_class();
+    for (int i = 0; i < 5; i++) {
+        bt_classification copy = bases[i];
+        BT_CHECK(bt_scheme_classification_eq(&bases[i], &copy));
+        bt_classification other_kind = bases[i];
+        other_kind.kind = (bt_class_kind)((other_kind.kind + 1) % 7);
+        BT_CHECK(!bt_scheme_classification_eq(&bases[i], &other_kind));
+    }
+    bt_classification three = three_style_class();
+    bt_classification three_orbit = three;
+    three_orbit.orbit = BT_ORBIT_CORNER;
+    BT_CHECK(!bt_scheme_classification_eq(&three, &three_orbit));
+    bt_classification three_count = three;
+    three_count.case_count = 2;
+    BT_CHECK(!bt_scheme_classification_eq(&three, &three_count));
+    bt_classification three_case_orbit = three;
+    three_case_orbit.cases[0].orbit = BT_ORBIT_CORNER;
+    BT_CHECK(!bt_scheme_classification_eq(&three, &three_case_orbit));
+    bt_classification three_t1 = three;
+    three_t1.cases[0].t1 = 27;
+    BT_CHECK(!bt_scheme_classification_eq(&three, &three_t1));
+    bt_classification three_t2 = three;
+    three_t2.cases[0].t2 = 27;
+    BT_CHECK(!bt_scheme_classification_eq(&three, &three_t2));
+    bt_classification pair = flip_pair_class();
+    bt_classification pair_first = pair;
+    pair_first.first = 25;
+    BT_CHECK(!bt_scheme_classification_eq(&pair, &pair_first));
+    bt_classification pair_second = pair;
+    pair_second.second = 25;
+    BT_CHECK(!bt_scheme_classification_eq(&pair, &pair_second));
+    bt_classification par = parity_class();
+    bt_classification par_e1 = par;
+    par_e1.e1 = 25;
+    BT_CHECK(!bt_scheme_classification_eq(&par, &par_e1));
+    bt_classification par_e2 = par;
+    par_e2.e2 = 25;
+    BT_CHECK(!bt_scheme_classification_eq(&par, &par_e2));
+    bt_classification par_c1 = par;
+    par_c1.c1 = 3;
+    BT_CHECK(!bt_scheme_classification_eq(&par, &par_c1));
+    bt_classification par_c2 = par;
+    par_c2.c2 = 3;
+    BT_CHECK(!bt_scheme_classification_eq(&par, &par_c2));
+    bt_classification ltct = ltct_class();
+    bt_classification ltct_bracket = ltct;
+    ltct_bracket.bracket = 27;
+    BT_CHECK(!bt_scheme_classification_eq(&ltct, &ltct_bracket));
+    bt_classification unclassified = unclassified_class();
+    bt_classification unclassified_text = unclassified;
+    snprintf(unclassified_text.unclassified, BT_CLASS_TEXT_MAX, "edge:[5] corner:[6]");
+    BT_CHECK(!bt_scheme_classification_eq(&unclassified, &unclassified_text));
+}
+
+BT_TEST(classifier, trace_eq_distinguishes_every_field) {
+    bt_trace base = {0};
+    base.orbit = BT_ORBIT_EDGE;
+    base.block_count = 2;
+    base.block_len[0] = 4;
+    base.block_len[1] = 4;
+    uint8_t first[4] = {26, 25, 24, 27};
+    uint8_t second[4] = {33, 35, 44, 46};
+    memcpy(base.blocks[0], first, 4);
+    memcpy(base.blocks[1], second, 4);
+    bt_trace copy = base;
+    BT_CHECK(bt_scheme_trace_eq(&base, &copy));
+    bt_trace other_orbit = base;
+    other_orbit.orbit = BT_ORBIT_CORNER;
+    BT_CHECK(!bt_scheme_trace_eq(&base, &other_orbit));
+    bt_trace other_count = base;
+    other_count.block_count = 1;
+    BT_CHECK(!bt_scheme_trace_eq(&base, &other_count));
+    bt_trace other_len = base;
+    other_len.block_len[0] = 3;
+    BT_CHECK(!bt_scheme_trace_eq(&base, &other_len));
+    bt_trace other_bytes = base;
+    other_bytes.blocks[0][1] = 27;
+    BT_CHECK(!bt_scheme_trace_eq(&base, &other_bytes));
+}
+
+BT_TEST(classifier, three_style_position_joins_two_blocks_with_space) {
+    bt_report report;
+    memset(&report, 0, sizeof report);
+    report.class.kind = BT_CLASS_THREE_STYLE;
+    report.class.orbit = BT_ORBIT_EDGE;
+    report.edge.orbit = BT_ORBIT_EDGE;
+    report.edge.block_count = 2;
+    report.edge.block_len[0] = 4;
+    report.edge.block_len[1] = 4;
+    uint8_t first[4] = {26, 25, 24, 27};
+    uint8_t second[4] = {33, 35, 44, 46};
+    memcpy(report.edge.blocks[0], first, 4);
+    memcpy(report.edge.blocks[1], second, 4);
+    BT_CHECK(bt_scheme_is_style_block(first, 4));
+    BT_CHECK(bt_scheme_is_style_block(second, 4));
+    char position[BT_CLASS_POSITION_MAX];
+    memset(position, 'X', sizeof position);
+    BT_CHECK(bt_scheme_report_position(&report, position));
+    BT_CHECK_EQ(position, "UF-UB-UR FR-DF-FL");
+}
+
+static void fill_corner_twists(bt_report *report, int8_t first, int8_t second) {
+    for (uint8_t slot = 0; slot < 12; slot++) {
+        bt_piece piece = {BT_PIECE_EDGE, slot};
+        report->defects.edge_flips[slot].head = bt_head_sticker(piece);
+        report->defects.edge_flips[slot].flipped = false;
+    }
+    for (uint8_t slot = 0; slot < 8; slot++) {
+        bt_piece piece = {BT_PIECE_CORNER, slot};
+        report->defects.corner_twists[slot].head = bt_head_sticker(piece);
+        report->defects.corner_twists[slot].twist = 0;
+    }
+    report->defects.corner_twists[2].twist = first;
+    report->defects.corner_twists[3].twist = second;
+}
+
+BT_TEST(classifier, twist_pair_position_normalizes_negative_twists) {
+    bt_report keep_first;
+    memset(&keep_first, 0, sizeof keep_first);
+    keep_first.class.kind = BT_CLASS_TWIST_PAIR;
+    keep_first.class.first = 2;
+    keep_first.class.second = 3;
+    fill_corner_twists(&keep_first, -2, 1);
+    char position[BT_CLASS_POSITION_MAX];
+    BT_CHECK(bt_scheme_report_position(&keep_first, position));
+    BT_CHECK_EQ(position, "UFR & UFL");
+    bt_report swap_first;
+    memset(&swap_first, 0, sizeof swap_first);
+    swap_first.class.kind = BT_CLASS_TWIST_PAIR;
+    swap_first.class.first = 2;
+    swap_first.class.second = 3;
+    fill_corner_twists(&swap_first, 0, -2);
+    BT_CHECK(bt_scheme_report_position(&swap_first, position));
+    BT_CHECK_EQ(position, "UFL & UFR");
+}
+
 static void run_flip_accessor_rejects_corner(void) {
     bt_cube cube = bt_cube_solved();
     uint8_t occ[54];

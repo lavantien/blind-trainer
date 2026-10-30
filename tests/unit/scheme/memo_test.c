@@ -429,3 +429,21 @@ BT_TEST(memo, walk_skips_reserved_displaced_pieces_in_both_scans) {
     BT_CHECK_EQ(walk.buffers[1], 25);
     BT_CHECK(!walk.has_parity);
 }
+
+BT_TEST(memo, residue_class_eq_distinguishes_every_field) {
+    bt_residue_class base = {BT_RESIDUE_TWIST_PAIR, 26, 32, 9};
+    bt_residue_class copy = base;
+    BT_CHECK(bt_scheme_residue_class_eq(base, copy));
+    bt_residue_class other_kind = base;
+    other_kind.kind = BT_RESIDUE_PARITY;
+    BT_CHECK(!bt_scheme_residue_class_eq(base, other_kind));
+    bt_residue_class other_a = base;
+    other_a.a = 25;
+    BT_CHECK(!bt_scheme_residue_class_eq(base, other_a));
+    bt_residue_class other_b = base;
+    other_b.b = 25;
+    BT_CHECK(!bt_scheme_residue_class_eq(base, other_b));
+    bt_residue_class other_c = base;
+    other_c.c = 3;
+    BT_CHECK(!bt_scheme_residue_class_eq(base, other_c));
+}
