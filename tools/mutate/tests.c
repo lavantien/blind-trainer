@@ -1,5 +1,6 @@
 #include "mutate/tests.h"
 #include "mutate/mutate.h"
+#include "mutate/tests_shared.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,22 +25,9 @@
 static void ensure_setup(void);
 static int bt_spawn_probe(char *argv[3], bt_mut_proc *proc);
 
-#define FX_REL "tests/unit/tools/fixtures/fx_target.c"
-
-enum {
-    FX_LINE_ADD_0 = 6,
-    FX_LINE_SPIN_1 = 13,
-    FX_LINE_SPIN_WHILE = 11,
-    FX_LINE_NOT_BANG = 19,
-    FX_LINE_DEL_10 = 26,
-    FX_LINE_DEL_STMT = 27,
-    FX_LINE_UNUSED_3 = 36,
-    FX_LINE_UNUSED_INC = 37,
-};
-
-static char g_root[BT_MUT_PATH_MAX];
-static char g_dir[BT_MUT_PATH_MAX];
-static bt_json_value *g_config;
+char g_root[BT_MUT_PATH_MAX];
+char g_dir[BT_MUT_PATH_MAX];
+bt_json_value *g_config;
 static bt_mut_build g_build;
 static char g_fx_main_obj[BT_MUT_PATH_MAX];
 static char g_fx_ws_main_obj[BT_MUT_PATH_MAX];
@@ -95,7 +83,7 @@ static void ensure_setup(void) {
     }
     argv[count] = NULL;
     bt_mut_proc proc;
-    if (bt_mut_spawn(g_build.clang, argv, NULL, 60000, &proc) != 0 || proc.exit_code != 0) {
+    if (bt_mut_spawn(g_build.clang, argv, NULL, MUT_TEST_TIMEOUT_MS, &proc) != 0 || proc.exit_code != 0) {
         bt_mut_proc_free(&proc);
         BT_ABORT("cannot link stub");
     }
@@ -104,8 +92,8 @@ static void ensure_setup(void) {
     g_ready = 1;
 }
 
-static void engine_for(const char *slot, unsigned long long timeout_ms, const char *clang_override,
-                       bt_mut_engine *engine) {
+void engine_for(const char *slot, unsigned long long timeout_ms, const char *clang_override,
+                bt_mut_engine *engine) {
     ensure_setup();
     memset(engine, 0, sizeof *engine);
     snprintf(engine->repo_root, BT_MUT_PATH_MAX, "%s", g_root);
@@ -155,7 +143,7 @@ static void common_obj_path(const char *name, char out[BT_MUT_PATH_MAX]) {
     snprintf(out, BT_MUT_PATH_MAX, "%s/%s/src/common/%s.obj", base, found, name);
 }
 
-static void ws_fixture_target(bt_mut_target *target) {
+void ws_fixture_target(bt_mut_target *target) {
     memset(target, 0, sizeof *target);
     snprintf(target->file, BT_MUT_PATH_MAX, "tests/unit/tools/fixtures/fx_ws_target.c");
     snprintf(g_ws_slot_obj, BT_MUT_PATH_MAX, "%s/obj/fx_ws_target.obj", g_dir);
@@ -171,7 +159,7 @@ static void ws_fixture_target(bt_mut_target *target) {
     target->target_index = 0;
 }
 
-static void fixture_target(bt_mut_target *target) {
+void fixture_target(bt_mut_target *target) {
     memset(target, 0, sizeof *target);
     snprintf(target->file, BT_MUT_PATH_MAX, "%s", FX_REL);
     snprintf(g_slot_obj, BT_MUT_PATH_MAX, "%s/obj/fx_target.obj", g_dir);
@@ -193,7 +181,7 @@ static char *fixture_text(size_t *len) {
     return text;
 }
 
-static void enumerate_fixture(bt_mut_mutant_list *list) {
+void enumerate_fixture(bt_mut_mutant_list *list) {
     size_t len = 0;
     char *text = fixture_text(&len);
     if (bt_mut_enumerate(FX_REL, text, len, list) != 0) {
@@ -233,7 +221,7 @@ static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
     return 0;
 }
 
-static bt_mut_row row_for(const char *ledger_path, const char *id) {
+bt_mut_row row_for(const char *ledger_path, const char *id) {
     bt_mut_ledger ledger;
     bt_mut_row found;
     memset(&found, 0, sizeof found);
@@ -287,184 +275,6 @@ BT_TEST(mutate, apply_compiles_for_every_operator) {
         MUT_CHECK(rc == 0, "%s mutant does not compile: %s", names[i], diag);
     }
     free(text);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, engine_records_builderr_when_the_mutant_fails_to_compile) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant =
-        bt_mut_find(&list, BT_MUT_UNARY_DROP, "++", "", FX_LINE_UNUSED_INC);
-    BT_CHECK(mutant != NULL);
-    if (mutant == NULL) {
-        bt_mut_mutants_free(&list);
-        return;
-    }
-    bt_mut_engine engine;
-    engine_for("builderr", 60000, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-    BT_CHECK_EQ(row.status, (long long)BT_MUT_BUILDERR);
-    BT_CHECK_EQ(row.attempts, 1ULL);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, engine_records_killed_for_a_guarded_test) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant = bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0", "1", FX_LINE_ADD_0);
-    BT_CHECK(mutant != NULL);
-    if (mutant == NULL) {
-        bt_mut_mutants_free(&list);
-        return;
-    }
-    bt_mut_engine engine;
-    engine_for("killed", 60000, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-    BT_CHECK_EQ(row.status, (long long)BT_MUT_KILLED);
-    BT_CHECK_EQ(row.attempts, 1ULL);
-    BT_CHECK_EQ(summary.killed, 1ULL);
-    BT_CHECK_EQ(summary.pending, list.count - 1);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, engine_records_survived_for_unread_code) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant =
-        bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "3", "4", FX_LINE_UNUSED_3);
-    BT_CHECK(mutant != NULL);
-    if (mutant == NULL) {
-        bt_mut_mutants_free(&list);
-        return;
-    }
-    bt_mut_engine engine;
-    engine_for("survived", 60000, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-    BT_CHECK_EQ(row.status, (long long)BT_MUT_SURVIVED);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, engine_stages_the_suite_exe_inside_the_workspace) {
-    bt_mut_engine engine;
-    engine_for("wsstage", 60000, NULL, &engine);
-    char temp[BT_MUT_PATH_MAX];
-    GetTempPathA(BT_MUT_PATH_MAX, temp);
-    size_t len = strlen(temp);
-    while (len > 0 && (temp[len - 1] == '\\' || temp[len - 1] == '/')) {
-        len--;
-    }
-    temp[len] = '\0';
-    snprintf(engine.scratch_root, BT_MUT_PATH_MAX, "%s/bt-mut-selftest-wsstage", temp);
-    bt_mut_rmtree(engine.scratch_root);
-    bt_mut_target target;
-    ws_fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, "zzz-none", 0, &summary), 0);
-    bt_mut_build_free(&engine.build);
-}
-
-BT_TEST(mutate, engine_records_timeout_for_a_frozen_loop) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant =
-        bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1", "0", FX_LINE_SPIN_1);
-    BT_CHECK(mutant != NULL);
-    if (mutant == NULL) {
-        bt_mut_mutants_free(&list);
-        return;
-    }
-    bt_mut_engine engine;
-    engine_for("timeout", 2500, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-    BT_CHECK_EQ(row.status, (long long)BT_MUT_TIMEOUT);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, engine_rejects_parallel_workers) {
-    bt_mut_engine engine;
-    engine_for("workers", 60000, NULL, &engine);
-    engine.workers = 2;
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, NULL, 0, &summary), 2);
-    BT_CHECK(strstr(bt_mut_engine_last_error(), "workers must be 1") != NULL);
-    bt_mut_build_free(&engine.build);
-}
-
-BT_TEST(mutate, ledger_resume_reruns_only_pending_rows) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    BT_CHECK(list.count >= 4);
-    char only_first[128];
-    char only_four[256];
-    snprintf(only_first, sizeof only_first, "%s,%s", list.items[0].id, list.items[1].id);
-    snprintf(only_four, sizeof only_four, "%s,%s,%s,%s", list.items[0].id, list.items[1].id,
-             list.items[2].id, list.items[3].id);
-    bt_mut_engine engine;
-    engine_for("resume", 60000, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, only_first, 0, &summary), 0);
-    bt_mut_ledger ledger;
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    BT_CHECK_EQ(ledger.rows[0].attempts, 1ULL);
-    BT_CHECK_EQ(ledger.rows[1].attempts, 1ULL);
-    BT_CHECK(ledger.rows[0].status != BT_MUT_PENDING);
-    BT_CHECK(ledger.rows[1].status != BT_MUT_PENDING);
-    unsigned long long pending = 0;
-    for (size_t i = 0; i < ledger.count; i++) {
-        if (ledger.rows[i].status == BT_MUT_PENDING) {
-            pending++;
-        }
-    }
-    BT_CHECK_EQ(pending, list.count - 2);
-    bt_mut_ledger_free(&ledger);
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, only_four, 0, &summary), 0);
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    BT_CHECK_EQ(ledger.rows[2].attempts, 1ULL);
-    BT_CHECK_EQ(ledger.rows[3].attempts, 1ULL);
-    BT_CHECK_EQ(ledger.rows[0].attempts, 1ULL);
-    BT_CHECK_EQ(ledger.rows[1].attempts, 1ULL);
-    for (size_t i = 0; i < 4; i++) {
-        BT_CHECK(ledger.rows[i].status != BT_MUT_PENDING);
-    }
-    bt_mut_ledger_free(&ledger);
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, only_four, 0, &summary), 0);
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    for (size_t i = 0; i < 4; i++) {
-        BT_CHECK_EQ(ledger.rows[i].attempts, 1ULL);
-    }
-    unsigned long long done = 0;
-    for (size_t i = 0; i < ledger.count; i++) {
-        if (ledger.rows[i].status != BT_MUT_PENDING) {
-            done++;
-        }
-    }
-    BT_CHECK_EQ(done, 4ULL);
-    bt_mut_ledger_free(&ledger);
-    bt_mut_build_free(&engine.build);
     bt_mut_mutants_free(&list);
 }
 
@@ -592,24 +402,6 @@ BT_TEST(mutate, report_maps_verdicts_and_attributes_functions) {
     free(text);
 }
 
-BT_TEST(mutate, report_refuses_pending_rows) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    bt_mut_engine engine;
-    engine_for("report-pending", 60000, NULL, &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    char only[64];
-    snprintf(only, sizeof only, "%s", list.items[0].id);
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, only, 0, &summary), 0);
-    char out[BT_MUT_PATH_MAX];
-    snprintf(out, BT_MUT_PATH_MAX, "%s/outcomes-pending.json", g_dir);
-    BT_CHECK_EQ(bt_mut_report(engine.ledger_path, g_root, out), 1);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
 BT_TEST(mutate, stub_assembly_matches_the_bt_py_contract) {
     bt_mut_mutant_list list;
     enumerate_fixture(&list);
@@ -619,7 +411,7 @@ BT_TEST(mutate, stub_assembly_matches_the_bt_py_contract) {
     snprintf(record, BT_MUT_PATH_MAX, "%s/record-assembly.txt", g_dir);
     remove(record);
     bt_mut_engine engine;
-    engine_for("assembly", 60000, g_stub_exe, &engine);
+    engine_for("assembly", MUT_TEST_TIMEOUT_MS, g_stub_exe, &engine);
     bt_mut_target target;
     fixture_target(&target);
     SetEnvironmentVariableA("BT_STUB_RECORD", record);
@@ -729,7 +521,7 @@ BT_TEST(mutate, flooding_child_hits_the_deadline) {
 BT_TEST(mutate, dep_inputs_land_under_scratch) {
     ensure_setup();
     bt_mut_engine engine;
-    engine_for("inputs", 60000, NULL, &engine);
+    engine_for("inputs", MUT_TEST_TIMEOUT_MS, NULL, &engine);
     size_t len = 0;
     char *text = fixture_text(&len);
     char source[BT_MUT_PATH_MAX];
@@ -756,7 +548,7 @@ BT_TEST(mutate, dep_inputs_land_under_scratch) {
 BT_TEST(mutate, link_list_never_references_missing_objects) {
     ensure_setup();
     bt_mut_engine engine;
-    engine_for("linklist", 60000, NULL, &engine);
+    engine_for("linklist", MUT_TEST_TIMEOUT_MS, NULL, &engine);
     bt_mut_target target;
     int rc = bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_alg_test", &target);
     BT_CHECK_EQ(rc, 0);
@@ -778,7 +570,7 @@ BT_TEST(mutate, link_list_never_references_missing_objects) {
 BT_TEST(mutate, link_list_stays_inside_the_suite_area_closure) {
     ensure_setup();
     bt_mut_engine engine;
-    engine_for("linkarea", 60000, NULL, &engine);
+    engine_for("linkarea", MUT_TEST_TIMEOUT_MS, NULL, &engine);
     char obj_root[BT_MUT_PATH_MAX];
     MUT_CHECK(selftest_obj_root(obj_root) == 0, "cannot find the build obj root");
     char foreign_dir[BT_MUT_PATH_MAX];
@@ -850,104 +642,21 @@ BT_TEST(mutate, scratch_sources_keep_their_own_directory_on_the_include_path) {
     bt_mut_rmtree(slot);
 }
 
-BT_TEST(mutate, spawn_error_leaves_the_row_pending) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant = bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0", "1", FX_LINE_ADD_0);
-    BT_CHECK(mutant != NULL);
-    bt_mut_engine engine;
-    engine_for("spawnfail", 60000, "no-such-clang.exe", &engine);
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    int rc = bt_mut_engine_run(&engine, &target, 1, mutant != NULL ? mutant->id : "", 0, &summary);
-    BT_CHECK_EQ(rc, 1);
-    BT_CHECK(strstr(bt_mut_engine_last_error(), "baseline run failed") != NULL);
-    if (mutant != NULL) {
-        bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-        BT_CHECK_EQ(row.status, (long long)BT_MUT_PENDING);
-        BT_CHECK_EQ(row.attempts, 0ULL);
-    }
-    bt_mut_build_free(&engine.build);
-    BT_CHECK_EQ(bt_mut_build_load(g_root, g_config, NULL, &engine.build), 0);
-    rc = bt_mut_engine_run(&engine, &target, 1, mutant != NULL ? mutant->id : "", 0, &summary);
-    BT_CHECK_EQ(rc, 0);
-    if (mutant != NULL) {
-        bt_mut_row row = row_for(engine.ledger_path, mutant->id);
-        BT_CHECK_EQ(row.status, (long long)BT_MUT_KILLED);
-        BT_CHECK_EQ(row.attempts, 1ULL);
-    }
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, stale_ledger_rows_are_dropped) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant = bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0", "1", FX_LINE_ADD_0);
-    BT_CHECK(mutant != NULL);
-    bt_mut_engine engine;
-    engine_for("stale", 60000, NULL, &engine);
-    char stale_text[512];
-    snprintf(stale_text, sizeof stale_text,
-             "id\tfile\tline\tcol\top\tfrom\tto\tstatus\tattempts\tlast_run\ttest_exe\n"
-             "deadbeefdeadbeef\t%s\t99\t9\tNumericTweak\t9\t8\tsurvived\t3\t2026-10-27T10:00:00\t"
-             "fx_test\n",
-             FX_REL);
-    bt_mut_write_file(engine.ledger_path, stale_text, strlen(stale_text));
-    bt_mut_target target;
-    fixture_target(&target);
-    bt_mut_summary summary;
-    BT_CHECK_EQ(
-        bt_mut_engine_run(&engine, &target, 1, mutant != NULL ? mutant->id : "", 0, &summary), 0);
-    bt_mut_ledger ledger;
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    BT_CHECK_EQ(ledger.count, list.count);
-    BT_CHECK(bt_mut_ledger_find(&ledger, "deadbeefdeadbeef") == NULL);
-    bt_mut_ledger_free(&ledger);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
-BT_TEST(mutate, exe_switch_reruns_terminal_rows) {
-    bt_mut_mutant_list list;
-    enumerate_fixture(&list);
-    const bt_mut_mutant *mutant = bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0", "1", FX_LINE_ADD_0);
-    BT_CHECK(mutant != NULL);
-    if (mutant == NULL) {
-        bt_mut_mutants_free(&list);
-        return;
-    }
-    bt_mut_engine engine;
-    bt_mut_target target;
-    bt_mut_summary summary;
-    engine_for("exeswitch", 60000, NULL, &engine);
-    fixture_target(&target);
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    bt_mut_ledger ledger;
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    BT_CHECK_EQ(ledger.rows[0].attempts, 1ULL);
-    bt_mut_ledger_free(&ledger);
-    snprintf(engine.test_exe, BT_MUT_PATH_MAX, "fx_test2");
-    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, mutant->id, 0, &summary), 0);
-    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
-    unsigned long long attempts = 0;
-    for (size_t i = 0; i < ledger.count; i++) {
-        if (strcmp(ledger.rows[i].id, mutant->id) == 0) {
-            attempts = ledger.rows[i].attempts;
-        }
-    }
-    BT_CHECK_EQ(attempts, 2ULL);
-    bt_mut_ledger_free(&ledger);
-    bt_mut_build_free(&engine.build);
-    bt_mut_mutants_free(&list);
-}
-
 static int bt_spawn_probe(char *argv[3], bt_mut_proc *proc) {
     ensure_setup();
     return bt_mut_spawn(g_self_exe, argv, g_root, 30000, proc);
 }
 
+void bt_test_mutate_engine_records_builderr_when_the_mutant_fails_to_compile(void);
+void bt_test_mutate_engine_records_killed_for_a_guarded_test(void);
+void bt_test_mutate_engine_records_survived_for_unread_code(void);
+void bt_test_mutate_engine_records_timeout_for_a_frozen_loop(void);
+void bt_test_mutate_engine_rejects_parallel_workers(void);
+void bt_test_mutate_exe_switch_reruns_terminal_rows(void);
+void bt_test_mutate_ledger_resume_reruns_only_pending_rows(void);
+void bt_test_mutate_report_refuses_pending_rows(void);
+void bt_test_mutate_spawn_error_leaves_the_row_pending(void);
+void bt_test_mutate_stale_ledger_rows_are_dropped(void);
 void bt_test_mutate_comparison_swap_variants(void);
 void bt_test_mutate_negation_guard_mutants(void);
 void bt_test_mutate_numeric_variants_and_suffixes(void);
