@@ -95,7 +95,7 @@ class BadgeSvgEscapeTests(unittest.TestCase):
     def test_committed_coverage_renders_are_unchanged(self):
         badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
         for name, label, value, percent in (
-            ("coverage.svg", "coverage", "0.0%", 0.0),
+            ("coverage.svg", "coverage", "74.0%", 74.0),
             ("alg-coverage.svg", "alg coverage", "99.9%", 99.9),
         ):
             self.assertEqual(
