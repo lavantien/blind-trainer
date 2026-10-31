@@ -328,16 +328,15 @@ bt-app.exe in smoke mode: 0 tour complete with all shots written, 1 verification
 
 ## QA harness
 
-The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records land in docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request and still executes the gates of the earlier application stack, item 2 of the roadmap moves it onto the bt.py gates.
+The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records land in docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request through the bt.py driver: setup, vendor, fmt, lint, policy, check, build, the unit suites of every area except app, which needs a desktop, and the python suite. The mutants, e2e, visual, and verify-algs gates stay local.
 
 ## Roadmap
 
 1. a coverage target that builds instrumented binaries, exports the llvm-cov json, and refreshes the coverage badge through scripts/coverage_badge.py
-2. CI moved onto the bt.py gates
-3. a chain target that runs every gate in order
-4. a memguard target that reports repo process memory against the cap through scripts/memguard.py
-5. targets wiring the alg coverage badge and the diagram renders into bt.py
-6. a run target that starts the app after a build
+2. a chain target that runs every gate in order
+3. a memguard target that reports repo process memory against the cap through scripts/memguard.py
+4. targets wiring the alg coverage badge and the diagram renders into bt.py
+5. a run target that starts the app after a build
 
 ## Licensing
 
