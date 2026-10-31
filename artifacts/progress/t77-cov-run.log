@@ -1,0 +1,29 @@
+2026-10-31T23:39:39 [entry] coverage
+2026-10-31T23:40:20 [repro] 567 object timestamps zeroed
+2026-10-31T23:40:20 [compile] 567 compiled, 567 ok
+2026-10-31T23:40:29 [build] 190 instrumented suite exes
+2026-10-31T23:44:38 [fail] tools_ga_run_lib_test assignment_rejects_an_out_of_range_gene
+ok tools_ga_run_lib_test ga_run_lib.build_assignment_reports_duplicate_and_range_for_the_same_gene
+ok tools_ga_run_lib_test ga_run_lib.build_assignment_reports_every_duplicate_syllable
+ok tools_ga_run_lib_test ga_run_lib.build_assignment_reports_every_gene_offender_in_rust_order
+ok tools_ga_run_lib_test ga_run_lib.build_report_copies_run_state_and_the_pool_head
+ok tools_ga_run_lib_test ga_run_lib.config_path_keeps_absolute_paths_and_joins_relative_ones
+ok tools_ga_run_lib_test ga_run_lib.config_path_root_only_keeps_the_workspace_drive
+ok tools_ga_run_lib_test ga_run_lib.crate_id_matches_package
+ok tools_ga_run_lib_test ga_run_lib.cross_check_compares_the_full_letter_strings
+ok tools_ga_run_lib_test ga_run_lib.cross_check_names_each_missing_letter_field
+ok tools_ga_run_lib_test ga_run_lib.cross_check_passes_on_generated_vendor_data
+ok tools_ga_run_lib_test ga_run_lib.end_to_end_small_run_produces_full_injective_assignment
+ok tools_ga_run_lib_test ga_run_lib.json_value_text_prints_f64_the_serde_way
+ok tools_ga_run_lib_test ga_run_lib.load_run_inputs_rejects_abort_shaped_upgrade_configs_as_offenders
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\ga_run_lib_test.c:364: check failed: strncmp(offenders.items[0], "parse freq.json", 15) == 0
+FAIL tools_ga_run_lib_test ga_run_lib.load_run_inputs_reports_freq_before_the_vendor_cross_check
+ok tools_ga_run_lib_test ga_run_lib.render_markdown_defaults_missing_config_sections_to_zero
+ok tools_ga_run_lib_test ga_run_lib.render_markdown_prints_config_inventory_pool_result_and_artifacts
+ok tools_ga_run_lib_test ga_run_lib.render_markdown_samples_long_trajectories_to_twenty_points
+ok tools_ga_run_lib_test ga_run_lib.render_markdown_uses_the_two_column_pool_separator
+ok tools_ga_run_lib_test ga_run_lib.report_carries_the_eval_lane_of_the_outcome
+ok tools_ga_run_lib_test ga_run_lib.wrong_typed_cuda_enable_is_an_offender
+suite tools_ga_run_lib_test: 25 passed, 1 failed
+2026-10-31T23:44:38 [fail] coverage BtError: 1 of 190 coverage suite runs failed
+EXIT:1
