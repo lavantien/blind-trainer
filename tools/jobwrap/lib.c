@@ -342,26 +342,26 @@ static unsigned int utf8_codepoint_at(const char *raw, size_t *at) {
     }
     size_t extra = 0;
     unsigned int codepoint = 0;
-    if ((lead & 0xE0) == 0xC0) {
+    if ((lead & 0xE0U) == 0xC0U) {
         extra = 1;
-        codepoint = lead & 0x1F;
-    } else if ((lead & 0xF0) == 0xE0) {
+        codepoint = lead & 0x1FU;
+    } else if ((lead & 0xF0U) == 0xE0U) {
         extra = 2;
-        codepoint = lead & 0x0F;
-    } else if ((lead & 0xF8) == 0xF0) {
+        codepoint = lead & 0x0FU;
+    } else if ((lead & 0xF8U) == 0xF0U) {
         extra = 3;
-        codepoint = lead & 0x07;
+        codepoint = lead & 0x07U;
     } else {
         (*at)++;
         return 0xFFFD;
     }
     for (size_t step = 1; step <= extra; step++) {
-        unsigned char cont = (unsigned char)raw[*at + step];
-        if ((cont & 0xC0) != 0x80) {
+        unsigned int cont = (unsigned char)raw[*at + step];
+        if ((cont & 0xC0U) != 0x80U) {
             (*at)++;
             return 0xFFFD;
         }
-        codepoint = (codepoint << 6) | (cont & 0x3F);
+        codepoint = (codepoint << 6U) | (cont & 0x3FU);
     }
     *at += extra + 1;
     return codepoint;

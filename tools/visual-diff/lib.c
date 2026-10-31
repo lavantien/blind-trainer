@@ -130,7 +130,7 @@ void btvd_compare_images(const btvd_image *shot, const btvd_image *base, uint16_
     out->pixels_over = 0;
     size_t bytes = (size_t)shot->width * shot->height * 4;
     for (size_t at = 0; at < bytes; at += 4) {
-        int pixel_over = 0;
+        unsigned pixel_over = 0;
         for (size_t channel = 0; channel < 4; channel++) {
             unsigned char a = shot->pixels[at + channel];
             unsigned char b = base->pixels[at + channel];
@@ -138,7 +138,9 @@ void btvd_compare_images(const btvd_image *shot, const btvd_image *base, uint16_
             if ((uint16_t)delta > out->max_delta) {
                 out->max_delta = (uint16_t)delta;
             }
-            pixel_over |= delta > tolerance;
+            if (delta > tolerance) {
+                pixel_over = 1;
+            }
         }
         out->pixels_over += pixel_over ? 1 : 0;
     }
@@ -146,11 +148,11 @@ void btvd_compare_images(const btvd_image *shot, const btvd_image *base, uint16_
 }
 
 static unsigned png_crc32(const unsigned char *data, size_t len) {
-    unsigned crc = 0xFFFFFFFFu;
+    unsigned crc = 0xFFFFFFFFU;
     for (size_t at = 0; at < len; at++) {
-        crc ^= data[at];
+        crc ^= (unsigned)data[at];
         for (int bit = 0; bit < 8; bit++) {
-            crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
+            crc = (crc >> 1U) ^ (0xEDB88320U & (0U - (crc & 1U)));
         }
     }
     return ~crc;
@@ -735,14 +737,13 @@ int btvd_artifacts_root_from(const char *env_value, const bt_json_value *config,
     }
     int has_prefix = (raw[0] != '\0' && raw[1] == ':') || (raw[0] == '\\' && raw[1] == '\\');
     int has_root = raw[0] == '/' || raw[0] == '\\';
+    int passthrough = has_prefix != 0 || (has_root != 0 && root[1] != ':');
     if (raw[0] == '\0') {
         snprintf(out, out_len, "%s", root);
-    } else if (has_prefix != 0) {
+    } else if (passthrough != 0) {
         snprintf(out, out_len, "%s", raw);
     } else if (has_root != 0 && root[1] == ':') {
         snprintf(out, out_len, "%2.2s%s", root, raw);
-    } else if (has_root != 0) {
-        snprintf(out, out_len, "%s", raw);
     } else {
         snprintf(out, out_len, "%s/%s", root, raw);
     }
@@ -866,12 +867,14 @@ int btvd_run(const btvd_env *env, char *err, size_t err_len) {
         return -1;
     }
     printf("report: %s\n", report_path);
-    int failed = 0;
+    unsigned failed = 0;
     for (size_t at = 0; at < reports.count; at++) {
         char label[BTVD_ERR_MAX];
         btvd_verdict_label(&reports.items[at].verdict, label, sizeof label);
         printf("%s: %s\n", reports.items[at].name, label);
-        failed |= btvd_verdict_is_failure(&reports.items[at].verdict);
+        if (btvd_verdict_is_failure(&reports.items[at].verdict) != 0) {
+            failed = 1;
+        }
     }
     bt_strbuf_free(&text);
     btvd_report_vec_free(&reports);

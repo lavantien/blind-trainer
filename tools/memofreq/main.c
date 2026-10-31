@@ -105,8 +105,8 @@ static int run(const bt_json_value *config, bt_mf_offenders *offenders) {
     if (data_ga_path(config, out_dir, offenders) != 0) {
         return -1;
     }
-    char path[BT_PATH_MAX];
-    bt_mf_freq_json_path(out_dir, path);
+    char out[BT_PATH_MAX];
+    bt_mf_freq_json_path(out_dir, out);
     bt_ga_freq_data *data = bt_mf_count_frequencies(samples, seed);
     if (data == NULL) {
         offenders_push(offenders, "count_frequencies failed");
@@ -138,13 +138,13 @@ static int run(const bt_json_value *config, bt_mf_offenders *offenders) {
         BT_TRACE_FAIL("mf.run", "freq data serialization failed");
         return -1;
     }
-    ensure_parent_dirs(path);
-    if (bt_paths_write_atomic(path, bytes.data, bytes.len) != 0) {
+    ensure_parent_dirs(out);
+    if (bt_paths_write_atomic(out, bytes.data, bytes.len) != 0) {
         bt_strbuf_free(&bytes);
         bt_ga_freq_data_free(data);
         free(data);
-        offenders_push(offenders, "write %s", path);
-        BT_TRACE_FAIL("mf.run", "write failed for %s", path);
+        offenders_push(offenders, "write %s", out);
+        BT_TRACE_FAIL("mf.run", "write failed for %s", out);
         return -1;
     }
     char sha[BT_GA_SHA256_HEX_LEN];
@@ -154,7 +154,7 @@ static int run(const bt_json_value *config, bt_mf_offenders *offenders) {
     printf("memofreq: %llu draws seed %llu -> %zu cases all hit (%llu pair events, %llu adjacent "
            "events), sha256 %s, wrote %s\n",
            (unsigned long long)samples, (unsigned long long)seed, data->cases_count,
-           (unsigned long long)pair_events, (unsigned long long)adjacent_events, sha, path);
+           (unsigned long long)pair_events, (unsigned long long)adjacent_events, sha, out);
     bt_strbuf_free(&bytes);
     bt_ga_freq_data_free(data);
     free(data);
