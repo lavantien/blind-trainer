@@ -138,6 +138,138 @@ class CudaCommandTests(unittest.TestCase):
         self.assertLess(lib_pos, argv.index("-lcudart_static"))
 
 
+class CudaPlanPayloadTests(unittest.TestCase):
+    def test_plan_payload_binds_nvcc_ccbin_arch_lib_and_ieee_flags(self):
+        plan = {"nvcc": "nvcc.exe", "ccbin": "C:/cl", "arch": "sm_86", "lib_dir": "C:/lib"}
+        base = bt.cuda_plan_payload(plan)
+        for needle in ("nvcc.exe", "C:/cl", "sm_86", "C:/lib"):
+            self.assertIn(needle, base)
+        for flag in bt.CUDA_IEEE_FLAGS:
+            self.assertIn(flag, base)
+        self.assertEqual(base, bt.cuda_plan_payload(dict(plan)))
+        for mutate in (
+            {"arch": "sm_90"},
+            {"ccbin": "C:/other"},
+            {"nvcc": "nvcc2.exe"},
+            {"lib_dir": "C:/lib2"},
+        ):
+            changed = dict(plan)
+            changed.update(mutate)
+            self.assertNotEqual(base, bt.cuda_plan_payload(changed))
+
+    def test_cuda_link_stamp_payload_binds_the_plan(self):
+        hub = sample_hub()
+        plan = {"nvcc": "nvcc.exe", "ccbin": "C:/cl", "arch": "sm_86", "lib_dir": "C:/lib"}
+        plain = bt.link_stamp_payload(hub, None)
+        cuda = bt.link_stamp_payload(hub, plan)
+        self.assertNotEqual(plain, cuda)
+        changed = dict(plan)
+        changed["arch"] = "sm_90"
+        self.assertNotEqual(cuda, bt.link_stamp_payload(hub, changed))
+
+
+class CudaVerdictTrustTests(unittest.TestCase):
+    def workable_verdict(self, root):
+        nvcc = root / "nvcc.exe"
+        nvcc.write_bytes(b"")
+        ccbin = root / "hostx64"
+        ccbin.mkdir(exist_ok=True)
+        lib_dir = root / "lib" / "x64"
+        lib_dir.mkdir(parents=True, exist_ok=True)
+        (lib_dir / "cudart_static.lib").write_bytes(b"")
+        return {
+            "ok": True,
+            "nvcc": str(nvcc),
+            "ccbin": str(ccbin),
+            "arch": "sm_86",
+            "lib_dir": str(lib_dir),
+            "detail": "stub",
+        }
+
+    def hub_with_env(self, tmp):
+        hub = sample_hub()
+        hub["build"]["dirs"]["env"] = str(Path(tmp) / "env.json")
+        return hub
+
+    def test_verdict_usable_requires_existing_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            verdict = self.workable_verdict(root)
+            self.assertTrue(bt.cuda_verdict_usable(verdict))
+            for key in ("nvcc", "ccbin", "lib_dir"):
+                broken = dict(verdict)
+                broken[key] = str(root / "absent")
+                self.assertFalse(bt.cuda_verdict_usable(broken))
+
+    def test_toolchain_honors_the_fail_override_over_a_warm_cache(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hub = self.hub_with_env(tmp)
+            bt.cache_cuda_verdict(hub, self.workable_verdict(Path(tmp)))
+            hub["cuda"]["doctor_override"] = "fail"
+            with self.assertRaises(bt.BtError):
+                bt.cuda_toolchain(hub)
+
+    def test_toolchain_returns_a_usable_cache_without_probing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hub = self.hub_with_env(tmp)
+            verdict = self.workable_verdict(Path(tmp))
+            bt.cache_cuda_verdict(hub, verdict)
+            self.assertEqual(bt.cuda_toolchain(hub)["nvcc"], verdict["nvcc"])
+
+    def test_toolchain_distrusts_a_cache_with_vanished_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hub = self.hub_with_env(tmp)
+            bt.cache_cuda_verdict(hub, self.workable_verdict(Path(tmp)))
+            ghost = dict(bt.cached_env(hub)["cuda"])
+            ghost["nvcc"] = str(Path(tmp) / "ghost" / "nvcc.exe")
+            bt.cache_cuda_verdict(hub, ghost)
+            try:
+                plan = bt.cuda_toolchain(hub)
+            except bt.BtError:
+                return
+            self.assertNotEqual(plan["nvcc"], ghost["nvcc"])
+
+    def test_toolchain_applies_the_arch_pin_over_the_cache(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hub = self.hub_with_env(tmp)
+            bt.cache_cuda_verdict(hub, self.workable_verdict(Path(tmp)))
+            hub["cuda"]["arch"] = "9.0"
+            self.assertEqual(bt.cuda_toolchain(hub)["arch"], "sm_90")
+
+
+class CudaArchValidationTests(unittest.TestCase):
+    def test_arch_pin_rejects_null_and_non_numeric_values(self):
+        hub = sample_hub()
+        for bad in (None, "abc", True, {"cap": 1}):
+            hub["cuda"]["arch"] = bad
+            with self.assertRaises(bt.BtError):
+                bt.cuda_arch(hub, "8.6")
+        hub["cuda"]["arch"] = ""
+        self.assertEqual(bt.cuda_arch(hub, "8.6"), "sm_86")
+        hub["cuda"]["arch"] = "8.6"
+        self.assertEqual(bt.cuda_arch(hub, "9.9"), "sm_86")
+
+
+class ParityTimeoutTests(unittest.TestCase):
+    def test_composed_timeout_covers_builds_runs_and_suites(self):
+        hub = sample_hub()
+        suite_timeout = hub["build"]["test_timeout_secs"]
+        suites = len(hub["cuda"]["parity_suites"])
+        self.assertEqual(
+            bt.parity_composed_timeout(hub),
+            2 * bt.GA_PARITY_BUILD_SECS + 8 * suite_timeout + suites * suite_timeout,
+        )
+
+    def test_parity_timeout_secs_rejects_wrong_types(self):
+        hub = sample_hub()
+        for bad in (True, "600", 1.5, 0, -1):
+            hub["cuda"]["parity_timeout_secs"] = bad
+            with self.assertRaises(bt.BtError):
+                bt.parity_timeout_secs(hub)
+        hub["cuda"]["parity_timeout_secs"] = 600
+        self.assertEqual(bt.parity_timeout_secs(hub), 600)
+
+
 class CudaProbeTests(unittest.TestCase):
     def test_doctor_override_verdicts_short_circuit_the_probe(self):
         hub = sample_hub()
@@ -260,6 +392,18 @@ class CudaCompileStageTests(unittest.TestCase):
         self.assertEqual(second_root, obj_root)
         still_nvcc = [line for line in self.argv_lines() if "-ccbin" in line]
         self.assertEqual(len(still_nvcc), 1)
+        repinned = self.cuda_plan()
+        repinned["arch"] = "sm_90"
+        bt.compile_stage(
+            hub,
+            self.root,
+            [sys.executable, "-I", str(self.stub_clang)],
+            bt.Logger(),
+            cuda=repinned,
+        )
+        recompiled = [line for line in self.argv_lines() if "-ccbin" in line]
+        self.assertEqual(len(recompiled), 2)
+        self.assertIn("sm_90", recompiled[1])
 
     def test_compile_stage_plain_never_invokes_nvcc(self):
         hub = sample_hub()

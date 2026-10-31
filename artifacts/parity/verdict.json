@@ -9,6 +9,27 @@
     "detail": "smoke exit 0 on sm_86 with C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64"
   },
   "tolerance": 1e-06,
+  "fp_strict": {
+    "clang_fp_contract_off": true,
+    "nvcc_ieee": [
+      "--fmad=false",
+      "-ftz=false",
+      "--prec-div=true",
+      "--prec-sqrt=true"
+    ]
+  },
+  "cpu_eval_used_cuda": 0,
+  "cuda_eval_used_cuda": 1,
+  "lane_timings": {
+    "ga_run_cpu_secs": 49.236,
+    "ga_run_cuda_secs": 36.304
+  },
+  "max_deltas": {
+    "best_fitness": 0.0,
+    "best_parts": 0.0,
+    "per_gen_best": 0.0,
+    "bit_exact": true
+  },
   "cpu_golden_hashes": {
     "syllables.json": "80682880a1c6d39cf8f30d38627223ea1493e7296e45ce069e45d93db29372f3",
     "report.md": "61b403bbb325ff33b430fe6a06319018bc02353fed30cd8f907cf56992d4ffdd"
@@ -115,7 +136,7 @@
     {
       "stem": "ga_eval",
       "code": 0,
-      "tail": "suite ga_ga_eval_test: 10 passed, 0 failed"
+      "tail": "suite ga_ga_eval_test: 11 passed, 0 failed"
     },
     {
       "stem": "ga",

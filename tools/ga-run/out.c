@@ -536,7 +536,10 @@ int bt_gr_report_text(const bt_gr_ga_report *report, bt_strbuf *out) {
         bt_strbuf_append_str(out, ",\n") == 0 && emit_indent(out, 1) == 0 &&
         bt_strbuf_append_str(out, "\"evaluations\": ") == 0 &&
         emit_u64(out, report->evaluations) == 0 && bt_strbuf_append_str(out, ",\n") == 0 &&
-        emit_indent(out, 1) == 0 && bt_strbuf_append_str(out, "\"freq_sha256\": ") == 0 &&
+        emit_indent(out, 1) == 0 &&
+        bt_strbuf_appendf(out, "\"eval_used_cuda\": %d", report->eval_used_cuda) == 0 &&
+        bt_strbuf_append_str(out, ",\n") == 0 && emit_indent(out, 1) == 0 &&
+        bt_strbuf_append_str(out, "\"freq_sha256\": ") == 0 &&
         emit_string(out, report->freq_sha256) == 0 && bt_strbuf_append_str(out, ",\n") == 0 &&
         emit_indent(out, 1) == 0 && bt_strbuf_append_str(out, "\"syllables_sha256\": ") == 0 &&
         emit_string(out, report->syllables_sha256) == 0 && bt_strbuf_append_str(out, "\n}") == 0;

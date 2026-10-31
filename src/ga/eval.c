@@ -6,6 +6,7 @@
 #include "data/paths.h"
 #include "ga/alloc.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -64,16 +65,24 @@ int bt_ga_eval_config_allow(const bt_json_value *config, int *allow, char err[BT
     return 1;
 }
 
+static void bt_ga_eval_fallback(const char *why) {
+    BT_TRACE_FAIL("ga.eval.create", "%s, cpu fallback", why);
+    fprintf(stderr, "ga: eval cpu fallback: %s\n", why);
+}
+
 #ifdef BT_GA_EVAL_CUDA
-static int bt_ga_eval_cuda_allowed(void) {
+static int bt_ga_eval_cuda_allowed(char reason[BT_GA_ERR_MAX]) {
+    reason[0] = '\0';
     bt_json_value *config = bt_data_load_config();
     if (config == NULL) {
+        snprintf(reason, BT_GA_ERR_MAX, "config unreadable");
         BT_TRACE_FAIL("ga.eval.create", "config unreadable, cpu fallback");
         return 0;
     }
     int allow = 0;
     char err[BT_GA_ERR_MAX];
     if (!bt_ga_eval_config_allow(config, &allow, err)) {
+        snprintf(reason, BT_GA_ERR_MAX, "%s", err);
         BT_TRACE_FAIL("ga.eval.create", "%s, cpu fallback", err);
         allow = 0;
     }
@@ -114,13 +123,16 @@ bt_ga_eval *bt_ga_eval_create(const bt_ga_env *env, const bt_ga_params *params, 
     eval->env = env;
     eval->capacity = max_count;
     int seam_block = bt_ga_eval_fault_hit("ga.eval.cuda");
-    if (seam_block) {
-        BT_TRACE_FAIL("ga.eval.create", "fault seam armed at ga.eval.cuda, cpu fallback");
-    }
 #ifdef BT_GA_EVAL_CUDA
     eval->cuda = NULL;
     eval->pack = NULL;
-    int allowed = bt_ga_eval_cuda_allowed();
+    char reason[BT_GA_ERR_MAX];
+    int allowed = bt_ga_eval_cuda_allowed(reason);
+    if (seam_block) {
+        bt_ga_eval_fallback("fault seam armed at ga.eval.cuda");
+    } else if (!allowed && reason[0] != '\0') {
+        bt_ga_eval_fallback(reason);
+    }
     if (allowed && !seam_block) {
         size_t pair_count = env->cooc_count + env->adj_count;
         if (pair_count != 0 && pair_count > SIZE_MAX / sizeof *env->cooc) {
@@ -138,7 +150,7 @@ bt_ga_eval *bt_ga_eval_create(const bt_ga_env *env, const bt_ga_params *params, 
             pair_w = bt_ga_alloc(pair_count * sizeof *pair_w, "ga.eval.pairs");
         }
         if (pair_count != 0 && (pair_i == NULL || pair_j == NULL || pair_w == NULL)) {
-            BT_TRACE_FAIL("ga.eval.create", "allocation failed at ga.eval.pairs, cpu fallback");
+            bt_ga_eval_fallback("allocation failed at ga.eval.pairs");
             bt_ga_free(pair_i);
             bt_ga_free(pair_j);
             bt_ga_free(pair_w);
@@ -159,7 +171,7 @@ bt_ga_eval *bt_ga_eval_create(const bt_ga_env *env, const bt_ga_params *params, 
             char err[BT_GA_CUDA_ERR_MAX];
             eval->cuda = bt_ga_cuda_eval_create(&desc, max_count, err);
             if (eval->cuda == NULL) {
-                BT_TRACE_FAIL("ga.eval.create", "cuda context failed (%s), cpu fallback", err);
+                bt_ga_eval_fallback(err);
             }
             bt_ga_free(pair_i);
             bt_ga_free(pair_j);
@@ -180,6 +192,10 @@ bt_ga_eval *bt_ga_eval_create(const bt_ga_env *env, const bt_ga_params *params, 
                             "abort: ga eval: allocation failed at ga.eval.pack");
             bt_harness_exit_failure();
         }
+    }
+#else
+    if (seam_block) {
+        bt_ga_eval_fallback("fault seam armed at ga.eval.cuda");
     }
 #endif
     BT_TRACE_EXIT("ga.eval.create");

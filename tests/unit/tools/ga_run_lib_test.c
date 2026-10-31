@@ -886,3 +886,49 @@ BT_TEST(ga_run_lib, render_markdown_defaults_missing_config_sections_to_zero) {
     report.run_config = NULL;
     fixture_report_free(&report);
 }
+
+BT_TEST(ga_run_lib, report_carries_the_eval_lane_of_the_outcome) {
+    bt_gr_run_inputs inputs;
+    memset(&inputs, 0, sizeof inputs);
+    uint32_t best[2] = {1, 2};
+    bt_ga_run_outcome outcome;
+    outcome_with_best(best, 2, &outcome);
+    outcome.eval_used_cuda = 1;
+    bt_gr_syllable_assignment assignment;
+    memset(&assignment, 0, sizeof assignment);
+    bt_json_value *config = parse_json("{}");
+    bt_gr_ga_report report;
+    bt_gr_build_report(&inputs, &outcome, &assignment, config, &report);
+    BT_CHECK_EQ(report.eval_used_cuda, 1);
+    bt_gr_report_free(&report);
+    bt_json_free(config);
+    free(outcome.best);
+    free(outcome.per_gen_best);
+}
+
+BT_TEST(ga_run_lib, wrong_typed_cuda_enable_is_an_offender) {
+    char scratch[BT_PATH_MAX];
+    xcheck_scratch("xbadcuda", scratch);
+    const char *body = "{\"cuda\": {\"enable\": \"on\"}}";
+    scratch_write(scratch, "config.json", body, strlen(body));
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/config.json", scratch);
+    const char *prior = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", prior != NULL ? prior : "");
+    _putenv_s("BT_CONFIG", path);
+    bt_gr_run_inputs inputs;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_load_run_inputs(&inputs, &offenders), -1);
+    BT_CHECK_EQ(offenders.count, (size_t)1);
+    if (offenders.count == 1) {
+        BT_CHECK(strstr(offenders.items[0], "cuda.enable") != NULL);
+    }
+    bt_gr_offenders_free(&offenders);
+    bt_gr_run_inputs_free(&inputs);
+    if (saved[0] == '\0') {
+        _putenv("BT_CONFIG=");
+    } else {
+        _putenv_s("BT_CONFIG", saved);
+    }
+}

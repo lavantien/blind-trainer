@@ -207,6 +207,21 @@
         }
       }
     },
+    "cuda": {
+      "arch": "",
+      "bin_dir": "build/bin-cuda",
+      "doctor_override": "",
+      "enable": false,
+      "parity_suites": [
+        "ga_eval",
+        "ga",
+        "ga_upgrade",
+        "ga_public_surface",
+        "ga_alloc_fault"
+      ],
+      "parity_timeout_secs": 3600,
+      "parity_tolerance": 1e-06
+    },
     "disk": {
       "free_floor_gb": 20,
       "scratch_stale_hours": 6
@@ -983,6 +998,7 @@
   "stagnation_tail": 3,
   "max_stagnation": 44,
   "evaluations": 99200,
+  "eval_used_cuda": 0,
   "freq_sha256": "11609bd494b8a4a9487ecdfda4237e5b7552500c0e9b77aa918a21ce04b657db",
   "syllables_sha256": "c79c850a102aebf27215dea1b418b6faefffa2caf4dc646674dbe33dd7c0b4bb"
 }

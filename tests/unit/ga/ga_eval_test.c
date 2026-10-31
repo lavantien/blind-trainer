@@ -380,6 +380,25 @@ BT_TEST(ga_eval, destroy_tolerates_null) {
     bt_ga_eval_destroy(NULL);
 }
 
+BT_TEST(ga_eval, outcome_reports_the_lane_the_session_engaged) {
+    char saved[BT_PATH_MAX];
+    use_scratch_config("cuda_outcome", "{\"cuda\":{\"enable\":true,\"parity_tolerance\":1e-06}}",
+                       saved);
+    bt_ga_features *feats = NULL;
+    float *lengths = NULL;
+    bt_ga_env *env = make_env(&feats, &lengths);
+    bt_ga_params params = make_params();
+    params.population = 6;
+    bt_ga_run_outcome *outcome = bt_ga_run(env, &params);
+    bt_ga_eval *probe = bt_ga_eval_create(env, &params, params.population);
+    BT_CHECK(outcome != NULL);
+    BT_CHECK_EQ(outcome->eval_used_cuda, bt_ga_eval_uses_cuda(probe));
+    bt_ga_eval_destroy(probe);
+    bt_ga_run_outcome_free(outcome);
+    free_env(env, feats, lengths);
+    restore_config(saved);
+}
+
 static void die_on_capacity_overflow(void) {
     bt_ga_features *feats = NULL;
     float *lengths = NULL;

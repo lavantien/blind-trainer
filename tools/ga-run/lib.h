@@ -62,6 +62,7 @@ typedef struct {
     uint32_t stagnation_tail;
     uint32_t max_stagnation;
     uint64_t evaluations;
+    int eval_used_cuda;
     char freq_sha256[BT_GA_SHA256_HEX_LEN];
     char syllables_sha256[BT_GA_SHA256_HEX_LEN];
 } bt_gr_ga_report;

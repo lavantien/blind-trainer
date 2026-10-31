@@ -4,6 +4,7 @@
 #include "common/config.h"
 #include "data/paths.h"
 #include "ga-run/out.h"
+#include "ga/eval.h"
 #include "scheme/pairs.h"
 
 #include <ctype.h>
@@ -263,7 +264,13 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
     }
     char err[BT_GA_ERR_MAX];
     int failed = 0;
-    if (bt_ga_config_params(config, &inputs->params, err) != 1) {
+    int cuda_allow = 0;
+    if (bt_ga_eval_config_allow(config, &cuda_allow, err) != 1) {
+        bt_gr_offenders_push(offenders, "%s", err);
+        BT_TRACE_FAIL("gr.load_run_inputs", "cuda enable rejected: %s", err);
+        failed = 1;
+    }
+    if (!failed && bt_ga_config_params(config, &inputs->params, err) != 1) {
         bt_gr_offenders_push(offenders, "%s", err);
         failed = 1;
     }
@@ -589,6 +596,7 @@ void bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome 
     report->stagnation_tail = outcome->stagnation_tail;
     report->max_stagnation = outcome->max_stagnation;
     report->evaluations = outcome->evaluations;
+    report->eval_used_cuda = outcome->eval_used_cuda;
     snprintf(report->freq_sha256, BT_GA_SHA256_HEX_LEN, "%s", assignment->freq_sha256);
     snprintf(report->syllables_sha256, BT_GA_SHA256_HEX_LEN, "%s", assignment->syllables_sha256);
     BT_TRACE_EXIT("gr.build_report");

@@ -49,37 +49,108 @@ def base_report():
 
 class CompareReportsTests(unittest.TestCase):
     def test_identical_reports_do_not_drift(self):
-        drift, improved = ga_parity.compare_reports(base_report(), base_report(), 1e-06)
+        drift, improved, deltas = ga_parity.compare_reports(base_report(), base_report(), 1e-06)
         self.assertEqual(drift, [])
         self.assertEqual(improved, [0, 1, 3])
+        self.assertTrue(deltas["bit_exact"])
 
     def test_exact_pin_drift_names_the_field(self):
         cuda = base_report()
         cuda["best_generation"] = 8
-        drift, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
+        drift, _, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
         self.assertTrue(any("best_generation" in line for line in drift))
 
     def test_tolerance_drift_names_the_index(self):
         cuda = base_report()
         cuda["per_gen_best"] = [9.0, 8.0, 8.0, 7.01]
-        drift, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
+        drift, _, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
         self.assertTrue(any("per_gen_best[3]" in line for line in drift))
 
     def test_tolerance_covers_a_small_shift(self):
         cuda = base_report()
         cuda["best_fitness"] = 12.5 + 1e-07
-        drift, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
+        drift, _, deltas = ga_parity.compare_reports(base_report(), cuda, 1e-06)
         self.assertEqual(drift, [])
+        self.assertAlmostEqual(deltas["best_fitness"], 1e-07)
+        self.assertFalse(deltas["bit_exact"])
+
+    def test_max_delta_records_the_largest_elementwise_gap(self):
+        cuda = base_report()
+        cuda["best_parts"] = [1.0 + 1e-08, 2.0, 3.0 + 3e-08]
+        cuda["per_gen_best"] = [9.0, 8.0, 8.0, 7.0 + 2e-07]
+        drift, _, deltas = ga_parity.compare_reports(base_report(), cuda, 1e-06)
+        self.assertEqual(drift, [])
+        self.assertAlmostEqual(deltas["best_parts"], 3e-08)
+        self.assertAlmostEqual(deltas["per_gen_best"], 2e-07)
 
     def test_improvement_pattern_drift_is_named(self):
         cuda = base_report()
         cuda["per_gen_best"] = [9.0, 8.0, 8.0 - 5e-07, 7.0]
-        drift, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
+        drift, _, _ = ga_parity.compare_reports(base_report(), cuda, 1e-06)
         self.assertEqual(
             [line for line in drift if "per_gen_best" in line],
             [],
         )
         self.assertTrue(any("improvement generations" in line for line in drift))
+
+
+class EngagementTests(unittest.TestCase):
+    def test_engaged_lanes_do_not_drift(self):
+        cpu = base_report()
+        cpu["eval_used_cuda"] = 0
+        cuda = base_report()
+        cuda["eval_used_cuda"] = 1
+        self.assertEqual(ga_parity.engagement_failures(cpu, cuda), [])
+
+    def test_silent_cuda_fallback_fails_the_verdict(self):
+        cpu = base_report()
+        cpu["eval_used_cuda"] = 0
+        cuda = base_report()
+        cuda["eval_used_cuda"] = 0
+        failures = ga_parity.engagement_failures(cpu, cuda)
+        self.assertTrue(any("cuda lane never engaged the device" in line for line in failures))
+
+    def test_cpu_lane_reporting_the_device_fails_the_verdict(self):
+        cpu = base_report()
+        cpu["eval_used_cuda"] = 1
+        cuda = base_report()
+        cuda["eval_used_cuda"] = 1
+        failures = ga_parity.engagement_failures(cpu, cuda)
+        self.assertTrue(any("cpu lane reports the device engaged" in line for line in failures))
+
+
+class SuiteBindingTests(unittest.TestCase):
+    def test_failed_suites_bind_into_the_verdict(self):
+        suites = [
+            {"stem": "ga_eval", "code": 0, "tail": "ok"},
+            {"stem": "ga", "code": 1, "tail": "boom"},
+        ]
+        failures = ga_parity.suite_failures(suites)
+        self.assertEqual(len(failures), 1)
+        self.assertIn("ga", failures[0])
+
+
+class ToleranceValidationTests(unittest.TestCase):
+    def test_parity_tolerance_rejects_wrong_types(self):
+        for bad in (True, "1e-6", None, 0, -1.0):
+            hub = sample_hub()
+            hub["cuda"]["parity_tolerance"] = bad
+            with self.assertRaises(ga_parity.ParityError):
+                ga_parity.parity_tolerance(hub)
+
+    def test_parity_tolerance_accepts_positive_numbers(self):
+        hub = sample_hub()
+        self.assertEqual(ga_parity.parity_tolerance(hub), 1e-06)
+
+
+class FpStrictTests(unittest.TestCase):
+    def test_fp_strict_requires_the_clang_contract_and_records_the_nvcc_flags(self):
+        hub = sample_hub()
+        record = ga_parity.fp_strict_record(hub)
+        self.assertTrue(record["clang_fp_contract_off"])
+        self.assertEqual(record["nvcc_ieee"], list(bt.CUDA_IEEE_FLAGS))
+        hub["build"]["cflags"] = [f for f in hub["build"]["cflags"] if f != "-ffp-contract=off"]
+        self.assertFalse(ga_parity.fp_strict_record(hub)["clang_fp_contract_off"])
 
 
 class ScratchConfigTests(unittest.TestCase):

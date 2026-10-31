@@ -66,6 +66,7 @@ typedef struct {
     uint32_t stagnation_tail;
     uint32_t max_stagnation;
     uint64_t evaluations;
+    int eval_used_cuda;
 } bt_ga_run_outcome;
 
 typedef struct {

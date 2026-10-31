@@ -39,6 +39,7 @@ CUDA_IEEE_FLAGS = ("--fmad=false", "-ftz=false", "--prec-div=true", "--prec-sqrt
 CUDA_UNIT = "src/ga/cuda/ga_eval.cu"
 CUDA_LIB_NAME = "cudart_static"
 GA_PARITY_SCRIPT = Path("scripts/ga_parity.py")
+GA_PARITY_BUILD_SECS = 900
 CUDA_SMOKE_SOURCE = """#include <cuda_runtime.h>
 
 __global__ void bt_cuda_smoke(float *dst) {
@@ -374,13 +375,27 @@ def sm_arch(cap):
     return f"sm_{int(major)}{int(minor)}"
 
 
+def cuda_pinned_cap(hub):
+    raw = cuda_cfg(hub).get("arch", "")
+    if raw is None or isinstance(raw, (bool, dict, list)):
+        raise BtError(f"cuda.arch must be a compute capability like 8.6, got: {raw!r}")
+    pinned = str(raw).strip()
+    if pinned and not re.fullmatch(r"\d+(\.\d+)?", pinned):
+        raise BtError(f"cuda.arch must be a compute capability like 8.6, got: {pinned}")
+    return pinned
+
+
 def cuda_arch(hub, cap):
-    pinned = str(cuda_cfg(hub).get("arch", "")).strip()
-    return sm_arch(pinned if pinned else cap)
+    return sm_arch(cuda_pinned_cap(hub) or cap)
 
 
 def cuda_lib_dir(nvcc):
     return Path(nvcc).resolve().parent.parent / "lib" / "x64"
+
+
+def cuda_plan_payload(cuda):
+    parts = [str(cuda.get(key)) for key in ("nvcc", "ccbin", "arch", "lib_dir")]
+    return "\n".join([*parts, *CUDA_IEEE_FLAGS, CUDA_LIB_NAME, CUDA_DEFINE])
 
 
 def vswhere_installs():
@@ -705,11 +720,16 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
         else:
             logger.line("skip", f"compile {rel} up to date")
         entries.append((source, obj))
+    cu_stamp = None
+    cu_payload = ""
     if cuda is not None:
         cu_source = root / CUDA_UNIT
         cu_obj = object_path(obj_root, root, cu_source)
         cu_obj.parent.mkdir(parents=True, exist_ok=True)
-        if needs_compile_plain(cu_source, cu_obj, [cu_source.with_suffix(".h")]):
+        cu_stamp = root / dirs_cfg(hub)["gen"] / "cu_stamp_cuda.txt"
+        cu_payload = cuda_plan_payload(cuda)
+        stamp_fresh = cu_stamp.is_file() and cu_stamp.read_text(encoding="utf-8") == cu_payload
+        if not stamp_fresh or needs_compile_plain(cu_source, cu_obj, [cu_source.with_suffix(".h")]):
             commands.append(
                 (
                     f"compile {CUDA_UNIT}",
@@ -727,6 +747,9 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
             logger.fail(result.label, result.output[-2000:] or "no output")
         if failed:
             raise BtError(f"{len(failed)} of {len(commands)} compiles failed")
+        if cu_stamp is not None:
+            cu_stamp.parent.mkdir(parents=True, exist_ok=True)
+            cu_stamp.write_text(cu_payload, encoding="utf-8")
         patched = 0
         for _, obj in entries:
             if obj.is_file() and patch_coff_timestamp(obj):
@@ -760,19 +783,22 @@ def link_stamp_path(hub, root, cuda=False):
     return root / dirs_cfg(hub)["gen"] / name
 
 
-def link_stamp_payload(hub, cuda=False):
-    return "\n".join([*link_flags_of(hub), "cuda" if cuda else "plain"])
+def link_stamp_payload(hub, cuda=None):
+    payload = [*link_flags_of(hub), "cuda" if cuda is not None else "plain"]
+    if cuda is not None:
+        payload.append(cuda_plan_payload(cuda))
+    return "\n".join(payload)
 
 
-def link_stamp_changed(hub, root, cuda=False):
-    stamp = link_stamp_path(hub, root, cuda)
+def link_stamp_changed(hub, root, cuda=None):
+    stamp = link_stamp_path(hub, root, cuda is not None)
     return not stamp.is_file() or stamp.read_text(
         encoding="utf-8"
     ) != link_stamp_payload(hub, cuda)
 
 
-def write_link_stamp(hub, root, cuda=False):
-    stamp = link_stamp_path(hub, root, cuda)
+def write_link_stamp(hub, root, cuda=None):
+    stamp = link_stamp_path(hub, root, cuda is not None)
     stamp.parent.mkdir(parents=True, exist_ok=True)
     stamp.write_text(link_stamp_payload(hub, cuda), encoding="utf-8")
 
@@ -887,7 +913,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
     if hello_obj in built_objects:
         links.append((f"link {hello_exe.name}", (hello_exe, [hello_obj], ())))
     commands = []
-    stamp_changed = link_stamp_changed(hub, root, cuda is not None)
+    stamp_changed = link_stamp_changed(hub, root, cuda)
     for label, (exe, objects, libs) in links:
         if stamp_changed or needs_link(objects, exe):
             exe.parent.mkdir(parents=True, exist_ok=True)
@@ -900,7 +926,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
             )
         else:
             logger.line("skip", f"{label} up to date")
-    write_link_stamp(hub, root, cuda is not None)
+    write_link_stamp(hub, root, cuda)
     if commands:
         results = run_units(commands, jobs=jobs_of(hub))
         failed = [r for r in results if r.returncode != 0]
@@ -1011,10 +1037,8 @@ def probe_cuda(hub, root):
     smi = shutil.which("nvidia-smi")
     if smi:
         cap = gpu_compute_cap([smi])
-    arch = cuda_arch(hub, cap) if cap else None
-    if arch is None:
-        pinned = str(cuda_cfg(hub).get("arch", "")).strip()
-        arch = sm_arch(pinned) if pinned else None
+    pinned = cuda_pinned_cap(hub)
+    arch = sm_arch(pinned or cap) if (pinned or cap) else None
     if arch is None:
         return {**base, "ok": False,
                 "detail": "no gpu compute capability from nvidia-smi and no cuda.arch pin"}
@@ -1042,17 +1066,38 @@ def probe_cuda(hub, root):
             "detail": "no host compiler produced a running cuda smoke"}
 
 
+def cuda_verdict_usable(verdict):
+    if not isinstance(verdict, dict) or not verdict.get("ok"):
+        return False
+    nvcc = verdict.get("nvcc")
+    ccbin = verdict.get("ccbin")
+    lib_dir = verdict.get("lib_dir")
+    if not all((nvcc, ccbin, lib_dir, verdict.get("arch"))):
+        return False
+    return Path(nvcc).is_file() and Path(ccbin).is_dir() and Path(lib_dir).is_dir()
+
+
 def cuda_toolchain(hub):
-    cached = cached_env(hub).get("cuda")
-    if cached and cached.get("ok") and all(cached.get(k) for k in ("nvcc", "ccbin", "arch",
-                                                                  "lib_dir")):
-        return cached
-    verdict = probe_cuda(hub, REPO_ROOT)
-    cache_cuda_verdict(hub, verdict)
+    override = str(cuda_cfg(hub).get("doctor_override", "")).strip().lower()
+    if override == "fail":
+        raise BtError("cuda toolchain unavailable: doctor override fail")
+    if override == "pass":
+        verdict = probe_cuda(hub, REPO_ROOT)
+        cache_cuda_verdict(hub, verdict)
+    else:
+        cached = cached_env(hub).get("cuda")
+        if cuda_verdict_usable(cached):
+            verdict = dict(cached)
+        else:
+            verdict = probe_cuda(hub, REPO_ROOT)
+            cache_cuda_verdict(hub, verdict)
     if not verdict.get("ok"):
         raise BtError(
             f"cuda toolchain unavailable: {verdict.get('detail')}; run python bt.py doctor"
         )
+    pinned = cuda_pinned_cap(hub)
+    if pinned:
+        verdict["arch"] = sm_arch(pinned)
     missing = [k for k in ("nvcc", "ccbin", "arch", "lib_dir") if not verdict.get(k)]
     if missing:
         raise BtError(f"cuda verdict incomplete, missing {', '.join(missing)}")
@@ -1831,17 +1876,40 @@ def tgt_ga(args):
     return tool_run(hub, "ga-run-build", "ga-run.exe", [], "ga", env=child_env(hub))
 
 
+def parity_timeout_secs(hub):
+    raw = cuda_cfg(hub).get("parity_timeout_secs", 3600)
+    if isinstance(raw, bool) or not isinstance(raw, int) or raw <= 0:
+        raise BtError(f"cuda.parity_timeout_secs must be a positive integer, got: {raw!r}")
+    return raw
+
+
+def parity_composed_timeout(hub):
+    suite_timeout = int(build_cfg(hub)["test_timeout_secs"])
+    suites = len(cuda_cfg(hub).get("parity_suites", []))
+    return 2 * GA_PARITY_BUILD_SECS + 2 * 4 * suite_timeout + suites * suite_timeout
+
+
 def tgt_ga_parity(args):
     """run the cpu vs cuda parity comparison"""
     hub = load_hub()
-    proc = run(
-        [sys.executable, "-I", REPO_ROOT / GA_PARITY_SCRIPT],
-        "ga-parity",
-        check=False,
-        cwd=REPO_ROOT,
-        timeout=int(hub["cuda"].get("parity_timeout_secs", 3600)),
-        env=child_env(hub),
-    )
+    logger = Logger()
+    try:
+        timeout = max(parity_timeout_secs(hub), parity_composed_timeout(hub))
+    except (BtError, KeyError, ValueError, TypeError) as e:
+        logger.fail("ga-parity", f"{type(e).__name__}: {e}")
+        return 1
+    try:
+        proc = run(
+            [sys.executable, "-I", REPO_ROOT / GA_PARITY_SCRIPT],
+            "ga-parity",
+            check=False,
+            cwd=REPO_ROOT,
+            timeout=timeout,
+            env=child_env(hub),
+        )
+    except subprocess.TimeoutExpired as e:
+        logger.fail("ga-parity", f"timeout after {e.timeout}s, the next run wipes the scratch lanes")
+        return 1
     output = ((proc.stdout or "") + (proc.stderr or "")).strip()
     if output:
         print(output[-3000:], flush=True)

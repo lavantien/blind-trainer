@@ -640,6 +640,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     bt_ga_free(staging);
     bt_ga_free(staging_scores);
     bt_ga_free(diversity_order);
+    int eval_used_cuda = bt_ga_eval_uses_cuda(eval);
     bt_ga_eval_destroy(eval);
 
     bt_ga_run_outcome *outcome = bt_ga_run_alloc(sizeof *outcome, "ga.run.outcome");
@@ -657,6 +658,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     outcome->stagnation_tail = stagnation_tail;
     outcome->max_stagnation = max_stagnation;
     outcome->evaluations = evaluations;
+    outcome->eval_used_cuda = eval_used_cuda;
     BT_TRACE_EXIT("ga.run");
     return outcome;
 }
