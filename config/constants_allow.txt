@@ -29,7 +29,7 @@ src/scheme/scramble.c	12	cube or Speffz geometry constant intrinsic to the 3x3 m
 src/scheme/scramble.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
 src/common/space.c	128	utf-8 lead byte boundary of the unicode whitespace classifier, pinned by the separator and ga trim tests
 src/scheme/scramble.h	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by oracle tests
-tools/gendata/synth.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, mirrored inline from bt-gendata synth.rs, pinned by the synth tests
+tools/gendata/synth.c	54	cube or Speffz geometry constant intrinsic to the 3x3 model, pinned by the synth tests
 tools/mutate/engine.c	256	link argv slot cap mirroring the engine link list, pinned by the mutate selftests
 tools/mutate/ledger.c	10	decimal radix of the ledger field parser, pinned by the mutate selftests
 tools/mutate/ledger.c	32	iso timestamp buffer of the ledger row, pinned by the mutate selftests
