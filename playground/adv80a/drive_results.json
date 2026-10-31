@@ -1,0 +1,147 @@
+{
+ "binary_fresh": true,
+ "hash_compare": {
+  "differing": [
+   "solve-review.png",
+   "stats.png"
+  ],
+  "identical": [
+   "algs-search.png",
+   "algs.png",
+   "case-drill-grade.png",
+   "case-drill-show.png",
+   "drill-card.png",
+   "drill-rate-a.png",
+   "drill-rate-b.png",
+   "drill-reps.png",
+   "memo-intro.png",
+   "memo-recall.png",
+   "memo-review.png",
+   "memo-stream.png",
+   "menu.png",
+   "replay.png",
+   "settings.png",
+   "solve-exec.png",
+   "solve-memo.png",
+   "solve-ready.png"
+  ]
+ },
+ "newest_source": "src\\app\\boot.c",
+ "replay": {
+  "smoke_census": {
+   "counts": {
+    "B": 46301,
+    "D": 38259,
+    "F": 24586,
+    "L": 33704,
+    "R": 68084,
+    "U": 63574
+   },
+   "total_px": 1024000,
+   "visible": {
+    "B": 46301,
+    "D": 38259,
+    "F": 24586,
+    "L": 33704,
+    "R": 68084,
+    "U": 63574
+   },
+   "visible_count": 6
+  },
+  "usage_census": {
+   "counts": {
+    "B": 32513,
+    "D": 26850,
+    "F": 65103,
+    "L": 67988,
+    "R": 36895,
+    "U": 45159
+   },
+   "total_px": 1024000,
+   "visible": {
+    "B": 32513,
+    "D": 26850,
+    "F": 65103,
+    "L": 67988,
+    "R": 36895,
+    "U": 45159
+   },
+   "visible_count": 6
+  },
+  "usage_vs_smoke_diff_px": 211096,
+  "usage_vs_smoke_same_hash": false
+ },
+ "runs": {
+  "smoke": {
+   "exit": 0,
+   "ok": true,
+   "secs": 9.7,
+   "shots": [
+    "algs",
+    "case-drill",
+    "drill",
+    "fatal",
+    "memo",
+    "menu",
+    "replay",
+    "settings",
+    "solve",
+    "stats"
+   ]
+  },
+  "usage1": {
+   "exit": 0,
+   "ok": false,
+   "secs": 27.2,
+   "shots": [
+    "algs",
+    "algs-search",
+    "case-drill-grade",
+    "case-drill-show",
+    "drill-card",
+    "drill-rate-a",
+    "drill-rate-b",
+    "drill-reps",
+    "memo-intro",
+    "memo-recall",
+    "memo-review",
+    "memo-stream",
+    "menu",
+    "replay",
+    "settings",
+    "solve-exec",
+    "solve-memo",
+    "solve-ready",
+    "solve-review",
+    "stats"
+   ]
+  },
+  "usage2": {
+   "exit": 0,
+   "ok": false,
+   "secs": 31.3,
+   "shots": [
+    "algs",
+    "algs-search",
+    "case-drill-grade",
+    "case-drill-show",
+    "drill-card",
+    "drill-rate-a",
+    "drill-rate-b",
+    "drill-reps",
+    "memo-intro",
+    "memo-recall",
+    "memo-review",
+    "memo-stream",
+    "menu",
+    "replay",
+    "settings",
+    "solve-exec",
+    "solve-memo",
+    "solve-ready",
+    "solve-review",
+    "stats"
+   ]
+  }
+ }
+}
