@@ -1,0 +1,5 @@
+2026-11-01T03:29:01 [entry] coverage
+2026-11-01T03:29:01 [entry] coverage tree guard git -C C:\Users\lavantien\dev\github\blind-trainer status --porcelain --untracked-files=all -- src tools tests/fuzz
+2026-11-01T03:29:01 [exit] coverage tree guard code=0 dt=0.032s
+2026-11-01T03:29:01 [fail] coverage BtError: measured tree dirty under ['src', 'tools', 'tests/fuzz'], commit or stash first: src/app/window_focus.c
+EXIT:1
