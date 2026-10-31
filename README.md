@@ -191,7 +191,7 @@ the verification chain, every gate from test to verify-algs, release adds dist a
 
 ## Local development
 
-Prerequisites: the LLVM 23 toolchain with clang, clang-format, clang-tidy and llvm-cov on PATH, python 3, git, and java for the diagram renders. `python bt.py setup` verifies the required tools and reports the optional nvcc probe.
+Prerequisites: the LLVM 23 toolchain with clang, clang-format, clang-tidy and llvm-cov on PATH, python 3, git, and java for the diagram renders. `python bt.py setup` verifies the required tools and reports the optional cuda probe, which compiles and runs a smoke kernel through nvcc and a host cl.exe when they are present.
 
 1. Clone, vendor and build:
 
@@ -204,6 +204,8 @@ python bt.py build
 ```
 
 `python scripts/vendor.py` downloads raylib 6.2 and the sqlite 3.54.1 amalgamation under the sha pins in the config hub, builds the raylib library, and writes build/vendor.lock. `python bt.py build` compiles and links every unit, the app lands in build/bin/bt-app.exe.
+
+`python bt.py build --cuda` builds the second flavor when the doctor's cuda probe passes: nvcc compiles src/ga/cuda/ga_eval.cu with IEEE-strict device flags for the arch nvidia-smi reports, using an MSVC cl.exe it discovers through the build tools override, PATH, or vswhere, and the exes land in build/bin-cuda. The plain flavor never invokes nvcc. The ga engine routes its per-generation population fitness through a dispatch session: with cuda.enable on it evaluates on the gpu, one thread per fitness value in the cpu accumulation order, and falls back to the cpu loop with a warning trace when the device context fails. `python bt.py ga-parity` compares the flavors on the fixed seed: the cpu lane must reproduce the ref_ground/ga goldens byte for byte outside run_config, the cuda lane must stay inside the hub tolerance on the fitness summaries and match the cpu ranking pins exactly, and the cuda-built ga suites rerun with the lane enabled.
 
 2. Generate the vendor data:
 
@@ -235,7 +237,7 @@ python scripts/alg_coverage_badge.py
 
 1. User data. blind-trainer.db, a sqlite database in the user dir: `%APPDATA%/blind-trainer` on Windows, `$XDG_DATA_HOME/blind-trainer` when the variable is set, `~/.local/share/blind-trainer` otherwise. Schema changes run as numbered migrations from db/migrations/, embedded into the binary by scripts/gen_migrations.py. The database copies to a `.bak` backup once before the first pending migration of a run, and only when tables already exist. Legacy JSON files (settings, srs, solves, user alg overlay) import once on first run after the migrations and rename to `.migrated`.
 
-2. Config hub. `config/config.json` is the single centralized source for every tunable: the app section (window, memo cadence and mode, drill reps, smoke seed, the app.replay playback and camera knobs, fonts, render), ga seed and weights, memofreq sampling, srs.fsrs (the FSRS-5 weights, request retention, interval clamp), verify limits, synth including synth.scoring (preferred faces, finger costs, ranking weights), visual tolerance, fuzz budgets, mutants workers and timeouts, policy scanner settings, the sloc cap, the job memory ceiling, memguard, the disk floor and scratch staleness window, the e2e shot list and timeout, the release verifier contract, all paths, the build toolchain, flags, and vendored library pins. `python bt.py policy` enforces the hub: numeric literals recurring in src outside the hub must carry a justified row in `config/constants_allow.txt`, and the same scan rejects every code comment and every file over the sloc cap.
+2. Config hub. `config/config.json` is the single centralized source for every tunable: the app section (window, memo cadence and mode, drill reps, smoke seed, the app.replay playback and camera knobs, fonts, render), ga seed and weights, memofreq sampling, srs.fsrs (the FSRS-5 weights, request retention, interval clamp), verify limits, synth including synth.scoring (preferred faces, finger costs, ranking weights), visual tolerance, the cuda offload (enable, parity tolerance and timeout, doctor override, arch pin, bin dir, parity suites), fuzz budgets, mutants workers and timeouts, policy scanner settings, the sloc cap, the job memory ceiling, memguard, the disk floor and scratch staleness window, the e2e shot list and timeout, the release verifier contract, all paths, the build toolchain, flags, and vendored library pins. `python bt.py policy` enforces the hub: numeric literals recurring in src outside the hub must carry a justified row in `config/constants_allow.txt`, and the same scan rejects every code comment and every file over the sloc cap.
 
 3. Environment overrides, the complete set the binaries honor:
 
@@ -307,6 +309,7 @@ baselines                recapture the committed baselines from two byte-identic
 gen-data                 build data/vendor from ref_ground and synthesize uncovered pairs
 memofreq                 memo pair frequency monte carlo
 ga                       run the syllable optimizer into data/ga/
+ga-parity                run the cpu vs cuda parity comparison
 verify-algs              verify every vendor alg and pack row, write the verify and packs reports
 verify-algs-selftest     run every verify_* unit suite with the ref ground and config env
 screenshots              regenerate every usage shot and the fatal screen
@@ -335,7 +338,6 @@ The verification chain runs through bt.py in order, committing at each green ste
 4. a memguard target that reports repo process memory against the cap through scripts/memguard.py
 5. targets wiring the alg coverage badge and the diagram renders into bt.py
 6. a run target that starts the app after a build
-7. a cuda acceleration lane behind the nvcc probe bt.py doctor already reports
 
 ## Licensing
 

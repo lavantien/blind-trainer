@@ -109,7 +109,9 @@ class CudaCommandTests(unittest.TestCase):
         ccbin = Path("C:/vs/bin/hostx64/x64")
         source = Path("src/ga/cuda/ga_eval.cu")
         obj = Path("build/obj/src/ga/cuda/ga_eval.obj")
-        argv = bt.nvcc_compile_command([Path("nvcc.exe")], ccbin, "sm_86", source, obj)
+        include = Path("repo/src")
+        argv = bt.nvcc_compile_command([Path("nvcc.exe")], ccbin, "sm_86", source, obj,
+                                       includes=[include])
         self.assertEqual(argv[0], "nvcc.exe")
         self.assertEqual(argv[argv.index("-ccbin") + 1], str(ccbin))
         self.assertIn("-arch=sm_86", argv)
@@ -117,6 +119,7 @@ class CudaCommandTests(unittest.TestCase):
             self.assertIn(flag, argv)
         self.assertIn("-O3", argv)
         self.assertIn("-cudart=static", argv)
+        self.assertEqual(argv[argv.index("-I") + 1], str(include))
         self.assertEqual(argv[argv.index("-c") + 1], str(source))
         self.assertEqual(argv[argv.index("-o") + 1], str(obj))
 

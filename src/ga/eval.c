@@ -123,6 +123,12 @@ bt_ga_eval *bt_ga_eval_create(const bt_ga_env *env, const bt_ga_params *params, 
     int allowed = bt_ga_eval_cuda_allowed();
     if (allowed && !seam_block) {
         size_t pair_count = env->cooc_count + env->adj_count;
+        if (pair_count != 0 && pair_count > SIZE_MAX / sizeof *env->cooc) {
+            BT_TRACE_FAIL("ga.eval.create", "allocation size overflow at ga.eval.pairs");
+            bt_harness_fail("src/ga/eval.c", 0,
+                            "abort: ga eval: allocation size overflow at ga.eval.pairs");
+            bt_harness_exit_failure();
+        }
         uint32_t *pair_i = NULL;
         uint32_t *pair_j = NULL;
         float *pair_w = NULL;

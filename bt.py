@@ -38,6 +38,7 @@ CUDA_DEFINE = "-DBT_GA_EVAL_CUDA"
 CUDA_IEEE_FLAGS = ("--fmad=false", "-ftz=false", "--prec-div=true", "--prec-sqrt=true")
 CUDA_UNIT = "src/ga/cuda/ga_eval.cu"
 CUDA_LIB_NAME = "cudart_static"
+GA_PARITY_SCRIPT = Path("scripts/ga_parity.py")
 CUDA_SMOKE_SOURCE = """#include <cuda_runtime.h>
 
 __global__ void bt_cuda_smoke(float *dst) {
@@ -338,15 +339,12 @@ def nvcc_base_flags(ccbin, arch):
     return ["-ccbin", str(ccbin), f"-arch={arch}", *CUDA_IEEE_FLAGS, "-O3", "-cudart=static"]
 
 
-def nvcc_compile_command(nvcc, ccbin, arch, source, obj):
-    return [
-        *nvcc_argv_of(nvcc),
-        *nvcc_base_flags(ccbin, arch),
-        "-c",
-        str(source),
-        "-o",
-        str(obj),
-    ]
+def nvcc_compile_command(nvcc, ccbin, arch, source, obj, includes=()):
+    argv = [*nvcc_argv_of(nvcc), *nvcc_base_flags(ccbin, arch)]
+    for include in includes:
+        argv += ["-I", str(include)]
+    argv += ["-c", str(source), "-o", str(obj)]
+    return argv
 
 
 def nvcc_smoke_command(nvcc, ccbin, arch, source, exe):
@@ -706,7 +704,7 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
                 (
                     f"compile {CUDA_UNIT}",
                     nvcc_compile_command(cuda["nvcc"], cuda["ccbin"], cuda["arch"],
-                                         cu_source, cu_obj),
+                                         cu_source, cu_obj, [root / "src"]),
                 )
             )
         else:
@@ -1821,6 +1819,23 @@ def tgt_ga(args):
     """run the syllable optimizer into data/ga/"""
     hub = load_hub()
     return tool_run(hub, "ga-run-build", "ga-run.exe", [], "ga", env=child_env(hub))
+
+
+def tgt_ga_parity(args):
+    """run the cpu vs cuda parity comparison"""
+    hub = load_hub()
+    proc = run(
+        [sys.executable, "-I", REPO_ROOT / GA_PARITY_SCRIPT],
+        "ga-parity",
+        check=False,
+        cwd=REPO_ROOT,
+        timeout=int(hub["cuda"].get("parity_timeout_secs", 3600)),
+        env=child_env(hub),
+    )
+    output = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    if output:
+        print(output[-3000:], flush=True)
+    return proc.returncode
 
 
 def tgt_verify_algs(args):

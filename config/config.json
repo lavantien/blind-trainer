@@ -188,9 +188,17 @@
   "cuda": {
     "enable": false,
     "parity_tolerance": 1e-06,
+    "parity_timeout_secs": 3600,
     "doctor_override": "",
     "arch": "",
-    "bin_dir": "build/bin-cuda"
+    "bin_dir": "build/bin-cuda",
+    "parity_suites": [
+      "ga_eval",
+      "ga",
+      "ga_upgrade",
+      "ga_public_surface",
+      "ga_alloc_fault"
+    ]
   },
   "fuzz": {
     "seed": 20261012,
