@@ -4,6 +4,7 @@
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "ga/alloc.h"
+#include "ga/eval.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -306,13 +307,6 @@ static uint64_t bt_ga_gate(double rate) {
     return (uint64_t)gates;
 }
 
-static void bt_ga_eval_population(const bt_ga_params *params, const bt_ga_env *env,
-                                  uint32_t **population, size_t count, float *scores) {
-    for (size_t i = 0; i < count; i++) {
-        scores[i] = bt_ga_fitness(params, env, population[i]);
-    }
-}
-
 static size_t bt_ga_effective_elite(const bt_ga_params *params, const bt_ga_upgrades *upgrades) {
     if (upgrades->elite_fraction_policy) {
         return (size_t)(upgrades->elite_fraction * (double)params->population);
@@ -459,6 +453,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     bt_rng_seed(&rng, params->seed);
     size_t pop = params->population;
     size_t case_count = env->case_count;
+    bt_ga_eval *eval = bt_ga_eval_create(env, params, pop);
     uint32_t *scratch = bt_ga_run_alloc_n(env->pool_size, sizeof *scratch, "ga.run.scratch");
     bt_ga_island *island = bt_ga_run_alloc_n(islands, sizeof *island, "ga.run.islands");
     uint32_t *stagnation = bt_ga_run_alloc_n(islands, sizeof *stagnation, "ga.run.stagnation");
@@ -473,7 +468,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
                                     island[isl].population[i]);
         }
         island[isl].scores = bt_ga_run_alloc_n(pop, sizeof *island[isl].scores, "ga.run.scores");
-        bt_ga_eval_population(params, env, island[isl].population, pop, island[isl].scores);
+        bt_ga_eval_population(eval, island[isl].population, pop, island[isl].scores);
         island[isl].order = bt_ga_run_alloc_n(pop, sizeof *island[isl].order, "ga.run.order");
         bt_ga_sorted_order(island[isl].scores, island[isl].population, pop, case_count,
                            island[isl].order);
@@ -555,7 +550,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
                 filled++;
             }
             evaluations += pop - elite;
-            bt_ga_eval_population(params, env, next, pop, island[isl].scores);
+            bt_ga_eval_population(eval, next, pop, island[isl].scores);
             for (size_t i = 0; i < pop; i++) {
                 if (!is_elite[i]) {
                     bt_ga_free(island[isl].population[i]);
@@ -645,6 +640,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     bt_ga_free(staging);
     bt_ga_free(staging_scores);
     bt_ga_free(diversity_order);
+    bt_ga_eval_destroy(eval);
 
     bt_ga_run_outcome *outcome = bt_ga_run_alloc(sizeof *outcome, "ga.run.outcome");
     float parts[3];
