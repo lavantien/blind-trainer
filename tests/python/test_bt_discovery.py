@@ -99,6 +99,18 @@ class FilterSuitesTests(unittest.TestCase):
         picked = bt.filter_suites(suites, "tools", "absent")
         self.assertEqual(picked, [])
 
+    def test_filter_suites_drops_stems_matching_without(self):
+        suites = [
+            {"area": "tools", "stem": "ga_run_lib_test"},
+            {"area": "tools", "stem": "policy_lib_test"},
+        ]
+        picked = bt.filter_suites(suites, "tools", without="ga_run_lib")
+        self.assertEqual([s["stem"] for s in picked], ["policy_lib_test"])
+        picked = bt.filter_suites(suites, "tools", only="lib", without="ga_run")
+        self.assertEqual([s["stem"] for s in picked], ["policy_lib_test"])
+        picked = bt.filter_suites(suites, "tools", without="absent")
+        self.assertEqual(len(picked), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

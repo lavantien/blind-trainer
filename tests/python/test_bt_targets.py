@@ -50,20 +50,31 @@ class TargetTableTests(unittest.TestCase):
 
 class TestUnitScopeTests(unittest.TestCase):
     def test_scope_accepts_area_and_only_pairs(self):
-        self.assertEqual(bt.test_unit_scope(["tools"]), ("tools", None))
+        self.assertEqual(bt.test_unit_scope(["tools"]), ("tools", None, None))
         self.assertEqual(
             bt.test_unit_scope(["tools", "--only", "visual_diff"]),
-            ("tools", "visual_diff"),
+            ("tools", "visual_diff", None),
         )
-        self.assertEqual(bt.test_unit_scope(["common"]), ("common", None))
+        self.assertEqual(bt.test_unit_scope(["common"]), ("common", None, None))
 
-    def test_scope_rejects_malformed_only_forms(self):
+    def test_scope_accepts_area_and_without_pairs(self):
+        self.assertEqual(
+            bt.test_unit_scope(["tools", "--without", "ga_run_lib"]),
+            ("tools", None, "ga_run_lib"),
+        )
+
+    def test_scope_rejects_malformed_only_and_without_forms(self):
         for args in (
             ["--only"],
             ["tools", "--only"],
             ["tools", "--only", ""],
             ["tools", "--only=visual_diff"],
             ["tools", "--only", "visual_diff", "extra"],
+            ["tools", "--without"],
+            ["tools", "--without", ""],
+            ["tools", "--without=ga_run_lib"],
+            ["tools", "--without", "ga_run_lib", "extra"],
+            ["tools", "--only", "a", "--without", "b"],
             ["tools", "extra"],
             ["--only", "visual_diff"],
         ):

@@ -248,10 +248,12 @@ def discover_test_suites(root):
     return suites
 
 
-def filter_suites(suites, area, only=None):
+def filter_suites(suites, area, only=None, without=None):
     picked = [s for s in suites if s["area"] == area]
     if only is not None:
         picked = [s for s in picked if only in s["stem"]]
+    if without is not None:
+        picked = [s for s in picked if without not in s["stem"]]
     return picked
 
 
@@ -578,9 +580,14 @@ def tools_needed_scoped(root, suites, only=None):
 
 def test_unit_scope(args):
     if len(args) == 1 and not args[0].startswith("--"):
-        return args[0], None
-    if len(args) == 3 and args[1] == "--only" and args[2] and not args[0].startswith("--"):
-        return args[0], args[2]
+        return args[0], None, None
+    if (
+        len(args) == 3
+        and args[1] in ("--only", "--without")
+        and args[2]
+        and not args[0].startswith("--")
+    ):
+        return (args[0], args[2], None) if args[1] == "--only" else (args[0], None, args[2])
     return None
 
 
@@ -1444,18 +1451,23 @@ def tgt_test(args):
 
 
 def tgt_test_unit(args):
-    """run one area's unit tests: python bt.py test-unit <area> [--only substring]"""
+    """run one area's unit tests: python bt.py test-unit <area> [--only substring] [--without substring]"""
     if not args:
-        print("usage: python bt.py test-unit <area> [--only substring]")
+        print("usage: python bt.py test-unit <area> [--only substring] [--without substring]")
         return 2
     scope = test_unit_scope(args)
     if scope is None:
-        print("usage: python bt.py test-unit <area> [--only substring]")
+        print("usage: python bt.py test-unit <area> [--only substring] [--without substring]")
         return 2
-    area, only = scope
+    area, only, without = scope
     hub = load_hub()
     logger = Logger()
-    logger.entry("test-unit", area if only is None else f"{area} --only {only}")
+    detail = area
+    if only is not None:
+        detail += f" --only {only}"
+    if without is not None:
+        detail += f" --without {without}"
+    logger.entry("test-unit", detail)
     try:
         compiler = [resolve_tool("clang", hub)]
         generated = generate_stage(hub, REPO_ROOT)
@@ -1466,7 +1478,7 @@ def tgt_test_unit(args):
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail("test-build", f"{type(e).__name__}: {e}")
         return 1
-    suites = filter_suites(discover_test_suites(REPO_ROOT), area, only)
+    suites = filter_suites(discover_test_suites(REPO_ROOT), area, only, without)
     if not suites:
         logger.fail("test-unit", f"no test suites under tests/unit/{area}")
         return 1
