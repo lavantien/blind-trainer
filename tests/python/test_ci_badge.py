@@ -309,17 +309,19 @@ class CiBadgeEndToEndTests(unittest.TestCase):
             self.assertNotIn("ci-badge: ci-badge", buffer.getvalue())
 
 
+PINNED_CI_VERDICT = "passed"
+
+
 class CommittedBadgeTests(unittest.TestCase):
-    def test_committed_ci_svg_matches_the_renderer(self):
-        badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
-        raw = (badge_dir / "ci.svg").read_bytes()
-        match = re.search(rb'aria-label="CI: ([^"]+)"', raw)
-        value = match.group(1).decode("utf-8")
+    def test_committed_ci_svg_carries_the_pinned_verdict(self):
+        expected = badge_svg(
+            "CI", PINNED_CI_VERDICT, color=ci_badge.VERDICT_COLORS[PINNED_CI_VERDICT]
+        ).encode("utf-8")
         self.assertEqual(
-            badge_svg("CI", value, color=ci_badge.VERDICT_COLORS[value]).encode(
-                "utf-8"
-            ),
-            raw,
+            (
+                Path(__file__).resolve().parents[2] / "docs" / "badges" / "ci.svg"
+            ).read_bytes(),
+            expected,
         )
 
 
