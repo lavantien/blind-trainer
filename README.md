@@ -298,6 +298,7 @@ fmt-fix                  clang-format in place
 lint                     clang-tidy over every c file, or one area: python bt.py lint <area>
 test                     run every unit test exe and the python suite
 test-unit                run one area's unit tests: python bt.py test-unit <area> [--only substring] [--without substring]
+coverage                 build instrumented suites, run them, export llvm-cov json, refresh the coverage badge
 policy                   selftest then the zero-comment, constants-hub, and sloc scans
 policy-selftest          prove bt-policy detects planted comments, literals, and cap breaches
 fuzz                     run every fuzz_*_test suite exe in plainloop mode, harness bodies keep the early-return, exit-at-bound applies only under a libFuzzer driver
@@ -334,12 +335,11 @@ The verification chain runs through bt.py in order, committing at each green ste
 
 ## Roadmap
 
-1. a coverage target that builds instrumented binaries, exports the llvm-cov json, and refreshes the coverage badge through scripts/coverage_badge.py
-2. a chain target that runs every gate in order
-3. a memguard target that reports repo process memory against the cap through scripts/memguard.py
-4. targets wiring the alg coverage badge and the diagram renders into bt.py
-5. a run target that starts the app after a build
-6. run the ga-run cross-check suite in CI once a cheap generated-data fixture lands
+1. a chain target that runs every gate in order
+2. a memguard target that reports repo process memory against the cap through scripts/memguard.py
+3. targets wiring the alg coverage badge and the diagram renders into bt.py
+4. a run target that starts the app after a build
+5. run the ga-run cross-check suite in CI once a cheap generated-data fixture lands
 
 ## Licensing
 

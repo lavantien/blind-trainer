@@ -205,6 +205,16 @@
     "runs": 5000,
     "secs": 30
   },
+  "coverage": {
+    "flags": [
+      "-fprofile-instr-generate",
+      "-fcoverage-mapping"
+    ],
+    "profiles_dir": "profiles",
+    "profdata": "coverage.profdata",
+    "export": "coverage.json",
+    "include_regex": "[\\\\/](src|tools)[\\\\/]|tests[\\\\/]fuzz[\\\\/]"
+  },
   "mutants": {
     "workers": 1,
     "timeout_secs": 120,
@@ -354,6 +364,8 @@
       "root": "build",
       "bin": "build/bin",
       "obj": "build/obj",
+      "obj_cov": "build/obj-cov",
+      "bin_cov": "build/bin-cov",
       "gen": "build/gen",
       "vendor": "build/vendor",
       "downloads": "build/vendor-downloads",
@@ -367,6 +379,7 @@
       "clang_format": "",
       "clang_tidy": "",
       "llvm_cov": "",
+      "llvm_profdata": "",
       "llvm_ar": "",
       "python": "",
       "nvcc": ""

@@ -40,6 +40,7 @@ CUDA_UNIT = "src/ga/cuda/ga_eval.cu"
 CUDA_LIB_NAME = "cudart_static"
 GA_PARITY_SCRIPT = Path("scripts/ga_parity.py")
 GA_PARITY_BUILD_SECS = 900
+COVERAGE_BADGE_SCRIPT = Path("scripts/coverage_badge.py")
 CUDA_SMOKE_SOURCE = """#include <cuda_runtime.h>
 
 __global__ void bt_cuda_smoke(float *dst) {
@@ -152,9 +153,9 @@ def run(argv, label, cwd=None, check=True, env=None, timeout=None):
     return proc
 
 
-def run_units(units, jobs=1, timeout=None, env=None):
+def run_units_env(units, jobs=1, timeout=None):
     def execute(unit):
-        label, argv = unit
+        label, argv, env = unit
         unit_argv = [str(part) for part in argv]
         try:
             proc = subprocess.run(
@@ -173,6 +174,11 @@ def run_units(units, jobs=1, timeout=None, env=None):
     workers = max(1, jobs)
     with ThreadPoolExecutor(max_workers=workers) as pool:
         return list(pool.map(execute, units))
+
+
+def run_units(units, jobs=1, timeout=None, env=None):
+    tagged = [(label, argv, env) for label, argv in units]
+    return run_units_env(tagged, jobs=jobs, timeout=timeout)
 
 
 def jobs_of(hub=None):
@@ -302,12 +308,37 @@ def cuda_compile_flags(hub, cuda=False):
     return [*flags, CUDA_DEFINE] if cuda else flags
 
 
+def coverage_cfg(hub=None):
+    return (hub or load_hub())["coverage"]
+
+
+def coverage_flags(hub):
+    return list(coverage_cfg(hub)["flags"])
+
+
+def coverage_compile_flags(hub):
+    return [*compile_flags(hub), *coverage_flags(hub)]
+
+
+def coverage_paths(hub):
+    cov = coverage_cfg(hub)
+    root = REPO_ROOT / hub.get("paths", {}).get("artifacts", "artifacts") / "coverage"
+    return {
+        "root": root,
+        "profiles": root / cov["profiles_dir"],
+        "profdata": root / cov["profdata"],
+        "export": root / cov["export"],
+    }
+
+
 def cuda_bin_dir(hub=None):
     return REPO_ROOT / cuda_cfg(hub).get("bin_dir", "build/bin-cuda")
 
 
-def objects_dirname(hub, cuda=False):
+def objects_dirname(hub, cuda=False, coverage=False):
     payload = "\n".join(cuda_compile_flags(hub, cuda=cuda))
+    if coverage:
+        payload += "\n" + "\n".join(coverage_flags(hub))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
@@ -483,11 +514,11 @@ def prune_stale_obj_roots(obj_base, current, logger, keep=()):
             logger.line("clean", f"removed stale objects {child.name}")
 
 
-def discover_compile_units(hub, root, cuda=False):
+def discover_compile_units(hub, root, cuda=False, coverage=False):
     includes = [root / d for d in INCLUDE_DIRS]
-    obj_base = root / dirs_cfg(hub)["obj"]
-    obj_root = obj_base / objects_dirname(hub, cuda=cuda)
-    if not cuda:
+    obj_base = root / dirs_cfg(hub)["obj_cov" if coverage else "obj"]
+    obj_root = obj_base / objects_dirname(hub, cuda=cuda, coverage=coverage)
+    if not cuda and not coverage:
         note_plain_obj_root(hub, root, obj_root)
     units = []
     for source in c_files(root):
@@ -660,15 +691,20 @@ def app_exe_link(hub, root, bin_dir, objs_by_source, src_objects, vendor_objects
     return (bin_dir / name, objects, libs)
 
 
-def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None, cuda=None):
-    includes, obj_root, units = discover_compile_units(hub, root, cuda=cuda is not None)
+def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None,
+                  cuda=None, coverage=False):
+    includes, obj_root, units = discover_compile_units(
+        hub, root, cuda=cuda is not None, coverage=coverage
+    )
     prune_stale_obj_roots(
-        root / dirs_cfg(hub)["obj"],
+        root / dirs_cfg(hub)["obj_cov" if coverage else "obj"],
         obj_root,
         logger,
-        keep={objects_dirname(hub, cuda=cuda is None)},
+        keep=set() if coverage else {objects_dirname(hub, cuda=cuda is None)},
     )
     flags = cuda_compile_flags(hub, cuda=cuda is not None)
+    if coverage:
+        flags = [*flags, *coverage_flags(hub)]
     system_dirs = system_include_dirs(hub)
     tools_needed = (
         tools_needed_scoped(root, discover_test_suites(root), only)
@@ -770,9 +806,11 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
     return obj_root, entries
 
 
-def generate_stage(hub, root, cuda=False):
+def generate_stage(hub, root, cuda=False, coverage=False):
     gen_dir = root / dirs_cfg(hub)["gen"]
-    obj_root = root / dirs_cfg(hub)["obj"] / objects_dirname(hub, cuda=cuda)
+    obj_root = root / dirs_cfg(hub)["obj_cov" if coverage else "obj"] / objects_dirname(
+        hub, cuda=cuda, coverage=coverage
+    )
     gen_dir.mkdir(parents=True, exist_ok=True)
     generated = []
     for suite in discover_test_suites(root):
@@ -787,35 +825,43 @@ def generate_stage(hub, root, cuda=False):
     return generated
 
 
-def link_stamp_path(hub, root, cuda=False):
-    name = "link_stamp_cuda.txt" if cuda else "link_stamp.txt"
+def link_stamp_path(hub, root, cuda=False, coverage=False):
+    name = "link_stamp_cuda.txt" if cuda else "link_stamp_cov.txt" if coverage else "link_stamp.txt"
     return root / dirs_cfg(hub)["gen"] / name
 
 
-def link_stamp_payload(hub, cuda=None):
-    payload = [*link_flags_of(hub), "cuda" if cuda is not None else "plain"]
+def link_stamp_payload(hub, cuda=None, coverage=False):
+    kind = "cuda" if cuda is not None else "cov" if coverage else "plain"
+    payload = [*link_flags_of(hub), kind]
     if cuda is not None:
         payload.append(cuda_plan_payload(cuda))
     return "\n".join(payload)
 
 
-def link_stamp_changed(hub, root, cuda=None):
-    stamp = link_stamp_path(hub, root, cuda is not None)
+def link_stamp_changed(hub, root, cuda=None, coverage=False):
+    stamp = link_stamp_path(hub, root, cuda is not None, coverage)
     return not stamp.is_file() or stamp.read_text(
         encoding="utf-8"
-    ) != link_stamp_payload(hub, cuda)
+    ) != link_stamp_payload(hub, cuda, coverage)
 
 
-def write_link_stamp(hub, root, cuda=None):
-    stamp = link_stamp_path(hub, root, cuda is not None)
+def write_link_stamp(hub, root, cuda=None, coverage=False):
+    stamp = link_stamp_path(hub, root, cuda is not None, coverage)
     stamp.parent.mkdir(parents=True, exist_ok=True)
-    stamp.write_text(link_stamp_payload(hub, cuda), encoding="utf-8")
+    stamp.write_text(link_stamp_payload(hub, cuda, coverage), encoding="utf-8")
 
 
-def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=None):
+def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=None,
+               coverage=False):
     cfg = build_cfg(hub)
-    bin_dir = cuda_bin_dir(hub) if cuda is not None else root / dirs_cfg(hub)["bin"]
+    bin_dir = (
+        cuda_bin_dir(hub)
+        if cuda is not None
+        else root / dirs_cfg(hub)["bin_cov" if coverage else "bin"]
+    )
     flags = cuda_compile_flags(hub, cuda=cuda is not None)
+    if coverage:
+        flags = [*flags, *coverage_flags(hub)]
     lib_dirs = [cuda["lib_dir"]] if cuda is not None else []
     objs_by_source = {source: obj for source, obj in entries}
     built_objects = {obj for _, obj in entries}
@@ -922,7 +968,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
     if hello_obj in built_objects:
         links.append((f"link {hello_exe.name}", (hello_exe, [hello_obj], ())))
     commands = []
-    stamp_changed = link_stamp_changed(hub, root, cuda)
+    stamp_changed = link_stamp_changed(hub, root, cuda, coverage)
     for label, (exe, objects, libs) in links:
         if stamp_changed or needs_link(objects, exe):
             exe.parent.mkdir(parents=True, exist_ok=True)
@@ -935,7 +981,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
             )
         else:
             logger.line("skip", f"{label} up to date")
-    write_link_stamp(hub, root, cuda)
+    write_link_stamp(hub, root, cuda, coverage)
     if commands:
         results = run_units(commands, jobs=jobs_of(hub))
         failed = [r for r in results if r.returncode != 0]
@@ -1487,6 +1533,133 @@ def tgt_test_unit(args):
     logger.line("summary", line)
     logger.exit("test-unit", code)
     return code
+
+
+def coverage_suite_units(hub, suites, profile_dir):
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin_cov"]
+    units = []
+    for suite in suites:
+        raw = profile_dir / f"{suite['exe_name']}.profraw"
+        env = {**child_env(hub), "LLVM_PROFILE_FILE": str(raw)}
+        units.append(
+            (suite["exe_name"], [bin_dir / f"{suite['exe_name']}.exe"], env)
+        )
+    return units
+
+
+def profdata_merge_argv(tool, profraws, output):
+    return [str(tool), "merge", f"--output={output}", *[str(path) for path in profraws]]
+
+
+def cov_export_argv(hub, tool, exes, profdata):
+    include = coverage_cfg(hub)["include_regex"]
+    paths = [str(exe) for exe in exes]
+    argv = [
+        str(tool),
+        "export",
+        f"--instr-profile={profdata}",
+        f"--include-filename-regex={include}",
+        paths[0],
+    ]
+    for exe in paths[1:]:
+        argv.append(f"--object={exe}")
+    return argv
+
+
+def coverage_badge_argv(hub, export_path):
+    python = build_cfg(hub)["tools"].get("python", "") or sys.executable
+    return [python, "-I", str(REPO_ROOT / COVERAGE_BADGE_SCRIPT), str(export_path)]
+
+
+def write_coverage_export(text, path):
+    payload = (text or "").strip()
+    if not payload:
+        raise BtError(f"llvm-cov export produced no json for {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(payload + "\n", encoding="utf-8", newline="\n")
+    return path
+
+
+def coverage_percent(output):
+    match = re.search(r"coverage regions: ([0-9]+(?:\.[0-9]+)?)%", output or "")
+    if match is None:
+        raise BtError(f"no coverage percentage in badge output: {(output or '')[-200:]!r}")
+    return float(match.group(1))
+
+
+def coverage_scrub(profiles_dir, profdata):
+    shutil.rmtree(profiles_dir, ignore_errors=True)
+    profdata.unlink(missing_ok=True)
+
+
+def coverage_build(hub, logger):
+    compiler = [resolve_tool("clang", hub)]
+    generated = generate_stage(hub, REPO_ROOT, coverage=True)
+    obj_root, entries = compile_stage(
+        hub, REPO_ROOT, compiler, logger, extra=generated, coverage=True
+    )
+    link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries, coverage=True)
+    bin_dir = REPO_ROOT / dirs_cfg(hub)["bin_cov"]
+    exes = []
+    for suite in discover_test_suites(REPO_ROOT):
+        exe = bin_dir / f"{suite['exe_name']}.exe"
+        if not exe.is_file():
+            raise BtError(f"coverage build left no exe at {exe}")
+        exes.append(exe)
+    if not exes:
+        raise BtError(f"coverage build produced no suite exes under {bin_dir}")
+    return exes
+
+
+def tgt_coverage(args):
+    """build instrumented suites, run them, export llvm-cov json, refresh the coverage badge"""
+    hub = load_hub()
+    logger = Logger()
+    logger.entry("coverage")
+    try:
+        profdata_tool = resolve_tool("llvm_profdata", hub)
+        cov_tool = resolve_tool("llvm_cov", hub)
+        paths = coverage_paths(hub)
+        exes = coverage_build(hub, logger)
+        logger.line("build", f"{len(exes)} instrumented suite exes")
+        shutil.rmtree(paths["profiles"], ignore_errors=True)
+        paths["profiles"].mkdir(parents=True, exist_ok=True)
+        units = coverage_suite_units(hub, discover_test_suites(REPO_ROOT), paths["profiles"])
+        results = run_units_env(
+            units, jobs=jobs_of(hub), timeout=build_cfg(hub)["test_timeout_secs"]
+        )
+        failed = [r for r in results if r.returncode != 0]
+        for result in failed:
+            logger.fail(result.label, result.output[-2000:] or "no output")
+        if failed:
+            raise BtError(f"{len(failed)} of {len(results)} coverage suite runs failed")
+        profraws = sorted(paths["profiles"].glob("*.profraw"))
+        if len(profraws) < len(exes):
+            raise BtError(
+                f"{len(profraws)} of {len(exes)} raw profiles landed under "
+                f"{paths['profiles']}"
+            )
+        run(profdata_merge_argv(profdata_tool, profraws, paths["profdata"]), "coverage merge")
+        if not paths["profdata"].is_file() or paths["profdata"].stat().st_size == 0:
+            raise BtError(f"profdata merge left no artifact at {paths['profdata']}")
+        proc = run(
+            cov_export_argv(hub, cov_tool, exes, paths["profdata"]), "coverage export"
+        )
+        write_coverage_export(proc.stdout, paths["export"])
+        logger.line("export", f"{paths['export']} size={paths['export'].stat().st_size}")
+        badge = run(
+            coverage_badge_argv(hub, paths["export"]), "coverage badge", check=False
+        )
+        if badge.returncode != 0:
+            raise BtError(f"coverage badge failed with code {badge.returncode}")
+        percent = coverage_percent((badge.stdout or "") + (badge.stderr or ""))
+        logger.line("badge", f"docs/badges/coverage.svg at {percent:.1f}% regions")
+        coverage_scrub(paths["profiles"], paths["profdata"])
+        logger.exit("coverage", 0)
+        return 0
+    except (BtError, OSError, KeyError, ValueError) as e:
+        logger.fail("coverage", f"{type(e).__name__}: {e}")
+        return 1
 
 
 def migrations_stale(root):
