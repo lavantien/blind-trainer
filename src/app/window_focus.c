@@ -121,6 +121,35 @@ static int sentinel_class_ready(void) {
     return ready;
 }
 
+static int sentinel_foreground_unseizable(void) {
+    BT_TRACE_ENTER("app.focus_sentinel_unseizable");
+    HWND probe =
+        CreateWindowExW(0, L"bt_app_focus_sentinel", L"blind trainer foreground probe", WS_POPUP,
+                        -2000, -2000, 8, 8, NULL, NULL, GetModuleHandleW(NULL), NULL);
+    int seizable = 1;
+    if (probe == NULL) {
+        BT_TRACE_FAIL("app.focus_sentinel_unseizable", "probe window was not created");
+        BT_TRACE_EXIT("app.focus_sentinel_unseizable");
+        return 0;
+    }
+    ShowWindow(probe, SW_SHOW);
+    HWND baseline = GetForegroundWindow();
+    DWORD owner_thread = GetWindowThreadProcessId(baseline, NULL);
+    DWORD self_thread = GetCurrentThreadId();
+    int attached = owner_thread != 0 && owner_thread != self_thread &&
+                   AttachThreadInput(self_thread, owner_thread, TRUE) != 0;
+    if (SetForegroundWindow(probe) == 0 || GetForegroundWindow() != probe) {
+        seizable = 0;
+    }
+    if (attached) {
+        AttachThreadInput(self_thread, owner_thread, FALSE);
+    }
+    SetForegroundWindow(baseline);
+    DestroyWindow(probe);
+    BT_TRACE_EXIT("app.focus_sentinel_unseizable");
+    return !seizable;
+}
+
 static int sentinel_force_foreground(void) {
     for (int attempt = 0; attempt < BT_FOCUS_SENTINEL_ATTEMPTS; attempt++) {
         if (attempt > 0) {
@@ -143,7 +172,7 @@ static int sentinel_force_foreground(void) {
             return 1;
         }
     }
-    return 0;
+    return sentinel_foreground_unseizable();
 }
 
 static void give_foreground_back(HWND target) {

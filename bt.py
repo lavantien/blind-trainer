@@ -1549,6 +1549,20 @@ def tgt_test_unit(args):
     return code
 
 
+def coverage_run_with_retry(units, jobs, timeout, logger, executor=run_units_env):
+    results = executor(units, jobs=jobs, timeout=timeout)
+    failed = [result for result in results if result.returncode != 0]
+    if not failed:
+        return results
+    retry = [
+        unit for unit, result in zip(units, results) if result.returncode != 0
+    ]
+    for result in failed:
+        logger.fail(result.label, result.output[-2000:] or "no output")
+    logger.line("retry", f"{len(retry)} of {len(units)} suites rerun serially")
+    return executor(retry, jobs=1, timeout=timeout)
+
+
 def coverage_suite_units(hub, suites, profile_dir):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin_cov"]
     units = []
@@ -1667,14 +1681,15 @@ def tgt_coverage(args):
         shutil.rmtree(paths["profiles"], ignore_errors=True)
         paths["profiles"].mkdir(parents=True, exist_ok=True)
         units = coverage_suite_units(hub, discover_test_suites(REPO_ROOT), paths["profiles"])
-        results = run_units_env(
-            units, jobs=jobs_of(hub), timeout=build_cfg(hub)["test_timeout_secs"]
+        results = coverage_run_with_retry(
+            units, jobs=jobs_of(hub), timeout=build_cfg(hub)["test_timeout_secs"],
+            logger=logger,
         )
         failed = [r for r in results if r.returncode != 0]
         for result in failed:
             logger.fail(result.label, result.output[-2000:] or "no output")
         if failed:
-            raise BtError(f"{len(failed)} of {len(results)} coverage suite runs failed")
+            raise BtError(f"{len(failed)} coverage suite runs failed after the serial retry")
         profraws = sorted(paths["profiles"].glob("*.profraw"))
         if len(profraws) < len(exes):
             raise BtError(

@@ -365,6 +365,48 @@ class CoverageArtifactTests(unittest.TestCase):
         self.assertTrue(bt.target_doc(names["coverage"]))
 
 
+class CoverageRetryTests(unittest.TestCase):
+    def test_failed_suites_are_rerun_serially_and_only_their_results_count(self):
+        calls = []
+
+        def executor(units, jobs=1, timeout=None):
+            calls.append((jobs, [unit[0] for unit in units]))
+            if len(calls) == 1:
+                return [bt.UnitResult("a", 0, ""), bt.UnitResult("b", 3, "boom")]
+            return [bt.UnitResult("b", 0, "")]
+
+        logger = bt.Logger()
+        final = bt.coverage_run_with_retry(
+            [("a", [], {}), ("b", [], {})], jobs=8, timeout=5, logger=logger,
+            executor=executor,
+        )
+        self.assertEqual([r.returncode for r in final], [0])
+        self.assertEqual(calls[0][0], 8)
+        self.assertEqual(calls[1], (1, ["b"]))
+
+    def test_suites_that_fail_serially_still_fail(self):
+        def executor(units, jobs=1, timeout=None):
+            return [bt.UnitResult(unit[0], 3, "boom") for unit in units]
+
+        final = bt.coverage_run_with_retry(
+            [("b", [], {})], jobs=8, timeout=5, logger=bt.Logger(), executor=executor
+        )
+        self.assertEqual([r.returncode for r in final], [3])
+
+    def test_green_pass_skips_the_retry(self):
+        calls = []
+
+        def executor(units, jobs=1, timeout=None):
+            calls.append(jobs)
+            return [bt.UnitResult(unit[0], 0, "") for unit in units]
+
+        final = bt.coverage_run_with_retry(
+            [("a", [], {})], jobs=8, timeout=5, logger=bt.Logger(), executor=executor
+        )
+        self.assertEqual([r.returncode for r in final], [0])
+        self.assertEqual(calls, [8])
+
+
 class CoverageTreeGuardTests(unittest.TestCase):
     def hub_with_guard(self):
         hub = sample_hub()
