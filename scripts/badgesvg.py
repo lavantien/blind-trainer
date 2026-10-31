@@ -10,8 +10,9 @@ HEIGHT = 20
 FONT = "Verdana,Geneva,DejaVu Sans,sans-serif"
 
 
-def badge_svg(label, value, percent):
-    color = GREEN if percent >= 80 else YELLOW if percent >= 60 else RED
+def badge_svg(label, value, percent=None, color=None):
+    if color is None:
+        color = GREEN if percent >= 80 else YELLOW if percent >= 60 else RED
     label_w = math.ceil(len(label) * CHAR_WIDTH + PADDING)
     value_w = math.ceil(len(value) * CHAR_WIDTH + PADDING)
     width = label_w + value_w
