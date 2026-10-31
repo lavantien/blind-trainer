@@ -1653,6 +1653,8 @@ def tgt_coverage(args):
         if badge.returncode != 0:
             raise BtError(f"coverage badge failed with code {badge.returncode}")
         percent = coverage_percent((badge.stdout or "") + (badge.stderr or ""))
+        if percent <= 0.0:
+            raise BtError("coverage export carried no covered regions, check the include regex")
         logger.line("badge", f"docs/badges/coverage.svg at {percent:.1f}% regions")
         coverage_scrub(paths["profiles"], paths["profdata"])
         logger.exit("coverage", 0)
