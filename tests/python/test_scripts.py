@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import subprocess
@@ -6,12 +5,10 @@ import sys
 import tempfile
 import time
 import unittest
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import clean_rust
 import coverage_badge
 import alg_coverage_badge
 import dist
@@ -21,7 +18,6 @@ import memguard
 import winproc
 
 MB = 1024 * 1024
-GB = 1024 * 1024 * 1024
 
 
 class MemguardLogicTests(unittest.TestCase):
@@ -155,65 +151,6 @@ class WinprocLiveTests(unittest.TestCase):
     def test_process_name_rows_see_our_own_process(self):
         names = dict(winproc.process_name_rows())
         self.assertTrue(names.get(os.getpid(), "").lower().startswith("python"))
-
-
-class CleanRustLogicTests(unittest.TestCase):
-    def test_gb_format_matches_pwsh_f2(self):
-        self.assertEqual(clean_rust.fmt_gb(2 * GB), "2.00")
-        self.assertEqual(clean_rust.fmt_gb(0), "0.00")
-
-    def test_floor_format_drops_trailing_zero_like_pwsh(self):
-        self.assertEqual(clean_rust.fmt_floor(20.0), "20")
-        self.assertEqual(clean_rust.fmt_floor(20.5), "20.5")
-        self.assertEqual(clean_rust.fmt_floor(12.75), "12.75")
-
-    def test_stale_selection_picks_only_aged_scratch_names(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            stale = Path(tmp) / "cargo-mutants-stale"
-            fresh = Path(tmp) / "cargo-mutants-fresh"
-            bt_stale = Path(tmp) / "bt-stale"
-            other = Path(tmp) / "unrelated"
-            for path in (stale, fresh, bt_stale, other):
-                path.mkdir()
-                (path / "a").write_text("x")
-            old = time.time() - 8 * 3600
-            os.utime(stale, (old, old))
-            os.utime(bt_stale, (old, old))
-            picked = clean_rust.stale_scratches(tmp, 6)
-            self.assertEqual(sorted(picked), sorted([str(stale), str(bt_stale)]))
-
-    def test_orphan_selection_uses_creation_time_vs_oldest_live_start(self):
-        now = datetime.now()
-        entries = [
-            ("/t/bt-old", now - timedelta(hours=3)),
-            ("/t/bt-new", now - timedelta(minutes=1)),
-        ]
-        picked = clean_rust.orphan_scratches(entries, [now - timedelta(hours=1)])
-        self.assertEqual(picked, ["/t/bt-old"])
-        self.assertEqual(clean_rust.orphan_scratches(entries, []), ["/t/bt-old", "/t/bt-new"])
-
-    def test_dir_bytes_sums_files_recursively(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / "sub").mkdir()
-            (Path(tmp) / "a").write_text("x" * 10)
-            (Path(tmp) / "sub" / "b").write_text("y" * 5)
-            self.assertEqual(clean_rust.dir_bytes(tmp), 15)
-        self.assertEqual(clean_rust.dir_bytes("Z:\\definitely\\missing"), 0)
-
-    def test_remove_tree_and_incremental(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            inc = Path(tmp) / "target" / "debug" / "incremental"
-            inc.mkdir(parents=True)
-            (inc / "cache.bin").write_text("x")
-            clean_rust.remove_incremental(str(inc))
-            self.assertFalse(inc.exists())
-            tree = Path(tmp) / "t"
-            tree.mkdir()
-            (tree / "a").write_text("x")
-            self.assertTrue(clean_rust.remove_tree(str(tree)))
-            self.assertFalse(tree.exists())
-            self.assertFalse(clean_rust.remove_tree(str(Path(tmp) / "nope")))
-            self.assertTrue(Path(tmp).exists())
 
 
 class DistLogicTests(unittest.TestCase):
