@@ -170,6 +170,9 @@ BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
         BT_ABORT("fonts: %s", error);
     }
     BT_CHECK(book.regular != NULL && book.bold != NULL);
+    const Font *regular = book.regular;
+    const Font *bold = book.bold;
+    BT_CHECK(regular->baseSize == 84 && bold->baseSize == 84);
     BT_CHECK(book.glyph_count >= 300);
     bt_app_fonts_unload(&book);
     bt_corpus_free(&corpus);

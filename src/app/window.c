@@ -191,12 +191,15 @@ static int load_face(const char *config_path, const char *key, const char *file_
     }
     char path[BT_PATH_MAX];
     bt_paths_join(fonts_dir, name, path);
-    *out = LoadFontEx(path, 64, codepoints, built);
+    const bt_theme *theme = bt_theme_table();
+    int base_size = (int)(theme->font_focal * theme->root_rem + 0.5F);
+    *out = LoadFontEx(path, base_size, codepoints, built);
     if (out->texture.id == 0) {
         snprintf(error, error_len, "font load failed at %s", path);
         BT_TRACE_FAIL("app.fonts_load", "%s", error);
         return -1;
     }
+    SetTextureFilter(out->texture, TEXTURE_FILTER_BILINEAR);
     if (out->glyphCount != built) {
         snprintf(error, error_len, "font %s holds %d glyphs, want %d", path, out->glyphCount,
                  built);
