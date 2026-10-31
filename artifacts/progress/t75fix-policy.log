@@ -1,0 +1,6 @@
+2026-10-31T20:44:45 [skip] link verify.exe up to date
+2026-10-31T20:44:45 [skip] link visual-diff.exe up to date
+2026-10-31T20:44:45 [skip] link bt-e2e.exe up to date
+2026-10-31T20:44:45 [skip] link bt-app.exe up to date
+2026-10-31T20:44:52 [entry] policy-scan C:\Users\lavantien\dev\github\blind-trainer\build\bin\policy.exe
+2026-10-31T20:44:53 [exit] policy-scan code=0 dt=0.432s

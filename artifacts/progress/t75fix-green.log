@@ -1,0 +1,6 @@
+2026-10-31T20:43:36 [skip] compile src\core\moves.c up to date
+2026-10-31T20:43:36 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-10-31T20:43:39 [repro] 210 object timestamps zeroed
+2026-10-31T20:43:39 [compile] 192 compiled, 192 ok
+2026-10-31T20:43:39 [summary] 1 passed, 0 failed
+2026-10-31T20:43:39 [exit] test-unit code=0

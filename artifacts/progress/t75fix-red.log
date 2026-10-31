@@ -1,0 +1,8 @@
+[fail] core_ref_ground_path_test
+ok core_ref_ground_path_test rg.absolute_ref_ground_passes_through
+ok core_ref_ground_path_test rg.config_root_beats_exe_location
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\core\ref_ground_path_test.c:202: rg_mkdirs(root) vs 0: got -1 want 0
+FAIL core_ref_ground_path_test rg.mkdirs_skip_existing_drive_root
+suite core_ref_ground_path_test: 2 passed, 1 failed
+2026-10-31T20:43:24 [summary] 0 passed, 1 failed
+2026-10-31T20:43:24 [exit] test-unit code=1

@@ -1,7 +1,5 @@
 #include "common.h"
 
-#include <errno.h>
-
 #ifdef _WIN32
 #include <direct.h>
 #include <io.h>
@@ -21,18 +19,26 @@ static void tc_env_set(const char *name, const char *value) {
 #endif
 }
 
-static int rg_mkdir_one(const char *path) {
+static int rg_dir_exists(const char *path) {
 #ifdef _WIN32
-    if (CreateDirectoryA(path, NULL) != 0) {
-        return 0;
-    }
-    return GetLastError() == ERROR_ALREADY_EXISTS ? 0 : -1;
+    DWORD attrs = GetFileAttributesA(path);
+    return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
 #else
-    if (mkdir(path, 0755) == 0) {
+    struct stat st;
+    return stat(path, &st) == 0 && S_ISDIR(st.st_mode);
+#endif
+}
+
+static int rg_mkdir_one(const char *path) {
+    if (rg_dir_exists(path)) {
         return 0;
     }
-    return errno == EEXIST ? 0 : -1;
+#ifdef _WIN32
+    CreateDirectoryA(path, NULL);
+#else
+    mkdir(path, 0755);
 #endif
+    return rg_dir_exists(path) ? 0 : -1;
 }
 
 static int rg_mkdirs(const char *path) {
@@ -85,6 +91,19 @@ static void tc_make_layout(char root[BT_PATH_MAX]) {
     }
     fputs("ok\n", file);
     fclose(file);
+}
+
+static void tc_drive_root(char root[BT_PATH_MAX]) {
+#ifdef _WIN32
+    char base[BT_PATH_MAX];
+    DWORD n = GetTempPathA(BT_PATH_MAX, base);
+    if (n == 0 || n >= BT_PATH_MAX || base[1] != ':') {
+        BT_ABORT("no temp drive root");
+    }
+    snprintf(root, BT_PATH_MAX, "%.2s\\", base);
+#else
+    snprintf(root, BT_PATH_MAX, "/");
+#endif
 }
 
 static void tc_layout_remove(const char *root) {
@@ -181,4 +200,10 @@ BT_TEST(rg, absolute_ref_ground_passes_through) {
     }
     BT_CHECK_EQ(resolved, absolute);
     tc_layout_remove(root);
+}
+
+BT_TEST(rg, mkdirs_skip_existing_drive_root) {
+    char root[BT_PATH_MAX];
+    tc_drive_root(root);
+    BT_CHECK_EQ(rg_mkdirs(root), 0);
 }

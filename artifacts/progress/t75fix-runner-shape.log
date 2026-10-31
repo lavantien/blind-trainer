@@ -1,0 +1,5 @@
+ok core_ref_ground_path_test rg.absolute_ref_ground_passes_through
+ok core_ref_ground_path_test rg.config_root_beats_exe_location
+ok core_ref_ground_path_test rg.mkdirs_skip_existing_drive_root
+suite core_ref_ground_path_test: 3 passed, 0 failed
+exit 0 cwd=X:\ temp=C:\Users\LAVANT~1\AppData\Local\Temp
