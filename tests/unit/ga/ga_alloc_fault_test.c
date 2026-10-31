@@ -165,6 +165,36 @@ BT_TEST(ga_alloc_fault, build_inventory_names_each_failed_site) {
     bt_ga_alloc_reset();
 }
 
+BT_TEST(ga_alloc_fault, build_inventory_names_each_failed_growth_site) {
+    bt_ga_strset wordlist;
+    if (!bt_ga_full_wordlist(&wordlist)) {
+        return;
+    }
+    fault_ctx ctx;
+    install_fault_ctx(&ctx);
+    bt_ga_inventory_entry *entries = NULL;
+    size_t count = 0;
+    bt_ga_inventory_report report;
+    char err[BT_GA_ERR_MAX];
+    static const char *const sites[2] = {
+        "ga.build_inventory.list_grow",
+        "ga.build_inventory.covered_grow",
+    };
+    static const char *const messages[2] = {
+        "inventory list growth allocation failed",
+        "inventory covered growth allocation failed",
+    };
+    for (size_t i = 0; i < 2; i++) {
+        ctx.fail_at = 0;
+        snprintf(ctx.fail_site, sizeof ctx.fail_site, "%s", sites[i]);
+        BT_CHECK(!bt_ga_build_inventory(&wordlist, &entries, &count, &report, err));
+        BT_CHECK(strstr(err, messages[i]) != NULL);
+    }
+    BT_CHECK(ctx.live == 0);
+    bt_ga_alloc_reset();
+    bt_ga_strset_free(&wordlist);
+}
+
 BT_TEST(ga_alloc_fault, wordlist_loader_reports_entry_allocation_failures) {
     fault_ctx ctx;
     install_fault_ctx(&ctx);
@@ -177,7 +207,11 @@ BT_TEST(ga_alloc_fault, wordlist_loader_reports_entry_allocation_failures) {
     ctx.fail_at = 3;
     int got = bt_ga_load_wordlist(path, &wordlist, err);
     BT_CHECK(got == 0);
-    BT_CHECK(strstr(err, "wordlist allocation failed") != NULL);
+    BT_CHECK(strstr(err, "wordlist entry allocation failed at entry") != NULL);
+    snprintf(ctx.fail_site, sizeof ctx.fail_site, "ga.strset.items");
+    got = bt_ga_load_wordlist(path, &wordlist, err);
+    BT_CHECK(got == 0);
+    BT_CHECK(strstr(err, "wordlist items allocation failed at entry") != NULL);
     ctx.fail_at = 0;
     snprintf(ctx.fail_site, sizeof ctx.fail_site, "ga.read_file.buffer");
     got = bt_ga_load_wordlist(path, &wordlist, err);
@@ -202,10 +236,22 @@ BT_TEST(ga_alloc_fault, freq_loader_reports_entry_allocation_failures) {
     fclose(probe);
     bt_ga_freqs freqs;
     char err[BT_GA_ERR_MAX];
-    snprintf(ctx.fail_site, sizeof ctx.fail_site, "ga.freqs.entry");
-    int got = bt_ga_load_syllable_frequencies(path, &freqs, err);
-    BT_CHECK(got == 0);
-    BT_CHECK(strstr(err, "frequency table allocation failed") != NULL);
+    static const char *const sites[3] = {
+        "ga.freqs.entry",
+        "ga.freqs.keys",
+        "ga.freqs.values",
+    };
+    static const char *const messages[3] = {
+        "frequency entry allocation failed at row",
+        "frequency keys allocation failed at row",
+        "frequency values allocation failed at row",
+    };
+    for (size_t i = 0; i < 3; i++) {
+        snprintf(ctx.fail_site, sizeof ctx.fail_site, "%s", sites[i]);
+        int got = bt_ga_load_syllable_frequencies(path, &freqs, err);
+        BT_CHECK(got == 0);
+        BT_CHECK(strstr(err, messages[i]) != NULL);
+    }
     BT_CHECK(ctx.live == 0);
     bt_ga_alloc_reset();
 }
@@ -285,4 +331,47 @@ BT_TEST(ga_alloc_fault, run_and_operators_abort_at_the_named_sites) {
                        die_on_mutate_replace_used);
     bt_ga_death_expect("die_on_build_pool_ranked", "allocation failed at ga.build_pool.ranked",
                        die_on_build_pool_ranked);
+}
+
+static void die_on_configured_run_site(void) {
+    fault_ctx ctx;
+    install_fault_ctx(&ctx);
+    const char *site = getenv("BT_FAULT_SITE");
+    snprintf(ctx.fail_site, sizeof ctx.fail_site, "%s", site != NULL ? site : "");
+    bt_ga_env *env = fault_env(5);
+    bt_ga_params params = fault_params();
+    bt_ga_upgrades upgrades;
+    memset(&upgrades, 0, sizeof upgrades);
+    upgrades.island_count = 2;
+    upgrades.migrate_every = 1;
+    upgrades.migrate_count = 1;
+    upgrades.stagnation_threshold = 1;
+    upgrades.swap_scale = 1.5;
+    upgrades.replace_scale = 0.5;
+    upgrades.diversity_threshold = 0.9;
+    upgrades.inject_fraction = 0.5;
+    bt_ga_run_outcome *outcome = bt_ga_run_ex(env, &params, &upgrades);
+    bt_ga_run_outcome_free(outcome);
+    bt_ga_env_free(env);
+}
+
+BT_TEST(ga_alloc_fault, every_run_site_aborts_with_its_own_label) {
+    static const char *const sites[] = {
+        "ga.run.scratch",    "ga.run.islands",         "ga.run.stagnation", "ga.run.island_best",
+        "ga.run.population", "ga.run.order",           "ga.run.best",       "ga.run.per_gen",
+        "ga.run.next",       "ga.run.is_elite",        "ga.run.migrants",   "ga.run.migrant_scores",
+        "ga.run.migrant",    "ga.run.diversity_order", "ga.run.child",      "ga.run.outcome",
+    };
+    char want[96];
+    for (size_t i = 0; i < sizeof sites / sizeof sites[0]; i++) {
+        char setting[64];
+        snprintf(setting, sizeof setting, "%s", sites[i]);
+        _putenv_s("BT_FAULT_SITE", setting);
+        char case_name[80];
+        const char *tag = sites[i] + strlen("ga.run.");
+        snprintf(case_name, sizeof case_name, "die_on_run_site_%s", tag);
+        snprintf(want, sizeof want, "allocation failed at %s", sites[i]);
+        bt_ga_death_expect(case_name, want, die_on_configured_run_site);
+    }
+    _putenv("BT_FAULT_SITE=");
 }

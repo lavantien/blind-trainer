@@ -371,6 +371,46 @@ BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) 
     }
 }
 
+BT_TEST(ga_run_lib, load_run_inputs_rejects_abort_shaped_upgrade_configs_as_offenders) {
+    char scratch[BT_PATH_MAX];
+    xcheck_scratch("xupg", scratch);
+    char clean[BT_PATH_MAX];
+    snprintf(clean, sizeof clean, "%s", scratch);
+    for (char *cursor = clean; *cursor != '\0'; cursor++) {
+        if (*cursor == 92) {
+            *cursor = '/';
+        }
+    }
+    char text[BT_PATH_MAX + 64];
+    snprintf(text, sizeof text,
+             "{\"paths\": {\"data_ga\": \"%s/ga\", \"data_vendor\": \"%s/vendor\"}, "
+             "\"ga\": {\"tournament\": 2, \"seed\": 7, \"population\": 200, \"generations\": 3, "
+             "\"elite\": 2, \"mutation\": {\"swap\": 0.1, \"replace\": 0.2}, \"weights\": "
+             "{\"confusion\": 1.0, \"flow\": 0.5, \"complexity\": 0.25}, \"elite_carry\": "
+             "{\"policy\": \"fraction\", \"fraction\": 0.004}}}",
+             clean, clean);
+    char config_path[BT_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config.json", scratch);
+    scratch_write(scratch, "config.json", text, strlen(text));
+    const char *original = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", original != NULL ? original : "");
+    _putenv_s("BT_CONFIG", config_path);
+    bt_gr_run_inputs inputs;
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_load_run_inputs(&inputs, &offenders), -1);
+    BT_CHECK(offenders.count >= 1);
+    if (offenders.count >= 1) {
+        BT_CHECK(strstr(offenders.items[0], "elite must be at least 1") != NULL);
+    }
+    bt_gr_offenders_free(&offenders);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+}
+
 BT_TEST(ga_run_lib, end_to_end_small_run_produces_full_injective_assignment) {
     bt_gr_run_inputs inputs;
     bt_gr_offenders offenders = {0};

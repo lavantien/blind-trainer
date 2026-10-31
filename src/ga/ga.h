@@ -99,5 +99,7 @@ void bt_ga_ring_migrate(bt_ga_island *islands, size_t island_count, size_t pop,
 int bt_ga_config_params(const bt_json_value *config, bt_ga_params *out, char err[BT_GA_ERR_MAX]);
 int bt_ga_config_upgrades(const bt_json_value *config, bt_ga_upgrades *out,
                           char err[BT_GA_ERR_MAX]);
+int bt_ga_upgrades_check(const bt_ga_upgrades *upgrades, const bt_ga_params *params,
+                         char err[BT_GA_ERR_MAX]);
 
 #endif

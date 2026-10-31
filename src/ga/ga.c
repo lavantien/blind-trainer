@@ -11,6 +11,13 @@
 
 #define BT_GA_GENE_MAX UINT32_MAX
 #define BT_GA_GATE_PPM 1000000.0
+#define BT_GA_SCALE_MAX 1000000.0
+
+enum {
+    BT_GA_ISLAND_MAX = 1024,
+    BT_GA_INTERVAL_MAX = 1000000000,
+};
+#define BT_GA_STAGNATION_MAX UINT32_MAX
 
 BT_NORETURN static void bt_ga_abort(const char *trace_unit, const char *label, const char *why,
                                     ...);
@@ -281,6 +288,24 @@ static void *bt_ga_run_alloc(size_t bytes, const char *site) {
     return block;
 }
 
+static void *bt_ga_run_alloc_n(size_t count, size_t each, const char *site) {
+    if (count != 0 && each != 0 && count > SIZE_MAX / each) {
+        bt_ga_abort("ga.run", "ga run", "allocation size overflow at %s", site);
+    }
+    return bt_ga_run_alloc(count * each, site);
+}
+
+static uint64_t bt_ga_gate(double rate) {
+    double gates = rate * BT_GA_GATE_PPM;
+    if (!(gates > 0.0)) {
+        return 0;
+    }
+    if (gates >= BT_GA_GATE_PPM) {
+        return (uint64_t)BT_GA_GATE_PPM;
+    }
+    return (uint64_t)gates;
+}
+
 static void bt_ga_eval_population(const bt_ga_params *params, const bt_ga_env *env,
                                   uint32_t **population, size_t count, float *scores) {
     for (size_t i = 0; i < count; i++) {
@@ -330,6 +355,10 @@ void bt_ga_ring_migrate(bt_ga_island *islands, size_t island_count, size_t pop,
                         size_t migrate_count, size_t case_count, uint32_t **staging,
                         float *staging_scores) {
     BT_TRACE_ENTER("ga.ring_migrate");
+    if (migrate_count > pop) {
+        bt_ga_abort("ga.ring_migrate", "ga ring migrate",
+                    "migrate count must stay at or below the population");
+    }
     for (size_t isl = 0; isl < island_count; isl++) {
         for (size_t k = 0; k < migrate_count; k++) {
             memcpy(staging[isl * migrate_count + k], islands[isl].population[islands[isl].order[k]],
@@ -351,6 +380,60 @@ void bt_ga_ring_migrate(bt_ga_island *islands, size_t island_count, size_t pop,
     BT_TRACE_EXIT("ga.ring_migrate");
 }
 
+int bt_ga_upgrades_check(const bt_ga_upgrades *upgrades, const bt_ga_params *params,
+                         char err[BT_GA_ERR_MAX]) {
+    BT_TRACE_ENTER("ga.upgrades_check");
+    if (upgrades->elite_fraction_policy &&
+        (!(upgrades->elite_fraction >= 0.0) || upgrades->elite_fraction >= 1.0)) {
+        snprintf(err, BT_GA_ERR_MAX, "elite fraction must stay within 0 to 1");
+        BT_TRACE_FAIL("ga.upgrades_check", "elite fraction out of range");
+        return 0;
+    }
+    if (!isfinite(upgrades->swap_scale) || upgrades->swap_scale < 0.0 ||
+        !isfinite(upgrades->replace_scale) || upgrades->replace_scale < 0.0) {
+        snprintf(err, BT_GA_ERR_MAX, "adaptive scales must be finite and non negative");
+        BT_TRACE_FAIL("ga.upgrades_check", "scales out of range");
+        return 0;
+    }
+    if (upgrades->diversity_threshold < 0.0 || upgrades->diversity_threshold > 1.0 ||
+        upgrades->inject_fraction < 0.0 || upgrades->inject_fraction > 1.0) {
+        snprintf(err, BT_GA_ERR_MAX, "restart thresholds must stay within 0 to 1");
+        BT_TRACE_FAIL("ga.upgrades_check", "restart thresholds out of range");
+        return 0;
+    }
+    size_t elite = bt_ga_effective_elite(params, upgrades);
+    if (!(elite >= 1)) {
+        snprintf(err, BT_GA_ERR_MAX, "elite must be at least 1");
+        BT_TRACE_FAIL("ga.upgrades_check", "effective elite is 0");
+        return 0;
+    }
+    if (!(params->population > elite)) {
+        snprintf(err, BT_GA_ERR_MAX, "population must exceed elite");
+        BT_TRACE_FAIL("ga.upgrades_check", "effective elite reaches population");
+        return 0;
+    }
+    if (upgrades->migrate_every > 0) {
+        if (upgrades->island_count < 2) {
+            snprintf(err, BT_GA_ERR_MAX, "migration requires at least 2 islands");
+            BT_TRACE_FAIL("ga.upgrades_check", "migration with fewer than 2 islands");
+            return 0;
+        }
+        if (upgrades->migrate_count < 1) {
+            snprintf(err, BT_GA_ERR_MAX, "migration requires a positive migrate count");
+            BT_TRACE_FAIL("ga.upgrades_check", "migration with zero migrate count");
+            return 0;
+        }
+        if (upgrades->migrate_count > params->population - elite) {
+            snprintf(err, BT_GA_ERR_MAX,
+                     "migrate count plus elite must stay at or below the population");
+            BT_TRACE_FAIL("ga.upgrades_check", "migration starves the children");
+            return 0;
+        }
+    }
+    BT_TRACE_EXIT("ga.upgrades_check");
+    return 1;
+}
+
 bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params,
                                 const bt_ga_upgrades *upgrades) {
     BT_TRACE_ENTER("ga.run");
@@ -363,65 +446,42 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     if (!(params->elite >= 1)) {
         bt_ga_abort("ga.run", "ga run", "elite must be at least 1");
     }
-    if (upgrades->elite_fraction_policy &&
-        (!(upgrades->elite_fraction >= 0.0) || upgrades->elite_fraction >= 1.0)) {
-        bt_ga_abort("ga.run", "ga run", "elite fraction must stay within 0 to 1");
+    if (params->generations == SIZE_MAX) {
+        bt_ga_abort("ga.run", "ga run", "generations must stay below the size_t ceiling");
     }
-    if (!isfinite(upgrades->swap_scale) || upgrades->swap_scale < 0.0 ||
-        !isfinite(upgrades->replace_scale) || upgrades->replace_scale < 0.0) {
-        bt_ga_abort("ga.run", "ga run", "adaptive scales must be finite and non negative");
-    }
-    if (upgrades->diversity_threshold < 0.0 || upgrades->diversity_threshold > 1.0 ||
-        upgrades->inject_fraction < 0.0 || upgrades->inject_fraction > 1.0) {
-        bt_ga_abort("ga.run", "ga run", "restart thresholds must stay within 0 to 1");
+    char why[BT_GA_ERR_MAX];
+    if (!bt_ga_upgrades_check(upgrades, params, why)) {
+        bt_ga_abort("ga.run", "ga run", "%s", why);
     }
     size_t islands = upgrades->island_count < 1 ? 1 : upgrades->island_count;
     size_t elite = bt_ga_effective_elite(params, upgrades);
-    if (!(params->population > elite)) {
-        bt_ga_abort("ga.run", "ga run", "population must exceed elite");
-    }
-    if (!(elite >= 1)) {
-        bt_ga_abort("ga.run", "ga run", "elite must be at least 1");
-    }
-    if (upgrades->migrate_every > 0) {
-        if (islands < 2) {
-            bt_ga_abort("ga.run", "ga run", "migration requires at least 2 islands");
-        }
-        if (upgrades->migrate_count < 1) {
-            bt_ga_abort("ga.run", "ga run", "migration requires a positive migrate count");
-        }
-        if (upgrades->migrate_count + elite > params->population) {
-            bt_ga_abort("ga.run", "ga run",
-                        "migrate count plus elite must stay at or below the population");
-        }
-    }
     bt_rng rng;
     bt_rng_seed(&rng, params->seed);
     size_t pop = params->population;
     size_t case_count = env->case_count;
-    uint32_t *scratch = bt_ga_run_alloc(env->pool_size * sizeof *scratch, "ga.run.scratch");
-    bt_ga_island *island = bt_ga_run_alloc(islands * sizeof *island, "ga.run.islands");
-    uint32_t *stagnation = bt_ga_run_alloc(islands * sizeof *stagnation, "ga.run.stagnation");
-    float *island_best = bt_ga_run_alloc(islands * sizeof *island_best, "ga.run.island_best");
+    uint32_t *scratch = bt_ga_run_alloc_n(env->pool_size, sizeof *scratch, "ga.run.scratch");
+    bt_ga_island *island = bt_ga_run_alloc_n(islands, sizeof *island, "ga.run.islands");
+    uint32_t *stagnation = bt_ga_run_alloc_n(islands, sizeof *stagnation, "ga.run.stagnation");
+    float *island_best = bt_ga_run_alloc_n(islands, sizeof *island_best, "ga.run.island_best");
     for (size_t isl = 0; isl < islands; isl++) {
         island[isl].population =
-            bt_ga_run_alloc(pop * sizeof *island[isl].population, "ga.run.population");
+            bt_ga_run_alloc_n(pop, sizeof *island[isl].population, "ga.run.population");
         for (size_t i = 0; i < pop; i++) {
             island[isl].population[i] =
-                bt_ga_run_alloc(case_count * sizeof **island[isl].population, "ga.run.individual");
+                bt_ga_run_alloc_n(case_count, sizeof **island[isl].population, "ga.run.individual");
             bt_ga_random_individual(&rng, env->pool_size, case_count, scratch,
                                     island[isl].population[i]);
         }
-        island[isl].scores = bt_ga_run_alloc(pop * sizeof *island[isl].scores, "ga.run.scores");
+        island[isl].scores = bt_ga_run_alloc_n(pop, sizeof *island[isl].scores, "ga.run.scores");
         bt_ga_eval_population(params, env, island[isl].population, pop, island[isl].scores);
-        island[isl].order = bt_ga_run_alloc(pop * sizeof *island[isl].order, "ga.run.order");
+        island[isl].order = bt_ga_run_alloc_n(pop, sizeof *island[isl].order, "ga.run.order");
         bt_ga_sorted_order(island[isl].scores, island[isl].population, pop, case_count,
                            island[isl].order);
         island_best[isl] = island[isl].scores[island[isl].order[0]];
         stagnation[isl] = 0;
     }
     uint64_t evaluations = islands * pop;
-    uint32_t *best = bt_ga_run_alloc(case_count * sizeof *best, "ga.run.best");
+    uint32_t *best = bt_ga_run_alloc_n(case_count, sizeof *best, "ga.run.best");
     memcpy(best, island[0].population[island[0].order[0]], case_count * sizeof *best);
     float best_fitness = island[0].scores[island[0].order[0]];
     for (size_t isl = 1; isl < islands; isl++) {
@@ -433,28 +493,32 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     }
     size_t best_generation = 0;
     float *per_gen_best =
-        bt_ga_run_alloc((params->generations + 1) * sizeof *per_gen_best, "ga.run.per_gen");
+        bt_ga_run_alloc_n(params->generations + 1, sizeof *per_gen_best, "ga.run.per_gen");
     per_gen_best[0] = best_fitness;
     uint32_t stagnation_tail = 0;
     uint32_t max_stagnation = 0;
-    uint32_t **next = bt_ga_run_alloc(pop * sizeof *next, "ga.run.next");
-    unsigned char *is_elite = bt_ga_run_alloc(pop, "ga.run.is_elite");
-    uint64_t swap_gate = (uint64_t)(params->swap * BT_GA_GATE_PPM);
-    uint64_t replace_gate = (uint64_t)(params->replace * BT_GA_GATE_PPM);
+    uint32_t **next = bt_ga_run_alloc_n(pop, sizeof *next, "ga.run.next");
+    unsigned char *is_elite = bt_ga_run_alloc_n(pop, 1, "ga.run.is_elite");
+    uint64_t swap_gate = bt_ga_gate(params->swap);
+    uint64_t replace_gate = bt_ga_gate(params->replace);
     uint32_t **staging = NULL;
     float *staging_scores = NULL;
+    size_t migrant_rows = 0;
     if (islands >= 2 && upgrades->migrate_every > 0) {
-        staging =
-            bt_ga_run_alloc(islands * upgrades->migrate_count * sizeof *staging, "ga.run.migrants");
-        staging_scores = bt_ga_run_alloc(islands * upgrades->migrate_count * sizeof *staging_scores,
-                                         "ga.run.migrant_scores");
-        for (size_t i = 0; i < islands * upgrades->migrate_count; i++) {
-            staging[i] = bt_ga_run_alloc(case_count * sizeof **staging, "ga.run.migrant");
+        if (upgrades->migrate_count != 0 && islands > SIZE_MAX / upgrades->migrate_count) {
+            bt_ga_abort("ga.run", "ga run", "allocation size overflow at ga.run.migrants");
+        }
+        migrant_rows = islands * upgrades->migrate_count;
+        staging = bt_ga_run_alloc_n(migrant_rows, sizeof *staging, "ga.run.migrants");
+        staging_scores =
+            bt_ga_run_alloc_n(migrant_rows, sizeof *staging_scores, "ga.run.migrant_scores");
+        for (size_t i = 0; i < migrant_rows; i++) {
+            staging[i] = bt_ga_run_alloc_n(case_count, sizeof **staging, "ga.run.migrant");
         }
     }
     size_t *diversity_order = NULL;
     if (upgrades->diversity_threshold > 0.0) {
-        diversity_order = bt_ga_run_alloc(pop * sizeof *diversity_order, "ga.run.diversity_order");
+        diversity_order = bt_ga_run_alloc_n(pop, sizeof *diversity_order, "ga.run.diversity_order");
     }
     for (size_t generation = 1; generation <= params->generations; generation++) {
         for (size_t isl = 0; isl < islands; isl++) {
@@ -462,9 +526,8 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
             uint64_t island_replace_gate = replace_gate;
             if (upgrades->stagnation_threshold > 0 &&
                 stagnation[isl] >= upgrades->stagnation_threshold) {
-                island_swap_gate = (uint64_t)(params->swap * upgrades->swap_scale * BT_GA_GATE_PPM);
-                island_replace_gate =
-                    (uint64_t)(params->replace * upgrades->replace_scale * BT_GA_GATE_PPM);
+                island_swap_gate = bt_ga_gate(params->swap * upgrades->swap_scale);
+                island_replace_gate = bt_ga_gate(params->replace * upgrades->replace_scale);
             }
             memset(is_elite, 0, pop);
             size_t filled = 0;
@@ -479,7 +542,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
                 size_t cut1 = 0;
                 size_t cut2 = 0;
                 bt_ga_draw_cuts(&rng, case_count, &cut1, &cut2);
-                uint32_t *child = bt_ga_run_alloc(case_count * sizeof *child, "ga.run.child");
+                uint32_t *child = bt_ga_run_alloc_n(case_count, sizeof *child, "ga.run.child");
                 bt_ga_ox(island[isl].population[p1], island[isl].population[p2], case_count, cut1,
                          cut2, child);
                 if (bt_rng_below(&rng, 1000000) < island_swap_gate) {
@@ -544,6 +607,9 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
                     bt_ga_distinct_count(island[isl].population, pop, case_count, diversity_order);
                 if ((double)distinct / (double)pop < upgrades->diversity_threshold) {
                     size_t kept = (size_t)(upgrades->inject_fraction * (double)pop);
+                    if (kept < 1) {
+                        kept = 1;
+                    }
                     for (size_t r = kept; r < pop; r++) {
                         size_t idx = island[isl].order[r];
                         bt_ga_random_individual(&rng, env->pool_size, case_count, scratch,
@@ -573,7 +639,7 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     bt_ga_free(stagnation);
     bt_ga_free(island_best);
     bt_ga_free(next);
-    for (size_t i = 0; staging != NULL && i < islands * upgrades->migrate_count; i++) {
+    for (size_t i = 0; i < migrant_rows; i++) {
         bt_ga_free(staging[i]);
     }
     bt_ga_free(staging);
@@ -625,12 +691,12 @@ static int bt_ga_config_number(const bt_json_value *config, const char *dotted, 
 }
 
 static int bt_ga_upgrade_int(const bt_json_value *config, const char *dotted, long long floor,
-                             long long *out, char err[BT_GA_ERR_MAX]) {
+                             long long ceiling, long long *out, char err[BT_GA_ERR_MAX]) {
     const bt_json_value *value = bt_config_value(config, dotted);
     if (value == NULL) {
         return 1;
     }
-    if (!bt_json_is_integer(value) || value->integer < floor) {
+    if (!bt_json_is_integer(value) || value->integer < floor || value->integer > ceiling) {
         snprintf(err, BT_GA_ERR_MAX, "config value out of range: %s", dotted);
         BT_TRACE_FAIL("ga.config_upgrades", "%s out of range", dotted);
         return 0;
@@ -665,35 +731,38 @@ int bt_ga_config_upgrades(const bt_json_value *config, bt_ga_upgrades *out,
     out->replace_scale = 1.0;
     out->inject_fraction = 0.5;
     long long number = 0;
-    if (!bt_ga_upgrade_int(config, "ga.islands.count", 1, &number, err)) {
+    if (!bt_ga_upgrade_int(config, "ga.islands.count", 1, BT_GA_ISLAND_MAX, &number, err)) {
         return 0;
     }
     if (bt_config_value(config, "ga.islands.count") != NULL) {
         out->island_count = (size_t)number;
     }
-    if (!bt_ga_upgrade_int(config, "ga.islands.migrate_every", 0, &number, err)) {
+    if (!bt_ga_upgrade_int(config, "ga.islands.migrate_every", 0, BT_GA_INTERVAL_MAX, &number,
+                           err)) {
         return 0;
     }
     if (bt_config_value(config, "ga.islands.migrate_every") != NULL) {
         out->migrate_every = (size_t)number;
     }
-    if (!bt_ga_upgrade_int(config, "ga.islands.migrate_count", 0, &number, err)) {
+    if (!bt_ga_upgrade_int(config, "ga.islands.migrate_count", 0, BT_GA_INTERVAL_MAX, &number,
+                           err)) {
         return 0;
     }
     if (bt_config_value(config, "ga.islands.migrate_count") != NULL) {
         out->migrate_count = (size_t)number;
     }
-    if (!bt_ga_upgrade_int(config, "ga.adaptive_mutation.stagnation_threshold", 0, &number, err)) {
+    if (!bt_ga_upgrade_int(config, "ga.adaptive_mutation.stagnation_threshold", 0,
+                           BT_GA_STAGNATION_MAX, &number, err)) {
         return 0;
     }
     if (bt_config_value(config, "ga.adaptive_mutation.stagnation_threshold") != NULL) {
         out->stagnation_threshold = (uint32_t)number;
     }
-    if (!bt_ga_upgrade_number(config, "ga.adaptive_mutation.swap_scale", 0.0, 1.0e18,
+    if (!bt_ga_upgrade_number(config, "ga.adaptive_mutation.swap_scale", 0.0, BT_GA_SCALE_MAX,
                               &out->swap_scale, err)) {
         return 0;
     }
-    if (!bt_ga_upgrade_number(config, "ga.adaptive_mutation.replace_scale", 0.0, 1.0e18,
+    if (!bt_ga_upgrade_number(config, "ga.adaptive_mutation.replace_scale", 0.0, BT_GA_SCALE_MAX,
                               &out->replace_scale, err)) {
         return 0;
     }

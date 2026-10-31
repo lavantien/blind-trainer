@@ -272,6 +272,11 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
         BT_TRACE_FAIL("gr.load_run_inputs", "upgrades rejected: %s", err);
         failed = 1;
     }
+    if (!failed && !bt_ga_upgrades_check(&inputs->upgrades, &inputs->params, err)) {
+        bt_gr_offenders_push(offenders, "%s", err);
+        BT_TRACE_FAIL("gr.load_run_inputs", "upgrades rejected: %s", err);
+        failed = 1;
+    }
     size_t top_k = 0;
     if (!failed && bt_ga_config_pool_top_k(config, &top_k, err) != 1) {
         bt_gr_offenders_push(offenders, "%s", err);

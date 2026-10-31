@@ -549,3 +549,164 @@ BT_TEST(ga_upgrade, run_ex_rejects_contradictory_upgrade_structs) {
                        "restart thresholds must stay within 0 to 1",
                        run_ex_with_out_of_range_diversity_threshold);
 }
+
+BT_TEST(ga_upgrade, forced_keep_restart_pins_the_reference_constants) {
+    bt_ga_env *env = upgrade_env(6);
+    bt_ga_params params = upgrade_params(0, 8, 6, 7);
+    params.swap = 0.0;
+    params.replace = 0.0;
+    params.w_conf = 0.0F;
+    params.w_flow = 0.0F;
+    params.w_cplx = 0.0F;
+    bt_ga_upgrades restart = no_upgrades();
+    restart.diversity_threshold = 0.9;
+    restart.inject_fraction = 0.1;
+    bt_ga_run_outcome *outcome = bt_ga_run_ex(env, &params, &restart);
+    const uint32_t genes[6] = {0, 2, 4, 3, 7, 5};
+    const uint32_t per_gen[7] = {
+        0, 0, 0, 0, 0, 0, 0,
+    };
+    check_outcome_pins(outcome, genes, 6, 0, per_gen, 7, 0, 6, 6, 21);
+    for (size_t i = 1; i < outcome->per_gen_count; i++) {
+        BT_CHECK(outcome->per_gen_best[i] <= outcome->per_gen_best[i - 1] + 1.19209290e-07F);
+    }
+    bt_ga_run_outcome_free(outcome);
+    bt_ga_env_free(env);
+}
+
+BT_TEST(ga_upgrade, adaptive_gate_clamp_stays_deterministic_at_the_ceiling) {
+    bt_ga_env *env = upgrade_env(6);
+    bt_ga_params params = upgrade_params(424242, 8, 6, 2);
+    bt_ga_upgrades adaptive = no_upgrades();
+    adaptive.stagnation_threshold = 1;
+    adaptive.swap_scale = 1000000.0;
+    adaptive.replace_scale = 1000000.0;
+    bt_ga_run_outcome *a = bt_ga_run_ex(env, &params, &adaptive);
+    bt_ga_run_outcome *b = bt_ga_run_ex(env, &params, &adaptive);
+    BT_CHECK(memcmp(a->best, b->best, a->best_count * sizeof(uint32_t)) == 0);
+    for (size_t i = 0; i < a->per_gen_count; i++) {
+        BT_CHECK_EQ(f32_bits(a->per_gen_best[i]), f32_bits(b->per_gen_best[i]));
+    }
+    BT_CHECK_EQ(a->evaluations, b->evaluations);
+    for (size_t i = 1; i < a->per_gen_count; i++) {
+        BT_CHECK(a->per_gen_best[i] <= a->per_gen_best[i - 1] + 1.19209290e-07F);
+    }
+    bt_ga_run_outcome_free(b);
+    bt_ga_run_outcome_free(a);
+    bt_ga_env_free(env);
+}
+
+BT_TEST(ga_upgrade, config_upgrades_caps_scale_and_count_ceilings) {
+    bt_json_value *config = upgrade_config_from_literal(
+        "{\"ga\":{\"islands\":{\"count\":1025},\"adaptive_mutation\":{\"swap_scale\":1000000.0},"
+        "\"restart\":{\"diversity_threshold\":0.5}}}");
+    bt_ga_upgrades upgrades;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.islands.count") != NULL);
+    bt_json_free(config);
+    config = upgrade_config_from_literal(
+        "{\"ga\":{\"adaptive_mutation\":{\"stagnation_threshold\":2,\"swap_scale\":1000000.5}}}");
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.adaptive_mutation.swap_scale") != NULL);
+    bt_json_free(config);
+    config = upgrade_config_from_literal(
+        "{\"ga\":{\"islands\":{\"count\":2,\"migrate_every\":1000000001,\"migrate_count\":1}}}");
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.islands.migrate_every") != NULL);
+    bt_json_free(config);
+    config = upgrade_config_from_literal(
+        "{\"ga\":{\"adaptive_mutation\":{\"stagnation_threshold\":4294967296}}}");
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.adaptive_mutation.stagnation_threshold") != NULL);
+    bt_json_free(config);
+    config = upgrade_config_from_literal(
+        "{\"ga\":{\"islands\":{\"count\":1024,\"migrate_every\":1000000000,\"migrate_count\":1},"
+        "\"adaptive_mutation\":{\"stagnation_threshold\":4294967295,\"swap_scale\":1000000.0,"
+        "\"replace_scale\":0.25}}}");
+    if (!bt_ga_config_upgrades(config, &upgrades, err)) {
+        BT_ABORT("ceiling values rejected: %s", err);
+    }
+    BT_CHECK_EQ(upgrades.island_count, (size_t)1024);
+    BT_CHECK_EQ(upgrades.migrate_every, (size_t)1000000000);
+    BT_CHECK_EQ(upgrades.stagnation_threshold, 4294967295U);
+    BT_CHECK_F64_NEAR(upgrades.swap_scale, 1000000.0, 1e-9);
+    bt_json_free(config);
+}
+
+BT_TEST(ga_upgrade, upgrades_check_names_each_rejected_shape) {
+    bt_ga_params params = upgrade_params(424242, 8, 6, 2);
+    bt_ga_upgrades fraction = no_upgrades();
+    fraction.elite_fraction_policy = 1;
+    fraction.elite_fraction = 0.0625;
+    bt_ga_upgrades starving = no_upgrades();
+    starving.island_count = 2;
+    starving.migrate_every = 1;
+    starving.migrate_count = 7;
+    bt_ga_upgrades clean = no_upgrades();
+    clean.island_count = 3;
+    clean.migrate_every = 2;
+    clean.migrate_count = 2;
+    clean.stagnation_threshold = 2;
+    clean.swap_scale = 1.5;
+    clean.replace_scale = 0.5;
+    clean.diversity_threshold = 0.9;
+    clean.inject_fraction = 0.5;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_upgrades_check(&fraction, &params, err));
+    BT_CHECK(strstr(err, "elite must be at least 1") != NULL);
+    BT_CHECK(!bt_ga_upgrades_check(&starving, &params, err));
+    BT_CHECK(strstr(err, "migrate count plus elite must stay at or below the population") != NULL);
+    BT_CHECK(bt_ga_upgrades_check(&clean, &params, err));
+}
+
+static void run_ex_with_island_count_overflow(void) {
+    bt_ga_env *env = upgrade_env(6);
+    bt_ga_params params = upgrade_params(424242, 8, 6, 2);
+    bt_ga_upgrades wrap = no_upgrades();
+    wrap.island_count = 4611686018427387904ULL;
+    bt_ga_run_outcome *outcome = bt_ga_run_ex(env, &params, &wrap);
+    bt_ga_run_outcome_free(outcome);
+    bt_ga_env_free(env);
+}
+
+static void run_ex_with_generations_at_size_max(void) {
+    bt_ga_env *env = upgrade_env(6);
+    bt_ga_params params = upgrade_params(424242, 8, 6, 2);
+    params.generations = SIZE_MAX;
+    bt_ga_run_outcome *outcome = bt_ga_run(env, &params);
+    bt_ga_run_outcome_free(outcome);
+    bt_ga_env_free(env);
+}
+
+static void ring_migrate_with_migrate_count_above_population(void) {
+    bt_ga_island *islands = calloc(2, sizeof *islands);
+    for (size_t isl = 0; isl < 2; isl++) {
+        islands[isl].population = calloc(2, sizeof *islands[isl].population);
+        islands[isl].scores = calloc(2, sizeof *islands[isl].scores);
+        islands[isl].order = calloc(2, sizeof *islands[isl].order);
+        for (size_t i = 0; i < 2; i++) {
+            islands[isl].population[i] = calloc(3, sizeof(uint32_t));
+            islands[isl].scores[i] = 1.0F;
+            islands[isl].order[i] = i;
+        }
+    }
+    uint32_t **staging = calloc(3, sizeof *staging);
+    float *staging_scores = calloc(3, sizeof *staging_scores);
+    for (size_t i = 0; i < 3; i++) {
+        staging[i] = calloc(3, sizeof(uint32_t));
+    }
+    bt_ga_ring_migrate(islands, 2, 2, 3, 3, staging, staging_scores);
+}
+
+BT_TEST(ga_upgrade, run_ex_rejects_overflow_and_unguarded_ring_calls) {
+    bt_ga_death_expect("run_ex_with_island_count_overflow",
+                       "allocation size overflow at ga.run.islands",
+                       run_ex_with_island_count_overflow);
+    bt_ga_death_expect("run_ex_with_generations_at_size_max",
+                       "generations must stay below the size_t ceiling",
+                       run_ex_with_generations_at_size_max);
+    bt_ga_death_expect("ring_migrate_with_migrate_count_above_population",
+                       "migrate count must stay at or below the population",
+                       ring_migrate_with_migrate_count_above_population);
+}

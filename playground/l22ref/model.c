@@ -135,6 +135,17 @@ static size_t ref_distinct_count(uint32_t **population, size_t pop, size_t case_
     return distinct;
 }
 
+static uint64_t ref_gate(double rate) {
+    double gates = rate * 1000000.0;
+    if (!(gates > 0.0)) {
+        return 0;
+    }
+    if (gates >= 1000000.0) {
+        return 1000000;
+    }
+    return (uint64_t)gates;
+}
+
 static ref_outcome ref_run(const bt_ga_env *env, const ref_params *params,
                            const ref_upgrades *up) {
     ref_outcome outcome;
@@ -205,11 +216,11 @@ static ref_outcome ref_run(const bt_ga_env *env, const ref_params *params,
     }
     for (size_t generation = 1; generation <= params->generations; generation++) {
         for (size_t isl = 0; isl < islands; isl++) {
-            uint64_t swap_gate = (uint64_t)(params->swap * 1000000.0);
-            uint64_t replace_gate = (uint64_t)(params->replace * 1000000.0);
+            uint64_t swap_gate = ref_gate(params->swap);
+            uint64_t replace_gate = ref_gate(params->replace);
             if (up->stagnation_threshold > 0 && island[isl].stagnation >= up->stagnation_threshold) {
-                swap_gate = (uint64_t)(params->swap * up->swap_scale * 1000000.0);
-                replace_gate = (uint64_t)(params->replace * up->replace_scale * 1000000.0);
+                swap_gate = ref_gate(params->swap * up->swap_scale);
+                replace_gate = ref_gate(params->replace * up->replace_scale);
             }
             memset(is_elite, 0, pop);
             size_t filled = 0;
@@ -313,6 +324,9 @@ static ref_outcome ref_run(const bt_ga_env *env, const ref_params *params,
                     ref_distinct_count(island[isl].population, pop, case_count, diversity_order);
                 if ((double)distinct / (double)pop < up->diversity_threshold) {
                     size_t kept = (size_t)(up->inject_fraction * (double)pop);
+                    if (kept < 1) {
+                        kept = 1;
+                    }
                     for (size_t r = kept; r < pop; r++) {
                         size_t idx = island[isl].order[r];
                         ref_random_individual(&rng, env->pool_size, case_count, scratch,
@@ -492,6 +506,20 @@ int main(void) {
     setvbuf(stdout, NULL, _IONBF, 0);
     bt_ga_env *env = fixture_env(6);
     bt_ga_env *env3 = fixture_env(3);
+    for (uint64_t seed = 1; seed <= 48; seed++) {
+        ref_params scan = base_params(seed, 8, 6, 7);
+        scan.swap = 0.0;
+        scan.replace = 0.0;
+        scan.w_conf = 0.0F;
+        scan.w_flow = 0.0F;
+        scan.w_cplx = 0.0F;
+        ref_upgrades scan_up = zero_upgrades();
+        scan_up.diversity_threshold = 0.9;
+        scan_up.inject_fraction = 0.1;
+        ref_outcome got = ref_run(env, &scan, &scan_up);
+        printf("scan8 seed %llu evals %llu base 14\n", (unsigned long long)seed,
+               (unsigned long long)got.evaluations);
+    }
     ref_params legacy = base_params(424242, 8, 6, 2);
     ref_upgrades zero = zero_upgrades();
     ref_outcome s0 = ref_run(env, &legacy, &zero);
@@ -544,6 +572,18 @@ int main(void) {
     flat_restart.inject_fraction = 0.5;
     ref_outcome s3b = ref_run(env3, &flat, &flat_restart);
     print_outcome("s3b", &s3b);
+
+    ref_params keep = base_params(0, 8, 6, 7);
+    keep.swap = 0.0;
+    keep.replace = 0.0;
+    keep.w_conf = 0.0F;
+    keep.w_flow = 0.0F;
+    keep.w_cplx = 0.0F;
+    ref_upgrades keep_restart = zero_upgrades();
+    keep_restart.diversity_threshold = 0.9;
+    keep_restart.inject_fraction = 0.1;
+    ref_outcome s5 = ref_run(env, &keep, &keep_restart);
+    print_outcome("s5", &s5);
 
     ref_upgrades fraction = zero_upgrades();
     fraction.elite_fraction_policy = 1;
