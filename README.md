@@ -1,6 +1,6 @@
 # blind-trainer
 
-[![CI](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml)
+[![CI](docs/badges/ci.svg)](https://github.com/lavantien/blind-trainer/actions/workflows/ci.yml)
 [![coverage](docs/badges/coverage.svg)](scripts/coverage_badge.py)
 [![alg coverage](docs/badges/alg-coverage.svg)](scripts/alg_coverage_badge.py)
 
@@ -230,9 +230,10 @@ The first run creates blind-trainer.db in the user dir, runs the numbered migrat
 python bt.py screenshots
 python scripts/diagrams.py
 python scripts/alg_coverage_badge.py
+python scripts/ci_badge.py
 ```
 
-`python bt.py screenshots` rebuilds the gallery from a sandboxed run of the app with APPDATA redirected, the fatal shot comes from a run whose config points at a missing path. `python scripts/diagrams.py` re-renders every png from its puml source with the sha-pinned plantuml jar. `python scripts/alg_coverage_badge.py` refreshes the alg coverage badge from the vendor manifest.
+`python bt.py screenshots` rebuilds the gallery from a sandboxed run of the app with APPDATA redirected, the fatal shot comes from a run whose config points at a missing path. `python scripts/diagrams.py` re-renders every png from its puml source with the sha-pinned plantuml jar. `python scripts/alg_coverage_badge.py` refreshes the alg coverage badge from the vendor manifest. `python scripts/ci_badge.py` refreshes the CI badge from the latest ci run on main through the gh binary.
 
 ## Runtime data and config
 
