@@ -82,6 +82,14 @@ static int is_shot_solve_review(const bt_usage_action *action) {
     return action->kind == BT_USAGE_ACT_SHOT && strcmp(action->name, "solve-review") == 0;
 }
 
+static int is_wait_app_replay(const bt_usage_action *action) {
+    return action->kind == BT_USAGE_ACT_WAIT_APP && action->app == BT_APP_REPLAY;
+}
+
+static int is_shot_replay(const bt_usage_action *action) {
+    return action->kind == BT_USAGE_ACT_SHOT && strcmp(action->name, "replay") == 0;
+}
+
 static int is_wait_app_case_drill(const bt_usage_action *action) {
     return action->kind == BT_USAGE_ACT_WAIT_APP && action->app == BT_APP_CASE_DRILL;
 }
@@ -98,7 +106,7 @@ BT_TEST(usage_script, shots_are_unique_and_complete) {
     size_t count = fill_script();
     const char *names[BT_USAGE_SHOT_MAX];
     size_t total = shot_names(g_actions, count, names);
-    BT_CHECK_EQ(total, (size_t)19);
+    BT_CHECK_EQ(total, (size_t)20);
     for (size_t i = 0; i < total; i++) {
         for (size_t j = i + 1; j < total; j++) {
             BT_CHECK(strcmp(names[i], names[j]) != 0);
@@ -107,25 +115,11 @@ BT_TEST(usage_script, shots_are_unique_and_complete) {
     BT_CHECK(strcmp(names[0], "menu") == 0);
     BT_CHECK(strcmp(names[total - 1], "settings") == 0);
     const char *expected[] = {
-        "algs",
-        "algs-search",
-        "case-drill-grade",
-        "case-drill-show",
-        "drill-card",
-        "drill-rate-a",
-        "drill-rate-b",
-        "drill-reps",
-        "menu",
-        "memo-intro",
-        "memo-recall",
-        "memo-review",
-        "memo-stream",
-        "settings",
-        "solve-exec",
-        "solve-memo",
-        "solve-ready",
-        "solve-review",
-        "stats",
+        "algs",        "algs-search",  "case-drill-grade", "case-drill-show",
+        "drill-card",  "drill-rate-a", "drill-rate-b",     "drill-reps",
+        "menu",        "memo-intro",   "memo-recall",      "memo-review",
+        "memo-stream", "replay",       "settings",         "solve-exec",
+        "solve-memo",  "solve-ready",  "solve-review",     "stats",
     };
     BT_CHECK_EQ(total, sizeof expected / sizeof expected[0]);
     for (size_t i = 0; i < total; i++) {
@@ -157,6 +151,32 @@ BT_TEST(usage_script, sequences_each_phase_before_its_shot) {
              position(g_actions, count, is_nav_open_solve));
     BT_CHECK(position(g_actions, count, is_nav_open_stats) >
              position(g_actions, count, is_shot_solve_review));
+}
+
+BT_TEST(usage_script, the_replay_leg_enters_paused_shoots_and_exits_back_to_solve) {
+    size_t count = fill_script();
+    BT_CHECK_EQ(count, (size_t)130);
+    size_t review = position(g_actions, count, is_shot_solve_review);
+    BT_CHECK_EQ(review, (size_t)59);
+    BT_CHECK(g_actions[review + 1].kind == BT_USAGE_ACT_PRESS);
+    BT_CHECK_EQ(g_actions[review + 1].key, KEY_V);
+    BT_CHECK(g_actions[review + 2].kind == BT_USAGE_ACT_WAIT_APP);
+    BT_CHECK_EQ(g_actions[review + 2].app, BT_APP_REPLAY);
+    BT_CHECK(g_actions[review + 3].kind == BT_USAGE_ACT_ELAPSE);
+    double dwell = (double)g_actions[review + 3].secs;
+    BT_CHECK((dwell - 0.3) < 1e-6 && (0.3 - dwell) < 1e-6);
+    BT_CHECK(g_actions[review + 4].kind == BT_USAGE_ACT_SHOT);
+    BT_CHECK(strcmp(g_actions[review + 4].name, "replay") == 0);
+    for (size_t i = review + 1; i <= review + 4; i++) {
+        BT_CHECK(!(g_actions[i].kind == BT_USAGE_ACT_PRESS && g_actions[i].key == KEY_SPACE));
+    }
+    BT_CHECK(g_actions[review + 5].kind == BT_USAGE_ACT_PRESS);
+    BT_CHECK_EQ(g_actions[review + 5].key, KEY_V);
+    BT_CHECK(g_actions[review + 6].kind == BT_USAGE_ACT_WAIT_SOLVE);
+    BT_CHECK_EQ(g_actions[review + 6].solve, BT_SOLVE_READY);
+    BT_CHECK(g_actions[review + 7].kind == BT_USAGE_ACT_NAV_MENU);
+    BT_CHECK(position(g_actions, count, is_wait_app_replay) <
+             position(g_actions, count, is_shot_replay));
 }
 
 BT_TEST(usage_script, the_case_drill_leg_drives_the_repo_and_all_four_grade_keys) {

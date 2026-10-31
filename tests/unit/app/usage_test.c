@@ -373,7 +373,7 @@ BT_TEST(usage, tour_init_wires_the_seeds_and_counts_the_shots) {
     BT_CHECK_EQ(bt_view_memo_app()->seed, (uint64_t)5);
     BT_CHECK_EQ(bt_view_solve_app()->seed, (uint64_t)6);
     BT_CHECK_EQ(bt_view_drill_app()->seed, (uint64_t)7);
-    BT_CHECK_EQ(tour.expected_shots, (size_t)19);
+    BT_CHECK_EQ(tour.expected_shots, (size_t)20);
     BT_CHECK_EQ(tour.index, (size_t)0);
     BT_CHECK_EQ(tour.mode, BT_USAGE_MODE_ACT);
     BT_CHECK_EQ(tour.shot_count, (size_t)0);

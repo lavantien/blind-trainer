@@ -189,6 +189,12 @@ bt_usage_action *bt_usage_script(float cadence_secs, size_t *count) {
     press(KEY_SPACE);
     wait_solve(BT_SOLVE_REVIEW);
     shot("solve-review");
+    press(KEY_V);
+    wait_app(BT_APP_REPLAY);
+    elapse(BT_USAGE_SETTLE_SECS);
+    shot("replay");
+    press(KEY_V);
+    wait_solve(BT_SOLVE_READY);
     nav_menu();
     wait_app(BT_APP_MENU);
     nav_open(BT_APP_ALGS);
@@ -197,11 +203,11 @@ bt_usage_action *bt_usage_script(float cadence_secs, size_t *count) {
     press(KEY_SLASH);
     elapse(0.1F);
     press_char(KEY_B, 'b');
-    elapse(0.3F);
+    elapse(BT_USAGE_SETTLE_SECS);
     press(KEY_DOWN);
     elapse(0.1F);
     press(KEY_DOWN);
-    elapse(0.3F);
+    elapse(BT_USAGE_SETTLE_SECS);
     shot("algs-search");
     nav_menu();
     wait_app(BT_APP_MENU);
@@ -214,7 +220,7 @@ bt_usage_action *bt_usage_script(float cadence_secs, size_t *count) {
     press(KEY_RIGHT);
     elapse(0.1F);
     press(KEY_RIGHT);
-    elapse(0.3F);
+    elapse(BT_USAGE_SETTLE_SECS);
     press(KEY_D);
     wait_app(BT_APP_CASE_DRILL);
     wait_case_drill(BT_CASE_DRILL_SHOW);

@@ -5,7 +5,8 @@
 
 #include <stddef.h>
 
-#define BT_USAGE_SHOT_MAX 19
+#define BT_USAGE_SHOT_MAX 20
+#define BT_USAGE_SETTLE_SECS 0.3F
 
 typedef enum {
     BT_USAGE_ACT_PRESS = 0,
