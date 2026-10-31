@@ -1,3 +1,5 @@
+import contextlib
+import io
 import os
 import re
 import sys
@@ -163,6 +165,17 @@ class CiBadgeEndToEndTests(unittest.TestCase):
             code, out = self.run_with_path(tmp, ["--offline"])
             self.assertEqual(code, 0)
             self.assert_badge_bytes(out, "unknown")
+
+    def test_trace_lines_carry_the_unit_name_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, out = self.run_with_stub(tmp, f"@echo [{PASSED_RUN}]\n")
+            self.assertEqual(code, 0)
+            self.assertTrue(out.exists())
+            self.assertIn("[entry] ci-badge: out=", buffer.getvalue())
+            self.assertIn("[exit] ci-badge: code=0", buffer.getvalue())
+            self.assertNotIn("ci-badge: ci-badge", buffer.getvalue())
 
 
 class CommittedBadgeTests(unittest.TestCase):

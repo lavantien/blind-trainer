@@ -31,7 +31,7 @@ VERDICT_COLORS = {"passed": GREEN, "failed": RED, "running": YELLOW, "unknown": 
 
 
 def fail(message):
-    return TOOL.fail("ci-badge", message)
+    return TOOL.line("fail", message)
 
 
 def verdict_of(run):
@@ -87,7 +87,9 @@ def main(argv=None):
         help="render the unknown badge and exit 0 when gh cannot answer",
     )
     args = parser.parse_args(argv)
-    TOOL.entry("ci-badge", f"out={args.out or 'docs/badges/ci.svg'} offline={args.offline}")
+    TOOL.line(
+        "entry", f"out={args.out or 'docs/badges/ci.svg'} offline={args.offline}"
+    )
     out = Path(args.out) if args.out else REPO / "docs" / "badges" / "ci.svg"
     verdict = "unknown"
     detail = "no matching run"
@@ -106,12 +108,12 @@ def main(argv=None):
     except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
         if not args.offline:
             fail(str(exc))
-            TOOL.exit("ci-badge", 1)
+            TOOL.line("exit", "code=1")
             return 1
         TOOL.line("offline", f"gh query failed, rendering unknown: {exc}")
     render(out, verdict)
     print(f"ci: {verdict} ({detail})")
-    TOOL.exit("ci-badge", 0)
+    TOOL.line("exit", "code=0")
     return 0
 
 
