@@ -20,7 +20,7 @@ jobs:
           $url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/LLVM-23.1.4-win64.msi"
           Invoke-WebRequest -Uri $url -OutFile $msi
           $install = Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /qn /norestart" -Wait -PassThru
-          if ($install.ExitCode -ne 0) { exit 1 }
+          if ($install.ExitCode -ne 0 -and $install.ExitCode -ne 3010) { exit 1 }
           $llvmBin = "C:\Program Files\LLVM\bin"
           if (-not (Test-Path "$llvmBin\clang.exe")) { exit 1 }
           Add-Content -Path $env:GITHUB_PATH -Value $llvmBin
@@ -28,6 +28,8 @@ jobs:
         run: python bt.py setup
       - name: vendor
         run: python scripts/vendor.py
+      - name: grounding
+        run: python scripts/fetch_docs.py --only vietnamese/syllables-7184-abc.txt
       - name: fmt
         run: python bt.py fmt
       - name: lint
@@ -41,9 +43,11 @@ jobs:
       - name: test
         shell: pwsh
         run: |
-          foreach ($area in "common","core","scheme","data","puzzles","ga","tools","e2e") {
+          foreach ($area in "common","core","scheme","data","puzzles","ga","e2e") {
             python bt.py test-unit $area
             if ($LASTEXITCODE -ne 0) { exit 1 }
           }
+          python bt.py test-unit tools --without ga_run_lib
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           python -m unittest discover -s tests/python
           if ($LASTEXITCODE -ne 0) { exit 1 }

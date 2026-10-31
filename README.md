@@ -199,11 +199,12 @@ Prerequisites: the LLVM 23 toolchain with clang, clang-format, clang-tidy and ll
 git clone https://github.com/lavantien/blind-trainer
 cd blind-trainer
 python scripts/vendor.py
+python scripts/fetch_docs.py
 python bt.py setup
 python bt.py build
 ```
 
-`python scripts/vendor.py` downloads raylib 6.2 and the sqlite 3.54.1 amalgamation under the sha pins in the config hub, builds the raylib library, and writes build/vendor.lock. `python bt.py build` compiles and links every unit, the app lands in build/bin/bt-app.exe.
+`python scripts/vendor.py` downloads raylib 6.2 and the sqlite 3.54.1 amalgamation under the sha pins in the config hub, builds the raylib library, and writes build/vendor.lock. `python scripts/fetch_docs.py` snapshots the raylib, c23, and win32 reference pages and the Vietnamese syllable wordlist into ref_doc with license headers, the wordlist entry carries a body sha pin and the ga suites replay it. `python bt.py build` compiles and links every unit, the app lands in build/bin/bt-app.exe.
 
 `python bt.py build --cuda` builds the second flavor when the doctor's cuda probe passes: nvcc compiles src/ga/cuda/ga_eval.cu with IEEE-strict device flags for the arch nvidia-smi reports, using an MSVC cl.exe it discovers through the build tools override, PATH, or vswhere, and the exes land in build/bin-cuda. The plain flavor never invokes nvcc. The ga engine routes its per-generation population fitness through a dispatch session: with cuda.enable on it evaluates on the gpu, one thread per fitness value in the cpu accumulation order, and falls back to the cpu loop when the device context fails, printing the reason to stderr and recording a trace. bt-ga-run reports the lane it used as eval_used_cuda in report.json, so a silent fallback is visible in the output. `python bt.py ga-parity` compares the flavors on the fixed seed: the cpu lane must reproduce the ref_ground/ga goldens byte for byte outside run_config, the cuda lane must stay inside the hub tolerance on the fitness summaries, match the cpu ranking pins exactly, and actually report the device engaged, and the cuda-built ga suites rerun with the lane enabled.
 
@@ -295,7 +296,7 @@ fmt                      clang-format dry run over every c and h file
 fmt-fix                  clang-format in place
 lint                     clang-tidy over every c file, or one area: python bt.py lint <area>
 test                     run every unit test exe and the python suite
-test-unit                run one area's unit tests: python bt.py test-unit <area> [--only substring]
+test-unit                run one area's unit tests: python bt.py test-unit <area> [--only substring] [--without substring]
 policy                   selftest then the zero-comment, constants-hub, and sloc scans
 policy-selftest          prove bt-policy detects planted comments, literals, and cap breaches
 fuzz                     run every fuzz_*_test suite exe in plainloop mode, harness bodies keep the early-return, exit-at-bound applies only under a libFuzzer driver
@@ -328,7 +329,7 @@ bt-app.exe in smoke mode: 0 tour complete with all shots written, 1 verification
 
 ## QA harness
 
-The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records land in docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request through the bt.py driver: setup, vendor, fmt, lint, policy, check, build, the unit suites of every area except app, which needs a desktop, and the python suite. The mutants, e2e, visual, and verify-algs gates stay local.
+The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records land in docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request through the bt.py driver: setup, vendor, the pinned wordlist fetch, fmt, lint, policy, check, build, the unit suites of every area except app, which needs a desktop, with the tools area skipping the ga-run cross-check suite that reads locally generated data, and the python suite. The mutants, e2e, visual, and verify-algs gates stay local.
 
 ## Roadmap
 
@@ -337,6 +338,7 @@ The verification chain runs through bt.py in order, committing at each green ste
 3. a memguard target that reports repo process memory against the cap through scripts/memguard.py
 4. targets wiring the alg coverage badge and the diagram renders into bt.py
 5. a run target that starts the app after a build
+6. run the ga-run cross-check suite in CI once a cheap generated-data fixture lands
 
 ## Licensing
 
