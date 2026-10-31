@@ -38,3 +38,4 @@ Change any of these, or the rendering they feed, and the baselines must be recap
 | 3e8f5ce | 2026-10-16 | 20261012 | 1280x800 | stage 5 single refresh: replay shot listed in e2e.shots after solve, case drill shot from the wave c tours, menu algs row text and stats due block from the seeded event repos |
 | fb2383e | 2026-10-18 | 20261012 | 1280x800 | drill.png only: net pulse frozen at a fixed factor in smoke mode (44067cc), refresh captured after the freeze over 2 green 10/10 visual runs, other 9 shots byte-identical |
 | 6f198b4 | 2026-10-28 | 20261012 | 1280x800 | c23 raylib port recapture, all 10 pngs replaced after a byte-identical double capture |
+| 541442d | 2026-11-01 | 20261012 | 1280x800 | fix wave recapture after the unfocused driven input, the density ladder, and the font atlas base 84 with bilinear filtering, 9 pngs replaced after a byte-identical double capture, replay.png unchanged because the replay view draws only the cube |
