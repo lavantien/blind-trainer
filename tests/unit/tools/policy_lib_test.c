@@ -316,7 +316,7 @@ BT_TEST(policy_lib, walk_skips_excluded_directories) {
     char root[POLICY_UTIL_PATH_MAX];
     policy_util_scratch("walk-skip", root);
     plant(root, "src/real.c", POLICY_CLEAN_FIXTURE);
-    plant(root, "src/target/gen.c", POLICY_DIRTY_FIXTURE);
+    plant(root, "src/ref_doc/gen.c", POLICY_DIRTY_FIXTURE);
     plant(root, "src/vendor/gen.c", POLICY_DIRTY_FIXTURE);
     plant(root, "src/build/gen.c", POLICY_DIRTY_FIXTURE);
     size_t count = 0;
@@ -328,6 +328,11 @@ BT_TEST(policy_lib, walk_skips_excluded_directories) {
         size_t root_len = strlen(root);
         BT_CHECK(strcmp(files[0] + root_len + 1, "src/real.c") == 0);
     }
+    policy_free_sources(files, count);
+    plant(root, "src/target/gen.c", POLICY_DIRTY_FIXTURE);
+    files = policy_collect_sources(root, &count, coll_err, sizeof coll_err);
+    BT_CHECK(files != NULL);
+    BT_CHECK_EQ(count, 2);
     policy_free_sources(files, count);
     policy_util_rm_rf(root);
 }

@@ -34,8 +34,7 @@ static const char *const POLICY_SCAN_PATTERNS[POLICY_SCAN_PATTERN_COUNT] = {
 };
 
 static const char *const POLICY_SKIP_DIRS[POLICY_SKIP_DIR_COUNT] = {
-    "vendor",  "build",      "ref_ground", "ref_doc",
-    "playground", "artifacts", "__pycache__",
+    "vendor", "build", "ref_ground", "ref_doc", "playground", "artifacts", "__pycache__",
 };
 
 const char POLICY_DIRTY_FIXTURE[] = "int dirty(void) {\n"
