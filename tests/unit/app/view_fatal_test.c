@@ -59,7 +59,7 @@ BT_TEST(view_fatal, lines_stop_at_the_capacity_bound) {
 }
 
 static int fatal_frame_has_variance(const bt_app_ctx *ctx, const char *path) {
-    if (!bt_app_window_open(640, 480, "fatal view test", NULL)) {
+    if (!bt_app_window_open_driven(640, 480, "fatal view test", NULL)) {
         return 0;
     }
     bt_app_font_book book;

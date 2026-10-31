@@ -148,7 +148,7 @@ BT_TEST(view_replay, played_scene_replays_the_collected_moves) {
 }
 
 BT_TEST(view_replay, draw_renders_the_cube_under_a_real_window) {
-    BT_CHECK(bt_app_window_open(640, 480, "replay probe", NULL));
+    BT_CHECK(bt_app_window_open_driven(640, 480, "replay probe", NULL));
     bt_app_ctx ctx;
     bt_app_ctx_init(&ctx);
     bt_view_replay_enter(&ctx);
