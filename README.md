@@ -22,7 +22,7 @@ A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves, plus 
 
 1. ![menu](docs/screenshots/menu.png)
 
-   the menu, digits 1 to 6 open the views, boot warnings in the header strip
+   the menu, digits 1 to 6 open the views, each row carries its data line, boot warnings in the header strip
 
 2. ![drill card](docs/screenshots/drill-card.png)
 
@@ -72,31 +72,35 @@ A desktop 3BLD trainer: 3-style drilling, memo training, and timed solves, plus 
 
     the result with memo, exec and total splits
 
-14. ![algs](docs/screenshots/algs.png)
+14. ![replay](docs/screenshots/replay.png)
+
+    the 3d replay, the scrambled cube held at the paused start of the solution, v returns to solve review
+
+15. ![algs](docs/screenshots/algs.png)
 
     the alg browser, the 3BLD letters plus 1 arm per event
 
-15. ![algs search](docs/screenshots/algs-search.png)
+16. ![algs search](docs/screenshots/algs-search.png)
 
     the list filtered to the b prefix with the selection moved
 
-16. ![case drill show](docs/screenshots/case-drill-show.png)
+17. ![case drill show](docs/screenshots/case-drill-show.png)
 
     a repository case drill card with the alg hidden
 
-17. ![case drill grade](docs/screenshots/case-drill-grade.png)
+18. ![case drill grade](docs/screenshots/case-drill-grade.png)
 
     case drill grading, keys 1 to 4
 
-18. ![stats](docs/screenshots/stats.png)
+19. ![stats](docs/screenshots/stats.png)
 
     the stats grid over the solve log and both card stores
 
-19. ![settings](docs/screenshots/settings.png)
+20. ![settings](docs/screenshots/settings.png)
 
-    settings, memo cadence, memo mode, drill reps
+    settings, full-width rows with the controls on the right, memo cadence, memo mode, drill reps
 
-20. ![fatal](docs/screenshots/fatal.png)
+21. ![fatal](docs/screenshots/fatal.png)
 
     the fatal screen, shown with the reason when the config or the ref_ground corpus sheets are unreadable
 
