@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 import os
 import re
 import sys
@@ -92,16 +93,24 @@ class BadgeSvgEscapeTests(unittest.TestCase):
         self.assertNotIn('"hi"', svg)
         self.assertIn("&quot;hi&quot;", svg)
 
-    def test_committed_coverage_renders_are_unchanged(self):
+    def test_committed_alg_coverage_render_is_unchanged(self):
         badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
-        for name, label, value, percent in (
-            ("coverage.svg", "coverage", "74.0%", 74.0),
-            ("alg-coverage.svg", "alg coverage", "99.9%", 99.9),
-        ):
-            self.assertEqual(
-                (badge_dir / name).read_bytes(),
-                badge_svg(label, value, percent).encode("utf-8"),
-            )
+        self.assertEqual(
+            (badge_dir / "alg-coverage.svg").read_bytes(),
+            badge_svg("alg coverage", "99.9%", 99.9).encode("utf-8"),
+        )
+
+    def test_committed_coverage_badge_renders_its_recorded_counts(self):
+        badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
+        counts = json.loads((badge_dir / "coverage.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(counts), {"covered", "count"})
+        self.assertGreater(counts["count"], 0)
+        self.assertLessEqual(counts["covered"], counts["count"])
+        percent = 100.0 * counts["covered"] / counts["count"]
+        self.assertEqual(
+            (badge_dir / "coverage.svg").read_bytes(),
+            badge_svg("coverage", f"{percent:.1f}%", percent).encode("utf-8"),
+        )
 
 
 class CiBadgeEndToEndTests(unittest.TestCase):

@@ -1,6 +1,7 @@
 #include "sleeper/lib.h"
 
 #include <math.h>
+#include <process.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -186,4 +187,28 @@ BT_TEST(sleeper, exe_selftest_mode_rejects_zero) {
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 2);
     BT_CHECK(strstr(err, "selftest alloc mb must be >= 1") != NULL);
+}
+
+BT_TEST(bin_path, override_dir_wins_over_the_plain_build_bin) {
+    char base[BT_PATH_MAX];
+    snprintf(base, sizeof base, "%s\\bt-bin-path-override-%d", getenv("TEMP"), _getpid());
+    bt_test_mkdirs(base);
+    char exe[BT_PATH_MAX];
+    _putenv_s("BT_BIN_DIR", base);
+    bt_test_bin_path(exe, "sleeper.exe");
+    _putenv("BT_BIN_DIR=");
+    BT_CHECK(strncmp(exe, base, strlen(base)) == 0);
+    BT_CHECK(strstr(exe, "sleeper.exe") != NULL);
+}
+
+BT_TEST(bin_path, empty_override_falls_back_to_the_plain_build_bin) {
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    char expected[BT_PATH_MAX];
+    snprintf(expected, sizeof expected, "%s/build/bin/sleeper.exe", root);
+    char exe[BT_PATH_MAX];
+    _putenv_s("BT_BIN_DIR", "");
+    bt_test_bin_path(exe, "sleeper.exe");
+    _putenv("BT_BIN_DIR=");
+    BT_CHECK(strcmp(exe, expected) == 0);
 }

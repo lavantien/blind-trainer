@@ -319,9 +319,9 @@ BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) 
     FILE *file = fopen(config_path, "rb");
     BT_CHECK(file != NULL);
     char config_text[32768];
-    fseek(file, 0, SEEK_END);
+    BT_CHECK(fseek(file, 0, SEEK_END) == 0);
     long file_size = ftell(file);
-    rewind(file);
+    BT_CHECK(fseek(file, 0, SEEK_SET) == 0);
     BT_CHECK(file_size >= 0 && (size_t)file_size + 1 <= sizeof config_text);
     size_t config_len = fread(config_text, 1, (size_t)file_size, file);
     fclose(file);

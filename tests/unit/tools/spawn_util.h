@@ -239,6 +239,11 @@ static inline void bt_test_repo_root(char out[BT_PATH_MAX]) {
 }
 
 static inline void bt_test_bin_path(char out[BT_PATH_MAX], const char *exe_name) {
+    const char *override = getenv("BT_BIN_DIR");
+    if (override != NULL && override[0] != '\0') {
+        snprintf(out, BT_PATH_MAX, "%s/%s", override, exe_name);
+        return;
+    }
     char root[BT_PATH_MAX];
     bt_test_repo_root(root);
     snprintf(out, BT_PATH_MAX, "%s/build/bin/%s", root, exe_name);

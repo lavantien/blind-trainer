@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import json
 import re
 import sys
@@ -99,6 +100,73 @@ def report_lines(data, stamp):
     return lines
 
 
+def validate_export(report):
+    if not isinstance(report, dict):
+        return None, "top level is not an object"
+    data = report.get("data")
+    if not isinstance(data, list) or not data:
+        return None, "data array is empty or missing"
+    first = data[0]
+    if not isinstance(first, dict):
+        return None, "first data entry is not an object"
+    if not isinstance(first.get("files"), list):
+        return None, "files array is missing"
+    totals = first.get("totals")
+    if not isinstance(totals, dict):
+        return None, "totals object is missing"
+    regions = totals.get("regions")
+    if not isinstance(regions, dict):
+        return None, "totals.regions is missing"
+    try:
+        count = int(regions["count"])
+        int(regions["covered"])
+        float(regions["percent"])
+    except (KeyError, TypeError, ValueError) as exc:
+        return None, f"totals.regions is incomplete: {exc}"
+    if count <= 0:
+        return None, f"region count is {count}"
+    return first, None
+
+
+def render(source, report_dir, badge_dir):
+    source = Path(source)
+    if not source.is_file():
+        fail(f"llvm-cov export not found: {source}, run the coverage build and export first")
+        return 2, None
+    try:
+        report = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        fail(f"llvm-cov export unreadable: {exc}")
+        return 1, None
+    data, reason = validate_export(report)
+    if reason is not None:
+        fail(f"llvm-cov export invalid: {reason}")
+        return 3, None
+    regions = data["totals"]["regions"]
+    covered = int(regions["covered"])
+    count = int(regions["count"])
+    percent = 100.0 * covered / count
+    if not percent > 0.0:
+        fail(f"region percent is {percent}, covered={covered} count={count}")
+        return 3, None
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    badge_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir / "report.md").write_text(
+        "\n".join(report_lines(data, stamp)) + "\n", encoding="utf-8", newline="\n"
+    )
+    value = f"{percent:.1f}%"
+    (badge_dir / "coverage.svg").write_text(
+        badge_svg("coverage", value, percent), encoding="utf-8", newline="\n"
+    )
+    (badge_dir / "coverage.json").write_text(
+        json.dumps({"covered": covered, "count": count}) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return 0, percent
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         prog="coverage_badge.py",
@@ -108,33 +176,13 @@ def main(argv=None):
     parser.add_argument("export", help="path to the llvm-cov json export")
     args = parser.parse_args(argv)
     TOOL.entry("coverage-badge", f"export={args.export}")
-    source = Path(args.export)
-    if not source.is_file():
-        fail(f"llvm-cov export not found: {source}, run the coverage build and export first")
-        return 2
-    try:
-        report = json.loads(source.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        fail(f"llvm-cov export unreadable: {exc}")
-        return 1
-    data = report["data"][0]
-    totals = data["totals"]["regions"]
-    percent = float(totals["percent"])
-    report_dir = REPO / "artifacts" / "coverage"
-    badge_dir = REPO / "docs" / "badges"
-    report_dir.mkdir(parents=True, exist_ok=True)
-    badge_dir.mkdir(parents=True, exist_ok=True)
-    import datetime
-
-    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    (report_dir / "report.md").write_text(
-        "\n".join(report_lines(data, stamp)) + "\n", encoding="utf-8", newline="\n"
+    code, percent = render(
+        args.export, REPO / "artifacts" / "coverage", REPO / "docs" / "badges"
     )
-    value = f"{percent:.1f}%"
-    (badge_dir / "coverage.svg").write_text(badge_svg("coverage", value, percent), encoding="utf-8", newline="\n")
-    print(f"coverage regions: {percent:.1f}%")
-    TOOL.exit("coverage-badge", 0)
-    return 0
+    if code == 0:
+        print(f"coverage regions: {percent:.1f}%")
+    TOOL.exit("coverage-badge", code)
+    return code
 
 
 if __name__ == "__main__":

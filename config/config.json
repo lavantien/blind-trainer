@@ -213,7 +213,12 @@
     "profiles_dir": "profiles",
     "profdata": "coverage.profdata",
     "export": "coverage.json",
-    "include_regex": "[\\\\/](src|tools)[\\\\/]|tests[\\\\/]fuzz[\\\\/]"
+    "include_regex": "{root}[\\\\/](src|tools)[\\\\/]|{root}[\\\\/]tests[\\\\/]fuzz[\\\\/]",
+    "guard_paths": [
+      "src",
+      "tools",
+      "tests/fuzz"
+    ]
   },
   "mutants": {
     "workers": 1,

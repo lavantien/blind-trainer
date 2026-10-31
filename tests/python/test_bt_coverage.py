@@ -1,7 +1,9 @@
 import json
 import os
+import re
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 
@@ -68,6 +70,39 @@ class CoverageFlagTests(unittest.TestCase):
         self.assertNotEqual(paths["profdata"], paths["export"])
 
 
+class CoverageScopeTests(unittest.TestCase):
+    def repo_sources(self):
+        found = []
+        for base in ("src", "tools", "tests/fuzz", "tests/unit"):
+            for path in sorted((bt.REPO_ROOT / base).rglob("*")):
+                if path.is_file() and path.suffix in (".c", ".h"):
+                    found.append(path)
+        return found
+
+    def in_scope(self, path):
+        rel = path.relative_to(bt.REPO_ROOT).as_posix()
+        return rel.startswith(("src/", "tools/", "tests/fuzz/"))
+
+    def test_include_regex_template_anchors_on_the_repo_root(self):
+        self.assertIn("{root}", sample_hub()["coverage"]["include_regex"])
+
+    def test_include_regex_admits_exactly_the_measured_sources(self):
+        pattern = bt.coverage_include_regex(sample_hub())
+        for path in self.repo_sources():
+            rel = path.relative_to(bt.REPO_ROOT).as_posix()
+            with self.subTest(path=rel):
+                self.assertEqual(bool(re.search(pattern, str(path))), self.in_scope(path))
+
+    def test_include_regex_rejects_foreign_roots_and_unit_paths(self):
+        pattern = bt.coverage_include_regex(sample_hub())
+        foreign = bt.REPO_ROOT.parent / "other" / "tools" / "main.c"
+        self.assertIsNone(re.search(pattern, str(foreign)))
+        unit_tool = bt.REPO_ROOT / "tests" / "unit" / "tools" / "x_test.c"
+        self.assertIsNone(re.search(pattern, str(unit_tool)))
+        forward = str(bt.REPO_ROOT / "tools" / "x.c").replace("\\", "/")
+        self.assertIsNotNone(re.search(pattern, forward))
+
+
 class CoverageCommandTests(unittest.TestCase):
     def test_profdata_merge_argv_uses_output_and_positions_profraws(self):
         raws = [Path("a.profraw"), Path("b.profraw")]
@@ -87,7 +122,7 @@ class CoverageCommandTests(unittest.TestCase):
         self.assertEqual(argv[1], "export")
         self.assertIn(f"--instr-profile={prof}", argv)
         self.assertIn(
-            f"--include-filename-regex={hub['coverage']['include_regex']}", argv
+            f"--include-filename-regex={bt.coverage_include_regex(hub)}", argv
         )
         self.assertEqual(
             argv[argv.index(f"--instr-profile={prof}") + 2], str(exes[0])
@@ -95,6 +130,27 @@ class CoverageCommandTests(unittest.TestCase):
         for exe in exes[1:]:
             self.assertIn(f"--object={exe}", argv)
         self.assertNotIn(f"--object={exes[0]}", argv)
+
+    def test_coverage_export_exes_feed_every_instrumented_exe_to_llvm_cov(self):
+        hub = sample_hub()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bin_cov = root / hub["build"]["dirs"]["bin_cov"]
+            bin_cov.mkdir(parents=True)
+            suites = [bin_cov / "core_cube_test.exe", bin_cov / "tools_sleeper_test.exe"]
+            extras = [
+                bin_cov / "mutants-gate.exe",
+                bin_cov / "mutate.exe",
+                bin_cov / hub["build"]["app_exe"],
+            ]
+            for exe in [*suites, *extras, bin_cov / "notes.txt"]:
+                exe.write_bytes(b"x")
+            objects = bt.coverage_export_exes(hub, root, suites)
+            self.assertEqual(objects[: len(suites)], suites)
+            self.assertEqual(objects[len(suites) :], sorted(extras))
+            self.assertEqual(len(objects), len(set(objects)))
+            for exe in extras:
+                self.assertIn(f"--object={exe}", bt.cov_export_argv(hub, Path("llvm-cov.exe"), objects, Path("m.profdata")))
 
     def test_coverage_badge_argv_runs_the_script_isolated_with_the_export(self):
         hub = sample_hub()
@@ -228,12 +284,14 @@ class CoverageRunTests(unittest.TestCase):
         for label, argv, env in units:
             exe = Path(argv[0])
             self.assertEqual(label, exe.stem)
-            self.assertEqual(exe.parent, bt.REPO_ROOT / hub["build"]["dirs"]["bin_cov"])
+            bin_cov = bt.REPO_ROOT / hub["build"]["dirs"]["bin_cov"]
+            self.assertEqual(exe.parent, bin_cov)
             raw = Path(env["LLVM_PROFILE_FILE"])
             self.assertEqual(raw.parent, profile_dir)
-            self.assertEqual(raw.name, f"{exe.stem}.profraw")
+            self.assertEqual(raw.name, f"{exe.stem}.%p.profraw")
             self.assertNotIn(str(raw), seen)
             seen.add(str(raw))
+            self.assertEqual(env["BT_BIN_DIR"], str(bin_cov))
             self.assertIn("BT_CONFIG", env)
 
     def test_run_units_env_runs_each_stub_with_its_own_env(self):
@@ -305,6 +363,78 @@ class CoverageArtifactTests(unittest.TestCase):
         names = dict(bt.target_functions(bt))
         self.assertIn("coverage", names)
         self.assertTrue(bt.target_doc(names["coverage"]))
+
+
+class CoverageTreeGuardTests(unittest.TestCase):
+    def hub_with_guard(self):
+        hub = sample_hub()
+        hub["coverage"]["guard_paths"] = ["src", "tools"]
+        return hub
+
+    def git(self, argv, label, env=None):
+        bt.run(argv, label, env=env)
+
+    def commit_env(self):
+        return {
+            **os.environ,
+            "GIT_AUTHOR_NAME": "t86",
+            "GIT_AUTHOR_EMAIL": "t86@example.com",
+            "GIT_COMMITTER_NAME": "t86",
+            "GIT_COMMITTER_EMAIL": "t86@example.com",
+        }
+
+    def test_guard_paths_cover_every_measured_area(self):
+        self.assertEqual(
+            set(sample_hub()["coverage"]["guard_paths"]), {"src", "tools", "tests/fuzz"}
+        )
+
+    def test_measured_dirty_paths_names_files_under_the_guard_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.git(["git", "init", "-q", str(root)], "guard init")
+            (root / "src").mkdir()
+            (root / "src" / "a.c").write_text("int a;\n", encoding="utf-8")
+            (root / "elsewhere").mkdir()
+            (root / "elsewhere" / "b.c").write_text("int b;\n", encoding="utf-8")
+            self.git(["git", "-C", str(root), "add", "."], "guard add")
+            self.git(
+                ["git", "-C", str(root), "commit", "-q", "-m", "chore: guard probe"],
+                "guard commit",
+                env=self.commit_env(),
+            )
+            self.assertEqual(bt.measured_dirty_paths(self.hub_with_guard(), root), [])
+            (root / "src" / "a.c").write_text("int b;\n", encoding="utf-8")
+            (root / "tools").mkdir()
+            (root / "tools" / "new.c").write_text("int c;\n", encoding="utf-8")
+            (root / "elsewhere" / "b.c").write_text("int z;\n", encoding="utf-8")
+            dirty = bt.measured_dirty_paths(self.hub_with_guard(), root)
+            self.assertIn("src/a.c", dirty)
+            self.assertIn("tools/new.c", dirty)
+            self.assertNotIn("elsewhere/b.c", dirty)
+
+    def test_failed_git_status_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(bt.BtError):
+                bt.measured_dirty_paths(self.hub_with_guard(), Path(tmp))
+
+
+class BadgeFailureTests(unittest.TestCase):
+    def test_proc_tail_joins_stderr_then_stdout_clamped_and_stripped(self):
+        proc = types.SimpleNamespace(stderr="  err \n", stdout="out\n")
+        self.assertEqual(bt.proc_tail(proc), "err \nout")
+        noisy = types.SimpleNamespace(stderr="e" * 4000, stdout="o" * 10)
+        self.assertEqual(bt.proc_tail(noisy), ("e" * 2990) + ("o" * 10))
+
+    def test_badge_failure_carries_the_code_and_the_captured_tail(self):
+        proc = types.SimpleNamespace(
+            returncode=3,
+            stderr="[fail] coverage-badge: llvm-cov export invalid: data array is empty\n",
+            stdout="",
+        )
+        error = bt.badge_failure(proc)
+        self.assertIsInstance(error, bt.BtError)
+        self.assertIn("coverage badge failed with code 3", str(error))
+        self.assertIn("data array is empty", str(error))
 
 
 if __name__ == "__main__":

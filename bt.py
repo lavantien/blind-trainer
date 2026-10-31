@@ -132,6 +132,10 @@ def resolve_tool(name, hub=None):
     return Path(found)
 
 
+def proc_tail(proc):
+    return ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
+
+
 def run(argv, label, cwd=None, check=True, env=None, timeout=None):
     unit_argv = [str(part) for part in argv]
     logger = Logger()
@@ -148,8 +152,7 @@ def run(argv, label, cwd=None, check=True, env=None, timeout=None):
     )
     logger.exit(label, proc.returncode, time.monotonic() - started)
     if proc.returncode != 0 and check:
-        tail = ((proc.stderr or "") + (proc.stdout or ""))[-3000:].strip()
-        raise BtError(f"{label} failed with code {proc.returncode}: {tail}")
+        raise BtError(f"{label} failed with code {proc.returncode}: {proc_tail(proc)}")
     return proc
 
 
@@ -314,6 +317,17 @@ def coverage_cfg(hub=None):
 
 def coverage_flags(hub):
     return list(coverage_cfg(hub)["flags"])
+
+
+def coverage_root_pattern(root):
+    parts = [re.escape(part.rstrip("\\/")) for part in Path(root).parts]
+    return "[\\\\/]".join(part for part in parts if part)
+
+
+def coverage_include_regex(hub):
+    return coverage_cfg(hub)["include_regex"].replace(
+        "{root}", coverage_root_pattern(REPO_ROOT)
+    )
 
 
 def coverage_compile_flags(hub):
@@ -1539,8 +1553,8 @@ def coverage_suite_units(hub, suites, profile_dir):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin_cov"]
     units = []
     for suite in suites:
-        raw = profile_dir / f"{suite['exe_name']}.profraw"
-        env = {**child_env(hub), "LLVM_PROFILE_FILE": str(raw)}
+        raw = profile_dir / f"{suite['exe_name']}.%p.profraw"
+        env = {**child_env(hub), "LLVM_PROFILE_FILE": str(raw), "BT_BIN_DIR": str(bin_dir)}
         units.append(
             (suite["exe_name"], [bin_dir / f"{suite['exe_name']}.exe"], env)
         )
@@ -1551,8 +1565,14 @@ def profdata_merge_argv(tool, profraws, output):
     return [str(tool), "merge", f"--output={output}", *[str(path) for path in profraws]]
 
 
+def coverage_export_exes(hub, root, suite_exes):
+    bin_dir = root / dirs_cfg(hub)["bin_cov"]
+    extras = sorted(path for path in bin_dir.glob("*.exe") if path not in suite_exes)
+    return [*suite_exes, *extras]
+
+
 def cov_export_argv(hub, tool, exes, profdata):
-    include = coverage_cfg(hub)["include_regex"]
+    include = coverage_include_regex(hub)
     paths = [str(exe) for exe in exes]
     argv = [
         str(tool),
@@ -1569,6 +1589,12 @@ def cov_export_argv(hub, tool, exes, profdata):
 def coverage_badge_argv(hub, export_path):
     python = build_cfg(hub)["tools"].get("python", "") or sys.executable
     return [python, "-I", str(REPO_ROOT / COVERAGE_BADGE_SCRIPT), str(export_path)]
+
+
+def badge_failure(badge):
+    return BtError(
+        f"coverage badge failed with code {badge.returncode}: {proc_tail(badge)}"
+    )
 
 
 def write_coverage_export(text, path):
@@ -1590,6 +1616,15 @@ def coverage_percent(output):
 def coverage_scrub(profiles_dir, profdata):
     shutil.rmtree(profiles_dir, ignore_errors=True)
     profdata.unlink(missing_ok=True)
+
+
+def measured_dirty_paths(hub, root):
+    proc = run(
+        ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all", "--",
+         *coverage_cfg(hub)["guard_paths"]],
+        "coverage tree guard",
+    )
+    return [line[3:].strip() for line in (proc.stdout or "").splitlines() if line.strip()]
 
 
 def coverage_build(hub, logger):
@@ -1620,6 +1655,13 @@ def tgt_coverage(args):
         profdata_tool = resolve_tool("llvm_profdata", hub)
         cov_tool = resolve_tool("llvm_cov", hub)
         paths = coverage_paths(hub)
+        dirty = measured_dirty_paths(hub, REPO_ROOT)
+        if dirty:
+            raise BtError(
+                f"measured tree dirty under {coverage_cfg(hub)['guard_paths']}, "
+                f"commit or stash first: {', '.join(dirty[:8])}"
+            )
+        logger.line("guard", f"measured tree quiet over {coverage_cfg(hub)['guard_paths']}")
         exes = coverage_build(hub, logger)
         logger.line("build", f"{len(exes)} instrumented suite exes")
         shutil.rmtree(paths["profiles"], ignore_errors=True)
@@ -1643,7 +1685,11 @@ def tgt_coverage(args):
         if not paths["profdata"].is_file() or paths["profdata"].stat().st_size == 0:
             raise BtError(f"profdata merge left no artifact at {paths['profdata']}")
         proc = run(
-            cov_export_argv(hub, cov_tool, exes, paths["profdata"]), "coverage export"
+            cov_export_argv(
+                hub, cov_tool, coverage_export_exes(hub, REPO_ROOT, exes),
+                paths["profdata"],
+            ),
+            "coverage export",
         )
         write_coverage_export(proc.stdout, paths["export"])
         logger.line("export", f"{paths['export']} size={paths['export'].stat().st_size}")
@@ -1651,10 +1697,8 @@ def tgt_coverage(args):
             coverage_badge_argv(hub, paths["export"]), "coverage badge", check=False
         )
         if badge.returncode != 0:
-            raise BtError(f"coverage badge failed with code {badge.returncode}")
+            raise badge_failure(badge)
         percent = coverage_percent((badge.stdout or "") + (badge.stderr or ""))
-        if percent <= 0.0:
-            raise BtError("coverage export carried no covered regions, check the include regex")
         logger.line("badge", f"docs/badges/coverage.svg at {percent:.1f}% regions")
         coverage_scrub(paths["profiles"], paths["profdata"])
         logger.exit("coverage", 0)

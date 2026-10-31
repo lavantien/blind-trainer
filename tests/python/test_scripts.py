@@ -1,3 +1,6 @@
+import contextlib
+import io
+import json
 import os
 import re
 import subprocess
@@ -386,6 +389,95 @@ class CoverageBadgeLogicTests(unittest.TestCase):
         self.assertIn("| core | 14/20 | 70.0% |", joined)
         self.assertIn("worst 25 files:", joined)
         self.assertIn("uncovered:", joined)
+
+
+class CoverageBadgeRenderTests(unittest.TestCase):
+    def render_to_tmp(self, payload):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "export.json"
+            text = payload if isinstance(payload, str) else json.dumps(payload)
+            source.write_text(text, encoding="utf-8")
+            report_dir = root / "artifacts" / "coverage"
+            badge_dir = root / "docs" / "badges"
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, percent = coverage_badge.render(source, report_dir, badge_dir)
+            svg = badge_dir / "coverage.svg"
+            counts = badge_dir / "coverage.json"
+            written = {
+                "report": (report_dir / "report.md").is_file(),
+                "svg": svg.read_bytes() if svg.is_file() else None,
+                "counts": (
+                    json.loads(counts.read_text(encoding="utf-8"))
+                    if counts.is_file()
+                    else None
+                ),
+            }
+            return code, percent, written, buffer.getvalue()
+
+    def assert_nothing_written(self, written):
+        self.assertEqual(written, {"report": False, "svg": None, "counts": None})
+
+    def test_valid_export_writes_report_badge_and_counts(self):
+        code, percent, written, stderr = self.render_to_tmp(COV_EXPORT)
+        self.assertEqual(code, 0)
+        self.assertEqual(percent, 50.0)
+        self.assertTrue(written["report"])
+        self.assertEqual(
+            written["svg"],
+            coverage_badge.badge_svg("coverage", "50.0%", 50.0).encode("utf-8"),
+        )
+        self.assertEqual(written["counts"], {"covered": 17, "count": 34})
+
+    def test_structurally_empty_export_fails_traced_without_any_write(self):
+        code, percent, written, stderr = self.render_to_tmp({"data": []})
+        self.assertNotEqual(code, 0)
+        self.assertIsNone(percent)
+        self.assert_nothing_written(written)
+        self.assertIn("[fail] coverage-badge:", stderr)
+        self.assertIn("data array is empty", stderr)
+        self.assertNotIn("Traceback", stderr)
+
+    def test_missing_totals_fails_traced_without_any_write(self):
+        payload = {"data": [{"files": COV_EXPORT["data"][0]["files"]}]}
+        code, _, written, stderr = self.render_to_tmp(payload)
+        self.assertNotEqual(code, 0)
+        self.assert_nothing_written(written)
+        self.assertIn("totals", stderr)
+        self.assertNotIn("Traceback", stderr)
+
+    def test_zero_region_export_fails_traced_without_any_write(self):
+        payload = json.loads(json.dumps(COV_EXPORT))
+        payload["data"][0]["totals"]["regions"] = {
+            "count": 0,
+            "covered": 0,
+            "percent": 0.0,
+        }
+        code, _, written, stderr = self.render_to_tmp(payload)
+        self.assertNotEqual(code, 0)
+        self.assert_nothing_written(written)
+        self.assertIn("region count is 0", stderr)
+        self.assertNotIn("Traceback", stderr)
+
+    def test_unparsable_export_fails_traced_without_any_write(self):
+        code, _, written, stderr = self.render_to_tmp("{not json")
+        self.assertNotEqual(code, 0)
+        self.assert_nothing_written(written)
+        self.assertIn("unreadable", stderr)
+        self.assertNotIn("Traceback", stderr)
+
+    def test_missing_export_file_fails_traced(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, percent = coverage_badge.render(
+                    root / "absent.json", root / "r", root / "b"
+                )
+        self.assertEqual(code, 2)
+        self.assertIsNone(percent)
+        self.assertIn("not found", buffer.getvalue())
 
 
 class AlgCoverageBadgeLogicTests(unittest.TestCase):
