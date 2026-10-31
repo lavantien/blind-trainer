@@ -1,0 +1,40 @@
+[smoke] exit 0 stdout tail '' stderr tail ''
+[smoke] kept m_algs.png
+[smoke] kept m_case-drill.png
+[smoke] kept m_drill.png
+[smoke] kept m_fatal.png
+[smoke] kept m_memo.png
+[smoke] kept m_menu.png
+[smoke] kept m_replay.png
+[smoke] kept m_settings.png
+[smoke] kept m_solve.png
+[smoke] kept m_stats.png
+[t] shot t_00_menu.png
+[t] shot t_01_solve_ready.png
+[t] shot t_02_solve_memo.png
+[t] shot t_03_solve_exec.png
+[t] shot t_04_solve_review.png
+[t] shot t_05_solve_replay.png
+[t] shot t_06_memo_intro.png
+[t] shot t_07_memo_stream.png
+[t] exited
+purged temp C:\Users\LAVANT~1\AppData\Local\Temp\adv79b-tour-c4vtjids
+Traceback (most recent call last):
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\tour.py", line 148, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\tour.py", line 140, in main
+    deep_tour(temp)
+    ~~~~~~~~~^^^^^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\tour.py", line 96, in deep_tour
+    app.shot("08_memo_late")
+    ~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\tour.py", line 59, in shot
+    winlib.capture(self.hwnd, str(path))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\winlib.py", line 129, in capture
+    w, h = client_size(hwnd)
+           ~~~~~~~~~~~^^^^^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv79b\winlib.py", line 93, in client_size
+    raise OSError("GetClientRect failed")
+OSError: GetClientRect failed

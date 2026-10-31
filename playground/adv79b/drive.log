@@ -1,0 +1,28 @@
+[s] window (1280, 800) pid 7232
+[s] shot s_01_initial.png
+[s] shot s_02_minus.png
+[s] shot s_03_plus_back.png
+[s] shot s_04_typing.png
+[s] shot s_05_commit_9999.png
+[s] shot s_06_clamped_10000.png
+[s] shot s_07_reps_100.png
+[s] shot s_08_reps_plus_at_max.png
+[s] shot s_09_mode_key_opens.png
+[s] shot s_10_arrows_to_per_orbit.png
+[s] shot s_11_enter_commits.png
+[s] shot s_12_field_focused.png
+[s] shot s_13_esc_unfocuses.png
+[s] shot s_14_esc_menu.png
+[s] shot s_15_reenter_roundtrip.png
+[s] shot s_16_select_open.png
+[s] shot s_17_clickthrough.png
+[s] shot s_18_digits_land_in_hidden_field.png
+[s] shot s_19_menu_after.png
+[s] exited code None
+[s] persisted {"settings": {"drill_reps": 9, "memo_cadence_ms": 10000, "memo_mode": "syllables"}}
+[r] window (1280, 800) pid 30344
+[r] shot r_01_settings_after_reload.png
+[r] exited code None
+[r] reloaded {"settings": {"drill_reps": 9, "memo_cadence_ms": 10000, "memo_mode": "syllables"}}
+[r] round trip identical: True
+purged temp C:\Users\LAVANT~1\AppData\Local\Temp\adv79b-lgyqs6bu
