@@ -42,9 +42,16 @@ BT_TEST(theme, font_scale_is_pinned) {
     BT_CHECK_EQ(theme->font_focal, 3.4F);
 }
 
+BT_TEST(theme, body_text_renders_at_least_sixteen_pixels) {
+    const bt_theme *theme = bt_theme_table();
+    float worst_glyph_share = 0.6F;
+    float nominal = theme->font_body * theme->root_rem;
+    BT_CHECK(nominal * worst_glyph_share >= 16.0F);
+}
+
 BT_TEST(theme, layout_scale_is_pinned) {
     const bt_theme *theme = bt_theme_table();
-    BT_CHECK_EQ(theme->root_rem, 20.0F);
+    BT_CHECK_EQ(theme->root_rem, 28.0F);
     BT_CHECK_EQ(theme->spacing_rem, 0.5F);
     BT_CHECK_EQ(theme->panel_padding_rem, 1.0F);
     BT_CHECK_EQ(theme->header_height_rem, 3.5F);

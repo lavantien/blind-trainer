@@ -5,7 +5,7 @@
 #include <math.h>
 
 static const bt_theme BT_THEME_TABLE = {
-    .root_rem = 20.0F,
+    .root_rem = 28.0F,
     .font_focal = 3.4F,
     .font_title = 2.2F,
     .font_alg = 1.7F,

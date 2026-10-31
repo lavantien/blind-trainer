@@ -73,27 +73,27 @@ static bt_stores probe_stores(void) {
 
 BT_TEST(view_draw, frame_metrics_pin_the_header_and_content_rect) {
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
-    BT_CHECK(metrics.pad == 20.0F);
-    BT_CHECK(metrics.header_height == 70.0F);
-    BT_CHECK(metrics.hairline == 1.0F);
-    BT_CHECK(metrics.content_x == 20.0F);
-    BT_CHECK(metrics.content_y == 90.0F);
-    BT_CHECK(metrics.content_w == 1240.0F);
-    BT_CHECK(metrics.content_h == 690.0F);
+    BT_CHECK(metrics.pad == 28.0F);
+    BT_CHECK(metrics.header_height == 98.0F);
+    BT_CHECK(metrics.hairline == 1.4F);
+    BT_CHECK(metrics.content_x == 28.0F);
+    BT_CHECK(metrics.content_y == 126.0F);
+    BT_CHECK(metrics.content_w == 1224.0F);
+    BT_CHECK(metrics.content_h == 646.0F);
 }
 
 BT_TEST(view_draw, drill_net_geometry_fills_the_left_region) {
     bt_net_geometry geo = bt_view_drill_net_geometry(1280.0F, 800.0F);
-    BT_CHECK(geo.quad == 37.0F);
-    BT_CHECK(bt_net_width(&geo) <= 545.6F);
-    BT_CHECK(bt_net_height(&geo) <= 690.0F);
+    BT_CHECK(geo.quad == 36.0F);
+    BT_CHECK(bt_net_width(&geo) <= 538.72F);
+    BT_CHECK(bt_net_height(&geo) <= 646.0F);
 }
 
 BT_TEST(view_draw, drill_layout_splits_the_content_region) {
     bt_view_drill_layout layout = bt_view_drill_layout_for(20.0F, 90.0F, 1240.0F, 690.0F);
     BT_CHECK(fabsf(layout.net_w - 545.6F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_x - 575.6F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_w - 684.4F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_x - 579.6F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_w - 680.4F) < 1e-4F);
     BT_CHECK(layout.net_x == 20.0F && layout.net_y == 90.0F);
     BT_CHECK(layout.card_h == 690.0F);
 }

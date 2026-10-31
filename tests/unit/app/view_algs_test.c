@@ -79,7 +79,7 @@ BT_TEST(view_algs, list_capacity_fits_the_window_and_floors_at_one) {
     bt_app_config config;
     bt_app_config_defaults(&config);
     config.window.height = 800;
-    BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)21);
+    BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)13);
     config.window.height = 0;
     BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)1);
 }

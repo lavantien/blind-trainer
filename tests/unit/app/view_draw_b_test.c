@@ -5,6 +5,8 @@
 #include "app/views/solve.h"
 #include "app/views/state.h"
 #include "app/window.h"
+#include "core/alg.h"
+#include "core/cube.h"
 #include "data/paths.h"
 
 #include "common.h"
@@ -237,7 +239,16 @@ BT_TEST(view_draw_b, solve_review_hint_draws_clear_of_the_splits_block) {
     bt_view_solve_app_state *app = bt_view_solve_app();
     bt_syllable_book book;
     bt_syllable_book_init(&book);
-    bt_view_solve_rebuild(&app->session, 7, &book, NULL);
+    bt_cube scramble = bt_cube_solved();
+    bt_alg scramble_alg;
+    bt_alg_init(&scramble_alg);
+    char scramble_err[64];
+    if (!bt_alg_parse("R", &scramble_alg, scramble_err, sizeof scramble_err)) {
+        BT_ABORT("fixture scramble: %s", scramble_err);
+    }
+    bt_cube_apply_alg(&scramble, &scramble_alg);
+    bt_alg_free(&scramble_alg);
+    bt_view_solve_rebuild(&app->session, 4, &book, &scramble);
     ctx.solve_phase = BT_SOLVE_READY;
     bt_view_solve_key(&ctx, app, KEY_SPACE);
     bt_view_solve_key(&ctx, app, KEY_SPACE);
