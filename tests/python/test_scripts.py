@@ -9,8 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import coverage_badge
 import alg_coverage_badge
+import coverage_badge
 import dist
 import fetch_docs
 import fetch_fonts
@@ -34,9 +34,17 @@ class MemguardLogicTests(unittest.TestCase):
 
     def test_repo_path_match_is_prefix_case_insensitive(self):
         repo = memguard.norm_repo_prefix("C:\\Users\\lav\\dev\\blind-trainer")
-        self.assertTrue(memguard.is_repo_path("C:\\Users\\lav\\dev\\blind-trainer\\build\\bin\\x.exe", repo))
-        self.assertTrue(memguard.is_repo_path("c:/users/lav/dev/blind-trainer/target/x", repo))
-        self.assertFalse(memguard.is_repo_path("C:\\Users\\lav\\dev\\blind-trainer-2\\x.exe", repo))
+        self.assertTrue(
+            memguard.is_repo_path(
+                "C:\\Users\\lav\\dev\\blind-trainer\\build\\bin\\x.exe", repo
+            )
+        )
+        self.assertTrue(
+            memguard.is_repo_path("c:/users/lav/dev/blind-trainer/target/x", repo)
+        )
+        self.assertFalse(
+            memguard.is_repo_path("C:\\Users\\lav\\dev\\blind-trainer-2\\x.exe", repo)
+        )
         self.assertFalse(memguard.is_repo_path("D:\\elsewhere\\x.exe", repo))
 
     def test_pid_file_parse_accepts_only_live_stamped_foreign_pids(self):
@@ -47,7 +55,9 @@ class MemguardLogicTests(unittest.TestCase):
         self.assertIsNone(memguard.parse_pid_file("abc", 5, lookup.get))
         self.assertIsNone(memguard.parse_pid_file("-5 0", 5, lookup.get))
         self.assertIsNone(memguard.parse_pid_file("0 0", 5, lookup.get))
-        self.assertIsNone(memguard.parse_pid_file("99999999999999999999 0", 5, lookup.get))
+        self.assertIsNone(
+            memguard.parse_pid_file("99999999999999999999 0", 5, lookup.get)
+        )
         self.assertIsNone(memguard.parse_pid_file("33 333", 5, lookup.get))
 
     def test_pid_file_parse_rejects_own_pid(self):
@@ -83,36 +93,52 @@ class MemguardLogicTests(unittest.TestCase):
 
     def test_monitor_kill_failure_lands_on_five(self):
         rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
-        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: False)
+        result = memguard.monitor(
+            rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: False
+        )
         self.assertEqual(result["code"], 5)
         self.assertTrue(any("kill failed" in line for line in result["lines"]))
 
     def test_monitor_kill_success_still_reports_breach(self):
         rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
-        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: True)
+        result = memguard.monitor(
+            rows, MB, kill=True, killer=lambda pid: True, waiter=lambda pid, secs: True
+        )
         self.assertEqual(result["code"], 3)
-        self.assertTrue(any("killed pid 7 z, verified gone" in line for line in result["lines"]))
+        self.assertTrue(
+            any("killed pid 7 z, verified gone" in line for line in result["lines"])
+        )
 
     def test_monitor_kill_taskkill_failure_with_gone_process_still_threes(self):
         rows = [{"id": 7, "name": "z", "ws": 4 * MB}]
-        result = memguard.monitor(rows, MB, kill=True, killer=lambda pid: False, waiter=lambda pid, secs: True)
+        result = memguard.monitor(
+            rows, MB, kill=True, killer=lambda pid: False, waiter=lambda pid, secs: True
+        )
         self.assertEqual(result["code"], 3)
-        self.assertTrue(any("killed pid 7 z, verified gone" in line for line in result["lines"]))
+        self.assertTrue(
+            any("killed pid 7 z, verified gone" in line for line in result["lines"])
+        )
 
     def test_wrap_split_honors_quotes(self):
         self.assertEqual(memguard.split_wrap_command('a "b c" d'), ["a", "b c", "d"])
         self.assertEqual(memguard.split_wrap_command("  only  "), ["only"])
 
     def test_wrap_payload_argv_routes_batch_through_cmd(self):
-        self.assertEqual(memguard.wrap_payload_argv(["x.bat", "a"]), ["cmd.exe", "/c", "x.bat", "a"])
-        self.assertEqual(memguard.wrap_payload_argv(["X.CMD", "a"]), ["cmd.exe", "/c", "X.CMD", "a"])
+        self.assertEqual(
+            memguard.wrap_payload_argv(["x.bat", "a"]), ["cmd.exe", "/c", "x.bat", "a"]
+        )
+        self.assertEqual(
+            memguard.wrap_payload_argv(["X.CMD", "a"]), ["cmd.exe", "/c", "X.CMD", "a"]
+        )
         self.assertEqual(memguard.wrap_payload_argv(["x.exe", "a"]), ["x.exe", "a"])
         self.assertEqual(memguard.wrap_payload_argv(["batch", "/c"]), ["batch", "/c"])
 
     def test_cap_resolution_prefers_positive_override(self):
         self.assertEqual(memguard.resolve_cap(5, 9), 5)
         self.assertEqual(memguard.resolve_cap(0, 9), 9)
-        self.assertEqual(memguard.resolve_cap(-1, 9), "-CapBytes must be a positive byte count")
+        self.assertEqual(
+            memguard.resolve_cap(-1, 9), "-CapBytes must be a positive byte count"
+        )
 
     def test_memguard_value_exits_two_on_null_section_and_non_dict_doc(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -174,16 +200,39 @@ class DistLogicTests(unittest.TestCase):
             }
             plan = dist.staging_plan(repo, repo / "artifacts" / "dist", release)
             destinations = [str(dst).replace("\\", "/") for _, dst in plan]
-            self.assertTrue(any(d.endswith("/blind-trainer/blind-trainer.exe") for d in destinations))
-            self.assertTrue(any(d.endswith("/blind-trainer/config/config.json") for d in destinations))
-            self.assertTrue(any(d.endswith("/blind-trainer/assets/fonts/NotoSans-Regular.ttf") for d in destinations))
+            self.assertTrue(
+                any(
+                    d.endswith("/blind-trainer/blind-trainer.exe") for d in destinations
+                )
+            )
+            self.assertTrue(
+                any(
+                    d.endswith("/blind-trainer/config/config.json")
+                    for d in destinations
+                )
+            )
+            self.assertTrue(
+                any(
+                    d.endswith("/blind-trainer/assets/fonts/NotoSans-Regular.ttf")
+                    for d in destinations
+                )
+            )
             zip_path = dist.zip_path(repo / "artifacts" / "dist", "1.2.3")
-            self.assertTrue(str(zip_path).replace("\\", "/").endswith("blind-trainer-1.2.3-windows-x64.zip"))
+            self.assertTrue(
+                str(zip_path)
+                .replace("\\", "/")
+                .endswith("blind-trainer-1.2.3-windows-x64.zip")
+            )
 
     def test_staging_plan_fails_when_exe_missing(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
-            release = {"staging_dir": "s", "exe": "e.exe", "config_file": "config/config.json", "fonts_dir": "fonts"}
+            release = {
+                "staging_dir": "s",
+                "exe": "e.exe",
+                "config_file": "config/config.json",
+                "fonts_dir": "fonts",
+            }
             with self.assertRaises(FileNotFoundError):
                 dist.staging_plan(repo, repo / "out", release)
 
@@ -193,7 +242,12 @@ class DistLogicTests(unittest.TestCase):
             exe = repo / "build" / "bin" / "e.exe"
             exe.parent.mkdir(parents=True)
             exe.write_text("x")
-            release = {"staging_dir": "s", "exe": "e.exe", "config_file": "config/config.json", "fonts_dir": "fonts"}
+            release = {
+                "staging_dir": "s",
+                "exe": "e.exe",
+                "config_file": "config/config.json",
+                "fonts_dir": "fonts",
+            }
             with self.assertRaises(FileNotFoundError):
                 dist.staging_plan(repo, repo / "out", release)
 
@@ -206,7 +260,12 @@ class DistLogicTests(unittest.TestCase):
             config = repo / "config" / "config.json"
             config.parent.mkdir()
             config.write_text("{}")
-            release = {"staging_dir": "s", "exe": "e.exe", "config_file": "config/config.json", "fonts_dir": "fonts"}
+            release = {
+                "staging_dir": "s",
+                "exe": "e.exe",
+                "config_file": "config/config.json",
+                "fonts_dir": "fonts",
+            }
             with self.assertRaises(FileNotFoundError):
                 dist.staging_plan(repo, repo / "out", release)
             fonts = repo / "fonts"
@@ -219,15 +278,41 @@ COV_EXPORT = {
     "data": [
         {
             "files": [
-                {"filename": "src/core/alg.c", "summary": {"regions": {"count": 10, "covered": 5, "percent": 50.0}}},
-                {"filename": "src/core/cube.c", "summary": {"regions": {"count": 10, "covered": 9, "percent": 90.0}}},
-                {"filename": "tools/policy/lib.c", "summary": {"regions": {"count": 4, "covered": 2, "percent": 50.0}}},
-                {"filename": "tests/fuzz/notation.c", "summary": {"regions": {"count": 2, "covered": 1, "percent": 50.0}}},
-                {"filename": "vendor/x.c", "summary": {"regions": {"count": 8, "covered": 0, "percent": 0.0}}},
-                {"filename": "README.md", "summary": {"regions": {"count": 0, "covered": 0, "percent": 0.0}}},
+                {
+                    "filename": "src/core/alg.c",
+                    "summary": {
+                        "regions": {"count": 10, "covered": 5, "percent": 50.0}
+                    },
+                },
+                {
+                    "filename": "src/core/cube.c",
+                    "summary": {
+                        "regions": {"count": 10, "covered": 9, "percent": 90.0}
+                    },
+                },
+                {
+                    "filename": "tools/policy/lib.c",
+                    "summary": {"regions": {"count": 4, "covered": 2, "percent": 50.0}},
+                },
+                {
+                    "filename": "tests/fuzz/notation.c",
+                    "summary": {"regions": {"count": 2, "covered": 1, "percent": 50.0}},
+                },
+                {
+                    "filename": "vendor/x.c",
+                    "summary": {"regions": {"count": 8, "covered": 0, "percent": 0.0}},
+                },
+                {
+                    "filename": "README.md",
+                    "summary": {"regions": {"count": 0, "covered": 0, "percent": 0.0}},
+                },
             ],
             "functions": [
-                {"name": "dead_long_function_name_" + "x" * 80, "count": 0, "filenames": ["src/core/alg.c"]},
+                {
+                    "name": "dead_long_function_name_" + "x" * 80,
+                    "count": 0,
+                    "filenames": ["src/core/alg.c"],
+                },
                 {"name": "live_one", "count": 3, "filenames": ["src/core/alg.c"]},
                 {"name": "dead_two", "count": 0, "filenames": ["tools/policy/lib.c"]},
             ],
@@ -262,9 +347,15 @@ class CoverageBadgeLogicTests(unittest.TestCase):
         self.assertIn('fill="#cf222e"', svg)
         self.assertIn('width="122"', svg)
         self.assertIn("coverage: 50.0%", svg)
-        self.assertIn('fill="#bf8700"', coverage_badge.badge_svg("coverage", "60.0%", 60.0))
-        self.assertIn('fill="#2ea043"', coverage_badge.badge_svg("coverage", "80.0%", 80.0))
-        self.assertIn('fill="#cf222e"', coverage_badge.badge_svg("coverage", "10.0%", 10.0))
+        self.assertIn(
+            'fill="#bf8700"', coverage_badge.badge_svg("coverage", "60.0%", 60.0)
+        )
+        self.assertIn(
+            'fill="#2ea043"', coverage_badge.badge_svg("coverage", "80.0%", 80.0)
+        )
+        self.assertIn(
+            'fill="#cf222e"', coverage_badge.badge_svg("coverage", "10.0%", 10.0)
+        )
 
     def test_badge_svg_ends_without_trailing_newline(self):
         svg = coverage_badge.badge_svg("coverage", "50.0%", 50.0)
@@ -273,15 +364,22 @@ class CoverageBadgeLogicTests(unittest.TestCase):
 
     def test_badge_bytes_match_committed_svgs(self):
         badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
-        for name, label in (("coverage.svg", "coverage"), ("alg-coverage.svg", "alg coverage")):
+        for name, label in (
+            ("coverage.svg", "coverage"),
+            ("alg-coverage.svg", "alg coverage"),
+        ):
             raw = (badge_dir / name).read_bytes()
             match = re.search(rb'aria-label="([^"]+): ([^"]+)"', raw)
             value = match.group(2).decode("utf-8")
             percent = float(value.rstrip("%"))
-            self.assertEqual(coverage_badge.badge_svg(label, value, percent).encode("utf-8"), raw)
+            self.assertEqual(
+                coverage_badge.badge_svg(label, value, percent).encode("utf-8"), raw
+            )
 
     def test_report_lines_carry_table_and_totals(self):
-        lines = coverage_badge.report_lines(COV_EXPORT["data"][0], "2026-10-27T00:00:00Z")
+        lines = coverage_badge.report_lines(
+            COV_EXPORT["data"][0], "2026-10-27T00:00:00Z"
+        )
         joined = "\n".join(lines)
         self.assertIn("regions: 17 of 34 (50.0%)", joined)
         self.assertIn("| policy | 2/4 | 50.0% |", joined)
@@ -292,9 +390,13 @@ class CoverageBadgeLogicTests(unittest.TestCase):
 
 class AlgCoverageBadgeLogicTests(unittest.TestCase):
     def test_compute_clamps_percent(self):
-        manifest = {"cases": {"entries": 10, "edge": {"covered": 4}, "corner": {"covered": 3}}}
+        manifest = {
+            "cases": {"entries": 10, "edge": {"covered": 4}, "corner": {"covered": 3}}
+        }
         self.assertEqual(alg_coverage_badge.compute(manifest), (70.0, 7, 10))
-        hot = {"cases": {"entries": 1, "edge": {"covered": 2}, "corner": {"covered": 2}}}
+        hot = {
+            "cases": {"entries": 1, "edge": {"covered": 2}, "corner": {"covered": 2}}
+        }
         self.assertEqual(alg_coverage_badge.compute(hot), (100.0, 4, 1))
 
     def test_missing_manifest_error_names_gen_data(self):
@@ -317,6 +419,46 @@ class FetchDocsLogicTests(unittest.TestCase):
         self.assertTrue(any("c23" in p for p in paths))
         self.assertTrue(any("job-objects" in p for p in paths))
 
+    def test_wordlist_entry_is_body_pinned(self):
+        entry = next(
+            e
+            for e in fetch_docs.ENTRIES
+            if e["path"] == "vietnamese/syllables-7184-abc.txt"
+        )
+        self.assertEqual(len(entry["body_sha256"]), 64)
+        self.assertTrue(entry["url"].startswith("https://raw.githubusercontent.com/"))
+
+    def test_only_selection_scopes_entries(self):
+        entries = [
+            {"path": "raylib/cheatsheet.html"},
+            {"path": "vietnamese/syllables-7184-abc.txt"},
+        ]
+        self.assertEqual(fetch_docs.select_entries(entries, None), entries)
+        picked = fetch_docs.select_entries(entries, "vietnamese/syllables-7184-abc.txt")
+        self.assertEqual(
+            [e["path"] for e in picked], ["vietnamese/syllables-7184-abc.txt"]
+        )
+        picked = fetch_docs.select_entries(
+            entries, "raylib/cheatsheet.html,vietnamese/syllables-7184-abc.txt"
+        )
+        self.assertEqual(len(picked), 2)
+        with self.assertRaises(ValueError):
+            fetch_docs.select_entries(entries, "vietnamese/absent.txt")
+
+    def test_body_pin_verification(self):
+        import hashlib
+
+        digest = hashlib.sha256(b"abc").hexdigest()
+        entry = {"path": "x.txt", "body_sha256": digest}
+        ok, error = fetch_docs.verify_body(entry, b"abc")
+        self.assertTrue(ok)
+        self.assertEqual(error, "")
+        ok, error = fetch_docs.verify_body(entry, b"wrong")
+        self.assertFalse(ok)
+        self.assertIn(digest, error)
+        ok, error = fetch_docs.verify_body({"path": "y.txt"}, b"anything")
+        self.assertTrue(ok)
+
     def test_header_lines_carry_source_retrieved_license(self):
         entry = fetch_docs.ENTRIES[0]
         header = fetch_docs.header_text(entry, "2026-10-27")
@@ -325,7 +467,9 @@ class FetchDocsLogicTests(unittest.TestCase):
         self.assertIn("# license: ", header)
 
     def test_manifest_line_is_sha_bytes_path_url(self):
-        line = fetch_docs.manifest_line("ab" * 32, 12, "raylib/x.html", "https://example")
+        line = fetch_docs.manifest_line(
+            "ab" * 32, 12, "raylib/x.html", "https://example"
+        )
         self.assertEqual(line, "ab" * 32 + "  12  raylib/x.html  https://example")
 
     def test_preamble_states_raylib_line_and_format(self):
@@ -340,13 +484,16 @@ class FetchFontsLogicTests(unittest.TestCase):
     def test_pins_carry_the_committed_shas(self):
         names = {f["name"]: f["sha256"] for f in fetch_fonts.FONTS}
         self.assertEqual(
-            names["NotoSans-Regular.ttf"], "478c558ea716033cd60c03438f628dfa75694dcf6b5f6d505a2f05fd2b4f3823"
+            names["NotoSans-Regular.ttf"],
+            "478c558ea716033cd60c03438f628dfa75694dcf6b5f6d505a2f05fd2b4f3823",
         )
         self.assertEqual(
-            names["NotoSans-Bold.ttf"], "1df075a380fc7cb898acf64c1f7b3b4dd780de3caa860178bf929de35817a913"
+            names["NotoSans-Bold.ttf"],
+            "1df075a380fc7cb898acf64c1f7b3b4dd780de3caa860178bf929de35817a913",
         )
         self.assertEqual(
-            names["OFL.txt"], "f2095b08bed08b23a6fe26112fcd679a2bee3f002eef077eb05d215ed1051bd8"
+            names["OFL.txt"],
+            "f2095b08bed08b23a6fe26112fcd679a2bee3f002eef077eb05d215ed1051bd8",
         )
 
     def test_needs_download_rules(self):
