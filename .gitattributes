@@ -5,4 +5,5 @@
 ref_ground/** -text
 tests/fuzz/corpus/** -text
 src/data/migrations_embedded.* -text
+db/migrations/** -text
 docs/badges/** -text
