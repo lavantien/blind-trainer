@@ -6,7 +6,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 12,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -14,7 +15,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 12,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -22,7 +24,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 10,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -30,7 +33,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -38,7 +42,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -46,7 +51,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -54,7 +60,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 13,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -62,7 +69,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -70,7 +78,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -78,7 +87,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -86,7 +96,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 6,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -94,7 +105,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 8,
-   "origin": "quarter+tableslot+bound"
+   "origin": "quarter+tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -102,7 +114,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 14,
-   "origin": "zero+quarter+tableslot+bound"
+   "origin": "zero+quarter+tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -110,7 +123,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -118,7 +132,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -126,7 +141,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 5,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -134,7 +150,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 2,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -142,7 +159,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 3,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -150,7 +168,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 2,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -158,7 +177,8 @@
    "op": "NumericTweak",
    "to": "8",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -166,7 +186,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -174,7 +195,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -182,7 +204,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -190,7 +213,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "equiv_write"
+   "origin": "equiv_write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -198,7 +222,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -206,7 +231,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -214,15 +240,17 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "bt_fto_new",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 6,
-   "origin": "leq"
+   "count": 7,
+   "origin": "leq",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/fto.c",
@@ -230,7 +258,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -238,23 +267,26 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "quarter+tableslot+bound"
+   "origin": "quarter+tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "bt_fto_new",
    "op": "NumericTweak",
    "to": "1",
-   "count": 6,
-   "origin": "zero+tableslot+bound"
+   "count": 8,
+   "origin": "zero+tableslot+bound",
+   "hangs": 2
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "bt_fto_new",
    "op": "NumericTweak",
    "to": "2",
-   "count": 6,
-   "origin": "quarter"
+   "count": 9,
+   "origin": "quarter",
+   "hangs": 3
   },
   {
    "file": "src/puzzles/fto.c",
@@ -262,15 +294,17 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "bt_fto_new",
    "op": "NumericTweak",
    "to": "4",
-   "count": 14,
-   "origin": "quarter"
+   "count": 15,
+   "origin": "quarter",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/fto.c",
@@ -278,7 +312,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 3,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -286,7 +321,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 7,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -294,7 +330,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -302,7 +339,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -310,7 +348,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -318,7 +357,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -326,7 +366,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -334,7 +375,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -342,15 +384,17 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "cross3",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 3,
-   "origin": "zero"
+   "count": 5,
+   "origin": "zero",
+   "hangs": 2
   },
   {
    "file": "src/puzzles/fto.c",
@@ -358,7 +402,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 7,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -366,7 +411,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 7,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -374,15 +420,17 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "cross3",
    "op": "NumericTweak",
    "to": "3",
-   "count": 2,
-   "origin": "quarter"
+   "count": 4,
+   "origin": "quarter",
+   "hangs": 2
   },
   {
    "file": "src/puzzles/fto.c",
@@ -390,15 +438,17 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "dot3",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 1,
-   "origin": "zero"
+   "count": 2,
+   "origin": "zero",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/fto.c",
@@ -406,7 +456,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -414,15 +465,17 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "dot3",
    "op": "NumericTweak",
    "to": "3",
-   "count": 1,
-   "origin": "quarter"
+   "count": 2,
+   "origin": "quarter",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/fto.c",
@@ -430,7 +483,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -438,7 +492,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -446,7 +501,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -454,7 +510,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -462,7 +519,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -470,7 +528,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -478,15 +537,17 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
    "function": "edge_local",
    "op": "StatementDelete",
    "to": "",
-   "count": 2,
-   "origin": "crash"
+   "count": 4,
+   "origin": "crash",
+   "hangs": 2
   },
   {
    "file": "src/puzzles/fto.c",
@@ -494,7 +555,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -502,7 +564,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -510,7 +573,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -518,7 +582,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -526,7 +591,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -534,7 +600,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -542,7 +609,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -550,7 +618,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/fto.c",
@@ -558,7 +627,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -566,7 +636,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -574,7 +645,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -582,7 +654,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -590,23 +663,26 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
    "function": "bt_pz_alg_default_parse",
    "op": "ComparisonSwap",
    "to": ">=",
-   "count": 1,
-   "origin": "bound_admit"
+   "count": 2,
+   "origin": "bound_admit",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/geometry.c",
    "function": "bt_pz_alg_default_parse",
    "op": "StatementDelete",
    "to": "",
-   "count": 4,
-   "origin": "crash"
+   "count": 6,
+   "origin": "crash",
+   "hangs": 2
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -614,7 +690,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -622,7 +699,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -630,7 +708,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -638,7 +717,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -646,7 +726,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -654,7 +735,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -662,7 +744,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -670,7 +753,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/geometry.c",
@@ -678,7 +762,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -686,7 +771,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -694,7 +780,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -702,7 +789,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -710,7 +798,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -718,7 +807,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -726,7 +816,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -734,7 +825,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -742,7 +834,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -750,7 +843,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -758,7 +852,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -766,7 +861,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -774,7 +870,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -782,7 +879,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "equiv_write"
+   "origin": "equiv_write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -790,7 +888,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -798,7 +897,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -806,7 +906,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -814,7 +915,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -822,7 +924,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -830,7 +933,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -838,7 +942,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -846,7 +951,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -854,7 +960,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -862,7 +969,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/mega.c",
@@ -870,7 +978,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -878,7 +987,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 8,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -886,7 +996,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 9,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -894,7 +1005,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -902,7 +1014,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 8,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -910,7 +1023,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -918,7 +1032,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 13,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -926,7 +1041,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -934,7 +1050,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 6,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -942,7 +1059,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -950,7 +1068,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -958,7 +1077,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -966,7 +1086,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -974,7 +1095,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -982,7 +1104,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -990,7 +1113,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -998,7 +1122,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1006,7 +1131,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1014,7 +1140,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1022,7 +1149,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1030,7 +1158,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero+tableslot+bound"
+   "origin": "zero+tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1038,15 +1167,17 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
    "function": "nxn_apply_move",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 2,
-   "origin": "zero"
+   "count": 3,
+   "origin": "zero",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1054,7 +1185,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1062,7 +1194,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1070,7 +1203,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1078,15 +1212,17 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 3,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
    "function": "nxn_face_of_normal",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 3,
-   "origin": "zero"
+   "count": 4,
+   "origin": "zero",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1094,7 +1230,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1102,7 +1239,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1110,7 +1248,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1118,7 +1257,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1126,7 +1266,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1134,7 +1275,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1142,7 +1284,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1150,7 +1293,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 6,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1158,7 +1302,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1166,7 +1311,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 8,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1174,7 +1320,8 @@
    "op": "NumericTweak",
    "to": "8",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1182,7 +1329,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1190,7 +1338,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1198,7 +1347,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1206,7 +1356,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1214,7 +1365,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1222,7 +1374,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/nxn.c",
@@ -1230,7 +1383,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1238,7 +1392,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1246,7 +1401,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1254,7 +1410,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1262,7 +1419,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1270,7 +1428,8 @@
    "op": "NumericTweak",
    "to": "47",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1278,7 +1437,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1286,7 +1446,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 2,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1294,7 +1455,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1302,23 +1464,26 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
    "function": "bt_pyra_facelets",
    "op": "NumericTweak",
    "to": "4",
-   "count": 1,
-   "origin": "quarter"
+   "count": 2,
+   "origin": "quarter",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/pyra.c",
    "function": "bt_pyra_facelets",
    "op": "NumericTweak",
    "to": "5",
-   "count": 1,
-   "origin": "tableslot"
+   "count": 2,
+   "origin": "tableslot",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1326,7 +1491,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1334,7 +1500,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1342,7 +1509,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1350,7 +1518,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "equiv_write"
+   "origin": "equiv_write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1358,7 +1527,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1366,7 +1536,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1374,7 +1545,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1382,7 +1554,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1390,7 +1563,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1398,7 +1572,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1406,7 +1581,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 6,
-   "origin": "error"
+   "origin": "error",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1414,7 +1590,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1422,7 +1599,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1430,7 +1608,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1438,7 +1617,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1446,7 +1626,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1454,7 +1635,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/pyra.c",
@@ -1462,7 +1644,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1470,7 +1653,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 10,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1478,7 +1662,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 10,
-   "origin": "quarter+tableslot"
+   "origin": "quarter+tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1486,7 +1671,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 9,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1494,7 +1680,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1502,7 +1689,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1510,7 +1698,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1518,7 +1707,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 13,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1526,7 +1716,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 2,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1534,7 +1725,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 3,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1542,7 +1734,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1550,7 +1743,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1558,7 +1752,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1566,7 +1761,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1574,7 +1770,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1582,7 +1779,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1590,7 +1788,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1598,7 +1797,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1606,7 +1806,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "tableslot+bound"
+   "origin": "tableslot+bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1614,7 +1815,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1622,7 +1824,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "tableslot"
+   "origin": "tableslot",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1630,7 +1833,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "equiv_write"
+   "origin": "equiv_write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1638,7 +1842,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1646,7 +1851,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1654,7 +1860,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1662,7 +1869,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1670,7 +1878,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1678,7 +1887,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1686,7 +1896,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1694,7 +1905,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1702,7 +1914,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1710,7 +1923,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1718,7 +1932,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1726,7 +1941,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1734,7 +1950,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1742,7 +1959,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1750,7 +1968,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1758,7 +1977,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1766,7 +1986,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1774,7 +1995,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 7,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1782,7 +2004,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 7,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1790,7 +2013,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1798,7 +2022,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1806,7 +2031,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1814,7 +2040,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1822,7 +2049,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1830,7 +2058,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1838,7 +2067,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/skewb.c",
@@ -1846,7 +2076,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1854,7 +2085,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1862,7 +2094,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1870,7 +2103,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1878,7 +2112,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1886,7 +2121,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1894,7 +2130,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1902,7 +2139,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1910,7 +2148,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1918,7 +2157,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1926,7 +2166,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1934,7 +2175,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1942,7 +2184,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1950,7 +2193,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1958,7 +2202,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 1,
-   "origin": "traceflip"
+   "origin": "traceflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1966,7 +2211,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1974,7 +2220,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1982,7 +2229,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1990,7 +2238,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -1998,7 +2247,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2006,7 +2256,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2014,7 +2265,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2022,15 +2274,17 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
    "function": "sq1_parse_bare",
    "op": "StatementDelete",
    "to": "",
-   "count": 2,
-   "origin": "error"
+   "count": 3,
+   "origin": "error",
+   "hangs": 1
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2038,7 +2292,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2046,7 +2301,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2054,7 +2310,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2062,7 +2319,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2070,7 +2328,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2078,7 +2337,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2086,7 +2346,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2094,7 +2355,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2102,7 +2364,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2110,7 +2373,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2118,7 +2382,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "error"
+   "origin": "error",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2126,7 +2391,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2134,7 +2400,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2142,7 +2409,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2150,7 +2418,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2158,7 +2427,8 @@
    "op": "NumericTweak",
    "to": "126",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
@@ -2166,15 +2436,17 @@
    "op": "NumericTweak",
    "to": "128",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/sq1.c",
    "function": "sq1_scan",
    "op": "StatementDelete",
    "to": "",
-   "count": 1,
-   "origin": "error"
+   "count": 5,
+   "origin": "error",
+   "hangs": 4
   },
   {
    "file": "src/puzzles/tier1.c",
@@ -2182,7 +2454,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "error"
+   "origin": "error",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/tier1.c",
@@ -2190,7 +2463,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/tier1.c",
@@ -2198,7 +2472,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/tier1.c",
@@ -2206,7 +2481,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/puzzles/tier1.c",
@@ -2214,7 +2490,143 @@
    "op": "StatementDelete",
    "to": "",
    "count": 8,
-   "origin": "crash"
+   "origin": "override",
+   "hangs": 0
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "format_move",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "rotate_point",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "vertex",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/fto.c",
+   "function": "vertex_id",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_alg_default_parse",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/geometry.c",
+   "function": "bt_pz_error_set",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/nxn.c",
+   "function": "nxn_rem_euclid",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 3,
+   "origin": "hang",
+   "hangs": 3
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 4,
+   "origin": "hang",
+   "hangs": 4
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "NumericTweak",
+   "to": "3",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/puzzles/pyra.c",
+   "function": "bt_pyra_facelets",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 5,
+   "origin": "hang",
+   "hangs": 5
+  },
+  {
+   "file": "src/puzzles/skewb.c",
+   "function": "format_move",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/puzzles/sq1.c",
+   "function": "sq1_rotate",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   }
  ],
  "test_disposed": [],

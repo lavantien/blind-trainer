@@ -1,3 +1,2 @@
-merged 5 inputs, 24092 mutants, wrote proof_all_areas.json
-survivors gated: 6128, all covered
-gate exit code 0 against config/allowlist.tsv
+real gate over artifacts/mutants/outcomes.json: survivors gated: 6225, all covered
+mutants-gate exit code 0

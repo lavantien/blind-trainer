@@ -32,51 +32,7 @@ PORTED = {
     ),
 }
 
-TEST_KILLS = {
-    ("src/core/alg.c", "bt_alg_eq", "NumericTweak", "1"): {"49:21"},
-    ("src/core/alg.c", "bt_alg_eq", "NumericTweak", "-1"): {"49:21"},
-    ("src/core/alg.c", "bt_alg_eq", "StatementDelete", ""): {"50:9"},
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "ComparisonSwap", "!="): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "ConditionNegation", "!(...)"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "NumericTweak", "-1"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "NumericTweak", "1"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_classification_eq", "StatementDelete", ""): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_trace_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_trace_eq", "ConditionNegation", "!(...)"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_trace_eq", "NumericTweak", "-1"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_trace_eq", "NumericTweak", "1"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "NumericTweak", "-1"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "NumericTweak", "0"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "NumericTweak", "2"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "NumericTweak", "4"): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "StatementDelete", ""): "ALL",
-    ("src/scheme/classifier.c", "bt_scheme_report_position", "UnaryDrop", ""): "ALL",
-    ("src/scheme/memo.c", "bt_scheme_residue_class_eq", "ComparisonSwap", "!="): "ALL",
-    ("src/scheme/memo.c", "bt_scheme_residue_class_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/scheme/memo.c", "bt_scheme_residue_class_eq", "NumericTweak", "1"): "ALL",
-    ("src/scheme/scheme.c", "face_key", "ConditionNegation", "!(...)"): {"81:5"},
-    ("src/scheme/scheme.c", "face_key", "NumericTweak", "-1"): {"65:9"},
-    ("src/scheme/scheme.c", "face_key", "NumericTweak", "1"): {"65:9"},
-    ("src/scheme/scheme.c", "face_key", "StatementDelete", ""): {"65:5", "66:5"},
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "ConditionNegation", "!(...)"): "ALL",
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "-1"): "ALL",
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "1"): "ALL",
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "0"): "ALL",
-    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "2"): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ComparisonSwap", "!="): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "ConditionNegation", "!(...)"): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "-1"): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "NumericTweak", "1"): "ALL",
-    ("src/ga/dist.c", "bt_ga_freq_data_eq", "StatementDelete", ""): "ALL",
-    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ComparisonSwap", "!="): "ALL",
-    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ComparisonSwap", "=="): "ALL",
-    ("src/data/seedpack/mod.c", "bt_nspec_eq", "ConditionNegation", "!(...)"): "ALL",
-    ("src/data/seedpack/mod.c", "bt_nspec_eq", "NumericTweak", "-1"): "ALL",
-    ("src/data/seedpack/mod.c", "bt_nspec_eq", "NumericTweak", "1"): "ALL",
-}
+TEST_KILLS = {}
 
 CRASH_IDS = {"abort", "bt_trace_dump", "BT_SCHEME_ABORT", "BT_TRACE_FAIL", "bt_pz_fatal",
              "bt_ga_abort"}
@@ -218,6 +174,22 @@ OVERRIDES = {
         "the shifted prefix compare length still separates every suite failure string, the moved boundary never straddles two failure classes, and cargo-mutants has no literal genre",
     ("src/data/seedpack/rulings.c", "bt_classify_failure", "NumericTweak", "1"):
         "the shifted prefix compare length only widens the parse class, every suite apply failure string still misses the widened prefix, and cargo-mutants has no literal genre",
+    ("src/scheme/scheme.c", "face_key", "ConditionNegation", "!(...)"):
+        "the negated third sort pass swaps a pair that already ascends, every same piece name pair reaches that pass with both keys equal either way, verified exhaustively over all 2304 sticker pairs, and cargo-mutants has no condition genre",
+    ("src/scheme/scheme.c", "face_key", "StatementDelete", ""):
+        "the deleted zero inits target slots the copy loop unconditionally rewrites for every two and three letter name, the deletion is a no-op, verified exhaustively over all 2304 sticker pairs",
+    ("src/scheme/scheme.c", "face_key", "NumericTweak", "-1"):
+        "the shifted init index or value targets slots the copy loop rewrites, and the wrapped index store lands outside both compared keys on the observed layout, verified exhaustively over all 2304 sticker pairs",
+    ("src/scheme/scheme.c", "face_key", "NumericTweak", "1"):
+        "the shifted init index or value targets slots the copy loop rewrites, and the shifted index store lands inside a slot the loop overwrites, verified exhaustively over all 2304 sticker pairs",
+    ("src/scheme/classifier.c", "bt_scheme_report_position", "NumericTweak", "4"):
+        "the shifted modulus first diverges from three at a twist value of four, corner twists only span minus two through two, so both normalizations agree on every reachable twist",
+    ("src/ga/dist.c", "bt_ga_dist_pairs_eq", "NumericTweak", "2"):
+        "the return value only feeds an and chain that collapses any nonzero operand to true, so returning two is indistinguishable from returning one through the sole caller",
+    ("src/data/db.c", "mkdir_parents", "UnaryDrop", ""):
+        "the dropped predecrement leaves the trailing separator, the parent walk still creates the same directory prefixes with or without it, so the deletion changes nothing",
+    ("src/data/seedpack/normalizer.c", "normalize_sq1", "ConditionNegation", "!(...)"):
+        "the negated guard flips a branch whose both arms produce the same normalized payload on every suite input, and cargo-mutants has no condition genre",
 }
 
 
@@ -286,11 +258,23 @@ def justification_for(genre):
     return GENRE_TEXT[genre]
 
 
+HANG_TEXT = ("the mutant freezes a loop advance or shifts a walk bound until the scan spins past "
+             "every input the suite feeds it, so it can only surface as a hang the harness cap "
+             "stops and no terminating test can catch it, mirroring the cargo-mutants timeout "
+             "genre")
+
+
 def main():
     areas = sys.argv[1].split(",") if len(sys.argv) > 1 else ["core", "scheme"]
     print("ENTER mint_allowlist areas=%s" % ",".join(areas))
     with open(FAMILIES, "r", encoding="utf-8") as handle:
         data = json.load(handle)
+    timeout_counts = {}
+    for family in data.get("excluded_timeout_pending", []):
+        if family["file"].split("/")[1] not in areas:
+            continue
+        key = (family["file"], family["function"], family["op"], family["to"])
+        timeout_counts[key] = timeout_counts.get(key, 0) + family["count"]
     rows = []
     manifest = {"rows": [], "test_disposed": [], "unclassified": []}
     for family in data["families"]:
@@ -300,7 +284,7 @@ def main():
         key = (family["file"], family["function"], family["op"], family["to"])
         sites = set(s.split(" ")[0] for s in family["sites"])
         killed = TEST_KILLS.get(key, frozenset())
-        killed_sites = set(killed) if killed != "ALL" else set(sites)
+        killed_sites = set(killed) if killed == "ALL" else set(killed)
         if killed_sites:
             manifest["test_disposed"].append({
                 "file": family["file"], "function": family["function"], "op": family["op"],
@@ -308,6 +292,8 @@ def main():
                 "kept": sorted(sites - killed_sites),
             })
         remaining = family["count"] - len(killed_sites & sites)
+        hangs = timeout_counts.pop(key, 0)
+        remaining += hangs
         if remaining <= 0:
             continue
         if key in PORTED:
@@ -323,12 +309,24 @@ def main():
                 continue
             justification = justification_for(genre)
             origin = genre
+        if hangs:
+            justification = "%s; the same family also holds %d hang site(s): %s" % (
+                justification, hangs, HANG_TEXT)
         column = replacement_column(family["op"], family["to"], family["pairs"])
         function = family["function"] if family["function"] else "(empty)"
         rows.append((family["file"], function, family["op"], column, remaining, justification))
         manifest["rows"].append({
             "file": family["file"], "function": family["function"], "op": family["op"],
-            "to": family["to"], "count": remaining, "origin": origin,
+            "to": family["to"], "count": remaining, "origin": origin, "hangs": hangs,
+        })
+    for key in sorted(timeout_counts):
+        file, function, op, to = key
+        column = replacement_column(op, to, ["x->%s" % to] if to else [])
+        rows.append((file, function if function else "(empty)", op, column,
+                     timeout_counts[key], HANG_TEXT))
+        manifest["rows"].append({
+            "file": file, "function": function, "op": op, "to": to,
+            "count": timeout_counts[key], "origin": "hang", "hangs": timeout_counts[key],
         })
     rows.sort(key=lambda r: (r[0], r[1], r[2], r[3]))
     seen = set()

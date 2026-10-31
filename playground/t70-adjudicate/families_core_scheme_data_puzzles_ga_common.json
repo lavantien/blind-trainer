@@ -1692,88 +1692,12 @@
    "function": "append_utf8",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "<-><="
    ],
    "sites": [
-    "279:19 <",
-    "281:26 <",
-    "284:26 <"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "0",
-   "count": 2,
-   "pairs": [
-    "0x10000->0",
-    "0x800->0"
-   ],
-   "sites": [
-    "281:28 0x800",
-    "284:28 0x10000"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "0U",
-   "count": 13,
-   "pairs": [
-    "0x3FU->0U",
-    "0x80U->0U",
-    "0xC0U->0U",
-    "0xE0U->0U",
-    "12U->0U",
-    "18U->0U",
-    "6U->0U"
-   ],
-   "sites": [
-    "282:33 0xC0U",
-    "282:55 6U",
-    "283:33 0x80U",
-    "283:54 0x3FU",
-    "285:33 0xE0U",
-    "285:55 12U",
-    "286:33 0x80U",
-    "286:56 6U",
-    "286:62 0x3FU",
-    "287:33 0x80U",
-    "287:54 0x3FU",
-    "289:55 18U",
-    "292:54 0x3FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 2,
-   "pairs": [
-    "0x10000->1",
-    "0x800->1"
-   ],
-   "sites": [
-    "281:28 0x800",
-    "284:28 0x10000"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "11U",
-   "count": 1,
-   "pairs": [
-    "12U->11U"
-   ],
-   "sites": [
-    "285:55 12U"
+    "279:19 <"
    ]
   },
   {
@@ -1793,21 +1717,6 @@
    "file": "src/common/json.c",
    "function": "append_utf8",
    "op": "NumericTweak",
-   "to": "127U",
-   "count": 3,
-   "pairs": [
-    "0x80U->127U"
-   ],
-   "sites": [
-    "283:33 0x80U",
-    "286:33 0x80U",
-    "287:33 0x80U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
    "to": "129",
    "count": 1,
    "pairs": [
@@ -1821,61 +1730,6 @@
    "file": "src/common/json.c",
    "function": "append_utf8",
    "op": "NumericTweak",
-   "to": "129U",
-   "count": 4,
-   "pairs": [
-    "0x80U->129U"
-   ],
-   "sites": [
-    "283:33 0x80U",
-    "286:33 0x80U",
-    "287:33 0x80U",
-    "290:33 0x80U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "13U",
-   "count": 1,
-   "pairs": [
-    "12U->13U"
-   ],
-   "sites": [
-    "285:55 12U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "17U",
-   "count": 1,
-   "pairs": [
-    "18U->17U"
-   ],
-   "sites": [
-    "289:55 18U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "191U",
-   "count": 1,
-   "pairs": [
-    "0xC0U->191U"
-   ],
-   "sites": [
-    "282:33 0xC0U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
    "to": "193U",
    "count": 1,
    "pairs": [
@@ -1883,102 +1737,6 @@
    ],
    "sites": [
     "282:33 0xC0U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "19U",
-   "count": 1,
-   "pairs": [
-    "18U->19U"
-   ],
-   "sites": [
-    "289:55 18U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "1U",
-   "count": 13,
-   "pairs": [
-    "0x3FU->1U",
-    "0x80U->1U",
-    "0xC0U->1U",
-    "0xE0U->1U",
-    "12U->1U",
-    "18U->1U",
-    "6U->1U"
-   ],
-   "sites": [
-    "282:33 0xC0U",
-    "282:55 6U",
-    "283:33 0x80U",
-    "283:54 0x3FU",
-    "285:33 0xE0U",
-    "285:55 12U",
-    "286:33 0x80U",
-    "286:56 6U",
-    "286:62 0x3FU",
-    "287:33 0x80U",
-    "287:54 0x3FU",
-    "289:55 18U",
-    "292:54 0x3FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "2047",
-   "count": 1,
-   "pairs": [
-    "0x800->2047"
-   ],
-   "sites": [
-    "281:28 0x800"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "2049",
-   "count": 1,
-   "pairs": [
-    "0x800->2049"
-   ],
-   "sites": [
-    "281:28 0x800"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "223U",
-   "count": 1,
-   "pairs": [
-    "0xE0U->223U"
-   ],
-   "sites": [
-    "285:33 0xE0U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "225U",
-   "count": 1,
-   "pairs": [
-    "0xE0U->225U"
-   ],
-   "sites": [
-    "285:33 0xE0U"
    ]
   },
   {
@@ -2005,109 +1763,6 @@
    ],
    "sites": [
     "277:18 4"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "5U",
-   "count": 2,
-   "pairs": [
-    "6U->5U"
-   ],
-   "sites": [
-    "282:55 6U",
-    "286:56 6U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "62U",
-   "count": 5,
-   "pairs": [
-    "0x3FU->62U"
-   ],
-   "sites": [
-    "283:54 0x3FU",
-    "286:62 0x3FU",
-    "287:54 0x3FU",
-    "291:62 0x3FU",
-    "292:54 0x3FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "64U",
-   "count": 4,
-   "pairs": [
-    "0x3FU->64U"
-   ],
-   "sites": [
-    "283:54 0x3FU",
-    "286:62 0x3FU",
-    "287:54 0x3FU",
-    "292:54 0x3FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "65535",
-   "count": 1,
-   "pairs": [
-    "0x10000->65535"
-   ],
-   "sites": [
-    "284:28 0x10000"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "65537",
-   "count": 1,
-   "pairs": [
-    "0x10000->65537"
-   ],
-   "sites": [
-    "284:28 0x10000"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "7U",
-   "count": 1,
-   "pairs": [
-    "6U->7U"
-   ],
-   "sites": [
-    "286:56 6U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "UnaryDrop",
-   "to": "",
-   "count": 5,
-   "pairs": [
-    "++->"
-   ],
-   "sites": [
-    "282:20 ++",
-    "283:20 ++",
-    "285:20 ++",
-    "286:20 ++",
-    "287:20 ++"
    ]
   },
   {
@@ -2957,12 +2612,11 @@
    "function": "parse_escaped_codepoint",
    "op": "ComparisonSwap",
    "to": "<",
-   "count": 2,
+   "count": 1,
    "pairs": [
     "<=-><"
    ],
    "sites": [
-    "328:42 <=",
     "345:49 <="
    ]
   },
@@ -2971,39 +2625,12 @@
    "function": "parse_escaped_codepoint",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 2,
+   "count": 1,
    "pairs": [
     "<-><="
    ],
    "sites": [
-    "329:42 <",
-    "340:17 <"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "ComparisonSwap",
-   "to": ">",
-   "count": 1,
-   "pairs": [
-    ">=->>"
-   ],
-   "sites": [
-    "345:26 >="
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "ComparisonSwap",
-   "to": ">=",
-   "count": 1,
-   "pairs": [
-    ">->>="
-   ],
-   "sites": [
-    "340:33 >"
+    "329:42 <"
    ]
   },
   {
@@ -3025,19 +2652,15 @@
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
    "to": "0",
-   "count": 6,
+   "count": 3,
    "pairs": [
-    "0xDC00->0",
     "1->0",
     "2->0"
    ],
    "sites": [
     "326:17 1",
     "329:44 2",
-    "338:21 1",
-    "340:19 0xDC00",
-    "342:21 1",
-    "347:17 1"
+    "338:21 1"
    ]
   },
   {
@@ -3045,17 +2668,15 @@
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
    "to": "1",
-   "count": 4,
+   "count": 3,
    "pairs": [
     "0->1",
-    "0xDC00->1",
     "2->1"
    ],
    "sites": [
     "324:26 0",
     "329:44 2",
-    "336:24 0",
-    "340:19 0xDC00"
+    "336:24 0"
    ]
   },
   {
@@ -3105,19 +2726,6 @@
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
-   "to": "56318",
-   "count": 1,
-   "pairs": [
-    "0xDBFF->56318"
-   ],
-   "sites": [
-    "328:45 0xDBFF"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "NumericTweak",
    "to": "56319",
    "count": 2,
    "pairs": [
@@ -3145,27 +2753,12 @@
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
-   "to": "56321",
-   "count": 2,
-   "pairs": [
-    "0xDC00->56321"
-   ],
-   "sites": [
-    "340:19 0xDC00",
-    "345:29 0xDC00"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "NumericTweak",
    "to": "57342",
-   "count": 2,
+   "count": 1,
    "pairs": [
     "0xDFFF->57342"
    ],
    "sites": [
-    "340:35 0xDFFF",
     "345:52 0xDFFF"
    ]
   },
@@ -3181,20 +2774,6 @@
    "sites": [
     "340:35 0xDFFF",
     "345:52 0xDFFF"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 2,
-   "pairs": [
-    "fail_here->"
-   ],
-   "sites": [
-    "341:13 fail_here",
-    "346:9 fail_here"
    ]
   },
   {
@@ -4186,15 +3765,13 @@
    "function": "utf8_valid",
    "op": "ComparisonSwap",
    "to": "<",
-   "count": 5,
+   "count": 3,
    "pairs": [
     "<=-><"
    ],
    "sites": [
     "238:30 <=",
     "241:37 <=",
-    "244:37 <=",
-    "253:26 <=",
     "260:42 <="
    ]
   },
@@ -4203,58 +3780,12 @@
    "function": "utf8_valid",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "<-><="
    ],
    "sites": [
-    "250:13 <",
-    "266:32 <",
-    "269:32 <"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ComparisonSwap",
-   "to": ">",
-   "count": 4,
-   "pairs": [
-    ">=->>"
-   ],
-   "sites": [
-    "238:14 >=",
-    "241:21 >=",
-    "244:21 >=",
-    "260:19 >="
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ComparisonSwap",
-   "to": ">=",
-   "count": 2,
-   "pairs": [
-    ">->>="
-   ],
-   "sites": [
-    "255:33 >",
-    "263:19 >"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 2,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "241:12 if",
-    "244:12 if"
+    "250:13 <"
    ]
   },
   {
@@ -4262,7 +3793,7 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 9,
+   "count": 5,
    "pairs": [
     "0->-1"
    ],
@@ -4271,10 +3802,6 @@
     "236:19 0",
     "237:26 0",
     "251:16 0",
-    "256:20 0",
-    "261:16 0",
-    "264:16 0",
-    "267:16 0",
     "270:16 0"
    ]
   },
@@ -4283,28 +3810,18 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "0",
-   "count": 11,
+   "count": 5,
    "pairs": [
     "0x10000->0",
-    "0x80->0",
-    "0x800->0",
-    "0xC2->0",
     "0xE0->0",
     "0xF0->0",
     "1->0",
-    "2->0",
     "3->0"
    ],
    "sites": [
-    "238:17 0xC2",
     "241:24 0xE0",
-    "242:16 2",
     "244:24 0xF0",
-    "245:16 3",
     "250:22 1",
-    "255:20 0x80",
-    "266:17 2",
-    "266:34 0x800",
     "269:17 3",
     "269:34 0x10000"
    ]
@@ -4314,18 +3831,12 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "0U",
-   "count": 4,
+   "count": 1,
    "pairs": [
-    "0x07U->0U",
-    "0x1FU->0U",
-    "0x3FU->0U",
-    "6U->0U"
+    "0x1FU->0U"
    ],
    "sites": [
-    "240:28 0x1FU",
-    "246:28 0x07U",
-    "258:35 6U",
-    "258:49 0x3FU"
+    "240:28 0x1FU"
    ]
   },
   {
@@ -4333,63 +3844,25 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "1",
-   "count": 18,
+   "count": 10,
    "pairs": [
     "0->1",
     "0x10000->1",
-    "0x80->1",
     "0x800->1",
-    "0xC2->1",
     "0xE0->1",
-    "0xF0->1",
-    "2->1",
-    "3->1"
+    "0xF0->1"
    ],
    "sites": [
     "228:16 0",
     "229:16 0",
     "236:19 0",
     "237:26 0",
-    "238:17 0xC2",
     "241:24 0xE0",
-    "242:16 2",
     "244:24 0xF0",
-    "245:16 3",
     "251:16 0",
-    "255:20 0x80",
-    "256:20 0",
-    "261:16 0",
-    "264:16 0",
     "266:34 0x800",
-    "267:16 0",
     "269:34 0x10000",
     "270:16 0"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "1114110",
-   "count": 1,
-   "pairs": [
-    "0x10FFFF->1114110"
-   ],
-   "sites": [
-    "263:21 0x10FFFF"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "1114112",
-   "count": 1,
-   "pairs": [
-    "0x10FFFF->1114112"
-   ],
-   "sites": [
-    "263:21 0x10FFFF"
    ]
   },
   {
@@ -4404,58 +3877,6 @@
    "sites": [
     "232:16 0x80",
     "255:20 0x80"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "129",
-   "count": 1,
-   "pairs": [
-    "0x80->129"
-   ],
-   "sites": [
-    "255:20 0x80"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "14U",
-   "count": 1,
-   "pairs": [
-    "0x0FU->14U"
-   ],
-   "sites": [
-    "243:28 0x0FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "16U",
-   "count": 1,
-   "pairs": [
-    "0x0FU->16U"
-   ],
-   "sites": [
-    "243:28 0x0FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "190",
-   "count": 1,
-   "pairs": [
-    "0xBF->190"
-   ],
-   "sites": [
-    "255:35 0xBF"
    ]
   },
   {
@@ -4488,34 +3909,13 @@
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
-   "to": "195",
+   "to": "1U",
    "count": 1,
    "pairs": [
-    "0xC2->195"
+    "0x1FU->1U"
    ],
    "sites": [
-    "238:17 0xC2"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "1U",
-   "count": 5,
-   "pairs": [
-    "0x07U->1U",
-    "0x0FU->1U",
-    "0x1FU->1U",
-    "0x3FU->1U",
-    "6U->1U"
-   ],
-   "sites": [
-    "240:28 0x1FU",
-    "243:28 0x0FU",
-    "246:28 0x07U",
-    "258:35 6U",
-    "258:49 0x3FU"
+    "240:28 0x1FU"
    ]
   },
   {
@@ -4523,17 +3923,13 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "2",
-   "count": 6,
+   "count": 3,
    "pairs": [
-    "1->2",
-    "3->2"
+    "1->2"
    ],
    "sites": [
     "234:16 1",
-    "245:16 3",
     "250:22 1",
-    "253:21 1",
-    "269:17 3",
     "273:12 1"
    ]
   },
@@ -4545,19 +3941,6 @@
    "count": 1,
    "pairs": [
     "0x800->2047"
-   ],
-   "sites": [
-    "266:34 0x800"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "2049",
-   "count": 1,
-   "pairs": [
-    "0x800->2049"
    ],
    "sites": [
     "266:34 0x800"
@@ -4593,32 +3976,6 @@
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
-   "to": "224",
-   "count": 1,
-   "pairs": [
-    "0xDF->224"
-   ],
-   "sites": [
-    "238:33 0xDF"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "225",
-   "count": 1,
-   "pairs": [
-    "0xE0->225"
-   ],
-   "sites": [
-    "241:24 0xE0"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
    "to": "238",
    "count": 1,
    "pairs": [
@@ -4645,45 +4002,6 @@
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
-   "to": "240",
-   "count": 1,
-   "pairs": [
-    "0xEF->240"
-   ],
-   "sites": [
-    "241:40 0xEF"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "241",
-   "count": 1,
-   "pairs": [
-    "0xF0->241"
-   ],
-   "sites": [
-    "244:24 0xF0"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "243",
-   "count": 1,
-   "pairs": [
-    "0xF4->243"
-   ],
-   "sites": [
-    "244:40 0xF4"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
    "to": "245",
    "count": 1,
    "pairs": [
@@ -4691,20 +4009,6 @@
    ],
    "sites": [
     "244:40 0xF4"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "3",
-   "count": 2,
-   "pairs": [
-    "2->3"
-   ],
-   "sites": [
-    "242:16 2",
-    "266:17 2"
    ]
   },
   {
@@ -4738,12 +4042,11 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "4",
-   "count": 2,
+   "count": 1,
    "pairs": [
     "3->4"
    ],
    "sites": [
-    "245:16 3",
     "269:17 3"
    ]
   },
@@ -4755,19 +4058,6 @@
    "count": 1,
    "pairs": [
     "0xD800->55295"
-   ],
-   "sites": [
-    "260:22 0xD800"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "55297",
-   "count": 1,
-   "pairs": [
-    "0xD800->55297"
    ],
    "sites": [
     "260:22 0xD800"
@@ -4803,36 +4093,10 @@
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
-   "to": "5U",
-   "count": 1,
-   "pairs": [
-    "6U->5U"
-   ],
-   "sites": [
-    "258:35 6U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
    "to": "62U",
    "count": 1,
    "pairs": [
     "0x3FU->62U"
-   ],
-   "sites": [
-    "258:49 0x3FU"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "64U",
-   "count": 1,
-   "pairs": [
-    "0x3FU->64U"
    ],
    "sites": [
     "258:49 0x3FU"
@@ -4855,19 +4119,6 @@
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
-   "to": "65537",
-   "count": 1,
-   "pairs": [
-    "0x10000->65537"
-   ],
-   "sites": [
-    "269:34 0x10000"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
    "to": "6U",
    "count": 1,
    "pairs": [
@@ -4880,46 +4131,14 @@
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "7U",
-   "count": 1,
-   "pairs": [
-    "6U->7U"
-   ],
-   "sites": [
-    "258:35 6U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "8U",
-   "count": 1,
-   "pairs": [
-    "0x07U->8U"
-   ],
-   "sites": [
-    "246:28 0x07U"
-   ]
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
    "op": "StatementDelete",
    "to": "",
-   "count": 6,
+   "count": 1,
    "pairs": [
-    "codepoint->",
-    "need->"
+    "codepoint->"
    ],
    "sites": [
-    "240:9 codepoint",
-    "242:9 need",
-    "243:9 codepoint",
-    "245:9 need",
-    "246:9 codepoint",
-    "258:9 codepoint"
+    "240:9 codepoint"
    ]
   },
   {
@@ -7336,45 +6555,6 @@
    "sites": [
     "99:9 bt_trace_dump",
     "100:9 abort"
-   ]
-  },
-  {
-   "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 1,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "49:21 0"
-   ]
-  },
-  {
-   "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 1,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "49:21 0"
-   ]
-  },
-  {
-   "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 1,
-   "pairs": [
-    "equal->"
-   ],
-   "sites": [
-    "50:9 equal"
    ]
   },
   {
@@ -14757,14 +13937,12 @@
    "function": "bt_user_algs_eq",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "0->-1"
    ],
    "sites": [
-    "463:16 0",
-    "465:21 0",
-    "468:20 0"
+    "463:16 0"
    ]
   },
   {
@@ -14772,14 +13950,12 @@
    "function": "bt_user_algs_eq",
    "op": "NumericTweak",
    "to": "1",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "0->1"
    ],
    "sites": [
-    "463:16 0",
-    "465:21 0",
-    "468:20 0"
+    "463:16 0"
    ]
   },
   {
@@ -16849,14 +16025,12 @@
    "function": "bt_solve_log_eq",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "0->-1"
    ],
    "sites": [
-    "39:16 0",
-    "41:21 0",
-    "46:20 0"
+    "39:16 0"
    ]
   },
   {
@@ -16864,14 +16038,12 @@
    "function": "bt_solve_log_eq",
    "op": "NumericTweak",
    "to": "1",
-   "count": 3,
+   "count": 1,
    "pairs": [
     "0->1"
    ],
    "sites": [
-    "39:16 0",
-    "41:21 0",
-    "46:20 0"
+    "39:16 0"
    ]
   },
   {
@@ -18040,15 +17212,12 @@
    "function": "bt_srs_store_eq",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 4,
+   "count": 1,
    "pairs": [
     "0->-1"
    ],
    "sites": [
-    "134:16 0",
-    "136:21 0",
-    "138:20 0",
-    "141:20 0"
+    "134:16 0"
    ]
   },
   {
@@ -18056,15 +17225,12 @@
    "function": "bt_srs_store_eq",
    "op": "NumericTweak",
    "to": "1",
-   "count": 4,
+   "count": 1,
    "pairs": [
     "0->1"
    ],
    "sites": [
-    "134:16 0",
-    "136:21 0",
-    "138:20 0",
-    "141:20 0"
+    "134:16 0"
    ]
   },
   {
@@ -19570,21 +18736,6 @@
    "file": "src/data/seedpack/mod.c",
    "function": "bt_nspec_eq",
    "op": "ComparisonSwap",
-   "to": "!=",
-   "count": 3,
-   "pairs": [
-    "==->!="
-   ],
-   "sites": [
-    "79:17 ==",
-    "80:25 ==",
-    "82:17 =="
-   ]
-  },
-  {
-   "file": "src/data/seedpack/mod.c",
-   "function": "bt_nspec_eq",
-   "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
    "pairs": [
@@ -19592,64 +18743,6 @@
    ],
    "sites": [
     "86:30 <"
-   ]
-  },
-  {
-   "file": "src/data/seedpack/mod.c",
-   "function": "bt_nspec_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 3,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "76:17 !=",
-    "83:27 !=",
-    "87:29 !="
-   ]
-  },
-  {
-   "file": "src/data/seedpack/mod.c",
-   "function": "bt_nspec_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 5,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "76:5 if",
-    "79:5 if",
-    "82:5 if",
-    "83:9 if",
-    "87:13 if"
-   ]
-  },
-  {
-   "file": "src/data/seedpack/mod.c",
-   "function": "bt_nspec_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 1,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "86:25 0"
-   ]
-  },
-  {
-   "file": "src/data/seedpack/mod.c",
-   "function": "bt_nspec_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 1,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "86:25 0"
    ]
   },
   {
@@ -20598,12 +19691,26 @@
    "function": "normalize_sq1",
    "op": "ComparisonSwap",
    "to": "!=",
-   "count": 1,
+   "count": 2,
    "pairs": [
     "==->!="
    ],
    "sites": [
-    "784:29 =="
+    "784:29 ==",
+    "873:24 =="
+   ]
+  },
+  {
+   "file": "src/data/seedpack/normalizer.c",
+   "function": "normalize_sq1",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "pairs": [
+    "if->!(...)"
+   ],
+   "sites": [
+    "873:9 if"
    ]
   },
   {
@@ -21543,19 +20650,6 @@
   {
    "file": "src/data/seedpack/parse.c",
    "function": "blank_line",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 1,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "136:9 if"
-   ]
-  },
-  {
-   "file": "src/data/seedpack/parse.c",
-   "function": "blank_line",
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
@@ -21564,19 +20658,6 @@
    ],
    "sites": [
     "135:21 0"
-   ]
-  },
-  {
-   "file": "src/data/seedpack/parse.c",
-   "function": "blank_line",
-   "op": "UnaryDrop",
-   "to": "",
-   "count": 1,
-   "pairs": [
-    "!->"
-   ],
-   "sites": [
-    "136:13 !"
    ]
   },
   {
@@ -25632,79 +24713,6 @@
   {
    "file": "src/ga/dist.c",
    "function": "bt_ga_dist_pairs_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 4,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "178:17 !=",
-    "182:23 !=",
-    "182:47 !=",
-    "182:72 !="
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 2,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "178:5 if",
-    "182:9 if"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 3,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "179:16 0",
-    "181:21 0",
-    "183:20 0"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "0",
-   "count": 1,
-   "pairs": [
-    "1->0"
-   ],
-   "sites": [
-    "186:12 1"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 3,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "179:16 0",
-    "181:21 0",
-    "183:20 0"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
@@ -26025,21 +25033,6 @@
    "file": "src/ga/dist.c",
    "function": "bt_ga_freq_data_eq",
    "op": "ComparisonSwap",
-   "to": "!=",
-   "count": 3,
-   "pairs": [
-    "==->!="
-   ],
-   "sites": [
-    "192:24 ==",
-    "192:60 ==",
-    "193:17 =="
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
    "pairs": [
@@ -26047,80 +25040,6 @@
    ],
    "sites": [
     "198:30 <"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 3,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "199:62 !=",
-    "200:66 !=",
-    "201:35 !="
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 2,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "197:5 if",
-    "199:13 if"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 4,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "198:25 0",
-    "199:65 0",
-    "200:69 0",
-    "202:25 0"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 4,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "198:25 0",
-    "199:65 0",
-    "200:69 0",
-    "202:25 0"
-   ]
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 1,
-   "pairs": [
-    "equal->"
-   ],
-   "sites": [
-    "202:17 equal"
    ]
   },
   {
@@ -33534,33 +32453,6 @@
    "file": "src/scheme/classifier.c",
    "function": "bt_scheme_classification_eq",
    "op": "ComparisonSwap",
-   "to": "!=",
-   "count": 15,
-   "pairs": [
-    "==->!="
-   ],
-   "sites": [
-    "394:17 ==",
-    "395:27 ==",
-    "395:56 ==",
-    "402:24 ==",
-    "402:57 ==",
-    "403:27 ==",
-    "403:52 ==",
-    "404:24 ==",
-    "404:54 ==",
-    "405:24 ==",
-    "405:42 ==",
-    "405:60 ==",
-    "405:78 ==",
-    "406:58 ==",
-    "407:24 =="
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
    "pairs": [
@@ -33568,88 +32460,6 @@
    ],
    "sites": [
     "396:30 <"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 7,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "395:74 !=",
-    "397:35 !=",
-    "397:74 !=",
-    "398:32 !=",
-    "403:66 !=",
-    "406:27 !=",
-    "406:74 !="
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 5,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "394:5 if",
-    "397:13 if",
-    "402:12 if",
-    "404:12 if",
-    "407:12 if"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 1,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "396:25 0"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 4,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "395:77 0",
-    "396:25 0",
-    "403:69 0",
-    "406:77 0"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 5,
-   "pairs": [
-    "equal->"
-   ],
-   "sites": [
-    "395:9 equal",
-    "399:17 equal",
-    "403:9 equal",
-    "405:9 equal",
-    "408:9 equal"
    ]
   },
   {
@@ -34008,34 +32818,6 @@
    "file": "src/scheme/classifier.c",
    "function": "bt_scheme_report_position",
    "op": "NumericTweak",
-   "to": "-1",
-   "count": 2,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "288:21 0",
-    "294:22 0"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "NumericTweak",
-   "to": "0",
-   "count": 2,
-   "pairs": [
-    "3->0"
-   ],
-   "sites": [
-    "314:44 3",
-    "315:46 3"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "NumericTweak",
    "to": "1",
    "count": 1,
    "pairs": [
@@ -34043,20 +32825,6 @@
    ],
    "sites": [
     "294:22 0"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "NumericTweak",
-   "to": "2",
-   "count": 2,
-   "pairs": [
-    "3->2"
-   ],
-   "sites": [
-    "314:39 3",
-    "315:41 3"
    ]
   },
   {
@@ -34071,37 +32839,6 @@
    "sites": [
     "314:39 3",
     "315:41 3"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 4,
-   "pairs": [
-    "out->",
-    "twist_first->",
-    "twist_second->"
-   ],
-   "sites": [
-    "295:17 out",
-    "301:9 out",
-    "314:9 twist_first",
-    "315:9 twist_second"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "UnaryDrop",
-   "to": "",
-   "count": 1,
-   "pairs": [
-    "++->"
-   ],
-   "sites": [
-    "295:23 ++"
    ]
   },
   {
@@ -34227,64 +32964,6 @@
    ],
    "sites": [
     "424:26 <"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 4,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "420:18 !=",
-    "420:48 !=",
-    "425:29 !=",
-    "426:65 !="
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 2,
-   "pairs": [
-    "if->!(...)"
-   ],
-   "sites": [
-    "420:5 if",
-    "425:9 if"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "count": 2,
-   "pairs": [
-    "0->-1"
-   ],
-   "sites": [
-    "424:21 0",
-    "426:68 0"
-   ]
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 2,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "424:21 0",
-    "426:68 0"
    ]
   },
   {
@@ -34906,48 +33585,6 @@
    ],
    "sites": [
     "512:70 1"
-   ]
-  },
-  {
-   "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
-   "op": "ComparisonSwap",
-   "to": "!=",
-   "count": 4,
-   "pairs": [
-    "==->!="
-   ],
-   "sites": [
-    "584:26 ==",
-    "584:43 ==",
-    "584:57 ==",
-    "584:71 =="
-   ]
-  },
-  {
-   "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "count": 1,
-   "pairs": [
-    "!=->=="
-   ],
-   "sites": [
-    "584:79 !="
-   ]
-  },
-  {
-   "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 1,
-   "pairs": [
-    "0->1"
-   ],
-   "sites": [
-    "584:82 0"
    ]
   },
   {
@@ -36608,7 +35245,7 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 1
+   "count": 5
   },
   {
    "file": "src/common/json.c",
@@ -36622,7 +35259,7 @@
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "1",
-   "count": 1
+   "count": 5
   },
   {
    "file": "src/common/paths.c",
@@ -37012,20 +35649,6 @@
   {
    "file": "src/data/seedpack/normalizer.c",
    "function": "normalize_sq1",
-   "op": "ComparisonSwap",
-   "to": "!=",
-   "count": 1
-  },
-  {
-   "file": "src/data/seedpack/normalizer.c",
-   "function": "normalize_sq1",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 1
-  },
-  {
-   "file": "src/data/seedpack/normalizer.c",
-   "function": "normalize_sq1",
    "op": "NumericTweak",
    "to": "-1",
    "count": 1
@@ -37035,14 +35658,14 @@
    "function": "normalize_sq1",
    "op": "NumericTweak",
    "to": "0",
-   "count": 4
+   "count": 3
   },
   {
    "file": "src/data/seedpack/normalizer.c",
    "function": "normalize_sq1",
    "op": "StatementDelete",
    "to": "",
-   "count": 5
+   "count": 4
   },
   {
    "file": "src/data/seedpack/normalizer.c",
@@ -37236,29 +35859,8 @@
   {
    "file": "src/ga/ga.c",
    "function": "bt_ga_ox",
-   "op": "ComparisonSwap",
-   "to": "<=",
-   "count": 2
-  },
-  {
-   "file": "src/ga/ga.c",
-   "function": "bt_ga_ox",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 1
-  },
-  {
-   "file": "src/ga/ga.c",
-   "function": "bt_ga_ox",
-   "op": "NumericTweak",
-   "to": "2",
-   "count": 1
-  },
-  {
-   "file": "src/ga/ga.c",
-   "function": "bt_ga_ox",
-   "op": "StatementDelete",
-   "to": "",
    "count": 1
   },
   {
@@ -37266,13 +35868,6 @@
    "function": "bt_ga_run",
    "op": "StatementDelete",
    "to": "",
-   "count": 1
-  },
-  {
-   "file": "src/ga/ga.c",
-   "function": "bt_ga_sorted_order",
-   "op": "ComparisonSwap",
-   "to": ">=",
    "count": 1
   },
   {
@@ -37371,13 +35966,6 @@
    "function": "bt_ga_trim",
    "op": "NumericTweak",
    "to": "0",
-   "count": 1
-  },
-  {
-   "file": "src/ga/inventory.c",
-   "function": "bt_ga_trim",
-   "op": "NumericTweak",
-   "to": "1",
    "count": 1
   },
   {

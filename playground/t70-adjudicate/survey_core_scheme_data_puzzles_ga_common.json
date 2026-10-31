@@ -100,30 +100,27 @@
   "scheme_scramble_test"
  ],
  "row_statuses": {
-  "survived": 376565,
+  "survived": 376459,
   "builderr": 54110,
-  "killed": 39609,
-  "timeout": 690,
-  "pending": 2
+  "killed": 39734,
+  "timeout": 673
  },
  "raw": {
   "sites": 24345,
   "union": {
-   "survived": 6246,
-   "killed": 14710,
+   "survived": 6140,
+   "killed": 14826,
    "unviable": 3136,
-   "timeout": 251,
-   "pending": 2
+   "timeout": 243
   }
  },
  "remapped": {
   "sites": 24345,
   "union": {
-   "survived": 6246,
-   "killed": 14710,
+   "survived": 6140,
+   "killed": 14826,
    "unviable": 3136,
-   "timeout": 251,
-   "pending": 2
+   "timeout": 243
   }
  },
  "per_area": {
@@ -153,19 +150,15 @@
    [
     [
      "killed",
-     1731
-    ],
-    [
-     "pending",
-     2
+     1734
     ],
     [
      "survived",
-     414
+     411
     ],
     [
      "timeout",
-     16
+     18
     ],
     [
      "unviable",
@@ -178,15 +171,15 @@
    [
     [
      "killed",
-     5246
+     5261
     ],
     [
      "survived",
-     3012
+     3001
     ],
     [
      "timeout",
-     76
+     72
     ],
     [
      "unviable",
@@ -199,15 +192,15 @@
    [
     [
      "killed",
-     1374
+     1410
     ],
     [
      "survived",
-     655
+     625
     ],
     [
      "timeout",
-     34
+     28
     ],
     [
      "unviable",
@@ -241,11 +234,11 @@
    [
     [
      "killed",
-     1578
+     1640
     ],
     [
      "survived",
-     423
+     361
     ],
     [
      "timeout",

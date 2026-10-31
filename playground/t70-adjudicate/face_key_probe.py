@@ -24,6 +24,17 @@ def key_no_third_pass(name):
     return tuple(out)
 
 
+def key_negated_third_pass(name):
+    out = [ord(name[i]) if i < len(name) else 0 for i in range(3)]
+    if out[0] > out[1]:
+        out[0], out[1] = out[1], out[0]
+    if out[1] > out[2]:
+        out[1], out[2] = out[2], out[1]
+    if out[0] <= out[1]:
+        out[0], out[1] = out[1], out[0]
+    return tuple(out)
+
+
 def key_init_tweak(name, index, value):
     out = [value, value, value]
     for i in range(min(3, len(name))):
@@ -53,7 +64,8 @@ def main():
     print("clean key vs oracle mismatches: %d" % mismatches)
 
     variants = {
-        "negated_third_pass": [key_no_third_pass(n) for n in NAMES],
+        "deleted_third_pass": [key_no_third_pass(n) for n in NAMES],
+        "negated_third_pass": [key_negated_third_pass(n) for n in NAMES],
         "out0_255": [key_init_tweak(n, 0, 255) for n in NAMES],
         "out1_255": [key_init_tweak(n, 1, 255) for n in NAMES],
         "out2_255": [key_init_tweak(n, 2, 255) for n in NAMES],

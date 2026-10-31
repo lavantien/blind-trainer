@@ -6,7 +6,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -14,7 +15,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -22,7 +24,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -30,7 +33,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -38,7 +42,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -46,7 +51,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -54,7 +60,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -62,7 +69,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -70,7 +78,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -78,7 +87,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -86,7 +96,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -94,15 +105,17 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
    "function": "bt_alg_parse",
    "op": "ConditionNegation",
    "to": "!(...)",
-   "count": 1,
-   "origin": "neg"
+   "count": 2,
+   "origin": "neg",
+   "hangs": 1
   },
   {
    "file": "src/core/alg.c",
@@ -110,7 +123,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -118,7 +132,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -126,7 +141,8 @@
    "op": "NumericTweak",
    "to": "63",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -134,15 +150,17 @@
    "op": "NumericTweak",
    "to": "65",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
    "function": "bt_alg_parse",
    "op": "StatementDelete",
    "to": "",
-   "count": 5,
-   "origin": "crash"
+   "count": 7,
+   "origin": "crash",
+   "hangs": 2
   },
   {
    "file": "src/core/alg.c",
@@ -150,7 +168,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -158,7 +177,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -166,7 +186,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -174,7 +195,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -182,7 +204,8 @@
    "op": "NumericTweak",
    "to": "15",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -190,7 +213,8 @@
    "op": "NumericTweak",
    "to": "17",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -198,7 +222,8 @@
    "op": "NumericTweak",
    "to": "3U",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -206,7 +231,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -214,7 +240,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -222,7 +249,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -230,7 +258,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -238,7 +267,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -246,7 +276,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -254,7 +285,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -262,7 +294,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
@@ -270,7 +303,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -278,7 +312,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 12,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -286,7 +321,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -294,7 +330,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 17,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -302,7 +339,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -310,7 +348,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 11,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -318,7 +357,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -326,7 +366,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 7,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -334,7 +375,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -342,7 +384,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -350,7 +393,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -358,7 +402,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -366,7 +411,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -374,7 +420,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -382,7 +429,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -390,7 +438,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -398,7 +447,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -406,7 +456,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -414,7 +465,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -422,7 +474,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -430,7 +483,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -438,7 +492,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -446,7 +501,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -454,7 +510,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -462,7 +519,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -470,7 +528,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -478,7 +537,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -486,7 +546,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -494,7 +555,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -502,7 +564,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -510,7 +573,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -518,7 +582,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -526,7 +591,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -534,7 +600,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -542,7 +609,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -550,7 +618,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -558,7 +627,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -566,7 +636,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -574,7 +645,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "quarter+bound"
+   "origin": "quarter+bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -582,7 +654,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero+bound"
+   "origin": "zero+bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -590,7 +663,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -598,7 +672,8 @@
    "op": "NumericTweak",
    "to": "254",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -606,7 +681,8 @@
    "op": "NumericTweak",
    "to": "47",
    "count": 3,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -614,7 +690,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 3,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -622,7 +699,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -630,7 +708,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -638,7 +717,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -646,7 +726,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -654,7 +735,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -662,7 +744,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/core/analysis.c",
@@ -670,7 +753,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -678,7 +762,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -686,7 +771,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -694,7 +780,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter+bound"
+   "origin": "quarter+bound",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -702,7 +789,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "quarter+bound"
+   "origin": "quarter+bound",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -710,7 +798,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -718,7 +807,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -726,7 +816,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -734,7 +825,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+bound"
+   "origin": "zero+bound",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -742,7 +834,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -750,7 +843,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -758,7 +852,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -766,7 +861,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -774,7 +870,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -782,7 +879,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -790,7 +888,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -798,7 +897,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -806,7 +906,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -814,7 +915,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero+size54"
+   "origin": "zero+size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -822,7 +924,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 3,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/cube.c",
@@ -830,7 +933,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -838,7 +942,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -846,7 +951,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -854,7 +960,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -862,7 +969,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -870,7 +978,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 14,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -878,7 +987,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -886,7 +996,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -894,15 +1005,17 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
    "function": "expand_tokenize",
    "op": "NumericTweak",
    "to": "0",
-   "count": 1,
-   "origin": "quarter"
+   "count": 2,
+   "origin": "quarter",
+   "hangs": 1
   },
   {
    "file": "src/core/expand.c",
@@ -910,7 +1023,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -918,7 +1032,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -926,7 +1041,8 @@
    "op": "NumericTweak",
    "to": "255",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -934,7 +1050,8 @@
    "op": "NumericTweak",
    "to": "257",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -942,7 +1059,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -950,7 +1068,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -958,7 +1077,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -966,7 +1086,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -974,7 +1095,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -982,7 +1104,8 @@
    "op": "NumericTweak",
    "to": "11U",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -990,7 +1113,8 @@
    "op": "NumericTweak",
    "to": "1U",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -998,7 +1122,8 @@
    "op": "NumericTweak",
    "to": "9U",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -1006,7 +1131,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -1014,7 +1140,8 @@
    "op": "NumericTweak",
    "to": "15",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -1022,7 +1149,8 @@
    "op": "NumericTweak",
    "to": "17",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/core/expand.c",
@@ -1030,7 +1158,8 @@
    "op": "NumericTweak",
    "to": "3U",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1038,7 +1167,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 13,
-   "origin": "quarter+size54"
+   "origin": "quarter+size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1046,7 +1176,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 10,
-   "origin": "quarter+size54"
+   "origin": "quarter+size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1054,7 +1185,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 9,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1062,7 +1194,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1070,7 +1203,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 6,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1078,7 +1212,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 7,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1086,7 +1221,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 7,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1094,7 +1230,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 5,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1102,7 +1239,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1110,7 +1248,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1118,7 +1257,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1126,7 +1266,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero+size54"
+   "origin": "zero+size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1134,7 +1275,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1142,7 +1284,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1150,7 +1293,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1158,7 +1302,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1166,7 +1311,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1174,7 +1320,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1182,7 +1329,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1190,7 +1338,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1198,7 +1347,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1206,7 +1356,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1214,7 +1365,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1222,7 +1374,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1230,7 +1383,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1238,7 +1392,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1246,7 +1401,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1254,7 +1410,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1262,7 +1419,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 5,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1270,7 +1428,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1278,7 +1437,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1286,7 +1446,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1294,7 +1455,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1302,7 +1464,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 10,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1310,7 +1473,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 2,
-   "origin": "override"
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1318,7 +1482,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1326,7 +1491,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1334,7 +1500,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1342,7 +1509,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "ported"
+   "origin": "ported",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1350,7 +1518,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1358,7 +1527,8 @@
    "op": "NumericTweak",
    "to": "0U",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1366,7 +1536,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1374,7 +1545,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1382,15 +1554,17 @@
    "op": "NumericTweak",
    "to": "5U",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
    "function": "move_power",
    "op": "NumericTweak",
    "to": "55",
-   "count": 2,
-   "origin": "size54"
+   "count": 3,
+   "origin": "size54",
+   "hangs": 1
   },
   {
    "file": "src/core/moves.c",
@@ -1398,7 +1572,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1406,7 +1581,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1414,7 +1590,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/moves.c",
@@ -1422,7 +1599,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1430,7 +1608,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1438,7 +1617,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1446,7 +1626,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1454,7 +1635,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1462,7 +1644,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1470,7 +1653,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1478,7 +1662,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "lazy"
+   "origin": "lazy",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1486,7 +1671,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1494,7 +1680,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1502,7 +1689,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1510,7 +1698,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1518,7 +1707,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1526,7 +1716,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1534,7 +1725,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1542,7 +1734,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1550,7 +1743,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1558,7 +1752,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1566,7 +1761,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1574,7 +1770,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1582,7 +1779,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1590,7 +1788,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1598,7 +1797,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1606,7 +1806,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1614,7 +1815,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1622,7 +1824,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1630,7 +1833,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1638,7 +1842,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1646,7 +1851,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1654,7 +1860,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1662,7 +1869,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1670,7 +1878,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1678,7 +1887,17 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
+  },
+  {
+   "file": "src/scheme/classifier.c",
+   "function": "bt_scheme_report_position",
+   "op": "NumericTweak",
+   "to": "4",
+   "count": 2,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1686,7 +1905,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1694,7 +1914,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1702,7 +1923,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1710,7 +1932,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1718,7 +1941,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1726,15 +1950,17 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
    "function": "bt_scheme_trace",
    "op": "StatementDelete",
    "to": "",
-   "count": 4,
-   "origin": "crash"
+   "count": 5,
+   "origin": "crash",
+   "hangs": 1
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1742,7 +1968,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1750,7 +1977,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1758,7 +1986,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1766,7 +1995,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1774,7 +2004,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1782,7 +2013,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1790,7 +2022,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1798,7 +2031,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1806,7 +2040,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1814,7 +2049,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1822,7 +2058,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1830,7 +2067,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1838,7 +2076,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1846,7 +2085,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1854,7 +2094,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1862,7 +2103,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/classifier.c",
@@ -1870,7 +2112,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 2,
-   "origin": "unary"
+   "origin": "unary",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1878,7 +2121,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 6,
-   "origin": "bound+size54"
+   "origin": "bound+size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1886,7 +2130,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 6,
-   "origin": "bound+size54"
+   "origin": "bound+size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1894,7 +2139,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1902,7 +2148,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1910,7 +2157,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 5,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1918,7 +2166,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 5,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1926,7 +2175,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1934,7 +2184,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1942,7 +2193,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1950,7 +2202,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1958,7 +2211,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1966,7 +2220,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1974,7 +2229,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1982,7 +2238,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1990,7 +2247,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -1998,7 +2256,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+quarter"
+   "origin": "zero+quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2006,7 +2265,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2014,7 +2274,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2022,7 +2283,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2030,7 +2292,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2038,7 +2301,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2046,7 +2310,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2054,7 +2319,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2062,7 +2328,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2070,7 +2337,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2078,7 +2346,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2086,7 +2355,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2094,7 +2364,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2102,7 +2373,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2110,7 +2382,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2118,7 +2391,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2126,7 +2400,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2134,7 +2409,8 @@
    "op": "NumericTweak",
    "to": "199",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2142,15 +2418,17 @@
    "op": "NumericTweak",
    "to": "201",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
    "function": "bt_scheme_walk_run",
    "op": "StatementDelete",
    "to": "",
-   "count": 3,
-   "origin": "write"
+   "count": 5,
+   "origin": "write",
+   "hangs": 2
   },
   {
    "file": "src/scheme/memo.c",
@@ -2158,7 +2436,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2166,7 +2445,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2174,7 +2454,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2182,7 +2463,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2190,7 +2472,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2198,7 +2481,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2206,7 +2490,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2214,7 +2499,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2222,7 +2508,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2230,7 +2517,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2238,7 +2526,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2246,7 +2535,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2254,7 +2544,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2262,7 +2553,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/memo.c",
@@ -2270,7 +2562,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/pairs.c",
@@ -2278,7 +2571,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2286,7 +2580,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2294,7 +2589,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2302,7 +2598,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2310,7 +2607,8 @@
    "op": "NumericTweak",
    "to": "25",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2318,7 +2616,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2326,7 +2625,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 3,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2334,7 +2634,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2342,7 +2643,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2350,7 +2652,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 4,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2358,7 +2661,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2366,7 +2670,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2374,7 +2679,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2382,7 +2688,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2390,7 +2697,8 @@
    "op": "NumericTweak",
    "to": "23",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2398,7 +2706,8 @@
    "op": "NumericTweak",
    "to": "25",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2406,7 +2715,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2414,7 +2724,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2422,7 +2733,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2430,7 +2742,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2438,7 +2751,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2446,7 +2760,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2454,7 +2769,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2462,15 +2778,26 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
    "function": "face_key",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 3,
-   "origin": "zero"
+   "count": 4,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2478,15 +2805,17 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
    "function": "face_key",
    "op": "NumericTweak",
    "to": "1",
-   "count": 3,
-   "origin": "zero"
+   "count": 4,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2494,7 +2823,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scheme.c",
@@ -2502,7 +2832,17 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
+  },
+  {
+   "file": "src/scheme/scheme.c",
+   "function": "face_key",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2510,7 +2850,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 3,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2518,7 +2859,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2526,7 +2868,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 3,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2534,7 +2877,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 3,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2542,7 +2886,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2550,7 +2895,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2558,7 +2904,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2566,7 +2913,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2574,7 +2922,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2582,7 +2931,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2590,7 +2940,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "quarter+bound+size54"
+   "origin": "quarter+bound+size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2598,7 +2949,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 11,
-   "origin": "zero+quarter+bound+size54"
+   "origin": "zero+quarter+bound+size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2606,7 +2958,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 3,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2614,7 +2967,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 3,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2622,7 +2976,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2630,7 +2985,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2638,7 +2994,8 @@
    "op": "NumericTweak",
    "to": "47",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2646,7 +3003,8 @@
    "op": "NumericTweak",
    "to": "49",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2654,7 +3012,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2662,7 +3021,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 2,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2670,7 +3030,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 2,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2678,7 +3039,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2686,7 +3048,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2694,7 +3057,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2702,7 +3066,8 @@
    "op": "NumericTweak",
    "to": "23",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2710,7 +3075,8 @@
    "op": "NumericTweak",
    "to": "25",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2718,7 +3084,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2726,7 +3093,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 4,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2734,7 +3102,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 6,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2742,7 +3111,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "quarter+bound"
+   "origin": "quarter+bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2750,7 +3120,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 11,
-   "origin": "zero+bound+size54"
+   "origin": "zero+bound+size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2758,7 +3129,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 3,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2766,7 +3138,8 @@
    "op": "NumericTweak",
    "to": "13",
    "count": 4,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2774,7 +3147,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2782,7 +3156,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2790,7 +3165,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2798,7 +3174,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 5,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2806,7 +3183,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 4,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2814,7 +3192,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2822,7 +3201,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2830,7 +3210,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2838,7 +3219,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2846,7 +3228,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2854,7 +3237,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2862,7 +3246,8 @@
    "op": "NumericTweak",
    "to": "254",
    "count": 1,
-   "origin": "bound"
+   "origin": "bound",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2870,7 +3255,8 @@
    "op": "NumericTweak",
    "to": "53",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2878,7 +3264,8 @@
    "op": "NumericTweak",
    "to": "55",
    "count": 1,
-   "origin": "size54"
+   "origin": "size54",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2886,7 +3273,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "quarter"
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/scheme/scramble.c",
@@ -2894,326 +3282,145 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "quarter"
-  }
- ],
- "test_disposed": [
-  {
-   "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "49:21"
-   ],
-   "kept": []
+   "origin": "quarter",
+   "hangs": 0
   },
   {
    "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "49:21"
-   ],
-   "kept": []
+   "function": "bt_alg_parse",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
-   "file": "src/core/alg.c",
-   "function": "bt_alg_eq",
-   "op": "StatementDelete",
-   "to": "",
-   "killed": [
-    "50:9"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
+   "file": "src/core/expand.c",
+   "function": "expand_seq",
    "op": "ComparisonSwap",
    "to": "!=",
-   "killed": [
-    "394:17",
-    "395:27",
-    "395:56",
-    "402:24",
-    "402:57",
-    "403:27",
-    "403:52",
-    "404:24",
-    "404:54",
-    "405:24",
-    "405:42",
-    "405:60",
-    "405:78",
-    "406:58",
-    "407:24"
-   ],
-   "kept": []
+   "count": 3,
+   "origin": "hang",
+   "hangs": 3
   },
   {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
+   "file": "src/core/expand.c",
+   "function": "expand_seq",
    "op": "ComparisonSwap",
-   "to": "==",
-   "killed": [
-    "395:74",
-    "397:35",
-    "397:74",
-    "398:32",
-    "403:66",
-    "406:27",
-    "406:74"
-   ],
-   "kept": []
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
+   "file": "src/core/expand.c",
+   "function": "expand_seq",
    "op": "ConditionNegation",
    "to": "!(...)",
-   "killed": [
-    "394:5",
-    "397:13",
-    "402:12",
-    "404:12",
-    "407:12"
-   ],
-   "kept": []
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
   },
   {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "396:25"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "395:77",
-    "396:25",
-    "403:69",
-    "406:77"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_classification_eq",
+   "file": "src/core/expand.c",
+   "function": "expand_tokenize",
    "op": "StatementDelete",
    "to": "",
-   "killed": [
-    "395:9",
-    "399:17",
-    "403:9",
-    "405:9",
-    "408:9"
-   ],
-   "kept": []
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
+   "file": "src/core/moves.c",
+   "function": "move_compose",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_compose",
    "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "288:21",
-    "294:22"
-   ],
-   "kept": []
+   "to": "55",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
+   "file": "src/core/moves.c",
+   "function": "move_power",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/core/moves.c",
+   "function": "move_power",
    "op": "NumericTweak",
-   "to": "0",
-   "killed": [
-    "314:44",
-    "315:46"
-   ],
-   "kept": []
+   "to": "53",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
   },
   {
    "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "NumericTweak",
-   "to": "2",
-   "killed": [
-    "314:39",
-    "315:41"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "NumericTweak",
-   "to": "4",
-   "killed": [
-    "314:39",
-    "315:41"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
-   "op": "StatementDelete",
-   "to": "",
-   "killed": [
-    "295:17",
-    "301:9",
-    "314:9",
-    "315:9"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_report_position",
+   "function": "bt_scheme_trace",
    "op": "UnaryDrop",
    "to": "",
-   "killed": [
-    "295:23"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "killed": [
-    "420:18",
-    "420:48",
-    "425:29",
-    "426:65"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "killed": [
-    "420:5",
-    "425:9"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "424:21",
-    "426:68"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/classifier.c",
-   "function": "bt_scheme_trace_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "424:21",
-    "426:68"
-   ],
-   "kept": []
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
    "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
-   "op": "ComparisonSwap",
-   "to": "!=",
-   "killed": [
-    "584:26",
-    "584:43",
-    "584:57",
-    "584:71"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "killed": [
-    "584:79"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/memo.c",
-   "function": "bt_scheme_residue_class_eq",
+   "function": "bt_scheme_memo",
    "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "584:82"
-   ],
-   "kept": []
+   "to": "53",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   },
   {
-   "file": "src/scheme/scheme.c",
-   "function": "face_key",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "killed": [
-    "81:5"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/scheme/scheme.c",
-   "function": "face_key",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "65:9"
-   ],
-   "kept": [
-    "65:14",
-    "66:14",
-    "67:14"
-   ]
-  },
-  {
-   "file": "src/scheme/scheme.c",
-   "function": "face_key",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "65:9"
-   ],
-   "kept": [
-    "65:14",
-    "66:14",
-    "67:14"
-   ]
-  },
-  {
-   "file": "src/scheme/scheme.c",
-   "function": "face_key",
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_perm_sign",
    "op": "StatementDelete",
    "to": "",
-   "killed": [
-    "65:5",
-    "66:5"
-   ],
-   "kept": []
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "bt_scheme_random_occ",
+   "op": "NumericTweak",
+   "to": "53",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "identity_occ",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/scheme/scramble.c",
+   "function": "identity_occ",
+   "op": "NumericTweak",
+   "to": "55",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
   }
  ],
+ "test_disposed": [],
  "unclassified": []
 }

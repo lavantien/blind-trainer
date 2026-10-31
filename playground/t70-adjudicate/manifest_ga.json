@@ -6,7 +6,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -14,7 +15,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -22,7 +24,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -30,7 +33,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -38,7 +42,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -46,7 +51,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -54,7 +60,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -62,7 +69,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -70,7 +78,17 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
+  },
+  {
+   "file": "src/ga/dist.c",
+   "function": "bt_ga_dist_pairs_eq",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "override",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -78,7 +96,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -86,7 +105,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 8,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -94,7 +114,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -102,7 +123,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 8,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -110,7 +132,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -118,7 +141,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -126,7 +150,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -134,7 +159,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -142,7 +168,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -150,7 +177,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -158,7 +186,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -166,7 +195,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -174,7 +204,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -182,7 +213,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -190,7 +222,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -198,7 +231,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -206,7 +240,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -214,7 +249,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -222,7 +258,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -230,7 +267,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -238,7 +276,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -246,7 +285,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -254,7 +294,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -262,7 +303,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -270,7 +312,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 9,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -278,7 +321,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 8,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -286,7 +330,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 8,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -294,7 +339,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/dist.c",
@@ -302,7 +348,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 16,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -310,7 +357,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -318,7 +366,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -326,7 +375,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -334,7 +384,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -342,7 +393,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -350,7 +402,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -358,7 +411,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -366,7 +420,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -374,7 +429,8 @@
    "op": "NumericTweak",
    "to": "767",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -382,7 +438,8 @@
    "op": "NumericTweak",
    "to": "769",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -390,7 +447,8 @@
    "op": "NumericTweak",
    "to": "878",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -398,7 +456,8 @@
    "op": "NumericTweak",
    "to": "880",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -406,7 +465,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -414,7 +474,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 12,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -422,7 +483,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -430,7 +492,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -438,7 +501,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -446,7 +510,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -454,7 +519,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 11,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -462,7 +528,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -470,7 +537,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 12,
-   "origin": "zero+count"
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -478,7 +546,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -486,7 +555,8 @@
    "op": "NumericTweak",
    "to": "767",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -494,7 +564,8 @@
    "op": "NumericTweak",
    "to": "769",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -502,7 +573,8 @@
    "op": "NumericTweak",
    "to": "878",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -510,7 +582,8 @@
    "op": "NumericTweak",
    "to": "880",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -518,7 +591,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -526,7 +600,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -534,7 +609,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -542,7 +618,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -550,7 +627,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -558,7 +636,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -566,7 +645,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -574,7 +654,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -582,7 +663,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -590,7 +672,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -598,7 +681,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -606,7 +690,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -614,7 +699,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -622,7 +708,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -630,7 +717,8 @@
    "op": "NumericTweak",
    "to": "0U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -638,7 +726,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero+count"
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -646,7 +735,8 @@
    "op": "NumericTweak",
    "to": "1114110",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -654,7 +744,8 @@
    "op": "NumericTweak",
    "to": "126U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -662,7 +753,8 @@
    "op": "NumericTweak",
    "to": "127",
    "count": 2,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -670,7 +762,8 @@
    "op": "NumericTweak",
    "to": "129",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -678,7 +771,8 @@
    "op": "NumericTweak",
    "to": "2047",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -686,7 +780,8 @@
    "op": "NumericTweak",
    "to": "2049",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -694,7 +789,8 @@
    "op": "NumericTweak",
    "to": "247U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -702,7 +798,8 @@
    "op": "NumericTweak",
    "to": "249U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -710,7 +807,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -718,7 +816,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -726,7 +825,8 @@
    "op": "NumericTweak",
    "to": "55295",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -734,7 +834,8 @@
    "op": "NumericTweak",
    "to": "57342",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -742,7 +843,8 @@
    "op": "NumericTweak",
    "to": "57344",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -750,7 +852,8 @@
    "op": "NumericTweak",
    "to": "65535",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -758,7 +861,8 @@
    "op": "NumericTweak",
    "to": "65537",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -766,7 +870,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -774,7 +879,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -782,7 +888,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/features.c",
@@ -790,7 +897,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -798,7 +906,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -806,7 +915,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -814,7 +924,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -822,7 +933,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -830,7 +942,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -838,7 +951,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -846,7 +960,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -854,7 +969,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 11,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -862,7 +978,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -870,7 +987,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -878,7 +996,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -886,7 +1005,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -894,7 +1014,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -902,7 +1023,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -910,7 +1032,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -918,7 +1041,8 @@
    "op": "NumericTweak",
    "to": "-1.0",
    "count": 1,
-   "origin": "floatbase"
+   "origin": "floatbase",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -926,7 +1050,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -934,7 +1059,8 @@
    "op": "NumericTweak",
    "to": "1.0",
    "count": 1,
-   "origin": "floatbase"
+   "origin": "floatbase",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -942,7 +1068,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -950,7 +1077,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -958,7 +1086,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -966,7 +1095,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -974,7 +1104,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -982,15 +1113,17 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
    "function": "bt_ga_mutate_replace",
    "op": "NumericTweak",
    "to": "0",
-   "count": 1,
-   "origin": "count"
+   "count": 2,
+   "origin": "count",
+   "hangs": 1
   },
   {
    "file": "src/ga/ga.c",
@@ -998,7 +1131,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1006,7 +1140,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1014,7 +1149,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1022,7 +1158,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1030,7 +1167,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1038,7 +1176,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1046,7 +1185,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1054,7 +1194,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1062,7 +1203,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1070,7 +1212,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 6,
-   "origin": "zero+count"
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1078,7 +1221,8 @@
    "op": "NumericTweak",
    "to": "1000001.0",
    "count": 2,
-   "origin": "floatbase"
+   "origin": "floatbase",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1086,7 +1230,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1094,15 +1239,17 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
    "function": "bt_ga_run",
    "op": "StatementDelete",
    "to": "",
-   "count": 11,
-   "origin": "crash"
+   "count": 12,
+   "origin": "crash",
+   "hangs": 1
   },
   {
    "file": "src/ga/ga.c",
@@ -1110,7 +1257,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1118,7 +1266,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1126,7 +1275,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1134,7 +1284,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/ga.c",
@@ -1142,7 +1293,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/hash.c",
@@ -1150,7 +1302,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/hash.c",
@@ -1158,7 +1311,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1166,7 +1320,8 @@
    "op": "NumericTweak",
    "to": "15",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1174,7 +1329,8 @@
    "op": "NumericTweak",
    "to": "22",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1182,7 +1338,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1190,7 +1347,8 @@
    "op": "NumericTweak",
    "to": "8",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1198,7 +1356,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 5,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1206,7 +1365,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 16,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1214,7 +1374,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 22,
-   "origin": "zero+cap"
+   "origin": "zero+cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1222,7 +1383,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1230,7 +1392,8 @@
    "op": "NumericTweak",
    "to": "63",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1238,7 +1401,8 @@
    "op": "NumericTweak",
    "to": "65",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1246,7 +1410,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 16,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1254,7 +1419,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1262,7 +1428,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1270,7 +1437,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1278,7 +1446,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1286,7 +1455,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1294,7 +1464,8 @@
    "op": "NumericTweak",
    "to": "817",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1302,7 +1473,8 @@
    "op": "NumericTweak",
    "to": "819",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1310,7 +1482,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1318,7 +1491,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1326,7 +1500,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1334,7 +1509,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1342,7 +1518,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1350,7 +1527,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1358,7 +1536,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1366,7 +1545,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 4,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1374,7 +1554,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 4,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1382,7 +1563,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 4,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1390,7 +1572,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1398,7 +1581,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 8,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1406,7 +1590,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1414,7 +1599,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 8,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1422,7 +1608,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1430,7 +1617,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1438,7 +1626,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 6,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1446,7 +1635,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1454,7 +1644,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1462,7 +1653,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1470,7 +1662,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1478,7 +1671,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1486,7 +1680,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1494,7 +1689,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1502,7 +1698,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1510,7 +1707,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1518,7 +1716,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1526,7 +1725,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1534,7 +1734,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1542,7 +1743,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1550,7 +1752,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero+count"
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1558,7 +1761,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1566,7 +1770,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1574,7 +1779,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 12,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1582,7 +1788,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1590,7 +1797,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1598,7 +1806,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1606,7 +1815,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1614,15 +1824,17 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
    "function": "bt_ga_load_wordlist",
    "op": "StatementDelete",
    "to": "",
-   "count": 8,
-   "origin": "crash"
+   "count": 9,
+   "origin": "crash",
+   "hangs": 1
   },
   {
    "file": "src/ga/inventory.c",
@@ -1630,7 +1842,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1638,7 +1851,8 @@
    "op": "UnaryDrop",
    "to": "",
    "count": 11,
-   "origin": "unary"
+   "origin": "unary",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1646,7 +1860,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1654,7 +1869,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1662,7 +1878,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1670,7 +1887,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1678,7 +1896,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1686,7 +1905,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1694,7 +1914,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1702,7 +1923,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1710,7 +1932,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1718,7 +1941,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1726,7 +1950,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1734,7 +1959,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1742,7 +1968,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 5,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1750,7 +1977,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1758,15 +1986,17 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
    "function": "bt_ga_render",
    "op": "NumericTweak",
    "to": "0",
-   "count": 5,
-   "origin": "count"
+   "count": 8,
+   "origin": "count",
+   "hangs": 3
   },
   {
    "file": "src/ga/inventory.c",
@@ -1774,15 +2004,17 @@
    "op": "NumericTweak",
    "to": "0U",
    "count": 8,
-   "origin": "count+utf8mask"
+   "origin": "count+utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
    "function": "bt_ga_render",
    "op": "NumericTweak",
    "to": "1",
-   "count": 4,
-   "origin": "zero+count"
+   "count": 5,
+   "origin": "zero+count",
+   "hangs": 1
   },
   {
    "file": "src/ga/inventory.c",
@@ -1790,7 +2022,8 @@
    "op": "NumericTweak",
    "to": "11U",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1798,7 +2031,8 @@
    "op": "NumericTweak",
    "to": "127",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1806,7 +2040,8 @@
    "op": "NumericTweak",
    "to": "129",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1814,7 +2049,8 @@
    "op": "NumericTweak",
    "to": "13U",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1822,7 +2058,8 @@
    "op": "NumericTweak",
    "to": "14U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1830,7 +2067,8 @@
    "op": "NumericTweak",
    "to": "16U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1838,7 +2076,8 @@
    "op": "NumericTweak",
    "to": "1U",
    "count": 8,
-   "origin": "count+utf8mask"
+   "origin": "count+utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1846,7 +2085,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1854,7 +2094,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1862,7 +2103,8 @@
    "op": "NumericTweak",
    "to": "30U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1870,7 +2112,8 @@
    "op": "NumericTweak",
    "to": "32U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1878,7 +2121,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1886,7 +2130,8 @@
    "op": "NumericTweak",
    "to": "5U",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1894,7 +2139,8 @@
    "op": "NumericTweak",
    "to": "6",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1902,7 +2148,8 @@
    "op": "NumericTweak",
    "to": "62U",
    "count": 3,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1910,7 +2157,8 @@
    "op": "NumericTweak",
    "to": "64U",
    "count": 3,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1918,23 +2166,26 @@
    "op": "NumericTweak",
    "to": "7U",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
    "function": "bt_ga_render",
    "op": "StatementDelete",
    "to": "",
-   "count": 3,
-   "origin": "write"
+   "count": 7,
+   "origin": "write",
+   "hangs": 4
   },
   {
    "file": "src/ga/inventory.c",
    "function": "bt_ga_sorted_contains",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 1,
-   "origin": "leq"
+   "count": 2,
+   "origin": "leq",
+   "hangs": 1
   },
   {
    "file": "src/ga/inventory.c",
@@ -1942,7 +2193,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1950,7 +2202,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1958,7 +2211,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1966,7 +2220,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1974,7 +2229,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1982,7 +2238,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1990,7 +2247,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -1998,7 +2256,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2006,7 +2265,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2014,7 +2274,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2022,7 +2283,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2030,7 +2292,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2038,7 +2301,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2046,7 +2310,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2054,7 +2319,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/ga/inventory.c",
@@ -2062,149 +2328,127 @@
    "op": "NumericTweak",
    "to": "193U",
    "count": 1,
-   "origin": "utf8mask"
-  }
- ],
- "test_disposed": [
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "killed": [
-    "178:17",
-    "182:23",
-    "182:47",
-    "182:72"
-   ],
-   "kept": []
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "killed": [
-    "178:5",
-    "182:9"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "179:16",
-    "181:21",
-    "183:20"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "0",
-   "killed": [
-    "186:12"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "179:16",
-    "181:21",
-    "183:20"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_dist_pairs_eq",
-   "op": "NumericTweak",
-   "to": "2",
-   "killed": [
-    "186:12"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ComparisonSwap",
-   "to": "!=",
-   "killed": [
-    "192:24",
-    "192:60",
-    "193:17"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ComparisonSwap",
-   "to": "==",
-   "killed": [
-    "199:62",
-    "200:66",
-    "201:35"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "killed": [
-    "197:5",
-    "199:13"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "NumericTweak",
-   "to": "-1",
-   "killed": [
-    "198:25",
-    "199:65",
-    "200:69",
-    "202:25"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
-   "op": "NumericTweak",
-   "to": "1",
-   "killed": [
-    "198:25",
-    "199:65",
-    "200:69",
-    "202:25"
-   ],
-   "kept": []
-  },
-  {
-   "file": "src/ga/dist.c",
-   "function": "bt_ga_freq_data_eq",
+   "file": "src/ga/features.c",
+   "function": "bt_ga_is_nfc",
    "op": "StatementDelete",
    "to": "",
-   "killed": [
-    "202:17"
-   ],
-   "kept": []
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/features.c",
+   "function": "bt_ga_utf8_valid",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_ox",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/ga.c",
+   "function": "bt_ga_sorted_order",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_sorted_contains",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/ga/inventory.c",
+   "function": "bt_ga_trim",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 3,
+   "origin": "hang",
+   "hangs": 3
   }
  ],
+ "test_disposed": [],
  "unclassified": []
 }

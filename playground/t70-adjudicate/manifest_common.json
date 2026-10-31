@@ -6,7 +6,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count+meta"
+   "origin": "count+meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -14,7 +15,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -22,7 +24,8 @@
    "op": "NumericTweak",
    "to": "133",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -30,7 +33,8 @@
    "op": "NumericTweak",
    "to": "135",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -38,7 +42,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -46,7 +51,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -54,7 +60,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -62,7 +69,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -70,7 +78,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -78,7 +87,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -86,7 +96,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -94,7 +105,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -102,7 +114,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -110,7 +123,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 11,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -118,7 +132,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -126,7 +141,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -134,7 +150,8 @@
    "op": "NumericTweak",
    "to": "255",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -142,7 +159,8 @@
    "op": "NumericTweak",
    "to": "257",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -150,7 +168,8 @@
    "op": "NumericTweak",
    "to": "492",
    "count": 2,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -158,7 +177,8 @@
    "op": "NumericTweak",
    "to": "494",
    "count": 2,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_harness.c",
@@ -166,7 +186,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -174,7 +195,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -182,31 +204,35 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "bt_trace_dump_to",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 1,
-   "origin": "leq"
+   "count": 2,
+   "origin": "leq",
+   "hangs": 1
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "bt_trace_dump_to",
    "op": "NumericTweak",
    "to": "1",
-   "count": 2,
-   "origin": "zero"
+   "count": 3,
+   "origin": "zero",
+   "hangs": 1
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "bt_trace_dump_to",
    "op": "StatementDelete",
    "to": "",
-   "count": 2,
-   "origin": "report"
+   "count": 3,
+   "origin": "report",
+   "hangs": 1
   },
   {
    "file": "src/common/bt_trace.c",
@@ -214,7 +240,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -222,7 +249,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -230,7 +258,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -238,7 +267,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -246,7 +276,8 @@
    "op": "NumericTweak",
    "to": "511",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -254,7 +285,8 @@
    "op": "NumericTweak",
    "to": "513",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -262,7 +294,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -270,7 +303,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -278,7 +312,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -286,7 +321,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -294,7 +330,8 @@
    "op": "NumericTweak",
    "to": "511",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -302,7 +339,8 @@
    "op": "NumericTweak",
    "to": "513",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -310,7 +348,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -318,7 +357,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -326,7 +366,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -334,7 +375,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -342,7 +384,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -350,7 +393,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+cap"
+   "origin": "zero+cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -358,7 +402,8 @@
    "op": "NumericTweak",
    "to": "511",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -366,7 +411,8 @@
    "op": "NumericTweak",
    "to": "513",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -374,7 +420,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "report"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -382,7 +429,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -390,7 +438,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -398,7 +447,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -406,7 +456,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -414,7 +465,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -422,7 +474,8 @@
    "op": "NumericTweak",
    "to": "511",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -430,7 +483,8 @@
    "op": "NumericTweak",
    "to": "513",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -438,7 +492,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "report"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -446,7 +501,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 4,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -454,15 +510,17 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "bt_trace_init",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 1,
-   "origin": "zero"
+   "count": 3,
+   "origin": "zero",
+   "hangs": 2
   },
   {
    "file": "src/common/bt_trace.c",
@@ -470,15 +528,17 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "bt_trace_init",
    "op": "NumericTweak",
    "to": "1",
-   "count": 4,
-   "origin": "zero+count"
+   "count": 5,
+   "origin": "zero+count",
+   "hangs": 1
   },
   {
    "file": "src/common/bt_trace.c",
@@ -486,7 +546,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -494,7 +555,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -502,7 +564,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -510,7 +573,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -518,7 +582,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -526,7 +591,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -534,7 +600,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -542,7 +609,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -550,7 +618,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -558,7 +627,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -566,7 +636,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 5,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -574,7 +645,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -582,7 +654,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 6,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -590,7 +663,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -598,7 +672,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 8,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -606,7 +681,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -614,7 +690,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -622,7 +699,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -630,7 +708,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -638,7 +717,8 @@
    "op": "NumericTweak",
    "to": "511",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -646,7 +726,8 @@
    "op": "NumericTweak",
    "to": "513",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -654,23 +735,26 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "read_u32",
    "op": "NumericTweak",
    "to": "0",
-   "count": 1,
-   "origin": "count"
+   "count": 2,
+   "origin": "count",
+   "hangs": 1
   },
   {
    "file": "src/common/bt_trace.c",
    "function": "read_u32",
    "op": "NumericTweak",
    "to": "1",
-   "count": 1,
-   "origin": "count"
+   "count": 3,
+   "origin": "count",
+   "hangs": 2
   },
   {
    "file": "src/common/bt_trace.c",
@@ -678,7 +762,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -686,7 +771,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -694,7 +780,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -702,7 +789,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -710,7 +798,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -718,7 +807,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -726,7 +816,8 @@
    "op": "NumericTweak",
    "to": "7",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/bt_trace.c",
@@ -734,7 +825,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -742,7 +834,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -750,7 +843,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -758,7 +852,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -766,7 +861,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -774,7 +870,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -782,7 +879,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -790,7 +888,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -798,7 +897,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -806,7 +906,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -814,7 +915,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -822,7 +924,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -830,7 +933,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -838,7 +942,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -846,7 +951,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -854,7 +960,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -862,7 +969,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -870,7 +978,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -878,7 +987,8 @@
    "op": "NumericTweak",
    "to": "127",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -886,7 +996,8 @@
    "op": "NumericTweak",
    "to": "129",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -894,7 +1005,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -902,7 +1014,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -910,7 +1023,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -918,7 +1032,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -926,7 +1041,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/config.c",
@@ -934,7 +1050,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 6,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/fsrs_math.c",
@@ -942,7 +1059,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/fsrs_math.c",
@@ -950,7 +1068,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/fsrs_math.c",
@@ -958,47 +1077,17 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "append_utf8",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 3,
-   "origin": "leq"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "0",
-   "count": 2,
-   "origin": "override"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "0U",
-   "count": 13,
-   "origin": "count+utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "1",
-   "count": 2,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "11U",
    "count": 1,
-   "origin": "count"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1006,15 +1095,8 @@
    "op": "NumericTweak",
    "to": "127",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "127U",
-   "count": 3,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1022,39 +1104,8 @@
    "op": "NumericTweak",
    "to": "129",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "129U",
-   "count": 4,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "13U",
-   "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "17U",
-   "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "191U",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1062,55 +1113,8 @@
    "op": "NumericTweak",
    "to": "193U",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "19U",
-   "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "1U",
-   "count": 13,
-   "origin": "count+utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "2047",
-   "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "2049",
-   "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "223U",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "225U",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1118,7 +1122,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1126,63 +1131,8 @@
    "op": "NumericTweak",
    "to": "5",
    "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "5U",
-   "count": 2,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "62U",
-   "count": 5,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "64U",
-   "count": 4,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "65535",
-   "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "65537",
-   "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "NumericTweak",
-   "to": "7U",
-   "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "append_utf8",
-   "op": "UnaryDrop",
-   "to": "",
-   "count": 5,
-   "origin": "override"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1190,7 +1140,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 3,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1198,7 +1149,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1206,7 +1158,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1214,7 +1167,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1222,7 +1176,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1230,7 +1185,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1238,7 +1194,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1246,7 +1203,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1254,7 +1212,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1262,7 +1221,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1270,7 +1230,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1278,7 +1239,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1286,7 +1248,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1294,7 +1257,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1302,7 +1266,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1310,7 +1275,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1318,7 +1284,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1326,7 +1293,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1334,7 +1302,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1342,7 +1311,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1350,7 +1320,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1358,7 +1329,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1366,7 +1338,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1374,7 +1347,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1382,7 +1356,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1390,7 +1365,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 5,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1398,7 +1374,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1406,7 +1383,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1414,7 +1392,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1422,7 +1401,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1430,7 +1410,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 2,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1438,7 +1419,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1446,7 +1428,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1454,7 +1437,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1462,7 +1446,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1470,7 +1455,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1478,7 +1464,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "report"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1486,7 +1473,8 @@
    "op": "NumericTweak",
    "to": "95",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1494,7 +1482,8 @@
    "op": "NumericTweak",
    "to": "97",
    "count": 1,
-   "origin": "meta"
+   "origin": "meta",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1502,7 +1491,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "report"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1510,7 +1500,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1518,7 +1509,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1526,7 +1518,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1534,7 +1527,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1542,7 +1536,8 @@
    "op": "NumericTweak",
    "to": "11",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1550,7 +1545,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1558,7 +1554,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1566,7 +1563,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1574,7 +1572,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1582,7 +1581,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1590,7 +1590,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1598,7 +1599,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1606,7 +1608,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1614,7 +1617,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 8,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1622,7 +1626,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1630,7 +1635,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1638,7 +1644,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1646,7 +1653,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1654,7 +1662,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1662,39 +1671,26 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "ComparisonSwap",
    "to": "<",
-   "count": 2,
-   "origin": "bound_admit"
+   "count": 1,
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 2,
-   "origin": "leq"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "ComparisonSwap",
-   "to": ">",
    "count": 1,
-   "origin": "bound_admit"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "ComparisonSwap",
-   "to": ">=",
-   "count": 1,
-   "origin": "bound_admit"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1702,23 +1698,26 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
    "to": "0",
-   "count": 6,
-   "origin": "count+unicoderange"
+   "count": 3,
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
    "to": "1",
-   "count": 4,
-   "origin": "zero+count+unicoderange"
+   "count": 3,
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1726,7 +1725,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1734,7 +1734,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1742,15 +1743,8 @@
    "op": "NumericTweak",
    "to": "55295",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "NumericTweak",
-   "to": "56318",
-   "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1758,7 +1752,8 @@
    "op": "NumericTweak",
    "to": "56319",
    "count": 2,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1766,23 +1761,17 @@
    "op": "NumericTweak",
    "to": "56320",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "NumericTweak",
-   "to": "56321",
-   "count": 2,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_escaped_codepoint",
    "op": "NumericTweak",
    "to": "57342",
-   "count": 2,
-   "origin": "unicoderange"
+   "count": 1,
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1790,15 +1779,8 @@
    "op": "NumericTweak",
    "to": "57344",
    "count": 2,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "parse_escaped_codepoint",
-   "op": "StatementDelete",
-   "to": "",
-   "count": 2,
-   "origin": "report"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1806,7 +1788,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1814,7 +1797,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1822,7 +1806,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1830,7 +1815,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1838,7 +1824,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1846,7 +1833,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1854,7 +1842,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1862,7 +1851,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1870,7 +1860,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1878,7 +1869,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1886,7 +1878,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 3,
-   "origin": "count+cap"
+   "origin": "count+cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1894,7 +1887,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero+cap"
+   "origin": "zero+cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1902,7 +1896,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 4,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1910,7 +1905,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1918,7 +1914,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1926,7 +1923,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1934,7 +1932,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 3,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1942,7 +1941,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1950,7 +1950,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1958,7 +1959,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1966,7 +1968,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1974,7 +1977,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 17,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -1982,15 +1986,17 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_string",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 1,
-   "origin": "zero"
+   "count": 2,
+   "origin": "zero",
+   "hangs": 1
   },
   {
    "file": "src/common/json.c",
@@ -1998,15 +2004,17 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "count+cap"
+   "origin": "count+cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_string",
    "op": "NumericTweak",
    "to": "1",
-   "count": 3,
-   "origin": "zero+cap"
+   "count": 4,
+   "origin": "zero+cap",
+   "hangs": 1
   },
   {
    "file": "src/common/json.c",
@@ -2014,7 +2022,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 8,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2022,7 +2031,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 2,
-   "origin": "cap+utf8mask"
+   "origin": "cap+utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2030,15 +2040,17 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "parse_string",
    "op": "StatementDelete",
    "to": "",
-   "count": 9,
-   "origin": "write"
+   "count": 10,
+   "origin": "write",
+   "hangs": 1
   },
   {
    "file": "src/common/json.c",
@@ -2046,7 +2058,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2054,7 +2067,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2062,7 +2076,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2070,7 +2085,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2078,7 +2094,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2086,7 +2103,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 5,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2094,7 +2112,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2102,7 +2121,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2110,7 +2130,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2118,7 +2139,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2126,7 +2148,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "report"
+   "origin": "report",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2134,7 +2157,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2142,7 +2166,8 @@
    "op": "NumericTweak",
    "to": "18",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2150,7 +2175,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2158,7 +2184,8 @@
    "op": "NumericTweak",
    "to": "63",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2166,7 +2193,8 @@
    "op": "NumericTweak",
    "to": "65",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2174,7 +2202,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2182,7 +2211,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 2,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2190,7 +2220,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2198,7 +2229,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2206,7 +2238,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 7,
-   "origin": "count+utf8mask"
+   "origin": "count+utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2214,7 +2247,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero+utf8mask"
+   "origin": "zero+utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2222,7 +2256,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2230,7 +2265,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2238,7 +2274,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2246,7 +2283,8 @@
    "op": "NumericTweak",
    "to": "8",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2254,7 +2292,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2262,7 +2301,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 9,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2270,7 +2310,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 9,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2278,7 +2319,8 @@
    "op": "NumericTweak",
    "to": "31",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2286,7 +2328,8 @@
    "op": "NumericTweak",
    "to": "33",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2294,7 +2337,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2302,7 +2346,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2310,7 +2355,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2318,7 +2364,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2326,7 +2373,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2334,95 +2382,62 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "ComparisonSwap",
    "to": "<",
-   "count": 5,
-   "origin": "bound_admit"
+   "count": 3,
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "ComparisonSwap",
    "to": "<=",
-   "count": 3,
-   "origin": "leq"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ComparisonSwap",
-   "to": ">",
-   "count": 4,
-   "origin": "bound_admit"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ComparisonSwap",
-   "to": ">=",
-   "count": 2,
-   "origin": "bound_admit"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "ConditionNegation",
-   "to": "!(...)",
-   "count": 2,
-   "origin": "neg"
+   "count": 1,
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "-1",
-   "count": 9,
-   "origin": "zero"
+   "count": 10,
+   "origin": "zero",
+   "hangs": 5
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "0",
-   "count": 11,
-   "origin": "count+utf8mask+unicoderange"
+   "count": 6,
+   "origin": "count+utf8mask+unicoderange",
+   "hangs": 1
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "0U",
-   "count": 4,
-   "origin": "count+utf8mask"
+   "count": 1,
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "1",
-   "count": 18,
-   "origin": "zero+count+utf8mask+unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "1114110",
-   "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "1114112",
-   "count": 1,
-   "origin": "unicoderange"
+   "count": 15,
+   "origin": "zero+utf8mask+unicoderange",
+   "hangs": 5
   },
   {
    "file": "src/common/json.c",
@@ -2430,39 +2445,8 @@
    "op": "NumericTweak",
    "to": "127",
    "count": 2,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "129",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "14U",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "16U",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "190",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2470,7 +2454,8 @@
    "op": "NumericTweak",
    "to": "192",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2478,31 +2463,26 @@
    "op": "NumericTweak",
    "to": "193",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "195",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "1U",
-   "count": 5,
-   "origin": "count+utf8mask"
+   "count": 1,
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "2",
-   "count": 6,
-   "origin": "count"
+   "count": 3,
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2510,15 +2490,8 @@
    "op": "NumericTweak",
    "to": "2047",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "2049",
-   "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2526,7 +2499,8 @@
    "op": "NumericTweak",
    "to": "222",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2534,23 +2508,8 @@
    "op": "NumericTweak",
    "to": "223",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "224",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "225",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2558,7 +2517,8 @@
    "op": "NumericTweak",
    "to": "238",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2566,31 +2526,8 @@
    "op": "NumericTweak",
    "to": "239",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "240",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "241",
-   "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "243",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2598,15 +2535,8 @@
    "op": "NumericTweak",
    "to": "245",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "3",
-   "count": 2,
-   "origin": "count"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2614,7 +2544,8 @@
    "op": "NumericTweak",
    "to": "30U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2622,15 +2553,17 @@
    "op": "NumericTweak",
    "to": "32U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "NumericTweak",
    "to": "4",
-   "count": 2,
-   "origin": "count"
+   "count": 1,
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2638,15 +2571,8 @@
    "op": "NumericTweak",
    "to": "55295",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "55297",
-   "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2654,7 +2580,8 @@
    "op": "NumericTweak",
    "to": "57342",
    "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2662,15 +2589,8 @@
    "op": "NumericTweak",
    "to": "57344",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "5U",
-   "count": 1,
-   "origin": "count"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2678,15 +2598,8 @@
    "op": "NumericTweak",
    "to": "62U",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "64U",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2694,15 +2607,8 @@
    "op": "NumericTweak",
    "to": "65535",
    "count": 1,
-   "origin": "unicoderange"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "65537",
-   "count": 1,
-   "origin": "unicoderange"
+   "origin": "unicoderange",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2710,31 +2616,17 @@
    "op": "NumericTweak",
    "to": "6U",
    "count": 1,
-   "origin": "utf8mask"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "7U",
-   "count": 1,
-   "origin": "count"
-  },
-  {
-   "file": "src/common/json.c",
-   "function": "utf8_valid",
-   "op": "NumericTweak",
-   "to": "8U",
-   "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
    "function": "utf8_valid",
    "op": "StatementDelete",
    "to": "",
-   "count": 6,
-   "origin": "write"
+   "count": 1,
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/json.c",
@@ -2742,7 +2634,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2750,7 +2643,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2758,7 +2652,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2766,7 +2661,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2774,7 +2670,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2782,7 +2679,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2790,7 +2688,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2798,7 +2697,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2806,7 +2706,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 2,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2814,7 +2715,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2822,7 +2724,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2830,7 +2733,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2838,7 +2742,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 2,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2846,7 +2751,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2854,7 +2760,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2862,7 +2769,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2870,7 +2778,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2878,7 +2787,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2886,7 +2796,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2894,7 +2805,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2902,7 +2814,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2910,7 +2823,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2918,7 +2832,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2926,7 +2841,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2934,7 +2850,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2942,7 +2859,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2950,7 +2868,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 2,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2958,7 +2877,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2966,7 +2886,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2974,7 +2895,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 5,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2982,7 +2904,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2990,7 +2913,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -2998,7 +2922,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3006,7 +2931,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3014,7 +2940,8 @@
    "op": "ComparisonSwap",
    "to": "==",
    "count": 1,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3022,7 +2949,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3030,7 +2958,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 3,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3038,7 +2967,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3046,7 +2976,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3054,7 +2985,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 7,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3062,7 +2994,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 7,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3070,7 +3003,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3078,7 +3012,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3086,7 +3021,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3094,7 +3030,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3102,7 +3039,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3110,7 +3048,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3118,7 +3057,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3126,7 +3066,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 2,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3134,7 +3075,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3142,7 +3084,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3150,7 +3093,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3158,7 +3102,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3166,7 +3111,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/paths.c",
@@ -3174,7 +3120,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3182,7 +3129,8 @@
    "op": "NumericTweak",
    "to": "65",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3190,7 +3138,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 2,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3198,7 +3147,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3206,7 +3156,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3214,7 +3165,8 @@
    "op": "NumericTweak",
    "to": "9",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3222,7 +3174,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3230,7 +3183,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3238,15 +3192,17 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
    "function": "bt_sha256_update",
    "op": "StatementDelete",
    "to": "",
-   "count": 1,
-   "origin": "write"
+   "count": 3,
+   "origin": "write",
+   "hangs": 2
   },
   {
    "file": "src/common/sha256.c",
@@ -3254,7 +3210,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3262,7 +3219,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3270,7 +3228,8 @@
    "op": "NumericTweak",
    "to": "17",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/sha256.c",
@@ -3278,7 +3237,8 @@
    "op": "NumericTweak",
    "to": "65",
    "count": 1,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3286,7 +3246,8 @@
    "op": "ComparisonSwap",
    "to": "!=",
    "count": 23,
-   "origin": "eqflip"
+   "origin": "eqflip",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3294,7 +3255,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3302,7 +3264,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3310,7 +3273,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 3,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3318,7 +3282,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 4,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3326,7 +3291,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 6,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3334,7 +3300,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 15,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3342,7 +3309,8 @@
    "op": "NumericTweak",
    "to": "0U",
    "count": 20,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3350,7 +3318,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 14,
-   "origin": "zero+count"
+   "origin": "zero+count",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3358,7 +3327,8 @@
    "op": "NumericTweak",
    "to": "10U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3366,7 +3336,8 @@
    "op": "NumericTweak",
    "to": "11U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3374,7 +3345,8 @@
    "op": "NumericTweak",
    "to": "127U",
    "count": 5,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3382,7 +3354,8 @@
    "op": "NumericTweak",
    "to": "128U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3390,7 +3363,8 @@
    "op": "NumericTweak",
    "to": "129U",
    "count": 5,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3398,7 +3372,8 @@
    "op": "NumericTweak",
    "to": "12U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3406,7 +3381,8 @@
    "op": "NumericTweak",
    "to": "130U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3414,7 +3390,8 @@
    "op": "NumericTweak",
    "to": "132U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3422,7 +3399,8 @@
    "op": "NumericTweak",
    "to": "134U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3430,7 +3408,8 @@
    "op": "NumericTweak",
    "to": "137U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3438,7 +3417,8 @@
    "op": "NumericTweak",
    "to": "139U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3446,7 +3426,8 @@
    "op": "NumericTweak",
    "to": "13U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3454,7 +3435,8 @@
    "op": "NumericTweak",
    "to": "153U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3462,7 +3444,8 @@
    "op": "NumericTweak",
    "to": "155U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3470,7 +3453,8 @@
    "op": "NumericTweak",
    "to": "158U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3478,7 +3462,8 @@
    "op": "NumericTweak",
    "to": "159U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3486,7 +3471,8 @@
    "op": "NumericTweak",
    "to": "160U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3494,7 +3480,8 @@
    "op": "NumericTweak",
    "to": "161U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3502,7 +3489,8 @@
    "op": "NumericTweak",
    "to": "167U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3510,7 +3498,8 @@
    "op": "NumericTweak",
    "to": "168U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3518,7 +3507,8 @@
    "op": "NumericTweak",
    "to": "169U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3526,7 +3516,8 @@
    "op": "NumericTweak",
    "to": "170U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3534,7 +3525,8 @@
    "op": "NumericTweak",
    "to": "174U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3542,7 +3534,8 @@
    "op": "NumericTweak",
    "to": "176U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3550,7 +3543,8 @@
    "op": "NumericTweak",
    "to": "193U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3558,7 +3552,8 @@
    "op": "NumericTweak",
    "to": "195U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3566,7 +3561,8 @@
    "op": "NumericTweak",
    "to": "1U",
    "count": 20,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3574,7 +3570,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 9,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3582,7 +3579,8 @@
    "op": "NumericTweak",
    "to": "224U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3590,7 +3588,8 @@
    "op": "NumericTweak",
    "to": "225U",
    "count": 2,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3598,7 +3597,8 @@
    "op": "NumericTweak",
    "to": "226U",
    "count": 2,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3606,7 +3606,8 @@
    "op": "NumericTweak",
    "to": "227U",
    "count": 2,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3614,7 +3615,8 @@
    "op": "NumericTweak",
    "to": "228U",
    "count": 1,
-   "origin": "utf8mask"
+   "origin": "utf8mask",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3622,7 +3624,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 10,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3630,7 +3633,8 @@
    "op": "NumericTweak",
    "to": "4",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/space.c",
@@ -3638,7 +3642,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 3,
-   "origin": "write"
+   "origin": "write",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3646,7 +3651,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3654,7 +3660,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3662,7 +3669,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3670,7 +3678,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3678,7 +3687,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3686,7 +3696,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3694,7 +3705,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3702,7 +3714,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 4,
-   "origin": "report"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3710,7 +3723,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3718,7 +3732,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3726,7 +3741,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "cleanup"
+   "origin": "cleanup",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3734,7 +3750,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3742,7 +3759,8 @@
    "op": "ConditionNegation",
    "to": "!(...)",
    "count": 1,
-   "origin": "neg"
+   "origin": "neg",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3750,15 +3768,17 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
    "function": "bt_strbuf_init",
    "op": "NumericTweak",
    "to": "0",
-   "count": 4,
-   "origin": "count+cap"
+   "count": 5,
+   "origin": "count+cap",
+   "hangs": 1
   },
   {
    "file": "src/common/strbuf.c",
@@ -3766,7 +3786,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 4,
-   "origin": "zero+cap"
+   "origin": "zero+cap",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3774,7 +3795,8 @@
    "op": "NumericTweak",
    "to": "15",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3782,7 +3804,8 @@
    "op": "NumericTweak",
    "to": "17",
    "count": 2,
-   "origin": "cap"
+   "origin": "cap",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3790,15 +3813,17 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 3,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
    "function": "bt_strbuf_init",
    "op": "StatementDelete",
    "to": "",
-   "count": 5,
-   "origin": "crash"
+   "count": 6,
+   "origin": "crash",
+   "hangs": 1
   },
   {
    "file": "src/common/strbuf.c",
@@ -3806,7 +3831,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3814,7 +3840,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3822,7 +3849,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 2,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3830,7 +3858,8 @@
    "op": "ComparisonSwap",
    "to": "<",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3838,23 +3867,26 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
    "function": "bt_strbuf_reserve",
    "op": "NumericTweak",
    "to": "0",
-   "count": 5,
-   "origin": "count"
+   "count": 6,
+   "origin": "count",
+   "hangs": 1
   },
   {
    "file": "src/common/strbuf.c",
    "function": "bt_strbuf_reserve",
    "op": "NumericTweak",
    "to": "1",
-   "count": 1,
-   "origin": "count"
+   "count": 2,
+   "origin": "count",
+   "hangs": 1
   },
   {
    "file": "src/common/strbuf.c",
@@ -3862,7 +3894,8 @@
    "op": "NumericTweak",
    "to": "2",
    "count": 5,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3870,15 +3903,17 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 2,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
    "function": "bt_strbuf_reserve",
    "op": "StatementDelete",
    "to": "",
-   "count": 2,
-   "origin": "crash"
+   "count": 3,
+   "origin": "crash",
+   "hangs": 1
   },
   {
    "file": "src/common/strbuf.c",
@@ -3886,7 +3921,8 @@
    "op": "ComparisonSwap",
    "to": "<=",
    "count": 1,
-   "origin": "leq"
+   "origin": "leq",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3894,7 +3930,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3902,7 +3939,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/strbuf.c",
@@ -3910,7 +3948,8 @@
    "op": "StatementDelete",
    "to": "",
    "count": 1,
-   "origin": "crash"
+   "origin": "crash",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3918,7 +3957,8 @@
    "op": "NumericTweak",
    "to": "3601",
    "count": 2,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3926,7 +3966,8 @@
    "op": "ComparisonSwap",
    "to": ">=",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3934,7 +3975,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3942,7 +3984,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 2,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3950,7 +3993,8 @@
    "op": "ComparisonSwap",
    "to": ">",
    "count": 1,
-   "origin": "bound_admit"
+   "origin": "bound_admit",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3958,7 +4002,8 @@
    "op": "NumericTweak",
    "to": "-1",
    "count": 1,
-   "origin": "zero"
+   "origin": "zero",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3966,7 +4011,8 @@
    "op": "NumericTweak",
    "to": "0",
    "count": 2,
-   "origin": "count+calconst"
+   "origin": "count+calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3974,7 +4020,8 @@
    "op": "NumericTweak",
    "to": "1",
    "count": 3,
-   "origin": "zero+count+calconst"
+   "origin": "zero+count+calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3982,7 +4029,8 @@
    "op": "NumericTweak",
    "to": "101",
    "count": 1,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3990,7 +4038,8 @@
    "op": "NumericTweak",
    "to": "1459",
    "count": 1,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -3998,7 +4047,8 @@
    "op": "NumericTweak",
    "to": "146095",
    "count": 2,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -4006,7 +4056,8 @@
    "op": "NumericTweak",
    "to": "146097",
    "count": 1,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -4014,7 +4065,8 @@
    "op": "NumericTweak",
    "to": "3",
    "count": 1,
-   "origin": "count"
+   "origin": "count",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -4022,7 +4074,8 @@
    "op": "NumericTweak",
    "to": "36523",
    "count": 1,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
   },
   {
    "file": "src/common/when.c",
@@ -4030,7 +4083,314 @@
    "op": "NumericTweak",
    "to": "36525",
    "count": 1,
-   "origin": "calconst"
+   "origin": "calconst",
+   "hangs": 0
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "bt_trace_dump_to",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "ComparisonSwap",
+   "to": "<=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "read_u32",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "ring_push",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "0U",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "1U",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "254U",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "NumericTweak",
+   "to": "256U",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/bt_trace.c",
+   "function": "write_u32",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "scan_digits",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/json.c",
+   "function": "skip_space",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "base_prefix_len",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/paths.c",
+   "function": "unc_is_absolute",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_final",
+   "op": "NumericTweak",
+   "to": "2",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "ComparisonSwap",
+   "to": "!=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "ComparisonSwap",
+   "to": ">=",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "ConditionNegation",
+   "to": "!(...)",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "NumericTweak",
+   "to": "-1",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "NumericTweak",
+   "to": "0",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "NumericTweak",
+   "to": "1",
+   "count": 3,
+   "origin": "hang",
+   "hangs": 3
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "NumericTweak",
+   "to": "63",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
+  },
+  {
+   "file": "src/common/sha256.c",
+   "function": "bt_sha256_update",
+   "op": "NumericTweak",
+   "to": "65",
+   "count": 1,
+   "origin": "hang",
+   "hangs": 1
+  },
+  {
+   "file": "src/common/strbuf.c",
+   "function": "bt_strbuf_trim",
+   "op": "StatementDelete",
+   "to": "",
+   "count": 2,
+   "origin": "hang",
+   "hangs": 2
   }
  ],
  "test_disposed": [],

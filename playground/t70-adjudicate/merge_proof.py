@@ -159,8 +159,8 @@ def main():
             test_killed.add((family["file"], int(line), int(col), family["op"], family["to"]))
     for key, statuses in sorted(sites.items()):
         verdict = verdict_of(statuses)
-        if verdict in ("timeout", "pending"):
-            excluded[verdict] += 1
+        if verdict == "pending":
+            excluded["pending"] += 1
             continue
         path, line, col, op, frm, to = key
         if verdict == "survived" and (path, line, col, op, to) in test_killed:
