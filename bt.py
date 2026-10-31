@@ -34,6 +34,37 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     return 0;
 }
 """
+CUDA_DEFINE = "-DBT_GA_EVAL_CUDA"
+CUDA_IEEE_FLAGS = ("--fmad=false", "-ftz=false", "--prec-div=true", "--prec-sqrt=true")
+CUDA_UNIT = "src/ga/cuda/ga_eval.cu"
+CUDA_LIB_NAME = "cudart_static"
+CUDA_SMOKE_SOURCE = """#include <cuda_runtime.h>
+
+__global__ void bt_cuda_smoke(float *dst) {
+    dst[0] = 0.25f + 0.25f;
+}
+
+int main(void) {
+    float *dev = NULL;
+    float host = 0.0f;
+    if (cudaMalloc(&dev, sizeof host) != cudaSuccess) {
+        return 2;
+    }
+    bt_cuda_smoke<<<1, 1>>>(dev);
+    if (cudaGetLastError() != cudaSuccess) {
+        return 3;
+    }
+    if (cudaDeviceSynchronize() != cudaSuccess) {
+        return 4;
+    }
+    if (cudaMemcpy(&host, dev, sizeof host, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        return 5;
+    }
+    cudaFree(dev);
+    return host == 0.5f ? 0 : 6;
+}
+"""
+VSWHERE_RELPATH = Path("Microsoft Visual Studio") / "Installer" / "vswhere.exe"
 
 
 class BtError(RuntimeError):
@@ -258,8 +289,21 @@ def compile_flags(hub):
     ]
 
 
-def objects_dirname(hub):
-    payload = "\n".join(compile_flags(hub))
+def cuda_cfg(hub=None):
+    return (hub or load_hub()).get("cuda", {})
+
+
+def cuda_compile_flags(hub, cuda=False):
+    flags = compile_flags(hub)
+    return [*flags, CUDA_DEFINE] if cuda else flags
+
+
+def cuda_bin_dir(hub=None):
+    return REPO_ROOT / cuda_cfg(hub).get("bin_dir", "build/bin-cuda")
+
+
+def objects_dirname(hub, cuda=False):
+    payload = "\n".join(cuda_compile_flags(hub, cuda=cuda))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
@@ -284,11 +328,110 @@ def vendor_extra_flags(source):
     return ()
 
 
-def link_command(compiler, flags, objects, libs, exe):
+def nvcc_argv_of(nvcc):
+    if isinstance(nvcc, (str, Path)):
+        return [str(nvcc)]
+    return [str(part) for part in nvcc]
+
+
+def nvcc_base_flags(ccbin, arch):
+    return ["-ccbin", str(ccbin), f"-arch={arch}", *CUDA_IEEE_FLAGS, "-O3", "-cudart=static"]
+
+
+def nvcc_compile_command(nvcc, ccbin, arch, source, obj):
+    return [
+        *nvcc_argv_of(nvcc),
+        *nvcc_base_flags(ccbin, arch),
+        "-c",
+        str(source),
+        "-o",
+        str(obj),
+    ]
+
+
+def nvcc_smoke_command(nvcc, ccbin, arch, source, exe):
+    return [*nvcc_argv_of(nvcc), *nvcc_base_flags(ccbin, arch), str(source), "-o", str(exe)]
+
+
+def gpu_compute_cap(smi_argv):
+    try:
+        proc = run(
+            [*smi_argv, "--query-gpu=compute_cap", "--format=csv,noheader"],
+            "probe gpu cap",
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if proc.returncode != 0:
+        return None
+    lines = (proc.stdout or "").strip().splitlines()
+    if not lines:
+        return None
+    cap = lines[0].strip()
+    return cap if re.fullmatch(r"\d+\.\d+", cap) else None
+
+
+def sm_arch(cap):
+    major, _, minor = str(cap).partition(".")
+    return f"sm_{int(major)}{int(minor)}"
+
+
+def cuda_arch(hub, cap):
+    pinned = str(cuda_cfg(hub).get("arch", "")).strip()
+    return sm_arch(pinned if pinned else cap)
+
+
+def cuda_lib_dir(nvcc):
+    return Path(nvcc).resolve().parent.parent / "lib" / "x64"
+
+
+def vswhere_installs():
+    vswhere = Path(os.environ.get("ProgramFiles(x86)", "")) / VSWHERE_RELPATH
+    if not vswhere.is_file():
+        return []
+    try:
+        proc = run(
+            [vswhere, "-all", "-products", "*", "-property", "installationPath"],
+            "probe vswhere",
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    if proc.returncode != 0:
+        return []
+    return sorted(
+        Path(line.strip()) for line in (proc.stdout or "").splitlines() if line.strip()
+    )
+
+
+def cl_ccbin_candidates(hub):
+    candidates = []
+    override = build_cfg(hub)["tools"].get("cl", "")
+    if override:
+        candidates.append(Path(override))
+    on_path = shutil.which("cl")
+    if on_path:
+        candidates.append(Path(on_path).parent)
+    for install in vswhere_installs():
+        toolroots = install.glob("VC/Tools/MSVC/*/bin/Hostx64/x64")
+        candidates.extend(sorted(toolroots, reverse=True))
+    seen = set()
+    unique = []
+    for candidate in candidates:
+        key = str(candidate).lower()
+        if key not in seen:
+            seen.add(key)
+            unique.append(candidate)
+    return unique
+
+
+def link_command(compiler, flags, objects, libs, exe, lib_dirs=()):
     argv = [*compiler, *flags, LINKER_FLAG]
     for flag in link_flags_of(load_hub()):
         argv += ["-Xlinker", flag]
     argv += [str(obj) for obj in objects]
+    for lib_dir in lib_dirs:
+        argv += ["-L", str(lib_dir)]
     argv += [f"-l{lib}" for lib in libs]
     argv += ["-o", str(exe)]
     return argv
@@ -316,19 +459,19 @@ def c_files(root):
     return sorted(set(files))
 
 
-def prune_stale_obj_roots(obj_base, current, logger):
+def prune_stale_obj_roots(obj_base, current, logger, keep=()):
     if not obj_base.is_dir():
         return
     for child in obj_base.iterdir():
-        if child.is_dir() and child != current:
+        if child.is_dir() and child != current and child.name not in keep:
             shutil.rmtree(child, ignore_errors=True)
             logger.line("clean", f"removed stale objects {child.name}")
 
 
-def discover_compile_units(hub, root):
+def discover_compile_units(hub, root, cuda=False):
     includes = [root / d for d in INCLUDE_DIRS]
     obj_base = root / dirs_cfg(hub)["obj"]
-    obj_root = obj_base / objects_dirname(hub)
+    obj_root = obj_base / objects_dirname(hub, cuda=cuda)
     units = []
     for source in c_files(root):
         obj = object_path(obj_root, root, source)
@@ -485,10 +628,15 @@ def app_exe_link(hub, root, bin_dir, objs_by_source, src_objects, vendor_objects
     return (bin_dir / name, objects, libs)
 
 
-def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None):
-    includes, obj_root, units = discover_compile_units(hub, root)
-    prune_stale_obj_roots(root / dirs_cfg(hub)["obj"], obj_root, logger)
-    flags = compile_flags(hub)
+def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=None, cuda=None):
+    includes, obj_root, units = discover_compile_units(hub, root, cuda=cuda is not None)
+    prune_stale_obj_roots(
+        root / dirs_cfg(hub)["obj"],
+        obj_root,
+        logger,
+        keep={objects_dirname(hub, cuda=cuda is None)},
+    )
+    flags = cuda_compile_flags(hub, cuda=cuda is not None)
     system_dirs = system_include_dirs(hub)
     tools_needed = (
         tools_needed_scoped(root, discover_test_suites(root), only)
@@ -549,6 +697,21 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
         else:
             logger.line("skip", f"compile {rel} up to date")
         entries.append((source, obj))
+    if cuda is not None:
+        cu_source = root / CUDA_UNIT
+        cu_obj = object_path(obj_root, root, cu_source)
+        cu_obj.parent.mkdir(parents=True, exist_ok=True)
+        if needs_compile(cu_source, cu_obj):
+            commands.append(
+                (
+                    f"compile {CUDA_UNIT}",
+                    nvcc_compile_command(cuda["nvcc"], cuda["ccbin"], cuda["arch"],
+                                         cu_source, cu_obj),
+                )
+            )
+        else:
+            logger.line("skip", f"compile {CUDA_UNIT} up to date")
+        entries.append((cu_source, cu_obj))
     if commands:
         results = run_units(commands, jobs=jobs_of(hub))
         failed = [r for r in results if r.returncode != 0]
@@ -557,7 +720,7 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
         if failed:
             raise BtError(f"{len(failed)} of {len(commands)} compiles failed")
         patched = 0
-        for _, obj in pairs:
+        for _, obj in entries:
             if obj.is_file() and patch_coff_timestamp(obj):
                 patched += 1
         logger.line("repro", f"{patched} object timestamps zeroed")
@@ -567,9 +730,9 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
     return obj_root, entries
 
 
-def generate_stage(hub, root):
+def generate_stage(hub, root, cuda=False):
     gen_dir = root / dirs_cfg(hub)["gen"]
-    obj_root = root / dirs_cfg(hub)["obj"] / objects_dirname(hub)
+    obj_root = root / dirs_cfg(hub)["obj"] / objects_dirname(hub, cuda=cuda)
     gen_dir.mkdir(parents=True, exist_ok=True)
     generated = []
     for suite in discover_test_suites(root):
@@ -584,31 +747,33 @@ def generate_stage(hub, root):
     return generated
 
 
-def link_stamp_path(hub, root):
-    return root / dirs_cfg(hub)["gen"] / "link_stamp.txt"
+def link_stamp_path(hub, root, cuda=False):
+    name = "link_stamp_cuda.txt" if cuda else "link_stamp.txt"
+    return root / dirs_cfg(hub)["gen"] / name
 
 
-def link_stamp_payload(hub):
-    return "\n".join(link_flags_of(hub))
+def link_stamp_payload(hub, cuda=False):
+    return "\n".join([*link_flags_of(hub), "cuda" if cuda else "plain"])
 
 
-def link_stamp_changed(hub, root):
-    stamp = link_stamp_path(hub, root)
+def link_stamp_changed(hub, root, cuda=False):
+    stamp = link_stamp_path(hub, root, cuda)
     return not stamp.is_file() or stamp.read_text(
         encoding="utf-8"
-    ) != link_stamp_payload(hub)
+    ) != link_stamp_payload(hub, cuda)
 
 
-def write_link_stamp(hub, root):
-    stamp = link_stamp_path(hub, root)
+def write_link_stamp(hub, root, cuda=False):
+    stamp = link_stamp_path(hub, root, cuda)
     stamp.parent.mkdir(parents=True, exist_ok=True)
-    stamp.write_text(link_stamp_payload(hub), encoding="utf-8")
+    stamp.write_text(link_stamp_payload(hub, cuda), encoding="utf-8")
 
 
-def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
+def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=None):
     cfg = build_cfg(hub)
-    bin_dir = root / dirs_cfg(hub)["bin"]
-    flags = compile_flags(hub)
+    bin_dir = cuda_bin_dir(hub) if cuda is not None else root / dirs_cfg(hub)["bin"]
+    flags = cuda_compile_flags(hub, cuda=cuda is not None)
+    lib_dirs = [cuda["lib_dir"]] if cuda is not None else []
     objs_by_source = {source: obj for source, obj in entries}
     built_objects = {obj for _, obj in entries}
     src_sources = [
@@ -714,16 +879,20 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None):
     if hello_obj in built_objects:
         links.append((f"link {hello_exe.name}", (hello_exe, [hello_obj], ())))
     commands = []
-    stamp_changed = link_stamp_changed(hub, root)
+    stamp_changed = link_stamp_changed(hub, root, cuda is not None)
     for label, (exe, objects, libs) in links:
         if stamp_changed or needs_link(objects, exe):
             exe.parent.mkdir(parents=True, exist_ok=True)
+            all_libs = [*libs, CUDA_LIB_NAME] if cuda is not None else list(libs)
             commands.append(
-                (label, link_command(compiler, flags, objects, list(libs), exe))
+                (
+                    label,
+                    link_command(compiler, flags, objects, all_libs, exe, lib_dirs=lib_dirs),
+                )
             )
         else:
             logger.line("skip", f"{label} up to date")
-    write_link_stamp(hub, root)
+    write_link_stamp(hub, root, cuda is not None)
     if commands:
         results = run_units(commands, jobs=jobs_of(hub))
         failed = [r for r in results if r.returncode != 0]
@@ -794,6 +963,94 @@ def write_env(hub, env):
     return path
 
 
+def cached_env(hub=None):
+    path = REPO_ROOT / dirs_cfg(hub or load_hub())["env"]
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def cache_cuda_verdict(hub, verdict):
+    env = cached_env(hub)
+    env["cuda"] = verdict
+    return write_env(hub, env)
+
+
+def cuda_probe_base(hub):
+    try:
+        nvcc = resolve_tool("nvcc", hub)
+    except BtError:
+        nvcc = None
+    return {
+        "nvcc": str(nvcc) if nvcc else None,
+        "ccbin": None,
+        "arch": None,
+        "lib_dir": str(cuda_lib_dir(nvcc)) if nvcc else None,
+    }
+
+
+def probe_cuda(hub, root):
+    override = str(cuda_cfg(hub).get("doctor_override", "")).strip().lower()
+    if override in ("pass", "fail"):
+        return {**cuda_probe_base(hub), "ok": override == "pass",
+                "detail": f"doctor override {override}"}
+    base = cuda_probe_base(hub)
+    if base["nvcc"] is None:
+        return {**base, "ok": False, "detail": "nvcc missing"}
+    cap = None
+    smi = shutil.which("nvidia-smi")
+    if smi:
+        cap = gpu_compute_cap([smi])
+    arch = cuda_arch(hub, cap) if cap else None
+    if arch is None:
+        pinned = str(cuda_cfg(hub).get("arch", "")).strip()
+        arch = sm_arch(pinned) if pinned else None
+    if arch is None:
+        return {**base, "ok": False,
+                "detail": "no gpu compute capability from nvidia-smi and no cuda.arch pin"}
+    gen_dir = root / dirs_cfg(hub)["gen"] / "cuda-probe"
+    gen_dir.mkdir(parents=True, exist_ok=True)
+    smoke = gen_dir / "smoke.cu"
+    smoke.write_text(CUDA_SMOKE_SOURCE, encoding="utf-8")
+    exe = gen_dir / "smoke.exe"
+    for ccbin in cl_ccbin_candidates(hub):
+        proc = run(
+            nvcc_smoke_command(base["nvcc"], ccbin, arch, smoke, exe),
+            "probe cuda compile",
+            check=False,
+        )
+        if proc.returncode != 0 or not exe.is_file():
+            continue
+        try:
+            runproc = run([exe], "probe cuda run", check=False, timeout=60)
+        except (OSError, subprocess.SubprocessError) as e:
+            return {**base, "ok": False, "detail": f"smoke run failed to start: {e}"}
+        if runproc.returncode == 0:
+            return {**base, "ccbin": str(ccbin), "arch": arch, "ok": True,
+                    "detail": f"smoke exit 0 on {arch} with {ccbin}"}
+    return {**base, "ok": False,
+            "detail": "no host compiler produced a running cuda smoke"}
+
+
+def cuda_toolchain(hub):
+    cached = cached_env(hub).get("cuda")
+    if cached and cached.get("ok") and all(cached.get(k) for k in ("nvcc", "ccbin", "arch",
+                                                                  "lib_dir")):
+        return cached
+    verdict = probe_cuda(hub, REPO_ROOT)
+    cache_cuda_verdict(hub, verdict)
+    if not verdict.get("ok"):
+        raise BtError(
+            f"cuda toolchain unavailable: {verdict.get('detail')}; run python bt.py doctor"
+        )
+    missing = [k for k in ("nvcc", "ccbin", "arch", "lib_dir") if not verdict.get(k)]
+    if missing:
+        raise BtError(f"cuda verdict incomplete, missing {', '.join(missing)}")
+    return verdict
+
+
 def doctor_collect():
     hub = load_hub()
     env = {
@@ -801,6 +1058,7 @@ def doctor_collect():
         for name in ("clang", "clang_format", "clang_tidy", "llvm_cov", "llvm_ar", "nvcc")
     }
     env["python"] = {"path": sys.executable, "version": platform.python_version()}
+    env["cuda"] = probe_cuda(hub, REPO_ROOT)
     clang = env["clang"]
     if clang["path"] is None:
         env["fuzz"] = {"mode": "plainloop", "detail": "clang missing"}
@@ -831,6 +1089,8 @@ def tgt_doctor(args):
         detail = entry["version"] or "missing"
         logger.line("probe", f"{name} {detail}")
     logger.line("probe", f"fuzz mode {env['fuzz']['mode']} ({env['fuzz']['detail']})")
+    cuda = env["cuda"]
+    logger.line("probe", f"cuda {'ok' if cuda['ok'] else 'unavailable'}: {cuda['detail']}")
     if defect:
         logger.fail("doctor", defect)
         return 1
@@ -858,6 +1118,11 @@ def tgt_setup(args):
         logger.line("pass", f"nvcc {nvcc['version']}")
     else:
         logger.line("info", "nvcc missing, cuda lane disabled")
+    cuda = env["cuda"]
+    if cuda["ok"]:
+        logger.line("pass", f"cuda {cuda['detail']}")
+    else:
+        logger.line("info", f"cuda unavailable: {cuda['detail']}")
     logger.line("info", f"fuzz mode {env['fuzz']['mode']}")
     logger.exit("setup", 0)
     return 0
@@ -868,14 +1133,18 @@ def tgt_build(args):
     hub = load_hub()
     compiler = [resolve_tool("clang", hub)]
     logger = Logger()
-    logger.entry("build")
+    logger.entry("build" if "--cuda" not in args else "build --cuda")
+    cuda = None
     try:
+        if "--cuda" in args:
+            cuda = cuda_toolchain(hub)
+            logger.line("cuda", f"{cuda['arch']} via {cuda['nvcc']} ccbin {cuda['ccbin']}")
         verify_migrations_fresh(REPO_ROOT, logger)
-        generated = generate_stage(hub, REPO_ROOT)
+        generated = generate_stage(hub, REPO_ROOT, cuda=cuda is not None)
         obj_root, entries = compile_stage(
-            hub, REPO_ROOT, compiler, logger, extra=generated
+            hub, REPO_ROOT, compiler, logger, extra=generated, cuda=cuda
         )
-        exes = link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries)
+        exes = link_stage(hub, REPO_ROOT, compiler, logger, obj_root, entries, cuda=cuda)
         for exe in exes:
             logger.line("artifact", f"{exe} size={exe.stat().st_size}")
         logger.exit("build", 0)

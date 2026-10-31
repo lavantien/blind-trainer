@@ -185,6 +185,13 @@
     "tolerance": 48,
     "raylib_log_level": "warning"
   },
+  "cuda": {
+    "enable": false,
+    "parity_tolerance": 1e-06,
+    "doctor_override": "",
+    "arch": "",
+    "bin_dir": "build/bin-cuda"
+  },
   "fuzz": {
     "seed": 20261012,
     "runs": 5000,
