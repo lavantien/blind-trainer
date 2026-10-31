@@ -1,0 +1,61 @@
+== stub: exact live run payload ==
+passed_real: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=41217224663 sha=1d76332)']
+passed_real bytes == committed: True
+== determinism: same payload, second invocation, fresh dir ==
+passed_real_again: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=41217224663 sha=1d76332)']
+identical bytes across runs: True
+== determinism: different run id and sha, same verdict ==
+passed_other_run: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=99999999999 sha=aaaabbb)']
+svg identical to ref, only stdout detail differs: True
+== verdict mapping: failed conclusion ==
+failed: rc=0 svg=f12e60e8ec1f9c0d stdout=['ci: failed (run=41217224663 sha=1d76332)']
+== verdict mapping: timed_out conclusion (gap probe) ==
+timed_out: rc=0 svg=1093845b6fafc2b2 stdout=['ci: unknown (run=41217224663 sha=1d76332)']
+== empty list: no run exists ==
+empty: rc=0 svg=1093845b6fafc2b2 stdout=['ci: unknown (no matching run)']
+== truncated json ==
+truncated: rc=1 svg=none stdout=[]
+== non-list json ==
+nonlist: rc=1 svg=none stdout=[]
+== invalid utf-8 byte inside a json string ==
+bad_utf8: rc=1 svg=none stdout=[]
+== unicode in adjacent fields (emoji, cjk, rtl) ==
+unicode: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=41217224663 sha=1d76332)']
+== long array, 50 entries, first passed ==
+longarr: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=40000000000 sha=1d76332)']
+longarr svg == passed bytes: True
+== long array, first failed, rest passed (runs[0] semantics) ==
+longarr_fail_first: rc=0 svg=f12e60e8ec1f9c0d stdout=['ci: failed (run=40000000000 sha=1d76332)']
+longarr_fail_first svg == failed bytes: True
+== null headSha and databaseId ==
+null_ids: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=None sha=)']
+== string databaseId ==
+str_dbid: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=41217224663 sha=1d76332)']
+== gh auth failure ==
+authfail: rc=1 svg=none stdout=[]
+authfail wrote no file: True
+== gh auth failure with --offline ==
+authfail_offline: rc=0 svg=1093845b6fafc2b2 stdout=['ci: unknown (no matching run)']
+== gh absent from PATH ==
+no_gh: rc=1 svg=37c0ee2e7a0baf4f stdout=[]
+== gh absent from PATH with --offline ==
+no_gh_offline: rc=0 svg=1093845b6fafc2b2 stdout=['ci: unknown (no matching run)']
+== real gh, live query, probe out path ==
+real_gh: rc=0 svg=37c0ee2e7a0baf4f stdout=['ci: passed (run=41217224663 sha=1d76332)']
+real_gh svg == committed bytes: True
+== real gh ordering: limit 5 must be newest first ==
+gh_limit5 rc=0 newest_first=True count=5
+== real gh: branch with zero runs returns empty list ==
+gh_empty_branch rc=0 stdout='[]'
+== real gh without auth: empty GH_CONFIG_DIR, tokens stripped ==
+real_noauth rc=1 svg_exists=False stderr_tail=['2026-10-31T23:40:10 [exit] ci-badge: ci-badge code=1']
+== real gh without auth with --offline ==
+real_noauth_offline rc=0 svg_exists=True verdict_line=['ci: unknown (no matching run)']
+== hang: gh never answers, script must hit its own 30s timeout ==
+hang: rc=1 svg=none stdout=[]
+== xml validity of every verdict svg plus the committed file ==
+xml passed: parses
+xml failed: parses
+xml running: parses
+xml unknown: parses
+xml committed: parses
