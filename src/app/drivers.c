@@ -110,8 +110,8 @@ static int dir_ready(const char *dir) {
 }
 
 static int open_window_and_fonts(bt_app_ctx *ctx, bt_app_font_book *book) {
-    if (!bt_app_window_open(ctx->config.window.width, ctx->config.window.height,
-                            ctx->config.window.title, &ctx->config.render)) {
+    if (!bt_app_window_open_driven(ctx->config.window.width, ctx->config.window.height,
+                                   ctx->config.window.title, &ctx->config.render)) {
         BT_TRACE_FAIL("app.drivers", "window open failed");
         return 0;
     }

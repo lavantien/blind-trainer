@@ -17,6 +17,8 @@ typedef struct {
 
 int bt_app_window_open(unsigned int width, unsigned int height, const char *title,
                        const bt_app_render_cfg *render);
+int bt_app_window_open_driven(unsigned int width, unsigned int height, const char *title,
+                              const bt_app_render_cfg *render);
 void bt_app_window_close(void);
 int bt_app_window_ready(void);
 int bt_app_window_capture(const char *path);

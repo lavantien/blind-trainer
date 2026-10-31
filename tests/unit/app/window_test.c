@@ -1,4 +1,6 @@
+#include "app/driver_keys.h"
 #include "app/window.h"
+#include "app/window_focus.h"
 
 #include "common.h"
 
@@ -45,15 +47,111 @@ BT_TEST(window, probe_opens_the_window_at_the_configured_size) {
     BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
                                 &config.render));
     BT_CHECK(bt_app_window_ready());
+    BT_CHECK(!bt_app_focus_style_no_activate(GetWindowHandle()));
     ClearBackground(bt_app_color(bt_theme_background()));
     bt_app_window_close();
     BT_CHECK(!bt_app_window_ready());
 }
 
+BT_TEST(window, driven_open_never_takes_the_foreground) {
+    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    BT_CHECK(bt_app_window_ready());
+    BT_CHECK(bt_app_focus_style_no_activate(GetWindowHandle()));
+    BT_CHECK(bt_app_focus_foreground_window() != GetWindowHandle());
+    void *watch = bt_app_focus_watch_start(config.window.title, bt_app_focus_current_pid());
+    BT_CHECK(watch != NULL);
+    for (unsigned frame = 0; frame < BT_WINDOW_CAPTURE_DWELL_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_app_window_frame_end();
+    }
+    BT_CHECK_EQ(bt_app_focus_watch_app_foreground_count(watch), 0);
+    bt_app_focus_watch_stop(watch);
+    bt_app_window_close();
+    BT_CHECK(!bt_app_window_ready());
+    bt_app_focus_sentinel_release();
+}
+
+enum {
+    BT_WINDOW_MOUSE_FAR_PX = 100,
+};
+
+static long point_distance_sq(long ax, long ay, long bx, long by) {
+    long dx = ax - bx;
+    long dy = ay - by;
+    return dx * dx + dy * dy;
+}
+
+BT_TEST(window, posted_mouse_drives_input_and_pins_the_real_cursor) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    void *hwnd = GetWindowHandle();
+    long cursor_x = 0;
+    long cursor_y = 0;
+    BT_CHECK(bt_app_focus_cursor_pos(&cursor_x, &cursor_y));
+    const int candidates[6][2] = {
+        {120, 90}, {60, 40}, {200, 150}, {30, 20}, {640, 400}, {1000, 700},
+    };
+    int px = 0;
+    int py = 0;
+    long far_sq = (long)BT_WINDOW_MOUSE_FAR_PX * BT_WINDOW_MOUSE_FAR_PX;
+    for (int at = 0; at < 6; at++) {
+        long screen_x = 0;
+        long screen_y = 0;
+        BT_CHECK(bt_app_focus_client_to_screen(hwnd, candidates[at][0], candidates[at][1],
+                                               &screen_x, &screen_y));
+        if (point_distance_sq(screen_x, screen_y, cursor_x, cursor_y) > far_sq) {
+            px = candidates[at][0];
+            py = candidates[at][1];
+            break;
+        }
+    }
+    BT_CHECK(px != 0);
+    BT_CHECK(bt_app_driver_mouse_move(hwnd, px, py));
+    BT_CHECK(bt_app_driver_mouse_left_down(hwnd, px, py));
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_app_window_frame_end();
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    bt_app_poll_input(&input);
+    BT_CHECK_EQ((int)input.x, px);
+    BT_CHECK_EQ((int)input.y, py);
+    BT_CHECK_EQ(input.click, 1);
+    BT_CHECK_EQ(input.down, 1);
+    bt_ui_rect target = {
+        .x = (float)px - 20.0F,
+        .y = (float)py - 10.0F,
+        .width = 40.0F,
+        .height = 20.0F,
+    };
+    BT_CHECK(bt_ui_contains(&target, input.x, input.y));
+    BT_CHECK(bt_app_driver_mouse_left_up(hwnd, px, py));
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_app_window_frame_end();
+    bt_ui_input_clear(&input);
+    bt_app_poll_input(&input);
+    BT_CHECK_EQ(input.click, 0);
+    BT_CHECK_EQ(input.down, 0);
+    long cursor_after_x = 0;
+    long cursor_after_y = 0;
+    long screen_x = 0;
+    long screen_y = 0;
+    BT_CHECK(bt_app_focus_cursor_pos(&cursor_after_x, &cursor_after_y));
+    BT_CHECK(bt_app_focus_client_to_screen(hwnd, px, py, &screen_x, &screen_y));
+    BT_CHECK(point_distance_sq(screen_x, screen_y, cursor_after_x, cursor_after_y) > far_sq);
+    bt_app_window_close();
+}
+
 BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                                &config.render));
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
     char vendor[BT_PATH_MAX];
     ref_ground(vendor);
     bt_corpus corpus;
@@ -80,8 +178,8 @@ BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
 
 BT_TEST(window, probe_screenshot_captures_the_window_dims) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                                &config.render));
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
     for (unsigned frame = 0; frame < BT_WINDOW_CAPTURE_DWELL_FRAMES; frame++) {
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
@@ -116,8 +214,8 @@ BT_TEST(window, probe_screenshot_captures_the_window_dims) {
 
 BT_TEST(window, probe_input_poll_runs_clean_without_devices) {
     bt_app_config config = load_config();
-    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                                &config.render));
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
     bt_app_window_frame_begin();
     ClearBackground(bt_app_color(bt_theme_background()));
     bt_app_window_frame_end();

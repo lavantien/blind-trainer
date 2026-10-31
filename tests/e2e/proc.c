@@ -1,5 +1,6 @@
 #include "e2e/proc.h"
 
+#include "app/window_focus.h"
 #include "common/bt_trace.h"
 
 #include <errno.h>
@@ -195,6 +196,60 @@ static void normalize_slashes(wchar_t *text) {
     }
 }
 
+static void *g_input_watch;
+
+static int input_guard_start(unsigned long pid, char *error, size_t error_cap) {
+    BT_TRACE_ENTER("e2e.input_guard_start");
+    if (!bt_app_focus_sentinel_acquire()) {
+        snprintf(error, error_cap, "cannot establish the sentinel foreground window");
+        BT_TRACE_FAIL("e2e.input_guard_start", "%s", error);
+        BT_TRACE_EXIT("e2e.input_guard_start");
+        return -1;
+    }
+    g_input_watch = bt_app_focus_watch_start(NULL, pid);
+    if (g_input_watch == NULL) {
+        bt_app_focus_sentinel_release();
+        snprintf(error, error_cap, "cannot watch the spawned process for focus steals");
+        BT_TRACE_FAIL("e2e.input_guard_start", "%s", error);
+        BT_TRACE_EXIT("e2e.input_guard_start");
+        return -1;
+    }
+    BT_TRACE_EXIT("e2e.input_guard_start");
+    return 0;
+}
+
+static void input_guard_stop(void) {
+    BT_TRACE_ENTER("e2e.input_guard_stop");
+    if (g_input_watch != NULL) {
+        bt_app_focus_watch_stop(g_input_watch);
+        g_input_watch = NULL;
+    }
+    bt_app_focus_sentinel_release();
+    BT_TRACE_EXIT("e2e.input_guard_stop");
+}
+
+static int input_guard_verdict(char *error, size_t error_cap) {
+    BT_TRACE_ENTER("e2e.input_guard_verdict");
+    long foreground_samples = bt_app_focus_watch_app_foreground_count(g_input_watch);
+    long cursor_jumps = bt_app_focus_watch_cursor_jump_count(g_input_watch);
+    int verdict = 0;
+    if (foreground_samples > 0) {
+        snprintf(error, error_cap,
+                 "app window held the foreground for %ld samples during the smoke run",
+                 foreground_samples);
+        BT_TRACE_FAIL("e2e.input_guard_verdict", "%s", error);
+        verdict = -1;
+    } else if (cursor_jumps > 0) {
+        snprintf(error, error_cap,
+                 "real cursor jumped onto the app window %ld times during the smoke run",
+                 cursor_jumps);
+        BT_TRACE_FAIL("e2e.input_guard_verdict", "%s", error);
+        verdict = -1;
+    }
+    BT_TRACE_EXIT("e2e.input_guard_verdict");
+    return verdict;
+}
+
 int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const *env_pairs,
                      size_t env_count, unsigned long long deadline_ms, bt_e2e_smoke_run *out,
                      char *error, size_t error_cap) {
@@ -303,6 +358,19 @@ int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const 
         BT_TRACE_EXIT("e2e.run_smoke");
         return -1;
     }
+    if (input_guard_start(GetProcessId(process.hProcess), error, error_cap) != 0) {
+        WaitForSingleObject(stdout_thread, INFINITE);
+        WaitForSingleObject(stderr_thread, INFINITE);
+        CloseHandle(stdout_thread);
+        CloseHandle(stderr_thread);
+        CloseHandle(stdout_read);
+        CloseHandle(stderr_read);
+        CloseHandle(process.hThread);
+        CloseHandle(process.hProcess);
+        BT_TRACE_FAIL("e2e.run_smoke", "%s", error);
+        BT_TRACE_EXIT("e2e.run_smoke");
+        return -1;
+    }
     int timed_out = 0;
     int wait_failed = 0;
     for (;;) {
@@ -345,6 +413,11 @@ int bt_e2e_run_smoke(const char *binary, const char *out_dir, const char *const 
     } else {
         out->has_code = 1;
         out->code = (long)exit_code;
+    }
+    int guard_failed = verdict == 0 ? input_guard_verdict(error, error_cap) : 0;
+    input_guard_stop();
+    if (guard_failed != 0) {
+        verdict = -1;
     }
     if (verdict == 0) {
         BT_TRACE_EXIT("e2e.run_smoke");

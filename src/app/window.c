@@ -2,6 +2,7 @@
 
 #include "app/config.h"
 #include "app/fonts.h"
+#include "app/window_focus.h"
 #include "common/bt_trace.h"
 #include "common/paths.h"
 
@@ -38,9 +39,33 @@ int bt_app_window_open(unsigned int width, unsigned int height, const char *titl
     return ready;
 }
 
+int bt_app_window_open_driven(unsigned int width, unsigned int height, const char *title,
+                              const bt_app_render_cfg *render) {
+    BT_TRACE_ENTER("app.window_open_driven");
+    SetTraceLogLevel(LOG_WARNING);
+    SetConfigFlags(FLAG_WINDOW_UNFOCUSED);
+    if (render != NULL && render->vsync) {
+        SetConfigFlags(FLAG_VSYNC_HINT);
+    }
+    InitWindow((int)width, (int)height, title);
+    SetExitKey(KEY_NULL);
+    if (render != NULL && render->target_fps > 0) {
+        SetTargetFPS((int)render->target_fps);
+    }
+    int ready = IsWindowReady() ? 1 : 0;
+    if (ready) {
+        bt_app_focus_no_activate_install(GetWindowHandle());
+    } else {
+        BT_TRACE_FAIL("app.window_open_driven", "window %ux%u not ready", width, height);
+    }
+    BT_TRACE_EXIT("app.window_open_driven");
+    return ready;
+}
+
 void bt_app_window_close(void) {
     BT_TRACE_ENTER("app.window_close");
     if (IsWindowReady()) {
+        bt_app_focus_no_activate_restore();
         CloseWindow();
     }
     BT_TRACE_EXIT("app.window_close");

@@ -2,6 +2,7 @@
 #include "app/driver_keys.h"
 #include "app/drivers.h"
 #include "app/window.h"
+#include "app/window_focus.h"
 
 #include "common.h"
 
@@ -39,8 +40,8 @@ BT_TEST(drivers, posted_arrow_keys_reach_the_polled_key_state) {
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers arrow test");
-    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                            &config.render)) {
+    if (!bt_app_window_open_driven(config.window.width, config.window.height, config.window.title,
+                                   &config.render)) {
         return;
     }
     void *hwnd = GetWindowHandle();
@@ -61,8 +62,8 @@ BT_TEST(drivers, posted_escape_routes_the_app_to_the_menu) {
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers escape test");
-    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                            &config.render)) {
+    if (!bt_app_window_open_driven(config.window.width, config.window.height, config.window.title,
+                                   &config.render)) {
         return;
     }
     bt_app_ctx ctx;
@@ -95,8 +96,8 @@ BT_TEST(drivers, escape_keeps_the_window_open_while_close_still_works) {
     config.window.width = 320;
     config.window.height = 240;
     snprintf(config.window.title, sizeof config.window.title, "%s", "drivers close test");
-    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title,
-                            &config.render)) {
+    if (!bt_app_window_open_driven(config.window.width, config.window.height, config.window.title,
+                                   &config.render)) {
         return;
     }
     void *hwnd = GetWindowHandle();
@@ -146,6 +147,7 @@ static void restore_appdata(const char *saved) {
 BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {
     char saved_appdata[TA_PATH_MAX];
     sandbox_appdata("smoke-user", saved_appdata, sizeof saved_appdata);
+    BT_CHECK(bt_app_focus_sentinel_acquire());
     bt_app_ctx ctx;
     bt_app_shot_mode mode;
     char mode_dir[BT_PATH_MAX];
@@ -154,8 +156,14 @@ BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {
     BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
                 0);
     BT_CHECK_EQ(mode, BT_APP_SHOT_NONE);
+    void *watch = bt_app_focus_watch_start(ctx.config.window.title, bt_app_focus_current_pid());
+    BT_CHECK(watch != NULL);
     const char *dir = ta_temp_dir("drivers", "smoke-tour");
     int code = bt_app_smoke_main(&ctx, dir, 20261012);
+    BT_CHECK_EQ(bt_app_focus_watch_app_foreground_count(watch), 0);
+    BT_CHECK_EQ(bt_app_focus_watch_cursor_jump_count(watch), 0);
+    bt_app_focus_watch_stop(watch);
+    bt_app_focus_sentinel_release();
     if (code != 0) {
         fprintf(stderr, "drivers: smoke code %d fatal [%s]\n", code, ctx.fatal_reason);
     }

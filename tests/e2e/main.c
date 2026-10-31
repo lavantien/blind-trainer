@@ -157,6 +157,7 @@ static int bt_e2e_real_main(size_t argc, const char *const *argv, char *error, s
         return -1;
     }
     bt_e2e_smoke_run_free(&run);
+    printf("ok input isolation held across the smoke tour\n");
     char **found = NULL;
     size_t found_count = 0;
     if (bt_e2e_png_names(out_dir, &found, &found_count, error, error_cap) != 0) {

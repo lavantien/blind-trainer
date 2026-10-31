@@ -76,3 +76,33 @@ int bt_app_driver_close_request(void *hwnd) {
     BT_TRACE_EXIT("app.driver_close_request");
     return ok;
 }
+
+int bt_app_driver_mouse_move(void *hwnd, int x, int y) {
+    BT_TRACE_ENTER("app.driver_mouse_move");
+    int ok = PostMessageW((HWND)hwnd, WM_MOUSEMOVE, 0, MAKELPARAM(x, y)) != 0;
+    if (!ok) {
+        BT_TRACE_FAIL("app.driver_mouse_move", "move to %d,%d not delivered", x, y);
+    }
+    BT_TRACE_EXIT("app.driver_mouse_move");
+    return ok;
+}
+
+int bt_app_driver_mouse_left_down(void *hwnd, int x, int y) {
+    BT_TRACE_ENTER("app.driver_mouse_left_down");
+    int ok = PostMessageW((HWND)hwnd, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y)) != 0;
+    if (!ok) {
+        BT_TRACE_FAIL("app.driver_mouse_left_down", "down at %d,%d not delivered", x, y);
+    }
+    BT_TRACE_EXIT("app.driver_mouse_left_down");
+    return ok;
+}
+
+int bt_app_driver_mouse_left_up(void *hwnd, int x, int y) {
+    BT_TRACE_ENTER("app.driver_mouse_left_up");
+    int ok = PostMessageW((HWND)hwnd, WM_LBUTTONUP, 0, MAKELPARAM(x, y)) != 0;
+    if (!ok) {
+        BT_TRACE_FAIL("app.driver_mouse_left_up", "up at %d,%d not delivered", x, y);
+    }
+    BT_TRACE_EXIT("app.driver_mouse_left_up");
+    return ok;
+}

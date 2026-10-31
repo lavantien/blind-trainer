@@ -329,6 +329,9 @@
         "data",
         "puzzles",
         "ga"
+      ],
+      "e2e": [
+        "app"
       ]
     },
     "tool_deps": {
