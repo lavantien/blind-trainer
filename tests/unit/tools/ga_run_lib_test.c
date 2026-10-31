@@ -318,8 +318,12 @@ BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) 
     snprintf(config_path, sizeof config_path, "%s/config/config.json", root);
     FILE *file = fopen(config_path, "rb");
     BT_CHECK(file != NULL);
-    char config_text[8192];
-    size_t config_len = fread(config_text, 1, sizeof config_text - 1, file);
+    char config_text[32768];
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    rewind(file);
+    BT_CHECK(file_size >= 0 && (size_t)file_size + 1 <= sizeof config_text);
+    size_t config_len = fread(config_text, 1, (size_t)file_size, file);
     fclose(file);
     config_text[config_len] = '\0';
     char ga_clean[BT_PATH_MAX];
@@ -336,7 +340,7 @@ BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) 
             *cursor = '/';
         }
     }
-    char stage[8192];
+    char stage[32768];
     char replacement[BT_PATH_MAX + 32];
     snprintf(replacement, sizeof replacement, "\"data_ga\": \"%s\"", ga_clean);
     char *at = strstr(config_text, "\"data_ga\": \"data/ga\"");
