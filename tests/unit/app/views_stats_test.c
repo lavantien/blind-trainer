@@ -314,8 +314,10 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     changed = 0;
     bt_ui_input pick;
     bt_ui_input_clear(&pick);
-    pick.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
-    pick.y = layout.controls[1].y + layout.controls[1].height * 3.5F;
+    bt_ui_rect pick_slot =
+        bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, 2, (float)PROBE_H);
+    pick.x = pick_slot.x + pick_slot.width / 2.0F;
+    pick.y = pick_slot.y + pick_slot.height / 2.0F;
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
         pick.click = frame == 0;
         bt_app_window_frame_begin();
@@ -349,6 +351,75 @@ BT_TEST(views_stats, settings_mode_keys_apply_the_first_match_only) {
     bt_view_settings_update_state(&ctx, app);
     BT_CHECK(ctx.stores.settings.memo_mode == BT_MEMO_IMAGES);
     bt_app_ctx_free(&ctx);
+}
+
+static int draw_settings_frames(bt_settings_draft *draft, int *changed, int *focus,
+                                bt_settings_widgets *widgets, const bt_app_font_book *book,
+                                float window_w, float window_h, bt_ui_input *input) {
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        input->click = frame == 0;
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_settings_draw(draft, changed, focus, widgets, book->regular, book->bold, window_w,
+                              window_h, input);
+        bt_app_window_frame_end();
+    }
+    return 0;
+}
+
+BT_TEST(views_stats, open_select_consumes_the_overlap_band_before_the_reps_field) {
+    if (!bt_app_window_open(1280, 800, "views select modal test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_ui_rect reps = layout.controls[2];
+    bt_ui_rect slot0 = bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, 0, 800.0F);
+    BT_CHECK(slot0.y < reps.y + reps.height);
+    BT_CHECK(slot0.y + slot0.height > reps.y);
+    bt_settings_draft draft;
+    draft.memo_cadence_ms = 800;
+    draft.memo_mode = BT_MEMO_IMAGES;
+    draft.drill_reps = 100;
+    int changed = 0;
+    int focus = 0;
+    bt_settings_widgets widgets;
+    memset(&widgets, 0, sizeof widgets);
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    input.y = layout.controls[1].y + layout.controls[1].height / 2.0F;
+    draw_settings_frames(&draft, &changed, &focus, &widgets, &book, 1280.0F, 800.0F, &input);
+    BT_CHECK(widgets.mode_select.open == 1);
+    changed = 0;
+    bt_ui_input pick;
+    bt_ui_input_clear(&pick);
+    pick.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    pick.y = (slot0.y > reps.y ? slot0.y : reps.y) + 5.0F;
+    draw_settings_frames(&draft, &changed, &focus, &widgets, &book, 1280.0F, 800.0F, &pick);
+    BT_CHECK(changed == 1);
+    BT_CHECK(draft.memo_mode == BT_MEMO_SYLLABLES);
+    BT_CHECK(widgets.mode_select.open == 0);
+    BT_CHECK(widgets.reps.focused == 0);
+    BT_CHECK(draft.drill_reps == 100);
+    widgets.mode_select.open = 1;
+    bt_ui_input stepper;
+    bt_ui_input_clear(&stepper);
+    stepper.x = reps.x + reps.height / 2.0F;
+    stepper.y = (slot0.y > reps.y ? slot0.y : reps.y) + 5.0F;
+    draw_settings_frames(&draft, &changed, &focus, &widgets, &book, 1280.0F, 800.0F, &stepper);
+    BT_CHECK(draft.drill_reps == 100);
+    BT_CHECK(draft.memo_mode == BT_MEMO_SYLLABLES);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
 }
 
 BT_TEST(views_stats, transition_frame_clears_the_published_input) {
@@ -484,8 +555,10 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
     BT_CHECK(app->widgets.mode_select.open == 1);
     bt_ui_input pick;
     bt_ui_input_clear(&pick);
-    pick.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
-    pick.y = layout.controls[1].y + layout.controls[1].height * 3.5F;
+    bt_ui_rect pick_slot =
+        bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, 2, (float)PROBE_H);
+    pick.x = pick_slot.x + pick_slot.width / 2.0F;
+    pick.y = pick_slot.y + pick_slot.height / 2.0F;
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
         pick.click = frame == 0;
         bt_app_frame_input_set(&pick);

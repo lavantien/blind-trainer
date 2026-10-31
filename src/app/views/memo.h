@@ -19,7 +19,8 @@
 #define BT_MEMO_RECENT_MAX 4096
 #define BT_MEMO_STATUS_MAX 2048
 #define BT_MEMO_RESIDUE_MAX 16
-#define BT_MEMO_RECENT_TOKENS 4
+#define BT_MEMO_RECENT_TOKENS 12
+#define BT_MEMO_WRAP_MAX 32
 
 typedef struct {
     bt_orbit orbit;

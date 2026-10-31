@@ -44,6 +44,27 @@ static void single_pair_solve(char first, char second, bt_memo *memo, bt_cube *s
     bt_scheme_memo(scramble, memo);
 }
 
+BT_TEST(view_solve, review_block_clamp_fits_reserves_a_tail_line_and_floors_at_zero) {
+    bt_view_solve_block_clamp fits = bt_view_solve_block_clamp_for(100.0F, 300.0F, 50.0F, 3);
+    BT_CHECK_EQ(fits.visible, (size_t)3);
+    BT_CHECK_EQ(fits.hidden, (size_t)0);
+    bt_view_solve_block_clamp clamps = bt_view_solve_block_clamp_for(100.0F, 260.0F, 50.0F, 4);
+    BT_CHECK_EQ(clamps.visible, (size_t)2);
+    BT_CHECK_EQ(clamps.hidden, (size_t)2);
+    bt_view_solve_block_clamp tight = bt_view_solve_block_clamp_for(100.0F, 120.0F, 50.0F, 4);
+    BT_CHECK_EQ(tight.visible, (size_t)0);
+    BT_CHECK_EQ(tight.hidden, (size_t)4);
+    bt_view_solve_block_clamp gone = bt_view_solve_block_clamp_for(300.0F, 260.0F, 50.0F, 2);
+    BT_CHECK_EQ(gone.visible, (size_t)0);
+    BT_CHECK_EQ(gone.hidden, (size_t)2);
+    bt_view_solve_block_clamp empty = bt_view_solve_block_clamp_for(100.0F, 300.0F, 50.0F, 0);
+    BT_CHECK_EQ(empty.visible, (size_t)0);
+    BT_CHECK_EQ(empty.hidden, (size_t)0);
+    bt_view_solve_block_clamp exact = bt_view_solve_block_clamp_for(100.0F, 250.0F, 50.0F, 3);
+    BT_CHECK_EQ(exact.visible, (size_t)3);
+    BT_CHECK_EQ(exact.hidden, (size_t)0);
+}
+
 BT_TEST(view_solve, simulate_passes_when_the_covered_alg_solves_the_scramble) {
     bt_corpus_row rows[1] = {heap_row("UF-UB-UR", "R2 U' S R2 S' R2 U R2")};
     bt_corpus corpus;

@@ -214,7 +214,7 @@ BT_TEST(view_draw_b, solve_renders_pixels) {
     CloseWindow();
 }
 
-BT_TEST(view_draw_b, solve_review_hint_draws_clear_of_the_splits_block) {
+BT_TEST(view_draw_b, solve_review_clamps_the_broken_block_and_anchors_the_hint) {
     bt_app_config config;
     bt_app_config_defaults(&config);
     config.window.width = 1280;
@@ -239,35 +239,38 @@ BT_TEST(view_draw_b, solve_review_hint_draws_clear_of_the_splits_block) {
     bt_view_solve_app_state *app = bt_view_solve_app();
     bt_syllable_book book;
     bt_syllable_book_init(&book);
-    bt_cube scramble = bt_cube_solved();
-    bt_alg scramble_alg;
-    bt_alg_init(&scramble_alg);
-    char scramble_err[64];
-    if (!bt_alg_parse("R", &scramble_alg, scramble_err, sizeof scramble_err)) {
-        BT_ABORT("fixture scramble: %s", scramble_err);
-    }
-    bt_cube_apply_alg(&scramble, &scramble_alg);
-    bt_alg_free(&scramble_alg);
-    bt_view_solve_rebuild(&app->session, 4, &book, &scramble);
+    bt_view_solve_rebuild(&app->session, 7, &book, NULL);
     ctx.solve_phase = BT_SOLVE_READY;
     bt_view_solve_key(&ctx, app, KEY_SPACE);
     bt_view_solve_key(&ctx, app, KEY_SPACE);
     bt_view_solve_key(&ctx, app, KEY_SPACE);
     BT_CHECK(ctx.solve_phase == BT_SOLVE_REVIEW);
+    bt_solve_view_parts parts;
+    bt_view_solve_review_parts(&app->session, &parts);
+    size_t broken_lines = 1;
+    for (const char *at = parts.broken; *at != '\0'; at++) {
+        if (*at == '\n') {
+            broken_lines++;
+        }
+    }
+    BT_CHECK(broken_lines >= 8);
     char dir[BT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s", ta_temp_dir("view_draw_b", "review_shot"));
     BT_CHECK(draw_and_capture(draw_solve, &ctx, dir, "solve_review.png"));
     char path[BT_PATH_MAX];
     snprintf(path, sizeof path, "%s/solve_review.png", dir);
     int bands[DRAW_BANDS_MAX][2];
-    size_t count = lit_row_bands(path, 590, 1260, 92, 780, bands, DRAW_BANDS_MAX);
-    BT_CHECK(count >= 3);
-    if (count >= 2) {
+    size_t count = lit_row_bands(path, 590, 1260, 510, 790, bands, DRAW_BANDS_MAX);
+    BT_CHECK(count >= 4);
+    if (count >= 4) {
         int last = (int)count - 1;
         int height = bands[last][1] - bands[last][0] + 1;
         int gap = bands[last][0] - bands[last - 1][1] - 1;
         BT_CHECK(height <= 20);
         BT_CHECK(gap >= 20);
+        BT_CHECK(bands[last][0] >= 745);
+        BT_CHECK(bands[last][0] <= 775);
+        BT_CHECK(bands[last - 1][1] < 740);
     }
     bt_syllable_book_free(&book);
     bt_app_ctx_free(&ctx);

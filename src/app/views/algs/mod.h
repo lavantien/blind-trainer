@@ -109,6 +109,7 @@ typedef struct {
 
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
                                  bt_view_algs_detail_line **out);
+size_t bt_view_algs_detail_visible(const float *line_rems, size_t count, float avail_px);
 void bt_view_algs_style_metrics(bt_algs_style style, float *size, bt_theme_color *color);
 
 #endif

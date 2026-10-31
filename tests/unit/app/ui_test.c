@@ -137,12 +137,12 @@ BT_TEST(ui, select_stays_collapsed_without_a_click) {
     input.x = 130.0F;
     input.y = 60.0F;
     int edited = 0;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 1, &input, &edited), 1);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 1, &input, &edited, 400.0F), 1);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 0);
     input.arrow_up = 1;
     input.enter = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 1, &input, &edited), 1);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 1, &input, &edited, 400.0F), 1);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 0);
 }
@@ -156,14 +156,14 @@ BT_TEST(ui, select_opens_on_click_and_picks_the_clicked_option) {
     input.y = 60.0F;
     input.click = 1;
     int edited = 0;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.open, 1);
     BT_CHECK_EQ(state.cursor, 0);
     bt_ui_input_clear(&input);
     input.x = 150.0F;
     input.y = 40.0F + 50.0F * 3.5F;
     input.click = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 2);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 2);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 1);
 }
@@ -175,29 +175,29 @@ BT_TEST(ui, select_cursor_moves_with_arrows_and_digits_and_commits_on_enter) {
     bt_ui_input_clear(&input);
     int edited = 0;
     input.arrow_up = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.cursor, 0);
     bt_ui_input_clear(&input);
     input.arrow_down = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.cursor, 1);
     input.arrow_down = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.cursor, 2);
     BT_CHECK_EQ(state.open, 1);
     bt_ui_input_clear(&input);
     input.chars[0] = '1';
     input.char_count = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.cursor, 0);
     bt_ui_input_clear(&input);
     input.enter = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(edited, 0);
     bt_ui_select_state reopen = {1, 2};
     bt_ui_input_clear(&input);
     input.enter = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&reopen, &rect, 3, 0, &input, &edited), 2);
+    BT_CHECK_EQ(bt_ui_select_transition(&reopen, &rect, 3, 0, &input, &edited, 400.0F), 2);
     BT_CHECK_EQ(reopen.open, 0);
     BT_CHECK_EQ(edited, 1);
 }
@@ -209,7 +209,7 @@ BT_TEST(ui, select_escape_and_outside_click_close_without_a_commit) {
     bt_ui_input_clear(&input);
     input.escape = 1;
     int edited = 0;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 0);
     state.open = 1;
@@ -217,13 +217,42 @@ BT_TEST(ui, select_escape_and_outside_click_close_without_a_commit) {
     input.x = 20.0F;
     input.y = 20.0F;
     input.click = 1;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 0);
     state.open = 1;
     input.x = 130.0F;
     input.y = 60.0F;
-    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited), 0);
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 0, &input, &edited, 400.0F), 0);
     BT_CHECK_EQ(state.open, 0);
     BT_CHECK_EQ(edited, 0);
+}
+
+BT_TEST(ui, select_slots_stay_inside_the_bound_they_open_toward) {
+    bt_ui_rect rect = {100.0F, 300.0F, 200.0F, 50.0F};
+    for (int i = 0; i < 3; i++) {
+        bt_ui_rect slot = bt_ui_select_slot(&rect, 3, i, 400.0F);
+        BT_CHECK_EQ(slot.x, rect.x);
+        BT_CHECK_EQ(slot.width, rect.width);
+        BT_CHECK_EQ(slot.height, rect.height);
+        BT_CHECK(slot.y >= 0.0F);
+        BT_CHECK(slot.y + slot.height <= 400.0F);
+    }
+    bt_ui_rect roomy = {100.0F, 40.0F, 200.0F, 50.0F};
+    bt_ui_rect below = bt_ui_select_slot(&roomy, 3, 0, 800.0F);
+    BT_CHECK_EQ(below.y, 90.0F);
+}
+
+BT_TEST(ui, select_picks_from_the_upward_slots_when_downward_overflows) {
+    bt_ui_rect rect = {100.0F, 300.0F, 200.0F, 50.0F};
+    bt_ui_select_state state = {1, 0};
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    int edited = 0;
+    input.x = 150.0F;
+    input.y = 275.0F;
+    input.click = 1;
+    BT_CHECK_EQ(bt_ui_select_transition(&state, &rect, 3, 1, &input, &edited, 400.0F), 2);
+    BT_CHECK_EQ(state.open, 0);
+    BT_CHECK_EQ(edited, 1);
 }

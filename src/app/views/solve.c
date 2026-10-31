@@ -565,10 +565,45 @@ void bt_view_solve_update(bt_app_ctx *ctx) {
     BT_TRACE_EXIT("app.solve_update");
 }
 
+bt_view_solve_block_clamp bt_view_solve_block_clamp_for(float y, float limit_y, float line,
+                                                        size_t count) {
+    BT_TRACE_ENTER("app.solve_block_clamp");
+    bt_view_solve_block_clamp clamp = {0, 0};
+    if (count == 0 || line <= 0.0F) {
+        BT_TRACE_EXIT("app.solve_block_clamp");
+        return clamp;
+    }
+    float room = limit_y - y;
+    size_t max_lines = room > 0.0F ? (size_t)(room / line) : 0;
+    if (count <= max_lines) {
+        clamp.visible = count;
+        BT_TRACE_EXIT("app.solve_block_clamp");
+        return clamp;
+    }
+    clamp.visible = max_lines > 0 ? max_lines - 1 : 0;
+    clamp.hidden = count - clamp.visible;
+    BT_TRACE_EXIT("app.solve_block_clamp");
+    return clamp;
+}
+
+static size_t block_line_count(const char *text) {
+    if (text[0] == '\0') {
+        return 0;
+    }
+    size_t count = 1;
+    for (const char *at = text; *at != '\0'; at++) {
+        if (*at == '\n') {
+            count++;
+        }
+    }
+    return count;
+}
+
 static float draw_text_block(const void *font, const char *text, float x, float y, float size,
-                             bt_theme_color color) {
+                             bt_theme_color color, size_t max_lines, char *tail, size_t tail_cap) {
     const char *at = text;
-    while (*at != '\0') {
+    size_t drawn = 0;
+    while (*at != '\0' && drawn < max_lines) {
         const char *newline = strchr(at, '\n');
         size_t len = newline != NULL ? (size_t)(newline - at) : strlen(at);
         char line[BT_SOLVE_TEXT_MAX];
@@ -579,7 +614,14 @@ static float draw_text_block(const void *font, const char *text, float x, float 
         line[len] = '\0';
         bt_app_draw_text(font, line, x, y, size, color);
         y += size;
+        drawn++;
         at = newline != NULL ? newline + 1 : at + len;
+    }
+    if (max_lines > 0 && drawn == max_lines && *at != '\0' && tail != NULL) {
+        size_t left = block_line_count(at);
+        snprintf(tail, tail_cap, "+%zu more", left);
+        bt_app_draw_text(font, tail, x, y, size, color);
+        y += size;
     }
     return y;
 }
@@ -601,33 +643,40 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     bt_solve_view_parts parts;
     bt_view_solve_review_parts(&app->session, &parts);
     float gap = theme->spacing_rem * theme->root_rem;
+    float heading_px = theme->font_heading * theme->root_rem;
+    float small_px = theme->font_small * theme->root_rem;
     bt_views_net *pulse = &bt_app_views_shared()->net;
     bt_view_drill_net_draw(font_bold, pulse, metrics.content_x, metrics.content_y,
                            theme->drill_net_width_pct * metrics.content_w, metrics.content_h);
     float x = metrics.content_x + theme->drill_net_width_pct * metrics.content_w + gap * 2.0F;
     float y = metrics.content_y;
-    bt_app_draw_text(font_regular, phase, x, y, theme->font_small * theme->root_rem,
-                     bt_theme_text_muted());
+    bt_app_draw_text(font_regular, phase, x, y, small_px, bt_theme_text_muted());
     y += theme->font_focal * theme->root_rem + gap;
     bt_app_draw_text(font_bold, focal, x, y, theme->font_focal * theme->root_rem,
                      bt_theme_text_primary());
     y += theme->font_focal * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, timer, x, y, theme->font_heading * theme->root_rem,
-                     bt_theme_text_primary());
+    bt_app_draw_text(font_bold, timer, x, y, heading_px, bt_theme_text_primary());
     y += theme->font_title * theme->root_rem + gap;
     bt_app_draw_text(font_bold, parts.result, x, y, theme->font_title * theme->root_rem,
                      parts.result[0] != '\0' && strcmp(parts.result, "solved") == 0
                          ? bt_theme_ok()
                          : bt_theme_danger());
-    y += theme->font_heading * theme->root_rem + gap;
-    y = draw_text_block(font_regular, parts.splits, x, y, theme->font_heading * theme->root_rem,
-                        bt_theme_text_primary());
-    y += theme->font_small * theme->root_rem + gap;
-    y = draw_text_block(font_regular, parts.broken, x, y, theme->font_small * theme->root_rem,
-                        bt_theme_danger());
-    y += theme->font_small * theme->root_rem + gap;
-    bt_app_draw_text(font_regular, bt_view_solve_hint_text(ctx->solve_phase), x, y,
-                     theme->font_small * theme->root_rem, bt_theme_text_muted());
+    y += heading_px + gap;
+    float bottom = metrics.content_y + metrics.content_h;
+    float hint_y = bottom - small_px;
+    float block_limit = hint_y - gap;
+    char tail[BT_SOLVE_TEXT_MAX];
+    bt_view_solve_block_clamp splits_clamp =
+        bt_view_solve_block_clamp_for(y, block_limit, heading_px, block_line_count(parts.splits));
+    y = draw_text_block(font_regular, parts.splits, x, y, heading_px, bt_theme_text_primary(),
+                        splits_clamp.visible, tail, sizeof tail);
+    y += gap;
+    bt_view_solve_block_clamp broken_clamp =
+        bt_view_solve_block_clamp_for(y, block_limit, small_px, block_line_count(parts.broken));
+    y = draw_text_block(font_regular, parts.broken, x, y, small_px, bt_theme_danger(),
+                        broken_clamp.visible, tail, sizeof tail);
+    bt_app_draw_text(font_regular, bt_view_solve_hint_text(ctx->solve_phase), x, hint_y, small_px,
+                     bt_theme_text_muted());
     BT_TRACE_EXIT("app.view_solve_draw");
 }
 

@@ -13,14 +13,15 @@ typedef struct {
     int number;
     const char *label;
     const char *description;
+    char data[BT_VIEW_MENU_TEXT_MAX];
 } bt_view_menu_row;
 
-void bt_view_menu_rows(bt_view_menu_row out[BT_VIEW_MENU_ROW_COUNT]);
+void bt_view_menu_rows(const bt_app_ctx *ctx, bt_view_menu_row out[BT_VIEW_MENU_ROW_COUNT]);
 void bt_view_menu_title(const bt_view_menu_row *row, char out[BT_VIEW_MENU_TEXT_MAX]);
 char *bt_view_menu_warning_context(const bt_str_list *warnings);
 
-void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, const void *font_bold,
-                       float window_w, float window_h);
+void bt_view_menu_draw(const bt_app_ctx *ctx, const bt_str_list *warnings, const void *font_regular,
+                       const void *font_bold, float window_w, float window_h);
 
 void bt_view_menu_row_draw(bt_app_ctx *ctx);
 

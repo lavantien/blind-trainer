@@ -73,27 +73,27 @@ static bt_stores probe_stores(void) {
 
 BT_TEST(view_draw, frame_metrics_pin_the_header_and_content_rect) {
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
-    BT_CHECK(metrics.pad == 28.0F);
-    BT_CHECK(metrics.header_height == 98.0F);
-    BT_CHECK(metrics.hairline == 1.4F);
-    BT_CHECK(metrics.content_x == 28.0F);
-    BT_CHECK(metrics.content_y == 126.0F);
-    BT_CHECK(metrics.content_w == 1224.0F);
-    BT_CHECK(metrics.content_h == 646.0F);
+    BT_CHECK(fabsf(metrics.pad - 16.8F) < 0.01F);
+    BT_CHECK(metrics.header_height == 77.0F);
+    BT_CHECK(fabsf(metrics.hairline - 1.4F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_x - 16.8F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_y - 93.8F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_w - 1246.4F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_h - 689.4F) < 0.01F);
 }
 
 BT_TEST(view_draw, drill_net_geometry_fills_the_left_region) {
     bt_net_geometry geo = bt_view_drill_net_geometry(1280.0F, 800.0F);
-    BT_CHECK(geo.quad == 36.0F);
-    BT_CHECK(bt_net_width(&geo) <= 538.72F);
-    BT_CHECK(bt_net_height(&geo) <= 646.0F);
+    BT_CHECK(geo.quad == 37.0F);
+    BT_CHECK(bt_net_width(&geo) <= 548.416F);
+    BT_CHECK(bt_net_height(&geo) <= 689.4F);
 }
 
 BT_TEST(view_draw, drill_layout_splits_the_content_region) {
     bt_view_drill_layout layout = bt_view_drill_layout_for(20.0F, 90.0F, 1240.0F, 690.0F);
     BT_CHECK(fabsf(layout.net_w - 545.6F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_x - 579.6F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_w - 680.4F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_x - 575.4F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_w - 684.6F) < 1e-4F);
     BT_CHECK(layout.net_x == 20.0F && layout.net_y == 90.0F);
     BT_CHECK(layout.card_h == 690.0F);
 }
@@ -167,9 +167,23 @@ static int with_fonts(int (*run)(const bt_app_font_book *)) {
 
 static void draw_menu(void) {
     const bt_app_font_book *book = g_book;
+    bt_app_ctx ctx;
+    bt_app_ctx_init(&ctx);
+    ctx.has_stores = 1;
+    memset(&ctx.stores, 0, sizeof ctx.stores);
+    ctx.stores.settings.memo_cadence_ms = 800;
+    ctx.stores.settings.memo_mode = BT_MEMO_PER_ORBIT;
+    ctx.stores.settings.drill_reps = 4;
+    bt_srs_store_init(&ctx.stores.srs);
+    bt_solve_log_init(&ctx.stores.solves);
+    bt_user_algs_init(&ctx.stores.user_algs);
+    bt_str_list_init(&ctx.stores.seeds.hidden);
+    bt_str_list_init(&ctx.stores.seeds.warnings);
     bt_str_list warnings;
     bt_str_list_init(&warnings);
-    bt_view_menu_draw(&warnings, book->regular, book->bold, PROBE_W, PROBE_H);
+    bt_view_menu_draw(&ctx, &warnings, book->regular, book->bold, PROBE_W, PROBE_H);
+    bt_app_ctx_free(&ctx);
+    bt_str_list_free(&warnings);
 }
 
 static void draw_drill_card(void) {
@@ -185,7 +199,7 @@ static void draw_drill_card(void) {
     bt_view_card_content(&session, &corpus, &syllables, &stores, 0, &content);
     bt_view_frame_draw(book->bold, book->regular, PROBE_W, PROBE_H, "drill",
                        "space reps, 1..4 rate, esc menu");
-    bt_view_drill_card_draw(&content, book->regular, 60.0F, 60.0F, 360.0F);
+    bt_view_drill_card_draw(&content, book->regular, 60.0F, 60.0F);
     bt_syllable_book_free(&syllables);
     bt_drill_session_free(&session);
     bt_stores_free(&stores);
@@ -199,11 +213,11 @@ static void draw_drill_reps(void) {
     bt_drill_session session;
     bt_drill_session_init(&session);
     bt_view_install_pair(&session, &corpus, &stores, edge_ab());
-    bt_view_drill_reps_draw(&session, book->regular, 60.0F, 60.0F, 360.0F);
+    bt_view_drill_reps_draw(&session, book->regular, 60.0F, 60.0F);
     session.reps_done = 2;
     bt_drill_push_split(&session, 1, 1.0F);
     bt_drill_push_split(&session, 0, 2.0F);
-    bt_view_drill_rate_draw(&session, book->regular, 60.0F, 300.0F, 160.0F);
+    bt_view_drill_rate_draw(&session, book->regular, 60.0F, 300.0F);
     bt_drill_session_free(&session);
     bt_stores_free(&stores);
     bt_corpus_free(&corpus);

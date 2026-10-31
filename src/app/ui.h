@@ -62,8 +62,9 @@ void bt_ui_list_show(bt_ui_list_window *window, int row_count, int visible_rows)
 int bt_ui_field_edit(char *buffer, size_t cap, size_t *cursor, const bt_ui_input *input,
                      int *committed, int *canceled);
 int64_t bt_ui_number_clamp(int64_t value, int64_t low, int64_t high);
+bt_ui_rect bt_ui_select_slot(const bt_ui_rect *rect, int row_count, int index, float max_y);
 int bt_ui_select_transition(bt_ui_select_state *state, const bt_ui_rect *rect, int row_count,
-                            int selected, const bt_ui_input *input, int *edited);
+                            int selected, const bt_ui_input *input, int *edited, float max_y);
 
 bt_ui_button_state bt_ui_button(const struct Font *font, const bt_ui_rect *rect, const char *label,
                                 const bt_ui_input *input);
@@ -78,6 +79,6 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
                            const bt_ui_input *input, int *edited);
 int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *const *rows,
                  int row_count, int selected, bt_ui_select_state *state, const bt_ui_input *input,
-                 int *edited);
+                 int *edited, float max_y);
 
 #endif

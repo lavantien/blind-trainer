@@ -152,18 +152,24 @@ static void ui_select_clamp_cursor(bt_ui_select_state *state, int row_count, int
     }
 }
 
-static bt_ui_rect ui_select_option_slot(const bt_ui_rect *rect, int index) {
-    bt_ui_rect slot = {
-        rect->x,
-        rect->y + rect->height * (float)(index + 1),
-        rect->width,
-        rect->height,
-    };
+static int ui_select_opens_upward(const bt_ui_rect *rect, int row_count, float max_y) {
+    float down_bottom = rect->y + rect->height * (float)(row_count + 1);
+    float up_top = rect->y - rect->height * (float)row_count;
+    return down_bottom > max_y && up_top >= 0.0F;
+}
+
+bt_ui_rect bt_ui_select_slot(const bt_ui_rect *rect, int row_count, int index, float max_y) {
+    BT_TRACE_ENTER("app.ui_select_slot");
+    int upward = ui_select_opens_upward(rect, row_count, max_y);
+    float y = upward ? rect->y - rect->height * (float)(row_count - index)
+                     : rect->y + rect->height * (float)(index + 1);
+    bt_ui_rect slot = {rect->x, y, rect->width, rect->height};
+    BT_TRACE_EXIT("app.ui_select_slot");
     return slot;
 }
 
 int bt_ui_select_transition(bt_ui_select_state *state, const bt_ui_rect *rect, int row_count,
-                            int selected, const bt_ui_input *input, int *edited) {
+                            int selected, const bt_ui_input *input, int *edited, float max_y) {
     BT_TRACE_ENTER("app.ui_select_transition");
     *edited = 0;
     if (row_count <= 0) {
@@ -217,7 +223,7 @@ int bt_ui_select_transition(bt_ui_select_state *state, const bt_ui_rect *rect, i
             return selected;
         }
         for (int i = 0; i < row_count; i++) {
-            bt_ui_rect slot = ui_select_option_slot(rect, i);
+            bt_ui_rect slot = bt_ui_select_slot(rect, row_count, i, max_y);
             if (bt_ui_contains(&slot, input->x, input->y)) {
                 state->open = 0;
                 if (i != selected) {
@@ -464,9 +470,9 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
 
 int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *const *rows,
                  int row_count, int selected, bt_ui_select_state *state, const bt_ui_input *input,
-                 int *edited) {
+                 int *edited, float max_y) {
     BT_TRACE_ENTER("app.ui_select");
-    int picked = bt_ui_select_transition(state, rect, row_count, selected, input, edited);
+    int picked = bt_ui_select_transition(state, rect, row_count, selected, input, edited, max_y);
     if (picked < 0 || picked >= row_count) {
         picked = 0;
     }
@@ -481,7 +487,7 @@ int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *co
             rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_muted());
     if (state->open) {
         for (int i = 0; i < row_count; i++) {
-            bt_ui_rect slot = ui_select_option_slot(rect, i);
+            bt_ui_rect slot = bt_ui_select_slot(rect, row_count, i, max_y);
             if (i == state->cursor) {
                 ui_fill(&slot, bt_theme_panel_raised());
             } else {

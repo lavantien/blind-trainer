@@ -79,9 +79,23 @@ BT_TEST(view_algs, list_capacity_fits_the_window_and_floors_at_one) {
     bt_app_config config;
     bt_app_config_defaults(&config);
     config.window.height = 800;
-    BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)13);
+    BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)18);
     config.window.height = 0;
     BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)1);
+}
+
+BT_TEST(view_algs, detail_fit_keeps_a_tail_line_when_the_panel_overflows) {
+    float line = 33.6F;
+    float tail = 0.9F * line;
+    float sizes[4] = {1.0F, 1.0F, 1.0F, 1.0F};
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 4.0F * line + 1.0F), (size_t)4);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 4.0F * line + 0.05F), (size_t)4);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 4.0F * line - 0.05F), (size_t)3);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 3.0F * line + tail + 0.05F), (size_t)3);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 3.0F * line + tail - 0.05F), (size_t)2);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, line + tail + 0.05F), (size_t)1);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, line - 0.05F), (size_t)0);
+    BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 0, 4.0F * line), (size_t)0);
 }
 
 BT_TEST(view_algs, list_rows_mark_the_selected_row_with_a_caret) {

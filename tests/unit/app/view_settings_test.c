@@ -35,6 +35,14 @@ static int rect_inside(const bt_ui_rect *inner, const bt_ui_rect *outer) {
            inner->y + inner->height <= outer->y + outer->height + 0.01F;
 }
 
+static int near(float value, float expected) {
+    float diff = value - expected;
+    if (diff < 0.0F) {
+        diff = -diff;
+    }
+    return diff < 0.02F;
+}
+
 BT_TEST(view_settings, draft_round_trips_settings) {
     bt_settings settings;
     settings.memo_cadence_ms = 650;
@@ -137,6 +145,52 @@ BT_TEST(view_settings, layout_fits_the_small_probe_window_too) {
                                                             metrics.content_w, metrics.content_h}));
         BT_CHECK(rect_inside(&layout.controls[i], &layout.rows[i]));
     }
+}
+
+BT_TEST(view_settings, layout_pins_absolute_row_bands_and_control_edges) {
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    float row_tops[BT_SETTINGS_ROW_COUNT] = {284.5F, 393.7F, 502.9F};
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        BT_CHECK(near(layout.rows[i].y, row_tops[i]));
+        BT_CHECK(near(layout.rows[i].height, 89.6F));
+        BT_CHECK(near(layout.controls[i].y, row_tops[i] + 8.4F));
+        BT_CHECK(near(layout.controls[i].height, 72.8F));
+        BT_CHECK(near(layout.controls[i].x + layout.controls[i].width, 1263.2F));
+        BT_CHECK(near(layout.controls[i].width, 392.0F));
+    }
+}
+
+BT_TEST(view_settings, layout_fills_the_content_width_with_full_width_rows) {
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    BT_CHECK(near(layout.rows[0].x, metrics.content_x));
+    BT_CHECK(near(layout.rows[0].width, metrics.content_w));
+}
+
+BT_TEST(view_settings, layout_keeps_the_open_select_inside_the_small_window) {
+    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F);
+    for (int i = 0; i < BT_MEMO_MODE_COUNT; i++) {
+        bt_ui_rect slot = bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, i, 480.0F);
+        BT_CHECK(slot.y >= 0.0F);
+        BT_CHECK(slot.y + slot.height <= 480.0F);
+    }
+}
+
+BT_TEST(view_settings, enter_state_resets_the_widget_state) {
+    bt_app_ctx ctx;
+    fixture_settings_ctx("widget-reset", &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    app->widgets.mode_select.open = 1;
+    app->widgets.mode_select.cursor = 2;
+    app->widgets.cadence.focused = 1;
+    app->widgets.reps.focused = 1;
+    bt_view_settings_enter_state(&ctx, app);
+    BT_CHECK(app->widgets.mode_select.open == 0);
+    BT_CHECK(app->widgets.cadence.focused == 0);
+    BT_CHECK(app->widgets.reps.focused == 0);
+    bt_app_ctx_free(&ctx);
 }
 
 BT_TEST(view_settings, select_starts_collapsed_and_opens_on_its_mode_key) {

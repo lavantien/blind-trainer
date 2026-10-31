@@ -49,17 +49,6 @@ void bt_view_drill_net_draw(const void *font_bold, const bt_views_net *pulse, fl
     BT_TRACE_EXIT("app.view_drill_net_draw");
 }
 
-static float line_height(bt_row_style style) {
-    float size_rem;
-    bt_theme_color color;
-    bt_row_style_metrics(style, &size_rem, &color);
-    return size_rem * bt_theme_table()->root_rem;
-}
-
-static float drill_center_offset(float total, float used) {
-    return (total - used) / 2.0F;
-}
-
 static void draw_span_line(const void *font_regular, const bt_card_content *content, float x,
                            float y) {
     Font regular = *(const Font *)font_regular;
@@ -75,16 +64,11 @@ static void draw_span_line(const void *font_regular, const bt_card_content *cont
 }
 
 void bt_view_drill_card_draw(const bt_card_content *content, const void *font_regular, float x,
-                             float y, float h) {
+                             float y) {
     BT_TRACE_ENTER("app.view_drill_card_draw");
     const bt_theme *theme = bt_theme_table();
     float gap = theme->spacing_rem * theme->root_rem;
-    float total = 0.0F;
-    for (size_t i = 0; i < content->row_count; i++) {
-        total += line_height(content->rows[i].style);
-    }
-    total += gap * (float)(content->row_count - 1);
-    float cursor = y + drill_center_offset(h, total);
+    float cursor = y;
     for (size_t i = 0; i < content->row_count; i++) {
         float size_rem;
         bt_theme_color color;
@@ -101,7 +85,7 @@ void bt_view_drill_card_draw(const bt_card_content *content, const void *font_re
 }
 
 void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_regular, float x,
-                             float y, float h) {
+                             float y) {
     BT_TRACE_ENTER("app.view_drill_reps_draw");
     const bt_theme *theme = bt_theme_table();
     float gap = theme->spacing_rem * theme->root_rem;
@@ -127,12 +111,7 @@ void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_r
         bt_theme_text_primary(), bt_theme_teal(),       bt_theme_text_primary(),
         bt_theme_text_muted(),   bt_theme_text_muted(),
     };
-    float total = 0.0F;
-    for (int i = 0; i < 5; i++) {
-        total += sizes[i];
-    }
-    total += gap * 4.0F;
-    float cursor = y + drill_center_offset(h, total);
+    float cursor = y;
     for (int i = 0; i < 5; i++) {
         bt_app_draw_text(font_regular, rows[i], x, cursor, sizes[i], colors[i]);
         cursor += sizes[i] + gap;
@@ -141,7 +120,7 @@ void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_r
 }
 
 void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_regular, float x,
-                             float y, float h) {
+                             float y) {
     BT_TRACE_ENTER("app.view_drill_rate_draw");
     const bt_theme *theme = bt_theme_table();
     float gap = theme->spacing_rem * theme->root_rem;
@@ -158,12 +137,7 @@ void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_r
         bt_theme_text_primary(),
         bt_theme_text_muted(),
     };
-    float total = 0.0F;
-    for (size_t i = 0; i < count && i < 3; i++) {
-        total += sizes[i];
-    }
-    total += gap * (float)(count > 1 ? count - 1 : 0);
-    float cursor = y + drill_center_offset(h, total);
+    float cursor = y;
     for (size_t i = 0; i < count && i < 3; i++) {
         bt_app_draw_text(font_regular, lines[i], x, cursor, sizes[i], colors[i]);
         cursor += sizes[i] + gap;
@@ -200,14 +174,11 @@ void bt_view_drill_row_draw(bt_app_ctx *ctx) {
         bt_card_content content;
         bt_view_card_content(&app->session, &ctx->vendor_corpus, bt_views_book(ctx), &ctx->stores,
                              bt_views_now_day(), &content);
-        bt_view_drill_card_draw(&content, book->regular, layout.card_x, layout.card_y,
-                                layout.card_h);
+        bt_view_drill_card_draw(&content, book->regular, layout.card_x, layout.card_y);
     } else if (ctx->drill_phase == BT_DRILL_REPS) {
-        bt_view_drill_reps_draw(&app->session, book->regular, layout.card_x, layout.card_y,
-                                layout.card_h);
+        bt_view_drill_reps_draw(&app->session, book->regular, layout.card_x, layout.card_y);
     } else {
-        bt_view_drill_rate_draw(&app->session, book->regular, layout.card_x, layout.card_y,
-                                layout.card_h);
+        bt_view_drill_rate_draw(&app->session, book->regular, layout.card_x, layout.card_y);
     }
     BT_TRACE_EXIT("app.view_drill_row_draw");
 }

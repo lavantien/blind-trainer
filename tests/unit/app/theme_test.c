@@ -33,13 +33,13 @@ BT_TEST(theme, face_colors_follow_cube_convention) {
 
 BT_TEST(theme, font_scale_is_pinned) {
     const bt_theme *theme = bt_theme_table();
-    BT_CHECK_EQ(theme->font_micro, 0.75F);
-    BT_CHECK_EQ(theme->font_small, 0.8F);
+    BT_CHECK_EQ(theme->font_micro, 0.9F);
+    BT_CHECK_EQ(theme->font_small, 0.96F);
     BT_CHECK_EQ(theme->font_body, 1.0F);
     BT_CHECK_EQ(theme->font_heading, 1.3F);
     BT_CHECK_EQ(theme->font_alg, 1.7F);
-    BT_CHECK_EQ(theme->font_title, 2.2F);
-    BT_CHECK_EQ(theme->font_focal, 3.4F);
+    BT_CHECK_EQ(theme->font_title, 2.0F);
+    BT_CHECK_EQ(theme->font_focal, 3.0F);
 }
 
 BT_TEST(theme, body_text_renders_at_least_sixteen_pixels) {
@@ -49,12 +49,27 @@ BT_TEST(theme, body_text_renders_at_least_sixteen_pixels) {
     BT_CHECK(nominal * worst_glyph_share >= 16.0F);
 }
 
+BT_TEST(theme, subtext_roles_render_at_least_twenty_four_pixels_nominal) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK(theme->font_small * theme->root_rem >= 24.0F);
+    BT_CHECK(theme->font_micro * theme->root_rem >= 24.0F);
+    BT_CHECK(theme->font_micro < theme->font_small);
+    BT_CHECK(theme->font_small < theme->font_body);
+}
+
+BT_TEST(theme, chrome_stays_inside_the_density_budget) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK(theme->header_height_rem <= 2.75F);
+    BT_CHECK(theme->panel_padding_rem <= 0.6F);
+    BT_CHECK(theme->spacing_rem <= 0.35F);
+}
+
 BT_TEST(theme, layout_scale_is_pinned) {
     const bt_theme *theme = bt_theme_table();
     BT_CHECK_EQ(theme->root_rem, 28.0F);
-    BT_CHECK_EQ(theme->spacing_rem, 0.5F);
-    BT_CHECK_EQ(theme->panel_padding_rem, 1.0F);
-    BT_CHECK_EQ(theme->header_height_rem, 3.5F);
+    BT_CHECK_EQ(theme->spacing_rem, 0.35F);
+    BT_CHECK_EQ(theme->panel_padding_rem, 0.6F);
+    BT_CHECK_EQ(theme->header_height_rem, 2.75F);
     BT_CHECK_EQ(theme->hairline_rem, 0.05F);
     BT_CHECK_EQ(theme->drill_net_width_pct, 0.44F);
     BT_CHECK_EQ(theme->net_view_reserve_rem, 8.0F);

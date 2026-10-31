@@ -249,6 +249,52 @@ void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, cons
     BT_TRACE_EXIT("app.memo_view_rows");
 }
 
+static size_t memo_wrap_lines(const void *font, const char *text, float size, float max_w,
+                              char out[][BT_MEMO_TEXT_MAX], size_t cap) {
+    Font regular = *(const Font *)font;
+    size_t count = 0;
+    const char *at = text;
+    while (*at != '\0' && count < cap) {
+        const char *end = at;
+        const char *last_fit = NULL;
+        while (*end != '\0') {
+            const char *space = strchr(end, ' ');
+            const char *stop = space != NULL ? space : end + strlen(end);
+            char piece[BT_MEMO_TEXT_MAX];
+            size_t len = (size_t)(stop - at);
+            if (len >= sizeof piece) {
+                len = sizeof piece - 1;
+            }
+            memcpy(piece, at, len);
+            piece[len] = '\0';
+            Vector2 box = MeasureTextEx(regular, piece, size, 1.0F);
+            if (box.x > max_w) {
+                break;
+            }
+            last_fit = stop;
+            if (space == NULL) {
+                break;
+            }
+            end = space + 1;
+        }
+        if (last_fit == NULL) {
+            last_fit = at + strlen(at);
+        }
+        size_t len = (size_t)(last_fit - at);
+        if (len >= BT_MEMO_TEXT_MAX) {
+            len = BT_MEMO_TEXT_MAX - 1;
+        }
+        memcpy(out[count], at, len);
+        out[count][len] = '\0';
+        count++;
+        at = *last_fit == ' ' ? last_fit + 1 : last_fit;
+        if (*last_fit == '\0') {
+            break;
+        }
+    }
+    return count;
+}
+
 void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const void *font_bold,
                        float window_w, float window_h) {
     BT_TRACE_ENTER("app.view_memo_draw");
@@ -256,33 +302,33 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
     bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "memo training", "");
     float gap = theme->spacing_rem * theme->root_rem;
-    const char *lines[4] = {"esc menu", rows->focal, rows->recent, rows->status};
-    float sizes[4] = {
-        theme->font_small * theme->root_rem,
-        theme->font_focal * theme->root_rem,
-        theme->font_small * theme->root_rem,
-        theme->font_body * theme->root_rem,
-    };
-    const void *fonts[4] = {font_regular, font_bold, font_regular, font_regular};
-    bt_theme_color colors[4] = {
-        bt_theme_text_muted(),
-        bt_theme_text_primary(),
-        bt_theme_text_muted(),
-        bt_theme_text_primary(),
-    };
-    float total = 0.0F;
-    for (int i = 0; i < 4; i++) {
-        total += sizes[i];
+    float small = theme->font_small * theme->root_rem;
+    float body = theme->font_body * theme->root_rem;
+    float bottom = metrics.content_y + metrics.content_h;
+    float status_y = bottom - body;
+    Vector2 focal_box = MeasureTextEx(*(const Font *)font_bold, rows->focal,
+                                      theme->font_focal * theme->root_rem, 1.0F);
+    bt_app_draw_text(font_regular, "esc menu", metrics.content_x, metrics.content_y, small,
+                     bt_theme_text_muted());
+    bt_app_draw_text(font_bold, rows->focal,
+                     metrics.content_x + (metrics.content_w - focal_box.x) / 2.0F,
+                     metrics.content_y + small + gap, theme->font_focal * theme->root_rem,
+                     bt_theme_text_primary());
+    float y = metrics.content_y + small + gap + theme->font_focal * theme->root_rem + gap;
+    char wrapped[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t line_count = memo_wrap_lines(font_regular, rows->recent, small, metrics.content_w,
+                                        wrapped, BT_MEMO_WRAP_MAX);
+    size_t room = status_y - gap - y > 0.0F ? (size_t)((status_y - gap - y) / small) : 0;
+    size_t shown = line_count < room ? line_count : room;
+    if (shown < line_count && shown > 0) {
+        strncat(wrapped[shown - 1], "...", BT_MEMO_TEXT_MAX - strlen(wrapped[shown - 1]) - 1);
     }
-    total += gap * 3.0F;
-    float y = metrics.content_y + (metrics.content_h - total) / 2.0F;
-    for (int i = 0; i < 4; i++) {
-        Font font = *(const Font *)fonts[i];
-        Vector2 box = MeasureTextEx(font, lines[i], sizes[i], 1.0F);
-        bt_app_draw_text(fonts[i], lines[i], metrics.content_x + (metrics.content_w - box.x) / 2.0F,
-                         y, sizes[i], colors[i]);
-        y += sizes[i] + gap;
+    for (size_t i = 0; i < shown; i++) {
+        bt_app_draw_text(font_regular, wrapped[i], metrics.content_x, y + small * (float)i, small,
+                         bt_theme_text_muted());
     }
+    bt_app_draw_text(font_regular, rows->status, metrics.content_x, status_y, body,
+                     bt_theme_text_primary());
     BT_TRACE_EXIT("app.view_memo_draw");
 }
 

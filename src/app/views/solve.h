@@ -85,6 +85,14 @@ size_t bt_view_solve_review_lines(const bt_solve_session *session, char out[][BT
 void bt_view_solve_review_parts(const bt_solve_session *session, bt_solve_view_parts *out);
 
 typedef struct {
+    size_t visible;
+    size_t hidden;
+} bt_view_solve_block_clamp;
+
+bt_view_solve_block_clamp bt_view_solve_block_clamp_for(float y, float limit_y, float line,
+                                                        size_t count);
+
+typedef struct {
     int initialized;
     uint64_t seed;
     int has_scramble_override;

@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const float BT_ALGS_LINE_FACTOR = 1.5F;
+static const float BT_ALGS_LINE_FACTOR = 1.2F;
 
 bt_view_list_span bt_view_list_window(size_t total, size_t selected, size_t capacity) {
     BT_TRACE_ENTER("app.algs_list_window");
@@ -189,6 +189,26 @@ size_t bt_view_algs_list_capacity(const bt_app_config *config) {
     }
     BT_TRACE_EXIT("app.algs_list_capacity");
     return (size_t)rows;
+}
+
+size_t bt_view_algs_detail_visible(const float *line_rems, size_t count, float avail_px) {
+    BT_TRACE_ENTER("app.algs_detail_visible");
+    const bt_theme *theme = bt_theme_table();
+    float pitch = theme->root_rem * BT_ALGS_LINE_FACTOR;
+    float tail = theme->font_micro * pitch;
+    float used = 0.0F;
+    size_t visible = 0;
+    while (visible < count) {
+        float lines = used + line_rems[visible] * pitch;
+        float next = visible + 1 < count ? lines + tail : lines;
+        if (next > avail_px) {
+            break;
+        }
+        used = lines;
+        visible++;
+    }
+    BT_TRACE_EXIT("app.algs_detail_visible");
+    return visible;
 }
 
 size_t bt_view_algs_list_rows(const bt_view_algs_browser *browser, size_t capacity,
@@ -695,12 +715,32 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
             bt_view_algs_detail_lines(&ctx->vendor_corpus, &app->browser, &detail_lines);
         float detail_x = metrics.content_x + metrics.content_w * 0.4F;
         float detail_y = metrics.content_y;
-        for (size_t i = 0; i < detail_count; i++) {
-            float font_size = theme->font_small;
-            bt_view_algs_style_metrics(detail_lines[i].style, &font_size, NULL);
-            bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y,
-                             font_size * theme->root_rem, detail_lines[i].color);
-            detail_y += font_size * theme->root_rem * BT_ALGS_LINE_FACTOR;
+        if (detail_count > 0) {
+            float *line_rems = malloc(detail_count * sizeof *line_rems);
+            if (line_rems == NULL) {
+                BT_TRACE_FAIL("app.view_algs_draw", "out of memory");
+                free(detail_lines);
+                BT_TRACE_EXIT("app.view_algs_draw");
+                return;
+            }
+            for (size_t i = 0; i < detail_count; i++) {
+                line_rems[i] = theme->font_small;
+                bt_view_algs_style_metrics(detail_lines[i].style, &line_rems[i], NULL);
+            }
+            size_t visible = bt_view_algs_detail_visible(
+                line_rems, detail_count, metrics.content_y + metrics.content_h - detail_y);
+            for (size_t i = 0; i < visible; i++) {
+                bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y,
+                                 line_rems[i] * theme->root_rem, detail_lines[i].color);
+                detail_y += line_rems[i] * theme->root_rem * BT_ALGS_LINE_FACTOR;
+            }
+            if (visible < detail_count) {
+                char tail[BT_ALGS_TEXT_MAX];
+                snprintf(tail, sizeof tail, "+%zu more", detail_count - visible);
+                bt_app_draw_text(font_regular, tail, detail_x, detail_y,
+                                 theme->font_micro * theme->root_rem, bt_theme_text_muted());
+            }
+            free(line_rems);
         }
         free(detail_lines);
     } else {
@@ -718,12 +758,23 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
                                   BT_DETAIL_LINES_MAX, &detail_count);
         float detail_x = metrics.content_x + metrics.content_w * 0.4F;
         float detail_y = metrics.content_y;
+        float line_rems[BT_DETAIL_LINES_MAX];
         for (size_t i = 0; i < detail_count; i++) {
-            float size = lines[i].kind == BT_DETAIL_TITLE ? theme->font_title : theme->font_small;
+            line_rems[i] = lines[i].kind == BT_DETAIL_TITLE ? theme->font_title : theme->font_small;
+        }
+        size_t visible = bt_view_algs_detail_visible(
+            line_rems, detail_count, metrics.content_y + metrics.content_h - detail_y);
+        for (size_t i = 0; i < visible; i++) {
             bt_app_draw_text(
-                font_regular, lines[i].text, detail_x, detail_y, size * theme->root_rem,
+                font_regular, lines[i].text, detail_x, detail_y, line_rems[i] * theme->root_rem,
                 lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger() : bt_theme_text_muted());
-            detail_y += size * theme->root_rem * BT_ALGS_LINE_FACTOR;
+            detail_y += line_rems[i] * theme->root_rem * BT_ALGS_LINE_FACTOR;
+        }
+        if (visible < detail_count) {
+            char tail[BT_ALGS_TEXT_MAX];
+            snprintf(tail, sizeof tail, "+%zu more", detail_count - visible);
+            bt_app_draw_text(font_regular, tail, detail_x, detail_y,
+                             theme->font_micro * theme->root_rem, bt_theme_text_muted());
         }
     }
     BT_TRACE_EXIT("app.view_algs_draw");

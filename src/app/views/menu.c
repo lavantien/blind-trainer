@@ -3,6 +3,7 @@
 #include "app/views/frame.h"
 #include "app/views/state.h"
 #include "app/window.h"
+#include "data/srs.h"
 
 #include "raylib.h"
 
@@ -11,6 +12,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+static size_t due_card_count(const bt_app_ctx *ctx) {
+    long long now_day = bt_views_now_day();
+    size_t due = 0;
+    for (size_t i = 0; i < ctx->stores.srs.count; i++) {
+        if (bt_card_is_due(&ctx->stores.srs.items[i].card, now_day)) {
+            due++;
+        }
+    }
+    return due;
+}
+
+static void menu_data_line(const bt_app_ctx *ctx, bt_app_state target, char *out, size_t cap) {
+    const bt_settings *settings = &ctx->stores.settings;
+    switch (target) {
+    case BT_APP_DRILL:
+        snprintf(out, cap, "%zu pairs due", due_card_count(ctx));
+        break;
+    case BT_APP_MEMO:
+        snprintf(out, cap, "cadence %u ms, mode %s", settings->memo_cadence_ms,
+                 bt_memo_mode_label(settings->memo_mode));
+        break;
+    case BT_APP_SOLVE:
+        snprintf(out, cap, "%zu solves logged", ctx->stores.solves.count);
+        break;
+    case BT_APP_ALGS:
+        if (ctx->has_corpus) {
+            snprintf(out, cap, "%zu vendor rows", ctx->vendor_corpus.count);
+        } else {
+            snprintf(out, cap, "%s", "vendor corpus not loaded");
+        }
+        break;
+    case BT_APP_STATS:
+        snprintf(out, cap, "%zu solves, %zu due cards", ctx->stores.solves.count,
+                 due_card_count(ctx));
+        break;
+    case BT_APP_SETTINGS:
+        snprintf(out, cap, "cadence %u ms, reps %u, mode %s", settings->memo_cadence_ms,
+                 settings->drill_reps, bt_memo_mode_label(settings->memo_mode));
+        break;
+    default:
+        out[0] = '\0';
+        break;
+    }
+}
 
 static const char *state_description(bt_app_state state) {
     switch (state) {
@@ -33,12 +79,13 @@ static const char *state_description(bt_app_state state) {
     }
 }
 
-void bt_view_menu_rows(bt_view_menu_row out[BT_VIEW_MENU_ROW_COUNT]) {
+void bt_view_menu_rows(const bt_app_ctx *ctx, bt_view_menu_row out[BT_VIEW_MENU_ROW_COUNT]) {
     BT_TRACE_ENTER("app.view_menu_rows");
     for (int i = 0; i < BT_VIEW_MENU_ROW_COUNT; i++) {
         out[i].number = i + 1;
         out[i].label = bt_app_state_label(BT_APP_MENU_KEYS[i].target);
         out[i].description = state_description(BT_APP_MENU_KEYS[i].target);
+        menu_data_line(ctx, BT_APP_MENU_KEYS[i].target, out[i].data, BT_VIEW_MENU_TEXT_MAX);
     }
     BT_TRACE_EXIT("app.view_menu_rows");
 }
@@ -80,8 +127,34 @@ char *bt_view_menu_warning_context(const bt_str_list *warnings) {
     return joined;
 }
 
-void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, const void *font_bold,
-                       float window_w, float window_h) {
+static const float BT_MENU_TEXT_SPACING = 1.0F;
+
+static void draw_fitted_text(const void *font, const char *text, float x, float y, float size,
+                             bt_theme_color color, float max_w) {
+    Font regular = *(const Font *)font;
+    Vector2 box = MeasureTextEx(regular, text, size, BT_MENU_TEXT_SPACING);
+    if (box.x <= max_w) {
+        bt_app_draw_text(font, text, x, y, size, color);
+        return;
+    }
+    Vector2 dot_box = MeasureTextEx(regular, "...", size, BT_MENU_TEXT_SPACING);
+    size_t len = strlen(text);
+    char trimmed[BT_VIEW_MENU_TEXT_MAX];
+    size_t keep = len;
+    while (keep > 0) {
+        snprintf(trimmed, sizeof trimmed, "%.*s", (int)keep, text);
+        Vector2 cut = MeasureTextEx(regular, trimmed, size, BT_MENU_TEXT_SPACING);
+        if (cut.x + dot_box.x <= max_w) {
+            break;
+        }
+        keep--;
+    }
+    strncat(trimmed, "...", sizeof trimmed - strlen(trimmed) - 1);
+    bt_app_draw_text(font, trimmed, x, y, size, color);
+}
+
+void bt_view_menu_draw(const bt_app_ctx *ctx, const bt_str_list *warnings, const void *font_regular,
+                       const void *font_bold, float window_w, float window_h) {
     BT_TRACE_ENTER("app.view_menu_draw");
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
@@ -90,29 +163,31 @@ void bt_view_menu_draw(const bt_str_list *warnings, const void *font_regular, co
                        context != NULL ? context : "");
     free(context);
     bt_view_menu_row rows[BT_VIEW_MENU_ROW_COUNT];
-    bt_view_menu_rows(rows);
+    bt_view_menu_rows(ctx, rows);
     float heading = theme->font_heading * theme->root_rem;
     float small = theme->font_small * theme->root_rem;
+    float micro = theme->font_micro * theme->root_rem;
     float inner_gap = theme->spacing_rem * 0.5F * theme->root_rem;
     float row_gap = theme->spacing_rem * 2.0F * theme->root_rem;
-    float row_height = heading + inner_gap + small;
-    float total =
-        row_height * (float)BT_VIEW_MENU_ROW_COUNT + row_gap * (float)(BT_VIEW_MENU_ROW_COUNT - 1);
-    float y = metrics.content_y + (metrics.content_h - total) / 2.0F;
+    float row_height = heading + inner_gap + small + inner_gap + micro;
+    float y = metrics.content_y;
     for (int i = 0; i < BT_VIEW_MENU_ROW_COUNT; i++) {
         char number[8];
         snprintf(number, sizeof number, "%d", rows[i].number);
         Font regular = *(const Font *)font_regular;
-        Vector2 number_box = MeasureTextEx(regular, number, heading, 1.0F);
-        Vector2 space_box = MeasureTextEx(regular, " ", heading, 1.0F);
+        Vector2 number_box = MeasureTextEx(regular, number, heading, BT_MENU_TEXT_SPACING);
+        Vector2 space_box = MeasureTextEx(regular, " ", heading, BT_MENU_TEXT_SPACING);
         float x = metrics.content_x;
         bt_app_draw_text(font_regular, number, x, y, heading, bt_theme_accent());
         x += number_box.x;
         bt_app_draw_text(font_regular, " ", x, y, heading, bt_theme_text_primary());
         x += space_box.x;
         bt_app_draw_text(font_regular, rows[i].label, x, y, heading, bt_theme_text_primary());
-        bt_app_draw_text(font_regular, rows[i].description, metrics.content_x,
-                         y + heading + inner_gap, small, bt_theme_text_muted());
+        draw_fitted_text(font_regular, rows[i].description, metrics.content_x,
+                         y + heading + inner_gap, small, bt_theme_text_muted(), metrics.content_w);
+        draw_fitted_text(font_regular, rows[i].data, metrics.content_x,
+                         y + heading + inner_gap + small + inner_gap, micro, bt_theme_text_muted(),
+                         metrics.content_w);
         y += row_height + row_gap;
     }
     BT_TRACE_EXIT("app.view_menu_draw");
@@ -126,7 +201,7 @@ void bt_view_menu_row_draw(bt_app_ctx *ctx) {
         BT_TRACE_EXIT("app.view_menu_row_draw");
         return;
     }
-    bt_view_menu_draw(&ctx->boot_warnings, book->regular, book->bold, (float)GetScreenWidth(),
+    bt_view_menu_draw(ctx, &ctx->boot_warnings, book->regular, book->bold, (float)GetScreenWidth(),
                       (float)GetScreenHeight());
     BT_TRACE_EXIT("app.view_menu_row_draw");
 }

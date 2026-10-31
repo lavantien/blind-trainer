@@ -340,6 +340,9 @@ void bt_view_stats_enter(bt_app_ctx *ctx) {
 }
 
 static const float BT_STATS_TEXT_SPACING = 1.0F;
+enum {
+    BT_STATS_LAYOUT_COLUMNS = 4,
+};
 
 static float stats_center_offset(float total, float used) {
     return (total - used) / 2.0F;
@@ -358,20 +361,20 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
         BT_TRACE_EXIT("app.view_stats_draw");
         return;
     }
-    size_t shown = count < BT_STATS_LAYOUT_BLOCKS ? count : BT_STATS_LAYOUT_BLOCKS;
+    size_t shown = count;
     Font regular = *(const Font *)font_regular;
     float row_gap = theme->spacing_rem * 2.0F * theme->root_rem;
-    float col_gap = theme->spacing_rem * 6.0F * theme->root_rem;
+    float col_gap = theme->spacing_rem * 4.0F * theme->root_rem;
     float inner_gap = theme->spacing_rem * 0.5F * theme->root_rem;
     float label_h = theme->font_micro * theme->root_rem;
     float row_h = 0.0F;
-    float block_w[2] = {0.0F, 0.0F};
+    float block_w[BT_STATS_LAYOUT_COLUMNS] = {0.0F, 0.0F, 0.0F, 0.0F};
     for (size_t i = 0; i < shown; i++) {
         float size = blocks[i].size_rem * theme->root_rem;
         Vector2 value_box = MeasureTextEx(regular, blocks[i].value, size, BT_STATS_TEXT_SPACING);
         Vector2 label_box = MeasureTextEx(regular, blocks[i].label, label_h, BT_STATS_TEXT_SPACING);
         float width = value_box.x > label_box.x ? value_box.x : label_box.x;
-        size_t col = i % 2;
+        size_t col = i % BT_STATS_LAYOUT_COLUMNS;
         if (width > block_w[col]) {
             block_w[col] = width;
         }
@@ -380,17 +383,21 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
             row_h = height;
         }
     }
-    size_t row_count = (shown + 1) / 2;
+    size_t row_count = (shown + BT_STATS_LAYOUT_COLUMNS - 1) / BT_STATS_LAYOUT_COLUMNS;
     float total_h = row_h * (float)row_count + row_gap * (float)(row_count - 1);
     float y = metrics.content_y + stats_center_offset(metrics.content_h, total_h);
     for (size_t row = 0; row < row_count; row++) {
-        float row_w = block_w[0] + block_w[1] + col_gap;
+        size_t in_row = shown - row * BT_STATS_LAYOUT_COLUMNS;
+        if (in_row > BT_STATS_LAYOUT_COLUMNS) {
+            in_row = BT_STATS_LAYOUT_COLUMNS;
+        }
+        float row_w = col_gap * (float)(in_row - 1);
+        for (size_t col = 0; col < in_row; col++) {
+            row_w += block_w[col];
+        }
         float x = metrics.content_x + stats_center_offset(metrics.content_w, row_w);
-        for (size_t col = 0; col < 2; col++) {
-            size_t index = row * 2 + col;
-            if (index >= shown) {
-                break;
-            }
+        for (size_t col = 0; col < in_row; col++) {
+            size_t index = row * BT_STATS_LAYOUT_COLUMNS + col;
             float size = blocks[index].size_rem * theme->root_rem;
             Vector2 value_box =
                 MeasureTextEx(regular, blocks[index].value, size, BT_STATS_TEXT_SPACING);

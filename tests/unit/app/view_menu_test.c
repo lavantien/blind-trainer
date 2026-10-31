@@ -14,9 +14,25 @@ static bt_str_list list_of(const char *const *items, size_t count) {
     return list;
 }
 
+static void fixture_menu_ctx(bt_app_ctx *ctx) {
+    bt_app_ctx_init(ctx);
+    ctx->has_stores = 1;
+    memset(&ctx->stores, 0, sizeof ctx->stores);
+    ctx->stores.settings.memo_cadence_ms = 800;
+    ctx->stores.settings.memo_mode = BT_MEMO_PER_ORBIT;
+    ctx->stores.settings.drill_reps = 6;
+    bt_srs_store_init(&ctx->stores.srs);
+    bt_solve_log_init(&ctx->stores.solves);
+    bt_user_algs_init(&ctx->stores.user_algs);
+    bt_str_list_init(&ctx->stores.seeds.hidden);
+    bt_str_list_init(&ctx->stores.seeds.warnings);
+}
+
 BT_TEST(view_menu, menu_rows_list_every_key_with_its_description) {
+    bt_app_ctx ctx;
+    fixture_menu_ctx(&ctx);
     bt_view_menu_row rows[BT_VIEW_MENU_ROW_COUNT];
-    bt_view_menu_rows(rows);
+    bt_view_menu_rows(&ctx, rows);
     const char *titles[BT_VIEW_MENU_ROW_COUNT] = {
         "1 drill", "2 memo training", "3 solve", "4 algs", "5 stats", "6 settings",
     };
@@ -32,6 +48,26 @@ BT_TEST(view_menu, menu_rows_list_every_key_with_its_description) {
     BT_CHECK(strcmp(rows[3].description, "browse 818 cases and the event repos") == 0);
     BT_CHECK(strcmp(rows[4].description, "solve history and review load") == 0);
     BT_CHECK(strcmp(rows[5].description, "cadence, memo mode, reps") == 0);
+}
+
+BT_TEST(view_menu, menu_rows_carry_context_data_lines) {
+    bt_app_ctx ctx;
+    fixture_menu_ctx(&ctx);
+    bt_solve_record record;
+    record.started_ms = 1;
+    record.memo_ms = 20000;
+    record.exec_ms = 10000;
+    record.success = 1;
+    bt_solve_log_push(&ctx.stores.solves, record);
+    bt_view_menu_row rows[BT_VIEW_MENU_ROW_COUNT];
+    bt_view_menu_rows(&ctx, rows);
+    BT_CHECK(strcmp(rows[0].data, "0 pairs due") == 0);
+    BT_CHECK(strcmp(rows[1].data, "cadence 800 ms, mode per-orbit") == 0);
+    BT_CHECK(strcmp(rows[2].data, "1 solves logged") == 0);
+    BT_CHECK(strcmp(rows[3].data, "vendor corpus not loaded") == 0);
+    BT_CHECK(strcmp(rows[4].data, "1 solves, 0 due cards") == 0);
+    BT_CHECK(strcmp(rows[5].data, "cadence 800 ms, reps 6, mode per-orbit") == 0);
+    bt_app_ctx_free(&ctx);
 }
 
 BT_TEST(view_menu, warning_context_joins_long_warning_lists_in_full) {
