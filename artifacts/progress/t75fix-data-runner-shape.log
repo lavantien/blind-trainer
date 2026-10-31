@@ -1,0 +1,5 @@
+ok data_ref_ground_path_test td_rg.absolute_ref_ground_passes_through
+ok data_ref_ground_path_test td_rg.config_root_beats_exe_location
+ok data_ref_ground_path_test td_rg.mkdirs_skip_existing_drive_root
+suite data_ref_ground_path_test: 3 passed, 0 failed
+exit 0 cwd=X:\ exe=data_ref_ground_path_test.exe temp=C:\Users\LAVANT~1\AppData\Local\Temp

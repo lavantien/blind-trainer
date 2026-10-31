@@ -1,0 +1,8 @@
+[fail] data_ref_ground_path_test
+ok data_ref_ground_path_test td_rg.absolute_ref_ground_passes_through
+ok data_ref_ground_path_test td_rg.config_root_beats_exe_location
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\data\ref_ground_path_test.c:162: td_mkdirs(root) vs 0: got -1 want 0
+FAIL data_ref_ground_path_test td_rg.mkdirs_skip_existing_drive_root
+suite data_ref_ground_path_test: 2 passed, 1 failed
+2026-10-31T20:48:55 [summary] 0 passed, 1 failed
+2026-10-31T20:48:55 [exit] test-unit code=1

@@ -1,0 +1,4 @@
+2026-10-31T20:49:14 [repro] 276 object timestamps zeroed
+2026-10-31T20:49:14 [compile] 191 compiled, 191 ok
+2026-10-31T20:49:39 [summary] 36 passed, 0 failed
+2026-10-31T20:49:39 [exit] test-unit code=0
