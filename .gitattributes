@@ -4,3 +4,5 @@
 *.xlsx binary
 ref_ground/** -text
 tests/fuzz/corpus/** -text
+src/data/migrations_embedded.* -text
+docs/badges/** -text
