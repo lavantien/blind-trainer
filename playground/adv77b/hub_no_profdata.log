@@ -1,0 +1,2 @@
+2026-11-01T00:15:51 [entry] coverage
+2026-11-01T00:15:51 [fail] coverage BtError: tool override for llvm_profdata missing: Z:\no\such\llvm-profdata.exe

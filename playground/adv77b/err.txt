@@ -1,0 +1,12 @@
+2026-11-01T00:16:27 [entry] coverage-badge: coverage-badge export=sandbox\export.json
+Traceback (most recent call last):
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv77b\sandbox\scripts\coverage_badge.py", line 141, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Users\lavantien\dev\github\blind-trainer\playground\adv77b\sandbox\scripts\coverage_badge.py", line 126, in main
+    badge_dir.mkdir(parents=True, exist_ok=True)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lavantien\AppData\Local\Programs\Python\Python314\Lib\pathlib\__init__.py", line 1011, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+PermissionError: [WinError 5] Access is denied: 'C:\\Users\\lavantien\\dev\\github\\blind-trainer\\playground\\adv77b\\sandbox\\docs\\badges'
