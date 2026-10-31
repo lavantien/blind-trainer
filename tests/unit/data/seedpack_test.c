@@ -302,6 +302,24 @@ BT_TEST(seedpack, registry_rejects_zero_expected_rows_and_out_of_range_n) {
     BT_CHECK(bt_seedpack_parse_registry(sizes, &entries, &count, &err) != 0);
 }
 
+BT_TEST(seedpack, tsv_skips_blank_lines_before_and_between_rows) {
+    const char *dir = tu_temp_dir("bt-seedpack", "blank-lines");
+    write_pack(dir,
+               "{\"file\":\"mini.tsv\",\"event\":\"3x3\",\"method\":\"cfop\",\"stage\":\"t\","
+               "\"n\":3,\"expected_rows\":2}",
+               "mini.tsv",
+               "\n" HEADER "\n   \na1\tR U\t{\"case\":\"x\"}\thttps://example.test/a\t2026-10-16"
+               "\n\na2\tR U'\t{\"case\":\"x\"}\thttps://example.test/a\t2026-10-16\n");
+    bt_seed_error err;
+    bt_seed_rows rows;
+    bt_pack_entry entry = mini_entry();
+    entry.expected_rows = 2;
+    BT_CHECK(bt_seedpack_load_pack(dir, &entry, &rows, &err) == 0);
+    BT_CHECK_EQ(rows.count, (size_t)2);
+    bt_seed_rows_free(&rows);
+    tu_remove_tree(dir);
+}
+
 BT_TEST(seedpack, tsv_rejects_a_ragged_row_with_four_columns) {
     const char *dir = tu_temp_dir("bt-seedpack", "ragged4");
     write_pack(dir,

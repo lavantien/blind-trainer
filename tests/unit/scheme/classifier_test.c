@@ -420,6 +420,23 @@ BT_TEST(classifier, three_style_position_joins_two_blocks_with_space) {
     memset(position, 'X', sizeof position);
     BT_CHECK(bt_scheme_report_position(&report, position));
     BT_CHECK_EQ(position, "UF-UB-UR FR-DF-FL");
+    bt_report none;
+    memset(&none, 0, sizeof none);
+    none.class.kind = BT_CLASS_THREE_STYLE;
+    none.class.orbit = BT_ORBIT_EDGE;
+    none.edge.orbit = BT_ORBIT_EDGE;
+    none.edge.block_count = 2;
+    none.edge.block_len[0] = 3;
+    none.edge.block_len[1] = 3;
+    uint8_t flip[3] = {26, 32, 26};
+    uint8_t swap[3] = {26, 25, 26};
+    memcpy(none.edge.blocks[0], flip, 3);
+    memcpy(none.edge.blocks[1], swap, 3);
+    BT_CHECK(!bt_scheme_is_style_block(flip, 3));
+    BT_CHECK(!bt_scheme_is_style_block(swap, 3));
+    memset(position, 'X', sizeof position);
+    BT_CHECK(bt_scheme_report_position(&none, position));
+    BT_CHECK_EQ(position, "");
 }
 
 static void fill_corner_twists(bt_report *report, int8_t first, int8_t second) {

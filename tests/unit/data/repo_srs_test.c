@@ -12,6 +12,41 @@ static void open_db(bt_db *db) {
     BT_CHECK(bt_db_open_memory(db, &err) == 0);
 }
 
+BT_TEST(repo_srs, store_eq_distinguishes_the_first_entry) {
+    bt_card card;
+    bt_card_init(&card, 100);
+    bt_srs_store a;
+    bt_srs_store_init(&a);
+    BT_CHECK(bt_srs_store_set(&a, "corner/URA", &card) == 0);
+    BT_CHECK(bt_srs_store_set(&a, "edge/UF", &card) == 0);
+    bt_srs_store same;
+    bt_srs_store_init(&same);
+    BT_CHECK(bt_srs_store_set(&same, "corner/URA", &card) == 0);
+    BT_CHECK(bt_srs_store_set(&same, "edge/UF", &card) == 0);
+    BT_CHECK(bt_srs_store_eq(&a, &same) == 1);
+    bt_srs_store differ_key;
+    bt_srs_store_init(&differ_key);
+    BT_CHECK(bt_srs_store_set(&differ_key, "corner/URB", &card) == 0);
+    BT_CHECK(bt_srs_store_set(&differ_key, "edge/UF", &card) == 0);
+    BT_CHECK(bt_srs_store_eq(&a, &differ_key) == 0);
+    bt_card other;
+    bt_card_init(&other, 100);
+    bt_fsrs_config cfg;
+    bt_fsrs_config_defaults(&cfg);
+    bt_card_review(&other, BT_GRADE_GOOD, 101, &cfg);
+    bt_srs_store differ_card;
+    bt_srs_store_init(&differ_card);
+    BT_CHECK(bt_srs_store_set(&differ_card, "corner/URA", &other) == 0);
+    BT_CHECK(bt_srs_store_set(&differ_card, "edge/UF", &card) == 0);
+    BT_CHECK(bt_srs_store_eq(&a, &differ_card) == 0);
+    bt_srs_store_free(&differ_card);
+    bt_srs_store_free(&differ_key);
+    bt_srs_store_free(&same);
+    bt_srs_store_free(&a);
+    bt_card_free(&other);
+    bt_card_free(&card);
+}
+
 static void cfg_of(bt_fsrs_config *cfg) {
     bt_fsrs_config_defaults(cfg);
 }

@@ -224,3 +224,59 @@ BT_TEST(json, deep_nesting_is_capped) {
     BT_CHECK(strstr(error.message, "depth") != NULL);
     bt_strbuf_free(&sb);
 }
+
+BT_TEST(json, unicode_escapes_decode_to_exact_utf8_bytes) {
+    bt_json_value *value = NULL;
+    parse_ok("{\"s\":\"\\u0041\\u00F4\\u07FF\\u0800\\u20AC\\uFFFF\\uD800\\uDC00\\uDBFF\\uDFFF\"}",
+             &value);
+    const char *want = "A\xC3\xB4\xDF\xBF\xE0\xA0\x80\xE2\x82\xAC\xEF\xBF\xBF"
+                       "\xF0\x90\x80\x80\xF4\x8F\xBF\xBF";
+    const bt_json_value *s = bt_json_get(value, "s");
+    BT_CHECK(s != NULL && s->type == BT_JSON_STRING);
+    BT_CHECK_EQ(s->as.string, want);
+    bt_json_free(value);
+}
+
+BT_TEST(json, raw_utf8_round_trips_and_boundaries_hold) {
+    const char *raw = "\"\xC2\x80\xC3\xB4\xE0\xA0\x80\xF0\x90\x80\x80\xF4\x8F\xBF\xBF\"";
+    bt_json_value *value = NULL;
+    parse_ok(raw, &value);
+    BT_CHECK(value->type == BT_JSON_STRING);
+    BT_CHECK_EQ(value->as.string, "\xC2\x80\xC3\xB4\xE0\xA0\x80\xF0\x90\x80\x80\xF4\x8F\xBF\xBF");
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    BT_CHECK_EQ(bt_json_serialize(value, &sb), 0);
+    BT_CHECK(strcmp(sb.data, raw) == 0);
+    bt_strbuf_free(&sb);
+    bt_json_free(value);
+}
+
+BT_TEST(json, invalid_utf8_sequences_are_rejected) {
+    const char *bad[] = {
+        "\"\x80\"",         "\"\xC2\x41\"",         "\"\xC0\x80\"", "\"\xE0\x80\x80\"",
+        "\"\xED\xA0\x80\"", "\"\xF4\x90\x80\x80\"", "\"\xC2\"",     "\"\xE0\xA0\"",
+    };
+    for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
+        bt_json_value *value = NULL;
+        bt_json_error error;
+        int rc = bt_json_parse(bad[i], strlen(bad[i]), &value, &error);
+        BT_CHECK(rc != 0);
+        BT_CHECK(value == NULL);
+    }
+}
+
+BT_TEST(json, lone_surrogate_escapes_are_rejected) {
+    const char *bad[] = {
+        "{\"s\":\"\\uD800\"}",
+        "{\"s\":\"\\uDC00\"}",
+        "{\"s\":\"\\uD800\\u0041\"}",
+    };
+    for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
+        bt_json_value *value = NULL;
+        bt_json_error error;
+        int rc = bt_json_parse(bad[i], strlen(bad[i]), &value, &error);
+        BT_CHECK(rc != 0);
+        BT_CHECK(value == NULL);
+        BT_CHECK(strstr(error.message, "surrogate") != NULL);
+    }
+}

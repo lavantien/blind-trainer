@@ -73,6 +73,27 @@ BT_TEST(repo_algs, save_and_load_round_trips_every_entry) {
     bt_db_close(&db);
 }
 
+BT_TEST(repo_algs, user_algs_eq_distinguishes_the_first_entry) {
+    const char *const base[][2] = {{"corner/URB", "R U"}, {"edge/UF", "R U"}};
+    const char *const other_alg[][2] = {{"corner/URB", "R U'"}, {"edge/UF", "R U"}};
+    const char *const other_key[][2] = {{"corner/URA", "R U"}, {"edge/UF", "R U"}};
+    bt_user_algs a;
+    algs_of(&a, base, 2);
+    bt_user_algs same;
+    algs_of(&same, base, 2);
+    BT_CHECK(bt_user_algs_eq(&a, &same) == 1);
+    bt_user_algs differ_alg;
+    algs_of(&differ_alg, other_alg, 2);
+    BT_CHECK(bt_user_algs_eq(&a, &differ_alg) == 0);
+    bt_user_algs differ_key;
+    algs_of(&differ_key, other_key, 2);
+    BT_CHECK(bt_user_algs_eq(&a, &differ_key) == 0);
+    bt_user_algs_free(&differ_key);
+    bt_user_algs_free(&differ_alg);
+    bt_user_algs_free(&same);
+    bt_user_algs_free(&a);
+}
+
 BT_TEST(repo_algs, save_replaces_the_previous_set) {
     bt_db db;
     open_db(&db);

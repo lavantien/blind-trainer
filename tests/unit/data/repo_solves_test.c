@@ -8,6 +8,39 @@ static void open_db(bt_db *db) {
     BT_CHECK(bt_db_open_memory(db, &err) == 0);
 }
 
+BT_TEST(repo_solves, solve_log_eq_distinguishes_the_first_record) {
+    bt_solve_record base[2] = {{5, 40000, 25000, 1}, {100, 1, 2, 1}};
+    bt_solve_log a;
+    bt_solve_log_init(&a);
+    for (int i = 0; i < 2; i++) {
+        BT_CHECK(bt_solve_log_push(&a, base[i]) == 0);
+    }
+    bt_solve_log same;
+    bt_solve_log_init(&same);
+    for (int i = 0; i < 2; i++) {
+        BT_CHECK(bt_solve_log_push(&same, base[i]) == 0);
+    }
+    BT_CHECK(bt_solve_log_eq(&a, &same) == 1);
+    bt_solve_record shifted[2] = {{6, 40000, 25000, 1}, {100, 1, 2, 1}};
+    bt_solve_log differ;
+    bt_solve_log_init(&differ);
+    for (int i = 0; i < 2; i++) {
+        BT_CHECK(bt_solve_log_push(&differ, shifted[i]) == 0);
+    }
+    BT_CHECK(bt_solve_log_eq(&a, &differ) == 0);
+    bt_solve_record tail[2] = {{5, 40000, 25000, 1}, {100, 1, 3, 1}};
+    bt_solve_log differ_tail;
+    bt_solve_log_init(&differ_tail);
+    for (int i = 0; i < 2; i++) {
+        BT_CHECK(bt_solve_log_push(&differ_tail, tail[i]) == 0);
+    }
+    BT_CHECK(bt_solve_log_eq(&a, &differ_tail) == 0);
+    bt_solve_log_free(&differ_tail);
+    bt_solve_log_free(&differ);
+    bt_solve_log_free(&same);
+    bt_solve_log_free(&a);
+}
+
 BT_TEST(repo_solves, save_and_load_round_trips_records_in_order) {
     bt_db db;
     open_db(&db);
