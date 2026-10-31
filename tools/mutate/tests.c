@@ -195,6 +195,26 @@ void enumerate_fixture(bt_mut_mutant_list *list) {
 static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
     char base[BT_MUT_PATH_MAX];
     snprintf(base, sizeof base, "%s/build/obj", g_root);
+    char env_path[BT_MUT_PATH_MAX];
+    snprintf(env_path, sizeof env_path, "%s/build/env.json", g_root);
+    bt_json_value *env = NULL;
+    if (bt_config_try_load(env_path, &env) == 0) {
+        const bt_json_value *recorded = bt_config_value(env, "obj_root");
+        int rc = -1;
+        if (recorded != NULL && recorded->type == BT_JSON_STRING) {
+            char recorded_dir[BT_MUT_PATH_MAX];
+            snprintf(recorded_dir, BT_MUT_PATH_MAX, "%s/%s", g_root, recorded->as.string);
+            DWORD attrs = GetFileAttributesA(recorded_dir);
+            if (attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY)) {
+                snprintf(out, BT_MUT_PATH_MAX, "%s", recorded_dir);
+                rc = 0;
+            }
+        }
+        bt_json_free(env);
+        if (rc == 0) {
+            return 0;
+        }
+    }
     char pattern[BT_MUT_PATH_MAX];
     snprintf(pattern, sizeof pattern, "%s/*", base);
     WIN32_FIND_DATAA entry;

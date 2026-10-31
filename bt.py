@@ -485,6 +485,8 @@ def discover_compile_units(hub, root, cuda=False):
     includes = [root / d for d in INCLUDE_DIRS]
     obj_base = root / dirs_cfg(hub)["obj"]
     obj_root = obj_base / objects_dirname(hub, cuda=cuda)
+    if not cuda:
+        note_plain_obj_root(hub, root, obj_root)
     units = []
     for source in c_files(root):
         obj = object_path(obj_root, root, source)
@@ -1010,6 +1012,19 @@ def cache_cuda_verdict(hub, verdict):
     env = cached_env(hub)
     env["cuda"] = verdict
     return write_env(hub, env)
+
+
+def note_plain_obj_root(hub, root, obj_root):
+    if root != REPO_ROOT:
+        return
+    try:
+        rel = obj_root.relative_to(root).as_posix()
+    except ValueError:
+        return
+    env = cached_env(hub)
+    if env.get("obj_root") != rel:
+        env["obj_root"] = rel
+        write_env(hub, env)
 
 
 def cuda_probe_base(hub):
