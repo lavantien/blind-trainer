@@ -22,7 +22,7 @@
 
 enum {
     POLICY_SCAN_PATTERN_COUNT = 12,
-    POLICY_SKIP_DIR_COUNT = 9,
+    POLICY_SKIP_DIR_COUNT = 7,
     POLICY_MAX_PATTERN_SEGS = 8,
     POLICY_DETAIL_MAX = 64,
 };
@@ -34,8 +34,8 @@ static const char *const POLICY_SCAN_PATTERNS[POLICY_SCAN_PATTERN_COUNT] = {
 };
 
 static const char *const POLICY_SKIP_DIRS[POLICY_SKIP_DIR_COUNT] = {
-    "vendor",  "build",      "crates",    "target",      "ref_ground",
-    "ref_doc", "playground", "artifacts", "__pycache__",
+    "vendor",  "build",      "ref_ground", "ref_doc",
+    "playground", "artifacts", "__pycache__",
 };
 
 const char POLICY_DIRTY_FIXTURE[] = "int dirty(void) {\n"
