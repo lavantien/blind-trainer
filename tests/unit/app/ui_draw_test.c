@@ -19,8 +19,8 @@ static int open_config_window(bt_app_config *config) {
     config->window.width = 640;
     config->window.height = 480;
     snprintf(config->window.title, sizeof config->window.title, "%s", "ui draw test");
-    return bt_app_window_open(config->window.width, config->window.height, config->window.title,
-                              &config->render);
+    return bt_app_window_open_driven(config->window.width, config->window.height,
+                                     config->window.title, &config->render);
 }
 
 static int shot_has_variance(const char *path) {

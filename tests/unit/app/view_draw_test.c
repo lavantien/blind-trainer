@@ -99,7 +99,7 @@ BT_TEST(view_draw, drill_layout_splits_the_content_region) {
 }
 
 static int open_config_window(void) {
-    return bt_app_window_open(PROBE_W, PROBE_H, "view draw test", NULL);
+    return bt_app_window_open_driven(PROBE_W, PROBE_H, "view draw test", NULL);
 }
 
 static int shot_has_variance(const char *path) {

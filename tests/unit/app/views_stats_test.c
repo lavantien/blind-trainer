@@ -224,7 +224,7 @@ static int shot_has_variance(const char *path) {
 }
 
 BT_TEST(views_stats, stats_draw_renders_blocks_under_real_fonts) {
-    if (!bt_app_window_open(PROBE_W, PROBE_H, "views stats test", NULL)) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views stats test", NULL)) {
         BT_CHECK(0);
         return;
     }
@@ -263,7 +263,7 @@ BT_TEST(views_stats, stats_draw_renders_blocks_under_real_fonts) {
 }
 
 BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
-    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings test", NULL)) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views settings test", NULL)) {
         BT_CHECK(0);
         return;
     }
@@ -368,7 +368,7 @@ static int draw_settings_frames(bt_settings_draft *draft, int *changed, int *foc
 }
 
 BT_TEST(views_stats, open_select_consumes_the_overlap_band_before_the_reps_field) {
-    if (!bt_app_window_open(1280, 800, "views select modal test", NULL)) {
+    if (!bt_app_window_open_driven(1280, 800, "views select modal test", NULL)) {
         BT_CHECK(0);
         return;
     }
@@ -438,7 +438,7 @@ BT_TEST(views_stats, transition_frame_clears_the_published_input) {
 }
 
 BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
-    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings typing test", NULL)) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views settings typing test", NULL)) {
         BT_CHECK(0);
         return;
     }
@@ -505,7 +505,7 @@ BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
 }
 
 BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
-    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings seam test", NULL)) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views settings seam test", NULL)) {
         BT_CHECK(0);
         return;
     }
@@ -577,7 +577,7 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
 }
 
 BT_TEST(views_stats, settings_mode_select_keyboard_flow_through_the_seam) {
-    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings select test", NULL)) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views settings select test", NULL)) {
         BT_CHECK(0);
         return;
     }

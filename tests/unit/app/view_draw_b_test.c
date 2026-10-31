@@ -23,8 +23,8 @@ static int open_window(bt_app_config *config) {
     config->window.width = 640;
     config->window.height = 480;
     snprintf(config->window.title, sizeof config->window.title, "%s", "l17 draw test");
-    return bt_app_window_open(config->window.width, config->window.height, config->window.title,
-                              &config->render);
+    return bt_app_window_open_driven(config->window.width, config->window.height,
+                                     config->window.title, &config->render);
 }
 
 static long long region_variance(const char *path, int x0, int y0, int x1, int y1) {
@@ -220,7 +220,8 @@ BT_TEST(view_draw_b, solve_review_clamps_the_broken_block_and_anchors_the_hint) 
     config.window.width = 1280;
     config.window.height = 800;
     snprintf(config.window.title, sizeof config.window.title, "%s", "l49 review test");
-    if (!bt_app_window_open(config.window.width, config.window.height, config.window.title, NULL)) {
+    if (!bt_app_window_open_driven(config.window.width, config.window.height, config.window.title,
+                                   NULL)) {
         return;
     }
     bt_app_ctx ctx;
