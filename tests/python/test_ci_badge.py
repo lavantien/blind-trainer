@@ -13,9 +13,8 @@ import ci_badge
 from badgesvg import GREY, GREEN, RED, YELLOW, badge_svg
 
 PASSED_RUN = (
-    '{"conclusion":"success","createdAt":"2026-10-31T15:56:23Z",'
-    '"databaseId":41217224663,"headSha":"1d763327e019233da29f0e8b17b839be02bec9a0",'
-    '"status":"completed"}'
+    '{"conclusion":"success","databaseId":41217224663,'
+    '"headSha":"1d763327e019233da29f0e8b17b839be02bec9a0","status":"completed"}'
 )
 FAILED_RUN = PASSED_RUN.replace('"success"', '"failure"')
 RUNNING_RUN = PASSED_RUN.replace('"completed"', '"in_progress"').replace(
@@ -31,7 +30,13 @@ class CiBadgeVerdictTests(unittest.TestCase):
         )
 
     def test_each_failed_conclusion_maps_to_failed(self):
-        for conclusion in ("failure", "cancelled", "startup_failure"):
+        for conclusion in (
+            "failure",
+            "cancelled",
+            "startup_failure",
+            "timed_out",
+            "action_required",
+        ):
             self.assertEqual(
                 ci_badge.verdict_of({"status": "completed", "conclusion": conclusion}),
                 "failed",
@@ -45,8 +50,8 @@ class CiBadgeVerdictTests(unittest.TestCase):
 
     def test_unmapped_conclusion_or_status_maps_to_unknown(self):
         for run in (
-            {"status": "completed", "conclusion": "timed_out"},
             {"status": "completed", "conclusion": None},
+            {"status": "completed", "conclusion": "neutral"},
             {"status": "waiting", "conclusion": "success"},
             {},
         ):
@@ -145,6 +150,39 @@ class CiBadgeEndToEndTests(unittest.TestCase):
             )
             self.assertEqual(code, 1)
             self.assertFalse(out.exists())
+
+    def test_valid_json_with_nonzero_exit_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_with_stub(tmp, f"@echo [{PASSED_RUN}]\n@exit /b 1\n")
+            self.assertEqual(code, 1)
+            self.assertFalse(out.exists())
+
+    def test_gh_argv_is_pinned_with_the_branch_filter(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stub = (
+                "@echo off\n"
+                'echo %*>>"%~dp0gh_args.txt"\n'
+                f"@echo [{PASSED_RUN}]\n"
+            )
+            code, out = self.run_with_stub(tmp, stub)
+            self.assertEqual(code, 0)
+            self.assert_badge_bytes(out, "passed")
+            recorded = (Path(tmp) / "gh_args.txt").read_text(encoding="utf-8").strip()
+            self.assertEqual(
+                recorded.split(),
+                [
+                    "run",
+                    "list",
+                    "--workflow",
+                    "ci.yml",
+                    "--branch",
+                    "main",
+                    "--limit",
+                    "1",
+                    "--json",
+                    "status,conclusion,headSha,databaseId",
+                ],
+            )
 
     def test_gh_auth_failure_with_offline_renders_unknown_and_exits_zero(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -22,11 +22,17 @@ GH_ARGS = [
     "--limit",
     "1",
     "--json",
-    "status,conclusion,headSha,createdAt,databaseId",
+    "status,conclusion,headSha,databaseId",
 ]
 GH_TIMEOUT_SECS = 30
 LIVE_STATUSES = ("in_progress", "queued")
-FAILED_CONCLUSIONS = ("failure", "cancelled", "startup_failure")
+FAILED_CONCLUSIONS = (
+    "failure",
+    "cancelled",
+    "startup_failure",
+    "timed_out",
+    "action_required",
+)
 VERDICT_COLORS = {"passed": GREEN, "failed": RED, "running": YELLOW, "unknown": GREY}
 
 
