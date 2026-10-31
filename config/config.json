@@ -73,6 +73,24 @@
     "mutation": {
       "swap": 0.15,
       "replace": 0.05
+    },
+    "islands": {
+      "count": 1,
+      "migrate_every": 0,
+      "migrate_count": 1
+    },
+    "adaptive_mutation": {
+      "stagnation_threshold": 0,
+      "swap_scale": 1.0,
+      "replace_scale": 1.0
+    },
+    "elite_carry": {
+      "policy": "count",
+      "fraction": 0.0
+    },
+    "restart": {
+      "diversity_threshold": 0.0,
+      "inject_fraction": 0.5
     }
   },
   "memofreq": {

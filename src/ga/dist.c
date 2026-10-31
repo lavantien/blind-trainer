@@ -2,6 +2,7 @@
 
 #include "common/bt_trace.h"
 #include "common/config.h"
+#include "ga/alloc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,10 +22,11 @@ static char *bt_ga_dist_read_file(const char *path, size_t *len, char err[BT_GA_
         snprintf(err, BT_GA_ERR_MAX, "read %s", path);
         return NULL;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_ga_alloc((size_t)size + 1, "ga.dist.read_buffer");
     if (text == NULL) {
         fclose(file);
-        snprintf(err, BT_GA_ERR_MAX, "read %s", path);
+        snprintf(err, BT_GA_ERR_MAX, "allocation failed reading %s", path);
+        BT_TRACE_FAIL("ga.dist_read_file", "allocation failed reading %s", path);
         return NULL;
     }
     size_t got = fread(text, 1, (size_t)size, file);
@@ -43,29 +45,34 @@ static int bt_ga_dist_integer(const bt_json_value *object, const char *key, uint
     return 1;
 }
 
-static int bt_ga_dist_parse_cases(const bt_json_value *array, bt_ga_case_row **rows,
-                                  size_t *count) {
+static int bt_ga_dist_parse_cases(const bt_json_value *array, bt_ga_case_row **rows, size_t *count,
+                                  char err[BT_GA_ERR_MAX]) {
     *rows = NULL;
     *count = 0;
     if (array == NULL || array->type != BT_JSON_ARRAY) {
         return 0;
     }
     *count = array->as.array.count;
-    *rows = malloc((*count > 0 ? *count : 1) * sizeof **rows);
+    *rows = bt_ga_alloc((*count > 0 ? *count : 1) * sizeof **rows, "ga.dist.cases");
+    if (*rows == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "freq cases allocation failed");
+        BT_TRACE_FAIL("ga.dist_parse_cases", "cases allocation failed");
+        return -1;
+    }
     for (size_t i = 0; i < *count; i++) {
         const bt_json_value *item = bt_json_at(array, i);
         const bt_json_value *orbit = item != NULL ? bt_json_get(item, "orbit") : NULL;
         const bt_json_value *letters = item != NULL ? bt_json_get(item, "letters") : NULL;
         if (item == NULL || item->type != BT_JSON_OBJECT || orbit == NULL ||
             orbit->type != BT_JSON_STRING || letters == NULL || letters->type != BT_JSON_STRING) {
-            free(*rows);
+            bt_ga_free(*rows);
             *rows = NULL;
             *count = 0;
             return 0;
         }
         if (strlen(orbit->as.string) >= sizeof(*rows)[i].orbit ||
             strlen(letters->as.string) >= sizeof(*rows)[i].letters) {
-            free(*rows);
+            bt_ga_free(*rows);
             *rows = NULL;
             *count = 0;
             return 0;
@@ -73,7 +80,7 @@ static int bt_ga_dist_parse_cases(const bt_json_value *array, bt_ga_case_row **r
         snprintf((*rows)[i].orbit, sizeof(*rows)[i].orbit, "%s", orbit->as.string);
         snprintf((*rows)[i].letters, sizeof(*rows)[i].letters, "%s", letters->as.string);
         if (!bt_ga_dist_integer(item, "count", &(*rows)[i].count)) {
-            free(*rows);
+            bt_ga_free(*rows);
             *rows = NULL;
             *count = 0;
             return 0;
@@ -92,21 +99,27 @@ static int bt_ga_dist_u32(const bt_json_value *object, const char *key, uint32_t
 }
 
 static int bt_ga_dist_parse_pairs(const bt_json_value *array, bt_ga_pair_count **rows,
-                                  size_t *count) {
+                                  size_t *count, const char *site, const char *label,
+                                  char err[BT_GA_ERR_MAX]) {
     *rows = NULL;
     *count = 0;
     if (array == NULL || array->type != BT_JSON_ARRAY) {
         return 0;
     }
     *count = array->as.array.count;
-    *rows = malloc((*count > 0 ? *count : 1) * sizeof **rows);
+    *rows = bt_ga_alloc((*count > 0 ? *count : 1) * sizeof **rows, site);
+    if (*rows == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "freq %s allocation failed", label);
+        BT_TRACE_FAIL("ga.dist_parse_pairs", "%s allocation failed", label);
+        return -1;
+    }
     for (size_t i = 0; i < *count; i++) {
         const bt_json_value *item = bt_json_at(array, i);
         if (item == NULL || item->type != BT_JSON_OBJECT ||
             !bt_ga_dist_u32(item, "from", &(*rows)[i].from) ||
             !bt_ga_dist_u32(item, "to", &(*rows)[i].to) ||
             !bt_ga_dist_integer(item, "count", &(*rows)[i].count)) {
-            free(*rows);
+            bt_ga_free(*rows);
             *rows = NULL;
             *count = 0;
             return 0;
@@ -134,25 +147,44 @@ int bt_ga_load_freq_data(const char *path, bt_ga_freq_data *out, char err[BT_GA_
     bt_json_error json_error;
     bt_json_value *root = NULL;
     if (bt_json_parse(text, len, &root, &json_error) != 0) {
-        free(text);
+        bt_ga_free(text);
         snprintf(err, BT_GA_ERR_MAX, "parse %s", path);
         BT_TRACE_FAIL("ga.load_freq_data", "parse failed for %s", path);
         return 0;
     }
-    free(text);
-    int ok = root != NULL && root->type == BT_JSON_OBJECT &&
-             bt_ga_dist_parse_cases(bt_json_get(root, "cases"), &out->cases, &out->cases_count) &&
-             bt_ga_dist_parse_pairs(bt_json_get(root, "adjacent"), &out->adjacent,
-                                    &out->adjacent_count) &&
-             bt_ga_dist_parse_pairs(bt_json_get(root, "cooccurring"), &out->cooccurring,
-                                    &out->cooccurring_count) &&
-             bt_ga_dist_integer(root, "total_draws", &out->total_draws) &&
+    bt_ga_free(text);
+    int ok = root != NULL && root->type == BT_JSON_OBJECT;
+    int alloc_failed = 0;
+    if (ok) {
+        int rc =
+            bt_ga_dist_parse_cases(bt_json_get(root, "cases"), &out->cases, &out->cases_count, err);
+        ok = rc == 1;
+        alloc_failed = rc < 0;
+    }
+    if (ok) {
+        int rc = bt_ga_dist_parse_pairs(bt_json_get(root, "adjacent"), &out->adjacent,
+                                        &out->adjacent_count, "ga.dist.adjacent", "adjacent", err);
+        ok = rc == 1;
+        alloc_failed = alloc_failed || rc < 0;
+    }
+    if (ok) {
+        int rc = bt_ga_dist_parse_pairs(bt_json_get(root, "cooccurring"), &out->cooccurring,
+                                        &out->cooccurring_count, "ga.dist.cooccurring",
+                                        "cooccurring", err);
+        ok = rc == 1;
+        alloc_failed = alloc_failed || rc < 0;
+    }
+    if (ok) {
+        ok = bt_ga_dist_integer(root, "total_draws", &out->total_draws) &&
              bt_ga_dist_integer(root, "seed", &out->seed);
+    }
     bt_json_free(root);
     if (!ok) {
         bt_ga_freq_data_free(out);
-        snprintf(err, BT_GA_ERR_MAX, "parse %s", path);
-        BT_TRACE_FAIL("ga.load_freq_data", "shape mismatch for %s", path);
+        if (!alloc_failed) {
+            snprintf(err, BT_GA_ERR_MAX, "parse %s", path);
+        }
+        BT_TRACE_FAIL("ga.load_freq_data", alloc_failed ? "allocation failed" : "shape mismatch");
         return 0;
     }
     BT_TRACE_EXIT("ga.load_freq_data");
@@ -161,9 +193,9 @@ int bt_ga_load_freq_data(const char *path, bt_ga_freq_data *out, char err[BT_GA_
 
 void bt_ga_freq_data_free(bt_ga_freq_data *data) {
     BT_TRACE_ENTER("ga.freq_data_free");
-    free(data->cases);
-    free(data->adjacent);
-    free(data->cooccurring);
+    bt_ga_free(data->cases);
+    bt_ga_free(data->adjacent);
+    bt_ga_free(data->cooccurring);
     data->cases = NULL;
     data->adjacent = NULL;
     data->cooccurring = NULL;

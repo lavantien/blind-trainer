@@ -267,6 +267,11 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
         bt_gr_offenders_push(offenders, "%s", err);
         failed = 1;
     }
+    if (!failed && bt_ga_config_upgrades(config, &inputs->upgrades, err) != 1) {
+        bt_gr_offenders_push(offenders, "%s", err);
+        BT_TRACE_FAIL("gr.load_run_inputs", "upgrades rejected: %s", err);
+        failed = 1;
+    }
     size_t top_k = 0;
     if (!failed && bt_ga_config_pool_top_k(config, &top_k, err) != 1) {
         bt_gr_offenders_push(offenders, "%s", err);
@@ -821,7 +826,7 @@ int bt_gr_run_all(bt_gr_offenders *offenders) {
         BT_TRACE_FAIL("gr.run_all", "inputs rejected");
         return -1;
     }
-    bt_ga_run_outcome *outcome = bt_ga_run(&inputs.env, &inputs.params);
+    bt_ga_run_outcome *outcome = bt_ga_run_ex(&inputs.env, &inputs.params, &inputs.upgrades);
     bt_gr_syllable_assignment assignment;
     if (bt_gr_build_assignment(&inputs, outcome, &assignment, offenders) != 0) {
         bt_ga_run_outcome_free(outcome);

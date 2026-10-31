@@ -68,9 +68,36 @@ typedef struct {
     uint64_t evaluations;
 } bt_ga_run_outcome;
 
+typedef struct {
+    size_t island_count;
+    size_t migrate_every;
+    size_t migrate_count;
+    uint32_t stagnation_threshold;
+    double swap_scale;
+    double replace_scale;
+    int elite_fraction_policy;
+    double elite_fraction;
+    double diversity_threshold;
+    double inject_fraction;
+} bt_ga_upgrades;
+
+typedef struct {
+    uint32_t **population;
+    float *scores;
+    size_t *order;
+} bt_ga_island;
+
 bt_ga_run_outcome *bt_ga_run(const bt_ga_env *env, const bt_ga_params *params);
+bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params,
+                                const bt_ga_upgrades *upgrades);
 void bt_ga_run_outcome_free(bt_ga_run_outcome *outcome);
 
+void bt_ga_ring_migrate(bt_ga_island *islands, size_t island_count, size_t pop,
+                        size_t migrate_count, size_t case_count, uint32_t **staging,
+                        float *staging_scores);
+
 int bt_ga_config_params(const bt_json_value *config, bt_ga_params *out, char err[BT_GA_ERR_MAX]);
+int bt_ga_config_upgrades(const bt_json_value *config, bt_ga_upgrades *out,
+                          char err[BT_GA_ERR_MAX]);
 
 #endif

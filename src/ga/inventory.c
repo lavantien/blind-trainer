@@ -1,14 +1,28 @@
 #include "ga/inventory.h"
 
+#include "common/bt_harness.h"
 #include "common/bt_trace.h"
 
 #include "common/config.h"
 #include "common/space.h"
+#include "ga/alloc.h"
 #include "ga/features.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+BT_NORETURN static void bt_ga_inventory_abort(const char *label, const char *why, ...) {
+    char text[128];
+    va_list args;
+    va_start(args, why);
+    vsnprintf(text, sizeof text, why, args);
+    va_end(args);
+    BT_TRACE_FAIL("ga.build_pool", "ga abort: %s", text);
+    bt_harness_fail("src/ga/inventory.c", 0, "abort: %s: %s", label, text);
+    bt_harness_exit_failure();
+}
 
 size_t bt_ga_case_count(void) {
     BT_TRACE_ENTER("ga.case_count");
@@ -30,10 +44,11 @@ static char *bt_ga_read_file(const char *path, size_t *len, char err[BT_GA_ERR_M
         snprintf(err, BT_GA_ERR_MAX, "read %s", path);
         return NULL;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_ga_alloc((size_t)size + 1, "ga.read_file.buffer");
     if (text == NULL) {
         fclose(file);
-        snprintf(err, BT_GA_ERR_MAX, "read %s", path);
+        snprintf(err, BT_GA_ERR_MAX, "allocation failed reading %s", path);
+        BT_TRACE_FAIL("ga.read_file", "allocation failed reading %s", path);
         return NULL;
     }
     size_t got = fread(text, 1, (size_t)size, file);
@@ -70,27 +85,39 @@ static char *bt_ga_trim(char *text) {
     return text + at;
 }
 
-static void bt_ga_strset_push(bt_ga_strset *set, const char *text) {
+static int bt_ga_strset_push(bt_ga_strset *set, const char *text) {
     for (size_t i = 0; i < set->count; i++) {
         if (strcmp(set->items[i], text) == 0) {
-            return;
+            return 1;
         }
     }
-    char **grown = realloc(set->items, (set->count + 1) * sizeof *grown);
+    char **grown = bt_ga_alloc((set->count + 1) * sizeof *grown, "ga.strset.items");
     if (grown == NULL) {
-        return;
+        return 0;
     }
+    if (set->count > 0) {
+        memcpy(grown, set->items, set->count * sizeof *grown);
+    }
+    size_t bytes = strlen(text) + 1;
+    char *copy = bt_ga_alloc(bytes, "ga.strset.entry");
+    if (copy == NULL) {
+        bt_ga_free(grown);
+        return 0;
+    }
+    memcpy(copy, text, bytes);
+    bt_ga_free(set->items);
     set->items = grown;
-    set->items[set->count] = _strdup(text);
+    set->items[set->count] = copy;
     set->count++;
+    return 1;
 }
 
 void bt_ga_strset_free(bt_ga_strset *set) {
     BT_TRACE_ENTER("ga.strset_free");
     for (size_t i = 0; i < set->count; i++) {
-        free(set->items[i]);
+        bt_ga_free(set->items[i]);
     }
-    free(set->items);
+    bt_ga_free(set->items);
     set->items = NULL;
     set->count = 0;
     BT_TRACE_EXIT("ga.strset_free");
@@ -119,7 +146,7 @@ int bt_ga_load_wordlist(const char *path, bt_ga_strset *out, char err[BT_GA_ERR_
         return 0;
     }
     if (!bt_ga_utf8_valid(text)) {
-        free(text);
+        bt_ga_free(text);
         snprintf(err, BT_GA_ERR_MAX, "utf8 %s", path);
         BT_TRACE_FAIL("ga.load_wordlist", "utf8 failed for %s", path);
         return 0;
@@ -147,48 +174,64 @@ int bt_ga_load_wordlist(const char *path, bt_ga_strset *out, char err[BT_GA_ERR_
         }
         if (!bt_ga_is_nfc(syllable)) {
             snprintf(err, BT_GA_ERR_MAX, "combining mark in wordlist entry \"%s\"", syllable);
-            free(text);
+            bt_ga_free(text);
             bt_ga_strset_free(out);
             BT_TRACE_FAIL("ga.load_wordlist", "combining mark in %s", syllable);
             return 0;
         }
-        bt_ga_strset_push(out, syllable);
+        if (!bt_ga_strset_push(out, syllable)) {
+            snprintf(err, BT_GA_ERR_MAX, "wordlist allocation failed at entry %zu", out->count + 1);
+            bt_ga_free(text);
+            bt_ga_strset_free(out);
+            BT_TRACE_FAIL("ga.load_wordlist", "allocation failed at entry %zu", out->count + 1);
+            return 0;
+        }
     }
-    free(text);
+    bt_ga_free(text);
     BT_TRACE_EXIT("ga.load_wordlist");
     return 1;
 }
 
-static void bt_ga_freqs_push(bt_ga_freqs *freqs, const char *key, uint64_t value) {
+static int bt_ga_freqs_push(bt_ga_freqs *freqs, const char *key, uint64_t value) {
     for (size_t i = 0; i < freqs->count; i++) {
         if (strcmp(freqs->keys[i], key) == 0) {
             freqs->values[i] += value;
-            return;
+            return 1;
         }
     }
-    char **grown_keys = realloc(freqs->keys, (freqs->count + 1) * sizeof *grown_keys);
-    if (grown_keys != NULL) {
-        freqs->keys = grown_keys;
+    char **grown_keys = bt_ga_alloc((freqs->count + 1) * sizeof *grown_keys, "ga.freqs.keys");
+    uint64_t *grown_values =
+        bt_ga_alloc((freqs->count + 1) * sizeof *grown_values, "ga.freqs.values");
+    size_t bytes = strlen(key) + 1;
+    char *copy = bt_ga_alloc(bytes, "ga.freqs.entry");
+    if (grown_keys == NULL || grown_values == NULL || copy == NULL) {
+        bt_ga_free(grown_keys);
+        bt_ga_free(grown_values);
+        bt_ga_free(copy);
+        return 0;
     }
-    uint64_t *grown_values = realloc(freqs->values, (freqs->count + 1) * sizeof *grown_values);
-    if (grown_values != NULL) {
-        freqs->values = grown_values;
+    if (freqs->count > 0) {
+        memcpy(grown_keys, freqs->keys, freqs->count * sizeof *grown_keys);
+        memcpy(grown_values, freqs->values, freqs->count * sizeof *grown_values);
     }
-    if (grown_keys == NULL || grown_values == NULL) {
-        return;
-    }
-    freqs->keys[freqs->count] = _strdup(key);
+    memcpy(copy, key, bytes);
+    bt_ga_free(freqs->keys);
+    bt_ga_free(freqs->values);
+    freqs->keys = grown_keys;
+    freqs->values = grown_values;
+    freqs->keys[freqs->count] = copy;
     freqs->values[freqs->count] = value;
     freqs->count++;
+    return 1;
 }
 
 void bt_ga_freqs_free(bt_ga_freqs *freqs) {
     BT_TRACE_ENTER("ga.freqs_free");
     for (size_t i = 0; i < freqs->count; i++) {
-        free(freqs->keys[i]);
+        bt_ga_free(freqs->keys[i]);
     }
-    free(freqs->keys);
-    free(freqs->values);
+    bt_ga_free(freqs->keys);
+    bt_ga_free(freqs->values);
     freqs->keys = NULL;
     freqs->values = NULL;
     freqs->count = 0;
@@ -251,7 +294,7 @@ int bt_ga_load_syllable_frequencies(const char *path, bt_ga_freqs *out, char err
         return 0;
     }
     if (!bt_ga_utf8_valid(text)) {
-        free(text);
+        bt_ga_free(text);
         snprintf(err, BT_GA_ERR_MAX, "utf8 %s", path);
         BT_TRACE_FAIL("ga.load_syllable_frequencies", "utf8 failed for %s", path);
         return 0;
@@ -298,7 +341,7 @@ int bt_ga_load_syllable_frequencies(const char *path, bt_ga_freqs *out, char err
         if (!bt_ga_parse_u64(count_trimmed, &parsed_count)) {
             snprintf(err, BT_GA_ERR_MAX, "freq row %zu has non numeric count \"%s\"", line_number,
                      count_text);
-            free(text);
+            bt_ga_free(text);
             bt_ga_freqs_free(out);
             BT_TRACE_FAIL("ga.load_syllable_frequencies", "non numeric count row %zu", line_number);
             return 0;
@@ -309,15 +352,23 @@ int bt_ga_load_syllable_frequencies(const char *path, bt_ga_freqs *out, char err
              token = strtok_s(NULL, " \t\r\n\v\f", &saved)) {
             if (!bt_ga_is_nfc(token)) {
                 snprintf(err, BT_GA_ERR_MAX, "combining mark in freq token \"%s\"", token);
-                free(text);
+                bt_ga_free(text);
                 bt_ga_freqs_free(out);
                 BT_TRACE_FAIL("ga.load_syllable_frequencies", "combining mark in %s", token);
                 return 0;
             }
-            bt_ga_freqs_push(out, token, parsed_count);
+            if (!bt_ga_freqs_push(out, token, parsed_count)) {
+                snprintf(err, BT_GA_ERR_MAX, "frequency table allocation failed at row %zu",
+                         line_number);
+                bt_ga_free(text);
+                bt_ga_freqs_free(out);
+                BT_TRACE_FAIL("ga.load_syllable_frequencies", "allocation failed at row %zu",
+                              line_number);
+                return 0;
+            }
         }
     }
-    free(text);
+    bt_ga_free(text);
     BT_TRACE_EXIT("ga.load_syllable_frequencies");
     return 1;
 }
@@ -731,7 +782,7 @@ static int bt_ga_entry_cmp(const void *a, const void *b) {
 }
 
 static int bt_ga_cover_word(char ***covered, size_t *covered_size, size_t *covered_capacity,
-                            const char *text) {
+                            const char *text, char err[BT_GA_ERR_MAX]) {
     for (size_t c = 0; c < *covered_size; c++) {
         if (strcmp((*covered)[c], text) == 0) {
             return 1;
@@ -739,29 +790,47 @@ static int bt_ga_cover_word(char ***covered, size_t *covered_size, size_t *cover
     }
     if (*covered_size == *covered_capacity) {
         *covered_capacity *= 2;
-        char **grown = realloc(*covered, *covered_capacity * sizeof *grown);
+        char **grown = bt_ga_alloc(*covered_capacity * sizeof *grown, "ga.build_inventory.covered");
         if (grown == NULL) {
+            snprintf(err, BT_GA_ERR_MAX, "inventory covered allocation failed");
+            BT_TRACE_FAIL("ga.build_inventory", "covered allocation failed");
             return 0;
         }
+        if (*covered_size > 0) {
+            memcpy(grown, *covered, *covered_size * sizeof *grown);
+        }
+        bt_ga_free(*covered);
         *covered = grown;
     }
-    char *copy = _strdup(text);
+    size_t bytes = strlen(text) + 1;
+    char *copy = bt_ga_alloc(bytes, "ga.build_inventory.word_copy");
     if (copy == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "inventory word copy allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "word copy allocation failed");
         return 0;
     }
+    memcpy(copy, text, bytes);
     (*covered)[(*covered_size)++] = copy;
     return 1;
 }
 
-static int bt_ga_grow_list(bt_ga_inventory_entry **list, size_t *capacity, size_t size) {
+static int bt_ga_grow_list(bt_ga_inventory_entry **list, size_t *capacity, size_t size,
+                           char err[BT_GA_ERR_MAX]) {
     if (size < *capacity) {
         return 1;
     }
     *capacity *= 2;
-    bt_ga_inventory_entry *grown = realloc(*list, *capacity * sizeof *grown);
+    bt_ga_inventory_entry *grown =
+        bt_ga_alloc(*capacity * sizeof *grown, "ga.build_inventory.list");
     if (grown == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "inventory list allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "list allocation failed");
         return 0;
     }
+    if (size > 0) {
+        memcpy(grown, *list, size * sizeof *grown);
+    }
+    bt_ga_free(*list);
     *list = grown;
     return 1;
 }
@@ -774,8 +843,11 @@ int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **
     size_t covered_size = 0;
     char **covered = NULL;
     bt_ga_inventory_entry *list = NULL;
-    const char **sorted = malloc(wordlist->count * sizeof *sorted);
+    const char **sorted =
+        bt_ga_alloc(wordlist->count * sizeof *sorted, "ga.build_inventory.sorted");
     if (sorted == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "inventory sorted allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "sorted allocation failed");
         ok = 0;
         goto fail;
     }
@@ -786,14 +858,18 @@ int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **
 
     size_t capacity = 64;
     size_t size = 0;
-    list = malloc(capacity * sizeof *list);
+    list = bt_ga_alloc(capacity * sizeof *list, "ga.build_inventory.list");
     if (list == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "inventory list allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "list allocation failed");
         ok = 0;
         goto fail;
     }
     size_t generated = 0;
-    covered = malloc(covered_capacity * sizeof *covered);
+    covered = bt_ga_alloc(covered_capacity * sizeof *covered, "ga.build_inventory.covered");
     if (covered == NULL) {
+        snprintf(err, BT_GA_ERR_MAX, "inventory covered allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "covered allocation failed");
         ok = 0;
         goto fail;
     }
@@ -819,11 +895,11 @@ int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **
                                 continue;
                             }
                             if (!bt_ga_cover_word(&covered, &covered_size, &covered_capacity,
-                                                  forms.items[f])) {
+                                                  forms.items[f], err)) {
                                 ok = 0;
                                 goto fail;
                             }
-                            if (!bt_ga_grow_list(&list, &capacity, size)) {
+                            if (!bt_ga_grow_list(&list, &capacity, size, err)) {
                                 ok = 0;
                                 goto fail;
                             }
@@ -846,12 +922,12 @@ int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **
                             if (!bt_ga_sorted_contains(sorted, wordlist->count, text)) {
                                 continue;
                             }
-                            if (!bt_ga_cover_word(&covered, &covered_size, &covered_capacity,
-                                                  text)) {
+                            if (!bt_ga_cover_word(&covered, &covered_size, &covered_capacity, text,
+                                                  err)) {
                                 ok = 0;
                                 goto fail;
                             }
-                            if (!bt_ga_grow_list(&list, &capacity, size)) {
+                            if (!bt_ga_grow_list(&list, &capacity, size, err)) {
                                 ok = 0;
                                 goto fail;
                             }
@@ -887,17 +963,16 @@ int bt_ga_build_inventory(const bt_ga_strset *wordlist, bt_ga_inventory_entry **
 
 fail:
     for (size_t c = 0; c < covered_size; c++) {
-        free(covered[c]);
+        bt_ga_free(covered[c]);
     }
-    free(covered);
-    free(sorted);
+    bt_ga_free(covered);
+    bt_ga_free(sorted);
     if (!ok) {
-        free(list);
+        bt_ga_free(list);
         *entries = NULL;
         *count = 0;
         memset(report, 0, sizeof *report);
-        snprintf(err, BT_GA_ERR_MAX, "inventory allocation failed");
-        BT_TRACE_FAIL("ga.build_inventory", "allocation failed");
+        BT_TRACE_FAIL("ga.build_inventory", "allocation failed: %s", err);
         return 0;
     }
     BT_TRACE_EXIT("ga.build_inventory");
@@ -906,7 +981,7 @@ fail:
 
 void bt_ga_inventory_free(bt_ga_inventory_entry *entries) {
     BT_TRACE_ENTER("ga.inventory_free");
-    free(entries);
+    bt_ga_free(entries);
     BT_TRACE_EXIT("ga.inventory_free");
 }
 
@@ -923,7 +998,11 @@ void bt_ga_build_pool(const bt_ga_inventory_entry *entries, size_t count, const 
                       size_t top_k, bt_ga_pool_entry **pool, size_t *pool_count) {
     BT_TRACE_ENTER("ga.build_pool");
     size_t size = 0;
-    bt_ga_pool_entry *ranked = malloc((count > 0 ? count : 1) * sizeof *ranked);
+    bt_ga_pool_entry *ranked =
+        bt_ga_alloc((count > 0 ? count : 1) * sizeof *ranked, "ga.build_pool.ranked");
+    if (ranked == NULL) {
+        bt_ga_inventory_abort("ga build_pool", "allocation failed at ga.build_pool.ranked");
+    }
     for (size_t i = 0; i < count; i++) {
         if (!bt_ga_freqs_has(freqs, entries[i].text)) {
             continue;
@@ -944,7 +1023,7 @@ void bt_ga_build_pool(const bt_ga_inventory_entry *entries, size_t count, const 
 
 void bt_ga_pool_free(bt_ga_pool_entry *pool) {
     BT_TRACE_ENTER("ga.pool_free");
-    free(pool);
+    bt_ga_free(pool);
     BT_TRACE_EXIT("ga.pool_free");
 }
 

@@ -68,6 +68,7 @@ typedef struct {
 
 typedef struct {
     bt_ga_params params;
+    bt_ga_upgrades upgrades;
     bt_ga_env env;
     bt_ga_pool_entry *pool;
     size_t pool_count;
