@@ -232,14 +232,32 @@
       "seed": 20261012
     },
     "ga": {
+      "adaptive_mutation": {
+        "replace_scale": 1.0,
+        "stagnation_threshold": 0,
+        "swap_scale": 1.0
+      },
       "elite": 2,
+      "elite_carry": {
+        "fraction": 0.0,
+        "policy": "count"
+      },
       "generations": 500,
+      "islands": {
+        "count": 1,
+        "migrate_count": 1,
+        "migrate_every": 0
+      },
       "mutation": {
         "replace": 0.05,
         "swap": 0.15
       },
       "pool_top_k": 1600,
       "population": 200,
+      "restart": {
+        "diversity_threshold": 0.0,
+        "inject_fraction": 0.5
+      },
       "seed": 20261012,
       "tournament": 2,
       "weights": {
