@@ -5,43 +5,45 @@ on:
     branches: [main]
   pull_request:
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   ci:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
-      - name: fmt
-        run: cargo fmt --all -- --check
-      - name: clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
-      - name: policy
-        run: cargo run --locked -p bt-policy
-      - name: check
-        run: cargo check --workspace
-      - name: build
-        run: cargo build --release -p bt-app
-      - name: test self-contained suites
+          python-version: "3.14"
+      - name: install llvm 23.1.4
+        shell: pwsh
         run: |
-          cargo test -p bt-app
-          cargo test -p bt-core --lib --test fuzzkill_analysis --test geometric_oracle --test parse_roundtrip
-          cargo test -p bt-scheme --lib --test memo_more --test scramble_oracle
-          cargo test -p bt-data
-          cargo test -p bt-puzzles
-          cargo test -p bt-ga --test fuzzkill_ga --test ga_public_surface --test inventory_more
-          cargo test -p bt-gendata --lib
-          cargo test -p bt-jobwrap
-          cargo test -p bt-memofreq
-          cargo test -p bt-mutants-gate
-          cargo test -p bt-policy
-          cargo test -p bt-release-verify
-          cargo test -p bt-sleeper
-          cargo test -p bt-visual-diff
-          cargo test -p bt-verify --lib
-          cargo test --manifest-path tests/e2e/Cargo.toml
+          $msi = Join-Path $env:RUNNER_TEMP "LLVM-23.1.4-win64.msi"
+          $url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/LLVM-23.1.4-win64.msi"
+          Invoke-WebRequest -Uri $url -OutFile $msi
+          $install = Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /qn /norestart" -Wait -PassThru
+          if ($install.ExitCode -ne 0) { exit 1 }
+          $llvmBin = "C:\Program Files\LLVM\bin"
+          if (-not (Test-Path "$llvmBin\clang.exe")) { exit 1 }
+          Add-Content -Path $env:GITHUB_PATH -Value $llvmBin
+      - name: setup
+        run: python bt.py setup
+      - name: vendor
+        run: python scripts/vendor.py
+      - name: fmt
+        run: python bt.py fmt
+      - name: lint
+        run: python bt.py lint
+      - name: policy
+        run: python bt.py policy
+      - name: check
+        run: python bt.py check
+      - name: build
+        run: python bt.py build
+      - name: test
+        shell: pwsh
+        run: |
+          foreach ($area in "common","core","scheme","data","puzzles","ga","tools","e2e") {
+            python bt.py test-unit $area
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
+          python -m unittest discover -s tests/python
+          if ($LASTEXITCODE -ne 0) { exit 1 }
