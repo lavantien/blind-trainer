@@ -143,6 +143,98 @@ int64_t bt_ui_number_clamp(int64_t value, int64_t low, int64_t high) {
     return clamped;
 }
 
+static void ui_select_clamp_cursor(bt_ui_select_state *state, int row_count, int selected) {
+    if (selected < 0 || selected >= row_count) {
+        selected = 0;
+    }
+    if (state->cursor < 0 || state->cursor >= row_count) {
+        state->cursor = selected;
+    }
+}
+
+static bt_ui_rect ui_select_option_slot(const bt_ui_rect *rect, int index) {
+    bt_ui_rect slot = {
+        rect->x,
+        rect->y + rect->height * (float)(index + 1),
+        rect->width,
+        rect->height,
+    };
+    return slot;
+}
+
+int bt_ui_select_transition(bt_ui_select_state *state, const bt_ui_rect *rect, int row_count,
+                            int selected, const bt_ui_input *input, int *edited) {
+    BT_TRACE_ENTER("app.ui_select_transition");
+    *edited = 0;
+    if (row_count <= 0) {
+        state->open = 0;
+        BT_TRACE_FAIL("app.ui_select_transition", "no rows to select from");
+        BT_TRACE_EXIT("app.ui_select_transition");
+        return selected;
+    }
+    if (selected < 0 || selected >= row_count) {
+        selected = 0;
+    }
+    ui_select_clamp_cursor(state, row_count, selected);
+    if (!state->open) {
+        if (input->click && bt_ui_contains(rect, input->x, input->y)) {
+            state->open = 1;
+            state->cursor = selected;
+        }
+        BT_TRACE_EXIT("app.ui_select_transition");
+        return selected;
+    }
+    if (input->escape) {
+        state->open = 0;
+        BT_TRACE_EXIT("app.ui_select_transition");
+        return selected;
+    }
+    if (input->arrow_up && state->cursor > 0) {
+        state->cursor -= 1;
+    }
+    if (input->arrow_down && state->cursor < row_count - 1) {
+        state->cursor += 1;
+    }
+    for (int i = 0; i < input->char_count; i++) {
+        int c = input->chars[i];
+        if (c >= '1' && c <= '9' && c - '1' < row_count) {
+            state->cursor = c - '1';
+        }
+    }
+    if (input->enter) {
+        state->open = 0;
+        int picked = state->cursor;
+        if (picked != selected) {
+            *edited = 1;
+        }
+        BT_TRACE_EXIT("app.ui_select_transition");
+        return picked;
+    }
+    if (input->click) {
+        if (bt_ui_contains(rect, input->x, input->y)) {
+            state->open = 0;
+            BT_TRACE_EXIT("app.ui_select_transition");
+            return selected;
+        }
+        for (int i = 0; i < row_count; i++) {
+            bt_ui_rect slot = ui_select_option_slot(rect, i);
+            if (bt_ui_contains(&slot, input->x, input->y)) {
+                state->open = 0;
+                if (i != selected) {
+                    *edited = 1;
+                }
+                BT_TRACE_EXIT("app.ui_select_transition");
+                return i;
+            }
+        }
+        state->open = 0;
+        BT_TRACE_EXIT("app.ui_select_transition");
+        return selected;
+    }
+    BT_TRACE_EXIT("app.ui_select_transition");
+    return selected;
+}
+
 #include "app/theme.h"
 #include "app/window.h"
 
@@ -368,4 +460,39 @@ int64_t bt_ui_number_field(const struct Font *font, const bt_ui_rect *rect, int6
             rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
     BT_TRACE_EXIT("app.ui_number_field");
     return value;
+}
+
+int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *const *rows,
+                 int row_count, int selected, bt_ui_select_state *state, const bt_ui_input *input,
+                 int *edited) {
+    BT_TRACE_ENTER("app.ui_select");
+    int picked = bt_ui_select_transition(state, rect, row_count, selected, input, edited);
+    if (picked < 0 || picked >= row_count) {
+        picked = 0;
+    }
+    ui_fill(rect, state->open ? bt_theme_panel_raised() : bt_theme_panel());
+    ui_lines(rect, state->open ? bt_theme_accent() : bt_theme_hairline());
+    const bt_theme *theme = bt_theme_table();
+    float size = theme->font_body * theme->root_rem;
+    float mark_w = rect->height;
+    ui_text(font, rows[picked], rect->x + theme->spacing_rem * theme->root_rem,
+            rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
+    ui_text(font, "v", rect->x + rect->width - mark_w + ui_center_offset(mark_w, 0.0F),
+            rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_muted());
+    if (state->open) {
+        for (int i = 0; i < row_count; i++) {
+            bt_ui_rect slot = ui_select_option_slot(rect, i);
+            if (i == state->cursor) {
+                ui_fill(&slot, bt_theme_panel_raised());
+            } else {
+                ui_fill(&slot, bt_theme_panel());
+            }
+            ui_lines(&slot, bt_theme_hairline());
+            bt_theme_color ink = i == picked ? bt_theme_accent() : bt_theme_text_primary();
+            ui_text(font, rows[i], slot.x + theme->spacing_rem * theme->root_rem,
+                    slot.y + ui_center_offset(slot.height, size), size, ink);
+        }
+    }
+    BT_TRACE_EXIT("app.ui_select");
+    return picked;
 }

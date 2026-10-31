@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #define BT_SETTINGS_TEXT_MAX 128
-#define BT_SETTINGS_LINE_COUNT 4
+#define BT_SETTINGS_ROW_COUNT 3
 #define BT_SETTINGS_CADENCE_MIN 1
 #define BT_SETTINGS_CADENCE_MAX 10000
 #define BT_SETTINGS_REPS_MIN 1
@@ -24,15 +24,22 @@ typedef struct {
 typedef struct {
     bt_ui_number_state cadence;
     bt_ui_number_state reps;
-    bt_ui_list_window mode_list;
+    bt_ui_select_state mode_select;
 } bt_settings_widgets;
+
+typedef struct {
+    bt_ui_rect rows[BT_SETTINGS_ROW_COUNT];
+    bt_ui_rect controls[BT_SETTINGS_ROW_COUNT];
+    bt_ui_rect hints[BT_SETTINGS_ROW_COUNT];
+} bt_view_settings_layout;
 
 void bt_view_settings_draft_from(const bt_settings *settings, bt_settings_draft *draft);
 void bt_view_settings_draft_apply(const bt_settings_draft *draft, bt_settings *out);
 unsigned int bt_view_settings_clamp_cadence(long long value);
 unsigned int bt_view_settings_clamp_reps(long long value);
-void bt_view_settings_lines(const bt_settings_draft *draft,
-                            char out[BT_SETTINGS_LINE_COUNT][BT_SETTINGS_TEXT_MAX]);
+bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h);
+void bt_view_settings_labels(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]);
+void bt_view_settings_hints(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]);
 
 typedef struct {
     int initialized;

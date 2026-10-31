@@ -188,6 +188,11 @@ BT_TEST(views_stats, settings_mode_keys_toggle_the_draft) {
     bt_view_settings_update_state(&ctx, app);
     BT_CHECK(app->draft.memo_mode == BT_MEMO_IMAGES);
     BT_CHECK(ctx.stores.settings.memo_mode == BT_MEMO_IMAGES);
+    BT_CHECK(app->widgets.mode_select.open == 1);
+    bt_view_settings_key(&ctx, app, '1');
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_IMAGES);
+    BT_CHECK(app->widgets.mode_select.cursor == 0);
+    app->widgets.mode_select.open = 0;
     bt_view_settings_key(&ctx, app, '1');
     bt_view_settings_update_state(&ctx, app);
     BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
@@ -270,22 +275,15 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    const bt_theme *theme = bt_theme_table();
-    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
-    float body = theme->font_body * theme->root_rem;
-    float field_h = body * 1.4F;
-    float line_gap = theme->spacing_rem * theme->root_rem;
-    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
-    float cadence_x = metrics.content_x + metrics.content_w - 2.0F * 160.0F - line_gap;
-    float reps_x = cadence_x + 160.0F + line_gap;
+    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
     bt_settings_draft draft;
     draft.memo_cadence_ms = 800;
     draft.memo_mode = BT_MEMO_SYLLABLES;
     draft.drill_reps = 6;
     bt_ui_input input;
     bt_ui_input_clear(&input);
-    input.x = reps_x + 160.0F - field_h / 2.0F;
-    input.y = field_y + field_h / 2.0F;
+    input.x = layout.controls[2].x + layout.controls[2].width - layout.controls[2].height / 2.0F;
+    input.y = layout.controls[2].y + layout.controls[2].height / 2.0F;
     int changed = 0;
     int focus = 0;
     bt_settings_widgets widgets;
@@ -300,21 +298,35 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     }
     BT_CHECK(changed == 1);
     BT_CHECK(draft.drill_reps == 7);
-    bt_ui_input second;
-    bt_ui_input_clear(&second);
-    second.x = cadence_x + 100.0F;
-    second.y = field_y + field_h + line_gap + field_h * (2.5F / 3.0F);
-    changed = 0;
+    bt_ui_input open;
+    bt_ui_input_clear(&open);
+    open.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    open.y = layout.controls[1].y + layout.controls[1].height / 2.0F;
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
-        second.click = frame == 0;
+        open.click = frame == 0;
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
         bt_view_settings_draw(&draft, &changed, &focus, &widgets, book.regular, book.bold,
-                              (float)PROBE_W, (float)PROBE_H, &second);
+                              (float)PROBE_W, (float)PROBE_H, &open);
+        bt_app_window_frame_end();
+    }
+    BT_CHECK(widgets.mode_select.open == 1);
+    changed = 0;
+    bt_ui_input pick;
+    bt_ui_input_clear(&pick);
+    pick.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    pick.y = layout.controls[1].y + layout.controls[1].height * 3.5F;
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        pick.click = frame == 0;
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_settings_draw(&draft, &changed, &focus, &widgets, book.regular, book.bold,
+                              (float)PROBE_W, (float)PROBE_H, &pick);
         bt_app_window_frame_end();
     }
     BT_CHECK(changed == 1);
     BT_CHECK(draft.memo_mode == BT_MEMO_PER_ORBIT);
+    BT_CHECK(widgets.mode_select.open == 0);
     char shot[BT_PATH_MAX];
     snprintf(shot, sizeof shot, "%s/app-views-settings-%d.png", getenv("TEMP"), _getpid());
     remove(shot);
@@ -367,14 +379,7 @@ BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    const bt_theme *theme = bt_theme_table();
-    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
-    float body = theme->font_body * theme->root_rem;
-    float field_h = body * 1.4F;
-    float line_gap = theme->spacing_rem * theme->root_rem;
-    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
-    float cadence_x = metrics.content_x + metrics.content_w - 2.0F * 160.0F - line_gap;
-    float reps_x = cadence_x + 160.0F + line_gap;
+    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
     bt_app_ctx ctx;
     fixture_ctx("typing", BT_APP_SETTINGS, &ctx);
     bt_settings_app_state *app = bt_view_settings_app();
@@ -383,8 +388,8 @@ BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
     BT_CHECK(app->draft.drill_reps == 4);
     bt_ui_input focus;
     bt_ui_input_clear(&focus);
-    focus.x = reps_x + 80.0F;
-    focus.y = field_y + field_h / 2.0F;
+    focus.x = layout.controls[2].x + layout.controls[2].width / 2.0F;
+    focus.y = layout.controls[2].y + layout.controls[2].height / 2.0F;
     focus.click = 1;
     bt_app_frame_input_set(&focus);
     bt_app_window_frame_begin();
@@ -412,8 +417,8 @@ BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
     BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
     bt_ui_input blur;
     bt_ui_input_clear(&blur);
-    blur.x = metrics.content_x + 10.0F;
-    blur.y = 200.0F;
+    blur.x = layout.rows[0].x + 10.0F;
+    blur.y = layout.rows[0].y + 10.0F;
     blur.click = 1;
     bt_app_frame_input_set(&blur);
     bt_app_window_frame_begin();
@@ -441,14 +446,7 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    const bt_theme *theme = bt_theme_table();
-    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
-    float body = theme->font_body * theme->root_rem;
-    float field_h = body * 1.4F;
-    float line_gap = theme->spacing_rem * theme->root_rem;
-    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
-    float cadence_x = metrics.content_x + metrics.content_w - 2.0F * 160.0F - line_gap;
-    float reps_x = cadence_x + 160.0F + line_gap;
+    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
     bt_app_ctx ctx;
     fixture_ctx("seam", BT_APP_SETTINGS, &ctx);
     bt_settings_app_state *app = bt_view_settings_app();
@@ -457,8 +455,8 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
     BT_CHECK(app->draft.drill_reps == 4);
     bt_ui_input input;
     bt_ui_input_clear(&input);
-    input.x = reps_x + 160.0F - field_h / 2.0F;
-    input.y = field_y + field_h / 2.0F;
+    input.x = layout.controls[2].x + layout.controls[2].width - layout.controls[2].height / 2.0F;
+    input.y = layout.controls[2].y + layout.controls[2].height / 2.0F;
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
         input.click = frame == 0;
         bt_app_frame_input_set(&input);
@@ -470,13 +468,27 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
     }
     BT_CHECK(app->draft.drill_reps == 5);
     BT_CHECK(app->changed == 1);
-    bt_ui_input second;
-    bt_ui_input_clear(&second);
-    second.x = cadence_x + 100.0F;
-    second.y = field_y + field_h + line_gap + field_h * (2.5F / 3.0F);
+    bt_ui_input open;
+    bt_ui_input_clear(&open);
+    open.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    open.y = layout.controls[1].y + layout.controls[1].height / 2.0F;
     for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
-        second.click = frame == 0;
-        bt_app_frame_input_set(&second);
+        open.click = frame == 0;
+        bt_app_frame_input_set(&open);
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_settings_row_draw(&ctx);
+        bt_app_window_frame_end();
+        bt_app_frame_input_set(NULL);
+    }
+    BT_CHECK(app->widgets.mode_select.open == 1);
+    bt_ui_input pick;
+    bt_ui_input_clear(&pick);
+    pick.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    pick.y = layout.controls[1].y + layout.controls[1].height * 3.5F;
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        pick.click = frame == 0;
+        bt_app_frame_input_set(&pick);
         bt_app_window_frame_begin();
         ClearBackground(bt_app_color(bt_theme_background()));
         bt_view_settings_row_draw(&ctx);
@@ -484,6 +496,99 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
         bt_app_frame_input_set(NULL);
     }
     BT_CHECK(app->draft.memo_mode == BT_MEMO_PER_ORBIT);
+    bt_view_settings_update_state(&ctx, app);
+    BT_CHECK(ctx.stores.settings.memo_mode == BT_MEMO_PER_ORBIT);
+    bt_app_ctx_free(&ctx);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+}
+
+BT_TEST(views_stats, settings_mode_select_keyboard_flow_through_the_seam) {
+    if (!bt_app_window_open(PROBE_W, PROBE_H, "views settings select test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
+    bt_app_ctx ctx;
+    fixture_ctx("select-flow", BT_APP_SETTINGS, &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    bt_ui_input quiet;
+    bt_ui_input_clear(&quiet);
+    bt_app_frame_input_set(&quiet);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.open == 0);
+    BT_CHECK(ctx.input_focus == 0);
+    bt_ui_input open;
+    bt_ui_input_clear(&open);
+    open.x = layout.controls[1].x + layout.controls[1].width / 2.0F;
+    open.y = layout.controls[1].y + layout.controls[1].height / 2.0F;
+    open.click = 1;
+    bt_app_frame_input_set(&open);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.open == 1);
+    BT_CHECK(ctx.input_focus == 1);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
+    bt_ui_input down;
+    bt_ui_input_clear(&down);
+    down.arrow_down = 1;
+    bt_app_frame_input_set(&down);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.cursor == 1);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
+    bt_ui_input enter;
+    bt_ui_input_clear(&enter);
+    enter.enter = 1;
+    bt_app_frame_input_set(&enter);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.open == 0);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_IMAGES);
+    bt_view_settings_update_state(&ctx, app);
+    BT_CHECK(ctx.stores.settings.memo_mode == BT_MEMO_IMAGES);
+    bt_app_frame_input_set(&open);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.open == 1);
+    bt_ui_input escape;
+    bt_ui_input_clear(&escape);
+    escape.escape = 1;
+    bt_app_frame_input_set(&escape);
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_view_settings_row_draw(&ctx);
+    bt_app_window_frame_end();
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(app->widgets.mode_select.open == 0);
+    BT_CHECK(app->draft.memo_mode == BT_MEMO_IMAGES);
+    BT_CHECK(ctx.state == BT_APP_SETTINGS);
     bt_app_ctx_free(&ctx);
     bt_app_fonts_unload(&book);
     bt_app_window_close();

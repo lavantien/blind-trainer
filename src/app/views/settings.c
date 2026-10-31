@@ -52,16 +52,75 @@ unsigned int bt_view_settings_clamp_reps(long long value) {
     return (unsigned int)value;
 }
 
-void bt_view_settings_lines(const bt_settings_draft *draft,
-                            char out[BT_SETTINGS_LINE_COUNT][BT_SETTINGS_TEXT_MAX]) {
-    BT_TRACE_ENTER("app.view_settings_lines");
-    snprintf(out[0], BT_SETTINGS_TEXT_MAX, "memo cadence %u ms", draft->memo_cadence_ms);
-    snprintf(out[1], BT_SETTINGS_TEXT_MAX, "memo mode %s", bt_memo_mode_label(draft->memo_mode));
-    snprintf(out[2], BT_SETTINGS_TEXT_MAX, "drill reps %u", draft->drill_reps);
-    snprintf(out[3], BT_SETTINGS_TEXT_MAX, "%s",
-             "1 syllables  2 images  3 per-orbit  edits save "
-             "immediately");
-    BT_TRACE_EXIT("app.view_settings_lines");
+static const float BT_SETTINGS_COLUMN_REM = 26.0F;
+static const float BT_SETTINGS_ROW_REM = 3.2F;
+static const float BT_SETTINGS_CONTROL_REM = 11.0F;
+static const float BT_SETTINGS_CONTROL_INSET_REM = 0.3F;
+
+bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h) {
+    BT_TRACE_ENTER("app.view_settings_layout");
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    bt_view_settings_layout layout;
+    float column_w = BT_SETTINGS_COLUMN_REM * theme->root_rem;
+    if (column_w > metrics.content_w) {
+        column_w = metrics.content_w;
+    }
+    float column_half = column_w * 0.5F;
+    float row_h = BT_SETTINGS_ROW_REM * theme->root_rem;
+    float gap = theme->spacing_rem * 2.0F * theme->root_rem;
+    float block_h = row_h * (float)BT_SETTINGS_ROW_COUNT + gap * (float)(BT_SETTINGS_ROW_COUNT - 1);
+    float column_x = metrics.content_x + (metrics.content_w - column_w) / 2.0F;
+    float top_y = metrics.content_y + (metrics.content_h - block_h) / 2.0F;
+    float control_w = BT_SETTINGS_CONTROL_REM * theme->root_rem;
+    if (control_w > column_half) {
+        control_w = column_half;
+    }
+    float inset = BT_SETTINGS_CONTROL_INSET_REM * theme->root_rem;
+    if (row_h - inset - inset < theme->root_rem) {
+        inset = (row_h - theme->root_rem) * 0.5F;
+        if (inset < 0.0F) {
+            inset = 0.0F;
+        }
+    }
+    float control_h = row_h - inset - inset;
+    float pad = theme->spacing_rem * theme->root_rem;
+    float body = theme->font_body * theme->root_rem;
+    float hint_gap = theme->spacing_rem * 0.5F * theme->root_rem;
+    float small = theme->font_small * theme->root_rem;
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        float row_y = top_y + (row_h + gap) * (float)i;
+        layout.rows[i].x = column_x;
+        layout.rows[i].y = row_y;
+        layout.rows[i].width = column_w;
+        layout.rows[i].height = row_h;
+        layout.controls[i].x = column_x + column_w - control_w;
+        layout.controls[i].y = row_y + inset;
+        layout.controls[i].width = control_w;
+        layout.controls[i].height = control_h;
+        layout.hints[i].x = column_x + pad;
+        layout.hints[i].y = row_y + pad + body + hint_gap;
+        layout.hints[i].width = column_w - control_w - pad;
+        layout.hints[i].height = small;
+    }
+    BT_TRACE_EXIT("app.view_settings_layout");
+    return layout;
+}
+
+void bt_view_settings_labels(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]) {
+    BT_TRACE_ENTER("app.view_settings_labels");
+    snprintf(out[0], BT_SETTINGS_TEXT_MAX, "%s", "memo cadence (ms)");
+    snprintf(out[1], BT_SETTINGS_TEXT_MAX, "%s", "memo mode");
+    snprintf(out[2], BT_SETTINGS_TEXT_MAX, "%s", "drill reps");
+    BT_TRACE_EXIT("app.view_settings_labels");
+}
+
+void bt_view_settings_hints(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]) {
+    BT_TRACE_ENTER("app.view_settings_hints");
+    snprintf(out[0], BT_SETTINGS_TEXT_MAX, "%s", "digits then enter");
+    snprintf(out[1], BT_SETTINGS_TEXT_MAX, "%s", "press 1, 2, or 3");
+    snprintf(out[2], BT_SETTINGS_TEXT_MAX, "%s", "digits then enter");
+    BT_TRACE_EXIT("app.view_settings_hints");
 }
 
 static bt_settings_app_state g_settings_app;
@@ -96,18 +155,25 @@ void bt_view_settings_enter_state(bt_app_ctx *ctx, bt_settings_app_state *app) {
 
 void bt_view_settings_key(bt_app_ctx *ctx, bt_settings_app_state *app, int key) {
     BT_TRACE_ENTER("app.view_settings_key");
-    if (ctx->input_focus) {
-        BT_TRACE_EXIT("app.view_settings_key");
-        return;
-    }
     bt_memo_mode mode;
     int index = key - '1';
     if (index < 0 || index >= BT_MEMO_MODE_COUNT || !bt_memo_mode_from_index(index, &mode)) {
         BT_TRACE_EXIT("app.view_settings_key");
         return;
     }
+    if (app->widgets.mode_select.open) {
+        app->widgets.mode_select.cursor = index;
+        BT_TRACE_EXIT("app.view_settings_key");
+        return;
+    }
+    if (ctx->input_focus) {
+        BT_TRACE_EXIT("app.view_settings_key");
+        return;
+    }
     app->draft.memo_mode = mode;
     app->changed = 1;
+    app->widgets.mode_select.open = 1;
+    app->widgets.mode_select.cursor = index;
     BT_TRACE_EXIT("app.view_settings_key");
 }
 
@@ -120,12 +186,19 @@ void bt_view_settings_keys(bt_app_ctx *ctx, bt_settings_app_state *app, const in
         if (index < 0 || index >= BT_MEMO_MODE_COUNT || !bt_memo_mode_from_index(index, &mode)) {
             continue;
         }
+        if (app->widgets.mode_select.open) {
+            app->widgets.mode_select.cursor = index;
+            BT_TRACE_EXIT("app.view_settings_keys");
+            return;
+        }
         if (ctx->input_focus) {
             BT_TRACE_EXIT("app.view_settings_keys");
             return;
         }
         app->draft.memo_mode = mode;
         app->changed = 1;
+        app->widgets.mode_select.open = 1;
+        app->widgets.mode_select.cursor = index;
         BT_TRACE_EXIT("app.view_settings_keys");
         return;
     }
@@ -178,40 +251,25 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
                            const bt_ui_input *input) {
     BT_TRACE_ENTER("app.view_settings_draw");
     const bt_theme *theme = bt_theme_table();
-    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(window_w, window_h);
     bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "settings", "esc menu");
-    char lines[BT_SETTINGS_LINE_COUNT][BT_SETTINGS_TEXT_MAX];
-    bt_view_settings_lines(draft, lines);
+    char labels[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    char hints[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    bt_view_settings_labels(labels);
+    bt_view_settings_hints(hints);
     float body = theme->font_body * theme->root_rem;
-    float line_gap = theme->spacing_rem * 1.0F * theme->root_rem;
-    float total_h =
-        body * (float)BT_SETTINGS_LINE_COUNT + line_gap * (float)(BT_SETTINGS_LINE_COUNT - 1);
-    float y = metrics.content_y + (metrics.content_h - total_h) / 2.0F;
-    for (size_t i = 0; i < BT_SETTINGS_LINE_COUNT; i++) {
-        bt_app_draw_text(font_regular, lines[i], metrics.content_x, y, body,
-                         bt_theme_text_primary());
-        y += body + line_gap;
+    float small = theme->font_small * theme->root_rem;
+    float pad = theme->spacing_rem * theme->root_rem;
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        bt_app_draw_text(font_regular, labels[i], layout.rows[i].x + pad, layout.rows[i].y + pad,
+                         body, bt_theme_text_primary());
+        bt_app_draw_text(font_regular, hints[i], layout.hints[i].x, layout.hints[i].y, small,
+                         bt_theme_text_muted());
     }
     Font regular = *(const Font *)font_regular;
-    float field_h = body * 1.4F;
-    float field_w = 160.0F;
-    float field_y = metrics.content_y + metrics.content_h - 2.0F * field_h - line_gap;
-    bt_ui_rect cadence_rect = {
-        metrics.content_x + metrics.content_w - 2.0F * field_w - line_gap,
-        field_y,
-        field_w,
-        field_h,
-    };
-    bt_ui_rect reps_rect = {cadence_rect.x + field_w + line_gap, field_y, field_w, field_h};
-    bt_ui_rect select_rect = {
-        cadence_rect.x,
-        field_y + field_h + line_gap,
-        metrics.content_w - (cadence_rect.x - metrics.content_x),
-        field_h,
-    };
     int edited = 0;
     long long cadence = bt_ui_number_field(
-        &regular, &cadence_rect, (long long)draft->memo_cadence_ms, BT_SETTINGS_CADENCE_MIN,
+        &regular, &layout.controls[0], (long long)draft->memo_cadence_ms, BT_SETTINGS_CADENCE_MIN,
         BT_SETTINGS_CADENCE_MAX, &widgets->cadence, input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_cadence(cadence);
@@ -220,9 +278,9 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
             *changed = 1;
         }
     }
-    long long reps =
-        bt_ui_number_field(&regular, &reps_rect, (long long)draft->drill_reps, BT_SETTINGS_REPS_MIN,
-                           BT_SETTINGS_REPS_MAX, &widgets->reps, input, &edited);
+    long long reps = bt_ui_number_field(&regular, &layout.controls[2], (long long)draft->drill_reps,
+                                        BT_SETTINGS_REPS_MIN, BT_SETTINGS_REPS_MAX, &widgets->reps,
+                                        input, &edited);
     if (edited) {
         unsigned int clamped = bt_view_settings_clamp_reps(reps);
         if (clamped != draft->drill_reps) {
@@ -230,26 +288,27 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
             *changed = 1;
         }
     }
-    const char *mode_rows[BT_MEMO_MODE_COUNT];
+    char mode_rows[BT_MEMO_MODE_COUNT][BT_SETTINGS_TEXT_MAX];
+    const char *mode_row_ptrs[BT_MEMO_MODE_COUNT];
     for (int i = 0; i < BT_MEMO_MODE_COUNT; i++) {
-        mode_rows[i] = BT_MEMO_MODE_LABELS[i].label;
+        snprintf(mode_rows[i], BT_SETTINGS_TEXT_MAX, "%d %s", i + 1, BT_MEMO_MODE_LABELS[i].label);
+        mode_row_ptrs[i] = mode_rows[i];
     }
-    widgets->mode_list.selected = bt_memo_mode_index(draft->memo_mode);
-    if (widgets->mode_list.selected < 0) {
-        widgets->mode_list.selected = 0;
+    int selected = bt_memo_mode_index(draft->memo_mode);
+    if (selected < 0) {
+        selected = 0;
     }
-    bt_ui_list_window picked = bt_ui_list(&regular, &select_rect, mode_rows, BT_MEMO_MODE_COUNT,
-                                          BT_MEMO_MODE_COUNT, widgets->mode_list, input);
-    if (picked.selected != widgets->mode_list.selected) {
+    int select_edited = 0;
+    int picked = bt_ui_select(&regular, &layout.controls[1], mode_row_ptrs, BT_MEMO_MODE_COUNT,
+                              selected, &widgets->mode_select, input, &select_edited);
+    if (select_edited) {
         bt_memo_mode mode;
-        if (bt_memo_mode_from_index(picked.selected, &mode)) {
+        if (bt_memo_mode_from_index(picked, &mode)) {
             draft->memo_mode = mode;
             *changed = 1;
-            picked.selected = bt_memo_mode_index(mode);
         }
     }
-    widgets->mode_list = picked;
-    *focus = widgets->cadence.focused || widgets->reps.focused;
+    *focus = widgets->cadence.focused || widgets->reps.focused || widgets->mode_select.open;
     BT_TRACE_EXIT("app.view_settings_draw");
 }
 
