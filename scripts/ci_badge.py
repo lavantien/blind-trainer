@@ -57,7 +57,8 @@ def query_latest_run(gh):
         timeout=GH_TIMEOUT_SECS,
     )
     if proc.returncode != 0:
-        reason = (proc.stderr or proc.stdout or "no output").strip().splitlines()[-1]
+        lines = (proc.stderr or proc.stdout or "no output").strip().splitlines()
+        reason = lines[-1] if lines else "empty output"
         raise RuntimeError(f"gh exited {proc.returncode}: {reason}")
     return json.loads(proc.stdout)
 
@@ -111,7 +112,13 @@ def main(argv=None):
             TOOL.line("exit", "code=1")
             return 1
         TOOL.line("offline", f"gh query failed, rendering unknown: {exc}")
-    render(out, verdict)
+        detail = str(exc)
+    try:
+        render(out, verdict)
+    except OSError as exc:
+        fail(str(exc))
+        TOOL.line("exit", "code=1")
+        return 1
     print(f"ci: {verdict} ({detail})")
     TOOL.line("exit", "code=0")
     return 0

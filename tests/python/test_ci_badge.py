@@ -73,16 +73,16 @@ class BadgeSvgColorTests(unittest.TestCase):
 
 
 class CiBadgeEndToEndTests(unittest.TestCase):
-    def run_with_stub(self, tmp, body, extra_argv=()):
+    def run_with_stub(self, tmp, body, extra_argv=(), out=None):
         (Path(tmp) / "gh.bat").write_text(body, encoding="utf-8")
-        out = Path(tmp) / "ci.svg"
+        target = out if out is not None else Path(tmp) / "ci.svg"
         old = os.environ["PATH"]
         os.environ["PATH"] = str(tmp) + os.pathsep + old
         try:
-            code = ci_badge.main(["--out", str(out), *extra_argv])
+            code = ci_badge.main(["--out", str(target), *extra_argv])
         finally:
             os.environ["PATH"] = old
-        return code, out
+        return code, target
 
     def run_with_path(self, tmp, extra_argv=()):
         out = Path(tmp) / "ci.svg"
@@ -153,6 +153,72 @@ class CiBadgeEndToEndTests(unittest.TestCase):
             )
             self.assertEqual(code, 0)
             self.assert_badge_bytes(out, "unknown")
+
+    def test_whitespace_only_stderr_fails_closed_without_a_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, out = self.run_with_stub(tmp, "@echo. 1>&2\n@exit /b 1\n")
+            self.assertEqual(code, 1)
+            self.assertFalse(out.exists())
+            self.assertIn(
+                "[fail] ci-badge: gh exited 1: empty output", buffer.getvalue()
+            )
+            self.assertNotIn("Traceback", buffer.getvalue())
+
+    def test_whitespace_only_stderr_with_offline_renders_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_with_stub(
+                tmp, "@echo. 1>&2\n@exit /b 1\n", ["--offline"]
+            )
+            self.assertEqual(code, 0)
+            self.assert_badge_bytes(out, "unknown")
+
+    def test_out_under_a_regular_file_parent_fails_with_a_trace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            blocker = Path(tmp) / "blocker"
+            blocker.write_text("x", encoding="utf-8")
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, out = self.run_with_stub(
+                    tmp,
+                    f"@echo [{PASSED_RUN}]\n",
+                    out=blocker / "ci.svg",
+                )
+            self.assertEqual(code, 1)
+            self.assertFalse(out.exists())
+            self.assertIn("[fail] ci-badge:", buffer.getvalue())
+            self.assertNotIn("Traceback", buffer.getvalue())
+
+    def test_out_under_a_regular_file_parent_fails_even_offline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            blocker = Path(tmp) / "blocker"
+            blocker.write_text("x", encoding="utf-8")
+            code, out = self.run_with_stub(
+                tmp,
+                "@echo gh: run gh auth login first\n@exit /b 1\n",
+                ["--offline"],
+                out=blocker / "ci.svg",
+            )
+            self.assertEqual(code, 1)
+            self.assertFalse(out.exists())
+
+    def test_offline_stdout_carries_the_real_reason(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code, out = self.run_with_stub(
+                    tmp,
+                    "@echo gh: run gh auth login first\n@exit /b 1\n",
+                    ["--offline"],
+                )
+            self.assertEqual(code, 0)
+            self.assert_badge_bytes(out, "unknown")
+            self.assertIn(
+                "ci: unknown (gh exited 1: gh: run gh auth login first)",
+                stdout.getvalue(),
+            )
+            self.assertNotIn("no matching run", stdout.getvalue())
 
     def test_missing_gh_exits_nonzero_and_writes_nothing(self):
         with tempfile.TemporaryDirectory() as tmp:
