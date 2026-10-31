@@ -312,6 +312,119 @@ class CiBadgeEndToEndTests(unittest.TestCase):
 PINNED_CI_VERDICT = "passed"
 
 
+class ConclusionModeTests(unittest.TestCase):
+    def run_conclusion(self, tmp, conclusion, extra_argv=()):
+        out = Path(tmp) / "ci.svg"
+        old = os.environ["PATH"]
+        os.environ["PATH"] = str(tmp)
+        try:
+            code = ci_badge.main(
+                ["--out", str(out), "--conclusion", conclusion, *extra_argv]
+            )
+        finally:
+            os.environ["PATH"] = old
+        return code, out
+
+    def test_conclusion_success_renders_passed_without_gh(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "success")
+            self.assertEqual(code, 0)
+            self.assert_badge_written(out, "passed")
+
+    def test_conclusion_failure_renders_failed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "failure")
+            self.assertEqual(code, 0)
+            self.assert_badge_written(out, "failed")
+
+    def test_conclusion_timed_out_renders_failed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "timed_out")
+            self.assertEqual(code, 0)
+            self.assert_badge_written(out, "failed")
+
+    def test_conclusion_action_required_renders_failed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "action_required")
+            self.assertEqual(code, 0)
+            self.assert_badge_written(out, "failed")
+
+    def test_conclusion_neutral_renders_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "neutral")
+            self.assertEqual(code, 0)
+            self.assert_badge_written(out, "unknown")
+
+    def test_unknown_conclusion_value_fails_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            buffer = io.StringIO()
+            with contextlib.redirect_stderr(buffer):
+                code, out = self.run_conclusion(tmp, "bogus")
+            self.assertEqual(code, 2)
+            self.assertFalse(out.exists())
+            self.assertIn("[fail] ci-badge: unknown conclusion: bogus", buffer.getvalue())
+
+    def test_conclusion_mode_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out = self.run_conclusion(tmp, "success")
+            first = out.read_bytes()
+            code, out = self.run_conclusion(tmp, "success")
+            self.assertEqual(code, 0)
+            self.assertEqual(out.read_bytes(), first)
+
+    def test_conclusion_stdout_names_the_conclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code, out = self.run_conclusion(tmp, "success")
+            self.assertEqual(code, 0)
+            self.assertIn("ci: passed (conclusion=success)", stdout.getvalue())
+
+    def assert_badge_written(self, out, verdict):
+        self.assertEqual(
+            out.read_bytes(),
+            badge_svg("CI", verdict, color=ci_badge.VERDICT_COLORS[verdict]).encode(
+                "utf-8"
+            ),
+        )
+
+
+class CiWorkflowTests(unittest.TestCase):
+    def setUp(self):
+        self.text = (
+            Path(__file__).resolve().parents[2] / ".github" / "workflows" / "ci.yml"
+        ).read_text(encoding="utf-8")
+
+    def badge_block(self):
+        return self.text.split("  badge:\n", 1)[1]
+
+    def test_badge_job_runs_after_ci_on_every_push(self):
+        block = self.badge_block()
+        self.assertIn("    needs: ci\n", block)
+        self.assertIn("    if: always() && github.event_name == 'push'\n", block)
+
+    def test_badge_job_writes_contents_on_windows_python(self):
+        block = self.badge_block()
+        self.assertIn("    permissions:\n      contents: write\n", block)
+        self.assertIn("    runs-on: windows-latest\n", block)
+        self.assertIn('          python-version: "3.14"\n', block)
+
+    def test_badge_job_renders_the_conclusion_from_the_ci_result(self):
+        block = self.badge_block()
+        self.assertIn("scripts/ci_badge.py --conclusion", block)
+        self.assertIn("needs.ci.result", block)
+
+    def test_badge_job_commits_only_when_bytes_changed(self):
+        block = self.badge_block()
+        self.assertIn("git status --porcelain -- docs/badges/ci.svg", block)
+        guard = block.find("if ($changed)")
+        commit = block.find("git commit")
+        push = block.find("git push")
+        self.assertLess(guard, commit)
+        self.assertLess(commit, push)
+        self.assertIn("[skip ci]", block.split("git commit", 1)[1].split("\n", 1)[0])
+
+
 class CommittedBadgeTests(unittest.TestCase):
     def test_committed_ci_svg_carries_the_pinned_verdict(self):
         expected = badge_svg(

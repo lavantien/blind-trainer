@@ -51,3 +51,35 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit 1 }
           python -m unittest discover -s tests/python
           if ($LASTEXITCODE -ne 0) { exit 1 }
+
+  badge:
+    needs: ci
+    if: always() && github.event_name == 'push'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: refresh badge
+        run: |
+          $conclusion = if ('${{ needs.ci.result }}' -eq 'success') { 'success' } else { 'failure' }
+          python scripts/ci_badge.py --conclusion $conclusion
+      - name: land badge
+        run: |
+          git config user.name "github-actions[bot]"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $changed = git status --porcelain -- docs/badges/ci.svg
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          if ($changed) {
+            git add docs/badges/ci.svg
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+            git commit -m "chore(badges): refresh ci badge [skip ci]"
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }

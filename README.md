@@ -233,7 +233,7 @@ python scripts/alg_coverage_badge.py
 python scripts/ci_badge.py
 ```
 
-`python bt.py screenshots` rebuilds the gallery from a sandboxed run of the app with APPDATA redirected, the fatal shot comes from a run whose config points at a missing path. `python scripts/diagrams.py` re-renders every png from its puml source with the sha-pinned plantuml jar. `python scripts/alg_coverage_badge.py` refreshes the alg coverage badge from the vendor manifest. `python scripts/ci_badge.py` refreshes the CI badge from the latest ci run on main through the gh binary.
+`python bt.py screenshots` rebuilds the gallery from a sandboxed run of the app with APPDATA redirected, the fatal shot comes from a run whose config points at a missing path. `python scripts/diagrams.py` re-renders every png from its puml source with the sha-pinned plantuml jar. `python scripts/alg_coverage_badge.py` refreshes the alg coverage badge from the vendor manifest. `python scripts/ci_badge.py` refreshes the CI badge from the latest ci run on main through the gh binary, and the ci workflow refreshes it automatically after every push to main.
 
 ## Runtime data and config
 

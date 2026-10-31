@@ -26,6 +26,17 @@ GH_ARGS = [
 ]
 GH_TIMEOUT_SECS = 30
 LIVE_STATUSES = ("in_progress", "queued")
+CONCLUSIONS = (
+    "action_required",
+    "cancelled",
+    "failure",
+    "neutral",
+    "skipped",
+    "stale",
+    "startup_failure",
+    "success",
+    "timed_out",
+)
 FAILED_CONCLUSIONS = (
     "failure",
     "cancelled",
@@ -93,32 +104,48 @@ def main(argv=None):
         action="store_true",
         help="render the unknown badge and exit 0 when gh cannot answer",
     )
-    args = parser.parse_args(argv)
-    TOOL.line(
-        "entry", f"out={args.out or 'docs/badges/ci.svg'} offline={args.offline}"
+    parser.add_argument(
+        "--conclusion",
+        default=None,
+        help="render this run conclusion directly, no gh call",
     )
+    args = parser.parse_args(argv)
+    mode = (
+        f"conclusion={args.conclusion}"
+        if args.conclusion is not None
+        else f"offline={args.offline}"
+    )
+    TOOL.line("entry", f"out={args.out or 'docs/badges/ci.svg'} {mode}")
     out = Path(args.out) if args.out else REPO / "docs" / "badges" / "ci.svg"
     verdict = "unknown"
     detail = "no matching run"
-    try:
-        gh = shutil.which("gh")
-        if gh is None:
-            raise RuntimeError("gh binary not found on PATH")
-        runs = query_latest_run(gh)
-        if not isinstance(runs, list):
-            raise ValueError("gh answer is not a run list")
-        if runs:
-            if not isinstance(runs[0], dict):
-                raise ValueError("gh run entry is not an object")
-            verdict = verdict_of(runs[0])
-            detail = run_detail(runs[0])
-    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
-        if not args.offline:
-            fail(str(exc))
-            TOOL.line("exit", "code=1")
-            return 1
-        TOOL.line("offline", f"gh query failed, rendering unknown: {exc}")
-        detail = str(exc)
+    if args.conclusion is not None:
+        if args.conclusion not in CONCLUSIONS:
+            fail(f"unknown conclusion: {args.conclusion}")
+            TOOL.line("exit", "code=2")
+            return 2
+        verdict = verdict_of({"status": "completed", "conclusion": args.conclusion})
+        detail = f"conclusion={args.conclusion}"
+    else:
+        try:
+            gh = shutil.which("gh")
+            if gh is None:
+                raise RuntimeError("gh binary not found on PATH")
+            runs = query_latest_run(gh)
+            if not isinstance(runs, list):
+                raise ValueError("gh answer is not a run list")
+            if runs:
+                if not isinstance(runs[0], dict):
+                    raise ValueError("gh run entry is not an object")
+                verdict = verdict_of(runs[0])
+                detail = run_detail(runs[0])
+        except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as exc:
+            if not args.offline:
+                fail(str(exc))
+                TOOL.line("exit", "code=1")
+                return 1
+            TOOL.line("offline", f"gh query failed, rendering unknown: {exc}")
+            detail = str(exc)
     try:
         render(out, verdict)
     except OSError as exc:
