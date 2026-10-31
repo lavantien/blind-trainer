@@ -51,6 +51,12 @@ ENTRIES = [
         "license": "no license file in repo, vietnameselanguage/syllable",
         "body_sha256": "bd55ccfef5ae0c9e85996561aa0a03556b686eaa362a8829e9e2d57c555b3dca",
     },
+    {
+        "path": "vietnamese/vn-word-frequencies.tsv",
+        "url": "https://raw.githubusercontent.com/tabidots/vn-freqs/main/vn_word_frequencies.tsv",
+        "license": "no license file in repo, tabidots/vn-freqs",
+        "body_sha256": "8f644d06173600f8acb0d2b1a9dd0111c53ef304b9974b76e2cb24bad81fe04d",
+    },
 ]
 
 

@@ -419,14 +419,19 @@ class FetchDocsLogicTests(unittest.TestCase):
         self.assertTrue(any("c23" in p for p in paths))
         self.assertTrue(any("job-objects" in p for p in paths))
 
-    def test_wordlist_entry_is_body_pinned(self):
-        entry = next(
-            e
-            for e in fetch_docs.ENTRIES
-            if e["path"] == "vietnamese/syllables-7184-abc.txt"
-        )
-        self.assertEqual(len(entry["body_sha256"]), 64)
-        self.assertTrue(entry["url"].startswith("https://raw.githubusercontent.com/"))
+    def test_vietnamese_entries_are_body_pinned(self):
+        paths = {
+            "vietnamese/syllables-7184-abc.txt",
+            "vietnamese/vn-word-frequencies.tsv",
+        }
+        pinned = {e["path"] for e in fetch_docs.ENTRIES if "body_sha256" in e}
+        self.assertEqual(pinned, paths)
+        for entry in fetch_docs.ENTRIES:
+            if entry["path"] in paths:
+                self.assertEqual(len(entry["body_sha256"]), 64)
+                self.assertTrue(
+                    entry["url"].startswith("https://raw.githubusercontent.com/")
+                )
 
     def test_only_selection_scopes_entries(self):
         entries = [

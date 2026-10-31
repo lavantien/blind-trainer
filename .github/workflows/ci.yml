@@ -29,7 +29,7 @@ jobs:
       - name: vendor
         run: python scripts/vendor.py
       - name: grounding
-        run: python scripts/fetch_docs.py --only vietnamese/syllables-7184-abc.txt
+        run: python scripts/fetch_docs.py --only vietnamese/syllables-7184-abc.txt,vietnamese/vn-word-frequencies.tsv
       - name: fmt
         run: python bt.py fmt
       - name: lint
