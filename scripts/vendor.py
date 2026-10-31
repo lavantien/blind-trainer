@@ -14,9 +14,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import bt
 
-CORPUS_SOURCE = "fuzz/fuzz/corpus"
-CORPUS_DEST = "tests/fuzz/corpus"
-
 
 class VendorError(RuntimeError):
     pass
@@ -210,26 +207,6 @@ def build_raylib(hub, root, logger):
     return {"sha256": sha256, "size": size}
 
 
-def copy_corpus(root, logger):
-    unit = "copy corpus"
-    source_dir = root / CORPUS_SOURCE
-    dest_dir = root / CORPUS_DEST
-    if not source_dir.is_dir():
-        raise VendorError(f"{unit}: missing {source_dir}")
-    total = 0
-    for corpus in sorted(source_dir.iterdir()):
-        if not corpus.is_dir():
-            continue
-        target = dest_dir / corpus.name
-        target.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(corpus, target, dirs_exist_ok=True)
-        count = sum(1 for f in target.iterdir() if f.is_file())
-        total += count
-        logger.line("corpus", f"{corpus.name}: {count} inputs")
-    logger.line("corpus", f"{total} inputs total under {dest_dir}")
-    return total
-
-
 def read_lock(path):
     if not path.is_file():
         return []
@@ -265,7 +242,6 @@ def main():
             if item is not None:
                 updated[name] = item
         lib = build_raylib(hub, root, logger)
-        copy_corpus(root, logger)
         items = []
         for name in hub["build"]["vendor"]:
             if name in updated:

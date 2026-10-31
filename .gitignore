@@ -1,8 +1,5 @@
-/target
-/target-*/
 /build/
 /vendor/
-/tests/fuzz/corpus/
 /ref_ground/__pycache__/
 /ref_ground/*.py
 /ref_ground/*.c
@@ -15,7 +12,6 @@
 /artifacts/*
 !/artifacts/.gitkeep
 
-/mutants.out*/
 __pycache__/
 /playground/attacker-a/gen/
 /playground/attacker-b/out/

@@ -1,8 +1,0 @@
-target
-corpus
-artifacts
-coverage
-Crash_*
-leak-*
-timeout-*
-oom-*
