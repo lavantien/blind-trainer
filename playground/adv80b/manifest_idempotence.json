@@ -1,0 +1,188 @@
+{
+ "drift_ab": [
+  "drill-card",
+  "solve-review",
+  "case-drill-show",
+  "case-drill-grade",
+  "stats"
+ ],
+ "drift_ac": [
+  "solve-review",
+  "stats"
+ ],
+ "exe": "C:\\Users\\lavantien\\dev\\github\\blind-trainer\\build\\bin\\bt-app.exe",
+ "runs": {
+  "A_fresh": {
+   "exit": 0,
+   "hashes": {
+    "algs": "f9cc0fd2ed1d61487acb38bfd72ecd2243afc7aa7be2d6a3c41305186b52459c",
+    "algs-search": "19570e7fcefe0f63d7af829da60d13c6c838cddbe4376ba43f469e67f3405ee0",
+    "case-drill-grade": "20a33774d07910e6b7143ef15a5dfe7e8ed67ff4356087ae49904a6383d1a63e",
+    "case-drill-show": "163f12f5c6af105b5ab5f5b32a561295ba21211d7deea0262ebb1b167ae17da6",
+    "drill-card": "3bd61a94d17329c9eeca738fdaebaae9ce6e5241cf6665a03dd819a947fc0224",
+    "drill-rate-a": "e0621b4a551828831864e166eb209cc88415971eb488afbb293da93d20391aa9",
+    "drill-rate-b": "94917df6a21cf427337a9abe4b894d428efe0ed68c18bafbd7726927e6c0f134",
+    "drill-reps": "8f0f2ce29727287c99a779928a37a93cf1d38270aed73ab62fb5bce48b338f6a",
+    "memo-intro": "3850b2f85f5ba679921c6a48ff3dc1c634f34979e86d8d83e0c7996534d82107",
+    "memo-recall": "a2e75a704ddcd8475119ed91d1fcf49371c8e17d34785c2905d2873999cf698c",
+    "memo-review": "09546d47c6c881b43a59ac2fc111aa9f263e3c8afca21262f865e54bf5b16409",
+    "memo-stream": "ff2dbafe52de41ad15c0a54a276ee5c9adc6f21c82adc9226f3130a02b9ea9f6",
+    "menu": "c9b1f9246347a6f66b184c5247424ef5c6027e52917152dc9bc5f500589c3286",
+    "replay": "f394da1d1931e0ba934efba14f29d55192ce08d03cd93e274d91c2b2a50f5302",
+    "settings": "fc485a620745f57693b53f944d29d458fe2b0c64b9d4018bcfe76785bdee4f0d",
+    "solve-exec": "abd0b1bdfbc4e9a8887932efa9d4553bc6a0492f6c1cf3a8da2e806883bd04df",
+    "solve-memo": "8a3100644b493c895ba52fa6f100a8bd614f4b83ad1accbefc4567b94c407250",
+    "solve-ready": "3c6583b863a8c003db8af18e2e9909e0c568045e59f6286ec9692c5052595f53",
+    "solve-review": "d9c1f768d4313f98f459de45aab148e3a48c171e4b16733f1bf3415aa1e4604e",
+    "stats": "ad64cc51d7606fdde00ccd9bcdd6223d02166c4c85feb1547923fb182dc5f95a"
+   },
+   "secs": 28.4,
+   "slugs_sorted": [
+    "algs",
+    "algs-search",
+    "case-drill-grade",
+    "case-drill-show",
+    "drill-card",
+    "drill-rate-a",
+    "drill-rate-b",
+    "drill-reps",
+    "memo-intro",
+    "memo-recall",
+    "memo-review",
+    "memo-stream",
+    "menu",
+    "replay",
+    "settings",
+    "solve-exec",
+    "solve-memo",
+    "solve-ready",
+    "solve-review",
+    "stats"
+   ]
+  },
+  "B_reuse": {
+   "exit": 0,
+   "hashes": {
+    "algs": "f9cc0fd2ed1d61487acb38bfd72ecd2243afc7aa7be2d6a3c41305186b52459c",
+    "algs-search": "19570e7fcefe0f63d7af829da60d13c6c838cddbe4376ba43f469e67f3405ee0",
+    "case-drill-grade": "3ffff03c91b032e9086737d895fe6f2b0c10f94bc3835c0e292e2e7f9e6a91d1",
+    "case-drill-show": "e15c1be7905a1e46a7b75eb1f4af1c06d1614bae971d749aad00093505b3c7d3",
+    "drill-card": "72f527700afb384f8d63d5ee6848dcee4de2b652fd8447715fee94195eb5ebff",
+    "drill-rate-a": "e0621b4a551828831864e166eb209cc88415971eb488afbb293da93d20391aa9",
+    "drill-rate-b": "94917df6a21cf427337a9abe4b894d428efe0ed68c18bafbd7726927e6c0f134",
+    "drill-reps": "8f0f2ce29727287c99a779928a37a93cf1d38270aed73ab62fb5bce48b338f6a",
+    "memo-intro": "3850b2f85f5ba679921c6a48ff3dc1c634f34979e86d8d83e0c7996534d82107",
+    "memo-recall": "a2e75a704ddcd8475119ed91d1fcf49371c8e17d34785c2905d2873999cf698c",
+    "memo-review": "09546d47c6c881b43a59ac2fc111aa9f263e3c8afca21262f865e54bf5b16409",
+    "memo-stream": "ff2dbafe52de41ad15c0a54a276ee5c9adc6f21c82adc9226f3130a02b9ea9f6",
+    "menu": "c9b1f9246347a6f66b184c5247424ef5c6027e52917152dc9bc5f500589c3286",
+    "replay": "f394da1d1931e0ba934efba14f29d55192ce08d03cd93e274d91c2b2a50f5302",
+    "settings": "fc485a620745f57693b53f944d29d458fe2b0c64b9d4018bcfe76785bdee4f0d",
+    "solve-exec": "abd0b1bdfbc4e9a8887932efa9d4553bc6a0492f6c1cf3a8da2e806883bd04df",
+    "solve-memo": "8a3100644b493c895ba52fa6f100a8bd614f4b83ad1accbefc4567b94c407250",
+    "solve-ready": "3c6583b863a8c003db8af18e2e9909e0c568045e59f6286ec9692c5052595f53",
+    "solve-review": "30ab799f1fb108726d42ddc5ca7d8155e738e9b0a3cfe4eb772b84a687884dcf",
+    "stats": "7335633af1b955ad7ff18d57c34249f5583894f9fea1d8e5b8065464fd7b550c"
+   },
+   "secs": 31.6,
+   "slugs_sorted": [
+    "algs",
+    "algs-search",
+    "case-drill-grade",
+    "case-drill-show",
+    "drill-card",
+    "drill-rate-a",
+    "drill-rate-b",
+    "drill-reps",
+    "memo-intro",
+    "memo-recall",
+    "memo-review",
+    "memo-stream",
+    "menu",
+    "replay",
+    "settings",
+    "solve-exec",
+    "solve-memo",
+    "solve-ready",
+    "solve-review",
+    "stats"
+   ]
+  },
+  "C_fresh": {
+   "exit": 0,
+   "hashes": {
+    "algs": "f9cc0fd2ed1d61487acb38bfd72ecd2243afc7aa7be2d6a3c41305186b52459c",
+    "algs-search": "19570e7fcefe0f63d7af829da60d13c6c838cddbe4376ba43f469e67f3405ee0",
+    "case-drill-grade": "20a33774d07910e6b7143ef15a5dfe7e8ed67ff4356087ae49904a6383d1a63e",
+    "case-drill-show": "163f12f5c6af105b5ab5f5b32a561295ba21211d7deea0262ebb1b167ae17da6",
+    "drill-card": "3bd61a94d17329c9eeca738fdaebaae9ce6e5241cf6665a03dd819a947fc0224",
+    "drill-rate-a": "e0621b4a551828831864e166eb209cc88415971eb488afbb293da93d20391aa9",
+    "drill-rate-b": "94917df6a21cf427337a9abe4b894d428efe0ed68c18bafbd7726927e6c0f134",
+    "drill-reps": "8f0f2ce29727287c99a779928a37a93cf1d38270aed73ab62fb5bce48b338f6a",
+    "memo-intro": "3850b2f85f5ba679921c6a48ff3dc1c634f34979e86d8d83e0c7996534d82107",
+    "memo-recall": "a2e75a704ddcd8475119ed91d1fcf49371c8e17d34785c2905d2873999cf698c",
+    "memo-review": "09546d47c6c881b43a59ac2fc111aa9f263e3c8afca21262f865e54bf5b16409",
+    "memo-stream": "ff2dbafe52de41ad15c0a54a276ee5c9adc6f21c82adc9226f3130a02b9ea9f6",
+    "menu": "c9b1f9246347a6f66b184c5247424ef5c6027e52917152dc9bc5f500589c3286",
+    "replay": "f394da1d1931e0ba934efba14f29d55192ce08d03cd93e274d91c2b2a50f5302",
+    "settings": "fc485a620745f57693b53f944d29d458fe2b0c64b9d4018bcfe76785bdee4f0d",
+    "solve-exec": "abd0b1bdfbc4e9a8887932efa9d4553bc6a0492f6c1cf3a8da2e806883bd04df",
+    "solve-memo": "8a3100644b493c895ba52fa6f100a8bd614f4b83ad1accbefc4567b94c407250",
+    "solve-ready": "3c6583b863a8c003db8af18e2e9909e0c568045e59f6286ec9692c5052595f53",
+    "solve-review": "be18fa01ffab732709b39b4e860f17d504c1b17c1d4f260a88248ffef1569118",
+    "stats": "4139d5135534484182a8a140897036654a4ee45fafb179800b59dd4d83860de0"
+   },
+   "secs": 27.3,
+   "slugs_sorted": [
+    "algs",
+    "algs-search",
+    "case-drill-grade",
+    "case-drill-show",
+    "drill-card",
+    "drill-rate-a",
+    "drill-rate-b",
+    "drill-reps",
+    "memo-intro",
+    "memo-recall",
+    "memo-review",
+    "memo-stream",
+    "menu",
+    "replay",
+    "settings",
+    "solve-exec",
+    "solve-memo",
+    "solve-ready",
+    "solve-review",
+    "stats"
+   ]
+  }
+ },
+ "store_after_a": {
+  "dbs": [
+   "blind-trainer\\blind-trainer.db"
+  ],
+  "tables": {
+   "blind-trainer.db:card": 6,
+   "blind-trainer.db:review_log": 6,
+   "blind-trainer.db:seed_alg": 1115,
+   "blind-trainer.db:settings": 1,
+   "blind-trainer.db:solves": 1,
+   "blind-trainer.db:srs_state": 6,
+   "blind-trainer.db:user_alg": 0
+  }
+ },
+ "store_after_b": {
+  "dbs": [
+   "blind-trainer\\blind-trainer.db"
+  ],
+  "tables": {
+   "blind-trainer.db:card": 10,
+   "blind-trainer.db:review_log": 12,
+   "blind-trainer.db:seed_alg": 1115,
+   "blind-trainer.db:settings": 1,
+   "blind-trainer.db:solves": 2,
+   "blind-trainer.db:srs_state": 10,
+   "blind-trainer.db:user_alg": 0
+  }
+ }
+}

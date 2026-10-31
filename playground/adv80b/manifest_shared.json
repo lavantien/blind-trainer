@@ -1,0 +1,237 @@
+{
+ "dims": {
+  "algs": {
+   "bytes": 75162,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "algs-search": {
+   "bytes": 73266,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "case-drill-grade": {
+   "bytes": 50818,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "case-drill-show": {
+   "bytes": 49274,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "drill-card": {
+   "bytes": 58780,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "drill-rate-a": {
+   "bytes": 55058,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "drill-rate-b": {
+   "bytes": 55050,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "drill-reps": {
+   "bytes": 54421,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "memo-intro": {
+   "bytes": 54481,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "memo-recall": {
+   "bytes": 49293,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "memo-review": {
+   "bytes": 52678,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "memo-stream": {
+   "bytes": 48296,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "menu": {
+   "bytes": 58156,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "replay": {
+   "bytes": 52347,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "settings": {
+   "bytes": 44169,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "solve-exec": {
+   "bytes": 52781,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "solve-memo": {
+   "bytes": 56164,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "solve-ready": {
+   "bytes": 52897,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "solve-review": {
+   "bytes": 58235,
+   "dims": [
+    1280,
+    800
+   ]
+  },
+  "stats": {
+   "bytes": 52130,
+   "dims": [
+    1280,
+    800
+   ]
+  }
+ },
+ "exe": "C:\\Users\\lavantien\\dev\\github\\blind-trainer\\build\\bin\\bt-app.exe",
+ "run": {
+  "exit": 0,
+  "hashes": {
+   "algs": "a22ed81fdd2c400c81cfcc6c03531da8579697ab149b30582fd1f797de5d9019",
+   "algs-search": "bc73351841a29548b3a1b51cd412301332ce3783a30bbea93afcc7f8df59bf0f",
+   "case-drill-grade": "6ee14f97460b9dffb6aeb7ff59081b4b596b7d6911f0b71965d0e5e3d5e49dce",
+   "case-drill-show": "4840c9657aecb106017a234cf7dc161ff2c7cb554ea1c1508da9c7dda8e27a15",
+   "drill-card": "ac726bc856ed6d708a9c801b9fa0e860e51368b494e459afe39570b16bab68ac",
+   "drill-rate-a": "f77c6de1bfcec7504af27eb0294ed23b2a90b9b7e350b869bbd568799763ae4f",
+   "drill-rate-b": "1ec70160309d4bf4e61694c61931a22198a5ab04643866bc13a5914159079d02",
+   "drill-reps": "42821f622b51f2c1496dafba3db0a6e83c7d09eec79f0ade81b1cae6041e4324",
+   "memo-intro": "e16d9d804fa270e578a8bece8e0e17c9294290b36ab15f214a7a3138df63649f",
+   "memo-recall": "fc94e1dc62f0946e8c062cbea64c4db52d29a48a37a7a0159ba3fb2e1a845caf",
+   "memo-review": "aff0bfb878b8b2694d3b547798a5bb27e86914c063501898add1f9f331e6197f",
+   "memo-stream": "2b8090b0d3d3a84d9f31dd4d08a92886bda750e605cfde7d45aea697db016d9b",
+   "menu": "9be03fed271599e94eba5322f68d9f5dc50ba92b49824ade8947db6b113c3541",
+   "replay": "f394da1d1931e0ba934efba14f29d55192ce08d03cd93e274d91c2b2a50f5302",
+   "settings": "7e97edb7dec67dfc9bffdd60f7d3a2f08b76ffbe6228edb442b86b7154131339",
+   "solve-exec": "833ee051f24ee746d2fd0064aab6a752c583e1067d10aad483f2318ca6f5371a",
+   "solve-memo": "da0a8294133a6c3040f7f5f7a71659b867b1a8114fd7194330e5f2b41e63234a",
+   "solve-ready": "6ffb6939fdb80b5d035dba251c580504a0d0c82fef00a6e33d34b6099ddb9fbe",
+   "solve-review": "5f48c4c7e479c7cc7f62d0a596809451de9b76b865bfba7283e96fbfe3962deb",
+   "stats": "61e520d9195679aed482109883f0dc7679b396797787a6f34f8156eb83c43fe3"
+  },
+  "secs": 26.8,
+  "sizes": {
+   "algs": 75162,
+   "algs-search": 73266,
+   "case-drill-grade": 50818,
+   "case-drill-show": 49274,
+   "drill-card": 58780,
+   "drill-rate-a": 55058,
+   "drill-rate-b": 55050,
+   "drill-reps": 54421,
+   "memo-intro": 54481,
+   "memo-recall": 49293,
+   "memo-review": 52678,
+   "memo-stream": 48296,
+   "menu": 58156,
+   "replay": 52347,
+   "settings": 44169,
+   "solve-exec": 52781,
+   "solve-memo": 56164,
+   "solve-ready": 52897,
+   "solve-review": 58235,
+   "stats": 52130
+  },
+  "slugs_sorted": [
+   "algs",
+   "algs-search",
+   "case-drill-grade",
+   "case-drill-show",
+   "drill-card",
+   "drill-rate-a",
+   "drill-rate-b",
+   "drill-reps",
+   "memo-intro",
+   "memo-recall",
+   "memo-review",
+   "memo-stream",
+   "menu",
+   "replay",
+   "settings",
+   "solve-exec",
+   "solve-memo",
+   "solve-ready",
+   "solve-review",
+   "stats"
+  ],
+  "slugs_tour_order": [
+   "menu",
+   "drill-card",
+   "drill-reps",
+   "drill-rate-a",
+   "drill-rate-b",
+   "memo-intro",
+   "memo-stream",
+   "memo-recall",
+   "memo-review",
+   "solve-ready",
+   "solve-memo",
+   "solve-exec",
+   "solve-review",
+   "replay",
+   "algs",
+   "algs-search",
+   "case-drill-show",
+   "case-drill-grade",
+   "stats",
+   "settings"
+  ]
+ }
+}
