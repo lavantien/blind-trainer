@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 
 #include "common/bt_trace.h"
 #include "common/config.h"
@@ -49,20 +50,27 @@ static int artifacts_verify_dir(char out[BT_PATH_MAX], char *err, size_t err_len
     return 0;
 }
 
+static int verify_dir_exists(const char *path) {
+    DWORD attrs = GetFileAttributesA(path);
+    return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
+}
+
 static int mkdirs_for(const char *dir, char *err, size_t err_len) {
     char copy[BT_PATH_MAX];
     snprintf(copy, sizeof copy, "%s", dir);
     for (char *cursor = copy + 1; *cursor != '\0'; cursor++) {
         if (*cursor == '/' || *cursor == '\\') {
             *cursor = '\0';
-            if (_mkdir(copy) != 0 && errno != EEXIST) {
-                snprintf(err, err_len, "write %s: mkdir failed %d", copy, errno);
-                return -1;
+            if (!verify_dir_exists(copy)) {
+                _mkdir(copy);
             }
             *cursor = '/';
         }
     }
-    if (_mkdir(copy) != 0 && errno != EEXIST) {
+    if (!verify_dir_exists(copy)) {
+        _mkdir(copy);
+    }
+    if (!verify_dir_exists(copy)) {
         snprintf(err, err_len, "write %s: mkdir failed %d", copy, errno);
         return -1;
     }

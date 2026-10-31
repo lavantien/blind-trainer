@@ -1,0 +1,7 @@
+ok tools_gendata_out_test gendata_out.mkdirs_skip_existing_drive_root
+ok tools_gendata_out_test gendata_out.write_atomic_creates_parents_and_overwrites
+ok tools_gendata_out_test gendata_out.write_atomic_fails_and_cleans_up_when_the_target_is_a_directory
+ok tools_gendata_out_test gendata_out.write_atomic_fails_when_the_parent_exists_as_a_file
+ok tools_gendata_out_test gendata_out.write_atomic_writes_into_an_existing_directory_without_temp_leftovers
+suite tools_gendata_out_test: 5 passed, 0 failed
+exit 0 cwd=X:\ exe=tools_gendata_out_test.exe temp=C:\Users\LAVANT~1\AppData\Local\Temp

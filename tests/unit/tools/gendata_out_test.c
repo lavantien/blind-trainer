@@ -41,6 +41,13 @@ static void temp_dir(char out[BT_PATH_MAX], const char *tag) {
     rm_tree(out);
 }
 
+static void temp_base(char out[BT_PATH_MAX]) {
+    DWORD n = GetTempPathA(BT_PATH_MAX, out);
+    if (n == 0 || n >= BT_PATH_MAX || out[1] != ':') {
+        BT_ABORT("no temp drive root");
+    }
+}
+
 BT_TEST(gendata_out, write_atomic_creates_parents_and_overwrites) {
     char dir[BT_PATH_MAX];
     temp_dir(dir, "nested");
@@ -149,4 +156,23 @@ BT_TEST(gendata_out, write_atomic_writes_into_an_existing_directory_without_temp
         _findclose(handle);
     }
     rm_tree(dir);
+}
+
+BT_TEST(gendata_out, mkdirs_skip_existing_drive_root) {
+    char base[BT_PATH_MAX];
+    temp_base(base);
+    char root[BT_PATH_MAX];
+    snprintf(root, sizeof root, "%sbt-gd-pin-%lu", base, GetCurrentProcessId());
+    rm_tree(root);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/nested/pin.json", root);
+    char err[128];
+    err[0] = '\0';
+    BT_CHECK_EQ(bt_gd_write_atomic(path, "pin", 3, err, sizeof err), 0);
+    FILE *file = fopen(path, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fclose(file);
+    }
+    rm_tree(root);
 }

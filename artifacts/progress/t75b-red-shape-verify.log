@@ -1,0 +1,7 @@
+ok tools_verify_lib_test verify_lib.artifacts_dir_from_root_only_keeps_the_base_drive
+ok tools_verify_lib_test verify_lib.crate_id_matches_package
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\verify_lib_test.c:58: check failed: file != NULL
+FAIL tools_verify_lib_test verify_lib.mkdirs_skip_existing_drive_root
+ok tools_verify_lib_test verify_lib.sheet_expectations_sum_to_the_corpus_total
+suite tools_verify_lib_test: 3 passed, 1 failed
+exit 1 cwd=X:\ exe=tools_verify_lib_test.exe temp=C:\Users\LAVANT~1\AppData\Local\Temp

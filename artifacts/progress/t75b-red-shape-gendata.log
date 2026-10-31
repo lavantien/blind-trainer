@@ -1,0 +1,15 @@
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:170: bt_gd_write_atomic(path, "pin", 3, err, sizeof err) vs 0: got -1 want 0
+FAIL tools_gendata_out_test gendata_out.mkdirs_skip_existing_drive_root
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:59: bt_gd_write_atomic(path, "{\"a\":1}", 7, err, sizeof err) vs 0: got -1 want 0
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:60: bt_gd_write_atomic(path, "{\"a\":2}", 7, err, sizeof err) vs 0: got -1 want 0
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:62: check failed: file != NULL
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:74: check failed: handle != -1
+FAIL tools_gendata_out_test gendata_out.write_atomic_creates_parents_and_overwrites
+ok tools_gendata_out_test gendata_out.write_atomic_fails_and_cleans_up_when_the_target_is_a_directory
+ok tools_gendata_out_test gendata_out.write_atomic_fails_when_the_parent_exists_as_a_file
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:133: bt_gd_write_atomic(path, "payload", 7, err, sizeof err) vs 0: got -1 want 0
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:135: check failed: file != NULL
+  check failed C:\Users\lavantien\dev\github\blind-trainer\tests\unit\tools\gendata_out_test.c:157: names vs 1U: got 0 (0x0) want 1 (0x1)
+FAIL tools_gendata_out_test gendata_out.write_atomic_writes_into_an_existing_directory_without_temp_leftovers
+suite tools_gendata_out_test: 2 passed, 3 failed
+exit 1 cwd=X:\ exe=tools_gendata_out_test.exe temp=C:\Users\LAVANT~1\AppData\Local\Temp
