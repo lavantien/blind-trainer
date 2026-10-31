@@ -101,6 +101,7 @@ int bt_app_focus_client_to_screen(const void *hwnd, long x, long y, long *screen
 enum {
     BT_FOCUS_SENTINEL_ATTEMPTS = 3,
     BT_FOCUS_SENTINEL_RETRY_MS = 30,
+    BT_FOCUS_SENTINEL_OFFSCREEN_POS = -2000,
 };
 
 static int sentinel_class_ready(void) {
@@ -125,7 +126,8 @@ static int sentinel_foreground_unseizable(void) {
     BT_TRACE_ENTER("app.focus_sentinel_unseizable");
     HWND probe =
         CreateWindowExW(0, L"bt_app_focus_sentinel", L"blind trainer foreground probe", WS_POPUP,
-                        -2000, -2000, 8, 8, NULL, NULL, GetModuleHandleW(NULL), NULL);
+                        BT_FOCUS_SENTINEL_OFFSCREEN_POS, BT_FOCUS_SENTINEL_OFFSCREEN_POS, 8, 8,
+                        NULL, NULL, GetModuleHandleW(NULL), NULL);
     int seizable = 1;
     if (probe == NULL) {
         BT_TRACE_FAIL("app.focus_sentinel_unseizable", "probe window was not created");
@@ -200,7 +202,8 @@ int bt_app_focus_sentinel_acquire(void) {
     }
     g_sentinel_window =
         CreateWindowExW(WS_EX_TOOLWINDOW, L"bt_app_focus_sentinel", L"blind trainer focus sentinel",
-                        WS_POPUP, -2000, -2000, 8, 8, NULL, NULL, GetModuleHandleW(NULL), NULL);
+                        WS_POPUP, BT_FOCUS_SENTINEL_OFFSCREEN_POS, BT_FOCUS_SENTINEL_OFFSCREEN_POS,
+                        8, 8, NULL, NULL, GetModuleHandleW(NULL), NULL);
     if (g_sentinel_window == NULL) {
         BT_TRACE_FAIL("app.focus_sentinel_acquire", "CreateWindowExW failed");
         BT_TRACE_EXIT("app.focus_sentinel_acquire");
