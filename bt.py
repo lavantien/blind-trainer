@@ -504,6 +504,16 @@ def needs_compile(source, obj, dep=None):
     return False
 
 
+def needs_compile_plain(source, obj, extra_inputs=()):
+    if not obj.is_file():
+        return True
+    obj_time = obj.stat().st_mtime
+    for path in (source, *extra_inputs):
+        if path.is_file() and path.stat().st_mtime >= obj_time:
+            return True
+    return False
+
+
 def patch_coff_timestamp(path):
     header = path.open("rb").read(8)
     if len(header) < 8 or header[0] != 0x64 or header[1] != 0x86:
@@ -699,7 +709,7 @@ def compile_stage(hub, root, compiler, logger, extra=(), test_area=None, only=No
         cu_source = root / CUDA_UNIT
         cu_obj = object_path(obj_root, root, cu_source)
         cu_obj.parent.mkdir(parents=True, exist_ok=True)
-        if needs_compile(cu_source, cu_obj):
+        if needs_compile_plain(cu_source, cu_obj, [cu_source.with_suffix(".h")]):
             commands.append(
                 (
                     f"compile {CUDA_UNIT}",

@@ -186,9 +186,13 @@ class CudaCompileStageTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
         (self.root / "src" / "common").mkdir(parents=True)
         (self.root / "src" / "common" / "x.c").write_text("int x;\n", encoding="utf-8")
+        (self.root / "vendor" / "sqlite").mkdir(parents=True)
+        (self.root / "vendor" / "sqlite" / "sqlite3.c").write_text("int sq;\n", encoding="utf-8")
         self.cu = self.root / "src" / "ga" / "cuda" / "ga_eval.cu"
         self.cu.parent.mkdir(parents=True)
         self.cu.write_text("int cu;\n", encoding="utf-8")
+        (self.root / "src" / "ga" / "cuda" / "ga_eval.h").write_text("int cu_h;\n",
+                                                                     encoding="utf-8")
         self.log = self.root / "argv.log"
         self.stub_clang = self.write_tool_stub("clang_stub.py")
         self.stub_nvcc = self.write_tool_stub("nvcc_stub.py")
@@ -246,6 +250,16 @@ class CudaCompileStageTests(unittest.TestCase):
         self.assertIn(repr(str(cu_obj)), nvcc_lines[0])
         self.assertTrue(cu_obj.is_file())
         self.assertIn((self.cu, cu_obj), entries)
+        second_root, second_entries = bt.compile_stage(
+            hub,
+            self.root,
+            [sys.executable, "-I", str(self.stub_clang)],
+            bt.Logger(),
+            cuda=self.cuda_plan(),
+        )
+        self.assertEqual(second_root, obj_root)
+        still_nvcc = [line for line in self.argv_lines() if "-ccbin" in line]
+        self.assertEqual(len(still_nvcc), 1)
 
     def test_compile_stage_plain_never_invokes_nvcc(self):
         hub = sample_hub()
