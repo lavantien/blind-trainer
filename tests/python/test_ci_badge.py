@@ -77,6 +77,33 @@ class BadgeSvgColorTests(unittest.TestCase):
         )
 
 
+class BadgeSvgEscapeTests(unittest.TestCase):
+    def test_xml_special_characters_are_escaped(self):
+        svg = badge_svg("A&B", "<x>", color=GREY)
+        self.assertIn('aria-label="A&amp;B: &lt;x&gt;"', svg)
+        self.assertIn("<title>A&amp;B: &lt;x&gt;</title>", svg)
+        self.assertIn(">A&amp;B</text>", svg)
+        self.assertIn(">&lt;x&gt;</text>", svg)
+        self.assertNotIn("A&B", svg)
+        self.assertNotIn("<x>", svg)
+
+    def test_quote_in_label_or_value_is_escaped(self):
+        svg = badge_svg('say "hi"', '"ok"', color=GREY)
+        self.assertNotIn('"hi"', svg)
+        self.assertIn("&quot;hi&quot;", svg)
+
+    def test_committed_coverage_renders_are_unchanged(self):
+        badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
+        for name, label, value, percent in (
+            ("coverage.svg", "coverage", "0.0%", 0.0),
+            ("alg-coverage.svg", "alg coverage", "99.9%", 99.9),
+        ):
+            self.assertEqual(
+                (badge_dir / name).read_bytes(),
+                badge_svg(label, value, percent).encode("utf-8"),
+            )
+
+
 class CiBadgeEndToEndTests(unittest.TestCase):
     def run_with_stub(self, tmp, body, extra_argv=(), out=None):
         (Path(tmp) / "gh.bat").write_text(body, encoding="utf-8")
