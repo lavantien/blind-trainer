@@ -1,0 +1,19 @@
+{
+  "suite_result": {
+    "stem": "ga_eval",
+    "code": 7,
+    "tail": "suite ga_ga_eval_test: 9 passed, 1 failed"
+  },
+  "failures_composition": [],
+  "verdict_ok_despite_suite_failure": true,
+  "run_suite_stem_raises_only_on_missing_exe": true,
+  "run_parity_source_bind_check": [
+    "suites = [",
+    "for stem in hub[\"cuda\"][\"parity_suites\"]",
+    "failures = golden_drift + drift",
+    "\"ok\": not failures,",
+    "\"drift\": failures,",
+    "\"suites\": suites,"
+  ],
+  "verdict": "ga-parity exits 0 with a failing parity suite: run_parity builds failures from golden_drift + drift only, suite exit codes are recorded but never bound to ok (scripts/ga_parity.py:199-205, 247)"
+}

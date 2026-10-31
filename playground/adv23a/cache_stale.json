@@ -1,0 +1,20 @@
+{
+  "arch_stale": {
+    "nvcc_invocations_after_arch_switch": 0,
+    "first_arch": "['-ccbin', 'C:\\\\Users\\\\LAVANT~1\\\\AppData\\\\Local\\\\Temp\\\\tmpfma229ju\\\\hostx64', '-arch=sm_86', '--fmad=false', '-ftz=false', '--prec-div=true', '--prec-sqrt=true', '-O3', '-cudart=static', '-I', 'C:\\\\Users\\\\LAVANT~1\\\\AppData\\\\Local\\\\Temp\\\\tmpfma229ju\\\\src', '-c', 'C:\\\\Users\\\\LAVANT~1\\\\AppData\\\\Local\\\\Temp\\\\tmpfma229ju\\\\src\\\\ga\\\\cuda\\\\ga_eval.cu', '-o', 'C:\\\\Users\\\\LAVANT~1\\\\AppData\\\\Local\\\\Temp\\\\tmpfma229ju\\\\build\\\\obj\\\\28fc8a999ed3\\\\src\\\\ga\\\\cuda\\\\ga_eval.obj']",
+    "total_nvcc_lines": 1,
+    "verdict": "stale cu reuse: arch change does not recompile the cu unit"
+  },
+  "verdict_trust": {
+    "returned_without_reprobe": true,
+    "returned": {
+      "ok": true,
+      "nvcc": "C:\\Users\\LAVANT~1\\AppData\\Local\\Temp\\tmpqwfkuv4f\\no-such-nvcc.exe",
+      "ccbin": "C:\\Users\\LAVANT~1\\AppData\\Local\\Temp\\tmpqwfkuv4f\\no-such-cl",
+      "arch": "sm_86",
+      "lib_dir": "C:\\Users\\LAVANT~1\\AppData\\Local\\Temp\\tmpqwfkuv4f\\no-such-lib",
+      "detail": "poisoned"
+    },
+    "verdict": "cached verdict trusted blindly: nvcc path existence and the cuda.arch pin are never rechecked"
+  }
+}

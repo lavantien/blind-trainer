@@ -1,0 +1,52 @@
+{
+  "results": [
+    {
+      "tag": "plain_enable_true",
+      "exe": "C:\\Users\\lavantien\\dev\\github\\blind-trainer\\build\\bin\\ga-run.exe",
+      "hide_gpu": false,
+      "code": 0,
+      "secs": 57.5,
+      "cuda_mentions_in_output": 0,
+      "report_sha": "19a78e05ca962da1bbc51669b2f4e597efbf3e266bfc81b60ce787312ac3565e",
+      "syllables_sha": "80682880a1c6d39cf8f30d38627223ea1493e7296e45ce069e45d93db29372f3",
+      "pins": {
+        "best_fitness": 0.55821705,
+        "best_generation": 497,
+        "evaluations": 99200
+      }
+    },
+    {
+      "tag": "cuda_gpu_hidden",
+      "exe": "C:\\Users\\lavantien\\dev\\github\\blind-trainer\\build\\bin-cuda\\ga-run.exe",
+      "hide_gpu": true,
+      "code": 0,
+      "secs": 36.9,
+      "cuda_mentions_in_output": 1,
+      "report_sha": "b34d0a69dd27e584e9dddb892a08851401522e19cd82dfc9fc0eb5d2d4248017",
+      "syllables_sha": "80682880a1c6d39cf8f30d38627223ea1493e7296e45ce069e45d93db29372f3",
+      "pins": {
+        "best_fitness": 0.55821705,
+        "best_generation": 497,
+        "evaluations": 99200
+      }
+    },
+    {
+      "tag": "cuda_gpu_visible",
+      "exe": "C:\\Users\\lavantien\\dev\\github\\blind-trainer\\build\\bin-cuda\\ga-run.exe",
+      "hide_gpu": false,
+      "code": 0,
+      "secs": 39.9,
+      "cuda_mentions_in_output": 1,
+      "report_sha": "00e6975a967cbdd6edb9e4f170267baa295df87237ab45b17f0060ff80b9f823",
+      "syllables_sha": "80682880a1c6d39cf8f30d38627223ea1493e7296e45ce069e45d93db29372f3",
+      "pins": {
+        "best_fitness": 0.55821705,
+        "best_generation": 497,
+        "evaluations": 99200
+      }
+    }
+  ],
+  "report_identical_plain_vs_hidden": false,
+  "report_identical_plain_vs_gpu": false,
+  "syllables_identical_plain_vs_gpu": true
+}

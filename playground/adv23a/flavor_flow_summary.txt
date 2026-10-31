@@ -1,0 +1,142 @@
+[
+  {
+    "args": [
+      "build"
+    ],
+    "code": 0,
+    "secs": 12.0,
+    "compiled_line": [
+      "2026-10-31T13:43:39 [compile] 191 compiled, 191 ok"
+    ],
+    "nvcc_mentions": 0,
+    "cu_lines": [],
+    "link_count": 0
+  },
+  {
+    "args": [
+      "build",
+      "--cuda"
+    ],
+    "code": 0,
+    "secs": 15.7,
+    "compiled_line": [
+      "2026-10-31T13:43:51 [compile] 191 compiled, 191 ok"
+    ],
+    "nvcc_mentions": 1,
+    "cu_lines": [
+      "2026-10-31T13:43:48 [skip] compile src/ga/cuda/ga_eval.cu up to date"
+    ],
+    "link_count": 0
+  },
+  {
+    "args": [
+      "build"
+    ],
+    "code": 0,
+    "secs": 13.1,
+    "compiled_line": [
+      "2026-10-31T13:44:08 [compile] 191 compiled, 191 ok"
+    ],
+    "nvcc_mentions": 0,
+    "cu_lines": [],
+    "link_count": 0
+  },
+  {
+    "args": [
+      "build",
+      "--cuda"
+    ],
+    "code": 0,
+    "secs": 12.0,
+    "compiled_line": [
+      "2026-10-31T13:44:19 [compile] 191 compiled, 191 ok"
+    ],
+    "nvcc_mentions": 1,
+    "cu_lines": [
+      "2026-10-31T13:44:17 [skip] compile src/ga/cuda/ga_eval.cu up to date"
+    ],
+    "link_count": 0
+  }
+]
+[
+  {
+    "tag": "start",
+    "roots": [
+      "28fc8a999ed3",
+      "70dcf3245464"
+    ],
+    "cu_objs": [
+      {
+        "root": "28fc8a999ed3",
+        "mtime": 1793427548.7410946,
+        "size": 46042
+      }
+    ],
+    "plain_ga_run": 1793427359.812575,
+    "cuda_ga_run": 1793427549.7209785
+  },
+  {
+    "tag": "b1_plain",
+    "roots": [
+      "28fc8a999ed3",
+      "70dcf3245464"
+    ],
+    "cu_objs": [
+      {
+        "root": "28fc8a999ed3",
+        "mtime": 1793427548.7410946,
+        "size": 46042
+      }
+    ],
+    "plain_ga_run": 1793427359.812575,
+    "cuda_ga_run": 1793427549.7209785
+  },
+  {
+    "tag": "b2_cuda",
+    "roots": [
+      "28fc8a999ed3",
+      "70dcf3245464"
+    ],
+    "cu_objs": [
+      {
+        "root": "28fc8a999ed3",
+        "mtime": 1793427548.7410946,
+        "size": 46042
+      }
+    ],
+    "plain_ga_run": 1793427359.812575,
+    "cuda_ga_run": 1793427549.7209785
+  },
+  {
+    "tag": "b3_plain",
+    "roots": [
+      "28fc8a999ed3",
+      "70dcf3245464"
+    ],
+    "cu_objs": [
+      {
+        "root": "28fc8a999ed3",
+        "mtime": 1793427548.7410946,
+        "size": 46042
+      }
+    ],
+    "plain_ga_run": 1793427359.812575,
+    "cuda_ga_run": 1793427549.7209785
+  },
+  {
+    "tag": "b4_cuda",
+    "roots": [
+      "28fc8a999ed3",
+      "70dcf3245464"
+    ],
+    "cu_objs": [
+      {
+        "root": "28fc8a999ed3",
+        "mtime": 1793427548.7410946,
+        "size": 46042
+      }
+    ],
+    "plain_ga_run": 1793427359.812575,
+    "cuda_ga_run": 1793427549.7209785
+  }
+]

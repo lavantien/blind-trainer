@@ -1,0 +1,1 @@
+{"cases":[{"orbit":"cv","letters":"ma","count":4},{"orbit":"cv","letters":"la","count":3}],"adjacent":[{"from":0,"to":1,"count":2}],"cooccurring":[{"from":1,"to":2,"count":5}],"total_draws":9,"seed":11}
