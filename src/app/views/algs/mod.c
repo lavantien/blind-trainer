@@ -1,6 +1,7 @@
 #include "app/views/algs/mod.h"
 
 #include "app/boot.h"
+#include "app/open_url.h"
 #include "app/views/algs/browse.h"
 #include "app/views/algs/detail.h"
 #include "app/views/case_drill.h"
@@ -17,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const float BT_ALGS_LINE_FACTOR = 1.2F;
+static const float BT_ALGS_TEXT_SPACING = 1.0F;
 
 bt_view_list_span bt_view_list_window(size_t total, size_t selected, size_t capacity) {
     BT_TRACE_ENTER("app.algs_list_window");
@@ -189,26 +190,6 @@ size_t bt_view_algs_list_capacity(const bt_app_config *config) {
     }
     BT_TRACE_EXIT("app.algs_list_capacity");
     return (size_t)rows;
-}
-
-size_t bt_view_algs_detail_visible(const float *line_rems, size_t count, float avail_px) {
-    BT_TRACE_ENTER("app.algs_detail_visible");
-    const bt_theme *theme = bt_theme_table();
-    float pitch = theme->root_rem * BT_ALGS_LINE_FACTOR;
-    float tail = theme->font_micro * pitch;
-    float used = 0.0F;
-    size_t visible = 0;
-    while (visible < count) {
-        float lines = used + line_rems[visible] * pitch;
-        float next = visible + 1 < count ? lines + tail : lines;
-        if (next > avail_px) {
-            break;
-        }
-        used = lines;
-        visible++;
-    }
-    BT_TRACE_EXIT("app.algs_detail_visible");
-    return visible;
 }
 
 size_t bt_view_algs_list_rows(const bt_view_algs_browser *browser, size_t capacity,
@@ -418,6 +399,10 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
     if (app->query_focused && !ctx->input_focus) {
         app->query_focused = 0;
     }
+    const bt_ui_input *frame_input = bt_app_frame_input();
+    if (frame_input != NULL) {
+        bt_view_algs_link_click(app, frame_input);
+    }
     if (!app->query_focused && draft->has_case) {
         const bt_ui_input *frame = bt_app_frame_input();
         if (frame != NULL) {
@@ -431,8 +416,8 @@ void bt_view_algs_update(bt_app_ctx *ctx) {
         }
     }
     static const int polled[] = {
-        KEY_SLASH, KEY_RIGHT, KEY_LEFT, KEY_DOWN,  KEY_UP,  KEY_N,         KEY_P,
-        KEY_D,     KEY_O,     KEY_X,    KEY_ENTER, KEY_TAB, KEY_BACKSPACE,
+        KEY_SLASH, KEY_RIGHT, KEY_LEFT, KEY_DOWN, KEY_UP,    KEY_N,   KEY_P,
+        KEY_D,     KEY_O,     KEY_X,    KEY_R,    KEY_ENTER, KEY_TAB, KEY_BACKSPACE,
     };
     int keys[sizeof polled / sizeof polled[0]];
     int count = 0;
@@ -559,47 +544,18 @@ static int push_detail(bt_view_algs_detail_line **out, size_t *cap, size_t *coun
     (*out)[*count].style = style;
     snprintf((*out)[*count].text, BT_ALGS_TEXT_MAX, "%s", text);
     (*out)[*count].color = color;
+    (*out)[*count].link = 0;
     (*count)++;
     return 0;
 }
 
-void bt_view_algs_style_metrics(bt_algs_style style, float *size, bt_theme_color *color) {
-    BT_TRACE_ENTER("app.algs_style_metrics");
-    const bt_theme *theme = bt_theme_table();
-    float font = theme->font_small;
-    bt_theme_color paint = bt_theme_text_muted();
-    switch (style) {
-    case BT_ALGS_STYLE_FOCAL:
-        font = theme->font_title;
-        paint = bt_theme_text_primary();
-        break;
-    case BT_ALGS_STYLE_MUTED:
-    case BT_ALGS_STYLE_BODY:
-        font = theme->font_body;
-        paint = bt_theme_text_muted();
-        break;
-    case BT_ALGS_STYLE_HEADING:
-        font = theme->font_heading;
-        paint = bt_theme_text_primary();
-        break;
-    case BT_ALGS_STYLE_ALG:
-        font = theme->font_alg;
-        paint = bt_theme_text_primary();
-        break;
-    case BT_ALGS_STYLE_SMALL:
-        font = theme->font_small;
-        paint = bt_theme_text_muted();
-        break;
-    case BT_ALGS_STYLE_MICRO:
-        font = theme->font_micro;
-        paint = bt_theme_text_muted();
-        break;
+static int push_link_detail(bt_view_algs_detail_line **out, size_t *cap, size_t *count,
+                            const char *text) {
+    if (push_detail(out, cap, count, BT_ALGS_STYLE_MICRO, text, bt_theme_accent()) != 0) {
+        return -1;
     }
-    *size = font;
-    if (color != NULL) {
-        *color = paint;
-    }
-    BT_TRACE_EXIT("app.algs_style_metrics");
+    (*out)[*count - 1].link = 1;
+    return 0;
 }
 
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
@@ -666,8 +622,7 @@ size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_bro
             }
             char expand[BT_ALGS_TEXT_MAX];
             if (bt_view_algs_pair_expand_rows(row, expand)) {
-                push_detail(&lines, &cap, &count, BT_ALGS_STYLE_SMALL, expand,
-                            bt_theme_text_muted());
+                push_detail(&lines, &cap, &count, BT_ALGS_STYLE_ALG, expand, bt_theme_text_muted());
             }
         } else {
             push_detail(&lines, &cap, &count, BT_ALGS_STYLE_MUTED, row->alg_text,
@@ -676,7 +631,11 @@ size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_bro
         bt_view_algs_meta_line(row, text);
         push_detail(&lines, &cap, &count, BT_ALGS_STYLE_SMALL, text, bt_theme_text_muted());
         snprintf(text, sizeof text, "recon %s video %s", row->recon_link, row->youtube_link);
-        push_detail(&lines, &cap, &count, BT_ALGS_STYLE_MICRO, text, bt_theme_text_muted());
+        if (i == 0 && bt_app_url_is_openable(row->recon_link)) {
+            push_link_detail(&lines, &cap, &count, text);
+        } else {
+            push_detail(&lines, &cap, &count, BT_ALGS_STYLE_MICRO, text, bt_theme_text_muted());
+        }
     }
     free(rows);
     BT_TRACE_EXIT("app.algs_detail_lines");
@@ -689,12 +648,12 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
     BT_TRACE_ENTER("app.view_algs_draw");
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
-    bt_view_frame_draw(
-        font_bold, font_regular, window_w, window_h, "algs",
-        "type letters to search, arrows select, left right browse packs, o edits a "
-        "case, enter saves, tab cancels, x deletes the override, d drills, esc menu");
+    bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "algs",
+                       "slash search, arrows select, right packs, o edit, d drill, esc menu");
     bt_view_algs_app_state *app = bt_view_algs_app();
     bt_repo_browser *repo = bt_view_algs_repo();
+    Font regular_font = *(const Font *)font_regular;
+    app->link_ready = 0;
     bt_app_config config;
     bt_app_config_defaults(&config);
     config.window.width = (unsigned)window_w;
@@ -713,7 +672,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         bt_view_algs_detail_line *detail_lines = NULL;
         size_t detail_count =
             bt_view_algs_detail_lines(&ctx->vendor_corpus, &app->browser, &detail_lines);
-        float detail_x = metrics.content_x + metrics.content_w * 0.4F;
+        bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
         float detail_y = metrics.content_y;
         if (detail_count > 0) {
             float *line_rems = malloc(detail_count * sizeof *line_rems);
@@ -727,18 +686,32 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
                 line_rems[i] = theme->font_small;
                 bt_view_algs_style_metrics(detail_lines[i].style, &line_rems[i], NULL);
             }
+            const char *recon = bt_view_algs_selected_recon(&ctx->vendor_corpus, &app->browser);
+            int recon_open = bt_app_url_is_openable(recon);
             size_t visible = bt_view_algs_detail_visible(
                 line_rems, detail_count, metrics.content_y + metrics.content_h - detail_y);
             for (size_t i = 0; i < visible; i++) {
-                bt_app_draw_text(font_regular, detail_lines[i].text, detail_x, detail_y,
-                                 line_rems[i] * theme->root_rem, detail_lines[i].color);
-                detail_y += line_rems[i] * theme->root_rem * BT_ALGS_LINE_FACTOR;
+                float size_px = line_rems[i] * theme->root_rem;
+                Vector2 box = MeasureTextEx(regular_font, detail_lines[i].text, size_px,
+                                            BT_ALGS_TEXT_SPACING);
+                float line_x = bt_view_algs_centered_line_x(column.center, box.x);
+                bt_app_draw_text(font_regular, detail_lines[i].text, line_x, detail_y, size_px,
+                                 detail_lines[i].color);
+                if (detail_lines[i].link && recon_open) {
+                    bt_view_algs_link_draw(app, column.center, detail_y, box.x, box.y,
+                                           size_px * BT_ALGS_LINE_FACTOR, recon);
+                }
+                detail_y += size_px * BT_ALGS_LINE_FACTOR;
             }
             if (visible < detail_count) {
                 char tail[BT_ALGS_TEXT_MAX];
                 snprintf(tail, sizeof tail, "+%zu more", detail_count - visible);
-                bt_app_draw_text(font_regular, tail, detail_x, detail_y,
-                                 theme->font_micro * theme->root_rem, bt_theme_text_muted());
+                float tail_size = theme->font_micro * theme->root_rem;
+                Vector2 tail_box =
+                    MeasureTextEx(regular_font, tail, tail_size, BT_ALGS_TEXT_SPACING);
+                bt_app_draw_text(font_regular, tail,
+                                 bt_view_algs_centered_line_x(column.center, tail_box.x), detail_y,
+                                 tail_size, bt_theme_text_muted());
             }
             free(line_rems);
         }
@@ -756,7 +729,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         size_t detail_count = 0;
         bt_view_repo_detail_lines(repo, bt_view_algs_overrides(), bt_view_algs_draft(), lines,
                                   BT_DETAIL_LINES_MAX, &detail_count);
-        float detail_x = metrics.content_x + metrics.content_w * 0.4F;
+        bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
         float detail_y = metrics.content_y;
         float line_rems[BT_DETAIL_LINES_MAX];
         for (size_t i = 0; i < detail_count; i++) {
@@ -765,16 +738,22 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         size_t visible = bt_view_algs_detail_visible(
             line_rems, detail_count, metrics.content_y + metrics.content_h - detail_y);
         for (size_t i = 0; i < visible; i++) {
-            bt_app_draw_text(
-                font_regular, lines[i].text, detail_x, detail_y, line_rems[i] * theme->root_rem,
-                lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger() : bt_theme_text_muted());
-            detail_y += line_rems[i] * theme->root_rem * BT_ALGS_LINE_FACTOR;
+            float size_px = line_rems[i] * theme->root_rem;
+            Vector2 box = MeasureTextEx(regular_font, lines[i].text, size_px, BT_ALGS_TEXT_SPACING);
+            bt_app_draw_text(font_regular, lines[i].text,
+                             bt_view_algs_centered_line_x(column.center, box.x), detail_y, size_px,
+                             lines[i].kind == BT_DETAIL_WARN ? bt_theme_danger()
+                                                             : bt_theme_text_muted());
+            detail_y += size_px * BT_ALGS_LINE_FACTOR;
         }
         if (visible < detail_count) {
             char tail[BT_ALGS_TEXT_MAX];
             snprintf(tail, sizeof tail, "+%zu more", detail_count - visible);
-            bt_app_draw_text(font_regular, tail, detail_x, detail_y,
-                             theme->font_micro * theme->root_rem, bt_theme_text_muted());
+            float tail_size = theme->font_micro * theme->root_rem;
+            Vector2 tail_box = MeasureTextEx(regular_font, tail, tail_size, BT_ALGS_TEXT_SPACING);
+            bt_app_draw_text(font_regular, tail,
+                             bt_view_algs_centered_line_x(column.center, tail_box.x), detail_y,
+                             tail_size, bt_theme_text_muted());
         }
     }
     BT_TRACE_EXIT("app.view_algs_draw");
@@ -1023,6 +1002,8 @@ int bt_view_algs_frame(bt_app_ctx *ctx, const int *keys, int count) {
                 bt_view_override_open(ctx);
             } else if (key == KEY_X) {
                 bt_view_override_delete(ctx);
+            } else if (key == KEY_R) {
+                bt_view_algs_open_recon(ctx);
             }
         }
     }

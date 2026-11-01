@@ -1,2 +1,7 @@
 2026-11-01T14:34:02.0048795+07:00 lane-c start: clean tree at 8ed5a9c, part 1 scope open_url module, exploration done (bt.py discovery is glob-based, no manifest edit needed)
 2026-11-01T14:38:41.2962460+07:00 part1 open_url done: src/app/open_url.{h,c} + tests/unit/app/open_url_test.c (6 tests), build=0 test=0 fmt=0 lint app=0 policy=0
+2026-11-01T14:45:39.1174381+07:00 baseline: app --only algs has 2 failures in view_algs_test (list_capacity pin 18->12, detail_fit pins) caused by lane A in-flight theme root_rem change 28->37.209; view_detail stem green; will re-derive pins from theme table in part 2
+2026-11-01T15:06:25.7214887+07:00 part2 start: lane A foundation visible on main, writing failing tests for algs view rework
+2026-11-01T15:15:37.4758682+07:00 part2 impl done, all 4 lane stems green; full app suite has 1 failure in view_draw_b solve_review (file mid-edit by another lane, out of lane, not caused by algs changes)
+2026-11-01T15:16:07.4570780+07:00 fmt: lane C files clean; out-of-lane fmt failure in tests/unit/app/view_solve_test.c:217 (another lane in-flight)
+2026-11-01T15:22:22.7609359+07:00 part2 done: algs view rework (context hint, alg-size expand line, centered detail columns, accent recon link with 2px underline, r key + click through bt_app_open_url seam), mod.c split at 973 sloc with new layout.c 149 sloc, all 4 stems green, fmt/lint clean, policy clean for lane files

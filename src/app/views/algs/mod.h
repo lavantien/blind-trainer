@@ -5,6 +5,8 @@
 #include "app/logic.h"
 #include "app/states.h"
 #include "app/theme.h"
+#include "app/ui.h"
+#include "app/views/frame.h"
 #include "app/views/state.h"
 #include "core/alg.h"
 #include "core/cube.h"
@@ -21,6 +23,7 @@
 #define BT_ALGS_TEXT_MAX 256
 #define BT_ALGS_SPANS_MAX 32
 #define BT_ALGS_CASES_MAX 1024
+#define BT_ALGS_LINE_FACTOR 1.2F
 
 typedef struct {
     size_t first;
@@ -55,7 +58,16 @@ typedef struct {
     char query[BT_ALGS_QUERY_MAX];
     bt_view_algs_browser browser;
     int query_focused;
+    int link_ready;
+    bt_ui_rect link_rect;
+    char link_url[BT_ALGS_TEXT_MAX];
 } bt_view_algs_app_state;
+
+typedef struct {
+    float x;
+    float width;
+    float center;
+} bt_view_algs_column;
 
 bt_view_list_span bt_view_list_window(size_t total, size_t selected, size_t capacity);
 
@@ -105,11 +117,23 @@ typedef struct {
     bt_algs_style style;
     char text[BT_ALGS_TEXT_MAX];
     bt_theme_color color;
+    int link;
 } bt_view_algs_detail_line;
 
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
                                  bt_view_algs_detail_line **out);
 size_t bt_view_algs_detail_visible(const float *line_rems, size_t count, float avail_px);
 void bt_view_algs_style_metrics(bt_algs_style style, float *size, bt_theme_color *color);
+bt_view_algs_column bt_view_algs_detail_column(const bt_view_frame_metrics *metrics);
+float bt_view_algs_centered_line_x(float center, float line_w);
+bt_ui_rect bt_view_algs_link_rect(float center, float y, float line_w, float line_h);
+const char *bt_view_algs_selected_recon(const bt_corpus *corpus,
+                                        const bt_view_algs_browser *browser);
+void bt_view_algs_link_record(bt_view_algs_app_state *app, float center, float y, float line_w,
+                              float line_h, const char *url);
+void bt_view_algs_link_draw(bt_view_algs_app_state *app, float center, float y, float text_w,
+                            float text_h, float line_h, const char *url);
+int bt_view_algs_link_click(bt_view_algs_app_state *app, const bt_ui_input *input);
+void bt_view_algs_open_recon(bt_app_ctx *ctx);
 
 #endif

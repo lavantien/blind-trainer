@@ -1,4 +1,5 @@
 #include "app/boot.h"
+#include "app/open_url.h"
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
@@ -9,9 +10,30 @@
 enum {
     KEY_SLASH = 47,
     KEY_D = 68,
+    KEY_R = 82,
     KEY_DOWN = 264,
     KEY_BACKSPACE = 259,
 };
+
+enum {
+    BT_VIEWS_ALGS_URL_MAX = 256,
+};
+
+static int g_recon_calls;
+static int g_recon_result;
+static char g_recon_last[BT_VIEWS_ALGS_URL_MAX];
+
+static int stub_launch(const char *url) {
+    g_recon_calls++;
+    snprintf(g_recon_last, sizeof g_recon_last, "%s", url);
+    return g_recon_result;
+}
+
+static void stub_reset(int result) {
+    g_recon_calls = 0;
+    g_recon_last[0] = '\0';
+    g_recon_result = result;
+}
 
 static bt_app_ctx algs_ctx(const char *tag) {
     bt_app_ctx ctx;
@@ -38,7 +60,7 @@ static bt_case edge_case(char first, char second) {
     return case_id;
 }
 
-static void covered_corpus(bt_app_ctx *ctx) {
+static void covered_corpus_recon(bt_app_ctx *ctx, const char *recon) {
     bt_corpus_row row;
     memset(&row, 0, sizeof row);
     row.solver = BT_SOLVER_CHERRY;
@@ -51,12 +73,16 @@ static void covered_corpus(bt_app_ctx *ctx) {
     }
     row.alg_text = _strdup("R2 U' S R2 S' R2 U R2");
     row.commutator = _strdup("R2 U':[S,R2]");
-    row.recon_link = _strdup("");
+    row.recon_link = _strdup(recon);
     row.youtube_link = _strdup("https://example.test/recon");
     bt_corpus_row *heap = malloc(sizeof *heap);
     memcpy(heap, &row, sizeof *heap);
     bt_corpus_from_rows(heap, 1, &ctx->vendor_corpus);
     ctx->has_corpus = 1;
+}
+
+static void covered_corpus(bt_app_ctx *ctx) {
+    covered_corpus_recon(ctx, "");
 }
 
 BT_TEST(views_algs, algs_search_routes_the_selected_case_into_drill) {
@@ -170,5 +196,86 @@ BT_TEST(views_algs, escape_releases_a_focused_text_input_before_leaving_the_view
     bt_app_process_keys(&ctx);
     bt_app_apply_pending(&ctx);
     BT_CHECK(ctx.state == BT_APP_MENU);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_algs, r_key_opens_the_selected_case_recon_through_the_seam) {
+    bt_app_ctx ctx = algs_ctx("reconkey");
+    covered_corpus_recon(&ctx, "https://example.test/recon");
+    bt_view_algs_enter(&ctx);
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    int r[1] = {KEY_R};
+    bt_view_algs_frame(&ctx, r, 1);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 1);
+    BT_CHECK(strcmp(g_recon_last, "https://example.test/recon") == 0);
+    bt_app_ctx_free(&ctx);
+
+    bt_app_ctx blank = algs_ctx("reconblank");
+    covered_corpus(&blank);
+    bt_view_algs_enter(&blank);
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    bt_view_algs_frame(&blank, r, 1);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 0);
+    bt_app_ctx_free(&blank);
+
+    bt_app_ctx typing = algs_ctx("recontyping");
+    covered_corpus_recon(&typing, "https://example.test/recon");
+    bt_view_algs_read_query(&typing, "");
+    bt_view_algs_enter(&typing);
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    int slash[1] = {KEY_SLASH};
+    bt_view_algs_frame(&typing, slash, 1);
+    bt_view_algs_frame(&typing, r, 1);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 0);
+    BT_CHECK_EQ(bt_view_algs_app()->query, "R");
+    bt_app_ctx_free(&typing);
+}
+
+BT_TEST(views_algs, recon_click_hits_the_recorded_link_rect_through_the_seam) {
+    bt_app_ctx ctx = algs_ctx("reconclick");
+    covered_corpus_recon(&ctx, "https://example.test/recon");
+    bt_view_algs_enter(&ctx);
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_view_algs_link_record(app, 500.0F, 300.0F, 240.0F, 44.0F, "https://example.test/recon");
+    BT_CHECK(app->link_ready);
+
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.click = 1;
+    input.x = 500.0F;
+    input.y = 310.0F;
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    bt_app_frame_input_set(&input);
+    bt_view_algs_update(&ctx);
+    bt_app_frame_input_set(NULL);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 1);
+    BT_CHECK(strcmp(g_recon_last, "https://example.test/recon") == 0);
+
+    input.x = 100.0F;
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    bt_app_frame_input_set(&input);
+    bt_view_algs_update(&ctx);
+    bt_app_frame_input_set(NULL);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 0);
+
+    app->link_ready = 0;
+    input.x = 500.0F;
+    stub_reset(0);
+    bt_app_open_url_bind(stub_launch);
+    bt_app_frame_input_set(&input);
+    bt_view_algs_update(&ctx);
+    bt_app_frame_input_set(NULL);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(g_recon_calls, 0);
     bt_app_ctx_free(&ctx);
 }

@@ -1,6 +1,7 @@
 #include "app/persist.h"
 #include "app/views/algs/browse.h"
 #include "app/views/algs/detail.h"
+#include "app/views/frame.h"
 #include "common/paths.h"
 #include "common/space.h"
 #include "data/repo_user.h"
@@ -397,6 +398,30 @@ BT_TEST(view_detail, case_detail_marks_the_override_and_warns_on_a_broken_effect
     }
     BT_CHECK(saw_editing);
     BT_CHECK(saw_draft_alg);
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+    free_rows(rows, 3);
+}
+
+BT_TEST(view_detail, centered_lines_stay_inside_the_detail_column) {
+    bt_seed_row rows[3];
+    bt_repo_browser browser = armed(rows);
+    bigcube_case_browser(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    bt_detail_line lines[BT_DETAIL_LINES_MAX];
+    size_t count = lines_of(&browser, &store, &draft, lines);
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
+    for (size_t i = 0; i < count; i++) {
+        float width = 20.0F + 8.0F * (float)strlen(lines[i].text);
+        BT_CHECK(width <= column.width);
+        float x = bt_view_algs_centered_line_x(column.center, width);
+        BT_CHECK(x >= column.x);
+        BT_CHECK(x + width <= column.x + column.width);
+    }
     bt_overrides_free(&store);
     bt_repo_browser_free(&browser);
     free_rows(rows, 3);

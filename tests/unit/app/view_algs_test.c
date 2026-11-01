@@ -1,9 +1,24 @@
 #include "app/views/algs/mod.h"
+#include "app/views/frame.h"
 #include "app/views/state.h"
 
 #include "common.h"
 
-static bt_corpus_row edge_row(const char *position, const char *alg, const char *commutator) {
+static int near_value(float value, float expected) {
+    float diff = value - expected;
+    if (diff < 0.0F) {
+        diff = -diff;
+    }
+    return diff < 0.02F;
+}
+
+static int color_is(const bt_theme_color *color, bt_theme_color want) {
+    return color->red == want.red && color->green == want.green && color->blue == want.blue &&
+           color->alpha == want.alpha;
+}
+
+static bt_corpus_row edge_row_recon(const char *position, const char *alg, const char *commutator,
+                                    const char *recon) {
     bt_corpus_row row;
     memset(&row, 0, sizeof row);
     row.solver = BT_SOLVER_CHERRY;
@@ -16,9 +31,30 @@ static bt_corpus_row edge_row(const char *position, const char *alg, const char 
     }
     row.alg_text = _strdup(alg);
     row.commutator = _strdup(commutator);
-    row.recon_link = _strdup("");
+    row.recon_link = _strdup(recon);
     row.youtube_link = _strdup("");
     return row;
+}
+
+static bt_corpus_row edge_row(const char *position, const char *alg, const char *commutator) {
+    return edge_row_recon(position, alg, commutator, "");
+}
+
+static bt_corpus one_row_corpus(const bt_corpus_row *row) {
+    bt_corpus_row *heap = malloc(sizeof *heap);
+    memcpy(heap, row, sizeof *heap);
+    bt_corpus corpus;
+    bt_corpus_from_rows(heap, 1, &corpus);
+    return corpus;
+}
+
+static bt_view_algs_browser selected_ab_browser(void) {
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_view_algs_app_init(app);
+    app->browser.filtered_count = bt_view_algs_filter_cases(
+        app->browser.all, app->browser.all_count, "", app->browser.filtered);
+    app->browser.selected = 0;
+    return app->browser;
 }
 
 static int span_is(const bt_view_algs_span *spans, size_t count, size_t at, const char *text,
@@ -76,16 +112,21 @@ BT_TEST(view_algs, list_window_keeps_the_selection_centered_and_clamped) {
 }
 
 BT_TEST(view_algs, list_capacity_fits_the_window_and_floors_at_one) {
+    const bt_theme *theme = bt_theme_table();
     bt_app_config config;
     bt_app_config_defaults(&config);
     config.window.height = 800;
-    BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)18);
+    float line = theme->root_rem * theme->font_body * 1.2F;
+    float chrome = theme->root_rem * (theme->header_height_rem + 2.0F * theme->panel_padding_rem);
+    float query_box = theme->root_rem * 3.0F;
+    BT_CHECK_EQ(bt_view_algs_list_capacity(&config),
+                (size_t)(((float)800 - chrome - query_box) / line));
     config.window.height = 0;
     BT_CHECK_EQ(bt_view_algs_list_capacity(&config), (size_t)1);
 }
 
 BT_TEST(view_algs, detail_fit_keeps_a_tail_line_when_the_panel_overflows) {
-    float line = 33.6F;
+    float line = bt_theme_table()->root_rem * 1.2F;
     float tail = 0.9F * line;
     float sizes[4] = {1.0F, 1.0F, 1.0F, 1.0F};
     BT_CHECK_EQ(bt_view_algs_detail_visible(sizes, 4, 4.0F * line + 1.0F), (size_t)4);
@@ -175,4 +216,82 @@ BT_TEST(view_algs, mechanic_spans_color_setup_insertion_and_interchange) {
     bt_expanded_list_free(&joined);
     bt_expanded_list_free(&units);
     bt_alg_free(&alg);
+}
+
+BT_TEST(view_algs, pair_expand_line_renders_at_the_alg_style) {
+    bt_corpus_row row = edge_row("UF-UB-UR", "U' R U R' U' U S U' U R U' R' U S'", "[U':[R,U],S]");
+    bt_corpus corpus = one_row_corpus(&row);
+    bt_view_algs_browser browser = selected_ab_browser();
+    bt_view_algs_detail_line *lines = NULL;
+    size_t count = bt_view_algs_detail_lines(&corpus, &browser, &lines);
+    int saw_expand = 0;
+    for (size_t i = 0; i < count; i++) {
+        if (strncmp(lines[i].text, "expand ", 7) == 0) {
+            saw_expand = 1;
+            BT_CHECK_EQ(lines[i].style, BT_ALGS_STYLE_ALG);
+        }
+    }
+    BT_CHECK(saw_expand);
+    free(lines);
+}
+
+BT_TEST(view_algs, recon_line_links_only_when_the_recon_url_is_openable) {
+    bt_corpus_row openable = edge_row_recon("UF-UB-UR", "R2 U' S R2 S' R2 U R2", "R2 U':[S,R2]",
+                                            "https://example.test/recon");
+    bt_corpus corpus = one_row_corpus(&openable);
+    bt_view_algs_browser browser = selected_ab_browser();
+    bt_view_algs_detail_line *lines = NULL;
+    size_t count = bt_view_algs_detail_lines(&corpus, &browser, &lines);
+    size_t linked = 0;
+    for (size_t i = 0; i < count; i++) {
+        if (lines[i].link) {
+            linked++;
+            BT_CHECK_EQ(lines[i].style, BT_ALGS_STYLE_MICRO);
+            BT_CHECK(color_is(&lines[i].color, bt_theme_accent()));
+            BT_CHECK(strstr(lines[i].text, "recon https://example.test/recon") == lines[i].text);
+        }
+    }
+    BT_CHECK_EQ(linked, (size_t)1);
+    free(lines);
+
+    bt_corpus_row blank = edge_row_recon("UF-UB-UR", "R2 U' S R2 S' R2 U R2", "R2 U':[S,R2]", "");
+    bt_corpus blank_corpus = one_row_corpus(&blank);
+    lines = NULL;
+    count = bt_view_algs_detail_lines(&blank_corpus, &browser, &lines);
+    for (size_t i = 0; i < count; i++) {
+        BT_CHECK(!lines[i].link);
+        if (strncmp(lines[i].text, "recon ", 6) == 0) {
+            BT_CHECK_EQ(lines[i].style, BT_ALGS_STYLE_MICRO);
+            BT_CHECK(color_is(&lines[i].color, bt_theme_text_muted()));
+        }
+    }
+    free(lines);
+
+    bt_corpus_row foreign =
+        edge_row_recon("UF-UB-UR", "R2 U' S R2 S' R2 U R2", "R2 U':[S,R2]", "file:///C:/Users/x");
+    bt_corpus foreign_corpus = one_row_corpus(&foreign);
+    lines = NULL;
+    count = bt_view_algs_detail_lines(&foreign_corpus, &browser, &lines);
+    for (size_t i = 0; i < count; i++) {
+        BT_CHECK(!lines[i].link);
+    }
+    free(lines);
+}
+
+BT_TEST(view_algs, detail_column_pins_the_split_and_its_center) {
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
+    BT_CHECK(near_value(column.x, metrics.content_x + metrics.content_w * 0.4F));
+    BT_CHECK(near_value(column.width, metrics.content_w * 0.6F));
+    BT_CHECK(near_value(column.center, column.x + column.width * 0.5F));
+}
+
+BT_TEST(view_algs, centered_line_x_and_link_rect_pin_the_hit_geometry) {
+    BT_CHECK(near_value(bt_view_algs_centered_line_x(500.0F, 200.0F), 400.0F));
+    BT_CHECK(near_value(bt_view_algs_centered_line_x(500.0F, 0.0F), 500.0F));
+    bt_ui_rect hit = bt_view_algs_link_rect(500.0F, 100.0F, 200.0F, 44.0F);
+    BT_CHECK(near_value(hit.x, 400.0F));
+    BT_CHECK(near_value(hit.y, 100.0F));
+    BT_CHECK(near_value(hit.width, 200.0F));
+    BT_CHECK(near_value(hit.height, 44.0F));
 }
