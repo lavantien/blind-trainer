@@ -144,8 +144,16 @@ void bt_view_replay_update(bt_app_ctx *ctx) {
 
 Camera3D bt_view_replay_camera(const bt_view_replay_scene *scene) {
     BT_TRACE_ENTER("view.replay_camera");
+    const bt_theme *theme = bt_theme_table();
+    bt_replay_orbit orbit = scene->orbit;
+    float margin = theme->panel_padding_rem * theme->root_rem;
+    float floor_distance =
+        bt_replay_distance_floor((float)GetScreenWidth(), (float)GetScreenHeight(), margin);
+    if (orbit.distance < floor_distance) {
+        orbit.distance = floor_distance;
+    }
     float offset[3];
-    bt_replay_camera_offset(&scene->orbit, offset);
+    bt_replay_camera_offset(&orbit, offset);
     Camera3D camera = {0};
     camera.position.x = offset[0];
     camera.position.y = offset[1];

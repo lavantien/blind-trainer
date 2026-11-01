@@ -59,6 +59,25 @@ BT_TEST(replay, default_orbit_matches_config_defaults) {
     BT_CHECK_EQ(orbit.distance, 6.0F);
 }
 
+BT_TEST(replay, distance_floor_keeps_the_cube_inside_the_window_margins) {
+    const float window_w = 1280.0F;
+    const float window_h = 800.0F;
+    const float margin = 22.0F;
+    float floor_distance = bt_replay_distance_floor(window_w, window_h, margin);
+    BT_CHECK(floor_distance > BT_REPLAY_DEFAULT_DISTANCE);
+    float corner = 1.0F + BT_REPLAY_STICKER_SPAN * 0.5F;
+    float reach = sqrtf(2.0F * corner * corner +
+                        (1.0F + BT_REPLAY_STICKER_LIFT) * (1.0F + BT_REPLAY_STICKER_LIFT));
+    float half_tan = tanf(BT_REPLAY_FOVY_DEG * 0.5F * (float)(3.14159265358979323846 / 180.0));
+    float vertical = reach / ((floor_distance - reach) * half_tan);
+    float horizontal = reach / ((floor_distance - reach) * half_tan * (window_w / window_h));
+    BT_CHECK(vertical <= 1.0F - 2.0F * margin / window_h + 1e-4F);
+    BT_CHECK(horizontal <= 1.0F - 2.0F * margin / window_w + 1e-4F);
+    BT_CHECK_EQ(bt_replay_distance_floor(0.0F, window_h, margin), 0.0F);
+    BT_CHECK_EQ(bt_replay_distance_floor(window_w, 0.0F, margin), 0.0F);
+    BT_CHECK_EQ(bt_replay_distance_floor(window_w, window_h, window_h), 0.0F);
+}
+
 BT_TEST(replay, drag_clamps_pitch_at_both_bounds) {
     bt_replay_cfg config = replay_cfg_defaults();
     bt_replay_orbit base = default_orbit();

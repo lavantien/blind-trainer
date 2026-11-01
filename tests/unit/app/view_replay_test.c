@@ -2,6 +2,7 @@
 
 #include "common.h"
 
+#include "app/theme.h"
 #include "app/window.h"
 #include "core/cube.h"
 
@@ -182,4 +183,65 @@ BT_TEST(view_replay, draw_renders_the_cube_under_a_real_window) {
     BT_CHECK(distinct >= 4);
     UnloadImage(image);
     bt_app_window_close();
+}
+
+enum {
+    REPLAY_MARGIN_W = 1280,
+    REPLAY_MARGIN_H = 800,
+    REPLAY_MARGIN_FRAMES = 6,
+    REPLAY_MARGIN_TOLERANCE = 2,
+};
+
+BT_TEST(view_replay, cube_ink_stays_inside_the_window_margins) {
+    bt_theme_set_root_for((float)REPLAY_MARGIN_H);
+    BT_CHECK(bt_app_window_open_driven(REPLAY_MARGIN_W, REPLAY_MARGIN_H, "replay margins", NULL));
+    bt_app_ctx ctx;
+    bt_app_ctx_init(&ctx);
+    bt_view_replay_enter(&ctx);
+    for (int i = 0; i < REPLAY_MARGIN_FRAMES; i++) {
+        bt_app_window_frame_begin();
+        bt_view_replay_draw(&ctx);
+        bt_app_window_frame_end();
+    }
+    const char *dir = ta_temp_dir("replay", "margins");
+    char shot[TA_PATH_MAX];
+    snprintf(shot, sizeof shot, "%s/replay-margins.png", dir);
+    BT_CHECK(bt_app_window_capture(shot));
+    Image image = LoadImage(shot);
+    BT_CHECK(image.width == REPLAY_MARGIN_W && image.height == REPLAY_MARGIN_H);
+    Color *pixels = LoadImageColors(image);
+    Color surface = bt_app_color(bt_theme_background());
+    int top = image.height;
+    int bottom = -1;
+    int left = image.width;
+    int right = -1;
+    for (int y = 0; y < image.height; y++) {
+        for (int x = 0; x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            if (pixel.r != surface.r || pixel.g != surface.g || pixel.b != surface.b) {
+                if (y < top) {
+                    top = y;
+                }
+                if (y > bottom) {
+                    bottom = y;
+                }
+                if (x < left) {
+                    left = x;
+                }
+                if (x > right) {
+                    right = x;
+                }
+            }
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    bt_app_window_close();
+    const bt_theme *theme = bt_theme_table();
+    float pad = theme->panel_padding_rem * theme->root_rem;
+    BT_CHECK(bottom >= 0);
+    BT_CHECK(top >= (int)pad - REPLAY_MARGIN_TOLERANCE);
+    BT_CHECK(bottom <= REPLAY_MARGIN_H - (int)pad + REPLAY_MARGIN_TOLERANCE);
+    BT_CHECK(left >= (int)pad - REPLAY_MARGIN_TOLERANCE);
+    BT_CHECK(right <= REPLAY_MARGIN_W - (int)pad + REPLAY_MARGIN_TOLERANCE);
 }

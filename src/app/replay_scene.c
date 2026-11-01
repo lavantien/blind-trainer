@@ -493,6 +493,31 @@ void bt_replay_camera_offset(const bt_replay_orbit *orbit, float out[3]) {
     BT_TRACE_EXIT("app.replay_camera_offset");
 }
 
+static const float BT_REPLAY_OUTER_CELL = 1.0F;
+
+float bt_replay_distance_floor(float window_w, float window_h, float margin_px) {
+    BT_TRACE_ENTER("app.replay_distance_floor");
+    float floor_distance = 0.0F;
+    if (window_w > 0.0F && window_h > 0.0F) {
+        float usable_v = (window_h - 2.0F * margin_px) / window_h;
+        float usable_h = (window_w - 2.0F * margin_px) / window_w;
+        if (usable_v > 0.0F && usable_h > 0.0F) {
+            float half_tan = tanf(BT_REPLAY_FOVY_DEG * 0.5F * (float)BT_REPLAY_DEG_TO_RAD);
+            float aspect = window_w / window_h;
+            float edge = BT_REPLAY_OUTER_CELL + BT_REPLAY_CUBIE_SPAN * 0.5F;
+            if (edge < BT_REPLAY_OUTER_CELL + BT_REPLAY_STICKER_LIFT) {
+                edge = BT_REPLAY_OUTER_CELL + BT_REPLAY_STICKER_LIFT;
+            }
+            float radius = edge * sqrtf(3.0F);
+            float vertical = radius + radius / (half_tan * usable_v);
+            float horizontal = radius + radius / (half_tan * aspect * usable_h);
+            floor_distance = vertical > horizontal ? vertical : horizontal;
+        }
+    }
+    BT_TRACE_EXIT("app.replay_distance_floor");
+    return floor_distance;
+}
+
 float bt_replay_turn_progress(double elapsed_secs, double secs_per_move) {
     BT_TRACE_ENTER("app.replay_turn_progress");
     if (secs_per_move <= 0.0) {
@@ -503,9 +528,7 @@ float bt_replay_turn_progress(double elapsed_secs, double secs_per_move) {
     if (clamped < 0.0) {
         clamped = 0.0;
     }
-    if (clamped > 1.0) {
-        clamped = 1.0;
-    }
+    clamped = fmin(clamped, 1.0);
     float t = (float)clamped;
     float progress = t * t * (3.0F - 2.0F * t);
     BT_TRACE_EXIT("app.replay_turn_progress");

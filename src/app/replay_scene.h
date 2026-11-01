@@ -22,6 +22,7 @@
 #define BT_REPLAY_CUBIE_SPAN 0.94F
 #define BT_REPLAY_STICKER_SPAN 0.82F
 #define BT_REPLAY_STICKER_LIFT 0.475F
+#define BT_REPLAY_FOVY_DEG 45.0F
 
 #define BT_REPLAY_CELL_COUNT 54
 
@@ -87,6 +88,7 @@ bt_replay_orbit bt_replay_apply_drag_delta(bt_replay_orbit orbit, const bt_repla
 bt_replay_orbit bt_replay_apply_zoom(bt_replay_orbit orbit, const bt_replay_cfg *cfg,
                                      float notches);
 void bt_replay_camera_offset(const bt_replay_orbit *orbit, float out[3]);
+float bt_replay_distance_floor(float window_w, float window_h, float margin_px);
 float bt_replay_turn_progress(double elapsed_secs, double secs_per_move);
 
 typedef struct {

@@ -7,7 +7,6 @@
 
 #include "raylib.h"
 
-#define BT_REPLAY_FOVY_DEG 45.0F
 #define BT_VIEW_REPLAY_BODY_RED 0.04F
 #define BT_VIEW_REPLAY_BODY_GREEN 0.04F
 #define BT_VIEW_REPLAY_BODY_BLUE 0.05F
