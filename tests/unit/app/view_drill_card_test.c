@@ -444,6 +444,39 @@ BT_TEST(view_drill_card, mechanic_spans_join_multiple_units_with_a_separator) {
     bt_alg_free(&alg);
 }
 
+BT_TEST(view_drill_card, span_text_joins_every_span_in_draw_order) {
+    bt_alg alg;
+    memset(&alg, 0, sizeof alg);
+    char err_token[64];
+    BT_CHECK(bt_alg_parse("S R2 S' R2 U R2 U' R2", &alg, err_token, sizeof err_token));
+    bt_card_content content;
+    memset(&content, 0, sizeof content);
+    BT_CHECK(bt_view_mechanic_spans("[S,R2] + [U,R2]", &alg, &content));
+    char joined[BT_CARD_TEXT_MAX * 4];
+    bt_view_span_text(&content, joined, sizeof joined);
+    BT_CHECK(strcmp(joined, "[S, R2] + [U, R2]") == 0);
+    bt_card_content empty;
+    memset(&empty, 0, sizeof empty);
+    bt_view_span_text(&empty, joined, sizeof joined);
+    BT_CHECK(joined[0] == '\0');
+    bt_alg_free(&alg);
+}
+
+BT_TEST(view_drill_card, span_text_truncates_safely_into_a_small_buffer) {
+    bt_alg alg;
+    memset(&alg, 0, sizeof alg);
+    char err_token[64];
+    BT_CHECK(bt_alg_parse("S R2 S' R2 U R2 U' R2", &alg, err_token, sizeof err_token));
+    bt_card_content content;
+    memset(&content, 0, sizeof content);
+    BT_CHECK(bt_view_mechanic_spans("[S,R2] + [U,R2]", &alg, &content));
+    char small[8];
+    bt_view_span_text(&content, small, sizeof small);
+    BT_CHECK(strlen(small) == 7);
+    BT_CHECK(strncmp(small, "[S, R2]", 7) == 0);
+    bt_alg_free(&alg);
+}
+
 BT_TEST(view_drill_card, reps_lines_show_the_executing_side_in_whole_seconds) {
     bt_corpus corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "");
     bt_stores stores = stores_with_reps(4);

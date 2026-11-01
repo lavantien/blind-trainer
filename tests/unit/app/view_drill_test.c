@@ -1,4 +1,5 @@
 #include "app/views/drill.h"
+#include "app/views/drill_view.h"
 
 #include "common.h"
 
@@ -266,4 +267,43 @@ BT_TEST(view_drill, write_review_creates_and_advances_the_card) {
     BT_CHECK(!bt_card_is_due(card, 0));
     BT_CHECK(bt_card_is_due(card, card->due_day));
     bt_stores_free(&stores);
+}
+
+BT_TEST(view_drill, alg_size_for_keeps_the_full_alg_size_when_it_fits) {
+    const bt_theme *theme = bt_theme_table();
+    float base = theme->font_alg * theme->root_rem;
+    float floor_size = theme->font_small * theme->root_rem;
+    BT_CHECK(floor_size < base);
+    BT_CHECK(bt_view_drill_alg_size_for(200.0F, 300.0F) == base);
+    BT_CHECK(bt_view_drill_alg_size_for(300.0F, 300.0F) == base);
+}
+
+BT_TEST(view_drill, alg_size_for_steps_down_until_the_alg_fits_the_column) {
+    const bt_theme *theme = bt_theme_table();
+    float base = theme->font_alg * theme->root_rem;
+    float floor_size = theme->font_small * theme->root_rem;
+    float max_w = 300.0F;
+    float measured = max_w * 1.2F;
+    float size = bt_view_drill_alg_size_for(measured, max_w);
+    BT_CHECK(size < base);
+    BT_CHECK(size > floor_size);
+    BT_CHECK(measured * (size / base) <= max_w + 0.5F);
+}
+
+BT_TEST(view_drill, alg_size_for_floors_at_font_small_when_no_step_fits) {
+    const bt_theme *theme = bt_theme_table();
+    float floor_size = theme->font_small * theme->root_rem;
+    float max_w = 300.0F;
+    BT_CHECK(bt_view_drill_alg_size_for(max_w * 6.0F, max_w) == floor_size);
+    BT_CHECK(bt_view_drill_alg_size_for(max_w * 40.0F, max_w) == floor_size);
+}
+
+BT_TEST(view_drill, alg_size_for_survives_degenerate_measures) {
+    const bt_theme *theme = bt_theme_table();
+    float base = theme->font_alg * theme->root_rem;
+    float floor_size = theme->font_small * theme->root_rem;
+    BT_CHECK(bt_view_drill_alg_size_for(0.0F, 300.0F) == base);
+    BT_CHECK(bt_view_drill_alg_size_for(-5.0F, 300.0F) == base);
+    BT_CHECK(bt_view_drill_alg_size_for(400.0F, 0.0F) == floor_size);
+    BT_CHECK(bt_view_drill_alg_size_for(0.0F, 0.0F) == floor_size);
 }

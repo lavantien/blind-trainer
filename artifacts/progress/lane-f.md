@@ -1,0 +1,2 @@
+2026-11-01 lane-f start: drill/stats/settings fitting wave, phase 1 authoring only until lane A foundation commits
+2026-11-01 lane-f phase 1 done: authored failing tests in view_drill_test.c (4 alg_size_for cases), view_drill_card_test.c (2 span_text cases), views_stats_test.c (4 row_size_for cases + wide-grid margin ink test + settings layout_for arity conversions), view_settings_test.c (clamp + no-overlap + text_width measure tests, 7 call-site conversions), view_draw_b_test.c (3 fitted-column ink tests). Lane A foundation visible (8f8392b, 15055cf), phase 2 unlocked

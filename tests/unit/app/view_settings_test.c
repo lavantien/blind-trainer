@@ -2,7 +2,10 @@
 #include "app/views/frame.h"
 #include "app/views/settings.h"
 #include "app/views/state.h"
+#include "app/window.h"
 #include "common.h"
+
+#include "raylib.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -98,7 +101,7 @@ BT_TEST(view_settings, every_row_carries_a_hint_and_the_mode_hint_names_the_keys
 }
 
 BT_TEST(view_settings, layout_keeps_controls_inside_their_rows_right_aligned) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, 0.0F);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
         BT_CHECK(layout.rows[i].width > 0.0F);
         BT_CHECK(layout.rows[i].height > 0.0F);
@@ -110,7 +113,7 @@ BT_TEST(view_settings, layout_keeps_controls_inside_their_rows_right_aligned) {
 }
 
 BT_TEST(view_settings, layout_rows_stack_evenly_in_a_centered_column) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, 0.0F);
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
         BT_CHECK(layout.rows[i].height == layout.rows[0].height);
@@ -129,7 +132,7 @@ BT_TEST(view_settings, layout_rows_stack_evenly_in_a_centered_column) {
 }
 
 BT_TEST(view_settings, layout_hints_sit_under_the_label_and_left_of_the_control) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, 0.0F);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
         BT_CHECK(rect_inside(&layout.hints[i], &layout.rows[i]));
         BT_CHECK(layout.hints[i].y > layout.rows[i].y);
@@ -138,42 +141,59 @@ BT_TEST(view_settings, layout_hints_sit_under_the_label_and_left_of_the_control)
 }
 
 BT_TEST(view_settings, layout_fits_the_small_probe_window_too) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F);
+    bt_theme_set_root_for(480.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F, 0.0F);
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(640.0F, 480.0F);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
         BT_CHECK(rect_inside(&layout.rows[i], &(bt_ui_rect){metrics.content_x, metrics.content_y,
                                                             metrics.content_w, metrics.content_h}));
         BT_CHECK(rect_inside(&layout.controls[i], &layout.rows[i]));
     }
+    bt_theme_set_root_for(800.0F);
 }
 
 BT_TEST(view_settings, layout_pins_absolute_row_bands_and_control_edges) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
-    float row_tops[BT_SETTINGS_ROW_COUNT] = {284.5F, 393.7F, 502.9F};
+    bt_theme_set_root_for(800.0F);
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    float row_h = 3.2F * theme->root_rem;
+    float gap = 2.0F * theme->spacing_rem * theme->root_rem;
+    float block_h = row_h * (float)BT_SETTINGS_ROW_COUNT + gap * (float)(BT_SETTINGS_ROW_COUNT - 1);
+    float top = metrics.content_y + (metrics.content_h - block_h) / 2.0F;
+    float inset = 0.3F * theme->root_rem;
+    float control_h = row_h - inset - inset;
+    float control_w = 14.0F * theme->root_rem;
+    if (control_w > metrics.content_w * 0.5F) {
+        control_w = metrics.content_w * 0.5F;
+    }
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, 0.0F);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
-        BT_CHECK(near(layout.rows[i].y, row_tops[i]));
-        BT_CHECK(near(layout.rows[i].height, 89.6F));
-        BT_CHECK(near(layout.controls[i].y, row_tops[i] + 8.4F));
-        BT_CHECK(near(layout.controls[i].height, 72.8F));
-        BT_CHECK(near(layout.controls[i].x + layout.controls[i].width, 1263.2F));
-        BT_CHECK(near(layout.controls[i].width, 392.0F));
+        BT_CHECK(near(layout.rows[i].y, top + (row_h + gap) * (float)i));
+        BT_CHECK(near(layout.rows[i].height, row_h));
+        BT_CHECK(near(layout.controls[i].y, top + (row_h + gap) * (float)i + inset));
+        BT_CHECK(near(layout.controls[i].height, control_h));
+        BT_CHECK(near(layout.controls[i].x + layout.controls[i].width,
+                      metrics.content_x + metrics.content_w));
+        BT_CHECK(near(layout.controls[i].width, control_w));
     }
 }
 
 BT_TEST(view_settings, layout_fills_the_content_width_with_full_width_rows) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, 0.0F);
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
     BT_CHECK(near(layout.rows[0].x, metrics.content_x));
     BT_CHECK(near(layout.rows[0].width, metrics.content_w));
 }
 
 BT_TEST(view_settings, layout_keeps_the_open_select_inside_the_small_window) {
-    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F);
+    bt_theme_set_root_for(480.0F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F, 0.0F);
     for (int i = 0; i < BT_MEMO_MODE_COUNT; i++) {
         bt_ui_rect slot = bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, i, 480.0F);
         BT_CHECK(slot.y >= 0.0F);
         BT_CHECK(slot.y + slot.height <= 480.0F);
     }
+    bt_theme_set_root_for(800.0F);
 }
 
 BT_TEST(view_settings, enter_state_resets_the_widget_state) {
@@ -224,4 +244,85 @@ BT_TEST(view_settings, mode_keys_stay_guarded_while_a_number_field_holds_focus) 
     BT_CHECK(app->draft.memo_mode == BT_MEMO_SYLLABLES);
     BT_CHECK(app->widgets.mode_select.open == 0);
     bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(view_settings, layout_clamps_the_control_width_to_the_measured_text) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    float column_w = metrics.content_w;
+    float pad = theme->spacing_rem * theme->root_rem;
+    float control_cap = 14.0F * theme->root_rem;
+    float text_w = 700.0F;
+    float expected = column_w - pad - text_w - pad;
+    BT_CHECK(expected < control_cap);
+    BT_CHECK(expected < column_w * 0.5F);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, text_w);
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        BT_CHECK(near(layout.controls[i].width, expected));
+        BT_CHECK(near(layout.controls[i].x + layout.controls[i].width,
+                      layout.rows[i].x + layout.rows[i].width));
+    }
+}
+
+BT_TEST(view_settings, layout_keeps_the_measured_text_clear_of_the_control) {
+    const bt_theme *theme = bt_theme_table();
+    float pad = theme->spacing_rem * theme->root_rem;
+    float widths[6] = {0.0F, 100.0F, 300.0F, 700.0F, 1200.0F, 1250.0F};
+    for (int at = 0; at < 6; at++) {
+        bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F, widths[at]);
+        for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+            BT_CHECK(layout.controls[i].width >= 0.0F);
+            BT_CHECK(near(layout.controls[i].x + layout.controls[i].width,
+                          layout.rows[i].x + layout.rows[i].width));
+            if (layout.controls[i].width > 0.0F) {
+                BT_CHECK(layout.controls[i].x >= layout.rows[i].x + pad + widths[at] + pad - 0.01F);
+            }
+        }
+    }
+}
+
+BT_TEST(view_settings, text_width_measures_the_widest_label_and_hint) {
+    if (!bt_app_window_open_driven(640, 480, "view settings measure test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    const bt_theme *theme = bt_theme_table();
+    Font regular = *(const Font *)book.regular;
+    char labels[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    char hints[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    bt_view_settings_labels(labels);
+    bt_view_settings_hints(hints);
+    float widest = 0.0F;
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        float label_w =
+            MeasureTextEx(regular, labels[i], theme->font_body * theme->root_rem, 1.0F).x;
+        float hint_w =
+            MeasureTextEx(regular, hints[i], theme->font_small * theme->root_rem, 1.0F).x;
+        if (label_w > widest) {
+            widest = label_w;
+        }
+        if (hint_w > widest) {
+            widest = hint_w;
+        }
+    }
+    float measured = bt_view_settings_text_width(book.regular);
+    BT_CHECK(measured >= widest - 0.01F);
+    BT_CHECK(measured <= widest + 0.01F);
+    float pad = theme->spacing_rem * theme->root_rem;
+    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F, measured);
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        if (layout.controls[i].width > 0.0F) {
+            BT_CHECK(layout.controls[i].x >= layout.rows[i].x + pad + measured + pad - 0.01F);
+        }
+    }
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
 }

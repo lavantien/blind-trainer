@@ -165,6 +165,19 @@ static int push_span(bt_card_content *content, const char *text, bt_theme_color 
     return 1;
 }
 
+void bt_view_span_text(const bt_card_content *content, char *out, size_t cap) {
+    BT_TRACE_ENTER("app.drill_span_text");
+    size_t at = 0;
+    if (cap > 0) {
+        out[0] = '\0';
+        for (size_t i = 0; i < content->span_count; i++) {
+            snprintf(out + at, cap - at, "%s", content->spans[i].text);
+            at += strlen(out + at);
+        }
+    }
+    BT_TRACE_EXIT("app.drill_span_text");
+}
+
 int bt_view_mechanic_spans(const char *commutator, const bt_alg *alg, bt_card_content *out) {
     BT_TRACE_ENTER("app.drill_mechanic_spans");
     bt_expanded_list units;

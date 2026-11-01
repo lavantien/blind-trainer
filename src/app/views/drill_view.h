@@ -23,14 +23,15 @@ typedef struct {
 bt_view_drill_layout bt_view_drill_layout_for(float content_x, float content_y, float content_w,
                                               float content_h);
 bt_net_geometry bt_view_drill_net_geometry(float window_w, float window_h);
+float bt_view_drill_alg_size_for(float measured_w, float max_w);
 void bt_view_drill_net_draw(const void *font_bold, const bt_views_net *pulse, float region_x,
                             float region_y, float region_w, float region_h);
 void bt_view_drill_card_draw(const bt_card_content *content, const void *font_regular, float x,
-                             float y);
+                             float y, float max_w);
 void bt_view_drill_reps_draw(const bt_drill_session *session, const void *font_regular, float x,
-                             float y);
+                             float y, float max_w);
 void bt_view_drill_rate_draw(const bt_drill_session *session, const void *font_regular, float x,
-                             float y);
+                             float y, float max_w);
 void bt_view_drill_row_draw(bt_app_ctx *ctx);
 
 #endif

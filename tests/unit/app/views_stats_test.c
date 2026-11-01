@@ -223,6 +223,59 @@ static int shot_has_variance(const char *path) {
     return variance > 0;
 }
 
+static long long margin_ink(const char *path, int x1, int y0, int y1) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return -1;
+    }
+    Color *pixels = LoadImageColors(image);
+    Color surface = bt_app_color(bt_theme_background());
+    long long ink = 0;
+    for (int y = y0; y < y1 && y < image.height; y++) {
+        for (int x = 0; x < x1 && x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            ink += pixel.r != surface.r || pixel.g != surface.g || pixel.b != surface.b;
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return ink;
+}
+
+BT_TEST(views_stats, row_size_for_keeps_the_block_size_when_the_row_fits) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 500.0F, 600.0F) == theme->font_title);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 600.0F, 600.0F) == theme->font_title);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_heading, 480.0F, 600.0F) ==
+             theme->font_heading);
+}
+
+BT_TEST(views_stats, row_size_for_steps_down_above_the_micro_floor) {
+    const bt_theme *theme = bt_theme_table();
+    float base = theme->font_title;
+    float content_w = 600.0F;
+    float row_w = content_w * 1.4F;
+    float size = bt_view_stats_row_size_for(base, row_w, content_w);
+    BT_CHECK(size < base);
+    BT_CHECK(size > theme->font_micro);
+    BT_CHECK(size * row_w <= base * content_w + 0.01F);
+}
+
+BT_TEST(views_stats, row_size_for_floors_at_font_micro_when_no_step_fits) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 6000.0F, 600.0F) == theme->font_micro);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_heading, 6000.0F, 600.0F) == theme->font_micro);
+}
+
+BT_TEST(views_stats, row_size_for_survives_degenerate_measures) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 0.0F, 600.0F) == theme->font_title);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, -10.0F, 600.0F) == theme->font_title);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 800.0F, 0.0F) == theme->font_micro);
+    BT_CHECK(bt_view_stats_row_size_for(theme->font_title, 0.0F, 0.0F) == theme->font_micro);
+}
+
 BT_TEST(views_stats, stats_draw_renders_blocks_under_real_fonts) {
     if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views stats test", NULL)) {
         BT_CHECK(0);
@@ -262,6 +315,57 @@ BT_TEST(views_stats, stats_draw_renders_blocks_under_real_fonts) {
     bt_app_window_close();
 }
 
+BT_TEST(views_stats, stats_draw_keeps_a_wide_due_grid_inside_the_content_column) {
+    if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views stats wide test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    enum { WIDE_EVENT_COUNT = 20 };
+    bt_stats_due events[WIDE_EVENT_COUNT];
+    memset(events, 0, sizeof events);
+    for (int i = 0; i < WIDE_EVENT_COUNT; i++) {
+        snprintf(events[i].event, BT_STATS_EVENT_MAX, "wide-due-event-%02d-abcdefghijklmnop", i);
+        events[i].due = 3;
+    }
+    bt_stats_snapshot snap;
+    memset(&snap, 0, sizeof snap);
+    snap.solves = 2;
+    snap.streak = 4;
+    snap.memo_mean_ms = 25000.0;
+    snap.memo_median_ms = 25000.0;
+    snap.exec_mean_ms = 15000.0;
+    snap.exec_median_ms = 15000.0;
+    snap.due_edge = 1;
+    snap.due_corner = 2;
+    snap.due_events = events;
+    snap.due_event_count = WIDE_EVENT_COUNT;
+    for (unsigned frame = 0; frame < DWELL_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_stats_draw(&snap, book.regular, book.bold, (float)PROBE_W, (float)PROBE_H);
+        bt_app_window_frame_end();
+    }
+    char shot[BT_PATH_MAX];
+    snprintf(shot, sizeof shot, "%s/app-views-stats-wide-%d.png", getenv("TEMP"), _getpid());
+    remove(shot);
+    BT_CHECK(bt_app_window_capture(shot));
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for((float)PROBE_W, (float)PROBE_H);
+    long long ink =
+        margin_ink(shot, (int)metrics.content_x - 2, (int)metrics.content_y + 2, PROBE_H - 2);
+    BT_CHECK(ink == 0);
+    remove(shot);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+}
+
 BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
     if (!bt_app_window_open_driven(PROBE_W, PROBE_H, "views settings test", NULL)) {
         BT_CHECK(0);
@@ -275,7 +379,8 @@ BT_TEST(views_stats, settings_draw_edits_the_draft_from_widget_input) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(
+        (float)PROBE_W, (float)PROBE_H, bt_view_settings_text_width(book.regular));
     bt_settings_draft draft;
     draft.memo_cadence_ms = 800;
     draft.memo_mode = BT_MEMO_SYLLABLES;
@@ -380,7 +485,8 @@ BT_TEST(views_stats, open_select_consumes_the_overlap_band_before_the_reps_field
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    bt_view_settings_layout layout = bt_view_settings_layout_for(1280.0F, 800.0F);
+    bt_view_settings_layout layout =
+        bt_view_settings_layout_for(1280.0F, 800.0F, bt_view_settings_text_width(book.regular));
     bt_ui_rect reps = layout.controls[2];
     bt_ui_rect slot0 = bt_ui_select_slot(&layout.controls[1], BT_MEMO_MODE_COUNT, 0, 800.0F);
     BT_CHECK(slot0.y < reps.y + reps.height);
@@ -450,7 +556,8 @@ BT_TEST(views_stats, settings_number_field_typed_entry_through_the_seam) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(
+        (float)PROBE_W, (float)PROBE_H, bt_view_settings_text_width(book.regular));
     bt_app_ctx ctx;
     fixture_ctx("typing", BT_APP_SETTINGS, &ctx);
     bt_settings_app_state *app = bt_view_settings_app();
@@ -517,7 +624,8 @@ BT_TEST(views_stats, settings_row_adapter_consumes_the_published_frame_input) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(
+        (float)PROBE_W, (float)PROBE_H, bt_view_settings_text_width(book.regular));
     bt_app_ctx ctx;
     fixture_ctx("seam", BT_APP_SETTINGS, &ctx);
     bt_settings_app_state *app = bt_view_settings_app();
@@ -589,7 +697,8 @@ BT_TEST(views_stats, settings_mode_select_keyboard_flow_through_the_seam) {
         bt_app_window_close();
         BT_ABORT("fonts: %s", error);
     }
-    bt_view_settings_layout layout = bt_view_settings_layout_for((float)PROBE_W, (float)PROBE_H);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(
+        (float)PROBE_W, (float)PROBE_H, bt_view_settings_text_width(book.regular));
     bt_app_ctx ctx;
     fixture_ctx("select-flow", BT_APP_SETTINGS, &ctx);
     bt_settings_app_state *app = bt_view_settings_app();

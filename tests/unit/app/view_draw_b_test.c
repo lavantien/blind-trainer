@@ -1,6 +1,7 @@
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/case_drill_view.h"
+#include "app/views/drill_view.h"
 #include "app/views/net_view.h"
 #include "app/views/solve.h"
 #include "app/views/state.h"
@@ -326,4 +327,178 @@ BT_TEST(view_draw_b, case_drill_renders_pixels) {
     BT_CHECK(lit_pixels(path, 25, 92, 430, 200) >= DRAW_TEXT_LIT_FLOOR);
     bt_app_ctx_free(&ctx);
     CloseWindow();
+}
+
+enum {
+    FIT_CARD_X = 40,
+    FIT_CARD_W = 240,
+    FIT_WINDOW_W = 640,
+    FIT_WINDOW_H = 480,
+};
+
+static const bt_app_font_book *g_fitted_book;
+
+static bt_corpus_row fitted_row(const char *alg, const char *commutator) {
+    bt_corpus_row row;
+    memset(&row, 0, sizeof row);
+    row.solver = BT_SOLVER_CHERRY;
+    row.sheet = BT_SHEET_EDGE;
+    row.rowid = 1;
+    row.position = _strdup("UF-UB-UR");
+    char err_token[64];
+    if (!bt_alg_parse(alg, &row.alg, err_token, sizeof err_token)) {
+        BT_ABORT("fixture alg %s: %s", alg, err_token);
+    }
+    row.alg_text = _strdup(alg);
+    row.commutator = _strdup(commutator);
+    row.recon_link = _strdup("");
+    row.youtube_link = _strdup("");
+    return row;
+}
+
+static bt_corpus fitted_corpus(const char *alg, const char *commutator) {
+    bt_corpus_row row = fitted_row(alg, commutator);
+    bt_corpus_row *heap = malloc(sizeof row);
+    memcpy(heap, &row, sizeof row);
+    bt_corpus corpus;
+    bt_corpus_from_rows(heap, 1, &corpus);
+    return corpus;
+}
+
+static bt_stores fitted_stores(void) {
+    bt_stores stores;
+    memset(&stores, 0, sizeof stores);
+    stores.settings.memo_cadence_ms = 800;
+    stores.settings.memo_mode = BT_MEMO_SYLLABLES;
+    stores.settings.drill_reps = 4;
+    bt_srs_store_init(&stores.srs);
+    bt_solve_log_init(&stores.solves);
+    bt_user_algs_init(&stores.user_algs);
+    bt_str_list_init(&stores.seeds.hidden);
+    bt_str_list_init(&stores.seeds.warnings);
+    return stores;
+}
+
+static bt_case fitted_edge_case(void) {
+    bt_case case_id;
+    case_id.orbit = BT_ORBIT_EDGE;
+    case_id.t1 = bt_scheme_sticker_of(BT_ORBIT_EDGE, 'A');
+    case_id.t2 = bt_scheme_sticker_of(BT_ORBIT_EDGE, 'B');
+    return case_id;
+}
+
+static int fitted_case(void (*draw)(void), const char *tag) {
+    bt_app_config config;
+    if (!open_window(&config)) {
+        return 0;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        CloseWindow();
+        BT_ABORT("fonts: %s", error);
+    }
+    g_fitted_book = &book;
+    for (int i = 0; i < DRAW_DWELL_FRAMES; i++) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        draw();
+        EndDrawing();
+    }
+    g_fitted_book = NULL;
+    char dir[BT_PATH_MAX];
+    snprintf(dir, sizeof dir, "%s", ta_temp_dir("view_draw_b", tag));
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/%s.png", dir, tag);
+    TakeScreenshot(path);
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        bt_app_fonts_unload(&book);
+        CloseWindow();
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    long long variance = 0;
+    for (int y = 0; y < image.height; y++) {
+        for (int x = 1; x < image.width; x++) {
+            Color left = pixels[y * image.width + x - 1];
+            Color right = pixels[y * image.width + x];
+            variance += left.r != right.r || left.g != right.g || left.b != right.b;
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    long long beyond = lit_pixels(path, FIT_CARD_X + FIT_CARD_W + 2, 0, FIT_WINDOW_W, FIT_WINDOW_H);
+    bt_app_fonts_unload(&book);
+    CloseWindow();
+    return variance > 0 && beyond == 0;
+}
+
+static void draw_fitted_card_long_alg(void) {
+    const bt_app_font_book *book = g_fitted_book;
+    const char *alg = "R2 U' S R2 S' R2 U R2 S R2 U' S R2 S' R2 U R2";
+    bt_corpus corpus = fitted_corpus(alg, "");
+    bt_stores stores = fitted_stores();
+    bt_drill_session session;
+    bt_drill_session_init(&session);
+    bt_view_install_pair(&session, &corpus, &stores, fitted_edge_case());
+    bt_syllable_book syllables;
+    bt_syllable_book_init(&syllables);
+    bt_card_content content;
+    bt_view_card_content(&session, &corpus, &syllables, &stores, 0, &content);
+    bt_view_drill_card_draw(&content, book->regular, (float)FIT_CARD_X, (float)FIT_CARD_X,
+                            (float)FIT_CARD_W);
+    bt_syllable_book_free(&syllables);
+    bt_drill_session_free(&session);
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
+static void draw_fitted_card_wide_spans(void) {
+    const bt_app_font_book *book = g_fitted_book;
+    bt_corpus corpus = fitted_corpus("S R2 S' R2 U R2 U' R2", "[S,R2] + [U,R2]");
+    bt_stores stores = fitted_stores();
+    bt_drill_session session;
+    bt_drill_session_init(&session);
+    bt_view_install_pair(&session, &corpus, &stores, fitted_edge_case());
+    bt_syllable_book syllables;
+    bt_syllable_book_init(&syllables);
+    bt_card_content content;
+    bt_view_card_content(&session, &corpus, &syllables, &stores, 0, &content);
+    bt_view_drill_card_draw(&content, book->regular, (float)FIT_CARD_X, (float)FIT_CARD_X,
+                            (float)FIT_CARD_W);
+    bt_syllable_book_free(&syllables);
+    bt_drill_session_free(&session);
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
+static void draw_fitted_reps_and_rate(void) {
+    const bt_app_font_book *book = g_fitted_book;
+    bt_corpus corpus = fitted_corpus("R2 U' S R2 S' R2 U R2", "");
+    bt_stores stores = fitted_stores();
+    bt_drill_session session;
+    bt_drill_session_init(&session);
+    bt_view_install_pair(&session, &corpus, &stores, fitted_edge_case());
+    bt_view_drill_reps_draw(&session, book->regular, (float)FIT_CARD_X, (float)FIT_CARD_X,
+                            (float)FIT_CARD_W);
+    bt_view_drill_rate_draw(&session, book->regular, (float)FIT_CARD_X, 300.0F, (float)FIT_CARD_W);
+    bt_drill_session_free(&session);
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(view_draw_b, drill_card_fits_a_long_alg_inside_the_column) {
+    BT_CHECK(fitted_case(draw_fitted_card_long_alg, "card_long_alg"));
+}
+
+BT_TEST(view_draw_b, drill_card_falls_back_to_one_fitted_line_for_wide_spans) {
+    BT_CHECK(fitted_case(draw_fitted_card_wide_spans, "card_wide_spans"));
+}
+
+BT_TEST(view_draw_b, drill_reps_and_rate_fit_their_lines_inside_the_column) {
+    BT_CHECK(fitted_case(draw_fitted_reps_and_rate, "reps_rate"));
 }

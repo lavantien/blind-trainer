@@ -46,6 +46,7 @@ int bt_view_build_sides(const bt_corpus *corpus, const bt_case *case_id, bt_dril
 void bt_view_memo_token(const bt_syllable_book *book, const bt_case *case_id,
                         char out[BT_CARD_TEXT_MAX]);
 int bt_view_mechanic_spans(const char *commutator, const bt_alg *alg, bt_card_content *out);
+void bt_view_span_text(const bt_card_content *content, char *out, size_t cap);
 void bt_view_card_content(const bt_drill_session *session, const bt_corpus *corpus,
                           const bt_syllable_book *book, const bt_stores *stores, long long now_day,
                           bt_card_content *out);

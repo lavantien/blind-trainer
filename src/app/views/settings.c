@@ -9,6 +9,7 @@
 
 #include "raylib.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -58,7 +59,34 @@ static const float BT_SETTINGS_CONTROL_INSET_REM = 0.3F;
 static const float BT_SETTINGS_ROW_GAP_SPACING = 2.0F;
 static const float BT_SETTINGS_HINT_GAP_SPACING = 0.5F;
 
-bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h) {
+static const float BT_SETTINGS_TEXT_SPACING = 1.0F;
+
+float bt_view_settings_text_width(const void *font_regular) {
+    BT_TRACE_ENTER("app.view_settings_text_width");
+    const bt_theme *theme = bt_theme_table();
+    Font regular = *(const Font *)font_regular;
+    char labels[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    char hints[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
+    bt_view_settings_labels(labels);
+    bt_view_settings_hints(hints);
+    float body = theme->font_body * theme->root_rem;
+    float small = theme->font_small * theme->root_rem;
+    float widest = 0.0F;
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        Vector2 label_box = MeasureTextEx(regular, labels[i], body, BT_SETTINGS_TEXT_SPACING);
+        Vector2 hint_box = MeasureTextEx(regular, hints[i], small, BT_SETTINGS_TEXT_SPACING);
+        if (label_box.x > widest) {
+            widest = label_box.x;
+        }
+        if (hint_box.x > widest) {
+            widest = hint_box.x;
+        }
+    }
+    BT_TRACE_EXIT("app.view_settings_text_width");
+    return widest;
+}
+
+bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h, float text_w) {
     BT_TRACE_ENTER("app.view_settings_layout");
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
@@ -74,15 +102,17 @@ bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window
     if (control_w > column_half) {
         control_w = column_half;
     }
+    float pad = theme->spacing_rem * theme->root_rem;
+    float room_w = column_w - pad - text_w - pad;
+    if (control_w > room_w) {
+        control_w = room_w;
+    }
+    control_w = fmaxf(control_w, 0.0F);
     float inset = BT_SETTINGS_CONTROL_INSET_REM * theme->root_rem;
     if (row_h - inset - inset < theme->root_rem) {
-        inset = (row_h - theme->root_rem) * 0.5F;
-        if (inset < 0.0F) {
-            inset = 0.0F;
-        }
+        inset = fmaxf((row_h - theme->root_rem) * 0.5F, 0.0F);
     }
     float control_h = row_h - inset - inset;
-    float pad = theme->spacing_rem * theme->root_rem;
     float body = theme->font_body * theme->root_rem;
     float hint_gap = theme->spacing_rem * BT_SETTINGS_HINT_GAP_SPACING * theme->root_rem;
     float small = theme->font_small * theme->root_rem;
@@ -250,7 +280,8 @@ void bt_view_settings_draw(bt_settings_draft *draft, int *changed, int *focus,
                            const bt_ui_input *input) {
     BT_TRACE_ENTER("app.view_settings_draw");
     const bt_theme *theme = bt_theme_table();
-    bt_view_settings_layout layout = bt_view_settings_layout_for(window_w, window_h);
+    bt_view_settings_layout layout =
+        bt_view_settings_layout_for(window_w, window_h, bt_view_settings_text_width(font_regular));
     bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "settings", "esc menu");
     char labels[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];
     char hints[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX];

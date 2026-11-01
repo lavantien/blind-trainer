@@ -48,6 +48,7 @@ void bt_stats_snapshot_free(bt_stats_snapshot *snap);
 
 bt_stats_block *bt_view_stats_blocks(const bt_stats_snapshot *snap, size_t *count);
 void bt_view_stats_blocks_free(bt_stats_block *blocks);
+float bt_view_stats_row_size_for(float base_rem, float row_w, float content_w);
 
 typedef struct {
     int initialized;

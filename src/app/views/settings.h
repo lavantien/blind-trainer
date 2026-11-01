@@ -37,7 +37,8 @@ void bt_view_settings_draft_from(const bt_settings *settings, bt_settings_draft 
 void bt_view_settings_draft_apply(const bt_settings_draft *draft, bt_settings *out);
 unsigned int bt_view_settings_clamp_cadence(long long value);
 unsigned int bt_view_settings_clamp_reps(long long value);
-bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h);
+float bt_view_settings_text_width(const void *font_regular);
+bt_view_settings_layout bt_view_settings_layout_for(float window_w, float window_h, float text_w);
 void bt_view_settings_labels(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]);
 void bt_view_settings_hints(char out[BT_SETTINGS_ROW_COUNT][BT_SETTINGS_TEXT_MAX]);
 

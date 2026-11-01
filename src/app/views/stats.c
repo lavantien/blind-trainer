@@ -344,8 +344,64 @@ enum {
     BT_STATS_LAYOUT_COLUMNS = 4,
 };
 
+float bt_view_stats_row_size_for(float base_rem, float row_w, float content_w) {
+    BT_TRACE_ENTER("app.view_stats_row_size_for");
+    const bt_theme *theme = bt_theme_table();
+    float floor_rem = theme->font_micro;
+    float size = base_rem;
+    if (content_w <= 0.0F) {
+        size = floor_rem;
+    } else if (row_w > content_w) {
+        size = base_rem * content_w / row_w;
+        if (size < floor_rem) {
+            size = floor_rem;
+        }
+    }
+    BT_TRACE_EXIT("app.view_stats_row_size_for");
+    return size;
+}
+
 static float stats_center_offset(float total, float used) {
     return (total - used) / 2.0F;
+}
+
+static void stats_measure_grid(const bt_stats_block *blocks, size_t shown, Font regular,
+                               const bt_theme *theme, float inner_gap, float label_h,
+                               float block_w[BT_STATS_LAYOUT_COLUMNS], float *row_h) {
+    for (size_t i = 0; i < shown; i++) {
+        float size = blocks[i].size_rem * theme->root_rem;
+        Vector2 value_box = MeasureTextEx(regular, blocks[i].value, size, BT_STATS_TEXT_SPACING);
+        Vector2 label_box = MeasureTextEx(regular, blocks[i].label, label_h, BT_STATS_TEXT_SPACING);
+        float width = value_box.x > label_box.x ? value_box.x : label_box.x;
+        size_t col = i % BT_STATS_LAYOUT_COLUMNS;
+        if (width > block_w[col]) {
+            block_w[col] = width;
+        }
+        float height = size + inner_gap + label_h;
+        if (height > *row_h) {
+            *row_h = height;
+        }
+    }
+}
+
+static float stats_grid_width(const float block_w[BT_STATS_LAYOUT_COLUMNS], size_t shown,
+                              float col_gap) {
+    size_t row_count = (shown + BT_STATS_LAYOUT_COLUMNS - 1) / BT_STATS_LAYOUT_COLUMNS;
+    float widest = 0.0F;
+    for (size_t row = 0; row < row_count; row++) {
+        size_t in_row = shown - row * BT_STATS_LAYOUT_COLUMNS;
+        if (in_row > BT_STATS_LAYOUT_COLUMNS) {
+            in_row = BT_STATS_LAYOUT_COLUMNS;
+        }
+        float row_w = col_gap * (float)(in_row - 1);
+        for (size_t col = 0; col < in_row; col++) {
+            row_w += block_w[col];
+        }
+        if (row_w > widest) {
+            widest = row_w;
+        }
+    }
+    return widest;
 }
 
 void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
@@ -369,19 +425,18 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
     float label_h = theme->font_micro * theme->root_rem;
     float row_h = 0.0F;
     float block_w[BT_STATS_LAYOUT_COLUMNS] = {0.0F, 0.0F, 0.0F, 0.0F};
-    for (size_t i = 0; i < shown; i++) {
-        float size = blocks[i].size_rem * theme->root_rem;
-        Vector2 value_box = MeasureTextEx(regular, blocks[i].value, size, BT_STATS_TEXT_SPACING);
-        Vector2 label_box = MeasureTextEx(regular, blocks[i].label, label_h, BT_STATS_TEXT_SPACING);
-        float width = value_box.x > label_box.x ? value_box.x : label_box.x;
-        size_t col = i % BT_STATS_LAYOUT_COLUMNS;
-        if (width > block_w[col]) {
-            block_w[col] = width;
+    stats_measure_grid(blocks, shown, regular, theme, inner_gap, label_h, block_w, &row_h);
+    float grid_w = stats_grid_width(block_w, shown, col_gap);
+    if (grid_w > metrics.content_w) {
+        for (size_t i = 0; i < shown; i++) {
+            blocks[i].size_rem =
+                bt_view_stats_row_size_for(blocks[i].size_rem, grid_w, metrics.content_w);
         }
-        float height = size + inner_gap + label_h;
-        if (height > row_h) {
-            row_h = height;
+        for (size_t col = 0; col < BT_STATS_LAYOUT_COLUMNS; col++) {
+            block_w[col] = 0.0F;
         }
+        row_h = 0.0F;
+        stats_measure_grid(blocks, shown, regular, theme, inner_gap, label_h, block_w, &row_h);
     }
     size_t row_count = (shown + BT_STATS_LAYOUT_COLUMNS - 1) / BT_STATS_LAYOUT_COLUMNS;
     float total_h = row_h * (float)row_count + row_gap * (float)(row_count - 1);
@@ -395,7 +450,11 @@ void bt_view_stats_draw(const bt_stats_snapshot *snap, const void *font_regular,
         for (size_t col = 0; col < in_row; col++) {
             row_w += block_w[col];
         }
-        float x = metrics.content_x + stats_center_offset(metrics.content_w, row_w);
+        float offset = stats_center_offset(metrics.content_w, row_w);
+        if (offset < 0.0F) {
+            offset = 0.0F;
+        }
+        float x = metrics.content_x + offset;
         for (size_t col = 0; col < in_row; col++) {
             size_t index = row * BT_STATS_LAYOUT_COLUMNS + col;
             float size = blocks[index].size_rem * theme->root_rem;
