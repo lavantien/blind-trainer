@@ -1,8 +1,17 @@
+#include "app/theme.h"
+#include "app/ui.h"
+#include "app/views/frame.h"
 #include "app/views/memo.h"
 #include "app/views/solve.h"
 #include "app/views/state.h"
+#include "app/window.h"
+#include "data/paths.h"
 
 #include "common.h"
+
+#include "raylib.h"
+
+#include <math.h>
 
 static bt_corpus_row heap_row(const char *position, const char *alg) {
     bt_corpus_row row;
@@ -186,4 +195,92 @@ BT_TEST(view_solve, review_parts_split_verdict_splits_and_broken) {
     BT_CHECK(strcmp(parts.splits, "memo 0.9s\nexec 0.5s\ntotal 1.4s") == 0);
     BT_CHECK(strcmp(parts.broken, "UF-UB-UR uncovered") == 0);
     bt_view_solve_session_free(&session);
+}
+
+BT_TEST(view_solve, text_column_opens_right_of_the_net_and_ends_at_the_content_edge) {
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    bt_view_solve_text_column column = bt_view_solve_text_column_for(1280.0F, 800.0F);
+    BT_CHECK(fabsf(column.x - 591.92558F) < 0.01F);
+    BT_CHECK(fabsf(column.width - 665.74884F) < 0.01F);
+    BT_CHECK(fabsf(column.x + column.width - (metrics.content_x + metrics.content_w)) < 0.01F);
+    bt_theme_set_root_for(900.0F);
+    bt_view_frame_metrics scaled = bt_view_frame_metrics_for(1600.0F, 900.0F);
+    bt_view_solve_text_column wide = bt_view_solve_text_column_for(1600.0F, 900.0F);
+    BT_CHECK(fabsf(wide.x - 736.31628F) < 0.01F);
+    BT_CHECK(fabsf(wide.width - 838.56744F) < 0.01F);
+    BT_CHECK(fabsf(wide.x + wide.width - (scaled.content_x + scaled.content_w)) < 0.01F);
+    bt_theme_set_root_for(800.0F);
+    BT_CHECK(fabsf(bt_theme_table()->root_rem - 37.20930F) < 0.001F);
+}
+
+BT_TEST(view_solve, text_column_stays_inside_the_content_rect_across_window_sizes) {
+    static const float widths[] = {320.0F,  640.0F,  800.0F,  1024.0F,
+                                   1280.0F, 1600.0F, 1920.0F, 2560.0F,};
+    static const float heights[] = {240.0F, 480.0F, 600.0F, 800.0F, 900.0F, 1080.0F, 1440.0F};
+    for (size_t w = 0; w < sizeof widths / sizeof widths[0]; w++) {
+        for (size_t h = 0; h < sizeof heights / sizeof heights[0]; h++) {
+            bt_theme_set_root_for(heights[h]);
+            bt_view_frame_metrics metrics = bt_view_frame_metrics_for(widths[w], heights[h]);
+            bt_view_solve_text_column column = bt_view_solve_text_column_for(widths[w], heights[h]);
+            BT_CHECK(column.x >= metrics.content_x - 0.01F);
+            BT_CHECK(column.width > 0.0F);
+            BT_CHECK(column.x + column.width <= metrics.content_x + metrics.content_w + 0.01F);
+        }
+    }
+    bt_theme_set_root_for(800.0F);
+}
+
+BT_TEST(view_solve, centered_line_x_centers_fitted_text_and_clamps_overflow_to_the_edge) {
+    bt_view_solve_text_column column = {100.0F, 400.0F};
+    BT_CHECK(fabsf(bt_view_solve_centered_line_x(column, 0.0F) - 300.0F) < 0.001F);
+    BT_CHECK(fabsf(bt_view_solve_centered_line_x(column, 400.0F) - 100.0F) < 0.001F);
+    BT_CHECK(fabsf(bt_view_solve_centered_line_x(column, 200.0F) - 200.0F) < 0.001F);
+    BT_CHECK(fabsf(bt_view_solve_centered_line_x(column, 600.0F) - 100.0F) < 0.001F);
+}
+
+static int with_solve_fonts(int (*run)(const bt_app_font_book *)) {
+    if (!bt_app_window_open_driven(640, 480, "view solve test", NULL)) {
+        return 0;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char path[BT_PATH_MAX];
+    bt_data_config_path(path);
+    if (bt_app_fonts_load(path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    int ok = run(&book);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+    return ok;
+}
+
+static int residue_probe_fits(const bt_app_font_book *book, const char *text,
+                              bt_view_solve_text_column column, float size) {
+    Font regular = *(const Font *)book->regular;
+    float full = MeasureTextEx(regular, text, size, 1.0F).x;
+    float fitted = bt_ui_fitted_width(book->regular, text, size, column.width);
+    if (!(fitted <= column.width + 0.01F)) {
+        return 0;
+    }
+    float x = bt_view_solve_centered_line_x(column, fitted);
+    if (!(x >= column.x - 0.01F) || !(x + fitted <= column.x + column.width + 0.01F)) {
+        return 0;
+    }
+    float tight = bt_ui_fitted_width(book->regular, text, size, 200.0F);
+    return full > 200.0F && tight <= 200.0F + 0.01F;
+}
+
+static int run_residue_fit(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_solve_text_column column = bt_view_solve_text_column_for(1280.0F, 800.0F);
+    float small = theme->font_small * theme->root_rem;
+    return residue_probe_fits(book, "residue unsupported: TwistTriple(53, 53, 53)", column,
+                              small) &&
+           residue_probe_fits(book, "UF-UB, UFR-UBR[UBL] uncovered", column, small);
+}
+
+BT_TEST(view_solve, longest_residue_lines_fit_and_center_inside_the_text_column) {
+    BT_CHECK(with_solve_fonts(run_residue_fit));
 }

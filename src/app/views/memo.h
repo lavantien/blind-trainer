@@ -21,6 +21,7 @@
 #define BT_MEMO_RESIDUE_MAX 16
 #define BT_MEMO_RECENT_TOKENS 12
 #define BT_MEMO_WRAP_MAX 32
+#define BT_MEMO_STATUS_LINES_MAX 3
 
 typedef struct {
     bt_orbit orbit;
@@ -58,6 +59,8 @@ void bt_memo_rate_pairs(bt_stores *stores, const bt_fsrs_config *fsrs,
                         const bt_memo_session *session, bt_grade rating, long long now_day);
 int bt_memo_residue_lines(const bt_memo *memo, char out[][BT_MEMO_TEXT_MAX], size_t cap,
                           size_t *count);
+size_t bt_memo_wrap_lines(const void *font, const char *text, float size, float max_w,
+                          char out[][BT_MEMO_TEXT_MAX], size_t cap, size_t max_lines);
 void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, const bt_stores *stores,
                        bt_memo_rows *out);
 

@@ -1,8 +1,15 @@
+#include "app/theme.h"
+#include "app/views/frame.h"
 #include "app/views/memo.h"
+#include "app/window.h"
 
 #include "app/views/images.h"
 
 #include "common.h"
+
+#include "raylib.h"
+
+#include "data/paths.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -270,4 +277,164 @@ BT_TEST(view_memo, stream_advances_only_at_cadence) {
     bt_syllable_book_free(&book);
     bt_memo_session_free(&session);
     bt_stores_free(&stores);
+}
+
+static const char STATUS_LONG[] =
+    "parity UF-UB, UFR-UBR; flip UF & UL; flip UR & FL; flip UB & DF; flip DL & UB; flip FU & BR; "
+    "flip LU & RF; twist UFR x2; twist UBL x1; twist DFR x2; twist DBR x1; twist ULB x2; "
+    "twist URF x1; twist DLF x2; twist DBL x1; r replay  space next  1..4 rate pairs";
+static const char STATUS_SHORT[] = "stream 3/20  cadence 800 ms";
+
+enum {
+    WRAP_WORD_MAX = 64,
+};
+
+static int with_memo_fonts(int (*run)(const bt_app_font_book *)) {
+    if (!bt_app_window_open_driven(640, 480, "view memo test", NULL)) {
+        return 0;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char path[BT_PATH_MAX];
+    bt_data_config_path(path);
+    if (bt_app_fonts_load(path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    int ok = run(&book);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+    return ok;
+}
+
+static float memo_measure(const bt_app_font_book *book, const char *text, float size) {
+    Font regular = *(const Font *)book->regular;
+    return MeasureTextEx(regular, text, size, 1.0F).x;
+}
+
+static size_t split_words(const char *text, char out[WRAP_WORD_MAX][BT_MEMO_TEXT_MAX]) {
+    size_t count = 0;
+    const char *at = text;
+    while (*at != '\0' && count < WRAP_WORD_MAX) {
+        while (*at == ' ') {
+            at++;
+        }
+        if (*at == '\0') {
+            break;
+        }
+        const char *start = at;
+        while (*at != '\0' && *at != ' ') {
+            at++;
+        }
+        size_t len = (size_t)(at - start);
+        if (len >= BT_MEMO_TEXT_MAX) {
+            len = BT_MEMO_TEXT_MAX - 1;
+        }
+        memcpy(out[count], start, len);
+        out[count][len] = '\0';
+        count++;
+    }
+    return count;
+}
+
+static int words_match(const char *left, const char *right) {
+    char left_words[WRAP_WORD_MAX][BT_MEMO_TEXT_MAX];
+    char right_words[WRAP_WORD_MAX][BT_MEMO_TEXT_MAX];
+    size_t left_count = split_words(left, left_words);
+    size_t right_count = split_words(right, right_words);
+    if (left_count != right_count) {
+        return 0;
+    }
+    for (size_t i = 0; i < left_count; i++) {
+        if (strcmp(left_words[i], right_words[i]) != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static int run_status_wrap(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    float body = theme->font_body * theme->root_rem;
+    float full = memo_measure(book, STATUS_LONG, body);
+    if (!(full > metrics.content_w * 2.0F)) {
+        return 0;
+    }
+    char lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = bt_memo_wrap_lines(book->regular, STATUS_LONG, body, metrics.content_w, lines,
+                                      BT_MEMO_WRAP_MAX, BT_MEMO_WRAP_MAX);
+    if (count < 3) {
+        return 0;
+    }
+    char joined[BT_MEMO_STATUS_MAX];
+    joined[0] = '\0';
+    for (size_t i = 0; i < count; i++) {
+        if (lines[i][0] == '\0') {
+            return 0;
+        }
+        if (memo_measure(book, lines[i], body) > metrics.content_w + 0.5F) {
+            return 0;
+        }
+        if (i > 0) {
+            strcat(joined, " ");
+        }
+        strcat(joined, lines[i]);
+    }
+    if (!words_match(STATUS_LONG, joined)) {
+        return 0;
+    }
+    size_t short_count = bt_memo_wrap_lines(book->regular, STATUS_SHORT, body, metrics.content_w,
+                                            lines, BT_MEMO_WRAP_MAX, BT_MEMO_WRAP_MAX);
+    return short_count == 1 && strcmp(lines[0], STATUS_SHORT) == 0;
+}
+
+BT_TEST(view_memo, status_wrap_spreads_a_long_review_status_across_the_content_width) {
+    BT_CHECK_EQ(strlen(STATUS_LONG), (size_t)256);
+    BT_CHECK(with_memo_fonts(run_status_wrap));
+}
+
+static int run_status_clamp(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    float body = theme->font_body * theme->root_rem;
+    char lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = bt_memo_wrap_lines(book->regular, STATUS_LONG, body, metrics.content_w, lines,
+                                      BT_MEMO_WRAP_MAX, 2);
+    if (count != 2) {
+        return 0;
+    }
+    size_t last = strlen(lines[1]);
+    if (last < 3 || strcmp(lines[1] + last - 3, "...") != 0) {
+        return 0;
+    }
+    for (size_t i = 0; i < count; i++) {
+        if (memo_measure(book, lines[i], body) > metrics.content_w + 0.5F) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+BT_TEST(view_memo, status_wrap_clamps_to_the_line_budget_with_a_trailing_ellipsis) {
+    BT_CHECK(with_memo_fonts(run_status_clamp));
+}
+
+static int run_wrap_edges(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    float body = theme->font_body * theme->root_rem;
+    char lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t empty = bt_memo_wrap_lines(book->regular, "", body, metrics.content_w, lines,
+                                      BT_MEMO_WRAP_MAX, BT_MEMO_WRAP_MAX);
+    size_t single = bt_memo_wrap_lines(book->regular, "ready", body, metrics.content_w, lines,
+                                       BT_MEMO_WRAP_MAX, 4);
+    int single_ok = single == 1 && strcmp(lines[0], "ready") == 0;
+    size_t starved = bt_memo_wrap_lines(book->regular, "ready", body, metrics.content_w, lines,
+                                        BT_MEMO_WRAP_MAX, 0);
+    return empty == 0 && single_ok && starved == 0;
+}
+
+BT_TEST(view_memo, wrap_handles_empty_short_and_starved_line_budgets) {
+    BT_CHECK(with_memo_fonts(run_wrap_edges));
 }

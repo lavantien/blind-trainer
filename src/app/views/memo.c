@@ -249,12 +249,31 @@ void bt_memo_view_rows(bt_memo_phase phase, const bt_memo_session *session, cons
     BT_TRACE_EXIT("app.memo_view_rows");
 }
 
-static size_t memo_wrap_lines(const void *font, const char *text, float size, float max_w,
-                              char out[][BT_MEMO_TEXT_MAX], size_t cap) {
+static void wrap_tail_ellipsize(const void *font, char *line, float size, float max_w) {
+    Font regular = *(const Font *)font;
+    size_t keep = strlen(line);
+    char fitted[BT_MEMO_TEXT_MAX];
+    for (;;) {
+        if (keep > sizeof fitted - sizeof "...") {
+            keep = sizeof fitted - sizeof "...";
+        }
+        snprintf(fitted, sizeof fitted, "%.*s...", (int)keep, line);
+        if (keep == 0 || MeasureTextEx(regular, fitted, size, 1.0F).x <= max_w) {
+            break;
+        }
+        keep--;
+    }
+    memcpy(line, fitted, strlen(fitted) + 1);
+}
+
+size_t bt_memo_wrap_lines(const void *font, const char *text, float size, float max_w,
+                          char out[][BT_MEMO_TEXT_MAX], size_t cap, size_t max_lines) {
+    BT_TRACE_ENTER("app.memo_wrap_lines");
     Font regular = *(const Font *)font;
     size_t count = 0;
     const char *at = text;
-    while (*at != '\0' && count < cap) {
+    size_t limit = cap < max_lines ? cap : max_lines;
+    while (*at != '\0' && count < limit) {
         const char *end = at;
         const char *last_fit = NULL;
         while (*end != '\0') {
@@ -292,6 +311,10 @@ static size_t memo_wrap_lines(const void *font, const char *text, float size, fl
             break;
         }
     }
+    if (*at != '\0' && count > 0) {
+        wrap_tail_ellipsize(font, out[count - 1], size, max_w);
+    }
+    BT_TRACE_EXIT("app.memo_wrap_lines");
     return count;
 }
 
@@ -305,7 +328,12 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
     float small = theme->font_small * theme->root_rem;
     float body = theme->font_body * theme->root_rem;
     float bottom = metrics.content_y + metrics.content_h;
-    float status_y = bottom - body;
+    Font regular = *(const Font *)font_regular;
+    char status_lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t status_count =
+        bt_memo_wrap_lines(font_regular, rows->status, body, metrics.content_w, status_lines,
+                           BT_MEMO_WRAP_MAX, BT_MEMO_STATUS_LINES_MAX);
+    float status_top = bottom - body * (float)status_count;
     Vector2 focal_box = MeasureTextEx(*(const Font *)font_bold, rows->focal,
                                       theme->font_focal * theme->root_rem, 1.0F);
     bt_app_draw_text(font_regular, "esc menu", metrics.content_x, metrics.content_y, small,
@@ -316,19 +344,22 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
                      bt_theme_text_primary());
     float y = metrics.content_y + small + gap + theme->font_focal * theme->root_rem + gap;
     char wrapped[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
-    size_t line_count = memo_wrap_lines(font_regular, rows->recent, small, metrics.content_w,
-                                        wrapped, BT_MEMO_WRAP_MAX);
-    size_t room = status_y - gap - y > 0.0F ? (size_t)((status_y - gap - y) / small) : 0;
-    size_t shown = line_count < room ? line_count : room;
-    if (shown < line_count && shown > 0) {
-        strncat(wrapped[shown - 1], "...", BT_MEMO_TEXT_MAX - strlen(wrapped[shown - 1]) - 1);
-    }
+    size_t room = status_top - gap - y > 0.0F ? (size_t)((status_top - gap - y) / small) : 0;
+    size_t shown = bt_memo_wrap_lines(font_regular, rows->recent, small, metrics.content_w, wrapped,
+                                      BT_MEMO_WRAP_MAX, room);
     for (size_t i = 0; i < shown; i++) {
         bt_app_draw_text(font_regular, wrapped[i], metrics.content_x, y + small * (float)i, small,
                          bt_theme_text_muted());
     }
-    bt_app_draw_text(font_regular, rows->status, metrics.content_x, status_y, body,
-                     bt_theme_text_primary());
+    for (size_t i = 0; i < status_count; i++) {
+        Vector2 line_box = MeasureTextEx(regular, status_lines[i], body, 1.0F);
+        float x = metrics.content_x;
+        if (line_box.x < metrics.content_w) {
+            x = metrics.content_x + (metrics.content_w - line_box.x) / 2.0F;
+        }
+        bt_app_draw_text(font_regular, status_lines[i], x, status_top + body * (float)i, body,
+                         bt_theme_text_primary());
+    }
     BT_TRACE_EXIT("app.view_memo_draw");
 }
 

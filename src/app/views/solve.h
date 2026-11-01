@@ -93,6 +93,14 @@ bt_view_solve_block_clamp bt_view_solve_block_clamp_for(float y, float limit_y, 
                                                         size_t count);
 
 typedef struct {
+    float x;
+    float width;
+} bt_view_solve_text_column;
+
+bt_view_solve_text_column bt_view_solve_text_column_for(float window_w, float window_h);
+float bt_view_solve_centered_line_x(bt_view_solve_text_column column, float line_w);
+
+typedef struct {
     int initialized;
     uint64_t seed;
     int has_scramble_override;

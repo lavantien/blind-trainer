@@ -1,0 +1,6 @@
+# lane e progress
+
+- 2026-11-01 09:40 lane e start: read solve.c/h, memo.c/h, frame.c/h, ui.c/h, theme.c/h, common.h, owned test files, commit_lane.py, bt.py suite wiring; lane A foundation not yet in git log, phase 1 authoring only
+- 2026-11-01 09:55 phase 1 done: authored failing tests in view_solve_test.c (text column metrics 1280x800 and 1600x900-root sweep, centered_x clamp cases, windowed residue-fit probe) and view_memo_test.c (171-char status wrap >=3 lines with word round-trip, 2-line clamp with trailing ellipsis, empty/short/starved budgets); no src edits yet, waiting on lane A foundation commit
+- 2026-11-01 10:00 lane A foundation visible in git log (8f8392b fitted helper, 15055cf rem scaling + frame guard), phase 2 starts: implement solve text column + centered fitted lines, memo status wrap block
+- 2026-11-01 10:08 phase 2 implemented and green: solve text column helper + centered fitted lines + short frame context; memo wrap helper with max-lines clamp and fitted ellipsis, status block wrapped/centered; all 4 stems pass (view_solve 11, view_memo 11, solve_more, views_solve); fmt clean for own files; lint clean for own files; playground wrap_probe.c pixel check: memo status ink 29..1250 in bounds 22..1257, solve ink right 1111 in column 591..1257

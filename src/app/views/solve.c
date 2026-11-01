@@ -1,5 +1,6 @@
 #include "app/views/solve.h"
 
+#include "app/ui.h"
 #include "app/views/drill.h"
 #include "app/views/drill_view.h"
 #include "app/views/frame.h"
@@ -586,6 +587,34 @@ bt_view_solve_block_clamp bt_view_solve_block_clamp_for(float y, float limit_y, 
     return clamp;
 }
 
+bt_view_solve_text_column bt_view_solve_text_column_for(float window_w, float window_h) {
+    BT_TRACE_ENTER("app.solve_text_column");
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
+    float gap = theme->spacing_rem * theme->root_rem;
+    bt_view_solve_text_column column;
+    column.x = metrics.content_x + theme->drill_net_width_pct * metrics.content_w + gap * 2.0F;
+    column.width = metrics.content_x + metrics.content_w - column.x;
+    if (column.width < 0.0F) {
+        column.width = 0.0F;
+    }
+    BT_TRACE_EXIT("app.solve_text_column");
+    return column;
+}
+
+float bt_view_solve_centered_line_x(bt_view_solve_text_column column, float line_w) {
+    BT_TRACE_ENTER("app.solve_centered_line_x");
+    float width = line_w;
+    if (width < 0.0F) {
+        width = 0.0F;
+    }
+    if (width > column.width) {
+        width = column.width;
+    }
+    BT_TRACE_EXIT("app.solve_centered_line_x");
+    return column.x + (column.width - width) / 2.0F;
+}
+
 static size_t block_line_count(const char *text) {
     if (text[0] == '\0') {
         return 0;
@@ -599,8 +628,16 @@ static size_t block_line_count(const char *text) {
     return count;
 }
 
-static float draw_text_block(const void *font, const char *text, float x, float y, float size,
-                             bt_theme_color color, size_t max_lines, char *tail, size_t tail_cap) {
+static void draw_column_line(const void *font, const char *text, bt_view_solve_text_column column,
+                             float y, float size, bt_theme_color color) {
+    float fitted = bt_ui_fitted_width(font, text, size, column.width);
+    bt_ui_draw_fitted(font, text, bt_view_solve_centered_line_x(column, fitted), y, size, color,
+                      column.width);
+}
+
+static float draw_text_block(const void *font, const char *text, bt_view_solve_text_column column,
+                             float y, float size, bt_theme_color color, size_t max_lines,
+                             char *tail, size_t tail_cap) {
     const char *at = text;
     size_t drawn = 0;
     while (*at != '\0' && drawn < max_lines) {
@@ -612,7 +649,7 @@ static float draw_text_block(const void *font, const char *text, float x, float 
         }
         memcpy(line, at, len);
         line[len] = '\0';
-        bt_app_draw_text(font, line, x, y, size, color);
+        draw_column_line(font, line, column, y, size, color);
         y += size;
         drawn++;
         at = newline != NULL ? newline + 1 : at + len;
@@ -620,7 +657,7 @@ static float draw_text_block(const void *font, const char *text, float x, float 
     if (max_lines > 0 && drawn == max_lines && *at != '\0' && tail != NULL) {
         size_t left = block_line_count(at);
         snprintf(tail, tail_cap, "+%zu more", left);
-        bt_app_draw_text(font, tail, x, y, size, color);
+        draw_column_line(font, tail, column, y, size, color);
         y += size;
     }
     return y;
@@ -632,7 +669,7 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     const bt_theme *theme = bt_theme_table();
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(window_w, window_h);
     bt_view_frame_draw(font_bold, font_regular, window_w, window_h, "solve",
-                       "space through ready, memo, exec, review, esc menu");
+                       "space advance, esc menu");
     bt_view_solve_app_state *app = bt_view_solve_app();
     char phase[BT_SOLVE_TEXT_MAX];
     char focal[BT_SOLVE_TEXT_MAX];
@@ -648,16 +685,16 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     bt_views_net *pulse = &bt_app_views_shared()->net;
     bt_view_drill_net_draw(font_bold, pulse, metrics.content_x, metrics.content_y,
                            theme->drill_net_width_pct * metrics.content_w, metrics.content_h);
-    float x = metrics.content_x + theme->drill_net_width_pct * metrics.content_w + gap * 2.0F;
+    bt_view_solve_text_column column = bt_view_solve_text_column_for(window_w, window_h);
     float y = metrics.content_y;
-    bt_app_draw_text(font_regular, phase, x, y, small_px, bt_theme_text_muted());
+    draw_column_line(font_regular, phase, column, y, small_px, bt_theme_text_muted());
     y += theme->font_focal * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, focal, x, y, theme->font_focal * theme->root_rem,
+    draw_column_line(font_bold, focal, column, y, theme->font_focal * theme->root_rem,
                      bt_theme_text_primary());
     y += theme->font_focal * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, timer, x, y, heading_px, bt_theme_text_primary());
+    draw_column_line(font_bold, timer, column, y, heading_px, bt_theme_text_primary());
     y += theme->font_title * theme->root_rem + gap;
-    bt_app_draw_text(font_bold, parts.result, x, y, theme->font_title * theme->root_rem,
+    draw_column_line(font_bold, parts.result, column, y, theme->font_title * theme->root_rem,
                      parts.result[0] != '\0' && strcmp(parts.result, "solved") == 0
                          ? bt_theme_ok()
                          : bt_theme_danger());
@@ -668,15 +705,15 @@ void bt_view_solve_draw(const bt_app_ctx *ctx, const void *font_regular, const v
     char tail[BT_SOLVE_TEXT_MAX];
     bt_view_solve_block_clamp splits_clamp =
         bt_view_solve_block_clamp_for(y, block_limit, heading_px, block_line_count(parts.splits));
-    y = draw_text_block(font_regular, parts.splits, x, y, heading_px, bt_theme_text_primary(),
+    y = draw_text_block(font_regular, parts.splits, column, y, heading_px, bt_theme_text_primary(),
                         splits_clamp.visible, tail, sizeof tail);
     y += gap;
     bt_view_solve_block_clamp broken_clamp =
         bt_view_solve_block_clamp_for(y, block_limit, small_px, block_line_count(parts.broken));
-    y = draw_text_block(font_regular, parts.broken, x, y, small_px, bt_theme_danger(),
+    y = draw_text_block(font_regular, parts.broken, column, y, small_px, bt_theme_danger(),
                         broken_clamp.visible, tail, sizeof tail);
-    bt_app_draw_text(font_regular, bt_view_solve_hint_text(ctx->solve_phase), x, hint_y, small_px,
-                     bt_theme_text_muted());
+    draw_column_line(font_regular, bt_view_solve_hint_text(ctx->solve_phase), column, hint_y,
+                     small_px, bt_theme_text_muted());
     BT_TRACE_EXIT("app.view_solve_draw");
 }
 
