@@ -293,7 +293,7 @@ BT_TEST(view_draw_b, solve_review_clamps_the_broken_block_and_anchors_the_hint) 
     int bands[DRAW_BANDS_MAX][2];
     size_t count =
         lit_row_bands(path, (int)column.x - 2, (int)(column.x + column.width) + 2,
-                      (int)split_top - 2, config.window.height - 2, bands, DRAW_BANDS_MAX);
+                      (int)split_top - 2, (int)config.window.height - 2, bands, DRAW_BANDS_MAX);
     BT_CHECK(count >= 4);
     if (count >= 4) {
         int last = (int)count - 1;
