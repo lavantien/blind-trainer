@@ -43,7 +43,7 @@ static void ensure_setup(void) {
     snprintf(g_dir, BT_MUT_PATH_MAX, "%s/build/test-tmp/mutate-selftest", g_root);
     bt_test_mkdirs(g_dir);
     char config_path[BT_MUT_PATH_MAX];
-    snprintf(config_path, BT_MUT_PATH_MAX, "%s/config/config.json", g_root);
+    bt_mut_config_path(NULL, g_root, config_path);
     if (bt_config_try_load(config_path, &g_config) != 0) {
         BT_ABORT("cannot load %s", config_path);
     }
@@ -310,6 +310,61 @@ BT_TEST(mutate, mutant_ids_are_deterministic) {
     }
     bt_mut_mutants_free(&first);
     bt_mut_mutants_free(&second);
+}
+
+BT_TEST(mutate, config_path_honors_bt_config_env) {
+    ensure_setup();
+    char fixture[BT_MUT_PATH_MAX];
+    snprintf(fixture, BT_MUT_PATH_MAX, "%s/bt-config-fixture.json", g_dir);
+    const char *body = "{\"build\":{\"tools\":{\"clang\":\"X:/bt-mutate-fixture/clang.exe\"}}}";
+    BT_CHECK_EQ(bt_mut_write_file(fixture, body, strlen(body)), 0);
+    const char *saved = getenv("BT_CONFIG");
+    BT_CHECK_EQ(_putenv_s("BT_CONFIG", fixture), 0);
+    char resolved[BT_MUT_PATH_MAX];
+    bt_mut_config_path(NULL, g_root, resolved);
+    char explicit_override[BT_MUT_PATH_MAX];
+    bt_mut_config_path("Y:/bt-mutate-override/config.json", g_root, explicit_override);
+    if (saved != NULL && saved[0] != '\0') {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved), 0);
+    } else {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", ""), 0);
+    }
+    MUT_CHECK(strcmp(resolved, fixture) == 0, "resolved %s want %s", resolved, fixture);
+    MUT_CHECK(strcmp(explicit_override, "Y:/bt-mutate-override/config.json") == 0,
+              "override resolved %s", explicit_override);
+    bt_json_value *config = NULL;
+    MUT_CHECK(bt_config_try_load(resolved, &config) == 0, "cannot load %s", resolved);
+    if (config != NULL) {
+        bt_mut_build build;
+        int rc = bt_mut_build_load(g_root, config, NULL, &build);
+        MUT_CHECK(rc == 0, "cannot load build settings from %s", resolved);
+        if (rc == 0) {
+            MUT_CHECK(strcmp(build.clang, "X:/bt-mutate-fixture/clang.exe") == 0,
+                      "clang %s want the fixture override", build.clang);
+            bt_mut_build_free(&build);
+        }
+        bt_json_free(config);
+    }
+}
+
+BT_TEST(mutate, config_path_joins_relative_env_and_keeps_the_default) {
+    ensure_setup();
+    const char *saved = getenv("BT_CONFIG");
+    BT_CHECK_EQ(_putenv_s("BT_CONFIG", "artifacts/hub.json"), 0);
+    char relative[BT_MUT_PATH_MAX];
+    bt_mut_config_path(NULL, g_root, relative);
+    BT_CHECK_EQ(_putenv_s("BT_CONFIG", ""), 0);
+    char fallback[BT_MUT_PATH_MAX];
+    bt_mut_config_path(NULL, g_root, fallback);
+    if (saved != NULL && saved[0] != '\0') {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved), 0);
+    }
+    char joined[BT_MUT_PATH_MAX];
+    snprintf(joined, BT_MUT_PATH_MAX, "%s/artifacts/hub.json", g_root);
+    char expected[BT_MUT_PATH_MAX];
+    snprintf(expected, BT_MUT_PATH_MAX, "%s/config/config.json", g_root);
+    MUT_CHECK(strcmp(relative, joined) == 0, "relative resolved %s want %s", relative, joined);
+    MUT_CHECK(strcmp(fallback, expected) == 0, "default resolved %s want %s", fallback, expected);
 }
 
 BT_TEST(mutate, orphan_scratch_is_judged_by_creation_time) {
@@ -668,6 +723,8 @@ static int bt_spawn_probe(char *argv[3], bt_mut_proc *proc) {
     return bt_mut_spawn(g_self_exe, argv, g_root, 30000, proc);
 }
 
+void bt_test_mutate_config_path_honors_bt_config_env(void);
+void bt_test_mutate_config_path_joins_relative_env_and_keeps_the_default(void);
 void bt_test_mutate_engine_records_builderr_when_the_mutant_fails_to_compile(void);
 void bt_test_mutate_engine_records_killed_for_a_guarded_test(void);
 void bt_test_mutate_engine_records_survived_for_unread_code(void);
@@ -696,6 +753,14 @@ int bt_mutate_selftest(void) {
             bt_test_mutate_apply_compiles_for_every_operator,
         },
         {"mutate.comparison_swap_variants", bt_test_mutate_comparison_swap_variants},
+        {
+            "mutate.config_path_honors_bt_config_env",
+            bt_test_mutate_config_path_honors_bt_config_env,
+        },
+        {
+            "mutate.config_path_joins_relative_env_and_keeps_the_default",
+            bt_test_mutate_config_path_joins_relative_env_and_keeps_the_default,
+        },
         {
             "mutate.engine_records_builderr_when_the_mutant_fails_to_compile",
             bt_test_mutate_engine_records_builderr_when_the_mutant_fails_to_compile,

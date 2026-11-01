@@ -18,7 +18,7 @@ BT_TEST(mutate_driver, selftest_passes) {
     int rc = bt_spawn_capture(exe, argv, root, 110000, &code, out, sizeof out, err, sizeof err);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 0);
-    BT_CHECK(strstr(out, "suite mutate: 30 passed, 0 failed") != NULL);
+    BT_CHECK(strstr(out, "suite mutate: 32 passed, 0 failed") != NULL);
 }
 
 BT_TEST(mutate_driver, usage_without_args_exits_2) {
@@ -68,6 +68,31 @@ BT_TEST(mutate_driver, list_enumerates_a_fixture) {
     BT_CHECK(strstr(out, "ConditionNegation") != NULL);
     BT_CHECK(strstr(out, "UnaryDrop") != NULL);
     BT_CHECK(strstr(out, "StatementDelete") != NULL);
+}
+
+BT_TEST(mutate_driver, run_loads_the_config_named_by_bt_config) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutate.exe");
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    char missing[BT_PATH_MAX];
+    snprintf(missing, BT_PATH_MAX, "%s/build/test-tmp/mutate-driver/hub-missing.json", root);
+    const char *saved = getenv("BT_CONFIG");
+    BT_CHECK_EQ(_putenv_s("BT_CONFIG", missing), 0);
+    const char *argv[] = {"run", "--exe", "fx_test", "tests/unit/tools/fixtures/fx_target.c", NULL};
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    if (saved != NULL && saved[0] != '\0') {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved), 0);
+    } else {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", ""), 0);
+    }
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "cannot load config") != NULL);
+    BT_CHECK(strstr(err, missing) != NULL);
 }
 
 #define UNION_FX_REL "tests/unit/tools/fixtures/fx_target.c"

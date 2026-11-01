@@ -6,6 +6,7 @@
 
 #include "common/bt_trace.h"
 #include "common/config.h"
+#include "common/paths.h"
 
 static char *dup_str(const char *text) {
     size_t len = strlen(text);
@@ -47,6 +48,15 @@ static int clang_from_env_json(const char *repo_root, char out[BT_MUT_PATH_MAX])
     }
     bt_json_free(env);
     return rc;
+}
+
+void bt_mut_config_path(const char *override, const char *workspace_root,
+                        char out[BT_MUT_PATH_MAX]) {
+    const char *configured = override;
+    if (configured == NULL || configured[0] == '\0') {
+        configured = getenv("BT_CONFIG");
+    }
+    bt_paths_config_path_from(configured, workspace_root, out);
 }
 
 int bt_mut_build_load(const char *repo_root, const bt_json_value *config,

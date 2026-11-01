@@ -22,32 +22,10 @@ static void usage(void) {
     fprintf(stderr, "       mutate selftest\n");
 }
 
-static void root_from_config(const char *config_path, char out[BT_MUT_PATH_MAX]) {
-    snprintf(out, BT_MUT_PATH_MAX, "%s", config_path);
-    for (int i = 0; i < 2; i++) {
-        char *slash = strrchr(out, '/');
-        char *backslash = strrchr(out, '\\');
-        char *cut = slash > backslash ? slash : backslash;
-        if (cut == NULL) {
-            break;
-        }
-        *cut = '\0';
-    }
-}
-
 static int resolve_config(const char *override, char path_out[BT_MUT_PATH_MAX],
                           char root_out[BT_MUT_PATH_MAX]) {
-    const char *config = override;
-    if (config == NULL || config[0] == '\0') {
-        config = getenv("BT_CONFIG");
-    }
-    if (config == NULL || config[0] == '\0') {
-        bt_paths_workspace_root(root_out);
-        snprintf(path_out, BT_MUT_PATH_MAX, "%s/config/config.json", root_out);
-        return 0;
-    }
-    snprintf(path_out, BT_MUT_PATH_MAX, "%s", config);
-    root_from_config(config, root_out);
+    bt_paths_workspace_root(root_out);
+    bt_mut_config_path(override, root_out, path_out);
     return 0;
 }
 

@@ -158,6 +158,8 @@ typedef struct {
     char system_include_dir[BT_MUT_PATH_MAX];
 } bt_mut_build;
 
+void bt_mut_config_path(const char *override, const char *workspace_root,
+                        char out[BT_MUT_PATH_MAX]);
 int bt_mut_build_load(const char *repo_root, const bt_json_value *config,
                       const char *clang_override, bt_mut_build *out);
 void bt_mut_build_free(bt_mut_build *build);
