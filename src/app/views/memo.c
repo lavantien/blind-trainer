@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static const float BT_MEMO_TEXT_SPACING = 1.0F;
+
 void bt_memo_session_init(bt_memo_session *session) {
     BT_TRACE_ENTER("app.memo_session_init");
     memset(session, 0, sizeof *session);
@@ -258,7 +260,7 @@ static void wrap_tail_ellipsize(const void *font, char *line, float size, float 
             keep = sizeof fitted - sizeof "...";
         }
         snprintf(fitted, sizeof fitted, "%.*s...", (int)keep, line);
-        if (keep == 0 || MeasureTextEx(regular, fitted, size, 1.0F).x <= max_w) {
+        if (keep == 0 || MeasureTextEx(regular, fitted, size, BT_MEMO_TEXT_SPACING).x <= max_w) {
             break;
         }
         keep--;
@@ -286,7 +288,7 @@ size_t bt_memo_wrap_lines(const void *font, const char *text, float size, float 
             }
             memcpy(piece, at, len);
             piece[len] = '\0';
-            Vector2 box = MeasureTextEx(regular, piece, size, 1.0F);
+            Vector2 box = MeasureTextEx(regular, piece, size, BT_MEMO_TEXT_SPACING);
             if (box.x > max_w) {
                 break;
             }
@@ -335,7 +337,7 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
                            BT_MEMO_WRAP_MAX, BT_MEMO_STATUS_LINES_MAX);
     float status_top = bottom - body * (float)status_count;
     Vector2 focal_box = MeasureTextEx(*(const Font *)font_bold, rows->focal,
-                                      theme->font_focal * theme->root_rem, 1.0F);
+                                      theme->font_focal * theme->root_rem, BT_MEMO_TEXT_SPACING);
     bt_app_draw_text(font_regular, "esc menu", metrics.content_x, metrics.content_y, small,
                      bt_theme_text_muted());
     bt_app_draw_text(font_bold, rows->focal,
@@ -352,7 +354,7 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
                          bt_theme_text_muted());
     }
     for (size_t i = 0; i < status_count; i++) {
-        Vector2 line_box = MeasureTextEx(regular, status_lines[i], body, 1.0F);
+        Vector2 line_box = MeasureTextEx(regular, status_lines[i], body, BT_MEMO_TEXT_SPACING);
         float x = metrics.content_x;
         if (line_box.x < metrics.content_w) {
             x = metrics.content_x + (metrics.content_w - line_box.x) / 2.0F;
