@@ -188,18 +188,17 @@ class CoverageStageTests(unittest.TestCase):
         lib = self.root / "build" / "vendor" / "raylib.lib"
         lib.parent.mkdir(parents=True)
         lib.write_bytes(b"")
-        self.log = self.root / "argv.log"
         self.stub = self.root / "clang_stub.py"
         self.stub.write_text(
-            "import sys\n"
+            "import os, sys, time\n"
             "from pathlib import Path\n"
             "argv = sys.argv[1:]\n"
-            "with open(r'%s', 'a', encoding='utf-8') as log:\n"
-            "    log.write(repr(argv) + '\\n')\n"
+            "log = Path(r'%s') / ('argv-' + str(os.getpid()) + '-' + str(time.time_ns()) + '.log')\n"
+            "log.write_text(repr(argv) + '\\n', encoding='utf-8')\n"
             "if '-o' in argv:\n"
             "    out = Path(argv[argv.index('-o') + 1])\n"
             "    out.parent.mkdir(parents=True, exist_ok=True)\n"
-            "    out.write_bytes(b'stub')\n" % str(self.log),
+            "    out.write_bytes(b'stub')\n" % str(self.root),
             encoding="utf-8",
         )
 
@@ -210,9 +209,12 @@ class CoverageStageTests(unittest.TestCase):
         return [sys.executable, "-I", str(self.stub)]
 
     def argv_lines(self):
-        if not self.log.is_file():
-            return []
-        return [line for line in self.log.read_text(encoding="utf-8").splitlines() if line]
+        lines = []
+        for log in sorted(self.root.glob("argv-*.log")):
+            lines.extend(
+                line for line in log.read_text(encoding="utf-8").splitlines() if line
+            )
+        return lines
 
     def test_compile_stage_coverage_carries_flags_and_isolates_the_obj_base(self):
         hub = sample_hub()

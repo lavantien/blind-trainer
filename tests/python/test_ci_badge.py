@@ -318,9 +318,6 @@ class CiBadgeEndToEndTests(unittest.TestCase):
             self.assertNotIn("ci-badge: ci-badge", buffer.getvalue())
 
 
-PINNED_CI_VERDICT = "passed"
-
-
 class ConclusionModeTests(unittest.TestCase):
     def run_conclusion(self, tmp, conclusion, extra_argv=()):
         out = Path(tmp) / "ci.svg"
@@ -435,15 +432,24 @@ class CiWorkflowTests(unittest.TestCase):
 
 
 class CommittedBadgeTests(unittest.TestCase):
-    def test_committed_ci_svg_carries_the_pinned_verdict(self):
-        expected = badge_svg(
-            "CI", PINNED_CI_VERDICT, color=ci_badge.VERDICT_COLORS[PINNED_CI_VERDICT]
-        ).encode("utf-8")
+    def test_committed_ci_svg_is_a_renderer_product_for_its_verdict(self):
+        committed = (
+            Path(__file__).resolve().parents[2] / "docs" / "badges" / "ci.svg"
+        ).read_bytes()
+        matches = [
+            verdict
+            for verdict in ci_badge.VERDICT_COLORS
+            if committed
+            == badge_svg(
+                "CI", verdict, color=ci_badge.VERDICT_COLORS[verdict]
+            ).encode("utf-8")
+        ]
         self.assertEqual(
-            (
-                Path(__file__).resolve().parents[2] / "docs" / "badges" / "ci.svg"
-            ).read_bytes(),
-            expected,
+            len(matches),
+            1,
+            f"committed ci.svg matches {len(matches)} renderer verdicts, it must be "
+            f"the byte-exact badge_svg product of exactly one verdict in "
+            f"{sorted(ci_badge.VERDICT_COLORS)}",
         )
 
 

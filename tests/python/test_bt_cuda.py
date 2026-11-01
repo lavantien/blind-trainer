@@ -325,7 +325,6 @@ class CudaCompileStageTests(unittest.TestCase):
         self.cu.write_text("int cu;\n", encoding="utf-8")
         (self.root / "src" / "ga" / "cuda" / "ga_eval.h").write_text("int cu_h;\n",
                                                                      encoding="utf-8")
-        self.log = self.root / "argv.log"
         self.stub_clang = self.write_tool_stub("clang_stub.py")
         self.stub_nvcc = self.write_tool_stub("nvcc_stub.py")
 
@@ -335,15 +334,15 @@ class CudaCompileStageTests(unittest.TestCase):
     def write_tool_stub(self, name):
         stub = self.root / name
         stub.write_text(
-            "import sys\n"
+            "import os, sys, time\n"
             "from pathlib import Path\n"
             "argv = sys.argv[1:]\n"
-            "with open(r'%s', 'a', encoding='utf-8') as log:\n"
-            "    log.write(repr(argv) + '\\n')\n"
+            "log = Path(r'%s') / ('argv-' + str(os.getpid()) + '-' + str(time.time_ns()) + '.log')\n"
+            "log.write_text(repr(argv) + '\\n', encoding='utf-8')\n"
             "if '-o' in argv:\n"
             "    out = Path(argv[argv.index('-o') + 1])\n"
             "    out.parent.mkdir(parents=True, exist_ok=True)\n"
-            "    out.write_bytes(b'stub')\n" % str(self.log),
+            "    out.write_bytes(b'stub')\n" % str(self.root),
             encoding="utf-8",
         )
         return stub
@@ -359,7 +358,12 @@ class CudaCompileStageTests(unittest.TestCase):
         }
 
     def argv_lines(self):
-        return [line for line in self.log.read_text(encoding="utf-8").splitlines() if line]
+        lines = []
+        for log in sorted(self.root.glob("argv-*.log")):
+            lines.extend(
+                line for line in log.read_text(encoding="utf-8").splitlines() if line
+            )
+        return lines
 
     def test_compile_stage_cuda_routes_the_cu_through_nvcc_with_the_define_on_clang(self):
         hub = sample_hub()
@@ -413,7 +417,7 @@ class CudaCompileStageTests(unittest.TestCase):
             [sys.executable, "-I", str(self.stub_clang)],
             bt.Logger(),
         )
-        self.assertFalse(self.log.exists() and any("-ccbin" in line for line in self.argv_lines()))
+        self.assertFalse(any("-ccbin" in line for line in self.argv_lines()))
         self.assertNotIn(
             obj_root / "src" / "ga" / "cuda" / "ga_eval.obj", [obj for _, obj in entries]
         )
