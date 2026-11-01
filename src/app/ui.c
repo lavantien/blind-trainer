@@ -267,24 +267,30 @@ static Vector2 ui_measure(const struct Font *font, const char *text, float size)
 
 static const float BT_UI_EDGE_PAIR = 2.0F;
 
-static const char BT_UI_ELLIPSIS[] = "...";
+static const char *const BT_UI_ELLIPSIS_LADDER[] = {"...", "..", ".", ""};
 
 static void ui_fit_prefix(const struct Font *font, const char *text, float size, float max_w,
                           char *out, size_t cap) {
-    Vector2 dot_box = ui_measure(font, BT_UI_ELLIPSIS, size);
-    size_t keep = strlen(text);
-    if (keep > cap - sizeof BT_UI_ELLIPSIS) {
-        keep = cap - sizeof BT_UI_ELLIPSIS;
-    }
-    while (keep > 0) {
-        snprintf(out, cap, "%.*s", (int)keep, text);
-        Vector2 cut = ui_measure(font, out, size);
-        if (cut.x + dot_box.x <= max_w) {
-            break;
+    for (size_t step = 0; step < sizeof BT_UI_ELLIPSIS_LADDER / sizeof BT_UI_ELLIPSIS_LADDER[0];
+         step++) {
+        const char *tail = BT_UI_ELLIPSIS_LADDER[step];
+        size_t keep = strlen(text);
+        if (keep > cap - strlen(tail) - 1) {
+            keep = cap - strlen(tail) - 1;
         }
-        keep--;
+        while (keep > 0) {
+            snprintf(out, cap, "%.*s%s", (int)keep, text, tail);
+            if (ui_measure(font, out, size).x <= max_w) {
+                return;
+            }
+            keep--;
+        }
+        snprintf(out, cap, "%s", tail);
+        if (ui_measure(font, out, size).x <= max_w) {
+            return;
+        }
     }
-    snprintf(out + keep, cap - keep, "%s", BT_UI_ELLIPSIS);
+    out[0] = '\0';
 }
 
 float bt_ui_fitted_width(const void *font, const char *text, float size, float max_w) {

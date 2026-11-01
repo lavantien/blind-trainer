@@ -312,6 +312,81 @@ BT_TEST(ui_draw, fitted_width_returns_the_full_measure_when_it_fits) {
     BT_CHECK(with_fonts(run_fitted_width));
 }
 
+static int run_fitted_tiny_budgets(const bt_app_font_book *book) {
+    Font regular = *(const Font *)book->regular;
+    float dots = MeasureTextEx(regular, "...", FIT_DRAW_SIZE, 1.0F).x;
+    if (!(dots > 18.0F)) {
+        return 0;
+    }
+    for (int max_w = 1; max_w <= 24; max_w++) {
+        float fitted =
+            bt_ui_fitted_width(book->regular, FIT_LONG_TEXT, FIT_DRAW_SIZE, (float)max_w);
+        if (fitted > (float)max_w + 0.01F) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+BT_TEST(ui_draw, fitted_width_never_exceeds_a_tiny_budget) {
+    BT_CHECK(with_fonts(run_fitted_tiny_budgets));
+}
+
+static void draw_fitted_empty(const bt_app_font_book *book) {
+    bt_ui_draw_fitted(book->regular, "", FIT_DRAW_X, FIT_DRAW_Y, FIT_DRAW_SIZE,
+                      bt_theme_text_primary(), -24.0F);
+}
+
+static int band_is_blank(const char *path, int y0, int y1, int x0, int x1) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    Color surface = bt_app_color(bt_theme_background());
+    int ink = 0;
+    for (int y = y0; y <= y1 && y < image.height && ink == 0; y++) {
+        for (int x = x0; x <= x1 && x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            if (pixel.r != surface.r || pixel.g != surface.g || pixel.b != surface.b) {
+                ink = 1;
+                break;
+            }
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return ink == 0;
+}
+
+static int run_empty_text_draws_no_ink(const bt_app_font_book *book) {
+    bt_app_config config;
+    if (!open_config_window(&config)) {
+        return 0;
+    }
+    for (unsigned frame = 0; frame < DRAW_DWELL_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        draw_fitted_empty(book);
+        bt_app_window_frame_end();
+    }
+    char shot[BT_PATH_MAX];
+    snprintf(shot, sizeof shot, "%s/app-ui-empty-%d.png", getenv("TEMP"), _getpid());
+    remove(shot);
+    int captured = bt_app_window_capture(shot);
+    int blank = captured && band_is_blank(shot, (int)FIT_DRAW_Y - 6,
+                                          (int)(FIT_DRAW_Y + FIT_DRAW_SIZE * 2.0F), 0, 639);
+    remove(shot);
+    bt_app_window_close();
+    return blank;
+}
+
+BT_TEST(ui_draw, fitted_empty_text_draws_no_ink_at_a_negative_budget) {
+    bt_ui_input_clear(&quiet_input);
+    BT_CHECK(with_fonts(run_empty_text_draws_no_ink));
+}
+
 static void fitted_roomy_verify(const bt_app_font_book *book, int left, int right) {
     Font probe = *(const Font *)book->regular;
     float full = MeasureTextEx(probe, FIT_SHORT_TEXT, FIT_DRAW_SIZE, 1.0F).x;
