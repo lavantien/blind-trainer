@@ -214,6 +214,12 @@ void bt_case_view_net_place(const bt_netdisp_layout *layout, float region_x, flo
     *out_quad = quad;
     *out_x = region_x + (region_w - w) / BT_CASE_VIEW_CENTER_SPLIT;
     *out_y = region_y + (region_h - h) / BT_CASE_VIEW_CENTER_SPLIT;
+    if (*out_x < region_x) {
+        *out_x = region_x;
+    }
+    if (*out_y < region_y) {
+        *out_y = region_y;
+    }
     BT_TRACE_EXIT("app.case_view_net_place");
 }
 

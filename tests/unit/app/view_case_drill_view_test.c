@@ -1,7 +1,9 @@
 #include "app/net.h"
+#include "app/theme.h"
 #include "app/views/algs/display.h"
 #include "app/views/case_drill.h"
 #include "app/views/case_drill_view.h"
+#include "app/views/frame.h"
 #include "app/views/state.h"
 
 #include "common.h"
@@ -188,4 +190,48 @@ BT_TEST(view_case_drill_view, net_place_fits_the_net_inside_the_region_and_cente
     bt_case_view_net_extent(&layout, quad, &w, &h);
     BT_CHECK_F64_NEAR(x, (4000.0F - w) / 2.0F, 1e-3);
     BT_CHECK_F64_NEAR(y, (4000.0F - h) / 2.0F, 1e-3);
+}
+
+BT_TEST(view_case_drill_view, net_place_anchors_at_the_region_when_the_floor_cannot_fit) {
+    bt_pz_grid grid;
+    char error[BT_CASE_DRILL_TEXT_MAX];
+    bt_netdisp_layout layout;
+    BT_CHECK(bt_case_drill_facelets("3x3", 0, 0, "R", &grid, error, sizeof error));
+    bt_netdisp_layout_of(&grid, &layout);
+
+    float x = 0.0F;
+    float y = 0.0F;
+    float quad = 0.0F;
+    bt_case_view_net_place(&layout, 100.0F, 300.0F, 200.0F, 40.0F, &x, &y, &quad);
+    BT_CHECK_EQ(quad, BT_CASE_VIEW_QUAD_MIN);
+    float w = 0.0F;
+    float h = 0.0F;
+    bt_case_view_net_extent(&layout, quad, &w, &h);
+    BT_CHECK(h > 40.0F);
+    BT_CHECK(y >= 300.0F - 0.01F);
+    BT_CHECK_F64_NEAR(y, 300.0F, 1e-3);
+    BT_CHECK(x >= 100.0F - 0.01F);
+}
+
+BT_TEST(view_case_drill_view, net_place_keeps_the_draw_inside_a_1280x400_window) {
+    bt_theme_set_root_for(400.0F);
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 400.0F);
+    float band = bt_case_view_text_band_height(theme, 7);
+    bt_pz_grid grid;
+    char error[BT_CASE_DRILL_TEXT_MAX];
+    bt_netdisp_layout layout;
+    BT_CHECK(bt_case_drill_facelets("3x3", 0, 0, "R", &grid, error, sizeof error));
+    bt_netdisp_layout_of(&grid, &layout);
+    float x = 0.0F;
+    float y = 0.0F;
+    float quad = 0.0F;
+    bt_case_view_net_place(&layout, metrics.content_x, metrics.content_y + band, metrics.content_w,
+                           metrics.content_h - band, &x, &y, &quad);
+    BT_CHECK(y >= metrics.content_y + band - 0.01F);
+    float w = 0.0F;
+    float h = 0.0F;
+    bt_case_view_net_extent(&layout, quad, &w, &h);
+    BT_CHECK(y + h <= 400.0F + 0.01F);
+    bt_theme_set_root_for(800.0F);
 }
