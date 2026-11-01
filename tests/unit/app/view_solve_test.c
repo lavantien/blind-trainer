@@ -214,8 +214,9 @@ BT_TEST(view_solve, text_column_opens_right_of_the_net_and_ends_at_the_content_e
 }
 
 BT_TEST(view_solve, text_column_stays_inside_the_content_rect_across_window_sizes) {
-    static const float widths[] = {320.0F,  640.0F,  800.0F,  1024.0F,
-                                   1280.0F, 1600.0F, 1920.0F, 2560.0F,};
+    static const float widths[] = {
+        320.0F, 640.0F, 800.0F, 1024.0F, 1280.0F, 1600.0F, 1920.0F, 2560.0F,
+    };
     static const float heights[] = {240.0F, 480.0F, 600.0F, 800.0F, 900.0F, 1080.0F, 1440.0F};
     for (size_t w = 0; w < sizeof widths / sizeof widths[0]; w++) {
         for (size_t h = 0; h < sizeof heights / sizeof heights[0]; h++) {

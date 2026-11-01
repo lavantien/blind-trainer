@@ -13,6 +13,12 @@
 #include <stdio.h>
 #include <string.h>
 
+static const float BT_CASE_VIEW_TEXT_SPACING = 1.0F;
+static const float BT_CASE_VIEW_CELL_PLUS_GAP_RATIO = 1.0F + BT_CASE_VIEW_CELL_GAP_RATIO;
+static const float BT_CASE_VIEW_STROKE_EDGE_PAIR = 2.0F;
+static const float BT_CASE_VIEW_CENTER_SPLIT = 2.0F;
+static const float BT_CASE_VIEW_ZERO_PX = 0.0F;
+
 static size_t band_row_count(const bt_netdisp_layout *layout, size_t band) {
     size_t rows = 0;
     for (size_t slot = 0; slot < layout->band_slot_count[band]; slot++) {
@@ -50,9 +56,9 @@ void bt_case_view_layout_cells(const bt_netdisp_layout *layout, size_t *out_cols
 
 float bt_case_view_quad_for(size_t cols, size_t rows, float region_w, float region_h) {
     BT_TRACE_ENTER("app.case_view_quad_for");
-    float span_cols = (float)(cols > 0 ? cols : 1) * (1.0F + BT_CASE_VIEW_CELL_GAP_RATIO) -
+    float span_cols = (float)(cols > 0 ? cols : 1) * BT_CASE_VIEW_CELL_PLUS_GAP_RATIO -
                       BT_CASE_VIEW_CELL_GAP_RATIO;
-    float span_rows = (float)(rows > 0 ? rows : 1) * (1.0F + BT_CASE_VIEW_CELL_GAP_RATIO) -
+    float span_rows = (float)(rows > 0 ? rows : 1) * BT_CASE_VIEW_CELL_PLUS_GAP_RATIO -
                       BT_CASE_VIEW_CELL_GAP_RATIO;
     float quad = region_w / span_cols;
     if (region_h / span_rows < quad) {
@@ -123,7 +129,7 @@ static float body_line_advance(const bt_theme *theme) {
 
 float bt_case_view_text_band_height(const bt_theme *theme, size_t line_count) {
     BT_TRACE_ENTER("app.case_view_text_band_height");
-    float height = 0.0F;
+    float height = BT_CASE_VIEW_ZERO_PX;
     if (line_count > 0) {
         height = title_line_advance(theme) + (float)(line_count - 1) * body_line_advance(theme);
     }
@@ -142,14 +148,15 @@ static float case_view_gap(float quad) {
 
 static float slot_width(const bt_netdisp_band_slot *slot, float quad, float gap, float stroke) {
     if (slot->kind == BT_NETDISP_BAND_FACE) {
-        return face_plate_width(slot->face.width, quad, gap) + stroke * 2.0F;
+        return face_plate_width(slot->face.width, quad, gap) +
+               stroke * BT_CASE_VIEW_STROKE_EDGE_PAIR;
     }
     return face_plate_width(slot->spacer, quad, gap);
 }
 
 static float band_width(const bt_netdisp_layout *layout, size_t band, float quad, float gap,
                         float stroke) {
-    float width = 0.0F;
+    float width = BT_CASE_VIEW_ZERO_PX;
     for (size_t slot = 0; slot < layout->band_slot_count[band]; slot++) {
         width += slot_width(&layout->bands[band][slot], quad, gap, stroke);
     }
@@ -161,9 +168,9 @@ static float band_height(const bt_netdisp_layout *layout, size_t band, float qua
                          float stroke) {
     size_t rows = band_row_count(layout, band);
     if (rows == 0) {
-        return 0.0F;
+        return BT_CASE_VIEW_ZERO_PX;
     }
-    return face_plate_width(rows, quad, gap) + stroke * 2.0F;
+    return face_plate_width(rows, quad, gap) + stroke * BT_CASE_VIEW_STROKE_EDGE_PAIR;
 }
 
 void bt_case_view_net_extent(const bt_netdisp_layout *layout, float quad, float *out_w,
@@ -171,8 +178,8 @@ void bt_case_view_net_extent(const bt_netdisp_layout *layout, float quad, float 
     BT_TRACE_ENTER("app.case_view_net_extent");
     float gap = case_view_gap(quad);
     float stroke = bt_net_cell_stroke(quad);
-    float width = 0.0F;
-    float height = 0.0F;
+    float width = BT_CASE_VIEW_ZERO_PX;
+    float height = BT_CASE_VIEW_ZERO_PX;
     for (size_t band = 0; band < layout->band_count; band++) {
         float drawn = band_width(layout, band, quad, gap, stroke);
         if (drawn > width) {
@@ -194,8 +201,8 @@ void bt_case_view_net_place(const bt_netdisp_layout *layout, float region_x, flo
     size_t rows = 0;
     bt_case_view_layout_cells(layout, &cols, &rows);
     float quad = bt_case_view_quad_for(cols, rows, region_w, region_h);
-    float w = 0.0F;
-    float h = 0.0F;
+    float w = BT_CASE_VIEW_ZERO_PX;
+    float h = BT_CASE_VIEW_ZERO_PX;
     while (quad > BT_CASE_VIEW_QUAD_MIN) {
         bt_case_view_net_extent(layout, quad, &w, &h);
         if (w <= region_w && h <= region_h) {
@@ -205,8 +212,8 @@ void bt_case_view_net_place(const bt_netdisp_layout *layout, float region_x, flo
     }
     bt_case_view_net_extent(layout, quad, &w, &h);
     *out_quad = quad;
-    *out_x = region_x + (region_w - w) / 2.0F;
-    *out_y = region_y + (region_h - h) / 2.0F;
+    *out_x = region_x + (region_w - w) / BT_CASE_VIEW_CENTER_SPLIT;
+    *out_y = region_y + (region_h - h) / BT_CASE_VIEW_CENTER_SPLIT;
     BT_TRACE_EXIT("app.case_view_net_place");
 }
 
@@ -222,8 +229,10 @@ static void draw_net(const bt_netdisp_layout *layout, float quad, float x, float
                 continue;
             }
             const bt_netdisp_face *face = &at->face;
-            float plate_w = face_plate_width(face->width, quad, gap) + stroke * 2.0F;
-            float plate_h = face_plate_width(face->row_count, quad, gap) + stroke * 2.0F;
+            float plate_w =
+                face_plate_width(face->width, quad, gap) + stroke * BT_CASE_VIEW_STROKE_EDGE_PAIR;
+            float plate_h = face_plate_width(face->row_count, quad, gap) +
+                            stroke * BT_CASE_VIEW_STROKE_EDGE_PAIR;
             DrawRectangleLinesEx((Rectangle){slot_x, y, plate_w, plate_h}, stroke,
                                  bt_app_color(bt_theme_text_primary()));
             float row_y = y + stroke;
@@ -248,8 +257,9 @@ static void draw_net(const bt_netdisp_layout *layout, float quad, float x, float
 static void draw_centered_line(const void *font, const char *text, float content_x, float content_w,
                                float y, float size, bt_theme_color color) {
     Font face = *(const Font *)font;
-    Vector2 box = MeasureTextEx(face, text, size, 1.0F);
-    bt_app_draw_text(font, text, content_x + (content_w - box.x) / 2.0F, y, size, color);
+    Vector2 box = MeasureTextEx(face, text, size, BT_CASE_VIEW_TEXT_SPACING);
+    bt_app_draw_text(font, text, content_x + (content_w - box.x) / BT_CASE_VIEW_CENTER_SPLIT, y,
+                     size, color);
 }
 
 void bt_view_case_drill_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
@@ -277,8 +287,9 @@ void bt_view_case_drill_draw(const bt_app_ctx *ctx, const void *font_regular, co
         if (lines[i].fitted) {
             float fitted_w = bt_ui_fitted_width(font, lines[i].text, size, metrics.content_w);
             bt_ui_draw_fitted(font, lines[i].text,
-                              metrics.content_x + (metrics.content_w - fitted_w) / 2.0F, y, size,
-                              color, metrics.content_w);
+                              metrics.content_x +
+                                  (metrics.content_w - fitted_w) / BT_CASE_VIEW_CENTER_SPLIT,
+                              y, size, color, metrics.content_w);
         } else {
             draw_centered_line(font, lines[i].text, metrics.content_x, metrics.content_w, y, size,
                                color);
@@ -289,9 +300,9 @@ void bt_view_case_drill_draw(const bt_app_ctx *ctx, const void *font_regular, co
         bt_netdisp_layout layout;
         bt_netdisp_layout_of(&session->grid, &layout);
         float band = bt_case_view_text_band_height(theme, count);
-        float x = 0.0F;
-        float net_y = 0.0F;
-        float quad = 0.0F;
+        float x = BT_CASE_VIEW_ZERO_PX;
+        float net_y = BT_CASE_VIEW_ZERO_PX;
+        float quad = BT_CASE_VIEW_ZERO_PX;
         bt_case_view_net_place(&layout, metrics.content_x, metrics.content_y + band,
                                metrics.content_w, metrics.content_h - band, &x, &net_y, &quad);
         draw_net(&layout, quad, x, net_y);
