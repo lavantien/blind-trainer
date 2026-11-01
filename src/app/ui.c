@@ -265,6 +265,57 @@ static Vector2 ui_measure(const struct Font *font, const char *text, float size)
     return MeasureTextEx(*(const Font *)font, text, size, 1.0F);
 }
 
+static const float BT_UI_EDGE_PAIR = 2.0F;
+
+static const char BT_UI_ELLIPSIS[] = "...";
+
+static void ui_fit_prefix(const struct Font *font, const char *text, float size, float max_w,
+                          char *out, size_t cap) {
+    Vector2 dot_box = ui_measure(font, BT_UI_ELLIPSIS, size);
+    size_t keep = strlen(text);
+    if (keep > cap - sizeof BT_UI_ELLIPSIS) {
+        keep = cap - sizeof BT_UI_ELLIPSIS;
+    }
+    while (keep > 0) {
+        snprintf(out, cap, "%.*s", (int)keep, text);
+        Vector2 cut = ui_measure(font, out, size);
+        if (cut.x + dot_box.x <= max_w) {
+            break;
+        }
+        keep--;
+    }
+    snprintf(out + keep, cap - keep, "%s", BT_UI_ELLIPSIS);
+}
+
+float bt_ui_fitted_width(const void *font, const char *text, float size, float max_w) {
+    BT_TRACE_ENTER("app.ui_fitted_width");
+    Vector2 box = ui_measure(font, text, size);
+    if (box.x <= max_w) {
+        BT_TRACE_EXIT("app.ui_fitted_width");
+        return box.x;
+    }
+    char fitted[BT_UI_TEXT_MAX];
+    ui_fit_prefix(font, text, size, max_w, fitted, sizeof fitted);
+    Vector2 cut = ui_measure(font, fitted, size);
+    BT_TRACE_EXIT("app.ui_fitted_width");
+    return cut.x;
+}
+
+void bt_ui_draw_fitted(const void *font, const char *text, float x, float y, float size,
+                       bt_theme_color color, float max_w) {
+    BT_TRACE_ENTER("app.ui_draw_fitted");
+    Vector2 box = ui_measure(font, text, size);
+    if (box.x <= max_w) {
+        ui_text(font, text, x, y, size, color);
+        BT_TRACE_EXIT("app.ui_draw_fitted");
+        return;
+    }
+    char fitted[BT_UI_TEXT_MAX];
+    ui_fit_prefix(font, text, size, max_w, fitted, sizeof fitted);
+    ui_text(font, fitted, x, y, size, color);
+    BT_TRACE_EXIT("app.ui_draw_fitted");
+}
+
 static float ui_center_offset(float total, float used) {
     return (total - used) / 2.0F;
 }
@@ -294,12 +345,13 @@ bt_ui_rect bt_ui_panel(const struct Font *font, const bt_ui_rect *rect, const ch
     const bt_theme *theme = bt_theme_table();
     float pad = theme->panel_padding_rem * theme->root_rem;
     float size = theme->font_title * theme->root_rem;
-    ui_text(font, title, rect->x + pad, rect->y + pad, size, bt_theme_text_primary());
+    bt_ui_draw_fitted(font, title, rect->x + pad, rect->y + pad, size, bt_theme_text_primary(),
+                      rect->width - pad * BT_UI_EDGE_PAIR);
     bt_ui_rect content = {
         rect->x + pad,
         rect->y + pad + size,
-        rect->width - pad * 2.0F,
-        rect->height - pad * 2.0F - size,
+        rect->width - pad * BT_UI_EDGE_PAIR,
+        rect->height - pad * BT_UI_EDGE_PAIR - size,
     };
     BT_TRACE_EXIT("app.ui_panel");
     return content;
@@ -480,9 +532,11 @@ int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *co
     ui_lines(rect, state->open ? bt_theme_accent() : bt_theme_hairline());
     const bt_theme *theme = bt_theme_table();
     float size = theme->font_body * theme->root_rem;
+    float indent = theme->spacing_rem * theme->root_rem;
     float mark_w = rect->height;
-    ui_text(font, rows[picked], rect->x + theme->spacing_rem * theme->root_rem,
-            rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary());
+    bt_ui_draw_fitted(font, rows[picked], rect->x + indent,
+                      rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_primary(),
+                      rect->width - indent * BT_UI_EDGE_PAIR);
     ui_text(font, "v", rect->x + rect->width - mark_w + ui_center_offset(mark_w, 0.0F),
             rect->y + ui_center_offset(rect->height, size), size, bt_theme_text_muted());
     if (state->open) {
@@ -495,8 +549,9 @@ int bt_ui_select(const struct Font *font, const bt_ui_rect *rect, const char *co
             }
             ui_lines(&slot, bt_theme_hairline());
             bt_theme_color ink = i == picked ? bt_theme_accent() : bt_theme_text_primary();
-            ui_text(font, rows[i], slot.x + theme->spacing_rem * theme->root_rem,
-                    slot.y + ui_center_offset(slot.height, size), size, ink);
+            bt_ui_draw_fitted(font, rows[i], slot.x + indent,
+                              slot.y + ui_center_offset(slot.height, size), size, ink,
+                              slot.width - indent * BT_UI_EDGE_PAIR);
         }
     }
     BT_TRACE_EXIT("app.ui_select");

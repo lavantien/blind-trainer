@@ -1,6 +1,8 @@
 #ifndef BT_APP_UI_H
 #define BT_APP_UI_H
 
+#include "app/theme.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -69,6 +71,9 @@ int bt_ui_select_transition(bt_ui_select_state *state, const bt_ui_rect *rect, i
 bt_ui_button_state bt_ui_button(const struct Font *font, const bt_ui_rect *rect, const char *label,
                                 const bt_ui_input *input);
 bt_ui_rect bt_ui_panel(const struct Font *font, const bt_ui_rect *rect, const char *title);
+float bt_ui_fitted_width(const void *font, const char *text, float size, float max_w);
+void bt_ui_draw_fitted(const void *font, const char *text, float x, float y, float size,
+                       bt_theme_color color, float max_w);
 bt_ui_list_window bt_ui_list(const struct Font *font, const bt_ui_rect *rect,
                              const char *const *rows, int row_count, int visible_rows,
                              bt_ui_list_window window, const bt_ui_input *input);
