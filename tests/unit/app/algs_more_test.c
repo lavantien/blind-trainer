@@ -145,16 +145,6 @@ static int colors_equal(bt_theme_color a, bt_theme_color b) {
     return a.red == b.red && a.green == b.green && a.blue == b.blue && a.alpha == b.alpha;
 }
 
-static int detail_line_is(const bt_view_algs_detail_line *lines, size_t count, const char *text,
-                          bt_theme_color color) {
-    for (size_t i = 0; i < count; i++) {
-        if (strcmp(lines[i].text, text) == 0 && colors_equal(lines[i].color, color)) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
 BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     bt_app_ctx ctx = algs_ctx("moredetail");
     bt_corpus_row row = covered_row(COVERED_ALG, "R2 U':[S,R2]");
@@ -170,12 +160,24 @@ BT_TEST(algs_more, the_detail_shows_coverage_mechanics_meta_and_links) {
     BT_CHECK(detail_has(lines, count, "edge UF-UB-UR covered yes"));
     BT_CHECK(detail_has(lines, count, meta));
     BT_CHECK(detail_has(lines, count, "recon  video https://example.test/recon"));
-    BT_CHECK(detail_line_is(lines, count, "R2 U': ", bt_theme_setup()));
-    BT_CHECK(detail_line_is(lines, count, "[", bt_theme_text_muted()));
-    BT_CHECK(detail_line_is(lines, count, "S", bt_theme_teal()));
-    BT_CHECK(detail_line_is(lines, count, ",", bt_theme_text_muted()));
-    BT_CHECK(detail_line_is(lines, count, "R2", bt_theme_interchange()));
-    BT_CHECK(detail_line_is(lines, count, "]", bt_theme_text_muted()));
+    size_t mechanic = count;
+    for (size_t i = 0; i < count; i++) {
+        if (lines[i].span_count > 0) {
+            mechanic = i;
+        }
+    }
+    BT_CHECK(mechanic < count);
+    BT_CHECK_EQ(lines[mechanic].span_count, (size_t)6);
+    BT_CHECK(strcmp(lines[mechanic].spans[0].text, "R2 U': ") == 0);
+    BT_CHECK(colors_equal(lines[mechanic].spans[0].color, bt_theme_setup()));
+    BT_CHECK(strcmp(lines[mechanic].spans[1].text, "[") == 0);
+    BT_CHECK(colors_equal(lines[mechanic].spans[1].color, bt_theme_text_muted()));
+    BT_CHECK(strcmp(lines[mechanic].spans[2].text, "S") == 0);
+    BT_CHECK(colors_equal(lines[mechanic].spans[2].color, bt_theme_teal()));
+    BT_CHECK(strcmp(lines[mechanic].spans[4].text, "R2") == 0);
+    BT_CHECK(colors_equal(lines[mechanic].spans[4].color, bt_theme_interchange()));
+    BT_CHECK(strcmp(lines[mechanic].spans[5].text, "]") == 0);
+    BT_CHECK(colors_equal(lines[mechanic].spans[5].color, bt_theme_text_muted()));
     free(lines);
     bt_app_ctx_free(&ctx);
 }

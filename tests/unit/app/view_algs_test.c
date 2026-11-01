@@ -295,3 +295,103 @@ BT_TEST(view_algs, centered_line_x_and_link_rect_pin_the_hit_geometry) {
     BT_CHECK(near_value(hit.width, 200.0F));
     BT_CHECK(near_value(hit.height, 44.0F));
 }
+
+BT_TEST(view_algs, unit_spans_carry_one_commutator_unit_without_the_join) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    char err_token[64];
+    if (!bt_alg_parse("R2 U' S R2 S' R2 U R2", &alg, err_token, sizeof err_token)) {
+        BT_ABORT("fixture alg: %s", err_token);
+    }
+    bt_expanded_list units;
+    bt_expanded_list_init(&units);
+    BT_CHECK(bt_decompose_verified("R2 U':[S,R2]", &alg, &units));
+    BT_CHECK_EQ(units.count, (size_t)1);
+    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+    size_t count = bt_view_algs_unit_spans(&units.items[0], spans);
+    BT_CHECK_EQ(count, (size_t)6);
+    BT_CHECK(span_is(spans, count, 0, "R2 U': ", bt_theme_setup()));
+    BT_CHECK(span_is(spans, count, 1, "[", bt_theme_text_muted()));
+    BT_CHECK(span_is(spans, count, 2, "S", bt_theme_teal()));
+    BT_CHECK(span_is(spans, count, 3, ",", bt_theme_text_muted()));
+    BT_CHECK(span_is(spans, count, 4, "R2", bt_theme_interchange()));
+    BT_CHECK(span_is(spans, count, 5, "]", bt_theme_text_muted()));
+    bt_expanded_list_free(&units);
+    bt_alg_free(&alg);
+}
+
+static float probe_span_width(const char *text, void *user) {
+    (void)user;
+    return 10.0F * (float)strlen(text);
+}
+
+BT_TEST(view_algs, span_pack_merges_units_that_fit_and_wraps_the_rest) {
+    bt_corpus_row row = edge_row("UF-UB-UR", "S R2 S' R2 U R2 U' R2", "[S,R2] + [U,R2]");
+    bt_corpus corpus = one_row_corpus(&row);
+    bt_view_algs_browser browser = selected_ab_browser();
+    bt_view_algs_detail_line *lines = NULL;
+    size_t count = bt_view_algs_detail_lines(&corpus, &browser, &lines);
+    size_t span_lines = 0;
+    for (size_t i = 0; i < count; i++) {
+        if (lines[i].span_count > 0) {
+            span_lines++;
+        }
+    }
+    BT_CHECK_EQ(span_lines, (size_t)2);
+
+    size_t packed = bt_view_algs_pack_spans(lines, count, 200.0F, probe_span_width, NULL);
+    span_lines = 0;
+    size_t merged_at = packed;
+    for (size_t i = 0; i < packed; i++) {
+        if (lines[i].span_count > 0) {
+            span_lines++;
+            merged_at = i;
+        }
+    }
+    BT_CHECK_EQ(span_lines, (size_t)1);
+    BT_CHECK_EQ(lines[merged_at].span_count, (size_t)11);
+    BT_CHECK(strcmp(lines[merged_at].spans[5].text, BT_ALGS_UNIT_JOIN) == 0);
+    BT_CHECK(strcmp(lines[merged_at].spans[6].text, "[") == 0);
+    BT_CHECK(strcmp(lines[merged_at].spans[10].text, "]") == 0);
+    free(lines);
+
+    lines = NULL;
+    count = bt_view_algs_detail_lines(&corpus, &browser, &lines);
+    packed = bt_view_algs_pack_spans(lines, count, 120.0F, probe_span_width, NULL);
+    span_lines = 0;
+    for (size_t i = 0; i < packed; i++) {
+        if (lines[i].span_count > 0) {
+            span_lines++;
+            BT_CHECK_EQ(lines[i].span_count, (size_t)5);
+            for (size_t span = 0; span < lines[i].span_count; span++) {
+                BT_CHECK(strcmp(lines[i].spans[span].text, BT_ALGS_UNIT_JOIN) != 0);
+            }
+        }
+    }
+    BT_CHECK_EQ(span_lines, (size_t)2);
+    free(lines);
+}
+
+BT_TEST(view_algs, query_echo_spells_the_typed_query_with_a_cursor) {
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_view_algs_app_init(app);
+    bt_view_algs_read_query(NULL, "quer");
+    char echo[BT_ALGS_TEXT_MAX];
+    app->query_focused = 0;
+    bt_view_algs_query_echo(app, echo);
+    BT_CHECK(strcmp(echo, BT_ALGS_QUERY_HINT) == 0);
+    app->query_focused = 1;
+    bt_view_algs_query_echo(app, echo);
+    BT_CHECK(strcmp(echo, "> quer|") == 0);
+    app->query_focused = 0;
+}
+
+BT_TEST(view_algs, query_band_pins_the_reserved_strip_under_the_list) {
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    bt_ui_rect band = bt_view_algs_query_band(&metrics);
+    BT_CHECK(near_value(band.x, metrics.content_x));
+    BT_CHECK(near_value(band.width, metrics.content_w * 0.4F));
+    BT_CHECK(near_value(band.height, theme->root_rem * BT_ALGS_QUERY_BAND_REM));
+    BT_CHECK(near_value(band.y + band.height, metrics.content_y + metrics.content_h));
+}

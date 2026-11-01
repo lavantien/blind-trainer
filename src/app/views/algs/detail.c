@@ -347,3 +347,128 @@ void bt_view_algs_override_enter(bt_app_ctx *ctx) {
     }
     BT_TRACE_EXIT("app.algs_override_enter");
 }
+
+void bt_view_override_open(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.algs_override_open");
+    (void)ctx;
+    bt_case_site site;
+    if (!bt_view_case_site_of(bt_view_algs_repo(), &site)) {
+        BT_TRACE_EXIT("app.algs_override_open");
+        return;
+    }
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    draft->has_case = 1;
+    draft->site = site;
+    const bt_repo_node *node = bt_repo_browser_node(bt_view_algs_repo());
+    const char *seed =
+        node != NULL && node->has_case && node->case_alg != NULL ? node->case_alg : "";
+    const char *current = bt_overrides_get(bt_view_algs_overrides(), &site.case_ref);
+    snprintf(draft->text, sizeof draft->text, "%s", current != NULL ? current : seed);
+    draft->has_error = 0;
+    draft->error[0] = '\0';
+    BT_TRACE_EXIT("app.algs_override_open");
+}
+
+void bt_view_override_cancel(void) {
+    BT_TRACE_ENTER("app.algs_override_cancel");
+    bt_view_override_draft_default(bt_view_algs_draft());
+    BT_TRACE_EXIT("app.algs_override_cancel");
+}
+
+void bt_view_override_submit(bt_app_ctx *ctx, const char *text) {
+    BT_TRACE_ENTER("app.algs_override_submit");
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    if (!draft->has_case) {
+        BT_TRACE_EXIT("app.algs_override_submit");
+        return;
+    }
+    size_t len = strlen(text);
+    size_t start = 0;
+    size_t end = len;
+    while (start < end) {
+        size_t run = bt_space_len(text, start, len);
+        if (run == 0) {
+            break;
+        }
+        start += run;
+    }
+    while (end > start) {
+        size_t run = bt_space_len(text, end - 1, len);
+        if (run == 0) {
+            break;
+        }
+        end -= run;
+    }
+    char trimmed[BT_ALGS_TEXT_MAX];
+    size_t trimmed_len = 0;
+    for (size_t at = start; at < end && trimmed_len + 1 < sizeof trimmed; at++) {
+        trimmed[trimmed_len++] = text[at];
+    }
+    trimmed[trimmed_len] = '\0';
+    if (trimmed[0] == '\0') {
+        bt_view_override_cancel();
+        BT_TRACE_EXIT("app.algs_override_submit");
+        return;
+    }
+    char error[BT_ALGS_TEXT_MAX];
+    if (bt_view_geometry_check(draft->site.case_ref.event, draft->site.has_size, draft->site.size,
+                               trimmed, error, sizeof error) != 0) {
+        draft->has_error = 1;
+        snprintf(draft->error, sizeof draft->error, "%s", error);
+        BT_TRACE_FAIL("app.algs_override_submit", "%s", error);
+        BT_TRACE_EXIT("app.algs_override_submit");
+        return;
+    }
+    bt_db db;
+    bt_db_error err;
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(ctx->paths.user_root, db_path);
+    if (bt_db_open_at(db_path, &db, &err) != 0 ||
+        bt_repo_user_upsert(&db, &draft->site.case_ref, trimmed, &err) != 0) {
+        draft->has_error = 1;
+        snprintf(draft->error, sizeof draft->error, "%s", err.detail);
+        if (db.conn != NULL) {
+            bt_db_close(&db);
+        }
+        BT_TRACE_FAIL("app.algs_override_submit", "%s", err.detail);
+        BT_TRACE_EXIT("app.algs_override_submit");
+        return;
+    }
+    bt_db_close(&db);
+    bt_overrides_put(bt_view_algs_overrides(), &draft->site.case_ref, trimmed);
+    bt_view_override_cancel();
+    BT_TRACE_EXIT("app.algs_override_submit");
+}
+
+void bt_view_override_delete(bt_app_ctx *ctx) {
+    BT_TRACE_ENTER("app.algs_override_delete");
+    bt_case_site site;
+    if (!bt_view_case_site_of(bt_view_algs_repo(), &site)) {
+        BT_TRACE_EXIT("app.algs_override_delete");
+        return;
+    }
+    if (!bt_overrides_contains(bt_view_algs_overrides(), &site.case_ref)) {
+        BT_TRACE_EXIT("app.algs_override_delete");
+        return;
+    }
+    bt_db db;
+    bt_db_error err;
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(ctx->paths.user_root, db_path);
+    int opened = bt_db_open_at(db_path, &db, &err);
+    int removed = opened == 0 ? bt_repo_user_remove(&db, &site.case_ref, &err) : -1;
+    if (opened != 0 || removed < 0) {
+        bt_view_override_draft *draft = bt_view_algs_draft();
+        draft->has_error = 1;
+        snprintf(draft->error, sizeof draft->error, "%s", err.detail);
+        if (db.conn != NULL) {
+            bt_db_close(&db);
+        }
+        BT_TRACE_FAIL("app.algs_override_delete", "%s", err.detail);
+        BT_TRACE_EXIT("app.algs_override_delete");
+        return;
+    }
+    bt_db_close(&db);
+    bt_overrides_remove(bt_view_algs_overrides(), &site.case_ref);
+    BT_TRACE_EXIT("app.algs_override_delete");
+}

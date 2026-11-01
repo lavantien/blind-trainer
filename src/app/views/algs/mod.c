@@ -181,7 +181,7 @@ size_t bt_view_algs_list_capacity(const bt_app_config *config) {
     BT_TRACE_ENTER("app.algs_list_capacity");
     const bt_theme *theme = bt_theme_table();
     float chrome = theme->root_rem * (theme->header_height_rem + 2.0F * theme->panel_padding_rem);
-    float query_box = theme->root_rem * 3.0F;
+    float query_box = theme->root_rem * BT_ALGS_QUERY_BAND_REM;
     float line = theme->root_rem * theme->font_body * BT_ALGS_LINE_FACTOR;
     float available = (float)config->window.height - chrome - query_box;
     long long rows = (long long)(available / line);
@@ -249,68 +249,79 @@ size_t bt_view_algs_pair_expand_rows(const bt_corpus_row *row, char out[BT_ALGS_
     return written ? 1 : 0;
 }
 
+size_t bt_view_algs_unit_spans(const bt_expanded *unit, bt_view_algs_span out[BT_ALGS_SPANS_MAX]) {
+    BT_TRACE_ENTER("app.algs_unit_spans");
+    size_t count = 0;
+    if (unit->has_setup && count < BT_ALGS_SPANS_MAX) {
+        bt_strbuf text;
+        bt_strbuf_init(&text, 128);
+        bt_alg_format(&unit->setup, &text);
+        snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s: ", text.data);
+        free(text.data);
+        out[count++].color = bt_theme_setup();
+    }
+    if (count < BT_ALGS_SPANS_MAX) {
+        snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", "[");
+        out[count++].color = bt_theme_text_muted();
+    }
+    bt_strbuf first;
+    bt_strbuf_init(&first, 128);
+    bt_strbuf second;
+    bt_strbuf_init(&second, 128);
+    if (unit->b_first) {
+        bt_alg_format(&unit->b, &first);
+        bt_alg_format(&unit->a, &second);
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", first.data);
+            out[count++].color = bt_theme_interchange();
+        }
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", ",");
+            out[count++].color = bt_theme_text_muted();
+        }
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", second.data);
+            out[count++].color = bt_theme_teal();
+        }
+    } else {
+        bt_alg_format(&unit->a, &first);
+        bt_alg_format(&unit->b, &second);
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", first.data);
+            out[count++].color = bt_theme_teal();
+        }
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", ",");
+            out[count++].color = bt_theme_text_muted();
+        }
+        if (count < BT_ALGS_SPANS_MAX) {
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", second.data);
+            out[count++].color = bt_theme_interchange();
+        }
+    }
+    free(first.data);
+    free(second.data);
+    if (count < BT_ALGS_SPANS_MAX) {
+        snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", "]");
+        out[count++].color = bt_theme_text_muted();
+    }
+    BT_TRACE_EXIT("app.algs_unit_spans");
+    return count;
+}
+
 size_t bt_view_algs_mechanic_spans(const bt_expanded_list *units,
                                    bt_view_algs_span out[BT_ALGS_SPANS_MAX]) {
     BT_TRACE_ENTER("app.algs_mechanic_spans");
     size_t count = 0;
     for (size_t index = 0; index < units->count; index++) {
-        const bt_expanded *unit = &units->items[index];
         if (index > 0 && count < BT_ALGS_SPANS_MAX) {
-            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", " + ");
+            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", BT_ALGS_UNIT_JOIN);
             out[count++].color = bt_theme_text_muted();
         }
-        if (unit->has_setup && count < BT_ALGS_SPANS_MAX) {
-            bt_strbuf text;
-            bt_strbuf_init(&text, 128);
-            bt_alg_format(&unit->setup, &text);
-            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s: ", text.data);
-            free(text.data);
-            out[count++].color = bt_theme_setup();
-        }
-        if (count < BT_ALGS_SPANS_MAX) {
-            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", "[");
-            out[count++].color = bt_theme_text_muted();
-        }
-        bt_strbuf first;
-        bt_strbuf_init(&first, 128);
-        bt_strbuf second;
-        bt_strbuf_init(&second, 128);
-        if (unit->b_first) {
-            bt_alg_format(&unit->b, &first);
-            bt_alg_format(&unit->a, &second);
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", first.data);
-                out[count++].color = bt_theme_interchange();
-            }
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", ",");
-                out[count++].color = bt_theme_text_muted();
-            }
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", second.data);
-                out[count++].color = bt_theme_teal();
-            }
-        } else {
-            bt_alg_format(&unit->a, &first);
-            bt_alg_format(&unit->b, &second);
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", first.data);
-                out[count++].color = bt_theme_teal();
-            }
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", ",");
-                out[count++].color = bt_theme_text_muted();
-            }
-            if (count < BT_ALGS_SPANS_MAX) {
-                snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", second.data);
-                out[count++].color = bt_theme_interchange();
-            }
-        }
-        free(first.data);
-        free(second.data);
-        if (count < BT_ALGS_SPANS_MAX) {
-            snprintf(out[count].text, BT_ALGS_TEXT_MAX, "%s", "]");
-            out[count++].color = bt_theme_text_muted();
+        bt_view_algs_span unit[BT_ALGS_SPANS_MAX];
+        size_t unit_count = bt_view_algs_unit_spans(&units->items[index], unit);
+        for (size_t at = 0; at < unit_count && count < BT_ALGS_SPANS_MAX; at++) {
+            out[count++] = unit[at];
         }
     }
     BT_TRACE_EXIT("app.algs_mechanic_spans");
@@ -545,6 +556,7 @@ static int push_detail(bt_view_algs_detail_line **out, size_t *cap, size_t *coun
     snprintf((*out)[*count].text, BT_ALGS_TEXT_MAX, "%s", text);
     (*out)[*count].color = color;
     (*out)[*count].link = 0;
+    (*out)[*count].span_count = 0;
     (*count)++;
     return 0;
 }
@@ -555,6 +567,19 @@ static int push_link_detail(bt_view_algs_detail_line **out, size_t *cap, size_t 
         return -1;
     }
     (*out)[*count - 1].link = 1;
+    return 0;
+}
+
+static int push_span_detail(bt_view_algs_detail_line **out, size_t *cap, size_t *count,
+                            const bt_view_algs_span *spans, size_t span_count) {
+    if (push_detail(out, cap, count, BT_ALGS_STYLE_ALG, "", bt_theme_text_primary()) != 0) {
+        return -1;
+    }
+    bt_view_algs_detail_line *line = &(*out)[*count - 1];
+    for (size_t at = 0; at < span_count && at < BT_ALGS_SPANS_MAX; at++) {
+        line->spans[at] = spans[at];
+    }
+    line->span_count = span_count < BT_ALGS_SPANS_MAX ? span_count : BT_ALGS_SPANS_MAX;
     return 0;
 }
 
@@ -603,11 +628,10 @@ size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_bro
             bt_expanded_list units;
             bt_expanded_list_init(&units);
             if (bt_decompose_verified(row->commutator, &row->alg, &units)) {
-                bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
-                size_t span_count = bt_view_algs_mechanic_spans(&units, spans);
-                for (size_t span = 0; span < span_count; span++) {
-                    push_detail(&lines, &cap, &count, BT_ALGS_STYLE_ALG, spans[span].text,
-                                spans[span].color);
+                for (size_t unit = 0; unit < units.count; unit++) {
+                    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+                    size_t span_count = bt_view_algs_unit_spans(&units.items[unit], spans);
+                    push_span_detail(&lines, &cap, &count, spans, span_count);
                 }
                 bt_expanded_list_free(&units);
             } else {
@@ -643,6 +667,70 @@ size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_bro
     return count;
 }
 
+typedef struct {
+    Font regular;
+    float size_px;
+} bt_algs_span_measure;
+
+static float bt_algs_span_width(const char *text, void *user) {
+    bt_algs_span_measure *measure = user;
+    return MeasureTextEx(measure->regular, text, measure->size_px, BT_ALGS_TEXT_SPACING).x;
+}
+
+static void bt_view_algs_span_line_draw(const bt_view_algs_detail_line *line, const void *font,
+                                        float center, float y, float size_px, float max_w) {
+    BT_TRACE_ENTER("app.algs_span_line_draw");
+    Font regular = *(const Font *)font;
+    float total = 0.0F;
+    for (size_t at = 0; at < line->span_count; at++) {
+        total += MeasureTextEx(regular, line->spans[at].text, size_px, BT_ALGS_TEXT_SPACING).x;
+    }
+    if (total > max_w) {
+        char joined[BT_ALGS_TEXT_MAX * BT_ALGS_SPANS_MAX];
+        joined[0] = '\0';
+        for (size_t at = 0; at < line->span_count; at++) {
+            strncat(joined, line->spans[at].text, sizeof joined - strlen(joined) - 1);
+        }
+        float fitted = bt_ui_fitted_width(font, joined, size_px, max_w);
+        bt_ui_draw_fitted(font, joined, bt_view_algs_centered_line_x(center, fitted), y, size_px,
+                          bt_theme_text_primary(), max_w);
+        BT_TRACE_EXIT("app.algs_span_line_draw");
+        return;
+    }
+    float cursor = bt_view_algs_centered_line_x(center, total);
+    for (size_t at = 0; at < line->span_count; at++) {
+        bt_app_draw_text(font, line->spans[at].text, cursor, y, size_px, line->spans[at].color);
+        cursor += MeasureTextEx(regular, line->spans[at].text, size_px, BT_ALGS_TEXT_SPACING).x;
+    }
+    BT_TRACE_EXIT("app.algs_span_line_draw");
+}
+
+void bt_view_algs_query_echo(const bt_view_algs_app_state *app, char out[BT_ALGS_TEXT_MAX]) {
+    BT_TRACE_ENTER("app.algs_query_echo");
+    if (app->query_focused) {
+        snprintf(out, BT_ALGS_TEXT_MAX, "> %s|", app->query);
+    } else {
+        snprintf(out, BT_ALGS_TEXT_MAX, "%s", BT_ALGS_QUERY_HINT);
+    }
+    BT_TRACE_EXIT("app.algs_query_echo");
+}
+
+void bt_view_algs_query_draw(const bt_view_algs_app_state *app, const void *font_regular,
+                             const bt_view_frame_metrics *metrics) {
+    BT_TRACE_ENTER("app.algs_query_draw");
+    const bt_theme *theme = bt_theme_table();
+    bt_ui_rect band = bt_view_algs_query_band(metrics);
+    char echo[BT_ALGS_TEXT_MAX];
+    bt_view_algs_query_echo(app, echo);
+    float size = theme->font_body * theme->root_rem;
+    float fitted = bt_ui_fitted_width(font_regular, echo, size, band.width);
+    bt_ui_draw_fitted(font_regular, echo, band.x + (band.width - fitted) * 0.5F,
+                      band.y + (band.height - size) * 0.5F, size,
+                      app->query_focused ? bt_theme_text_primary() : bt_theme_text_muted(),
+                      band.width);
+    BT_TRACE_EXIT("app.algs_query_draw");
+}
+
 void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const void *font_bold,
                        float window_w, float window_h) {
     BT_TRACE_ENTER("app.view_algs_draw");
@@ -660,6 +748,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
     config.window.height = (unsigned)window_h;
     size_t capacity = bt_view_algs_list_capacity(&config);
     float y = metrics.content_y;
+    bt_view_algs_query_draw(app, font_regular, &metrics);
     if (bt_repo_browser_letters_focused(repo)) {
         bt_view_case_row rows[BT_ALGS_ROWS_MAX];
         size_t count = bt_view_algs_list_rows(&app->browser, capacity, rows);
@@ -675,6 +764,9 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
         bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
         float detail_y = metrics.content_y;
         if (detail_count > 0) {
+            bt_algs_span_measure span_measure = {regular_font, theme->font_alg * theme->root_rem};
+            detail_count = bt_view_algs_pack_spans(detail_lines, detail_count, column.width,
+                                                   bt_algs_span_width, &span_measure);
             float *line_rems = malloc(detail_count * sizeof *line_rems);
             if (line_rems == NULL) {
                 BT_TRACE_FAIL("app.view_algs_draw", "out of memory");
@@ -692,14 +784,19 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
                 line_rems, detail_count, metrics.content_y + metrics.content_h - detail_y);
             for (size_t i = 0; i < visible; i++) {
                 float size_px = line_rems[i] * theme->root_rem;
-                Vector2 box = MeasureTextEx(regular_font, detail_lines[i].text, size_px,
-                                            BT_ALGS_TEXT_SPACING);
-                float line_x = bt_view_algs_centered_line_x(column.center, box.x);
-                bt_app_draw_text(font_regular, detail_lines[i].text, line_x, detail_y, size_px,
-                                 detail_lines[i].color);
-                if (detail_lines[i].link && recon_open) {
-                    bt_view_algs_link_draw(app, column.center, detail_y, box.x, box.y,
-                                           size_px * BT_ALGS_LINE_FACTOR, recon);
+                if (detail_lines[i].span_count > 0) {
+                    bt_view_algs_span_line_draw(&detail_lines[i], font_regular, column.center,
+                                                detail_y, size_px, column.width);
+                } else {
+                    Vector2 box = MeasureTextEx(regular_font, detail_lines[i].text, size_px,
+                                                BT_ALGS_TEXT_SPACING);
+                    float line_x = bt_view_algs_centered_line_x(column.center, box.x);
+                    bt_app_draw_text(font_regular, detail_lines[i].text, line_x, detail_y, size_px,
+                                     detail_lines[i].color);
+                    if (detail_lines[i].link && recon_open) {
+                        bt_view_algs_link_draw(app, column.center, detail_y, box.x, box.y,
+                                               size_px * BT_ALGS_LINE_FACTOR, recon);
+                    }
                 }
                 detail_y += size_px * BT_ALGS_LINE_FACTOR;
             }
@@ -770,130 +867,6 @@ void bt_view_algs_row_draw(bt_app_ctx *ctx) {
     bt_view_algs_draw(ctx, book->regular, book->bold, (float)GetScreenWidth(),
                       (float)GetScreenHeight());
     BT_TRACE_EXIT("app.view_algs_row_draw");
-}
-void bt_view_override_open(bt_app_ctx *ctx) {
-    BT_TRACE_ENTER("app.algs_override_open");
-    (void)ctx;
-    bt_case_site site;
-    if (!bt_view_case_site_of(bt_view_algs_repo(), &site)) {
-        BT_TRACE_EXIT("app.algs_override_open");
-        return;
-    }
-    bt_view_override_draft *draft = bt_view_algs_draft();
-    draft->has_case = 1;
-    draft->site = site;
-    const bt_repo_node *node = bt_repo_browser_node(bt_view_algs_repo());
-    const char *seed =
-        node != NULL && node->has_case && node->case_alg != NULL ? node->case_alg : "";
-    const char *current = bt_overrides_get(bt_view_algs_overrides(), &site.case_ref);
-    snprintf(draft->text, sizeof draft->text, "%s", current != NULL ? current : seed);
-    draft->has_error = 0;
-    draft->error[0] = '\0';
-    BT_TRACE_EXIT("app.algs_override_open");
-}
-
-void bt_view_override_cancel(void) {
-    BT_TRACE_ENTER("app.algs_override_cancel");
-    bt_view_override_draft_default(bt_view_algs_draft());
-    BT_TRACE_EXIT("app.algs_override_cancel");
-}
-
-void bt_view_override_submit(bt_app_ctx *ctx, const char *text) {
-    BT_TRACE_ENTER("app.algs_override_submit");
-    bt_view_override_draft *draft = bt_view_algs_draft();
-    if (!draft->has_case) {
-        BT_TRACE_EXIT("app.algs_override_submit");
-        return;
-    }
-    size_t len = strlen(text);
-    size_t start = 0;
-    size_t end = len;
-    while (start < end) {
-        size_t run = bt_space_len(text, start, len);
-        if (run == 0) {
-            break;
-        }
-        start += run;
-    }
-    while (end > start) {
-        size_t run = bt_space_len(text, end - 1, len);
-        if (run == 0) {
-            break;
-        }
-        end -= run;
-    }
-    char trimmed[BT_ALGS_TEXT_MAX];
-    size_t trimmed_len = 0;
-    for (size_t at = start; at < end && trimmed_len + 1 < sizeof trimmed; at++) {
-        trimmed[trimmed_len++] = text[at];
-    }
-    trimmed[trimmed_len] = '\0';
-    if (trimmed[0] == '\0') {
-        bt_view_override_cancel();
-        BT_TRACE_EXIT("app.algs_override_submit");
-        return;
-    }
-    char error[BT_ALGS_TEXT_MAX];
-    if (bt_view_geometry_check(draft->site.case_ref.event, draft->site.has_size, draft->site.size,
-                               trimmed, error, sizeof error) != 0) {
-        draft->has_error = 1;
-        snprintf(draft->error, sizeof draft->error, "%s", error);
-        BT_TRACE_FAIL("app.algs_override_submit", "%s", error);
-        BT_TRACE_EXIT("app.algs_override_submit");
-        return;
-    }
-    bt_db db;
-    bt_db_error err;
-    char db_path[BT_PATH_MAX];
-    bt_data_db_path_at(ctx->paths.user_root, db_path);
-    if (bt_db_open_at(db_path, &db, &err) != 0 ||
-        bt_repo_user_upsert(&db, &draft->site.case_ref, trimmed, &err) != 0) {
-        draft->has_error = 1;
-        snprintf(draft->error, sizeof draft->error, "%s", err.detail);
-        if (db.conn != NULL) {
-            bt_db_close(&db);
-        }
-        BT_TRACE_FAIL("app.algs_override_submit", "%s", err.detail);
-        BT_TRACE_EXIT("app.algs_override_submit");
-        return;
-    }
-    bt_db_close(&db);
-    bt_overrides_put(bt_view_algs_overrides(), &draft->site.case_ref, trimmed);
-    bt_view_override_cancel();
-    BT_TRACE_EXIT("app.algs_override_submit");
-}
-
-void bt_view_override_delete(bt_app_ctx *ctx) {
-    BT_TRACE_ENTER("app.algs_override_delete");
-    bt_case_site site;
-    if (!bt_view_case_site_of(bt_view_algs_repo(), &site)) {
-        BT_TRACE_EXIT("app.algs_override_delete");
-        return;
-    }
-    if (!bt_overrides_contains(bt_view_algs_overrides(), &site.case_ref)) {
-        BT_TRACE_EXIT("app.algs_override_delete");
-        return;
-    }
-    bt_db db;
-    bt_db_error err;
-    char db_path[BT_PATH_MAX];
-    bt_data_db_path_at(ctx->paths.user_root, db_path);
-    int opened = bt_db_open_at(db_path, &db, &err);
-    int removed = opened == 0 ? bt_repo_user_remove(&db, &site.case_ref, &err) : -1;
-    if (opened != 0 || removed < 0) {
-        bt_view_override_draft *draft = bt_view_algs_draft();
-        draft->has_error = 1;
-        snprintf(draft->error, sizeof draft->error, "%s", err.detail);
-        if (db.conn != NULL) {
-            bt_db_close(&db);
-        }
-        BT_TRACE_FAIL("app.algs_override_delete", "%s", err.detail);
-        BT_TRACE_EXIT("app.algs_override_delete");
-        return;
-    }
-    bt_db_close(&db);
-    bt_overrides_remove(bt_view_algs_overrides(), &site.case_ref);
-    BT_TRACE_EXIT("app.algs_override_delete");
 }
 
 int bt_view_algs_frame(bt_app_ctx *ctx, const int *keys, int count) {

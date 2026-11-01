@@ -82,6 +82,64 @@ bt_view_algs_column bt_view_algs_detail_column(const bt_view_frame_metrics *metr
     return column;
 }
 
+bt_ui_rect bt_view_algs_query_band(const bt_view_frame_metrics *metrics) {
+    BT_TRACE_ENTER("app.algs_query_band");
+    const bt_theme *theme = bt_theme_table();
+    bt_ui_rect band;
+    band.x = metrics->content_x;
+    band.y = metrics->content_y + metrics->content_h - theme->root_rem * BT_ALGS_QUERY_BAND_REM;
+    band.width = metrics->content_w * BT_ALGS_DETAIL_SPLIT;
+    band.height = theme->root_rem * BT_ALGS_QUERY_BAND_REM;
+    BT_TRACE_EXIT("app.algs_query_band");
+    return band;
+}
+
+static float pack_span_total(const bt_view_algs_detail_line *line, bt_view_algs_measure measure,
+                             void *user) {
+    float total = 0.0F;
+    for (size_t at = 0; at < line->span_count; at++) {
+        total += measure(line->spans[at].text, user);
+    }
+    return total;
+}
+
+size_t bt_view_algs_pack_spans(bt_view_algs_detail_line *lines, size_t count, float max_w,
+                               bt_view_algs_measure measure, void *user) {
+    BT_TRACE_ENTER("app.algs_pack_spans");
+    size_t out = 0;
+    size_t at = 0;
+    while (at < count) {
+        if (lines[at].span_count == 0) {
+            lines[out++] = lines[at++];
+            continue;
+        }
+        size_t head = at;
+        float used = pack_span_total(&lines[head], measure, user);
+        size_t next = at + 1;
+        while (next < count && lines[next].span_count > 0) {
+            float join = measure(BT_ALGS_UNIT_JOIN, user);
+            float width = pack_span_total(&lines[next], measure, user);
+            if (used + join + width > max_w ||
+                lines[head].span_count + 1 + lines[next].span_count > BT_ALGS_SPANS_MAX) {
+                break;
+            }
+            snprintf(lines[head].spans[lines[head].span_count].text, BT_ALGS_TEXT_MAX, "%s",
+                     BT_ALGS_UNIT_JOIN);
+            lines[head].spans[lines[head].span_count].color = bt_theme_text_muted();
+            lines[head].span_count++;
+            for (size_t span = 0; span < lines[next].span_count; span++) {
+                lines[head].spans[lines[head].span_count++] = lines[next].spans[span];
+            }
+            used += join + width;
+            next++;
+        }
+        lines[out++] = lines[head];
+        at = next;
+    }
+    BT_TRACE_EXIT("app.algs_pack_spans");
+    return out;
+}
+
 float bt_view_algs_centered_line_x(float center, float line_w) {
     BT_TRACE_ENTER("app.algs_centered_line_x");
     float x = center - line_w * 0.5F;

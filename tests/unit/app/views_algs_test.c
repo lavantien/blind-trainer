@@ -3,17 +3,14 @@
 #include "app/views/algs/mod.h"
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
+#include "app/views/frame.h"
 #include "app/views/state.h"
+#include "app/window.h"
+#include "data/paths.h"
 
 #include "common.h"
 
-enum {
-    KEY_SLASH = 47,
-    KEY_D = 68,
-    KEY_R = 82,
-    KEY_DOWN = 264,
-    KEY_BACKSPACE = 259,
-};
+#include "raylib.h"
 
 enum {
     BT_VIEWS_ALGS_URL_MAX = 256,
@@ -278,4 +275,124 @@ BT_TEST(views_algs, recon_click_hits_the_recorded_link_rect_through_the_seam) {
     bt_app_open_url_unbind();
     BT_CHECK_EQ(g_recon_calls, 0);
     bt_app_ctx_free(&ctx);
+}
+
+enum {
+    ALGS_BAND_W = 1280,
+    ALGS_BAND_H = 800,
+    ALGS_BAND_FRAMES = 6,
+};
+
+static int with_algs_fonts(int (*run)(const bt_app_font_book *)) {
+    if (!bt_app_window_open_driven(ALGS_BAND_W, ALGS_BAND_H, "algs detail test", NULL)) {
+        return 0;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char path[BT_PATH_MAX];
+    bt_data_config_path(path);
+    if (bt_app_fonts_load(path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    int ok = run(&book);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+    return ok;
+}
+
+static int run_recon_band(const bt_app_font_book *book) {
+    bt_app_ctx ctx = algs_ctx("reconband");
+    covered_corpus_recon(&ctx, "https://example.test/recon");
+    bt_view_algs_enter(&ctx);
+    bt_view_algs_read_query(&ctx, "");
+    bt_view_algs_refresh("", &bt_view_algs_app()->browser);
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    app->browser.selected = 0;
+    app->query_focused = 0;
+    for (int frame = 0; frame < ALGS_BAND_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        bt_view_algs_draw(&ctx, book->regular, book->bold, (float)ALGS_BAND_W, (float)ALGS_BAND_H);
+        bt_app_window_frame_end();
+    }
+    bt_view_frame_metrics metrics =
+        bt_view_frame_metrics_for((float)ALGS_BAND_W, (float)ALGS_BAND_H);
+    bt_view_algs_column column = bt_view_algs_detail_column(&metrics);
+    int ok = app->link_ready == 1;
+    if (ok) {
+        ok = app->link_rect.y >= metrics.content_y - 0.5F &&
+             app->link_rect.y + app->link_rect.height <=
+                 metrics.content_y + metrics.content_h + 0.5F &&
+             app->link_rect.x <= column.center + 0.5F &&
+             app->link_rect.x + app->link_rect.width >= column.center - 0.5F;
+    }
+    bt_app_ctx_free(&ctx);
+    return ok;
+}
+
+BT_TEST(views_algs, the_default_ab_detail_keeps_the_recon_link_visible_at_1280x800) {
+    BT_CHECK(with_algs_fonts(run_recon_band));
+}
+
+static const bt_app_font_book *g_algs_book;
+
+static void draw_algs_query_probe(void) {
+    bt_view_frame_metrics metrics =
+        bt_view_frame_metrics_for((float)ALGS_BAND_W, (float)ALGS_BAND_H);
+    bt_view_algs_query_draw(bt_view_algs_app(), g_algs_book->regular, &metrics);
+}
+
+static int algs_band_has_ink(const char *path, bt_ui_rect band) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    Color surface = bt_app_color(bt_theme_background());
+    int ink = 0;
+    for (int y = (int)band.y; y <= (int)(band.y + band.height) && y < image.height && ink == 0;
+         y++) {
+        for (int x = (int)band.x; x <= (int)(band.x + band.width) && x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            if (pixel.r != surface.r || pixel.g != surface.g || pixel.b != surface.b) {
+                ink = 1;
+                break;
+            }
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    return ink;
+}
+
+static int run_query_echo_renders(const bt_app_font_book *book) {
+    g_algs_book = book;
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    bt_view_algs_app_init(app);
+    bt_view_algs_read_query(NULL, "quer");
+    app->query_focused = 1;
+    for (int frame = 0; frame < ALGS_BAND_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        draw_algs_query_probe();
+        bt_app_window_frame_end();
+    }
+    char shot[BT_PATH_MAX];
+    snprintf(shot, sizeof shot, "%s/app-algs-query-%d.png", getenv("TEMP"), _getpid());
+    remove(shot);
+    int ok = bt_app_window_capture(shot);
+    if (ok) {
+        bt_view_frame_metrics metrics =
+            bt_view_frame_metrics_for((float)ALGS_BAND_W, (float)ALGS_BAND_H);
+        ok = algs_band_has_ink(shot, bt_view_algs_query_band(&metrics));
+    }
+    remove(shot);
+    app->query_focused = 0;
+    return ok;
+}
+
+BT_TEST(views_algs, the_query_band_renders_the_typed_query_echo) {
+    BT_CHECK(with_algs_fonts(run_query_echo_renders));
 }

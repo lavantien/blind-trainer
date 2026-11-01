@@ -24,6 +24,9 @@
 #define BT_ALGS_SPANS_MAX 32
 #define BT_ALGS_CASES_MAX 1024
 #define BT_ALGS_LINE_FACTOR 1.2F
+#define BT_ALGS_UNIT_JOIN " + "
+#define BT_ALGS_QUERY_BAND_REM 3.0F
+#define BT_ALGS_QUERY_HINT "slash to search"
 
 typedef struct {
     size_t first;
@@ -92,6 +95,7 @@ typedef struct {
 } bt_view_algs_span;
 size_t bt_view_algs_mechanic_spans(const bt_expanded_list *units,
                                    bt_view_algs_span out[BT_ALGS_SPANS_MAX]);
+size_t bt_view_algs_unit_spans(const bt_expanded *unit, bt_view_algs_span out[BT_ALGS_SPANS_MAX]);
 
 void bt_view_algs_app_init(bt_view_algs_app_state *app);
 bt_view_algs_app_state *bt_view_algs_app(void);
@@ -118,13 +122,23 @@ typedef struct {
     char text[BT_ALGS_TEXT_MAX];
     bt_theme_color color;
     int link;
+    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+    size_t span_count;
 } bt_view_algs_detail_line;
+
+typedef float (*bt_view_algs_measure)(const char *text, void *user);
 
 size_t bt_view_algs_detail_lines(const bt_corpus *corpus, const bt_view_algs_browser *browser,
                                  bt_view_algs_detail_line **out);
+size_t bt_view_algs_pack_spans(bt_view_algs_detail_line *lines, size_t count, float max_w,
+                               bt_view_algs_measure measure, void *user);
 size_t bt_view_algs_detail_visible(const float *line_rems, size_t count, float avail_px);
 void bt_view_algs_style_metrics(bt_algs_style style, float *size, bt_theme_color *color);
 bt_view_algs_column bt_view_algs_detail_column(const bt_view_frame_metrics *metrics);
+bt_ui_rect bt_view_algs_query_band(const bt_view_frame_metrics *metrics);
+void bt_view_algs_query_echo(const bt_view_algs_app_state *app, char out[BT_ALGS_TEXT_MAX]);
+void bt_view_algs_query_draw(const bt_view_algs_app_state *app, const void *font_regular,
+                             const bt_view_frame_metrics *metrics);
 float bt_view_algs_centered_line_x(float center, float line_w);
 bt_ui_rect bt_view_algs_link_rect(float center, float y, float line_w, float line_h);
 const char *bt_view_algs_selected_recon(const bt_corpus *corpus,
