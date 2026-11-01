@@ -115,6 +115,7 @@ static int open_window_and_fonts(bt_app_ctx *ctx, bt_app_font_book *book) {
         BT_TRACE_FAIL("app.drivers", "window open failed");
         return 0;
     }
+    bt_theme_set_root_for((float)ctx->config.window.height);
     char font_error[BT_APP_ERROR_MAX];
     const bt_corpus *corpus = ctx->has_corpus ? &ctx->vendor_corpus : NULL;
     if (bt_app_fonts_load(ctx->paths.config_path, corpus, NULL, 0, book, font_error,

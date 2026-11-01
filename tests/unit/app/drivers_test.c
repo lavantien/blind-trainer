@@ -1,6 +1,7 @@
 #include "app/boot.h"
 #include "app/driver_keys.h"
 #include "app/drivers.h"
+#include "app/theme.h"
 #include "app/window.h"
 #include "app/window_focus.h"
 
@@ -244,5 +245,35 @@ BT_TEST(drivers, smoke_main_fails_when_the_output_dir_cannot_exist) {
                 0);
     int code = bt_app_smoke_main(&ctx, "nul/bad-dir", 20261012);
     BT_CHECK_EQ(code, 1);
+    restore_appdata(saved_appdata);
+}
+
+BT_TEST(drivers, driven_font_path_sets_the_root_for_the_window_height) {
+    char saved_appdata[TA_PATH_MAX];
+    sandbox_appdata("smoke-root-user", saved_appdata, sizeof saved_appdata);
+    bt_app_ctx ctx;
+    bt_app_shot_mode mode;
+    char mode_dir[BT_PATH_MAX];
+    char error[BT_APP_ERROR_MAX];
+    char *argv[] = {(char *)"bt-app", NULL};
+    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
+                0);
+    unsigned int real_height = ctx.config.window.height;
+    unsigned int probe_height = real_height > 600U ? 600U : 1200U;
+    ctx.config.window.height = probe_height;
+    bt_theme_set_root_for((float)real_height);
+    float before = bt_theme_table()->root_rem;
+    bt_theme_set_root_for((float)probe_height);
+    float expected = bt_theme_table()->root_rem;
+    bt_theme_set_root_for((float)real_height);
+    BT_CHECK(expected != before);
+    const char *dir = ta_temp_dir("drivers", "smoke-root");
+    int code = bt_app_smoke_main(&ctx, dir, 20261012);
+    if (code != 0) {
+        fprintf(stderr, "drivers: root probe smoke code %d fatal [%s]\n", code, ctx.fatal_reason);
+    }
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK_EQ(bt_theme_table()->root_rem, expected);
+    bt_theme_set_root_for((float)real_height);
     restore_appdata(saved_appdata);
 }

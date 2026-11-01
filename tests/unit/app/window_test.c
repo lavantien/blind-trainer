@@ -1,4 +1,5 @@
 #include "app/driver_keys.h"
+#include "app/theme.h"
 #include "app/window.h"
 #include "app/window_focus.h"
 
@@ -172,7 +173,9 @@ BT_TEST(window, probe_font_covers_the_corpus_and_vietnamese) {
     BT_CHECK(book.regular != NULL && book.bold != NULL);
     const Font *regular = book.regular;
     const Font *bold = book.bold;
-    BT_CHECK(regular->baseSize == 84 && bold->baseSize == 84);
+    const bt_theme *theme = bt_theme_table();
+    int want_base = (int)(theme->font_focal * theme->root_rem + 0.5F);
+    BT_CHECK(regular->baseSize == want_base && bold->baseSize == want_base);
     BT_CHECK(book.glyph_count >= 300);
     bt_app_fonts_unload(&book);
     bt_corpus_free(&corpus);
