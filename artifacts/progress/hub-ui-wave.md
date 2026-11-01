@@ -1,0 +1,40 @@
+# ui fix wave, started 2026-11-01
+
+User complaints mapped to root causes, verified against artifacts/e2e shots and source:
+
+1. fonts too small for viewport: theme.c root_rem pinned at 28.0, sizes pressed down so the single column menu fit 800 px height.
+2. detail and expanded alg text small, not centered: algs detail styles small/micro left anchored at content_w * 0.4, mod.c 669, 716, 759; solve review and case drill lines left aligned.
+3. cube face borders lopsided: net.c 162 plate holds 4 strokes of padding, net_view.c 45 starts grid at 1 stroke, left/top flush vs right/bottom 2 stroke gap.
+4. menu wastes width: single column ends at x 520 of 1280, last row touches the bottom.
+5. algs header collision: frame.c 44 right anchors context with no clamp, algs hint 150 chars spans 1245 px and runs under the title.
+6. recon line dead text: mod.c 678 micro muted, no click path anywhere.
+7. systemic: no viewport scaling, no shared fitted draw, case drill text overlaps its net, memo status can hit 1500 px, drill algs unclamped.
+
+Design: root_rem = clamp(window_h / 21.5, 24, 64), set at boot before the font atlas loads. Menu 2 columns by 3 rows, centered. Net grid offset 2 strokes. Frame context ellipsis fitted with a guaranteed title gap. Algs expand line at alg size, detail block centered, recon an accent underlined link with click and r key through a cross platform opener. Shared bt_ui_draw_fitted in ui.c for every clamp.
+
+Lanes:
+
+- lane-a: theme dynamic root, boot wiring, ui fitted helper, frame collision guard, widget clamps. Files theme.c/h ui.c/h frame.c/h boot.c main.c + theme_test ui_test ui_draw_test view_draw_test. Status: launched.
+- lane-b: menu 2 column, waits for lane-a. Files menu.c/h + view_menu_test. Status: queued.
+- lane-c: part 1 open_url module now, part 2 algs rework after lane-a. Files open_url.c/h algs/mod.c/h + open_url_test view_algs_test views_algs_test view_detail_test. Status: launched.
+- lane-d: part 1 net symmetry now, part 2 case drill rework after lane-a. Files net.c/h net_view.c/h case_drill_view.c/h + net_test view_case_drill_view_test views_case_drill_test. Status: launched.
+- lane-e: solve and memo, waits for lane-a. Files solve.c/h memo.c/h + view_solve_test solve_more_test views_solve_test view_memo_test. Status: queued.
+- lane-f: drill, stats, settings clamps, waits for lane-a. Files drill_view.c/h drill_card.c/h stats.c/h settings.c/h + view_drill_test view_drill_card_test views_stats_test view_settings_test view_draw_b_test. Status: queued.
+
+Integration after all lanes: python bt.py build, test, fmt, lint, policy, screenshots, baselines, visual, e2e. Then 2 adversarial reviewers, fixes, final commit wave.
+
+Progress lines, newest last:
+
+- 2026-11-01 14:33 hub launched lane-a, lane-c part 1, lane-d part 1. Guard cron 476caf1a every 20 minutes.
+- 2026-11-01 14:46 guard tick 1: quota 10% of the 5h window, sliding reset, no halt. memguard 0 procs 0.0 MB of 16384. lane-c part1 committed dfe7622, lane-d part1 committed a6e8f21. window.c window_test.c drivers.c drivers_test.c rerouted to lane-a. quota skill defect: query-usage.mjs drops the reset timestamp field, raised, no bypass.
+- 2026-11-01 14:49 hub launched lane-b, lane-e, lane-f in authoring-first mode gated on lane-a's commit. 6 lanes live.
+- 2026-11-01 15:0x lane-a foundation landed: 8f8392b fitted helper + widget clamps, 15055cf dynamic rem + boot wiring + frame guard, a1785fa log. Symbols verified in theme.h and ui.h. Out-of-lane pins recorded: window_test 84 atlas (reroute to lane-a follow-up sent), view_algs capacity/detail (lane-c), view_draw_b height, view_settings row bands (lane-f). menu.c private fitted helper retirement belongs to lane-b.
+- 2026-11-01 15:1x lane-a reroute leg landed e7d1a98 (+log 5917d69): driven capture path sets the root before font load, atlas pin derives from theme, driven-root test red-first at 600 px height. lane-a complete and disposed via TaskStop, process tree confirmed gone by the stop receipt. lane-f granted 3 one-line arity edits at view_draw_test.c 203, 217, 221 inside its own atomic commit.
+- 2026-11-01 15:0x lane-b delivered 0eb3209: menu 2 column x 3 row centered grid, description word wrap at column width, private fitted helper retired, 6 new tests red-first with runtime-derived expectations plus pixel render pass. Verified in git. lane-b disposed via TaskStop. lane-e and lane-f still in flight, lane-c part 2 and lane-d part 2 unconfirmed since the foundation landed.
+- 2026-11-01 15:1x lane-d delivered 17a7d54: case drill centered panel, net seated under the measured text band with extent based sizing, fitted alg and error lines, plus a real extra fix (band advance used the spacer height so U and D plates overlapped, now tallest face per band). Deviation from brief accepted with cause: netdisp layouts are not the cube net footprint, so extent based placement is the correct generalization. lane-d disposed. git also shows lane-e's commits 7cea51c (solve centered clamped column, memo status wrap) and 93116ef landed, report pending.
+- 2026-11-01 15:2x lane-e closed with 7cea51c, 93116ef, 8564b91: solve text column centered and fitted with an 8x7 window sweep and a pixel probe, memo status wraps to 3 centered lines through the now public bt_memo_wrap_lines, playground probe committed with the work. Verified in git, lane-e disposed. Open items routed: mod.c at 1156 SLOC plus fmt violations to lane-c (split warned), policy literal findings in case_drill_view.c (0.0 x10, 2.0 x8) and settings.c (0.0 x5) queued for lane-f or a hub cleanup lane at integration. 5 of 6 lanes closed or delivering; lane-c and lane-f remain.
+- 2026-11-01 15:3x lane-f delivered fd4271d (+log 2f1e944): drill algs scale to fit with a fitted guard, span lines fall back to one fitted line, stats rows step down instead of centering negative, settings controls clamp against measured label width. Hub committed the 3 granted arity call-site lines as 56fa349 (fd4271d was red standalone without them). lane-f stays live for one closing item: rederive the stale solve_review pins in view_draw_b_test.c against 7cea51c. lane-c mid-split into algs/layout.c.
+- 2026-11-01 15:4x lane-c delivered part 2 as 545caf6: hint shortened, expand line at alg style, detail block centered per line, recon line an accent underlined link gated on url validation with click and r key through the open_url seam, mod.c split into algs/layout.c keeping mod.c at 973 policy sloc. Split kept at 0.4 with measured justification. Verified in git, lane-c disposed. All 6 lanes closed or on final item; only lane-f's view_draw_b pin fix remains before integration.
+- 2026-11-01 15:5x lane-f closing item landed b2c8195 571bf3a 4f844e8: solve review pins derived from the layout helpers, view_draw_b 7/7, tidy int cast fixed. All 6 lanes complete and disposed. Integration chain started: build exit 0, full suite 192 passed 0 failed. fmt, lint, policy running.
+- 2026-11-01 15:3x gates: lint exit 0 (379 clean), fmt exit 1 (view_solve_test.c 218 trailing comma wrap), policy exit 1 (case_drill_view.c literal groups 1.0 x4, 0.0 x10, 2.0 x8). fix-g micro-lane spawned for both, bit identical geometry required.
+- 2026-11-01 15:4x fix-g delivered 2dc8e27: fmt-fix canonical block form for the widths table, three literal groups named by role (CELL_PLUS_GAP_RATIO, TEXT_SPACING, ZERO_PX, STROKE_EDGE_PAIR, CENTER_SPLIT), fmt lint policy all exit 0, stems and both draw suites green, disposed. Visual chain running: screenshots, baselines, visual, e2e.
