@@ -2,6 +2,7 @@
 #include "app/views/case_drill.h"
 #include "app/views/case_drill_view.h"
 #include "app/views/drill_view.h"
+#include "app/views/frame.h"
 #include "app/views/net_view.h"
 #include "app/views/solve.h"
 #include "app/views/state.h"
@@ -256,23 +257,54 @@ BT_TEST(view_draw_b, solve_review_clamps_the_broken_block_and_anchors_the_hint) 
         }
     }
     BT_CHECK(broken_lines >= 8);
+    const bt_theme *theme = bt_theme_table();
+    bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
+    bt_view_solve_text_column column = bt_view_solve_text_column_for(1280.0F, 800.0F);
+    float gap = theme->spacing_rem * theme->root_rem;
+    float focal = theme->font_focal * theme->root_rem;
+    float title = theme->font_title * theme->root_rem;
+    float heading = theme->font_heading * theme->root_rem;
+    float small = theme->font_small * theme->root_rem;
+    float bottom = metrics.content_y + metrics.content_h;
+    float hint_y = bottom - small;
+    float block_limit = hint_y - gap;
+    float split_top = metrics.content_y + (focal + gap) * 2.0F + title + gap + heading + gap;
+    size_t split_lines = 1;
+    for (const char *at = parts.splits; *at != '\0'; at++) {
+        if (*at == '\n') {
+            split_lines++;
+        }
+    }
+    if (parts.splits[0] == '\0') {
+        split_lines = 0;
+    }
+    bt_view_solve_block_clamp split_clamp =
+        bt_view_solve_block_clamp_for(split_top, block_limit, heading, split_lines);
+    float split_rows = (float)split_clamp.visible + (split_clamp.hidden > 0 ? 1.0F : 0.0F);
+    float broken_top = split_top + split_rows * heading + gap;
+    bt_view_solve_block_clamp broken_clamp =
+        bt_view_solve_block_clamp_for(broken_top, block_limit, small, broken_lines);
+    BT_CHECK(broken_clamp.visible < broken_lines);
     char dir[BT_PATH_MAX];
     snprintf(dir, sizeof dir, "%s", ta_temp_dir("view_draw_b", "review_shot"));
     BT_CHECK(draw_and_capture(draw_solve, &ctx, dir, "solve_review.png"));
     char path[BT_PATH_MAX];
     snprintf(path, sizeof path, "%s/solve_review.png", dir);
     int bands[DRAW_BANDS_MAX][2];
-    size_t count = lit_row_bands(path, 590, 1260, 510, 790, bands, DRAW_BANDS_MAX);
+    size_t count =
+        lit_row_bands(path, (int)column.x - 2, (int)(column.x + column.width) + 2,
+                      (int)split_top - 2, config.window.height - 2, bands, DRAW_BANDS_MAX);
     BT_CHECK(count >= 4);
     if (count >= 4) {
         int last = (int)count - 1;
         int height = bands[last][1] - bands[last][0] + 1;
-        int gap = bands[last][0] - bands[last - 1][1] - 1;
-        BT_CHECK(height <= 20);
-        BT_CHECK(gap >= 20);
-        BT_CHECK(bands[last][0] >= 745);
-        BT_CHECK(bands[last][0] <= 775);
-        BT_CHECK(bands[last - 1][1] < 740);
+        int band_gap = bands[last][0] - bands[last - 1][1] - 1;
+        BT_CHECK(height <= (int)small);
+        BT_CHECK(band_gap >= (int)gap);
+        BT_CHECK(bands[last][0] >= (int)hint_y - 2);
+        BT_CHECK(bands[last][0] <= (int)(hint_y + small * 0.25F));
+        BT_CHECK(bands[last][1] <= (int)(hint_y + small));
+        BT_CHECK(bands[last - 1][1] < (int)block_limit);
     }
     bt_syllable_book_free(&book);
     bt_app_ctx_free(&ctx);
