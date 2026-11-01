@@ -147,11 +147,25 @@ bt_view_menu_layout bt_view_menu_layout_for(float window_w, float window_h, int 
     layout.col_x[0] = metrics.content_x;
     layout.col_x[1] = metrics.content_x + layout.col_w + layout.gutter;
     layout.row_h = heading + inner_gap + small * (float)lines + inner_gap + micro;
+    float block_h = (float)rows_per_column * layout.row_h + (float)(rows_per_column - 1) * row_gap;
+    if (block_h > metrics.content_h) {
+        row_gap = theme->spacing_rem * theme->root_rem;
+        block_h = (float)rows_per_column * layout.row_h + (float)(rows_per_column - 1) * row_gap;
+        if (block_h > metrics.content_h && lines > 1) {
+            lines = 1;
+            layout.row_h = heading + inner_gap + small * (float)lines + inner_gap + micro;
+            block_h =
+                (float)rows_per_column * layout.row_h + (float)(rows_per_column - 1) * row_gap;
+        }
+    }
     layout.row_pitch = layout.row_h + row_gap;
     layout.desc_dy = heading + inner_gap;
     layout.data_dy = layout.desc_dy + small * (float)lines + inner_gap;
-    float block_h = (float)rows_per_column * layout.row_h + (float)(rows_per_column - 1) * row_gap;
+    layout.desc_lines = lines;
     layout.first_row_y = metrics.content_y + (metrics.content_h - block_h) / 2.0F;
+    if (layout.first_row_y < metrics.content_y) {
+        layout.first_row_y = metrics.content_y;
+    }
     BT_TRACE_EXIT("app.view_menu_layout_for");
     return layout;
 }
@@ -238,8 +252,8 @@ void bt_view_menu_draw(const bt_app_ctx *ctx, const bt_str_list *warnings, const
         char wrapped[BT_VIEW_MENU_WRAP_MAX][BT_VIEW_MENU_TEXT_MAX];
         size_t line_count = bt_view_menu_wrap_lines(font_regular, rows[i].description, small,
                                                     layout.col_w, wrapped, BT_VIEW_MENU_WRAP_MAX);
-        if (line_count > (size_t)BT_VIEW_MENU_DESC_MAX_LINES) {
-            line_count = (size_t)BT_VIEW_MENU_DESC_MAX_LINES;
+        if (line_count > (size_t)layout.desc_lines) {
+            line_count = (size_t)layout.desc_lines;
         }
         for (size_t line = 0; line < line_count; line++) {
             bt_ui_draw_fitted(font_regular, wrapped[line], x,

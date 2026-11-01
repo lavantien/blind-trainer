@@ -212,6 +212,26 @@ BT_TEST(view_menu, menu_layout_fits_across_window_sizes) {
     pin_default_root();
 }
 
+BT_TEST(view_menu, menu_layout_keeps_the_block_inside_short_windows) {
+    const float short_heights[] = {400.0F, 450.0F};
+    for (size_t i = 0; i < sizeof short_heights / sizeof short_heights[0]; i++) {
+        float window_h = short_heights[i];
+        bt_theme_set_root_for(window_h);
+        bt_view_frame_metrics metrics =
+            bt_view_frame_metrics_for((float)MENU_DEFAULT_WINDOW_W, window_h);
+        bt_view_menu_layout layout = bt_view_menu_layout_for((float)MENU_DEFAULT_WINDOW_W, window_h,
+                                                             BT_VIEW_MENU_DESC_MAX_LINES);
+        int rows_per_column = BT_VIEW_MENU_ROW_COUNT / BT_VIEW_MENU_COLUMN_COUNT;
+        float block_h = (float)rows_per_column * layout.row_h +
+                        (float)(rows_per_column - 1) * (layout.row_pitch - layout.row_h);
+        BT_CHECK(layout.first_row_y >= metrics.content_y - MENU_FLOAT_TOL);
+        BT_CHECK(layout.first_row_y + block_h <=
+                 metrics.content_y + metrics.content_h + MENU_FLOAT_TOL);
+        BT_CHECK(layout.desc_lines >= 1 && layout.desc_lines <= BT_VIEW_MENU_DESC_MAX_LINES);
+    }
+    pin_default_root();
+}
+
 static int open_menu_probe_window(void) {
     return bt_app_window_open_driven(MENU_PROBE_WINDOW_W, MENU_PROBE_WINDOW_H, "menu wrap test",
                                      NULL);

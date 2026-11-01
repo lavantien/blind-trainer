@@ -28,6 +28,7 @@ typedef struct {
     float first_row_y;
     float desc_dy;
     float data_dy;
+    int desc_lines;
 } bt_view_menu_layout;
 
 void bt_view_menu_rows(const bt_app_ctx *ctx, bt_view_menu_row out[BT_VIEW_MENU_ROW_COUNT]);

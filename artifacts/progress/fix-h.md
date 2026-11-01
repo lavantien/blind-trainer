@@ -2,3 +2,8 @@
 
 2026-11-01T16:45 finding 6 fixed: bt_ui_draw_fitted ellipsis ladder in src/app/ui.c, ui_draw suite 13/13 green (red verified on pre-fix code)
 2026-11-01T16:50 finding 5 fixed: bt_memo_wrap_lines oversized word own line plus fitted status draw in src/app/views/memo.c, view_memo suite 13/13 green (red verified on pre-fix code)
+2026-11-01T17:12 findings 1-4 and 7 code written (algs span lines + query echo, menu clamp ladder, case drill net anchor, replay distance floor); verification blocked by the clang GNU-driver segfault reported to the hub at 16:56, minimal repro: clang -target x86_64-pc-windows-msvc on any TU including stdio
+2026-11-01T17:15 static review of all diffs done (include set, sloc caps, fmt clean, no stack arrays of the grown detail line struct); watching for clang recovery, chain to run on recovery: test-unit app suites, build, full test, lint app, policy, atomic commits per finding
+2026-11-01T17:20 toolchain bridge in use per hub: BT_CONFIG=artifacts/toolchain-config.json routes build.tools.clang to build/toolchain/clang.exe (fresh-page copy of the same binary); original path corrupted in the file cache at 16:53, hub reported reboot + memory diagnostic to the user
+2026-11-01T17:22 findings 1 and 2 red/green verified through the bridge (pre-fix draw leaves link_ready=0 behind +4 more at 1280x800, post-fix 8/8 views_algs), stale-exe trap found and cleared during the red demo (compile failed on unused fn, exe never relinked)
+2026-11-01T17:23 findings 3, 4, 7 red/green verified by stash cycles: menu short-window layout, case drill net anchor incl the 1280x400 pin, replay ink margins at 1280x800; suites view_menu 11/11, view_case_drill_view 9/9, replay_scene 20/20, view_replay 8/8, view_algs 17/17, algs_more 14/14
