@@ -345,7 +345,6 @@ The verification chain runs through bt.py in order, committing at each green ste
 4. a run target that starts the app after a build
 5. run the ga-run cross-check suite in CI once a cheap generated-data fixture lands
 6. split bt.py into modules under the 1000 source line rule, the driver sits past the cap invisible to the policy scan
-7. teach scripts/commit_lane.py to land file deletions
 
 ## Licensing
 
