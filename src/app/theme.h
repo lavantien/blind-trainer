@@ -34,6 +34,7 @@ typedef struct {
 } bt_theme;
 
 const bt_theme *bt_theme_table(void);
+void bt_theme_set_root_for(float window_h);
 bt_theme_color bt_theme_background(void);
 bt_theme_color bt_theme_panel(void);
 bt_theme_color bt_theme_panel_raised(void);

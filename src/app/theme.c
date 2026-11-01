@@ -4,8 +4,13 @@
 
 #include <math.h>
 
-static const bt_theme BT_THEME_TABLE = {
-    .root_rem = 28.0F,
+static const float BT_THEME_ROOT_WINDOW_H_PER_REM = 21.5F;
+static const float BT_THEME_ROOT_REM_MIN = 24.0F;
+static const float BT_THEME_ROOT_REM_MAX = 64.0F;
+static const float BT_THEME_ROOT_DEFAULT_WINDOW_H = 800.0F;
+
+static bt_theme BT_THEME_TABLE = {
+    .root_rem = BT_THEME_ROOT_DEFAULT_WINDOW_H / BT_THEME_ROOT_WINDOW_H_PER_REM,
     .font_focal = 3.0F,
     .font_title = 2.0F,
     .font_alg = 1.7F,
@@ -34,6 +39,19 @@ static const char *const BT_THEME_FACE_NAMES[BT_THEME_FACE_COUNT] = {"U", "L", "
 
 const bt_theme *bt_theme_table(void) {
     return &BT_THEME_TABLE;
+}
+
+void bt_theme_set_root_for(float window_h) {
+    BT_TRACE_ENTER("app.theme_set_root_for");
+    float root = window_h / BT_THEME_ROOT_WINDOW_H_PER_REM;
+    if (root < BT_THEME_ROOT_REM_MIN) {
+        root = BT_THEME_ROOT_REM_MIN;
+    }
+    if (root > BT_THEME_ROOT_REM_MAX) {
+        root = BT_THEME_ROOT_REM_MAX;
+    }
+    BT_THEME_TABLE.root_rem = root;
+    BT_TRACE_EXIT("app.theme_set_root_for");
 }
 
 static bt_theme_color shade_color(const float shade[3]) {

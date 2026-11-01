@@ -1,5 +1,6 @@
 #include "app/boot.h"
 #include "app/drivers.h"
+#include "app/theme.h"
 #include "app/views/drill.h"
 #include "app/views/memo.h"
 #include "app/views/net_view.h"
@@ -45,6 +46,7 @@ int bt_app_main(int argc, char **argv) {
         BT_TRACE_EXIT("app.main");
         return 1;
     }
+    bt_theme_set_root_for((float)ctx.config.window.height);
     bt_app_font_book book;
     char font_error[BT_APP_ERROR_MAX];
     const bt_corpus *corpus = ctx.has_corpus ? &ctx.vendor_corpus : NULL;

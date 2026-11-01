@@ -64,9 +64,38 @@ BT_TEST(theme, chrome_stays_inside_the_density_budget) {
     BT_CHECK(theme->spacing_rem <= 0.35F);
 }
 
+BT_TEST(theme, root_rem_defaults_to_the_800_pixel_window) {
+    const bt_theme *theme = bt_theme_table();
+    BT_CHECK_F64_NEAR((double)theme->root_rem, 800.0 / 21.5, 1e-5);
+    BT_CHECK(theme->root_rem >= 24.0F);
+    BT_CHECK(theme->root_rem <= 64.0F);
+}
+
+BT_TEST(theme, set_root_for_tracks_the_window_height) {
+    bt_theme_set_root_for(1075.0F);
+    BT_CHECK_F64_NEAR((double)bt_theme_table()->root_rem, 1075.0 / 21.5, 1e-5);
+    bt_theme_set_root_for(800.0F);
+    BT_CHECK_F64_NEAR((double)bt_theme_table()->root_rem, 800.0 / 21.5, 1e-5);
+}
+
+BT_TEST(theme, set_root_for_floors_tiny_windows_at_the_minimum) {
+    bt_theme_set_root_for(400.0F);
+    BT_CHECK_EQ(bt_theme_table()->root_rem, 24.0F);
+    bt_theme_set_root_for(0.0F);
+    BT_CHECK_EQ(bt_theme_table()->root_rem, 24.0F);
+    bt_theme_set_root_for(800.0F);
+    BT_CHECK_F64_NEAR((double)bt_theme_table()->root_rem, 800.0 / 21.5, 1e-5);
+}
+
+BT_TEST(theme, set_root_for_caps_tall_windows_at_the_maximum) {
+    bt_theme_set_root_for(1600.0F);
+    BT_CHECK_EQ(bt_theme_table()->root_rem, 64.0F);
+    bt_theme_set_root_for(800.0F);
+    BT_CHECK_F64_NEAR((double)bt_theme_table()->root_rem, 800.0 / 21.5, 1e-5);
+}
+
 BT_TEST(theme, layout_scale_is_pinned) {
     const bt_theme *theme = bt_theme_table();
-    BT_CHECK_EQ(theme->root_rem, 28.0F);
     BT_CHECK_EQ(theme->spacing_rem, 0.35F);
     BT_CHECK_EQ(theme->panel_padding_rem, 0.6F);
     BT_CHECK_EQ(theme->header_height_rem, 2.75F);

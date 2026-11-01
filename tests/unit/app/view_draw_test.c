@@ -1,3 +1,4 @@
+#include "app/ui.h"
 #include "app/views/drill.h"
 #include "app/views/drill_card.h"
 #include "app/views/drill_view.h"
@@ -73,27 +74,27 @@ static bt_stores probe_stores(void) {
 
 BT_TEST(view_draw, frame_metrics_pin_the_header_and_content_rect) {
     bt_view_frame_metrics metrics = bt_view_frame_metrics_for(1280.0F, 800.0F);
-    BT_CHECK(fabsf(metrics.pad - 16.8F) < 0.01F);
-    BT_CHECK(metrics.header_height == 77.0F);
-    BT_CHECK(fabsf(metrics.hairline - 1.4F) < 0.01F);
-    BT_CHECK(fabsf(metrics.content_x - 16.8F) < 0.01F);
-    BT_CHECK(fabsf(metrics.content_y - 93.8F) < 0.01F);
-    BT_CHECK(fabsf(metrics.content_w - 1246.4F) < 0.01F);
-    BT_CHECK(fabsf(metrics.content_h - 689.4F) < 0.01F);
+    BT_CHECK(fabsf(metrics.pad - 22.32558F) < 0.01F);
+    BT_CHECK(fabsf(metrics.header_height - 102.32558F) < 0.01F);
+    BT_CHECK(fabsf(metrics.hairline - 1.86047F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_x - 22.32558F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_y - 124.65116F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_w - 1235.34884F) < 0.01F);
+    BT_CHECK(fabsf(metrics.content_h - 653.02326F) < 0.01F);
 }
 
 BT_TEST(view_draw, drill_net_geometry_fills_the_left_region) {
     bt_net_geometry geo = bt_view_drill_net_geometry(1280.0F, 800.0F);
-    BT_CHECK(geo.quad == 37.0F);
-    BT_CHECK(bt_net_width(&geo) <= 548.416F);
-    BT_CHECK(bt_net_height(&geo) <= 689.4F);
+    BT_CHECK(geo.quad == 36.0F);
+    BT_CHECK(bt_net_width(&geo) <= 543.5535F);
+    BT_CHECK(bt_net_height(&geo) <= 653.0233F);
 }
 
 BT_TEST(view_draw, drill_layout_splits_the_content_region) {
     bt_view_drill_layout layout = bt_view_drill_layout_for(20.0F, 90.0F, 1240.0F, 690.0F);
     BT_CHECK(fabsf(layout.net_w - 545.6F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_x - 575.4F) < 1e-4F);
-    BT_CHECK(fabsf(layout.card_w - 684.6F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_x - 578.62326F) < 1e-4F);
+    BT_CHECK(fabsf(layout.card_w - 681.37674F) < 1e-4F);
     BT_CHECK(layout.net_x == 20.0F && layout.net_y == 90.0F);
     BT_CHECK(layout.card_h == 690.0F);
 }
@@ -285,6 +286,108 @@ BT_TEST(view_draw, net_view_renders_pixels) {
 
 BT_TEST(view_draw, memo_rows_render_pixels) {
     BT_CHECK(with_fonts(run_memo));
+}
+
+static const char FRAME_PROBE_TITLE[] = "drill";
+static const char FRAME_LONG_CONTEXT[] =
+    "space reps, 1..4 rate, tab flips the pair, click a card to open the reference replay";
+static char g_frame_context[BT_UI_TEXT_MAX];
+
+static void draw_frame_probe(void) {
+    const bt_app_font_book *book = g_book;
+    bt_view_frame_draw(book->bold, book->regular, PROBE_W, PROBE_H, FRAME_PROBE_TITLE,
+                       g_frame_context);
+}
+
+static int capture_frame_shot(const char *path) {
+    for (unsigned frame = 0; frame < DRAW_DWELL_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        draw_frame_probe();
+        bt_app_window_frame_end();
+    }
+    remove(path);
+    return bt_app_window_capture(path);
+}
+
+static int frame_context_band_case(const char *context, int must_truncate) {
+    const bt_theme *theme = bt_theme_table();
+    float pad = theme->panel_padding_rem * theme->root_rem;
+    float spacing = theme->spacing_rem * theme->root_rem;
+    float title_size = theme->font_title * theme->root_rem;
+    float context_size = theme->font_small * theme->root_rem;
+    Font bold = *(const Font *)g_book->bold;
+    Font regular = *(const Font *)g_book->regular;
+    Vector2 title_box = MeasureTextEx(bold, FRAME_PROBE_TITLE, title_size, 1.0F);
+    Vector2 context_box = MeasureTextEx(regular, context, context_size, 1.0F);
+    float allowed = PROBE_W - pad * 2.0F - title_box.x - spacing;
+    if (must_truncate ? context_box.x <= allowed : context_box.x > allowed) {
+        return 0;
+    }
+    int band_start = (int)(pad + title_box.x + spacing);
+    int band_end = (int)(PROBE_W - pad);
+    char with_ctx[BT_PATH_MAX];
+    char without_ctx[BT_PATH_MAX];
+    snprintf(with_ctx, sizeof with_ctx, "%s/app-frame-ctx-%d-a.png", getenv("TEMP"), _getpid());
+    snprintf(without_ctx, sizeof without_ctx, "%s/app-frame-ctx-%d-b.png", getenv("TEMP"),
+             _getpid());
+    snprintf(g_frame_context, sizeof g_frame_context, "%s", context);
+    int ok = capture_frame_shot(with_ctx);
+    if (ok) {
+        snprintf(g_frame_context, sizeof g_frame_context, "%s", "");
+        ok = capture_frame_shot(without_ctx);
+    }
+    if (ok) {
+        Image with_image = LoadImage(with_ctx);
+        Image without_image = LoadImage(without_ctx);
+        Color *with_pixels = LoadImageColors(with_image);
+        Color *without_pixels = LoadImageColors(without_image);
+        long long changed = 0;
+        int left = with_image.width;
+        int right = -1;
+        for (int y = 0; y < with_image.height && y < without_image.height; y++) {
+            for (int x = 0; x < with_image.width && x < without_image.width; x++) {
+                Color a = with_pixels[y * with_image.width + x];
+                Color b = without_pixels[y * without_image.width + x];
+                if (a.r != b.r || a.g != b.g || a.b != b.b || a.a != b.a) {
+                    changed++;
+                    if (x < left) {
+                        left = x;
+                    }
+                    if (x > right) {
+                        right = x;
+                    }
+                }
+            }
+        }
+        UnloadImageColors(with_pixels);
+        UnloadImageColors(without_pixels);
+        UnloadImage(with_image);
+        UnloadImage(without_image);
+        ok =
+            changed > 0 && left >= band_start - 2 && right >= band_end - 3 && right <= band_end + 2;
+    }
+    remove(with_ctx);
+    remove(without_ctx);
+    return ok;
+}
+
+static int run_frame_context_long(const bt_app_font_book *book) {
+    g_book = book;
+    return frame_context_band_case(FRAME_LONG_CONTEXT, 1);
+}
+
+static int run_frame_context_short(const bt_app_font_book *book) {
+    g_book = book;
+    return frame_context_band_case("esc menu", 0);
+}
+
+BT_TEST(view_draw, frame_long_context_never_crosses_the_title_band) {
+    BT_CHECK(with_fonts(run_frame_context_long));
+}
+
+BT_TEST(view_draw, frame_short_context_stays_right_anchored) {
+    BT_CHECK(with_fonts(run_frame_context_short));
 }
 
 static void fill_row_ctx(bt_app_ctx *ctx) {
