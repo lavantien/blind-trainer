@@ -200,7 +200,7 @@ static void draw_drill_card(void) {
     bt_view_card_content(&session, &corpus, &syllables, &stores, 0, &content);
     bt_view_frame_draw(book->bold, book->regular, PROBE_W, PROBE_H, "drill",
                        "space reps, 1..4 rate, esc menu");
-    bt_view_drill_card_draw(&content, book->regular, 60.0F, 60.0F);
+    bt_view_drill_card_draw(&content, book->regular, 60.0F, 60.0F, 580.0F);
     bt_syllable_book_free(&syllables);
     bt_drill_session_free(&session);
     bt_stores_free(&stores);
@@ -214,11 +214,11 @@ static void draw_drill_reps(void) {
     bt_drill_session session;
     bt_drill_session_init(&session);
     bt_view_install_pair(&session, &corpus, &stores, edge_ab());
-    bt_view_drill_reps_draw(&session, book->regular, 60.0F, 60.0F);
+    bt_view_drill_reps_draw(&session, book->regular, 60.0F, 60.0F, 580.0F);
     session.reps_done = 2;
     bt_drill_push_split(&session, 1, 1.0F);
     bt_drill_push_split(&session, 0, 2.0F);
-    bt_view_drill_rate_draw(&session, book->regular, 60.0F, 300.0F);
+    bt_view_drill_rate_draw(&session, book->regular, 60.0F, 300.0F, 580.0F);
     bt_drill_session_free(&session);
     bt_stores_free(&stores);
     bt_corpus_free(&corpus);
