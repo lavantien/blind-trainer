@@ -17,6 +17,10 @@ def sample_hub():
         return json.load(f)
 
 
+def argv_log_time(path):
+    return int(path.stem.rsplit("-", 1)[1])
+
+
 class CoverageFlagTests(unittest.TestCase):
     def test_hub_carries_the_coverage_section(self):
         hub = sample_hub()
@@ -210,7 +214,7 @@ class CoverageStageTests(unittest.TestCase):
 
     def argv_lines(self):
         lines = []
-        for log in sorted(self.root.glob("argv-*.log")):
+        for log in sorted(self.root.glob("argv-*.log"), key=argv_log_time):
             lines.extend(
                 line for line in log.read_text(encoding="utf-8").splitlines() if line
             )
