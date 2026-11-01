@@ -1,5 +1,6 @@
 #include "app/views/memo.h"
 
+#include "app/ui.h"
 #include "app/views/frame.h"
 #include "app/window.h"
 
@@ -299,7 +300,8 @@ size_t bt_memo_wrap_lines(const void *font, const char *text, float size, float 
             end = space + 1;
         }
         if (last_fit == NULL) {
-            last_fit = at + strlen(at);
+            const char *space = strchr(at, ' ');
+            last_fit = space != NULL ? space : at + strlen(at);
         }
         size_t len = (size_t)(last_fit - at);
         if (len >= BT_MEMO_TEXT_MAX) {
@@ -330,7 +332,6 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
     float small = theme->font_small * theme->root_rem;
     float body = theme->font_body * theme->root_rem;
     float bottom = metrics.content_y + metrics.content_h;
-    Font regular = *(const Font *)font_regular;
     char status_lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
     size_t status_count =
         bt_memo_wrap_lines(font_regular, rows->status, body, metrics.content_w, status_lines,
@@ -354,13 +355,10 @@ void bt_view_memo_draw(const bt_memo_rows *rows, const void *font_regular, const
                          bt_theme_text_muted());
     }
     for (size_t i = 0; i < status_count; i++) {
-        Vector2 line_box = MeasureTextEx(regular, status_lines[i], body, BT_MEMO_TEXT_SPACING);
-        float x = metrics.content_x;
-        if (line_box.x < metrics.content_w) {
-            x = metrics.content_x + (metrics.content_w - line_box.x) / 2.0F;
-        }
-        bt_app_draw_text(font_regular, status_lines[i], x, status_top + body * (float)i, body,
-                         bt_theme_text_primary());
+        float fitted_w = bt_ui_fitted_width(font_regular, status_lines[i], body, metrics.content_w);
+        float x = metrics.content_x + (metrics.content_w - fitted_w) / 2.0F;
+        bt_ui_draw_fitted(font_regular, status_lines[i], x, status_top + body * (float)i, body,
+                          bt_theme_text_primary(), metrics.content_w);
     }
     BT_TRACE_EXIT("app.view_memo_draw");
 }

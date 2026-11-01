@@ -1,4 +1,5 @@
 #include "app/theme.h"
+#include "app/ui.h"
 #include "app/views/frame.h"
 #include "app/views/memo.h"
 #include "app/window.h"
@@ -437,4 +438,124 @@ static int run_wrap_edges(const bt_app_font_book *book) {
 
 BT_TEST(view_memo, wrap_handles_empty_short_and_starved_line_budgets) {
     BT_CHECK(with_memo_fonts(run_wrap_edges));
+}
+
+enum {
+    WRAP_WORD_CHARS = 60,
+    WRAP_WORD_BUDGET = 300,
+    MEMO_DRAW_W = 640,
+    MEMO_DRAW_H = 480,
+    MEMO_DWELL_FRAMES = 6,
+};
+
+static void oversized_word(char out[WRAP_WORD_CHARS + 1]) {
+    memset(out, 'a', WRAP_WORD_CHARS);
+    out[WRAP_WORD_CHARS] = '\0';
+}
+
+static int run_wrap_oversized_word_alone(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    float body = theme->font_body * theme->root_rem;
+    char word[WRAP_WORD_CHARS + 1];
+    oversized_word(word);
+    char text[BT_MEMO_TEXT_MAX];
+    snprintf(text, sizeof text, "tail %s head", word);
+    if (!(memo_measure(book, word, body) > (float)WRAP_WORD_BUDGET)) {
+        return 0;
+    }
+    char lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = bt_memo_wrap_lines(book->regular, text, body, (float)WRAP_WORD_BUDGET, lines,
+                                      BT_MEMO_WRAP_MAX, BT_MEMO_WRAP_MAX);
+    if (count != 3 || strcmp(lines[0], "tail") != 0 || strcmp(lines[2], "head") != 0 ||
+        strcmp(lines[1], word) != 0) {
+        return 0;
+    }
+    char joined[BT_MEMO_TEXT_MAX];
+    snprintf(joined, sizeof joined, "%s %s %s", lines[0], lines[1], lines[2]);
+    if (!words_match(text, joined)) {
+        return 0;
+    }
+    for (size_t i = 0; i < count; i++) {
+        float fitted = bt_ui_fitted_width(book->regular, lines[i], body, (float)WRAP_WORD_BUDGET);
+        if (fitted > (float)WRAP_WORD_BUDGET + 0.01F) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+BT_TEST(view_memo, wrap_emits_an_oversized_word_as_its_own_line) {
+    BT_CHECK(with_memo_fonts(run_wrap_oversized_word_alone));
+}
+
+static int memo_status_ink_extent(const char *path, int y0, int y1, int *rightmost) {
+    Image image = LoadImage(path);
+    if (image.width <= 0 || image.height <= 0) {
+        UnloadImage(image);
+        return 0;
+    }
+    Color *pixels = LoadImageColors(image);
+    Color surface = bt_app_color(bt_theme_background());
+    int found = 0;
+    int right = -1;
+    for (int y = y0; y <= y1 && y < image.height; y++) {
+        for (int x = 0; x < image.width; x++) {
+            Color pixel = pixels[y * image.width + x];
+            if (pixel.r != surface.r || pixel.g != surface.g || pixel.b != surface.b) {
+                found = 1;
+                if (x > right) {
+                    right = x;
+                }
+            }
+        }
+    }
+    UnloadImageColors(pixels);
+    UnloadImage(image);
+    *rightmost = right;
+    return found;
+}
+
+static const bt_app_font_book *g_memo_book;
+
+static void draw_memo_oversized_status(void) {
+    bt_memo_rows rows;
+    memset(&rows, 0, sizeof rows);
+    char word[WRAP_WORD_CHARS + 1];
+    oversized_word(word);
+    snprintf(rows.focal, sizeof rows.focal, "%s", "...");
+    snprintf(rows.status, sizeof rows.status, "%s", word);
+    bt_view_memo_draw(&rows, g_memo_book->regular, g_memo_book->bold, (float)MEMO_DRAW_W,
+                      (float)MEMO_DRAW_H);
+}
+
+static int run_status_oversized_word_clamped(const bt_app_font_book *book) {
+    if (!bt_app_window_open_driven(MEMO_DRAW_W, MEMO_DRAW_H, "memo status clamp", NULL)) {
+        return 0;
+    }
+    g_memo_book = book;
+    for (int frame = 0; frame < MEMO_DWELL_FRAMES; frame++) {
+        bt_app_window_frame_begin();
+        ClearBackground(bt_app_color(bt_theme_background()));
+        draw_memo_oversized_status();
+        bt_app_window_frame_end();
+    }
+    char shot[BT_PATH_MAX];
+    snprintf(shot, sizeof shot, "%s/app-memo-status-%d.png", getenv("TEMP"), _getpid());
+    remove(shot);
+    int ok = bt_app_window_capture(shot);
+    int right = -1;
+    const bt_theme *theme = bt_theme_table();
+    float body = theme->font_body * theme->root_rem;
+    int band_top = (int)(MEMO_DRAW_H - theme->panel_padding_rem * theme->root_rem - body) - 4;
+    if (ok) {
+        ok = memo_status_ink_extent(shot, band_top, MEMO_DRAW_H - 1, &right);
+    }
+    remove(shot);
+    bt_app_window_close();
+    float limit = (float)MEMO_DRAW_W - theme->panel_padding_rem * theme->root_rem;
+    return ok && right >= 0 && (float)right <= limit + 2.0F;
+}
+
+BT_TEST(view_memo, status_draw_clamps_an_oversized_line_to_the_content_width) {
+    BT_CHECK(with_memo_fonts(run_status_oversized_word_clamped));
 }
