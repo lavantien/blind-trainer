@@ -164,6 +164,13 @@ float bt_net_face_plate(bt_net_geometry geo) {
     return plate;
 }
 
+float bt_net_grid_origin(bt_net_geometry geo) {
+    BT_TRACE_ENTER("app.net_grid_origin");
+    float origin = bt_net_face_stroke(geo.quad) * 2.0F;
+    BT_TRACE_EXIT("app.net_grid_origin");
+    return origin;
+}
+
 bt_net_geometry bt_net_for_region(float width, float height) {
     BT_TRACE_ENTER("app.net_for_region");
     bt_net_geometry geo;

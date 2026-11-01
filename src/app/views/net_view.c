@@ -42,8 +42,9 @@ static void draw_face(const void *font_bold, const bt_net_geometry *geo, size_t 
     float plate = bt_net_face_plate(*geo);
     Rectangle frame = {x, y, plate, plate};
     DrawRectangleLinesEx(frame, stroke, bt_app_color(bt_theme_text_primary()));
-    float inner = x + stroke;
-    float top = y + stroke;
+    float origin = bt_net_grid_origin(*geo);
+    float inner = x + origin;
+    float top = y + origin;
     for (size_t row = 0; row < 3; row++) {
         for (size_t col = 0; col < 3; col++) {
             draw_cell(font_bold, geo, face, row, col, ink,

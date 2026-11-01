@@ -37,6 +37,7 @@ int bt_net_sticker_at_grid(size_t grid);
 float bt_net_cell_stroke(float quad);
 float bt_net_face_stroke(float quad);
 float bt_net_face_plate(bt_net_geometry geo);
+float bt_net_grid_origin(bt_net_geometry geo);
 bt_net_geometry bt_net_for_window(float width, float height);
 bt_net_geometry bt_net_for_region(float width, float height);
 float bt_net_width(const bt_net_geometry *geo);

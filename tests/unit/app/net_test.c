@@ -178,6 +178,21 @@ BT_TEST(net, net_footprint_sums_cells_gaps_and_face_strokes) {
     BT_CHECK_F64_NEAR(bt_net_height(&geo), 414.96, 1e-4);
 }
 
+BT_TEST(net, grid_origin_sets_symmetric_padding_inside_the_face_plate) {
+    const float quads[] = {16.0F, 38.0F, 41.0F, 96.0F};
+    for (size_t i = 0; i < sizeof quads / sizeof quads[0]; i++) {
+        bt_net_geometry geo = {quads[i], fmaxf(quads[i] * 0.12F, 2.0F)};
+        float stroke = bt_net_face_stroke(geo.quad);
+        float plate = bt_net_face_plate(geo);
+        float grid_extent = geo.quad * 3.0F + geo.gap * 2.0F;
+        float origin = bt_net_grid_origin(geo);
+        BT_CHECK_EQ(origin, stroke * 2.0F);
+        BT_CHECK_F64_NEAR(plate - origin - grid_extent, origin, 1e-4);
+        BT_CHECK_F64_NEAR(origin - stroke, stroke, 1e-4);
+        BT_CHECK_F64_NEAR(plate - origin - grid_extent - stroke, stroke, 1e-4);
+    }
+}
+
 BT_TEST(net, bands_seat_faces_over_the_f_slot) {
     const int expected[BT_NET_BAND_COUNT][BT_NET_BAND_SLOTS] = {
         {-1, 0, -1, -1},
