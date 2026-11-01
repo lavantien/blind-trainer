@@ -13,9 +13,6 @@
 !/artifacts/.gitkeep
 
 __pycache__/
-/playground/attacker-a/gen/
-/playground/attacker-b/out/
 
-/playground/**/target/
 /playground/a8/bestf2l.pdf
 /playground/a8/page*.png
