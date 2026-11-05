@@ -545,3 +545,195 @@ BT_TEST(mutate_stage, scratch_rooted_run_exe_stages_under_the_workspace) {
     (void)remove(staged);
     bt_mut_rmtree(planted);
 }
+
+static int driver_spawn(const char *const argv[], unsigned timeout_ms, int *code, char *out,
+                        size_t out_cap, char *err, size_t err_cap) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutate.exe");
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    return bt_spawn_capture(exe, argv, root, timeout_ms, code, out, out_cap, err, err_cap);
+}
+
+BT_TEST(mutate_driver, list_wildcard_enumerates_the_fixture_directory) {
+    char out[32768];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"list", "tests/unit/tools/fixtures/fx_*.c", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(out, "tests/unit/tools/fixtures/fx_target.c") != NULL);
+    BT_CHECK(strstr(out, "tests/unit/tools/fixtures/fx_main.c") != NULL);
+    BT_CHECK(strstr(out, "NumericTweak") != NULL);
+}
+
+BT_TEST(mutate_driver, list_question_mark_matches_a_single_character) {
+    char out[16384];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"list", "tests/unit/tools/fixtures/fx_targe?.c", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(out, "tests/unit/tools/fixtures/fx_target.c") != NULL);
+    BT_CHECK(strstr(out, "tests/unit/tools/fixtures/fx_main.c") == NULL);
+}
+
+BT_TEST(mutate_driver, list_rejects_targets_that_are_not_c_sources) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"list", "README.md", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "target is not a .c file: README.md") != NULL);
+    const char *argv_dir[] = {"list", "tests/unit/tools/fixtures/", NULL};
+    BT_CHECK_EQ(driver_spawn(argv_dir, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "target is not a .c file: tests/unit/tools/fixtures") != NULL);
+}
+
+BT_TEST(mutate_driver, report_writes_counters_from_a_planted_ledger) {
+    char dir[BT_MUT_PATH_MAX];
+    union_dir_for("driver-report", dir);
+    char body[4096];
+    size_t used = (size_t)snprintf(body, sizeof body, "%s", UNION_HEADER);
+    used = union_row(body, sizeof body, used, "1212121212121212", 6, 20, "NumericTweak", "0", "1",
+                     "killed");
+    used = union_row(body, sizeof body, used, "1313131313131313", 36, 13, "NumericTweak", "3", "4",
+                     "survived");
+    union_ledger_write("driver-report", "ledger.tsv", body);
+    char ledger[BT_MUT_PATH_MAX];
+    char out_path[BT_MUT_PATH_MAX];
+    snprintf(ledger, BT_MUT_PATH_MAX, "%s/ledger.tsv", dir);
+    snprintf(out_path, BT_MUT_PATH_MAX, "%s/outcomes.json", dir);
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"report", "--ledger", ledger, "--out", out_path, NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 0);
+    bt_json_value *root = union_json(out_path);
+    BT_CHECK(root != NULL);
+    if (root != NULL) {
+        BT_CHECK_EQ(union_counter(root, "total_mutants"), 2ULL);
+        BT_CHECK_EQ(union_counter(root, "caught"), 1ULL);
+        BT_CHECK_EQ(union_counter(root, "missed"), 1ULL);
+        bt_json_free(root);
+    }
+}
+
+BT_TEST(mutate_driver, report_without_ledger_or_out_prints_usage) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"report", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "usage") != NULL);
+}
+
+BT_TEST(mutate_driver, report_with_a_missing_ledger_exits_1) {
+    char dir[BT_MUT_PATH_MAX];
+    union_dir_for("driver-report-miss", dir);
+    char out_path[BT_MUT_PATH_MAX];
+    snprintf(out_path, BT_MUT_PATH_MAX, "%s/outcomes.json", dir);
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"report", "--ledger", "no-such-ledger.tsv", "--out", out_path, NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "cannot produce") != NULL);
+}
+
+BT_TEST(mutate_driver, union_report_merges_a_ledger_directory) {
+    char dir[BT_MUT_PATH_MAX];
+    union_dir_for("driver-union", dir);
+    char body[4096];
+    size_t used = (size_t)snprintf(body, sizeof body, "%s", UNION_HEADER);
+    used = union_row(body, sizeof body, used, "1414141414141414", 6, 20, "NumericTweak", "0", "1",
+                     "killed");
+    union_ledger_write("driver-union", "ledger-" UNION_SUITE_A ".tsv", body);
+    used = (size_t)snprintf(body, sizeof body, "%s", UNION_HEADER);
+    used = union_row(body, sizeof body, used, "1515151515151515", 6, 20, "NumericTweak", "0", "1",
+                     "survived");
+    union_ledger_write("driver-union", "ledger-" UNION_SUITE_B ".tsv", body);
+    char out_path[BT_MUT_PATH_MAX];
+    snprintf(out_path, BT_MUT_PATH_MAX, "%s/outcomes.json", dir);
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"union-report", "--ledger", dir, "--out", out_path, NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 0);
+    bt_json_value *root = union_json(out_path);
+    BT_CHECK(root != NULL);
+    if (root != NULL) {
+        BT_CHECK_EQ(union_counter(root, "total_mutants"), 1ULL);
+        BT_CHECK_EQ(union_counter(root, "caught"), 1ULL);
+        bt_json_free(root);
+    }
+}
+
+BT_TEST(mutate_driver, union_report_without_out_prints_usage) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"union-report", "--ledger", "some-dir", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "usage") != NULL);
+}
+
+BT_TEST(mutate_driver, run_without_exe_prints_usage) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"run", "tests/unit/tools/fixtures/fx_target.c", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "usage") != NULL);
+}
+
+BT_TEST(mutate_driver, run_with_no_matching_files_exits_2_after_config) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"run", "--exe", "mutate", "no-such-dir/*.c", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "no files matched") != NULL);
+}
+
+BT_TEST(mutate_driver, unknown_verb_prints_usage) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"bogus", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "usage") != NULL);
+}
+
+BT_TEST(mutate_driver, selftest_probe_prints_a_pid) {
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"selftest-probe", NULL};
+    BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(out[0] != '\0');
+    for (const char *cursor = out; *cursor != '\0'; cursor++) {
+        BT_CHECK(*cursor >= '0' && *cursor <= '9' || *cursor == '\n' || *cursor == '\r');
+    }
+}
+
+BT_TEST(mutate_driver, selftest_flood_runs_until_the_timeout_kills_it) {
+    char out[8192];
+    char err[4096];
+    int code = -1;
+    const char *argv[] = {"selftest-flood", NULL};
+    int rc = driver_spawn(argv, 2000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, -2);
+    BT_CHECK(strstr(out, "flood") != NULL);
+}

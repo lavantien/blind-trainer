@@ -63,6 +63,15 @@ bt_json_value *bt_mut_mutant_scenario(const bt_mut_row *row, const char *functio
 
 int bt_mut_report(const char *ledger_path, const char *repo_root, const char *out_path) {
     BT_TRACE_ENTER("mutate.report");
+    char *probe = NULL;
+    size_t probe_len = 0;
+    bool readable = bt_mut_read_file(ledger_path, &probe, &probe_len) == 0;
+    free(probe);
+    if (!readable) {
+        BT_TRACE_FAIL("mutate.report", "cannot load ledger %s", ledger_path);
+        BT_TRACE_EXIT("mutate.report");
+        return 1;
+    }
     bt_mut_ledger ledger;
     if (bt_mut_ledger_load(ledger_path, &ledger) != 0) {
         BT_TRACE_FAIL("mutate.report", "cannot load ledger %s", ledger_path);
