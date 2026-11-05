@@ -122,10 +122,12 @@ BT_TEST(view_flow, memo_streams_rates_and_restreams) {
     bt_view_memo_enter_state(&ctx, app);
     BT_CHECK(ctx.memo_phase == BT_MEMO_INTRO);
     BT_CHECK(app->session.token_count > 0);
+    uint64_t shown_seed = app->session.seed;
 
     bt_view_memo_key(&ctx, app, KEY_SPACE);
     BT_CHECK(ctx.memo_phase == BT_MEMO_STREAM);
-    BT_CHECK(app->session.seed == 12346);
+    BT_CHECK(app->session.seed == shown_seed);
+    BT_CHECK(app->seed == 12345);
     BT_CHECK(app->session.shown == 0);
 
     float cadence = bt_memo_cadence_secs(&app->session, &ctx.stores);
@@ -140,16 +142,31 @@ BT_TEST(view_flow, memo_streams_rates_and_restreams) {
 
     bt_view_memo_key(&ctx, app, KEY_THREE);
     BT_CHECK(ctx.memo_phase == BT_MEMO_INTRO);
-    BT_CHECK(bt_srs_store_len(&ctx.stores.srs) == app->session.token_count);
+    BT_CHECK(app->seed == 12346);
+    BT_CHECK(app->session.seed == 12346);
+    BT_CHECK(app->session.token_count > 0);
+    BT_CHECK(bt_srs_store_len(&ctx.stores.srs) > 0);
+    size_t rated_pairs = bt_srs_store_len(&ctx.stores.srs);
 
     bt_view_memo_key(&ctx, app, KEY_SPACE);
     BT_CHECK(ctx.memo_phase == BT_MEMO_STREAM);
+    BT_CHECK(app->session.seed == 12346);
     bt_view_memo_tick(&ctx, app, cadence * 32.0F);
     bt_view_memo_key(&ctx, app, KEY_SPACE);
     BT_CHECK(ctx.memo_phase == BT_MEMO_REVIEW);
     bt_view_memo_key(&ctx, app, KEY_R);
     BT_CHECK(ctx.memo_phase == BT_MEMO_STREAM);
     BT_CHECK(app->session.shown == 0);
+
+    bt_view_memo_tick(&ctx, app, cadence * 32.0F);
+    BT_CHECK(ctx.memo_phase == BT_MEMO_RECALL);
+    bt_view_memo_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.memo_phase == BT_MEMO_REVIEW);
+    bt_view_memo_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.memo_phase == BT_MEMO_INTRO);
+    BT_CHECK(app->seed == 12347);
+    BT_CHECK(app->session.seed == 12347);
+    BT_CHECK(bt_srs_store_len(&ctx.stores.srs) == rated_pairs);
     bt_app_ctx_free(&ctx);
 }
 

@@ -419,12 +419,18 @@ void bt_view_memo_tick(bt_app_ctx *ctx, bt_memo_app_state *app, float dt) {
     BT_TRACE_EXIT("app.memo_tick");
 }
 
+static void advance_scramble(bt_app_ctx *ctx, bt_memo_app_state *app) {
+    BT_TRACE_ENTER("app.memo_advance_scramble");
+    app->seed += 1;
+    bt_memo_rebuild(&app->session, app->seed, bt_views_book(ctx));
+    ctx->memo_phase = BT_MEMO_INTRO;
+    BT_TRACE_EXIT("app.memo_advance_scramble");
+}
+
 void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key) {
     BT_TRACE_ENTER("app.memo_key");
     if (ctx->memo_phase == BT_MEMO_INTRO) {
         if (key == KEY_SPACE) {
-            app->seed += 1;
-            bt_memo_rebuild(&app->session, app->seed, bt_views_book(ctx));
             ctx->memo_phase = BT_MEMO_STREAM;
         }
         BT_TRACE_EXIT("app.memo_key");
@@ -445,7 +451,7 @@ void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key) {
             return;
         }
         if (key == KEY_SPACE) {
-            ctx->memo_phase = BT_MEMO_INTRO;
+            advance_scramble(ctx, app);
             BT_TRACE_EXIT("app.memo_key");
             return;
         }
@@ -453,7 +459,7 @@ void bt_view_memo_key(bt_app_ctx *ctx, bt_memo_app_state *app, int key) {
         if (bt_view_rating_of(key, &rating)) {
             bt_memo_rate_pairs(&ctx->stores, &ctx->fsrs, &app->session, rating, bt_views_now_day());
             bt_app_save_stores(ctx);
-            ctx->memo_phase = BT_MEMO_INTRO;
+            advance_scramble(ctx, app);
         }
     }
     BT_TRACE_EXIT("app.memo_key");
