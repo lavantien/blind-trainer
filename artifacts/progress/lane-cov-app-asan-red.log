@@ -1,0 +1,8 @@
+ERROR: AddressSanitizer: stack-buffer-overflow on address 0x00a41eafb900 at pc 0x7ff6d3a4c365 bp 0x00a41eafaaa0 sp 0x00a41eafaae8
+WRITE of size 8 at 0x00a41eafb900 thread T0
+    #0 0x7ff6d3a4c364  (C:\Users\lavantien\dev\github\blind-trainer\artifacts\lane\lane-cov-app\asan-build\bin\app_view_drill_test.exe+0x14004c364)
+    #1 0x7ff6d3b0f313  (C:\Users\lavantien\dev\github\blind-trainer\artifacts\lane\lane-cov-app\asan-build\bin\app_view_drill_test.exe+0x14010f313)
+    #2 0x7ff6d3a74a54  (C:\Users\lavantien\dev\github\blind-trainer\artifacts\lane\lane-cov-app\asan-build\bin\app_view_drill_test.exe+0x140074a54)
+    #3 0x7ff6d3b10daa  (C:\Users\lavantien\dev\github\blind-trainer\artifacts\lane\lane-cov-app\asan-build\bin\app_view_drill_test.exe+0x140110daa)
+    #4 0x7ff6d3f53d3e  (C:\Users\lavantien\dev\github\blind-trainer\artifacts\lane\lane-cov-app\asan-build\bin\app_view_drill_test.exe+0x140553d3e)
+  

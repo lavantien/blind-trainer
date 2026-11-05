@@ -316,9 +316,9 @@ int bt_view_pair_is_due(const bt_stores *stores, long long now_day, const bt_cas
 int bt_view_pick_pair(const bt_corpus *corpus, const bt_stores *stores, long long now_day,
                       bt_rng *rng, bt_case *out) {
     BT_TRACE_ENTER("app.drill_pick_pair");
-    bt_case tier_due[BT_PAIRS_MAX];
+    bt_case tier_due[BT_CASES_ALL_MAX];
     size_t due_count = 0;
-    bt_case tier_seen[BT_PAIRS_MAX];
+    bt_case tier_seen[BT_CASES_ALL_MAX];
     size_t seen_count = 0;
     for (int orbit = 0; orbit <= 1; orbit++) {
         bt_case cases[BT_PAIRS_MAX];

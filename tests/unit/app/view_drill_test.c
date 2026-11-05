@@ -256,6 +256,99 @@ BT_TEST(view_drill, pick_pair_draws_from_covered_cases) {
     bt_corpus_free(&corpus);
 }
 
+static size_t full_space_fixture(bt_case cases[BT_CASES_ALL_MAX], bt_corpus_row **rows_out) {
+    size_t count = bt_scheme_enumerate_cases(BT_ORBIT_EDGE, cases);
+    count += bt_scheme_enumerate_cases(BT_ORBIT_CORNER, cases + count);
+    if (count <= BT_PAIRS_MAX) {
+        BT_ABORT("pair space %zu no longer exceeds the per orbit bound %d", count, BT_PAIRS_MAX);
+    }
+    bt_corpus_row *rows = malloc(count * sizeof *rows);
+    for (size_t i = 0; i < count; i++) {
+        char position[BT_DRILL_TEXT_MAX];
+        bt_view_case_position(&cases[i], position);
+        rows[i] = heap_row(BT_SOLVER_CHERRY, bt_view_sheet_of(cases[i].orbit), position,
+                           "R U R' U'", "");
+    }
+    *rows_out = rows;
+    return count;
+}
+
+BT_TEST(view_drill, pick_pair_survives_a_fresh_store_due_across_the_whole_pair_space) {
+    bt_case cases[BT_CASES_ALL_MAX];
+    bt_corpus_row *rows = NULL;
+    size_t count = full_space_fixture(cases, &rows);
+    bt_corpus corpus;
+    bt_corpus_from_rows(rows, count, &corpus);
+    bt_stores stores = stores_with_reps(4);
+    for (unsigned seed = 0; seed < 24; seed++) {
+        bt_rng rng;
+        bt_rng_seed(&rng, 20261012 + seed);
+        bt_case picked;
+        if (!bt_view_pick_pair(&corpus, &stores, 0, &rng, &picked)) {
+            BT_ABORT("pick failed at seed %u over %zu covered positions", seed, count);
+        }
+        char position[BT_DRILL_TEXT_MAX];
+        bt_view_case_position(&picked, position);
+        if (bt_corpus_rows_for_position(&corpus, bt_view_sheet_of(picked.orbit), position, NULL,
+                                        0) == 0) {
+            BT_ABORT("pick at seed %u left the covered pair space: %s", seed, position);
+        }
+        if (!bt_view_pair_is_due(&stores, 0, &picked)) {
+            BT_ABORT("pick at seed %u returned a pair that is not due on a fresh store: %s", seed,
+                     position);
+        }
+    }
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(view_drill, pick_pair_survives_a_mature_store_seen_across_the_whole_pair_space) {
+    bt_case cases[BT_CASES_ALL_MAX];
+    bt_corpus_row *rows = NULL;
+    size_t count = full_space_fixture(cases, &rows);
+    bt_corpus corpus;
+    bt_corpus_from_rows(rows, count, &corpus);
+    bt_stores stores = stores_with_reps(4);
+    bt_card card;
+    memset(&card, 0, sizeof card);
+    card.interval_days = 100;
+    card.due_day = 400;
+    card.reps = 5;
+    for (size_t i = 0; i < count; i++) {
+        char position[BT_DRILL_TEXT_MAX];
+        char flipped_position[BT_DRILL_TEXT_MAX];
+        char key[BT_DRILL_TEXT_MAX];
+        bt_sheet_class sheet = bt_view_sheet_of(cases[i].orbit);
+        bt_view_case_position(&cases[i], position);
+        bt_case flipped = bt_view_flip_case(&cases[i]);
+        bt_view_case_position(&flipped, flipped_position);
+        bt_view_card_key(sheet, position, key);
+        bt_srs_store_set(&stores.srs, key, &card);
+        bt_view_card_key(sheet, flipped_position, key);
+        bt_srs_store_set(&stores.srs, key, &card);
+    }
+    for (unsigned seed = 0; seed < 24; seed++) {
+        bt_rng rng;
+        bt_rng_seed(&rng, 7717 + seed);
+        bt_case picked;
+        if (!bt_view_pick_pair(&corpus, &stores, 0, &rng, &picked)) {
+            BT_ABORT("pick failed at seed %u over %zu covered positions", seed, count);
+        }
+        char position[BT_DRILL_TEXT_MAX];
+        bt_view_case_position(&picked, position);
+        if (bt_corpus_rows_for_position(&corpus, bt_view_sheet_of(picked.orbit), position, NULL,
+                                        0) == 0) {
+            BT_ABORT("pick at seed %u left the covered pair space: %s", seed, position);
+        }
+        if (bt_view_pair_is_due(&stores, 0, &picked)) {
+            BT_ABORT("pick at seed %u returned a due pair from an all seen store: %s", seed,
+                     position);
+        }
+    }
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
 BT_TEST(view_drill, write_review_creates_and_advances_the_card) {
     bt_stores stores = stores_with_reps(4);
     bt_fsrs_config fsrs;
