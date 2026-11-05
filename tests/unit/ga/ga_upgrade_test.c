@@ -671,7 +671,8 @@ BT_TEST(ga_upgrade, upgrades_check_rejects_elite_reaching_the_population) {
 }
 
 BT_TEST(ga_upgrade, config_upgrades_rejects_a_negative_migrate_count_and_a_typed_policy) {
-    bt_json_value *config = upgrade_config_from_literal("{\"ga\":{\"islands\":{\"migrate_count\":-1}}}");
+    bt_json_value *config =
+        upgrade_config_from_literal("{\"ga\":{\"islands\":{\"migrate_count\":-1}}}");
     bt_ga_upgrades upgrades;
     char err[BT_GA_ERR_MAX];
     BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
@@ -695,8 +696,8 @@ BT_TEST(ga_upgrade, config_params_rejects_a_missing_tournament) {
 
 BT_TEST(ga_upgrade, two_islands_take_the_best_across_the_initial_populations) {
     static const char *const POOL19[] = {
-        "a",   "am",   "an",  "ang",  "anh", "ba",  "ban", "bang", "banh", "be",
-        "bem", "ben",  "bi",  "bia",  "bin", "binh", "biên", "biêng", "biêt",
+        "a",   "am",  "an", "ang", "anh", "ba",   "ban",  "bang",  "banh", "be",
+        "bem", "ben", "bi", "bia", "bin", "binh", "biên", "biêng", "biêt",
     };
     bt_ga_features *feats = calloc(19, sizeof *feats);
     float *lengths = calloc(19, sizeof *lengths);
