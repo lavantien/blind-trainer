@@ -1,5 +1,7 @@
 import argparse
+import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -59,6 +61,37 @@ def staged_files():
     return [line for line in proc.stdout.splitlines() if line]
 
 
+def clang_format_tool():
+    override = ""
+    try:
+        hub = json.loads((REPO_ROOT / "config" / "config.json").read_text(encoding="utf-8"))
+        override = hub.get("build", {}).get("tools", {}).get("clang_format", "")
+    except (OSError, json.JSONDecodeError):
+        override = ""
+    if override:
+        return override
+    return shutil.which("clang-format") or ""
+
+
+def fmt_violations(staged):
+    c_like = [f for f in staged if f.endswith((".c", ".h"))]
+    if not c_like:
+        return []
+    tool = clang_format_tool()
+    if not tool:
+        return []
+    proc = sh([tool, "--dry-run", "--Werror", *c_like], check=False)
+    if proc.returncode == 0:
+        return []
+    known = {f.replace("\\", "/") for f in c_like}
+    listed = []
+    for line in ((proc.stderr or "") + (proc.stdout or "")).splitlines():
+        head = line.split(":", 1)[0].strip().replace("\\", "/")
+        if head in known and head not in listed:
+            listed.append(head)
+    return listed or sorted(known)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="commit_lane.py",
@@ -90,6 +123,12 @@ def main():
             )
         if not staged:
             raise SystemExit("commit_lane: nothing staged from the given paths")
+        violations = fmt_violations(staged)
+        if violations:
+            raise SystemExit(
+                "commit_lane: clang-format violations, refusing to commit: "
+                + ", ".join(violations)
+            )
         proc = sh(["git", "commit", "-m", args.message, "--"] + list(args.paths))
         sys.stdout.write(proc.stdout)
         committed = sh(
