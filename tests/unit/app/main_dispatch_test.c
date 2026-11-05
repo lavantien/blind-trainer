@@ -135,6 +135,35 @@ BT_TEST(main_dispatch, reports_a_font_failure_and_exits_one) {
     dispatch_restore(saved_appdata);
 }
 
+BT_TEST(main_dispatch, window_open_failure_exits_one) {
+    char saved_appdata[TA_PATH_MAX];
+    dispatch_appdata("window-fail-user", saved_appdata, sizeof saved_appdata);
+    const char *config_path =
+        dispatch_config_with_title("window-fail-config", "dispatch window fail probe");
+    const char *saved_config = getenv("BT_CONFIG");
+    char saved_config_text[TA_PATH_MAX * 2];
+    snprintf(saved_config_text, sizeof saved_config_text, "%s",
+             saved_config != NULL ? saved_config : "");
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
+    _putenv(setting);
+    _putenv("BT_APP_WINDOW_FAIL=1");
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "bt-app.exe");
+    const char *argv[] = {NULL};
+    int code = -1;
+    char out[512];
+    char err[512];
+    int rc = bt_spawn_capture(exe, argv, NULL, 60000, &code, out, sizeof out, err, sizeof err);
+    _putenv("BT_APP_WINDOW_FAIL=");
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", saved_config_text);
+    _putenv(setting);
+    fprintf(stderr, "main_dispatch: window fail rc %d code %d\n", rc, code);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 1);
+    dispatch_restore(saved_appdata);
+}
+
 BT_TEST(main_dispatch, interactive_close_returns_zero) {
     char saved_appdata[TA_PATH_MAX];
     dispatch_appdata("interactive-user", saved_appdata, sizeof saved_appdata);

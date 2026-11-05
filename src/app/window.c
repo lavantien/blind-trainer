@@ -9,6 +9,7 @@
 #include "raylib.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void bt_app_fonts_dir_from(const char *configured, char out[BT_PATH_MAX]) {
@@ -19,9 +20,19 @@ void bt_app_fonts_dir_from(const char *configured, char out[BT_PATH_MAX]) {
     BT_TRACE_EXIT("app.fonts_dir_from");
 }
 
+static int window_open_forced_fail(void) {
+    const char *forced = getenv("BT_APP_WINDOW_FAIL");
+    return forced != NULL && forced[0] != '\0' ? 1 : 0;
+}
+
 int bt_app_window_open(unsigned int width, unsigned int height, const char *title,
                        const bt_app_render_cfg *render) {
     BT_TRACE_ENTER("app.window_open");
+    if (window_open_forced_fail()) {
+        BT_TRACE_FAIL("app.window_open", "forced by env");
+        BT_TRACE_EXIT("app.window_open");
+        return 0;
+    }
     SetTraceLogLevel(LOG_WARNING);
     if (render != NULL && render->vsync) {
         SetConfigFlags(FLAG_VSYNC_HINT);
@@ -42,6 +53,11 @@ int bt_app_window_open(unsigned int width, unsigned int height, const char *titl
 int bt_app_window_open_driven(unsigned int width, unsigned int height, const char *title,
                               const bt_app_render_cfg *render) {
     BT_TRACE_ENTER("app.window_open_driven");
+    if (window_open_forced_fail()) {
+        BT_TRACE_FAIL("app.window_open_driven", "forced by env");
+        BT_TRACE_EXIT("app.window_open_driven");
+        return 0;
+    }
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_UNFOCUSED);
     if (render != NULL && render->vsync) {
