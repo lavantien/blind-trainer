@@ -22,20 +22,20 @@ The smoke tour is seeded and fixed-size, so a recapture on the same inputs repro
 | window size | config `app.window` (width and height) |
 | fonts | assets/fonts |
 | tour and shot order | the `--smoke` implementation in src/app |
-| shot dwell | the smoke dwell constant in src/app/smoke.h, hardcoded at 0.5 like the rust twin |
+| shot dwell | the smoke dwell constant in src/app/smoke.h, hardcoded at 0.5 |
 
 Change any of these, or the rendering they feed, and the baselines must be recaptured with the recipe above.
 
 ## comparison contract
 
-`python bt.py visual` runs its own selftest first, then bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance; on a mismatch it re-renders via e2e-smoke and re-diffs once, exiting 4 when the re-render itself fails, 3 for an infra flake that passed the second run and 2 for a regression that failed both, with the verdict appended to artifacts/visual/report.md.
+`python bt.py visual` runs its own selftest first, then bt-visual-diff over artifacts/e2e against this directory, using `visual.tolerance` from the config hub as the per-channel pixel tolerance. A run fails when any shot is missing or differs beyond that tolerance. On a mismatch it re-renders via e2e-smoke and re-diffs once, exiting 4 when the re-render itself fails, 3 for an infra flake that passed the second run and 2 for a regression that failed both, with the verdict appended to artifacts/visual/report.md.
 
 ## capture log
 
 | commit | date | seed | window | notes |
 | --- | --- | --- | --- | --- |
-| 303dec0 | 2026-10-15 | 20261012 | 1280x800 | first capture under the stage 1 wiring: sandboxed e2e-smoke via bt-e2e, shot list from the e2e config section |
-| 3e8f5ce | 2026-10-16 | 20261012 | 1280x800 | stage 5 single refresh: replay shot listed in e2e.shots after solve, case drill shot from the wave c tours, menu algs row text and stats due block from the seeded event repos |
+| 303dec0 | 2026-10-15 | 20261012 | 1280x800 | first capture: sandboxed e2e-smoke via bt-e2e, shot list from the e2e config section |
+| 3e8f5ce | 2026-10-16 | 20261012 | 1280x800 | replay shot listed in e2e.shots after solve, case drill shot from the case drill tours, menu algs row text and stats due block from the seeded event repos |
 | fb2383e | 2026-10-18 | 20261012 | 1280x800 | drill.png only: net pulse frozen at a fixed factor in smoke mode (44067cc), refresh captured after the freeze over 2 green 10/10 visual runs, other 9 shots byte-identical |
 | 6f198b4 | 2026-10-28 | 20261012 | 1280x800 | c23 raylib port recapture, all 10 pngs replaced after a byte-identical double capture |
-| 541442d | 2026-11-01 | 20261012 | 1280x800 | fix wave recapture after the unfocused driven input, the density ladder, and the font atlas base 84 with bilinear filtering, 9 pngs replaced after a byte-identical double capture, replay.png unchanged because the replay view draws only the cube |
+| 541442d | 2026-11-01 | 20261012 | 1280x800 | recapture after the unfocused driven input fix, the density ladder, and the font atlas base 84 with bilinear filtering, 9 pngs replaced after a byte-identical double capture, replay.png unchanged because the replay view draws only the cube |
