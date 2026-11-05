@@ -913,6 +913,8 @@ void bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area(vo
 void bt_test_mutate_area_map_rejects_malformed_src_deps(void);
 void bt_test_mutate_prepare_scratch_refuses_unwritable_layouts(void);
 void bt_test_mutate_prepare_scratch_copies_and_skips_dep_tokens_by_rule(void);
+void bt_test_mutate_tokenizer_skips_comments_and_reads_prefixed_literals(void);
+void bt_test_mutate_tokenizer_and_span_helpers_edge_inputs(void);
 void bt_test_mutate_numeric_variants_and_suffixes(void);
 void bt_test_mutate_exponent_literals_are_float_tweaks(void);
 void bt_test_mutate_preprocessor_lines_stay_untouched(void);
@@ -989,6 +991,14 @@ int bt_mutate_selftest(void) {
         {
             "mutate.prepare_scratch_copies_and_skips_dep_tokens_by_rule",
             bt_test_mutate_prepare_scratch_copies_and_skips_dep_tokens_by_rule,
+        },
+        {
+            "mutate.tokenizer_skips_comments_and_reads_prefixed_literals",
+            bt_test_mutate_tokenizer_skips_comments_and_reads_prefixed_literals,
+        },
+        {
+            "mutate.tokenizer_and_span_helpers_edge_inputs",
+            bt_test_mutate_tokenizer_and_span_helpers_edge_inputs,
         },
         {
             "mutate.engine_stages_the_suite_exe_inside_the_workspace",

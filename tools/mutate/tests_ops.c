@@ -16,6 +16,72 @@ static long find_token(const bt_mut_tokens *tokens, const char *text) {
     return -1;
 }
 
+BT_TEST(mutate, tokenizer_skips_comments_and_reads_prefixed_literals) {
+    const char *src = "// line one\n"
+                      "int a; /* open\n"
+                      "still open */ int b;\n"
+                      "const char *s = u8\"esc\\\"ape\";\n"
+                      "wchar_t w = L'x';\n"
+                      "double h = 0x1p-4;\n"
+                      "double f = 1.5e+3;\n";
+    bt_mut_tokens tokens;
+    BT_CHECK_EQ(bt_mut_tokenize(src, strlen(src), &tokens), 0);
+    long a_index = find_token(&tokens, "a");
+    long b_index = find_token(&tokens, "b");
+    BT_CHECK(a_index >= 0);
+    BT_CHECK(b_index > a_index);
+    if (a_index >= 0) {
+        BT_CHECK_EQ(tokens.items[a_index].line, 2ULL);
+        BT_CHECK_EQ(tokens.items[a_index].kind, (long long)BT_MUT_TOK_IDENT);
+    }
+    if (b_index >= 0) {
+        BT_CHECK_EQ(tokens.items[b_index].line, 3ULL);
+    }
+    long h_index = find_token(&tokens, "0x1p-4");
+    long f_index = find_token(&tokens, "1.5e+3");
+    BT_CHECK(h_index >= 0);
+    BT_CHECK(f_index >= 0);
+    if (h_index >= 0) {
+        BT_CHECK_EQ(tokens.items[h_index].kind, (long long)BT_MUT_TOK_NUMBER);
+    }
+    if (f_index >= 0) {
+        BT_CHECK_EQ(tokens.items[f_index].kind, (long long)BT_MUT_TOK_NUMBER);
+    }
+    int saw_string = 0;
+    int saw_char = 0;
+    for (size_t i = 0; i < tokens.count; i++) {
+        const char *text = bt_mut_token_text(&tokens, &tokens.items[i]);
+        if (tokens.items[i].kind == BT_MUT_TOK_STRING) {
+            saw_string = 1;
+            BT_CHECK(strstr(text, "u8\"") == text || text[0] == '"');
+        }
+        if (tokens.items[i].kind == BT_MUT_TOK_CHAR) {
+            saw_char = 1;
+        }
+    }
+    BT_CHECK(saw_string);
+    BT_CHECK(saw_char);
+    bt_mut_tokens_free(&tokens);
+}
+
+BT_TEST(mutate, tokenizer_and_span_helpers_edge_inputs) {
+    const char *src = "int f(void) {\n    return 3;\n}\nint g(void) {\n    return 4;\n}\n";
+    bt_mut_tokens tokens;
+    BT_CHECK_EQ(bt_mut_tokenize(src, strlen(src), &tokens), 0);
+    BT_CHECK_EQ(bt_mut_offset_at(src, 1, 1), 0ULL);
+    BT_CHECK_EQ(bt_mut_offset_at(src, 99, 99), (size_t)-1);
+    size_t three = bt_mut_offset_at(src, 2, 12);
+    const char *fname = bt_mut_function_at(&tokens, three);
+    BT_CHECK(fname != NULL && strcmp(fname, "f") == 0);
+    size_t four = bt_mut_offset_at(src, 5, 12);
+    fname = bt_mut_function_at(&tokens, four);
+    BT_CHECK(fname != NULL && strcmp(fname, "g") == 0);
+    size_t second_int = bt_mut_offset_at(src, 4, 1);
+    fname = bt_mut_function_at(&tokens, second_int);
+    BT_CHECK(fname == NULL || fname[0] == '\0');
+    bt_mut_tokens_free(&tokens);
+}
+
 BT_TEST(mutate, comparison_swap_variants) {
     const char *src =
         "int f(int a, int b) {\n    if (a < b) {\n        return 1;\n    }\n    if (a "
