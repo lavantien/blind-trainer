@@ -209,3 +209,77 @@ BT_TEST(gate_driver, merge_two_inputs_writes_output) {
         BT_CHECK(strstr(text, "\"end_time\":\"2026-10-27T10:30:00Z\"") != NULL);
     }
 }
+
+BT_TEST(gate_driver, missing_allowlist_after_outcomes_exits_2) {
+    char dir[BT_PATH_MAX];
+    scratch_dir(dir);
+    char outcomes[BT_PATH_MAX];
+    char missing[BT_PATH_MAX];
+    snprintf(outcomes, BT_PATH_MAX, "%s/caught.json", dir);
+    snprintf(missing, BT_PATH_MAX, "%s/absent-allowlist.tsv", dir);
+    write_text(outcomes, DRIVER_CAUGHT);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutants-gate.exe");
+    const char *argv[] = {outcomes, missing, NULL};
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "cannot read") != NULL);
+    BT_CHECK(strstr(err, "absent-allowlist.tsv") != NULL);
+}
+
+BT_TEST(gate_driver, merge_with_a_later_input_missing_exits_2) {
+    char dir[BT_PATH_MAX];
+    scratch_dir(dir);
+    char input_a[BT_PATH_MAX];
+    char missing[BT_PATH_MAX];
+    char output[BT_PATH_MAX];
+    snprintf(input_a, BT_PATH_MAX, "%s/merge-a.json", dir);
+    snprintf(missing, BT_PATH_MAX, "%s/absent-input.json", dir);
+    snprintf(output, BT_PATH_MAX, "%s/merged.json", dir);
+    write_text(input_a, DRIVER_MERGE_A);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutants-gate.exe");
+    const char *argv[] = {"merge", output, input_a, missing, NULL};
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "cannot read") != NULL);
+    BT_CHECK(strstr(err, "absent-input.json") != NULL);
+}
+
+BT_TEST(gate_driver, merge_into_an_unwritable_output_exits_2) {
+    char root_dir[BT_PATH_MAX];
+    scratch_dir(root_dir);
+    char input_a[BT_PATH_MAX];
+    char input_b[BT_PATH_MAX];
+    char output[BT_PATH_MAX];
+    snprintf(input_a, BT_PATH_MAX, "%s/merge-a.json", root_dir);
+    snprintf(input_b, BT_PATH_MAX, "%s/merge-b.json", root_dir);
+    snprintf(output, BT_PATH_MAX, "%s/absent-subdir/merged.json", root_dir);
+    write_text(input_a, DRIVER_MERGE_A);
+    write_text(input_b, DRIVER_MERGE_B);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutants-gate.exe");
+    const char *argv[] = {"merge", output, input_a, input_b, NULL};
+    char out[4096];
+    char err[4096];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "cannot write") != NULL);
+    BT_CHECK(strstr(err, "absent-subdir") != NULL);
+}
