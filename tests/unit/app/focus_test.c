@@ -81,7 +81,7 @@ BT_TEST(focus, cursor_jump_counts_only_a_landing_on_our_own_window) {
     HWND hit = WindowFromPoint(probe);
     DWORD hit_pid = 0;
     GetWindowThreadProcessId(hit, &hit_pid);
-    int lands_on_ours = hit != NULL && hit_pid == (DWORD)GetCurrentProcessId();
+    int lands_on_ours = hit != NULL && hit_pid == GetCurrentProcessId();
     long jumps = bt_app_focus_watch_cursor_jump_count(watch);
     bt_app_focus_watch_stop(watch);
     SetCursorPos(far_x, far_y);

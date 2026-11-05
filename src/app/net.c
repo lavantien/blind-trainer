@@ -78,6 +78,8 @@ int bt_net_face_of(unsigned char sticker) {
     case 'D':
         face = 5;
         break;
+    default:
+        break;
     }
     BT_TRACE_EXIT("app.net_face_of");
     return face;

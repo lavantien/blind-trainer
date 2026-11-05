@@ -17,15 +17,15 @@ BT_TEST(alloc_oom, str_list_push_fails_closed_on_both_allocation_arms) {
     bt_str_list_init(&list);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_str_list_push(&list, "alpha"), -1);
-    BT_CHECK_EQ(list.count, 0u);
+    BT_CHECK_EQ(list.count, 0U);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_str_list_push(&list, "alpha"), 0);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_str_list_push(&list, "beta"), -1);
-    BT_CHECK_EQ(list.count, 1u);
+    BT_CHECK_EQ(list.count, 1U);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_str_list_push(&list, "beta"), 0);
-    BT_CHECK_EQ(list.count, 2u);
+    BT_CHECK_EQ(list.count, 2U);
     bt_str_list_free(&list);
 }
 
@@ -34,14 +34,14 @@ BT_TEST(alloc_oom, str_list_sorted_insert_fails_closed_under_failure) {
     bt_str_list_init(&list);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_str_list_sorted_insert_unique(&list, "b"), -1);
-    BT_CHECK_EQ(list.count, 0u);
+    BT_CHECK_EQ(list.count, 0U);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_str_list_sorted_insert_unique(&list, "b"), 0);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_str_list_sorted_insert_unique(&list, "a"), -1);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_str_list_sorted_insert_unique(&list, "a"), 0);
-    BT_CHECK_EQ(list.count, 2u);
+    BT_CHECK_EQ(list.count, 2U);
     bt_str_list_free(&list);
 }
 
@@ -50,7 +50,7 @@ BT_TEST(alloc_oom, syllable_book_insert_fails_closed_on_every_allocation_arm) {
     bt_syllable_book_init(&book);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_syllable_book_insert(&book, "edge", "AB", "lai"), -1);
-    BT_CHECK_EQ(book.count, 0u);
+    BT_CHECK_EQ(book.count, 0U);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_syllable_book_insert(&book, "edge", "AB", "lai"), 0);
     bt_alloc_fail_arm(0);
@@ -64,7 +64,7 @@ BT_TEST(alloc_oom, syllable_book_insert_fails_closed_on_every_allocation_arm) {
     BT_CHECK_EQ(bt_syllable_book_insert(&book, "corner", "CD", "nhu"), -1);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_syllable_book_insert(&book, "corner", "CD", "nhu"), 0);
-    BT_CHECK_EQ(book.count, 2u);
+    BT_CHECK_EQ(book.count, 2U);
     bt_syllable_book_free(&book);
 }
 
@@ -73,10 +73,10 @@ BT_TEST(alloc_oom, solve_broken_push_fails_closed_and_keeps_the_count) {
     bt_solve_outcome_init(&outcome);
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_solve_outcome_push_broken(&outcome, "UB"), -1);
-    BT_CHECK_EQ(outcome.broken_count, 0u);
+    BT_CHECK_EQ(outcome.broken_count, 0U);
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(bt_solve_outcome_push_broken(&outcome, "UB"), 0);
-    BT_CHECK_EQ(outcome.broken_count, 1u);
+    BT_CHECK_EQ(outcome.broken_count, 1U);
     bt_solve_outcome_free(&outcome);
 }
 
@@ -130,7 +130,7 @@ BT_TEST(alloc_oom, repo_arms_survives_allocation_failure_at_every_depth) {
             }
             free(arms);
         } else {
-            BT_CHECK_EQ(arm_count, 0u);
+            BT_CHECK_EQ(arm_count, 0U);
         }
     }
     bt_str_list_free(&hidden);
@@ -138,19 +138,19 @@ BT_TEST(alloc_oom, repo_arms_survives_allocation_failure_at_every_depth) {
 
 BT_TEST(alloc_oom, usage_script_degrades_to_a_prefix_under_allocation_failure) {
     size_t full_count = 0;
-    bt_usage_action *full = bt_usage_script(0.05f, &full_count);
+    bt_usage_action *full = bt_usage_script(0.05F, &full_count);
     BT_CHECK(full != NULL);
     BT_CHECK(full_count > 40);
     size_t count = 999;
     bt_alloc_fail_arm(0);
-    bt_usage_action *script = bt_usage_script(0.05f, &count);
+    bt_usage_action *script = bt_usage_script(0.05F, &count);
     bt_alloc_fail_disarm();
     BT_CHECK(script == NULL);
-    BT_CHECK_EQ(count, 0u);
+    BT_CHECK_EQ(count, 0U);
     free(script);
     count = 999;
     bt_alloc_fail_arm(1);
-    script = bt_usage_script(0.05f, &count);
+    script = bt_usage_script(0.05F, &count);
     bt_alloc_fail_disarm();
     BT_CHECK(script != NULL);
     BT_CHECK(count > 0);
