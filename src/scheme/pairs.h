@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #define BT_PAIRS_MAX 440
+#define BT_CASES_ALL_MAX (2 * BT_PAIRS_MAX)
 
 typedef struct {
     bt_orbit orbit;
