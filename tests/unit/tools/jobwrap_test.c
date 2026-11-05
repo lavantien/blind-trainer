@@ -1,13 +1,17 @@
 #include "jobwrap/lib.h"
 
+#include <process.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+#include <windows.h>
 
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/paths.h"
+#include "jobwrap/ffi.h"
+#include "unit/tools/spawn_util.h"
 
 static int parse_ok(const wchar_t *const argv[], int argc, bt_jobwrap_invocation *out) {
     char err[BT_JOBWRAP_ERR_MAX];
@@ -432,4 +436,397 @@ BT_TEST(jobwrap, config_path_honors_env_and_default) {
     snprintf(expected, sizeof expected, "%s/x.json", root);
     bt_jobwrap_config_path_from(expected, out);
     BT_CHECK_EQ(strcmp(out, expected), 0);
+}
+
+static char g_config_saved[BT_PATH_MAX];
+static int g_config_had = -1;
+
+static void set_config_env(const char *value) {
+    if (g_config_had < 0) {
+        const char *raw = getenv("BT_CONFIG");
+        g_config_had = raw != NULL && raw[0] != '\0';
+        snprintf(g_config_saved, sizeof g_config_saved, "%s", raw != NULL ? raw : "");
+    }
+    if (value != NULL) {
+        _putenv_s("BT_CONFIG", value);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+}
+
+static void restore_config_env(void) {
+    if (g_config_had > 0) {
+        _putenv_s("BT_CONFIG", g_config_saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+}
+
+static void write_config_pair(char dir[BT_PATH_MAX], const char *tag, const char *body) {
+    snprintf(dir, BT_PATH_MAX, "%s\\bt-jobwrap-cfg-%s-%d", getenv("TEMP"), tag, _getpid());
+    CreateDirectoryA(dir, NULL);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    FILE *file = fopen(path, "wb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fputs(body, file);
+        fclose(file);
+    }
+}
+
+static void drop_config_dir(const char *dir) {
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    DeleteFileA(path);
+    RemoveDirectoryA(dir);
+}
+
+BT_TEST(jobwrap, load_config_reports_missing_and_broken_files) {
+    char err[BT_JOBWRAP_ERR_MAX];
+    set_config_env("Z:/no-such/jobwrap-missing.json");
+    bt_json_value *config = bt_jobwrap_load_config(err, sizeof err);
+    BT_CHECK(config == NULL);
+    BT_CHECK(strstr(err, "read") == err);
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "broken", "{\"job\": ");
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    config = bt_jobwrap_load_config(err, sizeof err);
+    BT_CHECK(config == NULL);
+    BT_CHECK(strstr(err, "parse") == err);
+    restore_config_env();
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, pid_dir_rejects_an_empty_value) {
+    char out[BT_PATH_MAX];
+    char err[BT_JOBWRAP_ERR_MAX];
+    bt_json_value *config = config_of("{\"memguard\":{\"pid_dir\":\"\"}}");
+    BT_CHECK(bt_jobwrap_pid_dir_from(config, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config value invalid: memguard.pid_dir"), 0);
+    bt_json_free(config);
+}
+
+BT_TEST(jobwrap, run_rejects_non_wrap_kinds_and_bad_configs) {
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    bt_jobwrap_invocation plain = {BT_JOBWRAP_INVOCATION_HOLD_SECS, NULL, NULL, 0, 0};
+    BT_CHECK_EQ(bt_jobwrap_run(&plain, &code, err, sizeof err), BT_JOBWRAP_RUN_USAGE);
+    BT_CHECK(strstr(err, "run needs a wrap invocation") != NULL);
+
+    const wchar_t *payload[] = {L"cmd", L"/c", L"exit", L"0"};
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, NULL, payload, 4, 0};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "nojob", "{}");
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "job.per_process_bytes") != NULL);
+    drop_config_dir(dir);
+
+    char base[BT_PATH_MAX];
+    char piddir[BT_PATH_MAX];
+    snprintf(base, sizeof base, "%s\\bt-jobwrap-block-%d", getenv("TEMP"), _getpid());
+    CreateDirectoryA(base, NULL);
+    char blocker[BT_PATH_MAX];
+    snprintf(blocker, sizeof blocker, "%s\\blocker.txt", base);
+    FILE *file = fopen(blocker, "wb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fputs("in the way", file);
+        fclose(file);
+    }
+    snprintf(piddir, sizeof piddir, "%s\\blocker.txt\\pids", base);
+    char body[BT_PATH_MAX * 2];
+    char piddir_fwd[BT_PATH_MAX];
+    snprintf(piddir_fwd, sizeof piddir_fwd, "%s", piddir);
+    for (char *cursor = piddir_fwd; *cursor != '\0'; cursor++) {
+        if (*cursor == '\\') {
+            *cursor = '/';
+        }
+    }
+    snprintf(body, sizeof body,
+             "{\"job\":{\"per_process_bytes\":4294967296},\"memguard\":{\"pid_dir\":\"%s\"}}",
+             piddir_fwd);
+    write_config_pair(dir, "blocked", body);
+    bt_jobwrap_invocation anchored = {BT_JOBWRAP_INVOCATION_WRAP, L"anchor", payload, 4, 0};
+    char blocked_path[BT_PATH_MAX];
+    snprintf(blocked_path, sizeof blocked_path, "%s\\config.json", dir);
+    set_config_env(blocked_path);
+    verdict = bt_jobwrap_run(&anchored, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "anchor") == err);
+    drop_config_dir(dir);
+    DeleteFileA(blocker);
+    RemoveDirectoryA(base);
+}
+
+BT_TEST(jobwrap, run_spawns_the_payload_and_passes_the_exit_code_through) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    wchar_t payload0[BT_PATH_MAX];
+    size_t exelen = strlen(exe);
+    for (size_t at = 0; at <= exelen; at++) {
+        payload0[at] = (wchar_t)exe[at];
+    }
+    const wchar_t *payload[] = {payload0, L"0.1"};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "ok",
+                      "{\"job\":{\"per_process_bytes\":4294967296},"
+                      "\"memguard\":{\"pid_dir\":\"artifacts/progress/pids\"}}");
+    bt_jobwrap_invocation anchored = {BT_JOBWRAP_INVOCATION_WRAP, L"suitewrap", payload, 2, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 99;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&anchored, &code, err, sizeof err);
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_OK);
+    BT_CHECK_EQ(code, 0U);
+    bt_jobwrap_invocation bare = {BT_JOBWRAP_INVOCATION_WRAP, NULL, payload, 2, 0};
+    code = 99;
+    verdict = bt_jobwrap_run(&bare, &code, err, sizeof err);
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_OK);
+    BT_CHECK_EQ(code, 0U);
+    const wchar_t *usage_error[] = {payload0, L"abc"};
+    bt_jobwrap_invocation failing = {BT_JOBWRAP_INVOCATION_WRAP, NULL, usage_error, 2, 0};
+    code = 0;
+    verdict = bt_jobwrap_run(&failing, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_OK);
+    BT_CHECK_EQ(code, 2U);
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, run_reports_a_missing_payload_program) {
+    const wchar_t *payload[] = {L"bt-missing-program-xyz", L"arg"};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "miss",
+                      "{\"job\":{\"per_process_bytes\":4294967296},"
+                      "\"memguard\":{\"pid_dir\":\"artifacts/progress/pids\"}}");
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, NULL, payload, 2, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "spawn failed") != NULL);
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, run_rejects_an_over_budget_command_line) {
+    wchar_t huge[BT_JOBWRAP_CMDLINE_MAX + 8];
+    for (size_t at = 0; at < BT_JOBWRAP_CMDLINE_MAX + 4; at++) {
+        huge[at] = L'a';
+    }
+    huge[BT_JOBWRAP_CMDLINE_MAX + 4] = L'\0';
+    const wchar_t *payload[] = {huge};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "long",
+                      "{\"job\":{\"per_process_bytes\":4294967296},"
+                      "\"memguard\":{\"pid_dir\":\"artifacts/progress/pids\"}}");
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, NULL, payload, 1, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "payload command line too long") != NULL);
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, ffi_rejects_broken_and_oversized_command_lines) {
+    bt_jobwrap_spawned spawned;
+    unsigned long code = bt_jobwrap_spawn_suspended(L"bt-missing-program-xyz", &spawned);
+    BT_CHECK(code != 0);
+    wchar_t over[BT_JOBWRAP_CMDLINE_MAX + 2];
+    for (size_t at = 0; at < BT_JOBWRAP_CMDLINE_MAX + 1; at++) {
+        over[at] = L'x';
+    }
+    over[BT_JOBWRAP_CMDLINE_MAX + 1] = L'\0';
+    code = bt_jobwrap_spawn_suspended(over, &spawned);
+    BT_CHECK_EQ(code, ERROR_INVALID_PARAMETER);
+}
+
+BT_TEST(jobwrap, ffi_assign_resume_and_wait_fail_on_dead_handles) {
+    bt_jobwrap_spawned dead = {NULL, NULL, 0};
+    HANDLE job = NULL;
+    BT_CHECK(bt_jobwrap_create_ceiling_job(4294967296ULL, &job) == 0);
+    BT_CHECK(job != NULL);
+    unsigned long code = bt_jobwrap_assign_and_resume(job, &dead);
+    BT_CHECK(code != 0);
+    bt_jobwrap_spawned child;
+    BT_CHECK_EQ(bt_jobwrap_spawn_suspended(L"cmd /c exit 0", &child), 0UL);
+    BT_CHECK_EQ(bt_jobwrap_assign_and_resume(job, &child), 0UL);
+    bt_jobwrap_spawned resumed = {child.process, NULL, child.process_id};
+    code = bt_jobwrap_assign_and_resume(job, &resumed);
+    BT_CHECK(code != 0);
+    unsigned int exit_code = 0;
+    BT_CHECK_EQ(bt_jobwrap_wait_exit_code(child.process, &exit_code), 0UL);
+    BT_CHECK_EQ(exit_code, 0U);
+    code = bt_jobwrap_wait_exit_code(NULL, &exit_code);
+    BT_CHECK(code != 0);
+    code = bt_jobwrap_wait_exit_code(child.thread, &exit_code);
+    BT_CHECK(code != 0);
+    bt_jobwrap_close_handle(child.process);
+    bt_jobwrap_close_handle(child.thread);
+    bt_jobwrap_close_handle(job);
+    bt_jobwrap_close_handle(NULL);
+    unsigned long long ticks = 0;
+    BT_CHECK_EQ(bt_jobwrap_dotnet_start_ticks(&ticks), 0UL);
+    BT_CHECK(ticks > BT_JOBWRAP_DOTNET_TICKS_AT_FILETIME_ZERO);
+}
+
+BT_TEST(jobwrap, quote_argument_hits_cap_limits_mid_string) {
+    wchar_t out[8];
+    BT_CHECK(bt_jobwrap_quote_argument(L"plain", out, 2) != 0);
+    BT_CHECK(bt_jobwrap_quote_argument(L"", out, 2) != 0);
+    BT_CHECK(bt_jobwrap_quote_argument(L"a \"quoted\" tail", out, 8) != 0);
+    BT_CHECK(bt_jobwrap_quote_argument(L"back\\slash tail", out, 8) != 0);
+    BT_CHECK(bt_jobwrap_quote_argument(L"a b\\", out, 6) != 0);
+    wchar_t tight[6];
+    BT_CHECK_EQ(bt_jobwrap_quote_argument(L"ab", tight, 6), 0);
+    BT_CHECK_EQ(wcscmp(tight, L"ab"), 0);
+}
+
+BT_TEST(jobwrap, run_with_anchor_removes_the_pidfile_when_the_command_line_overflows) {
+    wchar_t huge[BT_JOBWRAP_CMDLINE_MAX + 8];
+    for (size_t at = 0; at < BT_JOBWRAP_CMDLINE_MAX + 4; at++) {
+        huge[at] = L'a';
+    }
+    huge[BT_JOBWRAP_CMDLINE_MAX + 4] = L'\0';
+    const wchar_t *payload[] = {huge};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "longanchored",
+                      "{\"job\":{\"per_process_bytes\":4294967296},"
+                      "\"memguard\":{\"pid_dir\":\"artifacts/progress/pids\"}}");
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, L"longwrap", payload, 1, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "payload command line too long") != NULL);
+    char root[BT_PATH_MAX];
+    bt_jobwrap_workspace_root(root);
+    char piddir[BT_PATH_MAX];
+    snprintf(piddir, sizeof piddir, "%s/artifacts/progress/pids", root);
+    char pattern[BT_PATH_MAX];
+    snprintf(pattern, sizeof pattern, "%s/longwrap-*.pid", piddir);
+    WIN32_FIND_DATAA found;
+    HANDLE scan = FindFirstFileA(pattern, &found);
+    BT_CHECK(scan == INVALID_HANDLE_VALUE);
+    if (scan != INVALID_HANDLE_VALUE) {
+        FindClose(scan);
+    }
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, run_reports_a_pid_file_that_cannot_be_created) {
+    const wchar_t *payload[] = {L"cmd", L"/c", L"exit", L"0"};
+    char dir[BT_PATH_MAX];
+    char piddir[BT_PATH_MAX];
+    char base[BT_PATH_MAX];
+    DWORD n = GetTempPathA(BT_PATH_MAX, base);
+    BT_CHECK(n > 0 && n < BT_PATH_MAX);
+    snprintf(piddir, sizeof piddir, "%sbt-jobwrap-pidblock-%lu", base, GetCurrentProcessId());
+    CreateDirectoryA(piddir, NULL);
+    char blocked[BT_PATH_MAX];
+    snprintf(blocked, sizeof blocked, "%s\\blocked-%lu-%lu.pid", piddir, GetCurrentProcessId(),
+             GetCurrentProcessId());
+    CreateDirectoryA(blocked, NULL);
+    char piddir_fwd[BT_PATH_MAX];
+    snprintf(piddir_fwd, sizeof piddir_fwd, "%s", piddir);
+    for (char *cursor = piddir_fwd; *cursor != '\0'; cursor++) {
+        if (*cursor == '\\') {
+            *cursor = '/';
+        }
+    }
+    char body[BT_PATH_MAX * 2];
+    snprintf(body, sizeof body,
+             "{\"job\":{\"per_process_bytes\":4294967296},\"memguard\":{\"pid_dir\":\"%s\"}}",
+             piddir_fwd);
+    write_config_pair(dir, "pidblocked", body);
+    wchar_t anchor[64];
+    swprintf(anchor, 64, L"blocked-%lu", GetCurrentProcessId());
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, anchor, payload, 4, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "anchor") == err);
+    drop_config_dir(dir);
+    RemoveDirectoryA(blocked);
+    RemoveDirectoryA(piddir);
+}
+
+BT_TEST(jobwrap, run_rejects_a_blank_pid_dir_with_an_anchor) {
+    const wchar_t *payload[] = {L"cmd", L"/c", L"exit", L"0"};
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "blankdir",
+                      "{\"job\":{\"per_process_bytes\":4294967296},"
+                      "\"memguard\":{\"pid_dir\":\"\"}}");
+    bt_jobwrap_invocation wrap = {BT_JOBWRAP_INVOCATION_WRAP, L"blank", payload, 4, 0};
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    set_config_env(path);
+    unsigned int code = 0;
+    char err[BT_JOBWRAP_ERR_MAX];
+    int verdict = bt_jobwrap_run(&wrap, &code, err, sizeof err);
+    restore_config_env();
+    BT_CHECK_EQ(verdict, BT_JOBWRAP_RUN_FAILURE);
+    BT_CHECK(strstr(err, "anchor blank") == err);
+    drop_config_dir(dir);
+}
+
+BT_TEST(jobwrap, exe_wrap_path_passes_the_child_exit_code) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "jobwrap.exe");
+    char sleeper[BT_PATH_MAX];
+    bt_test_bin_path(sleeper, "sleeper.exe");
+    wchar_t sleeper_wide[BT_PATH_MAX];
+    for (size_t at = 0; at <= strlen(sleeper); at++) {
+        sleeper_wide[at] = (wchar_t)sleeper[at];
+    }
+    char command[BT_PATH_MAX * 3];
+    snprintf(command, sizeof command, "\"%s\" -- \"%s\" 0.1", exe, sleeper);
+    wchar_t wide[BT_PATH_MAX * 3];
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide, BT_PATH_MAX * 3);
+    STARTUPINFOW startup = {0};
+    startup.cb = sizeof startup;
+    PROCESS_INFORMATION info = {0};
+    BT_CHECK(CreateProcessW(NULL, wide, NULL, NULL, FALSE, 0, NULL, NULL, &startup, &info) != 0);
+    WaitForSingleObject(info.hProcess, 30000);
+    DWORD code = 0;
+    GetExitCodeProcess(info.hProcess, &code);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    BT_CHECK_EQ(code, 0U);
+    snprintf(command, sizeof command, "\"%s\" --anchor bad!name -- \"%s\" 0.1", exe, sleeper);
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide, BT_PATH_MAX * 3);
+    BT_CHECK(CreateProcessW(NULL, wide, NULL, NULL, FALSE, 0, NULL, NULL, &startup, &info) != 0);
+    WaitForSingleObject(info.hProcess, 30000);
+    GetExitCodeProcess(info.hProcess, &code);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    BT_CHECK_EQ(code, 2U);
 }
