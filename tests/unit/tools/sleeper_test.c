@@ -64,6 +64,9 @@ BT_TEST(sleeper, parses_positive_decimals) {
 
 BT_TEST(sleeper, rejects_non_numeric) {
     BT_CHECK(plain_err("abc"));
+    BT_CHECK(plain_err("0x10"));
+    BT_CHECK(plain_err(" 1.5"));
+    BT_CHECK(plain_err(""));
 }
 
 BT_TEST(sleeper, rejects_negative_and_non_finite) {
@@ -113,6 +116,37 @@ BT_TEST(sleeper, rejects_bad_selftest_modes) {
     BT_CHECK(mode_err(missing, 1));
     char *extra[3] = {(char *)"--selftest-hold-secs", (char *)"3", (char *)"4"};
     BT_CHECK(mode_err(extra, 3));
+}
+
+BT_TEST(sleeper, rejects_selftest_overflow_and_empty_numbers) {
+    char *over[2] = {(char *)"--selftest-alloc-mb", (char *)"18446744073709551616"};
+    BT_CHECK(mode_err(over, 2));
+    char *plus_empty[2] = {(char *)"--selftest-hold-secs", (char *)"+"};
+    BT_CHECK(mode_err(plus_empty, 2));
+    char *plus_ok[2] = {(char *)"--selftest-hold-secs", (char *)"+2"};
+    int mode = BT_SLEEPER_PLAIN;
+    unsigned long long value = 99;
+    BT_CHECK_EQ(mode_ok(plus_ok, 2, &mode, &value), 0);
+    BT_CHECK_EQ(value, 2ULL);
+}
+
+BT_TEST(sleeper, parse_mode_treats_a_null_head_as_plain) {
+    char *head_null[1] = {NULL};
+    int mode = BT_SLEEPER_ALLOC_MB;
+    unsigned long long value = 7;
+    char err[BT_SLEEPER_ERR_MAX];
+    err[0] = '\0';
+    int rc = bt_sleeper_parse_mode(1, head_null, &mode, &value, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(mode, BT_SLEEPER_PLAIN);
+}
+
+BT_TEST(sleeper, sleep_ms_zero_chunk_runs_the_total_at_once) {
+    ULONGLONG started = GetTickCount64();
+    int rc = bt_sleeper_sleep_ms(250, 0);
+    ULONGLONG elapsed = GetTickCount64() - started;
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK(elapsed >= 250);
 }
 
 BT_TEST(sleeper, sleep_ms_covers_the_full_total_across_chunks) {
@@ -189,19 +223,105 @@ BT_TEST(sleeper, exe_selftest_mode_rejects_zero) {
     BT_CHECK(strstr(err, "selftest alloc mb must be >= 1") != NULL);
 }
 
+static void spawn_with_config(const char *config_value, const char *const argv[], int timeout_ms,
+                              int *code, char *err, size_t err_cap) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    char saved[BT_PATH_MAX];
+    DWORD had = GetEnvironmentVariableA("BT_CONFIG", saved, BT_PATH_MAX);
+    if (config_value == NULL) {
+        SetEnvironmentVariableA("BT_CONFIG", NULL);
+    } else {
+        SetEnvironmentVariableA("BT_CONFIG", config_value);
+    }
+    char out[512];
+    int rc = bt_spawn_capture(exe, argv, NULL, timeout_ms, code, out, sizeof out, err, err_cap);
+    SetEnvironmentVariableA("BT_CONFIG", had > 0 && had < BT_PATH_MAX ? saved : NULL);
+    BT_CHECK_EQ(rc, 0);
+}
+
+BT_TEST(sleeper, exe_runs_with_an_unreadable_config_on_defaults) {
+    char err[512];
+    int code = -1;
+    const char *argv[] = {"0.15", NULL};
+    spawn_with_config("Z:/no-such-dir/no-such-config.json", argv, 30000, &code, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+}
+
+BT_TEST(sleeper, exe_runs_with_a_config_that_has_no_trace_keys) {
+    char base[BT_PATH_MAX];
+    DWORD n = GetTempPathA(BT_PATH_MAX, base);
+    BT_CHECK(n > 0 && n < BT_PATH_MAX);
+    char dir[BT_PATH_MAX];
+    snprintf(dir, sizeof dir, "%sbt-sleeper-cfg-%lu", base, GetCurrentProcessId());
+    bt_test_mkdirs(dir);
+    char config[BT_PATH_MAX];
+    snprintf(config, sizeof config, "%s/minimal.json", dir);
+    FILE *file = fopen(config, "wb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fputs("{}", file);
+        fclose(file);
+    }
+    char err[512];
+    int code = -1;
+    const char *argv[] = {"0.15", NULL};
+    spawn_with_config(config, argv, 30000, &code, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+    char config_full[BT_PATH_MAX];
+    snprintf(config_full, sizeof config_full, "%s/full.json", dir);
+    file = fopen(config_full, "wb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fputs("{\"trace\": {\"ring_bytes\": 4096, \"max_threads\": 2, \"line_max\": 128}}", file);
+        fclose(file);
+    }
+    code = -1;
+    spawn_with_config(config_full, argv, 30000, &code, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+    DeleteFileA(config);
+    DeleteFileA(config_full);
+    RemoveDirectoryA(dir);
+}
+
+BT_TEST(sleeper, exe_alloc_mode_holds_and_exits_zero) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    const char *argv[] = {"--selftest-alloc-mb", "32", NULL};
+    char out[512];
+    char err[2048];
+    int code = -1;
+    int rc = bt_spawn_capture(exe, argv, NULL, 60000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(err, "selftest alloc touched 32 MiB and holds it") != NULL);
+}
+
+static void restore_bin_dir(const char *saved) {
+    if (saved[0] != '\0') {
+        _putenv_s("BT_BIN_DIR", saved);
+    } else {
+        _putenv("BT_BIN_DIR=");
+    }
+}
+
 BT_TEST(bin_path, override_dir_wins_over_the_plain_build_bin) {
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", getenv("BT_BIN_DIR") != NULL ? getenv("BT_BIN_DIR") : "");
     char base[BT_PATH_MAX];
     snprintf(base, sizeof base, "%s\\bt-bin-path-override-%d", getenv("TEMP"), _getpid());
     bt_test_mkdirs(base);
     char exe[BT_PATH_MAX];
     _putenv_s("BT_BIN_DIR", base);
     bt_test_bin_path(exe, "sleeper.exe");
-    _putenv("BT_BIN_DIR=");
+    restore_bin_dir(saved);
     BT_CHECK(strncmp(exe, base, strlen(base)) == 0);
     BT_CHECK(strstr(exe, "sleeper.exe") != NULL);
 }
 
 BT_TEST(bin_path, empty_override_falls_back_to_the_plain_build_bin) {
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", getenv("BT_BIN_DIR") != NULL ? getenv("BT_BIN_DIR") : "");
     char root[BT_PATH_MAX];
     bt_test_repo_root(root);
     char expected[BT_PATH_MAX];
@@ -209,6 +329,6 @@ BT_TEST(bin_path, empty_override_falls_back_to_the_plain_build_bin) {
     char exe[BT_PATH_MAX];
     _putenv_s("BT_BIN_DIR", "");
     bt_test_bin_path(exe, "sleeper.exe");
-    _putenv("BT_BIN_DIR=");
+    restore_bin_dir(saved);
     BT_CHECK(strcmp(exe, expected) == 0);
 }
