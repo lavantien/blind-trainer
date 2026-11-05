@@ -94,7 +94,7 @@ static void overwrite_file(const char *path, const char *body) {
 static void replace_in_file(const char *path, const char *needle, const char *replacement) {
     FILE *file = fopen(path, "rb");
     BT_CHECK(file != NULL);
-    static char text[1U << 20];
+    static char text[1U << 20U];
     size_t len = 0;
     if (file != NULL) {
         len = fread(text, 1, sizeof text - 1, file);
@@ -344,5 +344,28 @@ BT_TEST(verify_exe, reports_registry_drift_as_a_pack_offender) {
     int code = spawn_verify(root, "artifacts", NULL, out, sizeof out, err, sizeof err);
     BT_CHECK_EQ(code, 1);
     BT_CHECK(strstr(err, "registry holds 41 rows, pin holds 42") != NULL);
+    rm_scratch_root(root);
+}
+
+BT_TEST(verify_exe, reports_a_missing_ref_ground_root) {
+    char out[2048];
+    char err[4096];
+    int code =
+        spawn_verify("Z:/no-such-ground", "artifacts", NULL, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "no-such-ground") != NULL);
+}
+
+BT_TEST(verify_exe, reports_a_clone_without_the_packs_root) {
+    char root[BT_PATH_MAX];
+    clone_ref_ground("nopacks", root);
+    char packs[BT_PATH_MAX];
+    snprintf(packs, sizeof packs, "%s/packs", root);
+    rm_scratch_root(packs);
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify(root, "artifacts", NULL, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "packs") != NULL);
     rm_scratch_root(root);
 }
