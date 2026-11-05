@@ -1,6 +1,7 @@
 #include "common/bt_harness.h"
 #include "core/alg.h"
 #include "core/cube.h"
+#include "death_test.h"
 
 static bt_cube cube_of(const char *text) {
     bt_alg alg;
@@ -158,4 +159,40 @@ BT_TEST(cube, from_occ_rejects_out_of_range_bytes) {
     BT_CHECK(!bt_cube_try_from_occ(occ, &out));
     occ[10] = 255;
     BT_CHECK(!bt_cube_try_from_occ(occ, &out));
+}
+
+BT_TEST(cube, try_from_occ_rejects_duplicates_and_band_crossings) {
+    uint8_t occ[54];
+    for (size_t i = 0; i < 54; i++) {
+        occ[i] = (uint8_t)i;
+    }
+    bt_cube out;
+    occ[9] = 1;
+    BT_CHECK(!bt_cube_try_from_occ(occ, &out));
+    occ[9] = 9;
+    occ[1] = 24;
+    occ[24] = 1;
+    BT_CHECK(!bt_cube_try_from_occ(occ, &out));
+}
+
+static void cube_death_from_occ_duplicate(void) {
+    uint8_t occ[54];
+    for (size_t i = 0; i < 54; i++) {
+        occ[i] = (uint8_t)i;
+    }
+    occ[0] = 1;
+    (void)bt_cube_from_occ(occ);
+}
+
+static void cube_death_position_of_missing(void) {
+    bt_cube cube = bt_cube_solved();
+    cube.occ[0] = 1;
+    (void)bt_cube_position_of(&cube, 0);
+}
+
+BT_TEST(cube, from_occ_and_position_of_abort_on_broken_states) {
+    bt_death_expect_abort("cube.from_occ_rejects_a_duplicate_sticker",
+                          "occ must be a permutation of 0..54", cube_death_from_occ_duplicate);
+    bt_death_expect_abort("cube.position_of_rejects_a_missing_sticker",
+                          "sticker 0 not present", cube_death_position_of_missing);
 }

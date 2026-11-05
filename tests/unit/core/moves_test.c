@@ -1,6 +1,7 @@
 #include "common/bt_harness.h"
 #include "core/cube.h"
 #include "core/moves.h"
+#include "death_test.h"
 
 enum { GENERATOR_MAX = (6 * 3 * 3 + 3 * 3 + 3 * 3) };
 
@@ -147,4 +148,50 @@ BT_TEST(moves, geometry_helpers_return_sentinels_off_the_surface) {
     bt_moves_cell_of(0, edge, &r, &c);
     BT_CHECK_EQ(r, (size_t)9);
     BT_CHECK_EQ(c, (size_t)9);
+}
+
+BT_TEST(moves, equality_separates_slices_and_axes_and_the_quarter_accessor_reads) {
+    BT_CHECK(!bt_move_eq(bt_move_of_slice(BT_SLICE_M, 1), bt_move_of_slice(BT_SLICE_E, 1)));
+    BT_CHECK(!bt_move_eq(bt_move_of_rotation(BT_AXIS_X, 1), bt_move_of_rotation(BT_AXIS_Y, 1)));
+    BT_CHECK(bt_move_eq(bt_move_of_slice(BT_SLICE_S, 2), bt_move_of_slice(BT_SLICE_S, 2)));
+    BT_CHECK_EQ(bt_move_quarter(bt_move_of_face(BT_FACE_D, 3)), 3);
+    BT_CHECK_EQ(bt_move_quarter(bt_move_of_slice(BT_SLICE_E, 2)), 2);
+}
+
+static void moves_death_quarter_zero(void) {
+    uint8_t table[54];
+    bt_move_table(bt_move_of_face(BT_FACE_U, 0), table);
+}
+
+static void moves_death_quarter_four(void) {
+    uint8_t table[54];
+    bt_move_table(bt_move_with_quarter(bt_move_of_face(BT_FACE_U, 1), 4), table);
+}
+
+static void moves_death_face_six(void) {
+    uint8_t table[54];
+    bt_move_table((bt_move){BT_MOVE_FACE, 6, 0, 0, 1}, table);
+}
+
+static void moves_death_slice_three(void) {
+    uint8_t table[54];
+    bt_move_table((bt_move){BT_MOVE_SLICE, 0, 3, 0, 1}, table);
+}
+
+static void moves_death_axis_three(void) {
+    uint8_t table[54];
+    bt_move_table((bt_move){BT_MOVE_ROTATION, 0, 0, 3, 1}, table);
+}
+
+BT_TEST(moves, table_rejects_out_of_domain_moves) {
+    bt_death_expect_abort("moves.table_rejects_quarter_zero", "quarter 0 out of range",
+                          moves_death_quarter_zero);
+    bt_death_expect_abort("moves.table_rejects_quarter_four", "quarter 4 out of range",
+                          moves_death_quarter_four);
+    bt_death_expect_abort("moves.table_rejects_face_six", "face 6 out of range",
+                          moves_death_face_six);
+    bt_death_expect_abort("moves.table_rejects_slice_three", "slice 3 out of range",
+                          moves_death_slice_three);
+    bt_death_expect_abort("moves.table_rejects_axis_three", "axis 3 out of range",
+                          moves_death_axis_three);
 }

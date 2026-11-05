@@ -4,6 +4,7 @@
 #include "common/strbuf.h"
 #include "core/alg.h"
 #include "core/moves.h"
+#include "death_test.h"
 
 static bool parse_ok(const char *text, bt_alg *alg) {
     char err[64];
@@ -174,4 +175,83 @@ BT_TEST(alg, splits_unicode_whitespace) {
         bt_strbuf_free(&sb);
         bt_alg_free(&alg);
     }
+}
+
+BT_TEST(alg, parse_token_rejects_inner_wides_inner_slices_and_bad_suffixes) {
+    const char *bad[] = {"2", "2u", "2r", "2M", "2E", "2S", "2x", "2y", "2z", "U3", "U2x", "R2'2"};
+    for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
+        bt_move mv;
+        BT_CHECK(!bt_alg_parse_token(bad[i], &mv));
+    }
+    bt_move mv;
+    BT_CHECK(bt_alg_parse_token("2R", &mv));
+    BT_CHECK_EQ(mv.kind, (int)BT_MOVE_INNER);
+    BT_CHECK(bt_alg_parse_token("2F'", &mv));
+}
+
+BT_TEST(alg, parse_reports_the_offending_token) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    char err[64];
+    BT_CHECK(!bt_alg_parse("R X", &alg, err, sizeof err));
+    BT_CHECK_EQ(err, "X");
+    char long_token[80];
+    memset(long_token, 'R', sizeof long_token - 1);
+    long_token[sizeof long_token - 1] = '\0';
+    BT_CHECK(!bt_alg_parse(long_token, &alg, err, sizeof err));
+    BT_CHECK_EQ(strlen(err), (size_t)63);
+    BT_CHECK_EQ(err[0], 'R');
+    bt_alg_free(&alg);
+}
+
+BT_TEST(alg, try_parse_matches_the_parse_verdicts) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    BT_CHECK(bt_alg_try_parse("R U'", &alg));
+    bt_alg_free(&alg);
+    bt_alg_init(&alg);
+    BT_CHECK(!bt_alg_try_parse("R Q", &alg));
+    bt_alg_free(&alg);
+}
+
+static void alg_death_format_face_six(void) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    bt_alg_push(&alg, (bt_move){BT_MOVE_FACE, 6, 0, 0, 1});
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 16);
+    bt_alg_format(&alg, &sb);
+    bt_strbuf_free(&sb);
+    bt_alg_free(&alg);
+}
+
+static void alg_death_format_slice_three(void) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    bt_alg_push(&alg, (bt_move){BT_MOVE_SLICE, 0, 3, 0, 1});
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 16);
+    bt_alg_format(&alg, &sb);
+    bt_strbuf_free(&sb);
+    bt_alg_free(&alg);
+}
+
+static void alg_death_format_axis_three(void) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    bt_alg_push(&alg, (bt_move){BT_MOVE_ROTATION, 0, 0, 3, 1});
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 16);
+    bt_alg_format(&alg, &sb);
+    bt_strbuf_free(&sb);
+    bt_alg_free(&alg);
+}
+
+BT_TEST(alg, format_aborts_on_out_of_domain_moves) {
+    bt_death_expect_abort("alg.format_rejects_face_six", "face 6 out of range",
+                          alg_death_format_face_six);
+    bt_death_expect_abort("alg.format_rejects_slice_three", "slice 3 out of range",
+                          alg_death_format_slice_three);
+    bt_death_expect_abort("alg.format_rejects_axis_three", "axis 3 out of range",
+                          alg_death_format_axis_three);
 }

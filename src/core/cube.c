@@ -132,6 +132,7 @@ uint8_t bt_cube_position_of(const bt_cube *cube, uint8_t sticker) {
         }
     }
     BT_TRACE_FAIL("bt_cube_position_of", "sticker %u not present", (unsigned)sticker);
+    bt_trace_dump();
     abort();
 }
 

@@ -4,6 +4,7 @@
 #include "core/alg.h"
 #include "core/analysis.h"
 #include "core/cube.h"
+#include "death_test.h"
 
 static bt_cube apply(const char *text) {
     bt_alg alg;
@@ -118,4 +119,63 @@ BT_TEST(analysis, out_of_domain_pieces_fail_closed) {
     bt_cube cube = bt_cube_solved();
     BT_CHECK(!bt_edge_flip(&cube, 12));
     BT_CHECK_EQ(bt_corner_twist(&cube, 8), 0);
+}
+
+static void analysis_death_piece_of_48(void) {
+    (void)bt_piece_of(48);
+}
+
+static void analysis_death_corner_stickers_8(void) {
+    uint8_t out[3];
+    bt_corner_stickers(8, out);
+}
+
+static void analysis_death_edge_stickers_12(void) {
+    uint8_t out[2];
+    bt_edge_stickers(12, out);
+}
+
+static void analysis_death_two_ud_centers(void) {
+    bt_cube cube = bt_cube_solved();
+    uint8_t keep = cube.occ[52];
+    cube.occ[52] = cube.occ[53];
+    cube.occ[53] = keep;
+    (void)bt_corner_twist(&cube, 0);
+}
+
+static void analysis_death_no_ud_center(void) {
+    bt_cube cube = bt_cube_solved();
+    uint8_t keep = cube.occ[48];
+    cube.occ[48] = cube.occ[49];
+    cube.occ[49] = keep;
+    keep = cube.occ[50];
+    cube.occ[50] = cube.occ[51];
+    cube.occ[51] = keep;
+    (void)bt_corner_twist(&cube, 0);
+}
+
+static void analysis_death_no_ud_sticker(void) {
+    bt_cube cube = bt_cube_solved();
+    uint8_t keep = cube.occ[1];
+    cube.occ[1] = cube.occ[24];
+    cube.occ[24] = keep;
+    (void)bt_corner_twist(&cube, 0);
+}
+
+BT_TEST(analysis, cubie_accessors_abort_on_out_of_domain_input) {
+    bt_death_expect_abort("analysis.piece_of_rejects_a_non_cubie_sticker",
+                          "sticker 48 is not a cubie sticker", analysis_death_piece_of_48);
+    bt_death_expect_abort("analysis.corner_stickers_rejects_index_8", "corner 8 out of range",
+                          analysis_death_corner_stickers_8);
+    bt_death_expect_abort("analysis.edge_stickers_rejects_index_12", "edge 12 out of range",
+                          analysis_death_edge_stickers_12);
+}
+
+BT_TEST(analysis, corner_twist_aborts_on_states_without_one_ud_face_per_corner) {
+    bt_death_expect_abort("analysis.corner_twist_rejects_two_ud_centers",
+                          "two ud centers on corner 0", analysis_death_two_ud_centers);
+    bt_death_expect_abort("analysis.corner_twist_rejects_a_missing_ud_center",
+                          "no ud center on a corner slot", analysis_death_no_ud_center);
+    bt_death_expect_abort("analysis.corner_twist_rejects_a_missing_ud_sticker",
+                          "no ud sticker on a corner piece", analysis_death_no_ud_sticker);
 }
