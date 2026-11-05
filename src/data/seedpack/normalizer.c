@@ -575,6 +575,8 @@ static bool canonical_tuple(const char *inner, char *out, size_t out_len, bool *
             }
             if (value == -HALF_RING) {
                 mapped = HALF_RING;
+            } else if (value == HALF_RING + 1) {
+                mapped = TURN_MIN;
             } else if (value >= TURN_MIN && value <= HALF_RING) {
                 mapped = value;
             } else {

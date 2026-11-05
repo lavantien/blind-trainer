@@ -151,7 +151,7 @@ BT_TEST(seedpack_normalize, normalize_rejects_unknown_tokens_and_broken_structur
 
 BT_TEST(seedpack_normalize, sq1_rejects_turns_the_engine_can_never_parse) {
     const char *bad[] = {
-        "(0,0)", "(7,0)", "(0,7)", "(1,-7)", "(-7,0)", "(6,7)", "(0,-7)", "(8,1)", "0,0", "7,-5",
+        "(0,0)", "(1,-7)", "(-7,0)", "(0,-7)", "(8,1)", "0,0",
     };
     for (size_t i = 0; i < sizeof bad / sizeof bad[0]; i++) {
         expect_error("sq1", bad[i], NULL);
@@ -534,6 +534,26 @@ BT_TEST(seedpack_normalize, sq1_minus_six_turns_wrap_to_six_with_a_verbatim_note
                 "{\"case\":\"H-W\",\"loader_notes\":[\"auf prefix stripped: (D2)\","
                 "\"wraparound: (0,-6) -> (0,6)\"],\"parity\":true}");
     bt_seed_rows_free(&rows);
+}
+
+BT_TEST(seedpack_normalize, sq1_seven_turns_wrap_to_minus_five_symmetrically) {
+    bt_normalized out = normalize_ok("sq1", "(7,0)");
+    BT_CHECK_EQ(out.alg, "(-5,0)");
+    BT_CHECK(out.note_count == 1);
+    BT_CHECK_EQ(out.notes[0], "wraparound: (7,0) -> (-5,0)");
+    bt_normalized_free(&out);
+    bt_normalized bare = normalize_ok("sq1", "0,7");
+    BT_CHECK_EQ(bare.alg, "(0,-5)");
+    BT_CHECK(bare.note_count == 1);
+    BT_CHECK_EQ(bare.notes[0], "wraparound: (0,7) -> (0,-5)");
+    bt_normalized_free(&bare);
+    bt_normalized both = normalize_ok("sq1", "(7,7)");
+    BT_CHECK_EQ(both.alg, "(-5,-5)");
+    BT_CHECK(both.note_count == 1);
+    BT_CHECK_EQ(both.notes[0], "wraparound: (7,7) -> (-5,-5)");
+    bt_normalized_free(&both);
+    expect_error("sq1", "(8,0)", "unknown token");
+    expect_error("sq1", "(-7,0)", "unknown token");
 }
 
 static const char *MEGA_PINNED_TOKENS[16] = {
