@@ -348,6 +348,117 @@ static const char FX_OTHER_VERSION[] =
 static const char FX_COMMENTED_ALLOWLIST[] =
     "# columns: file\tfunction\tgenre\treplacement\tcount\tjustification\n";
 
+static const char FX_MISSED_NO_FILE[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"scenario\":{\""
+    "Mutant\":{\"name\":\"n\",\"package\":\"p\",\"function\":{\"function_name\":\"f\"},\"span\""
+    ":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\":3,\"column\":6}},\"replacement\""
+    ":\"y\",\"genre\":\"FnValue\"}},\"summary\":\"MissedMutant\"}]}";
+
+static const char FX_MISSED_FN_NUMBER[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"scenario\":{\""
+    "Mutant\":{\"name\":\"n\",\"package\":\"p\",\"file\":\"src/a.rs\",\"function\":5,\"span\""
+    ":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\":3,\"column\":6}},\"replacement\""
+    ":\"y\",\"genre\":\"FnValue\"}},\"summary\":\"MissedMutant\"}]}";
+
+static const char FX_MISSED_FN_NO_NAME[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"scenario\":{\""
+    "Mutant\":{\"name\":\"n\",\"package\":\"p\",\"file\":\"src/a.rs\",\"function\":{"
+    "\"return_type\":\"\"},\"span\":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\":3"
+    ",\"column\":6}},\"replacement\":\"y\",\"genre\":\"FnValue\"}},\"summary\":\""
+    "MissedMutant\"}]}";
+
+static const char FX_MISSED_NO_GENRE[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"scenario\":{\""
+    "Mutant\":{\"name\":\"n\",\"package\":\"p\",\"file\":\"src/a.rs\",\"function\":{"
+    "\"function_name\":\"f\"},\"span\":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\""
+    ":3,\"column\":6}},\"replacement\":\"y\"}},\"summary\":\"MissedMutant\"}]}";
+
+static const char FX_OUTCOME_NO_SCENARIO[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"summary\":\""
+    "MissedMutant\"}]}";
+
+static const char FX_OUTCOME_NO_SUMMARY[] =
+    "{\"total_mutants\":1,\"caught\":0,\"missed\":1,\"timeout\":0,\"unviable\":0,\"success\":"
+    "0,\"outcomes\":[{\"scenario\":\"Baseline\",\"summary\":\"Success\"},{\"scenario\":{"
+    "\"Mutant\":{\"name\":\"n\",\"package\":\"p\",\"file\":\"src/a.rs\",\"function\":{"
+    "\"function_name\":\"f\"},\"span\":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\""
+    ":3,\"column\":6}},\"replacement\":\"y\",\"genre\":\"FnValue\"}}}]}";
+
+BT_TEST(gate, malformed_mutant_fields_fail_with_named_errors) {
+    char summary[BT_GATE_SUMMARY_MAX];
+    const char *fixtures[] = {
+        FX_MISSED_NO_FILE,  FX_MISSED_FN_NUMBER,    FX_MISSED_FN_NO_NAME,
+        FX_MISSED_NO_GENRE, FX_OUTCOME_NO_SCENARIO, FX_OUTCOME_NO_SUMMARY,
+    };
+    const char *errors[] = {
+        "missing string field 'file'",
+        "mutant without function object",
+        "missing string field 'function_name'",
+        "missing string field 'genre'",
+        "missing scenario",
+        "missing summary string",
+    };
+    for (size_t i = 0; i < sizeof fixtures / sizeof fixtures[0]; i++) {
+        int rc = bt_gate_run(fixtures[i], FX_COMMENTED_ALLOWLIST, summary, sizeof summary);
+        BT_CHECK_EQ(rc, BT_GATE_VIOLATION);
+        const char *msg = bt_gate_last_error();
+        BT_CHECK(strstr(msg, errors[i]) != NULL);
+    }
+}
+
+BT_TEST(gate, allowlist_field_edges_trim_and_refuse) {
+    char summary[BT_GATE_SUMMARY_MAX];
+    const char *padded_count = "src/a.rs\tf\tFnValue\ty\t 1 \t padded count\n";
+    int rc = bt_gate_run(FX_MISSED_ONE, padded_count, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_OK);
+    const char *crlf = "src/a.rs\tf\tFnValue\ty\t1\tcrlf row\r\n";
+    rc = bt_gate_run(FX_MISSED_ONE, crlf, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_OK);
+    const char *empty_replacement = "src/a.rs\tf\tFnValue\t\t1\twhy\n";
+    rc = bt_gate_run(FX_MISSED_ONE, empty_replacement, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "replacement must be non-empty") != NULL);
+    const char *empty_file = "\tf\tFnValue\ty\t1\twhy\n";
+    rc = bt_gate_run(FX_MISSED_ONE, empty_file, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "file and genre must be non-empty") != NULL);
+    static char too_long[4400];
+    snprintf(too_long, sizeof too_long, "src/a.rs\tf\tFnValue\ty\t1\t%4200s\n", "pad");
+    rc = bt_gate_run(FX_MISSED_ONE, too_long, summary, sizeof summary);
+    BT_CHECK_EQ(rc, BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "line too long") != NULL);
+}
+
+BT_TEST(gate, merge_refuses_missing_shapes) {
+    const char *no_outcomes =
+        "{\"end_time\":\"2026-10-16T10:10:00Z\",\"total_mutants\":0,\"caught\":0,\"missed\":0}";
+    const char *scenario_no_mutant =
+        "{\"end_time\":\"2026-10-16T10:10:00Z\",\"total_mutants\":1,\"caught\":1,\"missed\":0,"
+        "\"timeout\":0,\"unviable\":0,\"success\":0,\"outcomes\":[{\"scenario\":{\"Package\":{"
+        "}},\"summary\":\"CaughtMutant\"}]}";
+    const char *no_summary =
+        "{\"end_time\":\"2026-10-16T10:10:00Z\",\"total_mutants\":1,\"caught\":1,\"missed\":0,"
+        "\"timeout\":0,\"unviable\":0,\"success\":0,\"outcomes\":[{\"scenario\":\"Baseline\"}]}";
+    const char *inputs[2] = {NULL, NULL};
+    char *merged = NULL;
+    unsigned long long total = 0;
+    inputs[0] = no_outcomes;
+    inputs[1] = FX_OTHER_VERSION;
+    BT_CHECK_EQ(bt_gate_merge(inputs, 2, &merged, &total), BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "missing the outcomes array") != NULL);
+    inputs[0] = scenario_no_mutant;
+    BT_CHECK_EQ(bt_gate_merge(inputs, 2, &merged, &total), BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "scenario object without Mutant") != NULL);
+    inputs[0] = no_summary;
+    BT_CHECK_EQ(bt_gate_merge(inputs, 2, &merged, &total), BT_GATE_VIOLATION);
+    BT_CHECK(strstr(bt_gate_last_error(), "missing summary string") != NULL);
+}
+
 static unsigned long long fx_u64(const bt_json_value *root, const char *key) {
     const bt_json_value *value = bt_json_get(root, key);
     if (value == NULL || value->type != BT_JSON_NUMBER) {
@@ -801,6 +912,15 @@ int bt_mutants_gate_selftest(void) {
             bt_test_gate_failed_baseline_fails_even_with_every_mutant_caught,
         },
         {"gate.invalid_json_is_usage_error", bt_test_gate_invalid_json_is_usage_error},
+        {
+            "gate.malformed_mutant_fields_fail_with_named_errors",
+            bt_test_gate_malformed_mutant_fields_fail_with_named_errors,
+        },
+        {
+            "gate.allowlist_field_edges_trim_and_refuse",
+            bt_test_gate_allowlist_field_edges_trim_and_refuse,
+        },
+        {"gate.merge_refuses_missing_shapes", bt_test_gate_merge_refuses_missing_shapes},
         {"gate.malformed_allowlist_row_fails", bt_test_gate_malformed_allowlist_row_fails},
         {"gate.malformed_scenario_object_fails", bt_test_gate_malformed_scenario_object_fails},
         {"gate.merged_output_feeds_the_gate", bt_test_gate_merged_output_feeds_the_gate},
