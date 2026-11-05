@@ -109,3 +109,119 @@ BT_TEST(gendata_audit, audit_accepts_a_build_that_matches_every_constant) {
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
 }
+
+BT_TEST(gendata_audit, audit_copies_build_offenders_before_the_shortfalls) {
+    bt_gd_built built = {0};
+    built.cases.count = 0;
+    built.cases.cases = NULL;
+    built.offenders = malloc(2 * sizeof(char *));
+    built.offenders[0] = _strdup("cherry/edge.tsv/9 broken");
+    built.offenders[1] = _strdup("eggins/corner.tsv/4 also broken");
+    built.offender_count = 2;
+    bt_corpus corpus;
+    bt_corpus_init(&corpus);
+    char **offenders = NULL;
+    size_t count = 0;
+    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    BT_CHECK(count >= 2);
+    BT_CHECK_EQ(strcmp(offenders[0], "cherry/edge.tsv/9 broken"), 0);
+    BT_CHECK_EQ(strcmp(offenders[1], "eggins/corner.tsv/4 also broken"), 0);
+    bt_gd_string_list_free(offenders, count);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(gendata_audit, audit_names_catalog_total_and_per_orbit_entry_drift) {
+    bt_gd_built built = {0};
+    built.cases.count = 3;
+    built.cases.cases = malloc(3 * sizeof(bt_gd_case_entry));
+    for (size_t i = 0; i < 3; i++) {
+        bt_gd_case_entry *entry = &built.cases.cases[i];
+        entry->orbit = _strdup(i == 0 ? "edge" : "corner");
+        entry->t1 = 0;
+        entry->t2 = 1;
+        entry->t1_letter = 'A';
+        entry->t2_letter = 'B';
+        entry->t1_name = _strdup("");
+        entry->t2_name = _strdup("");
+        entry->covered = false;
+        entry->vendor_algs = NULL;
+        entry->vendor_count = 0;
+    }
+    bt_corpus corpus;
+    bt_corpus_init(&corpus);
+    char **offenders = NULL;
+    size_t count = 0;
+    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    bool total_drift = false;
+    bool edge_drift = false;
+    bool corner_drift = false;
+    bool covered_drift = false;
+    for (size_t i = 0; i < count; i++) {
+        if (strcmp(offenders[i], "case catalog holds 3 entries, expected 818") == 0) {
+            total_drift = true;
+        }
+        if (strcmp(offenders[i], "edge case catalog holds 1 entries, expected 440") == 0) {
+            edge_drift = true;
+        }
+        if (strcmp(offenders[i], "corner case catalog holds 2 entries, expected 378") == 0) {
+            corner_drift = true;
+        }
+        if (strstr(offenders[i], "covered cases are") != NULL) {
+            covered_drift = true;
+        }
+    }
+    BT_CHECK(total_drift);
+    BT_CHECK(edge_drift);
+    BT_CHECK(corner_drift);
+    BT_CHECK(!covered_drift);
+    bt_gd_string_list_free(offenders, count);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(gendata_audit, audit_names_covered_drift_when_entry_counts_hold) {
+    bt_gd_built built = {0};
+    built.cases.count = BT_GD_TOTAL_CASES;
+    built.cases.cases = malloc(built.cases.count * sizeof(bt_gd_case_entry));
+    size_t at = 0;
+    static const struct {
+        const char *orbit;
+        size_t total;
+    } orbits[2] = {{"edge", 440}, {"corner", 378}};
+    for (int o = 0; o < 2; o++) {
+        for (size_t index = 0; index < orbits[o].total; index++) {
+            bt_gd_case_entry *entry = &built.cases.cases[at++];
+            entry->orbit = _strdup(orbits[o].orbit);
+            entry->t1 = 0;
+            entry->t2 = 1;
+            entry->t1_letter = 'A';
+            entry->t2_letter = 'B';
+            entry->t1_name = _strdup("");
+            entry->t2_name = _strdup("");
+            entry->covered = false;
+            entry->vendor_algs = NULL;
+            entry->vendor_count = 0;
+        }
+    }
+    bt_corpus corpus;
+    bt_corpus_init(&corpus);
+    char **offenders = NULL;
+    size_t count = 0;
+    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    bool edge_covered_drift = false;
+    bool corner_covered_drift = false;
+    for (size_t i = 0; i < count; i++) {
+        if (strcmp(offenders[i], "edge covered cases are 0, expected 372") == 0) {
+            edge_covered_drift = true;
+        }
+        if (strcmp(offenders[i], "corner covered cases are 0, expected 288") == 0) {
+            corner_covered_drift = true;
+        }
+    }
+    BT_CHECK(edge_covered_drift);
+    BT_CHECK(corner_covered_drift);
+    bt_gd_string_list_free(offenders, count);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}

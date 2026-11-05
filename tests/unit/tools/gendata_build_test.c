@@ -272,6 +272,58 @@ BT_TEST(gendata_build, build_attaches_a_verified_corner_three_style_to_its_case)
     bt_corpus_free(&corpus);
 }
 
+BT_TEST(gendata_build, derive_mirrored_inverses_fills_the_flipped_case_after_build) {
+    bt_case cases[BT_PAIRS_MAX];
+    bt_scheme_enumerate_cases(BT_ORBIT_CORNER, cases);
+    bt_gd_synth_limits lim;
+    limits(&lim);
+    bt_gd_scoring_cfg cfg;
+    test_scoring(&cfg);
+    bt_gd_synth_hit hit;
+    BT_CHECK(bt_gd_synth_case(BT_ORBIT_CORNER, cases[0].t1, cases[0].t2, &lim, &cfg, &hit));
+    char position[BT_PATH_MAX];
+    position_of(BT_ORBIT_CORNER, cases[0].t1, cases[0].t2, position);
+    bt_corpus_row rows[1] = {
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_CORNER, 7, position, &hit.alg),
+    };
+    bt_corpus corpus = corpus_of(rows, 1);
+    bt_gd_built built;
+    bt_gd_build(&corpus, &built);
+    char mirror_position[BT_PATH_MAX];
+    position_of(BT_ORBIT_CORNER, cases[0].t2, cases[0].t1, mirror_position);
+    const bt_gd_case_entry *mirror = NULL;
+    for (size_t i = 0; i < built.cases.count; i++) {
+        if (built.cases.cases[i].t1 == cases[0].t2 && built.cases.cases[i].t2 == cases[0].t1) {
+            mirror = &built.cases.cases[i];
+            break;
+        }
+    }
+    BT_CHECK(mirror != NULL);
+    BT_CHECK(!mirror->covered);
+    bt_gd_derive_mirrored_inverses(&built.cases);
+    BT_CHECK(mirror->covered);
+    BT_CHECK_EQ(mirror->vendor_count, 1U);
+    const bt_gd_vendor_alg *alg = &mirror->vendor_algs[0];
+    BT_CHECK(alg->ok);
+    BT_CHECK_EQ(alg->problem_count, 0U);
+    BT_CHECK_EQ(strcmp(alg->position, mirror_position), 0);
+    BT_CHECK_EQ(strcmp(alg->solver, "cherry"), 0);
+    BT_CHECK_EQ(alg->rowid, 7U);
+    bt_alg inverse = bt_alg_inverse(&hit.alg);
+    bt_strbuf want;
+    bt_strbuf_init(&want, 0);
+    bt_alg_format(&inverse, &want);
+    BT_CHECK_EQ(strcmp(alg->alg, want.data), 0);
+    BT_CHECK_EQ(alg->qtm, bt_alg_qtm(&hit.alg));
+    BT_CHECK_EQ(alg->htm, bt_alg_htm(&hit.alg));
+    BT_CHECK_EQ(built.rows_in_pair_space, 1U);
+    bt_strbuf_free(&want);
+    bt_alg_free(&inverse);
+    bt_gd_synth_hit_free(&hit);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
 BT_TEST(gendata_build, build_routes_special_sheets_with_their_verdicts) {
     bt_alg alg = {0};
     char bad[64];

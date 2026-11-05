@@ -36,17 +36,19 @@ BT_TEST(gendata_lib, coverage_constants_are_self_consistent) {
     BT_CHECK_EQ(BT_GD_EDGE_CASES + BT_GD_CORNER_CASES, BT_GD_TOTAL_CASES);
     BT_CHECK_EQ(BT_GD_EDGE_CASES - BT_GD_EDGE_COVERED, 68);
     BT_CHECK_EQ(BT_GD_CORNER_CASES - BT_GD_CORNER_COVERED, 90);
-    BT_CHECK_EQ(BT_GD_EDGE_COVERED + BT_GD_EDGE_GENERATED, BT_GD_EDGE_TOTAL_COVERED);
-    BT_CHECK_EQ(BT_GD_CORNER_COVERED + BT_GD_CORNER_GENERATED, BT_GD_CORNER_TOTAL_COVERED);
+    BT_CHECK_EQ(BT_GD_EDGE_COVERED + BT_GD_EDGE_GENERATED + BT_GD_EDGE_DERIVED,
+                BT_GD_EDGE_TOTAL_COVERED);
+    BT_CHECK_EQ(BT_GD_CORNER_COVERED + BT_GD_CORNER_GENERATED + BT_GD_CORNER_DERIVED,
+                BT_GD_CORNER_TOTAL_COVERED);
     BT_CHECK_EQ(BT_GD_EDGE_TOTAL_COVERED + BT_GD_CORNER_TOTAL_COVERED, BT_GD_TOTAL_COVERED);
-    BT_CHECK_EQ(BT_GD_TOTAL_CASES - BT_GD_TOTAL_COVERED, 1);
+    BT_CHECK_EQ(BT_GD_TOTAL_CASES - BT_GD_TOTAL_COVERED, 0);
     size_t sum = 0;
     for (size_t i = 0; i < BT_GD_SPECIAL_COUNTS_LEN; i++) {
         sum += BT_GD_SPECIAL_COUNTS[i].rows;
     }
     BT_CHECK_EQ(sum, BT_GD_TOTAL_SPECIALS);
     BT_CHECK_EQ(BT_DATA_TOTAL_ROWS - BT_GD_TOTAL_SPECIALS, 988);
-    BT_CHECK_EQ(strcmp(BT_GD_SYNTH_ALGORITHM, "first-setup-plateau-1"), 0);
+    BT_CHECK_EQ(strcmp(BT_GD_SYNTH_ALGORITHM, "first-setup-plateau-1+inverse-1"), 0);
 }
 
 BT_TEST(gendata_lib, synth_params_hash_ignores_key_order_and_tracks_values) {
@@ -106,7 +108,7 @@ BT_TEST(gendata_lib, synth_params_hash_pins_the_rust_era_golden) {
     char hash[65];
     char err[96];
     BT_CHECK_EQ(bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err), 0);
-    BT_CHECK_EQ(strcmp(hash, "dead579f6d96481fa46f82680b33d19b301de595daebb0fcae7707fe4b339106"),
+    BT_CHECK_EQ(strcmp(hash, "d7050d616b2d64269416e425ca9bc6771a877fc94441439a09f4e40755d6cb55"),
                 0);
     bt_json_free(config);
 }
@@ -118,11 +120,11 @@ BT_TEST(gendata_lib, synth_params_hash_pins_the_serde_float_boundaries) {
         "{\"synth\": {\"penalty_other\": 2.0}}",
     };
     static const char *want[] = {
-        "8e683253ae420f8782e9267dc2edbb6c097be6d0930a69ce727b9a9a2b683923",
-        "a10be46815cfbd0750cbf2c957c0b4049839a5e8b9bb0e4c4a208025ee1ee448",
-        "4ac6f9c2f3d4e16793a9a2581bc5343e05b6ae2b4c79e0e2956c6f95c5004f77",
-        "ddb980121d4e27abeb2cc00361dd48770263ce70468518257185281e1304b7fe",
-        "9cb8f5ee5cb14649a813b0a8aba3e4dd8a0fb7ef11f6be3dfc515bb970f9c842",
+        "a8ba4ce6105497928a2ce2ac8ac3ec70c72f4de75ec37f31134fd479edafa72d",
+        "75c8b2e90a1b156c09a70b73484c62166cea430813ab0792f92a8f6329148160",
+        "abcd3e14741e9abb52b03110478e07a73e771e4eb0796793ad038330756a033f",
+        "d1fd453f4428a4df984a49aeafb0ee97a8a0c69a332445fb86f6f1ca7b07b5c6",
+        "43bd657df0c56260b0ab27e37c7bdeaed7d00c6b18179ee1c9735e1641db023e",
     };
     for (size_t i = 0; i < 5; i++) {
         bt_json_error jerr;
@@ -135,4 +137,70 @@ BT_TEST(gendata_lib, synth_params_hash_pins_the_serde_float_boundaries) {
         BT_CHECK_EQ(strcmp(hash, want[i]), 0);
         bt_json_free(config);
     }
+}
+
+BT_TEST(gendata_lib, limits_from_config_reads_the_hub_fields) {
+    const char *text =
+        "{\"synth\": {\"max_setup\": 3, \"max_insert\": 4, \"node_budget\": 50000000}}";
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+    bt_gd_synth_limits lim;
+    char err[96];
+    err[0] = '\0';
+    BT_CHECK_EQ(bt_gd_limits_from_config(config, &lim, err, sizeof err), 0);
+    BT_CHECK_EQ(lim.max_setup, 3U);
+    BT_CHECK_EQ(lim.max_insert, 4U);
+    BT_CHECK_EQ(lim.node_budget, 50000000U);
+    bt_json_free(config);
+}
+
+BT_TEST(gendata_lib, limits_from_config_rejects_each_malformed_field) {
+    static const char *configs[] = {
+        "{}",
+        "{\"synth\": {\"max_insert\": 4, \"node_budget\": 50000000}}",
+        "{\"synth\": {\"max_setup\": 3, \"node_budget\": 50000000}}",
+        "{\"synth\": {\"max_setup\": 3, \"max_insert\": 4}}",
+        "{\"synth\": {\"max_setup\": \"3\", \"max_insert\": 4, \"node_budget\": 50000000}}",
+        "{\"synth\": {\"max_setup\": 3, \"max_insert\": 2.5, \"node_budget\": 50000000}}",
+        "{\"synth\": {\"max_setup\": -1, \"max_insert\": 4, \"node_budget\": 50000000}}",
+    };
+    static const char *want[] = {
+        "config section missing: synth",
+        "config section missing: synth.max_setup",
+        "config section missing: synth.max_insert",
+        "config section missing: synth.node_budget",
+        "config section missing: synth.max_setup",
+        "config section missing: synth.max_insert",
+        "config section missing: synth.max_setup",
+    };
+    for (size_t i = 0; i < 7; i++) {
+        bt_json_error jerr;
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(configs[i], strlen(configs[i]), &config, &jerr), 0);
+        bt_gd_synth_limits lim;
+        char err[96];
+        err[0] = '\0';
+        BT_CHECK(bt_gd_limits_from_config(config, &lim, err, sizeof err) != 0);
+        BT_CHECK_EQ(strcmp(err, want[i]), 0);
+        bt_json_free(config);
+    }
+}
+
+BT_TEST(gendata_lib, data_vendor_path_rejects_missing_and_malformed_fields) {
+    bt_json_value *empty = bt_json_new_object();
+    char out[BT_PATH_MAX];
+    char err[96];
+    err[0] = '\0';
+    BT_CHECK(bt_gd_data_vendor_path(empty, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config section missing: paths.data_vendor"), 0);
+    bt_json_free(empty);
+    const char *text = "{\"paths\": {\"data_vendor\": 7}}";
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+    err[0] = '\0';
+    BT_CHECK(bt_gd_data_vendor_path(config, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config section missing: paths.data_vendor"), 0);
+    bt_json_free(config);
 }

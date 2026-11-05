@@ -176,3 +176,52 @@ BT_TEST(gendata_out, mkdirs_skip_existing_drive_root) {
     }
     rm_tree(root);
 }
+
+BT_TEST(gendata_out, write_atomic_accepts_a_bare_filename_in_the_cwd) {
+    char dir[BT_PATH_MAX];
+    temp_dir(dir, "bare");
+    bt_test_mkdirs(dir);
+    char prior[BT_PATH_MAX];
+    BT_CHECK(_getcwd(prior, sizeof prior) != NULL);
+    if (_chdir(dir) != 0) {
+        BT_ABORT("%s", "chdir into the temp dir failed");
+    }
+    char err[128];
+    err[0] = '\0';
+    BT_CHECK_EQ(bt_gd_write_atomic("bare.json", "x", 1, err, sizeof err), 0);
+    char probe[BT_PATH_MAX];
+    snprintf(probe, sizeof probe, "%s/bare.json", dir);
+    FILE *file = fopen(probe, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fclose(file);
+    }
+    _chdir(prior);
+    rm_tree(dir);
+}
+
+BT_TEST(gendata_out, write_atomic_reports_open_failure_on_an_illegal_name) {
+    char dir[BT_PATH_MAX];
+    temp_dir(dir, "illegal");
+    bt_test_mkdirs(dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/bad?.json", dir);
+    char err[128];
+    err[0] = '\0';
+    BT_CHECK(bt_gd_write_atomic(path, "{}", 2, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "open failed") != NULL);
+    rm_tree(dir);
+}
+
+BT_TEST(gendata_out, write_atomic_reports_a_short_write_for_an_impossible_length) {
+    char dir[BT_PATH_MAX];
+    temp_dir(dir, "short");
+    bt_test_mkdirs(dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/short.json", dir);
+    char err[128];
+    err[0] = '\0';
+    BT_CHECK(bt_gd_write_atomic(path, "{}", (size_t)-1, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "short write") != NULL);
+    rm_tree(dir);
+}

@@ -80,6 +80,45 @@ BT_TEST(gendata_vendor_pins, case_space_counts_match_coverage_md) {
     bt_corpus_free(&corpus);
 }
 
+BT_TEST(gendata_vendor_pins, mirrored_only_case_ni_carries_the_verified_cherry_inverse) {
+    bt_corpus corpus;
+    loaded(&corpus);
+    bt_gd_built built;
+    bt_gd_build(&corpus, &built);
+    const bt_gd_case_entry *before =
+        find_case(&built, "corner", bt_scheme_sticker_of(BT_ORBIT_CORNER, 'N'),
+                  bt_scheme_sticker_of(BT_ORBIT_CORNER, 'I'));
+    BT_CHECK(!before->covered);
+    bt_gd_derive_mirrored_inverses(&built.cases);
+    const bt_gd_case_entry *entry =
+        find_case(&built, "corner", bt_scheme_sticker_of(BT_ORBIT_CORNER, 'N'),
+                  bt_scheme_sticker_of(BT_ORBIT_CORNER, 'I'));
+    BT_CHECK_EQ(entry->vendor_count, 1U);
+    BT_CHECK(entry->covered);
+    const bt_gd_vendor_alg *alg = &entry->vendor_algs[0];
+    BT_CHECK(alg->ok);
+    BT_CHECK_EQ(alg->problem_count, 0U);
+    BT_CHECK_EQ(strcmp(alg->solver, "cherry"), 0);
+    BT_CHECK_EQ(alg->rowid, 109U);
+    BT_CHECK_EQ(strcmp(alg->position, "UFR-RUB-FUL"), 0);
+    const bt_gd_case_entry *mirror =
+        find_case(&built, "corner", bt_scheme_sticker_of(BT_ORBIT_CORNER, 'I'),
+                  bt_scheme_sticker_of(BT_ORBIT_CORNER, 'N'));
+    BT_CHECK(mirror->vendor_count >= 1U);
+    size_t mirror_row = 0;
+    bool has_109 = false;
+    for (size_t i = 0; i < mirror->vendor_count; i++) {
+        if (mirror->vendor_algs[i].rowid == 109U) {
+            mirror_row = i;
+            has_109 = true;
+        }
+    }
+    BT_CHECK(has_109);
+    BT_CHECK_EQ(alg->qtm, mirror->vendor_algs[mirror_row].qtm);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
 BT_TEST(gendata_vendor_pins, covered_flag_equals_vendor_algs_presence) {
     bt_corpus corpus;
     loaded(&corpus);
