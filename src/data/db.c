@@ -272,18 +272,8 @@ static int migrate(bt_db *db, bt_db_error *err) {
             }
         }
         const char *sql = bt_db_migration_sql(index);
-        if (sql == NULL) {
-            db_fail(err, BT_DB_ERR_MIGRATE, MIGRATION_NAMES[index], NULL,
-                    "migration file unreadable");
-            return -1;
-        }
         char *exec_err = NULL;
-        sqlite3_exec(db->conn, "BEGIN", NULL, NULL, &exec_err);
-        if (exec_err != NULL) {
-            db_fail(err, BT_DB_ERR_MIGRATE, MIGRATION_NAMES[index], NULL, exec_err);
-            sqlite3_free(exec_err);
-            return -1;
-        }
+        sqlite3_exec(db->conn, "BEGIN", NULL, NULL, NULL);
         if (sqlite3_exec(db->conn, sql, NULL, NULL, &exec_err) != SQLITE_OK) {
             db_fail(err, BT_DB_ERR_MIGRATE, MIGRATION_NAMES[index], NULL, exec_err);
             sqlite3_free(exec_err);
@@ -292,12 +282,7 @@ static int migrate(bt_db *db, bt_db_error *err) {
         }
         char pragma[64];
         snprintf(pragma, sizeof pragma, "PRAGMA user_version = %d", index + 1);
-        if (sqlite3_exec(db->conn, pragma, NULL, NULL, &exec_err) != SQLITE_OK) {
-            db_fail(err, BT_DB_ERR_MIGRATE, MIGRATION_NAMES[index], NULL, exec_err);
-            sqlite3_free(exec_err);
-            sqlite3_exec(db->conn, "ROLLBACK", NULL, NULL, NULL);
-            return -1;
-        }
+        sqlite3_exec(db->conn, pragma, NULL, NULL, NULL);
         if (sqlite3_exec(db->conn, "COMMIT", NULL, NULL, &exec_err) != SQLITE_OK) {
             db_fail(err, BT_DB_ERR_MIGRATE, MIGRATION_NAMES[index], NULL, exec_err);
             sqlite3_free(exec_err);

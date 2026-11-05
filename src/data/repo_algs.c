@@ -166,13 +166,7 @@ int bt_repo_algs_load(const bt_db *db, bt_user_algs *out, bt_db_error *err) {
         snprintf(stage, sizeof stage, "%s", sqlite3_column_text(stmt, 0));
         snprintf(case_key, sizeof case_key, "%s", sqlite3_column_text(stmt, 1));
         const unsigned char *alg = sqlite3_column_text(stmt, 2);
-        if (bt_repo_algs_join_key(stage, case_key, key, sizeof key) != 0) {
-            sqlite3_finalize(stmt);
-            bt_user_algs_free(out);
-            db_step_error(db, err, BT_DB_ERR_QUERY, "select user_alg");
-            BT_TRACE_FAIL("repo_algs.load", "joined key overflows");
-            return -1;
-        }
+        bt_repo_algs_join_key(stage, case_key, key, sizeof key);
         if (bt_user_algs_set_entry(out, key, (const char *)alg) != 0) {
             sqlite3_finalize(stmt);
             bt_user_algs_free(out);
