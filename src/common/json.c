@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 typedef struct {
@@ -60,7 +61,7 @@ static void skip_space(bt_json_reader *reader) {
 static bt_json_value *parse_value(bt_json_reader *reader, int depth);
 
 static bt_json_value *value_new(bt_json_type type) {
-    bt_json_value *value = calloc(1, sizeof(bt_json_value));
+    bt_json_value *value = bt_calloc(1, sizeof(bt_json_value));
     if (value != NULL) {
         value->type = type;
     }
@@ -69,7 +70,7 @@ static bt_json_value *value_new(bt_json_type type) {
 
 static char *text_dup(const char *text) {
     size_t len = strlen(text);
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         return NULL;
     }
@@ -597,12 +598,12 @@ static bt_json_value *parse_object(bt_json_reader *reader, int depth) {
             return NULL;
         }
         size_t count = object->as.object.count;
-        char **keys = (char **)realloc(object->as.object.keys, (count + 1) * sizeof(char *));
+        char **keys = (char **)bt_realloc(object->as.object.keys, (count + 1) * sizeof(char *));
         if (keys != NULL) {
             object->as.object.keys = keys;
         }
-        bt_json_value **values = (bt_json_value **)realloc(object->as.object.values,
-                                                           (count + 1) * sizeof(bt_json_value *));
+        bt_json_value **values = (bt_json_value **)bt_realloc(
+            object->as.object.values, (count + 1) * sizeof(bt_json_value *));
         if (values != NULL) {
             object->as.object.values = values;
         }
@@ -657,8 +658,8 @@ static bt_json_value *parse_array(bt_json_reader *reader, int depth) {
             return NULL;
         }
         size_t count = array->as.array.count;
-        bt_json_value **items =
-            (bt_json_value **)realloc(array->as.array.items, (count + 1) * sizeof(bt_json_value *));
+        bt_json_value **items = (bt_json_value **)bt_realloc(array->as.array.items,
+                                                             (count + 1) * sizeof(bt_json_value *));
         if (items == NULL) {
             bt_json_free(item);
             bt_json_free(array);
@@ -796,7 +797,7 @@ int bt_json_array_push(bt_json_value *array, bt_json_value *item) {
     }
     size_t count = array->as.array.count;
     bt_json_value **items =
-        (bt_json_value **)realloc(array->as.array.items, (count + 1) * sizeof(bt_json_value *));
+        (bt_json_value **)bt_realloc(array->as.array.items, (count + 1) * sizeof(bt_json_value *));
     if (items == NULL) {
         BT_TRACE_FAIL("json.array_push", "growth failed");
         BT_TRACE_EXIT("json.array_push");
@@ -825,12 +826,12 @@ int bt_json_object_set(bt_json_value *object, const char *key, bt_json_value *va
         }
     }
     size_t count = object->as.object.count;
-    char **keys = (char **)realloc(object->as.object.keys, (count + 1) * sizeof(char *));
+    char **keys = (char **)bt_realloc(object->as.object.keys, (count + 1) * sizeof(char *));
     if (keys != NULL) {
         object->as.object.keys = keys;
     }
-    bt_json_value **values =
-        (bt_json_value **)realloc(object->as.object.values, (count + 1) * sizeof(bt_json_value *));
+    bt_json_value **values = (bt_json_value **)bt_realloc(object->as.object.values,
+                                                          (count + 1) * sizeof(bt_json_value *));
     if (values != NULL) {
         object->as.object.values = values;
     }
@@ -996,7 +997,7 @@ static int serialize_value(const bt_json_value *value, bt_strbuf *out) {
             return -1;
         }
         if (value->as.object.count > 0) {
-            bt_json_key_slot *slots = malloc(value->as.object.count * sizeof(bt_json_key_slot));
+            bt_json_key_slot *slots = bt_malloc(value->as.object.count * sizeof(bt_json_key_slot));
             if (slots == NULL) {
                 return -1;
             }

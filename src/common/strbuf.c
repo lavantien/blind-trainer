@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 int bt_strbuf_init(bt_strbuf *sb, size_t cap) {
@@ -16,7 +17,7 @@ int bt_strbuf_init(bt_strbuf *sb, size_t cap) {
     if (cap < 16) {
         cap = 16;
     }
-    char *data = malloc(cap + 1);
+    char *data = bt_malloc(cap + 1);
     if (data == NULL) {
         BT_TRACE_FAIL("strbuf.init", "malloc of %zu failed", cap + 1);
         BT_TRACE_EXIT("strbuf.init");
@@ -46,7 +47,7 @@ int bt_strbuf_reserve(bt_strbuf *sb, size_t extra) {
     while (want < sb->len + extra + 1) {
         want *= 2;
     }
-    char *grown = realloc(sb->data, want + 1);
+    char *grown = bt_realloc(sb->data, want + 1);
     if (grown == NULL) {
         BT_TRACE_FAIL("strbuf.reserve", "realloc to %zu failed", want + 1);
         return -1;
