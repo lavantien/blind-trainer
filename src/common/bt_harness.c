@@ -1,4 +1,5 @@
 #include "common/bt_harness.h"
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <signal.h>
@@ -9,12 +10,14 @@
 #include <sys/stat.h>
 #endif
 
-__attribute__((weak)) int __llvm_profile_write_file(void);
+#ifdef __LLVM_PROFILE_GENERATE
+#include <profile/InstrProf.h>
+#endif
 
 static void bt_harness_sigabrt(int sig) {
-    if (__llvm_profile_write_file != NULL) {
-        __llvm_profile_write_file();
-    }
+#ifdef __LLVM_PROFILE_GENERATE
+    __llvm_profile_write_file();
+#endif
     signal(sig, SIG_DFL);
 }
 
@@ -94,6 +97,18 @@ BT_NORETURN void bt_harness_exit_failure(void) {
     exit(134);
 }
 
+void bt_harness_alloc_arm(size_t ok_count) {
+    bt_alloc_fail_arm(ok_count);
+}
+
+void bt_harness_alloc_disarm(void) {
+    bt_alloc_fail_disarm();
+}
+
+size_t bt_harness_alloc_failures(void) {
+    return bt_alloc_fail_count();
+}
+
 int bt_harness_run(const char *suite, const bt_test_entry *tests, size_t count) {
     bt_harness_install_sigabrt_writer();
     g_passed = 0;
@@ -101,7 +116,9 @@ int bt_harness_run(const char *suite, const bt_test_entry *tests, size_t count) 
     for (size_t i = 0; i < count; i++) {
         g_current_failed = 0;
         g_current_name = tests[i].name;
+        bt_alloc_fail_disarm();
         tests[i].fn();
+        bt_alloc_fail_disarm();
         if (g_current_failed) {
             g_failed++;
             printf("FAIL %s %s\n", suite, tests[i].name);

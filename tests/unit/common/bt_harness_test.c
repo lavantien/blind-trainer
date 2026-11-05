@@ -21,7 +21,17 @@ BT_TEST(bt_harness, run_reports_green_suite) {
     BT_CHECK_EQ(bt_harness_run("bt_harness_inner", entries, 1), 0);
 }
 
-__attribute__((weak)) int __llvm_profile_register_write_file_atexit(void);
+#ifdef __LLVM_PROFILE_GENERATE
+#include <profile/InstrProf.h>
+#endif
+
+static bool coverage_instrumented(void) {
+#ifdef __LLVM_PROFILE_GENERATE
+    return true;
+#else
+    return false;
+#endif
+}
 
 static void abort_child(void) {
     abort();
@@ -32,7 +42,7 @@ BT_TEST(bt_harness, an_aborting_child_still_writes_its_coverage_profile) {
     if (child != NULL) {
         abort_child();
     }
-    bool instrumented = __llvm_profile_register_write_file_atexit != NULL;
+    bool instrumented = coverage_instrumented();
     _putenv("BT_HARNESS_ABORT_CHILD=1");
     _putenv("LLVM_PROFILE_FILE=build/test-tmp/harness-abort-%p.profraw");
     _mkdir("build");
