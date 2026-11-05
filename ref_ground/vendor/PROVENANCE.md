@@ -1,6 +1,6 @@
 # data vendor reference provenance
 
-retrieval date 2026-10-28, captured by the l9 t31 task.
+retrieval date 2026-10-28.
 
 ## purpose
 
@@ -18,6 +18,6 @@ the rust-era artifacts were produced by the rust tool on 2026-10-15 and lived un
 
 regenerate with python bt.py gen-data on an unchanged config and corpus, or with playground/gendata/run_tool.py against a redirected paths.data_vendor when foreign in-flight trees block the whole-area build, then byte-compare with playground/gendata/compare_regen.py, which reads this directory.
 
-disposition: data/vendor remains the tool's runtime output directory and may be rewritten by later runs, this committed copy is the immutable reference. the cross-era identity rests on the byte-compares recorded in the t31 log and the sha pins below.
+disposition: data/vendor remains the tool's runtime output directory and may be rewritten by later runs, this committed copy is the immutable reference. the cross-era identity rests on the recorded byte-compares and the sha pins below.
 
 file sha-256 of this directory: cases.json fecefb09a6b6e462a6e4fdf29bbafd42e2d91d6a0cc6a87eaa69743880b5fa9b, specials.json 627d2bdeac98061ebdf56252677b07ecc5a68832565021196ef5e62a644348df, manifest.json a7e72cacef736c44900fb244d8d1dd73dfec92712f2004088775443804e704bf.
