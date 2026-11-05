@@ -78,9 +78,6 @@ int bt_net_face_of(unsigned char sticker) {
     case 'D':
         face = 5;
         break;
-    default:
-        BT_TRACE_FAIL("app.net_face_of", "sticker face byte unexpected: %c", name[0]);
-        break;
     }
     BT_TRACE_EXIT("app.net_face_of");
     return face;
