@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "common/bt_harness.h"
+#include "common/json.h"
 #include "unit/tools/spawn_util.h"
 
 #ifdef _WIN32
@@ -290,6 +291,37 @@ BT_TEST(mutate, target_from_repo_names_the_missing_suite_and_unknown_area) {
     BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
     bt_mut_build_free(&engine.build);
     bt_mut_rmtree(root);
+}
+
+static bt_json_value *area_config(const char *body) {
+    bt_json_value *value = NULL;
+    bt_json_error error;
+    if (bt_json_parse(body, strlen(body), &value, &error) != 0) {
+        BT_ABORT("fixture config does not parse");
+    }
+    return value;
+}
+
+BT_TEST(mutate, area_map_rejects_malformed_src_deps) {
+    const char *not_object = "{\"build\": {\"src_deps\": 5}}";
+    const char *not_array = "{\"build\": {\"src_deps\": {\"core\": 5}}}";
+    const char *bad_dep = "{\"build\": {\"src_deps\": {\"core\": [5]}}}";
+    char long_name[512];
+    snprintf(long_name, sizeof long_name, "{\"build\": {\"src_deps\": {\"%0300d\": []}}}", 7);
+    const char *cases[] = {not_object, not_array, bad_dep, long_name};
+    const char *errors[] = {
+        "build.src_deps is not an object",
+        "build.src_deps[core] is not an array",
+        "build.src_deps[core] holds an invalid dependency",
+        "area map overflow",
+    };
+    for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
+        bt_json_value *config = area_config(cases[i]);
+        bt_mut_area_map map;
+        BT_CHECK_EQ(bt_mut_area_map_load(config, &map), -1);
+        BT_CHECK(strstr(bt_mut_engine_last_error(), errors[i]) != NULL);
+        bt_json_free(config);
+    }
 }
 
 BT_TEST(mutate, ledger_resume_reruns_only_pending_rows) {

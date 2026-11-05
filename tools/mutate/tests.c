@@ -910,6 +910,7 @@ void bt_test_mutate_engine_run_refuses_a_poisoned_ledger_path(void);
 void bt_test_mutate_target_from_repo_builds_a_tools_path_target_over_a_fake_root(void);
 void bt_test_mutate_target_from_repo_rejects_ambiguous_and_missing_obj_roots(void);
 void bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area(void);
+void bt_test_mutate_area_map_rejects_malformed_src_deps(void);
 void bt_test_mutate_numeric_variants_and_suffixes(void);
 void bt_test_mutate_exponent_literals_are_float_tweaks(void);
 void bt_test_mutate_preprocessor_lines_stay_untouched(void);
@@ -977,6 +978,8 @@ int bt_mutate_selftest(void) {
             "mutate.target_from_repo_names_the_missing_suite_and_unknown_area",
             bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area,
         },
+        {"mutate.area_map_rejects_malformed_src_deps",
+         bt_test_mutate_area_map_rejects_malformed_src_deps},
         {
             "mutate.engine_stages_the_suite_exe_inside_the_workspace",
             bt_test_mutate_engine_stages_the_suite_exe_inside_the_workspace,
