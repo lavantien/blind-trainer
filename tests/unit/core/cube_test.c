@@ -193,6 +193,6 @@ static void cube_death_position_of_missing(void) {
 BT_TEST(cube, from_occ_and_position_of_abort_on_broken_states) {
     bt_death_expect_abort("cube.from_occ_rejects_a_duplicate_sticker",
                           "occ must be a permutation of 0..54", cube_death_from_occ_duplicate);
-    bt_death_expect_abort("cube.position_of_rejects_a_missing_sticker",
-                          "sticker 0 not present", cube_death_position_of_missing);
+    bt_death_expect_abort("cube.position_of_rejects_a_missing_sticker", "sticker 0 not present",
+                          cube_death_position_of_missing);
 }
