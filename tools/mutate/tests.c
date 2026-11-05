@@ -594,6 +594,111 @@ BT_TEST(mutate, flooding_child_hits_the_deadline) {
     bt_mut_proc_free(&proc);
 }
 
+static void scratch_case_dir(const char *slot, char dir[BT_MUT_PATH_MAX]) {
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/scratch-%s", g_dir, slot);
+    bt_mut_rmtree(dir);
+    bt_test_mkdirs(dir);
+}
+
+BT_TEST(mutate, scratch_root_passes_through_and_falls_back_to_temp) {
+    char out[BT_MUT_PATH_MAX];
+    BT_CHECK_EQ(bt_mut_scratch_root("E:/custom/root", out), 0);
+    MUT_CHECK(strcmp(out, "E:/custom/root") == 0, "passthrough got %s", out);
+    BT_CHECK_EQ(bt_mut_scratch_root(NULL, out), 0);
+    size_t len = strlen(out);
+    MUT_CHECK(len > strlen("/bt-mutants") &&
+                  strcmp(out + len - strlen("/bt-mutants"), "/bt-mutants") == 0,
+              "temp fallback got %s", out);
+    BT_CHECK_EQ(bt_mut_scratch_root("", out), 0);
+    len = strlen(out);
+    MUT_CHECK(len > strlen("/bt-mutants") &&
+                  strcmp(out + len - strlen("/bt-mutants"), "/bt-mutants") == 0,
+              "empty fallback got %s", out);
+}
+
+BT_TEST(mutate, orphan_marker_pid_short_circuits_the_creation_clock) {
+    ensure_setup();
+    uint64_t backdated = bt_mut_process_start() - 3600ULL * 10000000ULL;
+    uint64_t now = bt_mut_process_start();
+    char self[BT_MUT_PATH_MAX];
+    scratch_case_dir("pid-self", self);
+    char marker[BT_MUT_PATH_MAX];
+    snprintf(marker, BT_MUT_PATH_MAX, "%s/marker.txt", self);
+    char body[32];
+    snprintf(body, sizeof body, "%lu", GetCurrentProcessId());
+    bt_mut_write_file(marker, body, strlen(body));
+    BT_CHECK_EQ(bt_mut_set_file_creation(marker, backdated), 0);
+    MUT_CHECK(bt_mut_scratch_is_orphan(self, now) == 0, "a live owner pid must never be an orphan");
+
+    const char *dead_markers[] = {"0", "9999999999", "12345678901", "abc12"};
+    for (size_t i = 0; i < sizeof dead_markers / sizeof dead_markers[0]; i++) {
+        char dir[BT_MUT_PATH_MAX];
+        char name[32];
+        snprintf(name, sizeof name, "pid-dead-%zu", i);
+        scratch_case_dir(name, dir);
+        snprintf(marker, BT_MUT_PATH_MAX, "%s/marker.txt", dir);
+        bt_mut_write_file(marker, dead_markers[i], strlen(dead_markers[i]));
+        BT_CHECK_EQ(bt_mut_set_file_creation(marker, backdated), 0);
+        MUT_CHECK(bt_mut_scratch_is_orphan(dir, now) == 1,
+                  "marker %s must fall back to the creation clock", dead_markers[i]);
+    }
+}
+
+BT_TEST(mutate, orphan_without_marker_uses_the_first_file_creation) {
+    ensure_setup();
+    uint64_t backdated = bt_mut_process_start() - 3600ULL * 10000000ULL;
+    uint64_t now = bt_mut_process_start();
+    char dir[BT_MUT_PATH_MAX];
+    scratch_case_dir("nomarker", dir);
+    char planted[BT_MUT_PATH_MAX];
+    snprintf(planted, BT_MUT_PATH_MAX, "%s/leftover.obj", dir);
+    bt_mut_write_file(planted, "x", 1);
+    BT_CHECK_EQ(bt_mut_set_file_creation(planted, backdated), 0);
+    MUT_CHECK(bt_mut_scratch_is_orphan(dir, now) == 1,
+              "a markerless dir with an old file is an orphan");
+    MUT_CHECK(bt_mut_scratch_is_orphan(dir, backdated) == 0,
+              "the same dir predates an older live start and stays");
+}
+
+BT_TEST(mutate, orphan_and_sweep_refuse_roots_they_cannot_read) {
+    ensure_setup();
+    uint64_t now = bt_mut_process_start();
+    char missing[BT_MUT_PATH_MAX];
+    snprintf(missing, BT_MUT_PATH_MAX, "%s/absent-scratch-root", g_dir);
+    bt_mut_rmtree(missing);
+    BT_CHECK_EQ(bt_mut_scratch_is_orphan(missing, now), -1);
+    BT_CHECK_EQ(bt_mut_scratch_sweep(missing, now), 0ULL);
+}
+
+BT_TEST(mutate, orphan_marker_with_a_foreign_live_pid_stays) {
+    ensure_setup();
+    char command[BT_MUT_PATH_MAX * 2];
+    snprintf(command, sizeof command, "\"%s\" selftest-flood", g_self_exe);
+    wchar_t wide[BT_MUT_PATH_MAX * 2];
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide, BT_MUT_PATH_MAX * 2);
+    STARTUPINFOW startup = {.cb = sizeof startup};
+    PROCESS_INFORMATION info = {0};
+    MUT_CHECK(CreateProcessW(NULL, wide, NULL, NULL, FALSE, 0, NULL, NULL, &startup, &info) != 0,
+              "flood child spawn failed");
+    char dir[BT_MUT_PATH_MAX];
+    scratch_case_dir("pid-foreign", dir);
+    char marker[BT_MUT_PATH_MAX];
+    snprintf(marker, BT_MUT_PATH_MAX, "%s/marker.txt", dir);
+    char body[32];
+    snprintf(body, sizeof body, "%lu", info.dwProcessId);
+    bt_mut_write_file(marker, body, strlen(body));
+    uint64_t backdated = bt_mut_process_start() - 3600ULL * 10000000ULL;
+    BT_CHECK_EQ(bt_mut_set_file_creation(marker, backdated), 0);
+    int alive_verdict = bt_mut_scratch_is_orphan(dir, bt_mut_process_start());
+    TerminateProcess(info.hProcess, 0);
+    WaitForSingleObject(info.hProcess, 5000);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    MUT_CHECK(alive_verdict == 0, "a foreign live owner pid must keep its scratch");
+    int dead_verdict = bt_mut_scratch_is_orphan(dir, bt_mut_process_start());
+    MUT_CHECK(dead_verdict == 1, "a dead owner pid falls back to the backdated creation clock");
+}
+
 BT_TEST(mutate, dep_inputs_land_under_scratch) {
     ensure_setup();
     bt_mut_engine engine;
@@ -825,6 +930,26 @@ int bt_mutate_selftest(void) {
         {
             "mutate.preprocessor_lines_stay_untouched",
             bt_test_mutate_preprocessor_lines_stay_untouched,
+        },
+        {
+            "mutate.scratch_root_passes_through_and_falls_back_to_temp",
+            bt_test_mutate_scratch_root_passes_through_and_falls_back_to_temp,
+        },
+        {
+            "mutate.orphan_marker_pid_short_circuits_the_creation_clock",
+            bt_test_mutate_orphan_marker_pid_short_circuits_the_creation_clock,
+        },
+        {
+            "mutate.orphan_without_marker_uses_the_first_file_creation",
+            bt_test_mutate_orphan_without_marker_uses_the_first_file_creation,
+        },
+        {
+            "mutate.orphan_and_sweep_refuse_roots_they_cannot_read",
+            bt_test_mutate_orphan_and_sweep_refuse_roots_they_cannot_read,
+        },
+        {
+            "mutate.orphan_marker_with_a_foreign_live_pid_stays",
+            bt_test_mutate_orphan_marker_with_a_foreign_live_pid_stays,
         },
         {
             "mutate.report_maps_verdicts_and_attributes_functions",
