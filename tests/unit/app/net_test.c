@@ -290,3 +290,19 @@ BT_TEST(net, update_cells_keeps_border_ink_matched) {
         BT_CHECK(color_eq(ink[grid].border, bt_net_ink_for(ink[grid].background)));
     }
 }
+
+BT_TEST(net, face_of_maps_every_sticker_face_letter) {
+    BT_CHECK_EQ(bt_net_face_of(0), 0);
+    BT_CHECK_EQ(bt_net_face_of(4), 1);
+    BT_CHECK_EQ(bt_net_face_of(8), 2);
+    BT_CHECK_EQ(bt_net_face_of(12), 3);
+    BT_CHECK_EQ(bt_net_face_of(16), 4);
+    BT_CHECK_EQ(bt_net_face_of(20), 5);
+    BT_CHECK_EQ(bt_net_face_of(24), 0);
+    BT_CHECK_EQ(bt_net_face_of(47), 5);
+}
+
+BT_TEST(net, sticker_at_grid_rejects_out_of_range_cells) {
+    BT_CHECK_EQ(bt_net_sticker_at_grid(BT_NET_GRID_CELLS), -1);
+    BT_CHECK(bt_net_sticker_at_grid(0) >= 0);
+}

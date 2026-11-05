@@ -125,3 +125,11 @@ BT_TEST(open_url, unbind_restores_the_default_launcher) {
     BT_CHECK_EQ(bt_app_open_url("javascript:alert(1)"), -1);
     BT_CHECK_EQ(g_open_calls, 0);
 }
+
+BT_TEST(open_url, an_over_long_url_fails_widening_before_any_launch) {
+    char url[6000];
+    strcpy(url, "https://example.test/");
+    memset(url + strlen(url), 'a', sizeof url - strlen(url) - 1);
+    bt_app_open_url_unbind();
+    BT_CHECK_EQ(bt_app_open_url(url), -1);
+}

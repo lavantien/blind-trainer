@@ -1,3 +1,4 @@
+#include "app/driver_keys.h"
 #include "app/window_focus.h"
 
 #include "common.h"
@@ -112,4 +113,42 @@ BT_TEST(focus, sentinel_acquire_and_release_hand_back) {
     bt_app_focus_sentinel_release();
     BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 1);
     bt_app_focus_sentinel_release();
+}
+
+BT_TEST(focus, driver_keys_post_every_extended_key_and_a_char) {
+    HWND window = spawn_window(L"driver key target", 100, 100, 200, 200);
+    BT_CHECK(window != NULL);
+    static const unsigned int extended[] = {
+        VK_RIGHT, VK_LEFT,   VK_UP,       VK_DOWN,     VK_HOME,    VK_END,  VK_PRIOR,
+        VK_NEXT,  VK_INSERT, VK_DELETE,   VK_DIVIDE,   VK_NUMLOCK, VK_RWIN, VK_LWIN,
+        VK_APPS,  VK_RMENU,  VK_RCONTROL, VK_SNAPSHOT, VK_CANCEL,
+    };
+    for (size_t i = 0; i < sizeof extended / sizeof extended[0]; i++) {
+        BT_CHECK_EQ(bt_app_driver_key_down(window, extended[i]), 1);
+        BT_CHECK_EQ(bt_app_driver_key_up(window, extended[i]), 1);
+    }
+    BT_CHECK_EQ(bt_app_driver_key_char(window, 'b'), 1);
+    BT_CHECK_EQ(bt_app_driver_mouse_move(window, 10, 20), 1);
+    BT_CHECK_EQ(bt_app_driver_mouse_left_down(window, 10, 20), 1);
+    BT_CHECK_EQ(bt_app_driver_mouse_left_up(window, 10, 20), 1);
+    MSG msg;
+    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+    DestroyWindow(window);
+}
+
+BT_TEST(focus, driver_posts_fail_on_destroyed_targets) {
+    HWND window = spawn_window(L"doomed driver target", 100, 100, 200, 200);
+    BT_CHECK(window != NULL);
+    BT_CHECK(bt_app_driver_find_window("no such window anywhere") == NULL);
+    DestroyWindow(window);
+    Sleep(50);
+    BT_CHECK_EQ(bt_app_driver_mouse_move(window, 1, 2), 0);
+    BT_CHECK_EQ(bt_app_driver_mouse_left_down(window, 1, 2), 0);
+    BT_CHECK_EQ(bt_app_driver_mouse_left_up(window, 1, 2), 0);
+    BT_CHECK_EQ(bt_app_driver_key_down(window, VK_SPACE), 0);
+    BT_CHECK_EQ(bt_app_driver_key_up(window, VK_SPACE), 0);
+    BT_CHECK_EQ(bt_app_driver_close_request(window), 0);
 }

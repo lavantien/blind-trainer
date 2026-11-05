@@ -395,3 +395,11 @@ BT_TEST(logic, save_stores_request_persists_every_store) {
     bt_stores_free(&reloaded);
     bt_app_ctx_free(&ctx);
 }
+
+BT_TEST(logic, settings_and_store_saves_fail_without_booted_stores) {
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_settings settings = {640, BT_MEMO_SYLLABLES, 4};
+    BT_CHECK_EQ(bt_app_apply_settings_change(&ctx, &settings), -1);
+    BT_CHECK_EQ(bt_app_save_stores(&ctx), -1);
+}
