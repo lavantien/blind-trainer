@@ -75,7 +75,8 @@ static void bt_death_expect_code(const char *case_name, const char *message, lon
     BT_CHECK(strstr(body, message) != NULL);
 }
 
-static void bt_death_expect_abort(const char *case_name, const char *message, void (*fn)(void)) {
+__attribute__((unused)) static void bt_death_expect_abort(const char *case_name,
+                                                          const char *message, void (*fn)(void)) {
     bt_death_expect_code(case_name, message, -1073740791LL, fn);
 }
 
