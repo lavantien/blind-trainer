@@ -18,6 +18,7 @@ int bt_app_driver_key_down(void *hwnd, unsigned int vk);
 int bt_app_driver_key_up(void *hwnd, unsigned int vk);
 int bt_app_driver_key_char(void *hwnd, unsigned int ch);
 int bt_app_driver_close_request(void *hwnd);
+void *bt_app_driver_find_window(const char *title);
 int bt_app_driver_mouse_move(void *hwnd, int x, int y);
 int bt_app_driver_mouse_left_down(void *hwnd, int x, int y);
 int bt_app_driver_mouse_left_up(void *hwnd, int x, int y);

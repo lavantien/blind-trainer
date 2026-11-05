@@ -208,7 +208,7 @@ static int smoke_loop(bt_app_ctx *ctx, bt_smoke_tour *tour) {
         }
     }
     BT_TRACE_EXIT("app.smoke_loop");
-    return code >= 0 ? code : 0;
+    return code >= 0 ? code : 1;
 }
 
 int bt_app_smoke_main(bt_app_ctx *ctx, const char *dir, uint64_t seed) {

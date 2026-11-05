@@ -10,6 +10,7 @@
 #include "raylib.h"
 
 #include <io.h>
+#include <process.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -143,6 +144,53 @@ static void restore_appdata(const char *saved) {
     char setting[TA_PATH_MAX];
     snprintf(setting, sizeof setting, "APPDATA=%s", saved);
     _putenv(setting);
+}
+
+typedef struct {
+    const char *title;
+    volatile int posted;
+    volatile int found;
+} smoke_close_probe;
+
+static unsigned __stdcall smoke_close_poster(void *raw) {
+    smoke_close_probe *probe = raw;
+    for (int attempt = 0; attempt < 750 && !probe->posted; attempt++) {
+        void *hwnd = bt_app_driver_find_window(probe->title);
+        if (hwnd != NULL) {
+            probe->found = 1;
+            probe->posted = bt_app_driver_close_request(hwnd);
+        }
+        WaitTime(0.02);
+    }
+    return 0;
+}
+
+BT_TEST(drivers, smoke_interrupted_by_window_close_exits_nonzero) {
+    char saved_appdata[TA_PATH_MAX];
+    sandbox_appdata("smoke-close-user", saved_appdata, sizeof saved_appdata);
+    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_ctx ctx;
+    bt_app_shot_mode mode;
+    char mode_dir[BT_PATH_MAX];
+    char error[BT_APP_ERROR_MAX];
+    char *argv[] = {(char *)"bt-app", NULL};
+    BT_CHECK_EQ(bt_app_init(1, argv, &ctx, &mode, mode_dir, sizeof mode_dir, error, sizeof error),
+                0);
+    const char *dir = ta_temp_dir("drivers", "smoke-interrupted");
+    smoke_close_probe probe;
+    memset(&probe, 0, sizeof probe);
+    probe.title = ctx.config.window.title;
+    uintptr_t thread = _beginthreadex(NULL, 0, smoke_close_poster, &probe, 0, NULL);
+    BT_CHECK(thread != 0);
+    int code = bt_app_smoke_main(&ctx, dir, 20261012);
+    for (int attempt = 0; attempt < 100 && !probe.posted; attempt++) {
+        WaitTime(0.02);
+    }
+    fprintf(stderr, "drivers: interrupted smoke code %d posted %d\n", code, probe.posted);
+    BT_CHECK(probe.posted);
+    BT_CHECK_EQ(code, 1);
+    bt_app_focus_sentinel_release();
+    restore_appdata(saved_appdata);
 }
 
 BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {

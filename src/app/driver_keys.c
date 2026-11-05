@@ -77,6 +77,17 @@ int bt_app_driver_close_request(void *hwnd) {
     return ok;
 }
 
+void *bt_app_driver_find_window(const char *title) {
+    BT_TRACE_ENTER("app.driver_find_window");
+    HWND found = FindWindowA(NULL, title);
+    if (found == NULL) {
+        BT_TRACE_FAIL("app.driver_find_window", "no window titled %s", title);
+    } else {
+        BT_TRACE_EXIT("app.driver_find_window");
+    }
+    return (void *)found;
+}
+
 int bt_app_driver_mouse_move(void *hwnd, int x, int y) {
     BT_TRACE_ENTER("app.driver_mouse_move");
     int ok = PostMessageW((HWND)hwnd, WM_MOUSEMOVE, 0, MAKELPARAM(x, y)) != 0;
