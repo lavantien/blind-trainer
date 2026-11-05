@@ -305,6 +305,97 @@ static void restore_bin_dir(const char *saved) {
     }
 }
 
+BT_TEST(sleeper, exe_huge_plain_seconds_saturate_and_never_finish) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    const char *argv[] = {"1e300", NULL};
+    char out[512];
+    char err[512];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    int rc = bt_spawn_capture(exe, argv, root, 3000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, -2);
+}
+
+BT_TEST(sleeper, exe_max_hold_seconds_saturate_and_never_finish) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    const char *argv[] = {"--selftest-hold-secs", "18446744073709551615", NULL};
+    char out[512];
+    char err[512];
+    int code = -1;
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    int rc = bt_spawn_capture(exe, argv, root, 3000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, -2);
+}
+
+static int spawn_alloc_under_cap(const char *mb, char *err, size_t err_cap, DWORD cap_bytes) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "sleeper.exe");
+    char base[BT_PATH_MAX];
+    DWORD n = GetTempPathA(BT_PATH_MAX, base);
+    if (n == 0 || n >= BT_PATH_MAX) {
+        return -1;
+    }
+    char log[BT_PATH_MAX];
+    snprintf(log, sizeof log, "%sbt-sleeper-alloc-%lu.log", base, GetCurrentProcessId());
+    SECURITY_ATTRIBUTES inherit = {
+        .nLength = sizeof inherit, .lpSecurityDescriptor = NULL, .bInheritHandle = TRUE};
+    HANDLE sink =
+        CreateFileA(log, GENERIC_WRITE, 0, &inherit, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
+    if (sink == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+    char command[BT_PATH_MAX * 2];
+    char quoted[BT_PATH_MAX * 2];
+    snprintf(quoted, sizeof quoted, "\"%s\"", exe);
+    snprintf(command, sizeof command, "%s --selftest-alloc-mb %s", quoted, mb);
+    STARTUPINFOA startup = {0};
+    startup.cb = sizeof startup;
+    startup.dwFlags = STARTF_USESTDHANDLES;
+    startup.hStdError = sink;
+    startup.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+    PROCESS_INFORMATION info = {0};
+    if (!CreateProcessA(NULL, command, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &startup,
+                        &info)) {
+        CloseHandle(sink);
+        DeleteFileA(log);
+        return -1;
+    }
+    HANDLE job = CreateJobObjectA(NULL, NULL);
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits = {0};
+    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+    limits.ProcessMemoryLimit = cap_bytes;
+    SetInformationJobObject(job, JobObjectExtendedLimitInformation, &limits, sizeof limits);
+    AssignProcessToJobObject(job, info.hProcess);
+    ResumeThread(info.hThread);
+    WaitForSingleObject(info.hProcess, 60000);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    CloseHandle(job);
+    CloseHandle(sink);
+    err[0] = '\0';
+    HANDLE read = CreateFileA(log, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+    if (read != INVALID_HANDLE_VALUE) {
+        DWORD got = 0;
+        ReadFile(read, err, (DWORD)err_cap - 1, &got, NULL);
+        err[got] = '\0';
+        CloseHandle(read);
+    }
+    DeleteFileA(log);
+    return 0;
+}
+
+BT_TEST(sleeper, exe_alloc_fails_inside_a_capped_job_and_reports_the_block) {
+    char err[2048];
+    int rc = spawn_alloc_under_cap("512", err, sizeof err, 64U * 1024U * 1024U);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK(strstr(err, "selftest alloc failed at block") != NULL);
+}
+
 BT_TEST(bin_path, override_dir_wins_over_the_plain_build_bin) {
     char saved[BT_PATH_MAX];
     snprintf(saved, sizeof saved, "%s", getenv("BT_BIN_DIR") != NULL ? getenv("BT_BIN_DIR") : "");
