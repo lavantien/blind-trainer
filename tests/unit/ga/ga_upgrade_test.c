@@ -705,8 +705,9 @@ BT_TEST(ga_upgrade, two_islands_take_the_best_across_the_initial_populations) {
         feats[i] = bt_ga_parse_or_abort(POOL19[i]);
         lengths[i] = 3.0F;
     }
-    bt_ga_pair_weight cooc[6] = {{0, 1, 0.9F}, {1, 2, 0.7F}, {3, 4, 0.6F},
-                                 {5, 6, 0.5F}, {7, 8, 0.4F}, {2, 6, 0.3F}};
+    bt_ga_pair_weight cooc[6] = {
+        {0, 1, 0.9F}, {1, 2, 0.7F}, {3, 4, 0.6F}, {5, 6, 0.5F}, {7, 8, 0.4F}, {2, 6, 0.3F},
+    };
     bt_ga_pair_weight adj[3] = {{0, 1, 0.8F}, {3, 4, 0.5F}, {5, 6, 0.2F}};
     bt_ga_env *env = malloc(sizeof *env);
     char err[BT_GA_ERR_MAX];
