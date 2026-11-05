@@ -830,3 +830,95 @@ BT_TEST(jobwrap, exe_wrap_path_passes_the_child_exit_code) {
     CloseHandle(info.hThread);
     BT_CHECK_EQ(code, 2U);
 }
+
+static DWORD spawn_jobwrap_wait(char *command, DWORD timeout_ms, DWORD *code) {
+    wchar_t wide[BT_PATH_MAX * 3];
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide, BT_PATH_MAX * 3);
+    STARTUPINFOW startup = {0};
+    startup.cb = sizeof startup;
+    PROCESS_INFORMATION info = {0};
+    if (CreateProcessW(NULL, wide, NULL, NULL, FALSE, 0, NULL, NULL, &startup, &info) == 0) {
+        return (DWORD)-1;
+    }
+    DWORD wait = WaitForSingleObject(info.hProcess, timeout_ms);
+    if (wait == WAIT_TIMEOUT) {
+        TerminateProcess(info.hProcess, 124);
+        WaitForSingleObject(info.hProcess, 5000);
+        GetExitCodeProcess(info.hProcess, code);
+        CloseHandle(info.hProcess);
+        CloseHandle(info.hThread);
+        return WAIT_TIMEOUT;
+    }
+    GetExitCodeProcess(info.hProcess, code);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    return wait;
+}
+
+BT_TEST(jobwrap, exe_max_hold_seconds_saturate_and_never_finish) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "jobwrap.exe");
+    char command[BT_PATH_MAX * 3];
+    snprintf(command, sizeof command, "\"%s\" --selftest-hold-secs 18446744073709551615", exe);
+    DWORD code = 0;
+    DWORD wait = spawn_jobwrap_wait(command, 3000, &code);
+    BT_CHECK_EQ(wait, WAIT_TIMEOUT);
+}
+
+static int spawn_alloc_capped(char *command, DWORD cap_bytes, DWORD *code) {
+    wchar_t wide[BT_PATH_MAX * 3];
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide, BT_PATH_MAX * 3);
+    STARTUPINFOW startup = {0};
+    startup.cb = sizeof startup;
+    PROCESS_INFORMATION info = {0};
+    if (CreateProcessW(NULL, wide, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startup,
+                       &info) == 0) {
+        return -1;
+    }
+    HANDLE job = CreateJobObjectA(NULL, NULL);
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits = {0};
+    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+    limits.ProcessMemoryLimit = cap_bytes;
+    SetInformationJobObject(job, JobObjectExtendedLimitInformation, &limits, sizeof limits);
+    AssignProcessToJobObject(job, info.hProcess);
+    ResumeThread(info.hThread);
+    WaitForSingleObject(info.hProcess, 60000);
+    GetExitCodeProcess(info.hProcess, code);
+    CloseHandle(info.hProcess);
+    CloseHandle(info.hThread);
+    CloseHandle(job);
+    return 0;
+}
+
+BT_TEST(jobwrap, exe_alloc_fails_inside_a_capped_job_and_aborts) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "jobwrap.exe");
+    char command[BT_PATH_MAX * 3];
+    snprintf(command, sizeof command, "\"%s\" --selftest-alloc-mb 512", exe);
+    DWORD code = 0;
+    int rc = spawn_alloc_capped(command, 64U * 1024U * 1024U, &code);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK(code == 3 || code == 0xC0000409);
+}
+
+BT_TEST(jobwrap, exe_run_usage_verdict_exits_2_with_the_run_error) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "jobwrap.exe");
+    char sleeper[BT_PATH_MAX];
+    bt_test_bin_path(sleeper, "sleeper.exe");
+    char dir[BT_PATH_MAX];
+    write_config_pair(dir, "nojob", "{}");
+    char config[BT_PATH_MAX];
+    snprintf(config, sizeof config, "%s\\config.json", dir);
+    char saved[BT_PATH_MAX];
+    DWORD had = GetEnvironmentVariableA("BT_CONFIG", saved, BT_PATH_MAX);
+    SetEnvironmentVariableA("BT_CONFIG", config);
+    char command[BT_PATH_MAX * 3];
+    snprintf(command, sizeof command, "\"%s\" --anchor blank -- \"%s\" 0.1", exe, sleeper);
+    DWORD code = 0;
+    DWORD wait = spawn_jobwrap_wait(command, 30000, &code);
+    SetEnvironmentVariableA("BT_CONFIG", had > 0 && had < BT_PATH_MAX ? saved : NULL);
+    drop_config_dir(dir);
+    BT_CHECK_EQ(wait, WAIT_OBJECT_0);
+    BT_CHECK_EQ(code, 2U);
+}
