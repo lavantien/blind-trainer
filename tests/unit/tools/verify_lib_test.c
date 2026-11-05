@@ -95,6 +95,37 @@ BT_TEST(verify_lib, simcheck_rejects_each_malformed_shape) {
                                "cherry\tedge\t2\tUF-UB-UL\t9\t1e3\tCYCLE_A\tclean\n",
                                "qtm 1e3 is not a number"));
     BT_CHECK(simcheck_error_is("empty", "", "simcheck.tsv is empty"));
+    BT_CHECK(simcheck_error_is("rowoverflow",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t18446744073709551616\tUF-UB-UL\t9\t12\tCYCLE_A\tc\n",
+                               "rowid 18446744073709551616 is not a number"));
+    BT_CHECK(simcheck_error_is("qtmoverflow",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t2\tUF-UB-UL\t9\t99999999999999999999\tCYCLE_A\tc\n",
+                               "qtm 99999999999999999999 is not a number"));
+    BT_CHECK(simcheck_error_is("qtmwide",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t2\tUF-UB-UL\t9\t4294967296\tCYCLE_A\tc\n",
+                               "qtm 4294967296 is not a number"));
+}
+
+BT_TEST(verify_lib, simcheck_accepts_leading_plus_in_rowid_and_qtm) {
+    char root[BT_PATH_MAX];
+    scratch_simcheck("plus",
+                     "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                     "eggins\tcorner\t+7\tUFR-UBR-UL\t9\t+21\tCYCLE_A\tclean\n",
+                     root);
+    verify_sim_map map;
+    verify_sim_map_init(&map);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_load_simcheck(root, &map, err, sizeof err), 0);
+    const verify_sim_row *row = verify_sim_map_get(&map, BT_SOLVER_EGGINS, BT_SHEET_CORNER, 7);
+    BT_CHECK(row != NULL);
+    if (row != NULL) {
+        BT_CHECK_EQ(row->qtm, 21U);
+    }
+    verify_sim_map_free(&map);
+    drop_scratch_simcheck(root);
 }
 
 BT_TEST(verify_lib, simcheck_accepts_blank_lines_and_replaces_duplicates) {

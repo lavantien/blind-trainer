@@ -37,6 +37,55 @@ BT_TEST(verify_report, note_text_renders_flip_and_twist_with_signs) {
     BT_CHECK_EQ(out, "twist:UBL:+0");
 }
 
+static void reasons_case(verify_report_row_outcome *row, bt_strbuf *out) {
+    bt_strbuf_init(out, 0);
+    verify_report_reasons(row, out);
+}
+
+BT_TEST(verify_report, reasons_render_missing_simcheck_as_none) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 2, "UF-UB-UL", &row);
+    row.qtm_match = false;
+    row.has_simcheck = false;
+    bt_strbuf reasons;
+    reasons_case(&row, &reasons);
+    BT_CHECK(strstr(reasons.data, "qtm 0 vs simcheck None") != NULL);
+    bt_strbuf_free(&reasons);
+    row.position_match = false;
+    row.simcheck_position = verify_xstrdup("UF-UB-UR");
+    reasons_case(&row, &reasons);
+    BT_CHECK(strstr(reasons.data, "position UF-UB-UL vs simcheck None") != NULL);
+    bt_strbuf_free(&reasons);
+    verify_report_row_free(&row);
+}
+
+BT_TEST(verify_report, reasons_escape_quotes_inside_simcheck_positions) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 3, "UF-UB-UR", &row);
+    row.position_match = false;
+    row.has_simcheck = true;
+    row.simcheck_position = verify_xstrdup("UF-UB-U\"R");
+    bt_strbuf reasons;
+    reasons_case(&row, &reasons);
+    BT_CHECK(strstr(reasons.data, "Some(\"UF-UB-U\\\"R\")") != NULL);
+    bt_strbuf_free(&reasons);
+    verify_report_row_free(&row);
+}
+
+BT_TEST(verify_report, reasons_separate_multiple_problems_with_semicolons) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 4, "UF-UB-UF", &row);
+    static char problems[2][VERIFY_REPORT_PROBLEM_LEN] = {"first", "second"};
+    row.problems = (char (*)[VERIFY_REPORT_PROBLEM_LEN])problems;
+    row.problem_count = 2;
+    bt_strbuf reasons;
+    reasons_case(&row, &reasons);
+    BT_CHECK(strstr(reasons.data, "first; second") != NULL);
+    bt_strbuf_free(&reasons);
+    row.problems = NULL;
+    verify_report_row_free(&row);
+}
+
 static void copy_alg(const bt_alg *src, bt_alg *dst) {
     bt_alg_init(dst);
     for (size_t at = 0; at < bt_alg_len(src); at++) {

@@ -114,6 +114,61 @@ BT_TEST(verify_ev_bld, corner_names_match_slots_in_any_letter_order) {
     BT_CHECK(ufr != ufl);
 }
 
+BT_TEST(verify_ev_bld, slot_index_rejects_bad_letters_and_repeated_faces) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK(verify_bld_slot_index(&layout, "Z", err, sizeof err) < 0);
+    BT_CHECK(strstr(err, "face") != NULL || strstr(err, "piece") != NULL);
+    BT_CHECK(verify_bld_slot_index(&layout, "UU", err, sizeof err) < 0);
+    BT_CHECK(strstr(err, "repeats a face") != NULL);
+    BT_CHECK(verify_bld_slot_index(&layout, "UD", err, sizeof err) < 0);
+    BT_CHECK(strstr(err, "matches no slot") != NULL);
+    char bracket[VERIFY_BLD_NAME_MAX];
+    BT_CHECK(verify_bld_slot_index(&layout, "UF[fl]", bracket, sizeof bracket) >= 0);
+}
+
+BT_TEST(verify_ev_bld, transposed_reports_slot_lookup_failures) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    verify_bld_state_audit audit;
+    memset(&audit, 0, sizeof audit);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK(verify_bld_transposed(&audit, &layout, "ZZ", "UR", err, sizeof err) != 0);
+}
+
+BT_TEST(verify_ev_bld, mask_name_lists_faces_in_layout_order) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    for (size_t piece = 0; piece < layout.piece_count; piece++) {
+        char name[VERIFY_BLD_NAME_MAX];
+        verify_bld_mask_name(verify_bld_mask_of(&layout, piece), name, sizeof name);
+        BT_CHECK(name[0] != '\0');
+        BT_CHECK_EQ(strlen(name), verify_bld_slot_len_of(&layout, piece));
+        BT_CHECK(verify_bld_slot_of_index(&layout, piece) != NULL);
+    }
+    char name[VERIFY_BLD_NAME_MAX];
+    verify_bld_mask_name(0, name, sizeof name);
+    BT_CHECK_EQ(name, "");
+    verify_bld_mask_name(0x3F, name, sizeof name);
+    BT_CHECK_EQ(strlen(name), 6U);
+}
+
+BT_TEST(verify_ev_bld, pair_and_parity_specs_reject_wrong_shapes) {
+    char pair[2][VERIFY_BLD_NAME_MAX];
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK(verify_bld_parse_pair("UF", '&', pair, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "does not hold two names") != NULL);
+    BT_CHECK(verify_bld_parse_pair("UF & UB & UL", '&', pair, err, sizeof err) != 0);
+    char edge[2][VERIFY_BLD_NAME_MAX];
+    char corner[2][VERIFY_BLD_NAME_MAX];
+    BT_CHECK(verify_bld_parity_swaps("UF-UR+UFR", edge, corner, err, sizeof err) != 0);
+    BT_CHECK(verify_bld_parity_swaps("UF", edge, corner, err, sizeof err) != 0);
+    BT_CHECK(verify_bld_parse_pair(" UF & UB ", '&', pair, err, sizeof err) == 0);
+    BT_CHECK_EQ(pair[0], "UF");
+    BT_CHECK_EQ(pair[1], "UB");
+}
+
 BT_TEST(verify_ev_bld, an_unknown_alg_token_names_the_core_error) {
     bt_seed_row storage;
     memset(&storage, 0, sizeof storage);

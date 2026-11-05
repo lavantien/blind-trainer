@@ -332,3 +332,17 @@ BT_TEST(verify_exe, reports_a_blocked_artifacts_root) {
     DeleteFileA(blocker);
     rm_scratch_root(base);
 }
+
+BT_TEST(verify_exe, reports_registry_drift_as_a_pack_offender) {
+    char root[BT_PATH_MAX];
+    clone_ref_ground("drift", root);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/packs/registry.json", root);
+    replace_in_file(path, "\"expected_rows\": 42", "\"expected_rows\": 41");
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify(root, "artifacts", NULL, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "registry holds 41 rows, pin holds 42") != NULL);
+    rm_scratch_root(root);
+}
