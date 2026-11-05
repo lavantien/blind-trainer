@@ -1,0 +1,150 @@
+#include "../tools/spawn_util.h"
+#include "app/driver_keys.h"
+#include "app/window_focus.h"
+
+#include "common.h"
+
+typedef struct {
+    const char *title;
+    volatile int posted;
+    volatile int found;
+} dispatch_close_probe;
+
+static unsigned __stdcall dispatch_close_poster(void *raw) {
+    dispatch_close_probe *probe = raw;
+    for (int attempt = 0; attempt < 750 && !probe->posted; attempt++) {
+        void *hwnd = bt_app_driver_find_window(probe->title);
+        if (hwnd != NULL) {
+            probe->found = 1;
+            probe->posted = bt_app_driver_close_request(hwnd);
+        }
+        Sleep(20);
+    }
+    return 0;
+}
+
+static void dispatch_appdata(const char *tag, char *saved, size_t saved_len) {
+    const char *current = getenv("APPDATA");
+    snprintf(saved, saved_len, "%s", current != NULL ? current : "");
+    const char *dir = ta_temp_dir("dispatch", tag);
+    char setting[TA_PATH_MAX];
+    snprintf(setting, sizeof setting, "APPDATA=%s", dir);
+    _putenv(setting);
+}
+
+static void dispatch_restore(const char *saved) {
+    char setting[TA_PATH_MAX];
+    snprintf(setting, sizeof setting, "APPDATA=%s", saved);
+    _putenv(setting);
+}
+
+BT_TEST(main_dispatch, rejects_two_shot_flags_with_usage_error) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "bt-app.exe");
+    const char *argv[] = {"--smoke", "--usage", "somewhere", NULL};
+    int code = -1;
+    char out[512];
+    char err[512];
+    BT_CHECK_EQ(bt_spawn_capture(exe, argv, NULL, 30000, &code, out, sizeof out, err, sizeof err),
+                0);
+    BT_CHECK_EQ(code, 2);
+    BT_CHECK(strstr(err, "only one of") != NULL);
+}
+
+BT_TEST(main_dispatch, runs_the_fatal_shot_tour) {
+    char saved_appdata[TA_PATH_MAX];
+    dispatch_appdata("fatal-user", saved_appdata, sizeof saved_appdata);
+    BT_CHECK(bt_app_focus_sentinel_acquire());
+    const char *dir = ta_temp_dir("dispatch", "fatal-shot");
+    char missing_config[TA_PATH_MAX];
+    snprintf(missing_config, sizeof missing_config, "%s/absent-config.json", dir);
+    const char *saved_config = getenv("BT_CONFIG");
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", missing_config);
+    _putenv(setting);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "bt-app.exe");
+    char dir_arg[TA_PATH_MAX];
+    snprintf(dir_arg, sizeof dir_arg, "%s", dir);
+    const char *argv[] = {"--fatal-shot", dir_arg, NULL};
+    int code = -1;
+    char out[512];
+    char err[512];
+    int rc = bt_spawn_capture(exe, argv, NULL, 120000, &code, out, sizeof out, err, sizeof err);
+    if (saved_config != NULL && saved_config[0] != '\0') {
+        snprintf(setting, sizeof setting, "BT_CONFIG=%s", saved_config);
+    } else {
+        snprintf(setting, sizeof setting, "BT_CONFIG=");
+    }
+    _putenv(setting);
+    char path[TA_PATH_MAX];
+    snprintf(path, sizeof path, "%s/fatal.png", dir);
+    struct _stat info;
+    int shot = _stat(path, &info) == 0 && info.st_size > 0;
+    fprintf(stderr, "main_dispatch: fatal rc %d code %d shot %d\n", rc, code, shot);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(shot);
+    bt_app_focus_sentinel_release();
+    dispatch_restore(saved_appdata);
+}
+
+BT_TEST(main_dispatch, reports_a_font_failure_and_exits_one) {
+    char saved_appdata[TA_PATH_MAX];
+    dispatch_appdata("fonts-user", saved_appdata, sizeof saved_appdata);
+    const char *dir = ta_temp_dir("dispatch", "fonts-fail");
+    char config_path[TA_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config.json", dir);
+    ta_write_file(config_path,
+                  "{\"app\":{\"window\":{\"width\":320,\"height\":240,\"title\":\"w\"},"
+                  "\"memo\":{\"cadence_ms\":800,\"mode\":\"per-orbit\"},\"drill\":{\"reps\":4}},"
+                  "\"paths\":{\"fonts\":\"definitely-missing-fonts\"}}");
+    const char *saved_config = getenv("BT_CONFIG");
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
+    _putenv(setting);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "bt-app.exe");
+    const char *argv[] = {NULL};
+    int code = -1;
+    char out[512];
+    char err[512];
+    int rc = bt_spawn_capture(exe, argv, NULL, 60000, &code, out, sizeof out, err, sizeof err);
+    if (saved_config != NULL && saved_config[0] != '\0') {
+        snprintf(setting, sizeof setting, "BT_CONFIG=%s", saved_config);
+    } else {
+        snprintf(setting, sizeof setting, "BT_CONFIG=");
+    }
+    _putenv(setting);
+    fprintf(stderr, "main_dispatch: fonts rc %d code %d err %s\n", rc, code, err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 1);
+    dispatch_restore(saved_appdata);
+}
+
+BT_TEST(main_dispatch, interactive_close_returns_zero) {
+    char saved_appdata[TA_PATH_MAX];
+    dispatch_appdata("interactive-user", saved_appdata, sizeof saved_appdata);
+    BT_CHECK(bt_app_focus_sentinel_acquire());
+    dispatch_close_probe probe;
+    memset(&probe, 0, sizeof probe);
+    probe.title = "blind trainer";
+    uintptr_t thread = _beginthreadex(NULL, 0, dispatch_close_poster, &probe, 0, NULL);
+    BT_CHECK(thread != 0);
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "bt-app.exe");
+    const char *argv[] = {NULL};
+    int code = -1;
+    char out[512];
+    char err[512];
+    int rc = bt_spawn_capture(exe, argv, NULL, 120000, &code, out, sizeof out, err, sizeof err);
+    for (int attempt = 0; attempt < 100 && !probe.posted; attempt++) {
+        Sleep(20);
+    }
+    fprintf(stderr, "main_dispatch: interactive rc %d code %d posted %d\n", rc, code, probe.posted);
+    BT_CHECK(probe.posted);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+    bt_app_focus_sentinel_release();
+    dispatch_restore(saved_appdata);
+}

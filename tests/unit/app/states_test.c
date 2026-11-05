@@ -68,3 +68,16 @@ BT_TEST(states, subphase_defaults_start_each_phase_ladder) {
     BT_CHECK_EQ(BT_MEMO_RECALL, BT_MEMO_STREAM + 1);
     BT_CHECK_EQ(BT_MEMO_REVIEW, BT_MEMO_RECALL + 1);
 }
+
+BT_TEST(states, validity_rejects_out_of_range_states) {
+    BT_CHECK_EQ(bt_app_state_valid(BT_APP_BOOTSTRAP), 1);
+    BT_CHECK_EQ(bt_app_state_valid(BT_APP_FATAL), 1);
+    BT_CHECK_EQ(bt_app_state_valid(BT_APP_SETTINGS), 1);
+    BT_CHECK_EQ(bt_app_state_valid(-1), 0);
+    BT_CHECK_EQ(bt_app_state_valid(BT_APP_STATE_COUNT), 0);
+    BT_CHECK_EQ(bt_app_state_valid(9999), 0);
+    BT_CHECK_EQ(bt_app_state_slug(-1), NULL);
+    BT_CHECK_EQ(bt_app_state_slug(BT_APP_STATE_COUNT), NULL);
+    BT_CHECK_EQ(bt_app_state_label(-1), NULL);
+    BT_CHECK_EQ(bt_app_state_label(BT_APP_STATE_COUNT), NULL);
+}

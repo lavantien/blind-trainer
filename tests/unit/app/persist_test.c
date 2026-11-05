@@ -1,6 +1,7 @@
 #include "app/persist.h"
 
 #include "common.h"
+#include "common/json.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -251,6 +252,45 @@ BT_TEST(persist, memo_mode_index_round_trips_through_the_label_order) {
     }
     bt_memo_mode mode;
     BT_CHECK_EQ(bt_memo_mode_from_index(BT_MEMO_MODE_COUNT, &mode), 0);
+    BT_CHECK_EQ(bt_memo_mode_from_index(-1, &mode), 0);
+    BT_CHECK_EQ(bt_memo_mode_index((bt_memo_mode)99), -1);
+    BT_CHECK_EQ(bt_memo_mode_label((bt_memo_mode)99), NULL);
+}
+
+static bt_json_value *settings_json(const char *text) {
+    bt_json_value *value = NULL;
+    bt_json_error error;
+    if (bt_json_parse(text, strlen(text), &value, &error) != 0) {
+        BT_ABORT("fixture json %s: %s", text, error.message);
+    }
+    return value;
+}
+
+BT_TEST(persist, settings_json_rejects_every_malformed_field_shape) {
+    bt_settings out;
+    char error[BT_APP_ERROR_MAX];
+    const char *fixtures[] = {
+        "{\"memo_cadence_ms\":800,\"memo_mode\":\"per-orbit\"}",
+        "{\"memo_cadence_ms\":800,\"memo_mode\":\"per-orbit\",\"drill_reps\":\"four\"}",
+        "{\"memo_cadence_ms\":-1,\"memo_mode\":\"per-orbit\",\"drill_reps\":4}",
+        "{\"memo_cadence_ms\":800,\"memo_mode\":\"per-orbit\",\"drill_reps\":-2}",
+        "{\"memo_cadence_ms\":1.5,\"memo_mode\":\"per-orbit\",\"drill_reps\":4}",
+        "{\"memo_cadence_ms\":800,\"memo_mode\":7,\"drill_reps\":4}",
+        "{\"memo_cadence_ms\":800,\"memo_mode\":\"no-such-mode\",\"drill_reps\":4}",
+    };
+    for (size_t i = 0; i < sizeof fixtures / sizeof fixtures[0]; i++) {
+        bt_json_value *value = settings_json(fixtures[i]);
+        BT_CHECK_EQ(bt_settings_from_json(value, &out, error, sizeof error), -1);
+        BT_CHECK(error[0] != '\0');
+        bt_json_free(value);
+    }
+    bt_json_value *good =
+        settings_json("{\"memo_cadence_ms\":640,\"memo_mode\":\"syllables\",\"drill_reps\":2}");
+    BT_CHECK_EQ(bt_settings_from_json(good, &out, error, sizeof error), 0);
+    BT_CHECK_EQ(out.memo_cadence_ms, SENTINEL_CADENCE_MS);
+    BT_CHECK_EQ(out.memo_mode, BT_MEMO_SYLLABLES);
+    BT_CHECK_EQ(out.drill_reps, 2);
+    bt_json_free(good);
 }
 
 BT_TEST(persist, every_store_saves_into_the_db) {
