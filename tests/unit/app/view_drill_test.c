@@ -266,8 +266,8 @@ static size_t full_space_fixture(bt_case cases[BT_CASES_ALL_MAX], bt_corpus_row 
     for (size_t i = 0; i < count; i++) {
         char position[BT_DRILL_TEXT_MAX];
         bt_view_case_position(&cases[i], position);
-        rows[i] = heap_row(BT_SOLVER_CHERRY, bt_view_sheet_of(cases[i].orbit), position,
-                           "R U R' U'", "");
+        bt_sheet_class sheet = bt_view_sheet_of(cases[i].orbit);
+        rows[i] = heap_row(BT_SOLVER_CHERRY, sheet, position, "R U R' U'", "");
     }
     *rows_out = rows;
     return count;

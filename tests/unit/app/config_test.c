@@ -88,10 +88,10 @@ BT_TEST(config, from_json_rejects_malformed_and_missing_sections) {
 BT_TEST(config, from_json_rejects_a_malformed_render_section) {
     bt_app_config config;
     char error[96];
-    bt_json_value *bad_fps = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
-                                  "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
-                                  "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
-                                  "\"render\":{\"target_fps\":\"fast\"}}}");
+    bt_json_value *bad_fps =
+        parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,\"title\":\"w\"},"
+              "\"memo\":{\"cadence_ms\":1,\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+              "\"render\":{\"target_fps\":\"fast\"}}}");
     BT_CHECK_EQ(bt_app_config_from_json(bad_fps, &config, error, sizeof error), -1);
     BT_CHECK_EQ(strcmp(error, "config app section malformed: field target_fps"), 0);
     bt_json_free(bad_fps);
