@@ -90,6 +90,28 @@ BT_TEST(mutate, numeric_variants_and_suffixes) {
     bt_mut_mutants_free(&list);
 }
 
+BT_TEST(mutate, exponent_literals_are_float_tweaks) {
+    const char *src = "double a = 1.5e3;\ndouble b = 0x1p4;\nfloat c = 2e9f;\n";
+    bt_mut_mutant_list list;
+    BT_CHECK_EQ(bt_mut_enumerate("t.c", src, strlen(src), &list), 0);
+    size_t numeric = 0;
+    for (size_t i = 0; i < list.count; i++) {
+        if (list.items[i].op == BT_MUT_NUMERIC_TWEAK) {
+            numeric++;
+        }
+    }
+    BT_CHECK_EQ(numeric, 12ULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "1501.0", 1) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "1499.0", 1) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "0.0", 1) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0x1p4", "17.0", 2) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "0x1p4", "0.0", 2) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "2e9f", "0.0f", 3) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "2e9f", "1.0f", 3) != NULL);
+    BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "2e9f", "2000000001.0f", 3) != NULL);
+    bt_mut_mutants_free(&list);
+}
+
 BT_TEST(mutate, preprocessor_lines_stay_untouched) {
     const char *src = "#define N 3\n#define CMP(a, b) ((a) < (b))\nint f(void) {\n    return N + "
                       "3;\n}\n";

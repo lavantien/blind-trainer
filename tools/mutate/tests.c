@@ -844,6 +844,7 @@ void bt_test_mutate_stale_ledger_rows_are_dropped(void);
 void bt_test_mutate_comparison_swap_variants(void);
 void bt_test_mutate_negation_guard_mutants(void);
 void bt_test_mutate_numeric_variants_and_suffixes(void);
+void bt_test_mutate_exponent_literals_are_float_tweaks(void);
 void bt_test_mutate_preprocessor_lines_stay_untouched(void);
 void bt_test_mutate_statement_delete_skips_declarations_and_control(void);
 void bt_test_mutate_tokenizer_kinds_and_positions(void);
@@ -923,6 +924,8 @@ int bt_mutate_selftest(void) {
         {"mutate.mutant_ids_are_deterministic", bt_test_mutate_mutant_ids_are_deterministic},
         {"mutate.negation_guard_mutants", bt_test_mutate_negation_guard_mutants},
         {"mutate.numeric_variants_and_suffixes", bt_test_mutate_numeric_variants_and_suffixes},
+        {"mutate.exponent_literals_are_float_tweaks",
+         bt_test_mutate_exponent_literals_are_float_tweaks},
         {
             "mutate.orphan_scratch_is_judged_by_creation_time",
             bt_test_mutate_orphan_scratch_is_judged_by_creation_time,
