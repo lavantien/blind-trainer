@@ -128,6 +128,104 @@ void bt_gd_built_free(bt_gd_built *built) {
     built->rows_other_buffer = 0;
 }
 
+static const bt_gd_vendor_alg *best_mirror_alg(const bt_gd_case_entry *mirror) {
+    const bt_gd_vendor_alg *best = NULL;
+    for (size_t i = 0; i < mirror->vendor_count; i++) {
+        const bt_gd_vendor_alg *row = &mirror->vendor_algs[i];
+        if (!row->ok) {
+            continue;
+        }
+        if (best == NULL || row->htm < best->htm) {
+            best = row;
+        }
+    }
+    if (best == NULL && mirror->vendor_count > 0) {
+        best = &mirror->vendor_algs[0];
+    }
+    return best;
+}
+
+void bt_gd_derive_mirrored_inverses(bt_gd_cases_file *cases) {
+    BT_TRACE_ENTER("gd.build.derive_mirrored_inverses");
+    for (size_t i = 0; i < cases->count; i++) {
+        bt_gd_case_entry *entry = &cases->cases[i];
+        if (entry->vendor_count != 0) {
+            continue;
+        }
+        const bt_gd_case_entry *mirror = NULL;
+        for (size_t m = 0; m < cases->count; m++) {
+            const bt_gd_case_entry *candidate = &cases->cases[m];
+            if (strcmp(candidate->orbit, entry->orbit) == 0 && candidate->t1 == entry->t2 &&
+                candidate->t2 == entry->t1) {
+                mirror = candidate;
+                break;
+            }
+        }
+        if (mirror == NULL || mirror->vendor_count == 0) {
+            continue;
+        }
+        const bt_gd_vendor_alg *source = best_mirror_alg(mirror);
+        bt_orbit orbit = strcmp(entry->orbit, "edge") == 0 ? BT_ORBIT_EDGE : BT_ORBIT_CORNER;
+        bt_sheet_class sheet = orbit == BT_ORBIT_EDGE ? BT_SHEET_EDGE : BT_SHEET_CORNER;
+        char position[96];
+        snprintf(position, sizeof position, "%s-%s-%s", bt_scheme_name_of(buffer_sticker(orbit)),
+                 bt_scheme_name_of(entry->t1), bt_scheme_name_of(entry->t2));
+        bt_alg parsed;
+        bt_alg_init(&parsed);
+        if (!bt_alg_try_parse(source->alg, &parsed)) {
+            continue;
+        }
+        bt_alg inverse = bt_alg_inverse(&parsed);
+        bt_verdict verdict;
+        bt_verdict_init(&verdict);
+        bt_verify(&inverse, position, sheet, &verdict);
+        bool ok = bt_verdict_ok(&verdict);
+        char **problems = NULL;
+        size_t problem_count = 0;
+        char **notes = NULL;
+        size_t note_count = 0;
+        if (verdict_strings(&verdict, &problems, &problem_count, &notes, &note_count) != 0) {
+            bt_verdict_free(&verdict);
+            bt_alg_free(&inverse);
+            bt_alg_free(&parsed);
+            continue;
+        }
+        bt_verdict_free(&verdict);
+        bt_strbuf text;
+        bt_strbuf_init(&text, 0);
+        bt_alg_format(&inverse, &text);
+        bt_gd_vendor_alg derived;
+        memset(&derived, 0, sizeof derived);
+        derived.solver = _strdup(source->solver);
+        derived.rowid = source->rowid;
+        derived.position = _strdup(position);
+        derived.alg = _strdup(text.data);
+        derived.qtm = bt_alg_qtm(&inverse);
+        derived.htm = bt_alg_htm(&inverse);
+        derived.ok = ok;
+        derived.problems = problems;
+        derived.problem_count = problem_count;
+        derived.notes = notes;
+        derived.note_count = note_count;
+        derived.commutator = _strdup(text.data);
+        derived.recon_link = _strdup(source->recon_link);
+        derived.youtube_link = _strdup(source->youtube_link);
+        bt_gd_vendor_alg *grown = realloc(entry->vendor_algs, sizeof(bt_gd_vendor_alg));
+        if (grown != NULL) {
+            entry->vendor_algs = grown;
+            entry->vendor_algs[0] = derived;
+            entry->vendor_count = 1;
+            entry->covered = true;
+        } else {
+            bt_gd_vendor_alg_free(&derived);
+        }
+        bt_strbuf_free(&text);
+        bt_alg_free(&inverse);
+        bt_alg_free(&parsed);
+    }
+    BT_TRACE_EXIT("gd.build.derive_mirrored_inverses");
+}
+
 void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
     BT_TRACE_ENTER("gd.build.build");
     memset(out, 0, sizeof *out);

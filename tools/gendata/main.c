@@ -172,6 +172,7 @@ static int run(bt_gd_errors *errors) {
     size_t edge_added = 0;
     size_t corner_added = 0;
     bt_gd_synthesize(&built.cases, &limits, &scoring, &edge_added, &corner_added);
+    bt_gd_derive_mirrored_inverses(&built.cases);
     bt_json_value *cases_value = bt_gd_cases_file_to_json(&built.cases);
     bt_json_value *specials_value = bt_gd_specials_file_to_json(&built.specials);
     bt_strbuf cases_text;
