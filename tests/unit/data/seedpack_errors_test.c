@@ -44,60 +44,76 @@ BT_TEST(seedpack_errors, registry_rejects_each_malformed_shape) {
     } cases[] = {
         {"{}", BT_SEED_ERR_REGISTRY_JSON},
         {"[1]", BT_SEED_ERR_REGISTRY_JSON},
-        {"[{\"file\":1,\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":1,\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":1,\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":1,\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":1,\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":1,\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":1,\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":1,\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
-         "\"expected_rows\":\"1\"}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
+            "\"expected_rows\":\"1\"}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"extra\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"extra\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":\"x\","
-         "\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":\"x\","
+            "\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":8,"
-         "\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":8,"
+            "\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":[],"
-         "\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":[],"
+            "\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":[2,9],"
-         "\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"n\":[2,9],"
+            "\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"a/b.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
-         "\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"a/b.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
+            "\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"..\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"..\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
-         BT_SEED_ERR_REGISTRY_RULE,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"\",\"method\":\"m\",\"stage\":\"s\",\"expected_rows\":1}]",
+            BT_SEED_ERR_REGISTRY_RULE,
         },
-        {"[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
-         "\"expected_rows\":-1}]",
-         BT_SEED_ERR_REGISTRY_JSON,
+        {
+            "[{\"file\":\"a.tsv\",\"event\":\"e\",\"method\":\"m\",\"stage\":\"s\","
+            "\"expected_rows\":-1}]",
+            BT_SEED_ERR_REGISTRY_JSON,
         },
     };
     for (int i = 0; i < 18; i++) {
@@ -108,8 +124,9 @@ BT_TEST(seedpack_errors, registry_rejects_each_malformed_shape) {
         BT_CHECK(err.kind == cases[i].kind);
         BT_CHECK(entries == NULL && count == 0);
     }
-    const char *good = "[{\"file\":\"a.tsv\",\"event\":\"3x3\",\"method\":\"cfop\",\"stage\":\"pll\","
-                       "\"n\":[3,5],\"expected_rows\":2}]";
+    const char *good =
+        "[{\"file\":\"a.tsv\",\"event\":\"3x3\",\"method\":\"cfop\",\"stage\":\"pll\","
+        "\"n\":[3,5],\"expected_rows\":2}]";
     bt_pack_entry *entries = NULL;
     size_t count = 0;
     bt_seed_error err;
@@ -296,30 +313,14 @@ BT_TEST(seedpack_errors, normalizer_cube_dialect_shapes) {
 
 BT_TEST(seedpack_errors, normalizer_cube_rejects_each_bad_shape) {
     const char *bad[] = {
-        "8R",
-        "[R U*3",
-        "[R [U]*2]",
-        "[R U]3",
-        "[R U]*3 x",
-        "(R)0",
-        "(R)100",
-        "(R",
-        ") R",
-        "R )",
-        "(",
+        "8R",     "[R U*3", "[R [U]*2]", "[R U]3", "[R U]*3 x", "(R)0",
+        "(R)100", "(R",     ") R",       "R )",    "(",
     };
     bt_normalize_error_kind kinds[] = {
-        BT_NORMALIZE_ERR_UNKNOWN_TOKEN,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_BAD_REPEAT,
-        BT_NORMALIZE_ERR_UNBALANCED,
-        BT_NORMALIZE_ERR_UNBALANCED,
-        BT_NORMALIZE_ERR_UNBALANCED,
-        BT_NORMALIZE_ERR_UNBALANCED,
+        BT_NORMALIZE_ERR_UNKNOWN_TOKEN, BT_NORMALIZE_ERR_BAD_REPEAT, BT_NORMALIZE_ERR_BAD_REPEAT,
+        BT_NORMALIZE_ERR_BAD_REPEAT,    BT_NORMALIZE_ERR_BAD_REPEAT, BT_NORMALIZE_ERR_BAD_REPEAT,
+        BT_NORMALIZE_ERR_BAD_REPEAT,    BT_NORMALIZE_ERR_UNBALANCED, BT_NORMALIZE_ERR_UNBALANCED,
+        BT_NORMALIZE_ERR_UNBALANCED,    BT_NORMALIZE_ERR_UNBALANCED,
     };
     for (int i = 0; i < 11; i++) {
         bt_normalized normalized;
