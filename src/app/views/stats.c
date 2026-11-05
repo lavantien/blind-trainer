@@ -4,6 +4,7 @@
 #include "app/views/frame.h"
 #include "app/views/state.h"
 #include "app/window.h"
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include "raylib.h"
@@ -90,7 +91,7 @@ size_t bt_stats_streak_of(const bt_stores *stores) {
         BT_TRACE_EXIT("app.stats_streak_of");
         return 0;
     }
-    bt_stats_card_order *order = malloc(stores->srs.count * sizeof *order);
+    bt_stats_card_order *order = bt_malloc(stores->srs.count * sizeof *order);
     if (order == NULL) {
         BT_TRACE_FAIL("app.stats_streak_of", "out of memory");
         BT_TRACE_EXIT("app.stats_streak_of");
@@ -105,7 +106,7 @@ size_t bt_stats_streak_of(const bt_stores *stores) {
     for (size_t i = 0; i < stores->srs.count; i++) {
         review_total += stores->srs.items[i].card.review_count;
     }
-    bt_stats_review *reviews = review_total == 0 ? NULL : malloc(review_total * sizeof *reviews);
+    bt_stats_review *reviews = review_total == 0 ? NULL : bt_malloc(review_total * sizeof *reviews);
     if (reviews == NULL && review_total > 0) {
         free(order);
         BT_TRACE_FAIL("app.stats_streak_of", "out of memory");
@@ -158,7 +159,7 @@ int bt_stats_due_events(const bt_case_cards *cards, long long now_day, bt_stats_
         if (slot == *count) {
             if (*count == cap) {
                 size_t grown_cap = cap == 0 ? 8 : cap * 2;
-                bt_stats_due *grown = realloc(*out, grown_cap * sizeof *grown);
+                bt_stats_due *grown = bt_realloc(*out, grown_cap * sizeof *grown);
                 if (grown == NULL) {
                     free(*out);
                     *out = NULL;
@@ -186,10 +187,10 @@ void bt_stats_snapshot_make(const bt_stores *stores, const bt_case_cards *cards,
     memset(out, 0, sizeof *out);
     out->solves = stores->solves.count;
     size_t solves = stores->solves.count;
-    long long *memo = malloc((solves + 1) * sizeof *memo);
-    long long *exec = malloc((solves + 1) * sizeof *exec);
-    long long *memo_copy = malloc((solves + 1) * sizeof *memo_copy);
-    long long *exec_copy = malloc((solves + 1) * sizeof *exec_copy);
+    long long *memo = bt_malloc((solves + 1) * sizeof *memo);
+    long long *exec = bt_malloc((solves + 1) * sizeof *exec);
+    long long *memo_copy = bt_malloc((solves + 1) * sizeof *memo_copy);
+    long long *exec_copy = bt_malloc((solves + 1) * sizeof *exec_copy);
     if (memo == NULL || exec == NULL || memo_copy == NULL || exec_copy == NULL) {
         free(memo);
         free(exec);
@@ -246,7 +247,7 @@ bt_stats_block *bt_view_stats_blocks(const bt_stats_snapshot *snap, size_t *coun
     BT_TRACE_ENTER("app.view_stats_blocks");
     const bt_theme *theme = bt_theme_table();
     size_t total = BT_STATS_LAYOUT_BLOCKS + snap->due_event_count;
-    bt_stats_block *blocks = total == 0 ? NULL : malloc(total * sizeof *blocks);
+    bt_stats_block *blocks = total == 0 ? NULL : bt_malloc(total * sizeof *blocks);
     if (blocks == NULL) {
         *count = 0;
         BT_TRACE_FAIL("app.view_stats_blocks", "out of memory");

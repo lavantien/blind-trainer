@@ -8,6 +8,7 @@
 
 #include "app/views/drill_card.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 #include "core/expand.h"
@@ -66,7 +67,7 @@ int bt_drill_push_split(bt_drill_session *session, int is_a, float secs) {
     BT_TRACE_ENTER("app.drill_push_split");
     if (session->split_count == session->split_cap) {
         size_t cap = session->split_cap == 0 ? 8 : session->split_cap * 2;
-        bt_drill_split *grown = realloc(session->splits, cap * sizeof *grown);
+        bt_drill_split *grown = bt_realloc(session->splits, cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.drill_push_split", "out of memory at %zu", session->split_count);
             BT_TRACE_EXIT("app.drill_push_split");

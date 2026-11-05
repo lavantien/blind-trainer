@@ -1,5 +1,6 @@
 #include "app/persist.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 
@@ -82,7 +83,7 @@ static int str_list_grow(bt_str_list *list) {
         return 0;
     }
     size_t cap = list->cap == 0 ? 8 : list->cap * 2;
-    char **grown = realloc(list->items, cap * sizeof *grown);
+    char **grown = bt_realloc(list->items, cap * sizeof *grown);
     if (grown == NULL) {
         BT_TRACE_FAIL("app.str_list", "growth to %zu failed", cap);
         return -1;
@@ -94,7 +95,7 @@ static int str_list_grow(bt_str_list *list) {
 
 static char *str_copy(const char *text) {
     size_t len = strlen(text);
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy != NULL) {
         memcpy(copy, text, len + 1);
     }
@@ -268,7 +269,7 @@ static int packs_grow(bt_seed_repo *repo) {
         return 0;
     }
     size_t cap = repo->pack_cap == 0 ? 4 : repo->pack_cap * 2;
-    bt_pack_entry *grown = realloc(repo->packs, cap * sizeof *grown);
+    bt_pack_entry *grown = bt_realloc(repo->packs, cap * sizeof *grown);
     if (grown == NULL) {
         BT_TRACE_FAIL("app.load_seeds", "pack growth to %zu failed", cap);
         return -1;

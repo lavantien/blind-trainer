@@ -8,6 +8,7 @@
 
 #include "raylib.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -100,7 +101,7 @@ void bt_view_menu_title(const bt_view_menu_row *row, char out[BT_VIEW_MENU_TEXT_
 char *bt_view_menu_warning_context(const bt_str_list *warnings) {
     BT_TRACE_ENTER("app.view_menu_warning_context");
     size_t cap = 64;
-    char *joined = malloc(cap);
+    char *joined = bt_malloc(cap);
     if (joined == NULL) {
         BT_TRACE_FAIL("app.view_menu_warning_context", "out of memory");
         BT_TRACE_EXIT("app.view_menu_warning_context");
@@ -112,7 +113,7 @@ char *bt_view_menu_warning_context(const bt_str_list *warnings) {
         const char *sep = i > 0 ? " | " : "";
         size_t need = at + strlen(sep) + strlen(warnings->items[i]) + 1;
         if (need > cap) {
-            char *grown = realloc(joined, need);
+            char *grown = bt_realloc(joined, need);
             if (grown == NULL) {
                 free(joined);
                 BT_TRACE_FAIL("app.view_menu_warning_context", "out of memory");

@@ -1,5 +1,6 @@
 #include "app/window_focus.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -322,7 +323,7 @@ unsigned long bt_app_focus_current_pid(void) {
 
 void *bt_app_focus_watch_start(const char *title, unsigned long pid) {
     BT_TRACE_ENTER("app.focus_watch_start");
-    bt_focus_watch *watch = malloc(sizeof *watch);
+    bt_focus_watch *watch = bt_malloc(sizeof *watch);
     if (watch == NULL) {
         BT_TRACE_FAIL("app.focus_watch_start", "allocation failed");
         BT_TRACE_EXIT("app.focus_watch_start");

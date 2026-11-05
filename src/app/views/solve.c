@@ -10,6 +10,7 @@
 
 #include "raylib.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -36,11 +37,13 @@ int bt_solve_outcome_push_broken(bt_solve_outcome *outcome, const char *text) {
         BT_TRACE_FAIL("app.solve_outcome_push_broken", "broken list full at %s", text);
         return -1;
     }
-    char *copy = _strdup(text);
+    size_t text_len = strlen(text) + 1;
+    char *copy = bt_malloc(text_len);
     if (copy == NULL) {
         BT_TRACE_FAIL("app.solve_outcome_push_broken", "out of memory");
         return -1;
     }
+    memcpy(copy, text, text_len);
     outcome->broken[outcome->broken_count++] = copy;
     return 0;
 }
@@ -352,7 +355,7 @@ void bt_view_solve_review_parts(const bt_solve_session *session, bt_solve_view_p
         broken_count = session->finished.outcome.broken_count;
     }
     size_t rows = 4 + broken_count;
-    char (*lines)[BT_SOLVE_TEXT_MAX] = malloc(rows * sizeof *lines);
+    char (*lines)[BT_SOLVE_TEXT_MAX] = bt_malloc(rows * sizeof *lines);
     if (lines == NULL) {
         BT_TRACE_FAIL("app.solve_review_parts", "out of memory");
         memset(out, 0, sizeof *out);
@@ -402,7 +405,7 @@ void bt_view_solve_app_free(bt_view_solve_app_state *app) {
 bt_view_solve_app_state *bt_view_solve_app(void) {
     BT_TRACE_ENTER("app.solve_app");
     if (shared_solve_app == NULL) {
-        shared_solve_app = malloc(sizeof *shared_solve_app);
+        shared_solve_app = bt_malloc(sizeof *shared_solve_app);
         if (shared_solve_app == NULL) {
             BT_TRACE_FAIL("app.solve_app", "out of memory");
             BT_TRACE_EXIT("app.solve_app");

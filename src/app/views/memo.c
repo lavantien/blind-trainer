@@ -8,6 +8,7 @@
 
 #include "app/views/drill.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "scheme/scheme.h"
 
@@ -64,9 +65,12 @@ void bt_memo_build_tokens(const bt_memo *memo, const bt_syllable_book *book, bt_
             const char *syllable = bt_syllable_book_for(
                 book, token->orbit == BT_ORBIT_EDGE ? "edge" : "corner", token->letters);
             if (syllable != NULL) {
-                token->syllable = _strdup(syllable);
+                size_t syllable_len = strlen(syllable) + 1;
+                token->syllable = bt_malloc(syllable_len);
                 if (token->syllable == NULL) {
                     BT_TRACE_FAIL("app.memo_build_tokens", "out of memory");
+                } else {
+                    memcpy(token->syllable, syllable, syllable_len);
                 }
             }
             token->image = bt_views_image_for(token->letters);

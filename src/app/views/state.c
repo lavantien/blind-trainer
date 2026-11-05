@@ -3,6 +3,7 @@
 #include "app/views/images.h"
 
 #include "app/config.h"
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 
@@ -63,7 +64,7 @@ static bt_app_views *shared_views;
 bt_app_views *bt_app_views_shared(void) {
     BT_TRACE_ENTER("app.views_shared");
     if (shared_views == NULL) {
-        shared_views = malloc(sizeof *shared_views);
+        shared_views = bt_malloc(sizeof *shared_views);
         if (shared_views == NULL) {
             BT_TRACE_FAIL("app.views_shared", "out of memory");
             BT_TRACE_EXIT("app.views_shared");
@@ -117,16 +118,18 @@ static int syllable_upsert(bt_syllable_book *book, const char *orbit, const char
                            const char *syllable) {
     for (size_t i = 0; i < book->count; i++) {
         if (syllable_entry_matches(&book->items[i], orbit, letters)) {
-            char *copy = _strdup(syllable);
+            size_t syllable_len = strlen(syllable) + 1;
+            char *copy = bt_malloc(syllable_len);
             if (copy == NULL) {
                 return -1;
             }
+            memcpy(copy, syllable, syllable_len);
             free(book->items[i].syllable);
             book->items[i].syllable = copy;
             return 0;
         }
     }
-    bt_syllable_entry *grown = realloc(book->items, (book->count + 1) * sizeof *book->items);
+    bt_syllable_entry *grown = bt_realloc(book->items, (book->count + 1) * sizeof *book->items);
     if (grown == NULL) {
         return -1;
     }
@@ -134,10 +137,12 @@ static int syllable_upsert(bt_syllable_book *book, const char *orbit, const char
     bt_syllable_entry *entry = &book->items[book->count];
     snprintf(entry->orbit, sizeof entry->orbit, "%s", orbit);
     snprintf(entry->letters, sizeof entry->letters, "%.2s", letters);
-    entry->syllable = _strdup(syllable);
+    size_t syllable_len = strlen(syllable) + 1;
+    entry->syllable = bt_malloc(syllable_len);
     if (entry->syllable == NULL) {
         return -1;
     }
+    memcpy(entry->syllable, syllable, syllable_len);
     book->count += 1;
     return 0;
 }

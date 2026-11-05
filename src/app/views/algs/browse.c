@@ -1,5 +1,6 @@
 #include "app/views/algs/browse.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -9,7 +10,7 @@ enum { BT_ALGS_BROWSE_EVENTS_MAX = 64 };
 
 static char *dup_or_empty(const char *text) {
     const char *source = text != NULL ? text : "";
-    char *out = malloc(strlen(source) + 1);
+    char *out = bt_malloc(strlen(source) + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -22,7 +23,7 @@ static void node_set_label(bt_repo_node *node, const char *label) {
 }
 
 static void node_push_child(bt_repo_node *node, const bt_repo_node *child) {
-    bt_repo_node *grown = realloc(node->children, (node->children_count + 1) * sizeof *grown);
+    bt_repo_node *grown = bt_realloc(node->children, (node->children_count + 1) * sizeof *grown);
     if (grown == NULL) {
         BT_TRACE_FAIL("app.repo_node_push", "out of memory");
         return;
@@ -52,7 +53,7 @@ void bt_repo_node_free(bt_repo_node *node) {
 void bt_repo_browser_default(bt_repo_browser *browser) {
     BT_TRACE_ENTER("app.repo_browser_default");
     memset(browser, 0, sizeof *browser);
-    browser->arms = malloc(sizeof *browser->arms);
+    browser->arms = bt_malloc(sizeof *browser->arms);
     if (browser->arms == NULL) {
         BT_TRACE_FAIL("app.repo_browser_default", "out of memory");
         BT_TRACE_EXIT("app.repo_browser_default");
@@ -272,14 +273,17 @@ bt_repo_node *bt_repo_arms(const bt_pack_entry *packs, size_t pack_count, const 
                 merge_method(&node, group[i], rows, row_count);
             }
         }
-        bt_repo_node *grown = realloc(arms, (capacity + 1) * sizeof *grown);
+        bt_repo_node *grown = bt_realloc(arms, (capacity + 1) * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.repo_arms", "out of memory");
+            bt_repo_node_free(&node);
             arms = NULL;
             capacity = 0;
             break;
         }
         arms = grown;
+        base.arms = grown;
+        base.arm_count = capacity + 1;
         arms[capacity] = node;
         capacity++;
     }
@@ -526,7 +530,7 @@ static bt_repo_browser *shared_repo_browser;
 bt_repo_browser *bt_view_algs_repo(void) {
     BT_TRACE_ENTER("app.algs_repo");
     if (shared_repo_browser == NULL) {
-        shared_repo_browser = malloc(sizeof *shared_repo_browser);
+        shared_repo_browser = bt_malloc(sizeof *shared_repo_browser);
         if (shared_repo_browser == NULL) {
             BT_TRACE_FAIL("app.algs_repo", "out of memory");
             BT_TRACE_EXIT("app.algs_repo");

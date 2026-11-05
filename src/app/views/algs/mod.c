@@ -8,6 +8,7 @@
 #include "app/views/drill.h"
 #include "app/views/frame.h"
 #include "app/window.h"
+#include "common/alloc.h"
 #include "common/space.h"
 
 #include "raylib.h"
@@ -150,7 +151,7 @@ size_t bt_view_algs_case_rows_dyn(const bt_corpus *corpus, const bt_case *case_i
         if (corpus->rows[i].sheet == sheet && strcmp(corpus->rows[i].position, position) == 0) {
             if (count == cap) {
                 size_t grown_cap = cap == 0 ? 16 : cap * 2;
-                const bt_corpus_row **grown = realloc(rows, grown_cap * sizeof *grown);
+                const bt_corpus_row **grown = bt_realloc(rows, grown_cap * sizeof *grown);
                 if (grown == NULL) {
                     free(rows);
                     BT_TRACE_FAIL("app.algs_case_rows_dyn", "out of memory");
@@ -341,7 +342,7 @@ void bt_view_algs_app_init(bt_view_algs_app_state *app) {
 bt_view_algs_app_state *bt_view_algs_app(void) {
     BT_TRACE_ENTER("app.algs_app");
     if (shared_algs_app == NULL) {
-        shared_algs_app = malloc(sizeof *shared_algs_app);
+        shared_algs_app = bt_malloc(sizeof *shared_algs_app);
         if (shared_algs_app == NULL) {
             BT_TRACE_FAIL("app.algs_app", "out of memory");
             BT_TRACE_EXIT("app.algs_app");
@@ -544,7 +545,7 @@ static int push_detail(bt_view_algs_detail_line **out, size_t *cap, size_t *coun
                        bt_algs_style style, const char *text, bt_theme_color color) {
     if (*count == *cap) {
         size_t grown_cap = *cap == 0 ? 16 : *cap * 2;
-        bt_view_algs_detail_line *grown = realloc(*out, grown_cap * sizeof *grown);
+        bt_view_algs_detail_line *grown = bt_realloc(*out, grown_cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.algs_detail_lines", "out of memory");
             return -1;
@@ -767,7 +768,7 @@ void bt_view_algs_draw(const bt_app_ctx *ctx, const void *font_regular, const vo
             bt_algs_span_measure span_measure = {regular_font, theme->font_alg * theme->root_rem};
             detail_count = bt_view_algs_pack_spans(detail_lines, detail_count, column.width,
                                                    bt_algs_span_width, &span_measure);
-            float *line_rems = malloc(detail_count * sizeof *line_rems);
+            float *line_rems = bt_malloc(detail_count * sizeof *line_rems);
             if (line_rems == NULL) {
                 BT_TRACE_FAIL("app.view_algs_draw", "out of memory");
                 free(detail_lines);

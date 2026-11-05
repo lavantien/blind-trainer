@@ -5,6 +5,7 @@
 #include "app/views/drill.h"
 #include "app/views/memo.h"
 #include "app/views/solve.h"
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "scheme/memo.h"
 #include "scheme/pairs.h"
@@ -99,7 +100,7 @@ void bt_usage_tour_set_actions(bt_usage_tour *tour, const bt_usage_action *actio
         while (cap < count) {
             cap *= 2;
         }
-        bt_usage_action *grown = malloc(cap * sizeof *grown);
+        bt_usage_action *grown = bt_malloc(cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.usage_tour_set_actions", "allocation of %zu actions failed", cap);
             BT_TRACE_EXIT("app.usage_tour_set_actions");

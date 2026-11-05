@@ -1,5 +1,6 @@
 #include "app/config.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -182,7 +183,7 @@ int bt_app_load_config_value(const char *path, bt_json_value **out, char *error,
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         snprintf(error, error_len, "cannot read config %s", shown);

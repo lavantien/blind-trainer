@@ -3,6 +3,7 @@
 #include "app/boot.h"
 #include "app/views/drill.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "data/db.h"
 #include "data/notation.h"
@@ -187,7 +188,7 @@ static int geometry_grid(bt_pz_engine engine, const char *text, const char *even
     void *inverse = bt_pz_alg_create();
     engine.invert_alg(&engine, alg, inverse);
     bt_pz_alg_destroy(alg);
-    char *state = malloc(engine.state_size);
+    char *state = bt_malloc(engine.state_size);
     if (state == NULL) {
         bt_pz_alg_destroy(inverse);
         snprintf(error, error_len, "%s", "out of memory");
@@ -466,7 +467,7 @@ void bt_drill_case_queue_free(bt_drill_case_queue *queue) {
 int bt_drill_case_queue_push(bt_drill_case_queue *queue, const bt_drill_case *case_drill) {
     if (queue->count == queue->cap) {
         size_t cap = queue->cap == 0 ? BT_CASE_DRILL_QUEUE_INIT_CAP : queue->cap * 2;
-        bt_drill_case *grown = realloc(queue->items, cap * sizeof *grown);
+        bt_drill_case *grown = bt_realloc(queue->items, cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.case_drill_queue_push", "out of memory");
             return -1;
@@ -484,7 +485,7 @@ int bt_drill_case_queue_set(bt_drill_case_queue *queue, const bt_drill_case *cas
         while (cap < count) {
             cap *= 2;
         }
-        bt_drill_case *grown = realloc(queue->items, cap * sizeof *grown);
+        bt_drill_case *grown = bt_realloc(queue->items, cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.case_drill_queue_set", "out of memory");
             return -1;
@@ -510,7 +511,7 @@ void bt_view_case_drill_app_init(bt_view_case_drill_app_state *app) {
 bt_view_case_drill_app_state *bt_view_case_drill_app(void) {
     BT_TRACE_ENTER("app.case_drill_app_case_drill");
     if (shared_case_drill_app == NULL) {
-        shared_case_drill_app = malloc(sizeof *shared_case_drill_app);
+        shared_case_drill_app = bt_malloc(sizeof *shared_case_drill_app);
         if (shared_case_drill_app == NULL) {
             BT_TRACE_FAIL("app.case_drill_app_case_drill", "out of memory");
             BT_TRACE_EXIT("app.case_drill_app_case_drill");

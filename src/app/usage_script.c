@@ -1,5 +1,6 @@
 #include "app/usage_script.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include "raylib.h"
@@ -19,7 +20,7 @@ static void begin(void) {
 static void emit(bt_usage_action action) {
     if (g_at == g_cap) {
         size_t next = g_cap == 0 ? 32 : g_cap * 2;
-        bt_usage_action *grown = realloc(g_actions, next * sizeof *grown);
+        bt_usage_action *grown = bt_realloc(g_actions, next * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("app.usage_script", "allocation of %zu actions failed", next);
             return;
