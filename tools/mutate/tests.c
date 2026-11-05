@@ -192,18 +192,15 @@ void enumerate_fixture(bt_mut_mutant_list *list) {
     free(text);
 }
 
-static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
-    char base[BT_MUT_PATH_MAX];
-    snprintf(base, sizeof base, "%s/build/obj", g_root);
-    char env_path[BT_MUT_PATH_MAX];
-    snprintf(env_path, sizeof env_path, "%s/build/env.json", g_root);
+static int obj_root_from(const char *env_path, const char *base, const char *root,
+                         char out[BT_MUT_PATH_MAX]) {
     bt_json_value *env = NULL;
     if (bt_config_try_load(env_path, &env) == 0) {
         const bt_json_value *recorded = bt_config_value(env, "obj_root");
         int rc = -1;
         if (recorded != NULL && recorded->type == BT_JSON_STRING) {
             char recorded_dir[BT_MUT_PATH_MAX];
-            snprintf(recorded_dir, BT_MUT_PATH_MAX, "%s/%s", g_root, recorded->as.string);
+            snprintf(recorded_dir, BT_MUT_PATH_MAX, "%s/%s", root, recorded->as.string);
             DWORD attrs = GetFileAttributesA(recorded_dir);
             if (attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY)) {
                 snprintf(out, BT_MUT_PATH_MAX, "%s", recorded_dir);
@@ -240,6 +237,14 @@ static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
     }
     snprintf(out, BT_MUT_PATH_MAX, "%s/%s", base, found);
     return 0;
+}
+
+static int selftest_obj_root(char out[BT_MUT_PATH_MAX]) {
+    char base[BT_MUT_PATH_MAX];
+    snprintf(base, sizeof base, "%s/build/obj", g_root);
+    char env_path[BT_MUT_PATH_MAX];
+    snprintf(env_path, sizeof env_path, "%s/build/env.json", g_root);
+    return obj_root_from(env_path, base, g_root, out);
 }
 
 bt_mut_row row_for(const char *ledger_path, const char *id) {
@@ -600,6 +605,61 @@ static void scratch_case_dir(const char *slot, char dir[BT_MUT_PATH_MAX]) {
     bt_test_mkdirs(dir);
 }
 
+BT_TEST(mutate, obj_root_prefers_the_env_record_and_scans_as_fallback) {
+    ensure_setup();
+    char root[BT_MUT_PATH_MAX];
+    snprintf(root, BT_MUT_PATH_MAX, "%s/objroot", g_dir);
+    bt_mut_rmtree(root);
+    bt_test_mkdirs(root);
+    char recorded_dir[BT_MUT_PATH_MAX];
+    snprintf(recorded_dir, BT_MUT_PATH_MAX, "%s/recorded/a1", root);
+    bt_test_mkdirs(recorded_dir);
+    char single[BT_MUT_PATH_MAX];
+    snprintf(single, BT_MUT_PATH_MAX, "%s/single", root);
+    bt_test_mkdirs(single);
+    char only_child[BT_MUT_PATH_MAX];
+    snprintf(only_child, BT_MUT_PATH_MAX, "%s/only", single);
+    bt_test_mkdirs(only_child);
+    char doubled[BT_MUT_PATH_MAX];
+    snprintf(doubled, BT_MUT_PATH_MAX, "%s/doubled", root);
+    char first[BT_MUT_PATH_MAX];
+    char second[BT_MUT_PATH_MAX];
+    snprintf(first, BT_MUT_PATH_MAX, "%s/one", doubled);
+    snprintf(second, BT_MUT_PATH_MAX, "%s/two", doubled);
+    bt_test_mkdirs(first);
+    bt_test_mkdirs(second);
+    char empty[BT_MUT_PATH_MAX];
+    snprintf(empty, BT_MUT_PATH_MAX, "%s/empty", root);
+    bt_test_mkdirs(empty);
+    char env_ok[BT_MUT_PATH_MAX];
+    char env_number[BT_MUT_PATH_MAX];
+    char env_absent[BT_MUT_PATH_MAX];
+    char env_missing[BT_MUT_PATH_MAX];
+    snprintf(env_ok, BT_MUT_PATH_MAX, "%s/env-ok.json", root);
+    snprintf(env_number, BT_MUT_PATH_MAX, "%s/env-number.json", root);
+    snprintf(env_absent, BT_MUT_PATH_MAX, "%s/env-absent.json", root);
+    snprintf(env_missing, BT_MUT_PATH_MAX, "%s/env-missing.json", root);
+    const char *ok_body = "{\"obj_root\": \"recorded/a1\"}";
+    const char *number_body = "{\"obj_root\": 5}";
+    const char *absent_body = "{\"obj_root\": \"no-such\"}";
+    bt_mut_write_file(env_ok, ok_body, strlen(ok_body));
+    bt_mut_write_file(env_number, number_body, strlen(number_body));
+    bt_mut_write_file(env_absent, absent_body, strlen(absent_body));
+    char got[BT_MUT_PATH_MAX];
+    BT_CHECK_EQ(obj_root_from(env_ok, single, root, got), 0);
+    MUT_CHECK(strcmp(got, recorded_dir) == 0, "env record got %s", got);
+    BT_CHECK_EQ(obj_root_from(env_number, single, root, got), 0);
+    MUT_CHECK(strstr(got, "/single/only") != NULL, "non-string record falls back, got %s", got);
+    BT_CHECK_EQ(obj_root_from(env_absent, single, root, got), 0);
+    MUT_CHECK(strstr(got, "/single/only") != NULL, "missing recorded dir falls back, got %s", got);
+    BT_CHECK_EQ(obj_root_from(env_missing, single, root, got), 0);
+    MUT_CHECK(strstr(got, "/single/only") != NULL, "missing env file falls back, got %s", got);
+    BT_CHECK_EQ(obj_root_from(env_absent, doubled, root, got), -1);
+    BT_CHECK_EQ(obj_root_from(env_absent, empty, root, got), -1);
+    BT_CHECK_EQ(obj_root_from(env_absent, "no-such-base", root, got), -1);
+    bt_mut_rmtree(root);
+}
+
 BT_TEST(mutate, scratch_root_passes_through_and_falls_back_to_temp) {
     char out[BT_MUT_PATH_MAX];
     BT_CHECK_EQ(bt_mut_scratch_root("E:/custom/root", out), 0);
@@ -933,6 +993,10 @@ int bt_mutate_selftest(void) {
         {
             "mutate.preprocessor_lines_stay_untouched",
             bt_test_mutate_preprocessor_lines_stay_untouched,
+        },
+        {
+            "mutate.obj_root_prefers_the_env_record_and_scans_as_fallback",
+            bt_test_mutate_obj_root_prefers_the_env_record_and_scans_as_fallback,
         },
         {
             "mutate.scratch_root_passes_through_and_falls_back_to_temp",
