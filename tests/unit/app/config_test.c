@@ -85,6 +85,47 @@ BT_TEST(config, from_json_rejects_malformed_and_missing_sections) {
     bt_json_free(missing);
 }
 
+BT_TEST(config, from_json_rejects_a_malformed_render_section) {
+    bt_app_config config;
+    char error[96];
+    bt_json_value *bad_fps = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
+                                  "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
+                                  "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+                                  "\"render\":{\"target_fps\":\"fast\"}}}");
+    BT_CHECK_EQ(bt_app_config_from_json(bad_fps, &config, error, sizeof error), -1);
+    BT_CHECK_EQ(strcmp(error, "config app section malformed: field target_fps"), 0);
+    bt_json_free(bad_fps);
+    bt_json_value *negative = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
+                                    "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
+                                    "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+                                    "\"render\":{\"target_fps\":-1}}}");
+    BT_CHECK_EQ(bt_app_config_from_json(negative, &config, error, sizeof error), -1);
+    BT_CHECK_EQ(strcmp(error, "config app section malformed: field target_fps"), 0);
+    bt_json_free(negative);
+    bt_json_value *bad_vsync = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
+                                     "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
+                                     "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+                                     "\"render\":{\"vsync\":\"on\"}}}");
+    BT_CHECK_EQ(bt_app_config_from_json(bad_vsync, &config, error, sizeof error), -1);
+    BT_CHECK_EQ(strcmp(error, "config app section malformed: field vsync"), 0);
+    bt_json_free(bad_vsync);
+    bt_json_value *bad_section = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
+                                       "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
+                                       "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+                                       "\"render\":60}}");
+    BT_CHECK_EQ(bt_app_config_from_json(bad_section, &config, error, sizeof error), -1);
+    BT_CHECK_EQ(strcmp(error, "config app section malformed: render"), 0);
+    bt_json_free(bad_section);
+    bt_json_value *good = parse("{\"app\":{\"window\":{\"width\":1,\"height\":2,"
+                                "\"title\":\"w\"},\"memo\":{\"cadence_ms\":1,"
+                                "\"mode\":\"images\"},\"drill\":{\"reps\":1},"
+                                "\"render\":{\"target_fps\":144,\"vsync\":true}}}");
+    BT_CHECK_EQ(bt_app_config_from_json(good, &config, error, sizeof error), 0);
+    BT_CHECK_EQ(config.render.target_fps, 144);
+    BT_CHECK_EQ(config.render.vsync, 1);
+    bt_json_free(good);
+}
+
 BT_TEST(config, display_path_relativizes_only_inside_the_workspace) {
     char root[BT_PATH_MAX];
     bt_paths_workspace_root(root);

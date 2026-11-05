@@ -115,10 +115,27 @@ int bt_app_config_from_json(const bt_json_value *value, bt_app_config *out, char
         return -1;
     }
     const bt_json_value *render = bt_json_get(section, "render");
-    if (render != NULL && render->type == BT_JSON_OBJECT) {
-        field_uint(render, "target_fps", &parsed.render.target_fps, error, error_len);
+    if (render != NULL) {
+        if (render->type != BT_JSON_OBJECT) {
+            snprintf(error, error_len, "config app section malformed: render");
+            BT_TRACE_FAIL("app.config_from_json", "render section invalid");
+            BT_TRACE_EXIT("app.config_from_json");
+            return -1;
+        }
+        const bt_json_value *fps = bt_json_get(render, "target_fps");
+        if (fps != NULL &&
+            field_uint(render, "target_fps", &parsed.render.target_fps, error, error_len) != 0) {
+            BT_TRACE_EXIT("app.config_from_json");
+            return -1;
+        }
         const bt_json_value *vsync = bt_json_get(render, "vsync");
-        if (vsync != NULL && vsync->type == BT_JSON_BOOL) {
+        if (vsync != NULL) {
+            if (vsync->type != BT_JSON_BOOL) {
+                snprintf(error, error_len, "config app section malformed: field vsync");
+                BT_TRACE_FAIL("app.config_from_json", "field vsync invalid");
+                BT_TRACE_EXIT("app.config_from_json");
+                return -1;
+            }
             parsed.render.vsync = vsync->as.boolean;
         }
     }
