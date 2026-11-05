@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "common/bt_harness.h"
+#include "unit/tools/spawn_util.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -129,6 +130,166 @@ BT_TEST(mutate, engine_rejects_parallel_workers) {
     BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, NULL, 0, &summary), 2);
     BT_CHECK(strstr(bt_mut_engine_last_error(), "workers must be 1") != NULL);
     bt_mut_build_free(&engine.build);
+}
+
+BT_TEST(mutate, engine_run_stops_after_the_limit) {
+    bt_mut_mutant_list list;
+    enumerate_fixture(&list);
+    BT_CHECK(list.count >= 3);
+    bt_mut_engine engine;
+    engine_for("limit", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    bt_mut_target target;
+    fixture_target(&target);
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, NULL, 1, &summary), 0);
+    bt_mut_ledger ledger;
+    BT_CHECK_EQ(bt_mut_ledger_load(engine.ledger_path, &ledger), 0);
+    unsigned long long settled = 0;
+    for (size_t i = 0; i < ledger.count; i++) {
+        if (ledger.rows[i].status != BT_MUT_PENDING) {
+            settled++;
+        }
+    }
+    bt_mut_ledger_free(&ledger);
+    BT_CHECK_EQ(settled, 1ULL);
+    BT_CHECK_EQ(summary.pending, list.count - 1);
+    bt_mut_build_free(&engine.build);
+    bt_mut_mutants_free(&list);
+}
+
+BT_TEST(mutate, engine_run_refuses_a_malformed_ledger) {
+    bt_mut_engine engine;
+    engine_for("badledger", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    const char *broken = "id\tbroken\naaa\tb\n";
+    BT_CHECK_EQ(bt_mut_write_file(engine.ledger_path, broken, strlen(broken)), 0);
+    bt_mut_target target;
+    fixture_target(&target);
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, NULL, 0, &summary), 2);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot load ledger") != NULL);
+    bt_mut_build_free(&engine.build);
+}
+
+BT_TEST(mutate, engine_run_refuses_an_unreadable_target) {
+    bt_mut_engine engine;
+    engine_for("noread", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    bt_mut_target target;
+    fixture_target(&target);
+    snprintf(target.file, BT_MUT_PATH_MAX, "src/absent-%lu.c", GetCurrentProcessId());
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, NULL, 0, &summary), 2);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot read target") != NULL);
+    bt_mut_build_free(&engine.build);
+}
+
+BT_TEST(mutate, engine_run_refuses_a_poisoned_ledger_path) {
+    bt_mut_engine engine;
+    engine_for("poisledger", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    char blocker[BT_MUT_PATH_MAX];
+    snprintf(blocker, BT_MUT_PATH_MAX, "%s/blocker-poisledger.txt", g_dir);
+    BT_CHECK_EQ(bt_mut_write_file(blocker, "x", 1), 0);
+    snprintf(engine.ledger_path, BT_MUT_PATH_MAX, "%s/ledger.tsv", blocker);
+    bt_mut_target target;
+    fixture_target(&target);
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, "zzz-none", 0, &summary), 2);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot save ledger") != NULL);
+    bt_mut_build_free(&engine.build);
+    remove(blocker);
+}
+
+static void fake_root_make(const char *slot, int obj_dirs, int with_suite, const char *suite_area,
+                           int with_src, char root_out[BT_MUT_PATH_MAX]) {
+    snprintf(root_out, BT_MUT_PATH_MAX, "%s/fake-%s", g_dir, slot);
+    bt_mut_rmtree(root_out);
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/build/obj", root_out);
+    bt_test_mkdirs(dir);
+    for (int i = 0; i < obj_dirs; i++) {
+        char obj_dir[BT_MUT_PATH_MAX];
+        snprintf(obj_dir, BT_MUT_PATH_MAX, "%s/d%d", dir, i);
+        bt_test_mkdirs(obj_dir);
+    }
+    if (with_src) {
+        snprintf(dir, BT_MUT_PATH_MAX, "%s/src/core", root_out);
+        bt_test_mkdirs(dir);
+        char src[BT_MUT_PATH_MAX];
+        const char *body = "int bt_alg_id(void) {\n    return 0;\n}\n";
+        snprintf(src, BT_MUT_PATH_MAX, "%s/alg.c", dir);
+        bt_mut_write_file(src, body, strlen(body));
+        snprintf(dir, BT_MUT_PATH_MAX, "%s/build/obj/d0/src/core", root_out);
+        bt_test_mkdirs(dir);
+        char obj[BT_MUT_PATH_MAX];
+        snprintf(obj, BT_MUT_PATH_MAX, "%s/alg.obj", dir);
+        bt_mut_write_file(obj, "", 0);
+    }
+    if (with_suite) {
+        snprintf(dir, BT_MUT_PATH_MAX, "%s/tests/unit/%s", root_out, suite_area);
+        bt_test_mkdirs(dir);
+        char suite[BT_MUT_PATH_MAX];
+        const char *body = "int fake_suite(void) {\n    return 0;\n}\n";
+        snprintf(suite, BT_MUT_PATH_MAX, "%s/fake_test.c", dir);
+        bt_mut_write_file(suite, body, strlen(body));
+    }
+}
+
+BT_TEST(mutate, target_from_repo_builds_a_tools_path_target_over_a_fake_root) {
+    char root[BT_MUT_PATH_MAX];
+    fake_root_make("tools", 1, 1, "core", 1, root);
+    bt_mut_engine engine;
+    engine_for("fakeroot", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    bt_mut_target target;
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "tools/mutate/main.c", "core_fake_test", &target),
+                0);
+    BT_CHECK_EQ(target.target_index, 1ULL);
+    BT_CHECK_EQ(target.link_obj_count, 4ULL);
+    bt_mut_target_free(&target);
+    bt_mut_build_free(&engine.build);
+    bt_mut_rmtree(root);
+}
+
+BT_TEST(mutate, target_from_repo_rejects_ambiguous_and_missing_obj_roots) {
+    bt_mut_engine engine;
+    engine_for("fakeobj", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    char root[BT_MUT_PATH_MAX];
+    bt_mut_target target;
+    fake_root_make("nodir", 0, 0, "core", 0, root);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "expected 1 object root") != NULL);
+    bt_mut_rmtree(root);
+    fake_root_make("twodir", 2, 0, "core", 0, root);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "expected 1 object root") != NULL);
+    bt_mut_rmtree(root);
+    fake_root_make("noobjtree", 0, 0, "core", 0, root);
+    char obj_tree[BT_MUT_PATH_MAX];
+    snprintf(obj_tree, BT_MUT_PATH_MAX, "%s/build/obj", root);
+    bt_mut_rmtree(obj_tree);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "no build objects") != NULL);
+    bt_mut_build_free(&engine.build);
+    bt_mut_rmtree(root);
+}
+
+BT_TEST(mutate, target_from_repo_names_the_missing_suite_and_unknown_area) {
+    bt_mut_engine engine;
+    engine_for("fakesuite", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    char root[BT_MUT_PATH_MAX];
+    bt_mut_target target;
+    fake_root_make("nosuite", 1, 0, "core", 0, root);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "no test suite named core_fake_test") != NULL);
+    bt_mut_rmtree(root);
+    fake_root_make("oddarea", 1, 1, "nosucharea", 0, root);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    BT_CHECK_EQ(bt_mut_target_from_repo(&engine, "src/core/alg.c", "core_fake_test", &target), -1);
+    bt_mut_build_free(&engine.build);
+    bt_mut_rmtree(root);
 }
 
 BT_TEST(mutate, ledger_resume_reruns_only_pending_rows) {

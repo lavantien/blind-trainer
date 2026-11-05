@@ -903,6 +903,13 @@ void bt_test_mutate_spawn_error_leaves_the_row_pending(void);
 void bt_test_mutate_stale_ledger_rows_are_dropped(void);
 void bt_test_mutate_comparison_swap_variants(void);
 void bt_test_mutate_negation_guard_mutants(void);
+void bt_test_mutate_engine_run_stops_after_the_limit(void);
+void bt_test_mutate_engine_run_refuses_a_malformed_ledger(void);
+void bt_test_mutate_engine_run_refuses_an_unreadable_target(void);
+void bt_test_mutate_engine_run_refuses_a_poisoned_ledger_path(void);
+void bt_test_mutate_target_from_repo_builds_a_tools_path_target_over_a_fake_root(void);
+void bt_test_mutate_target_from_repo_rejects_ambiguous_and_missing_obj_roots(void);
+void bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area(void);
 void bt_test_mutate_numeric_variants_and_suffixes(void);
 void bt_test_mutate_exponent_literals_are_float_tweaks(void);
 void bt_test_mutate_preprocessor_lines_stay_untouched(void);
@@ -944,6 +951,32 @@ int bt_mutate_selftest(void) {
             bt_test_mutate_engine_records_timeout_for_a_frozen_loop,
         },
         {"mutate.engine_rejects_parallel_workers", bt_test_mutate_engine_rejects_parallel_workers},
+        {"mutate.engine_run_stops_after_the_limit",
+         bt_test_mutate_engine_run_stops_after_the_limit},
+        {
+            "mutate.engine_run_refuses_a_malformed_ledger",
+            bt_test_mutate_engine_run_refuses_a_malformed_ledger,
+        },
+        {
+            "mutate.engine_run_refuses_an_unreadable_target",
+            bt_test_mutate_engine_run_refuses_an_unreadable_target,
+        },
+        {
+            "mutate.engine_run_refuses_a_poisoned_ledger_path",
+            bt_test_mutate_engine_run_refuses_a_poisoned_ledger_path,
+        },
+        {
+            "mutate.target_from_repo_builds_a_tools_path_target_over_a_fake_root",
+            bt_test_mutate_target_from_repo_builds_a_tools_path_target_over_a_fake_root,
+        },
+        {
+            "mutate.target_from_repo_rejects_ambiguous_and_missing_obj_roots",
+            bt_test_mutate_target_from_repo_rejects_ambiguous_and_missing_obj_roots,
+        },
+        {
+            "mutate.target_from_repo_names_the_missing_suite_and_unknown_area",
+            bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area,
+        },
         {
             "mutate.engine_stages_the_suite_exe_inside_the_workspace",
             bt_test_mutate_engine_stages_the_suite_exe_inside_the_workspace,
