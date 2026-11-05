@@ -51,6 +51,10 @@ Oracles used: the serde layout pinned by data/ga/report.json and the ryu shortes
 
 Process notes: the first inputs red was a NULL deref through bt_gr_run_inputs.pool after memset, the CRT turned it into a silent fastfail, fixed with real storage. The stale exe trap hit once, a suite verdict from a binary built before the edit, resolved by rebuilding before trusting output. C hex escape greed ate a fixture byte, literals split.
 
+## 2026-11-06 05:00 closing verification
+
+The policy build failure in the closing chain was a foreign transient: a mid-edit file from a concurrent lane broke the whole-tree compile once, the rerun cleared it, and the policy scan then reported findings only in foreign in-flight files (tools/mutate/tests.c literals and over-cap lines, tools/mutate/tests_ops.c literal, tests/unit/data/repo_errors_test.c over cap), none in this lane's files. Those belong to the mutate and data lanes' own gates. This lane's scoped surface is green: ga 14 suites, ga-run 4 suites, memofreq 2 suites, lint ga 34 clean, fmt clean per commit.
+
 ## reading log
 
 read artifacts/progress/lane-cov-ga.md full - predecessor state and plan
