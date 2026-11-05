@@ -3,6 +3,7 @@
 #include "common.h"
 #include "common/json.h"
 
+#include <sqlite3.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -589,4 +590,165 @@ BT_TEST(persist, missing_packs_root_keeps_stored_rows_quiet) {
     bt_stores_free(&quiet);
     free(registry);
     free(pack);
+}
+
+static void poison_table(const char *root, const char *table) {
+    bt_db db;
+    bt_db_error db_err;
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(root, db_path);
+    if (bt_db_open_at(db_path, &db, &db_err) != 0) {
+        BT_ABORT("poison open failed");
+    }
+    char sql[160];
+    snprintf(sql, sizeof sql, "DROP TABLE %s; CREATE TABLE %s(x)", table, table);
+    char *exec_err = NULL;
+    if (sqlite3_exec(bt_db_conn(&db), sql, NULL, NULL, &exec_err) != SQLITE_OK) {
+        char text[192];
+        snprintf(text, sizeof text, "poison %s: %s", table, exec_err ? exec_err : "?");
+        sqlite3_free(exec_err);
+        bt_db_close(&db);
+        BT_ABORT("%s", text);
+    }
+    sqlite3_free(exec_err);
+    bt_db_close(&db);
+}
+
+static void seeded_store(const char *root) {
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    if (bt_stores_load(root, sample_settings(), fsrs_cfg(), &stores, error, sizeof error) != 0) {
+        BT_ABORT("seed store failed: %s", error);
+    }
+    bt_card card;
+    memset(&card, 0, sizeof card);
+    card.interval_days = 3;
+    card.due_day = 4;
+    card.reps = 1;
+    card.lapses = 0;
+    if (bt_srs_store_set(&stores.srs, "edge/UF", &card) != 0) {
+        BT_ABORT("card set failed");
+    }
+    bt_solve_record record = {9, 1000, 500, 1};
+    bt_solve_log_push(&stores.solves, record);
+    bt_app_save_srs(root, &stores.srs, error, sizeof error);
+    bt_app_save_solves(root, &stores.solves, error, sizeof error);
+    bt_stores_free(&stores);
+}
+
+BT_TEST(persist, settings_table_failure_fails_closed_naming_the_db) {
+    const char *root = ta_temp_dir("persist", "poison-settings");
+    seeded_store(root);
+    poison_table(root, "settings");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load(root, sample_settings(), fsrs_cfg(), &stores, error, sizeof error),
+                -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+}
+
+BT_TEST(persist, card_table_failure_fails_closed_naming_the_db) {
+    const char *root = ta_temp_dir("persist", "poison-card");
+    seeded_store(root);
+    poison_table(root, "card");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load(root, sample_settings(), fsrs_cfg(), &stores, error, sizeof error),
+                -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+}
+
+BT_TEST(persist, solves_table_failure_fails_closed_naming_the_db) {
+    const char *root = ta_temp_dir("persist", "poison-solves");
+    seeded_store(root);
+    poison_table(root, "solves");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load(root, sample_settings(), fsrs_cfg(), &stores, error, sizeof error),
+                -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+}
+
+BT_TEST(persist, user_alg_table_failure_fails_closed_naming_the_db) {
+    const char *root = ta_temp_dir("persist", "poison-algs");
+    seeded_store(root);
+    poison_table(root, "user_alg");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load(root, sample_settings(), fsrs_cfg(), &stores, error, sizeof error),
+                -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+}
+
+BT_TEST(persist, seed_alg_table_failure_fails_closed_naming_the_db) {
+    const char *root = ta_temp_dir("persist", "poison-seed");
+    const char *registry_one[1][5] = {{"good.tsv", "2x2", "cll", "cll", "1"}};
+    char *registry = registry_text(registry_one, 1);
+    const char *pack_one[1][2] = {{"cll.1", "R U R'"}};
+    char *pack = pack_text(pack_one, 1);
+    const char *packs = write_packs(root, registry, "good.tsv", pack);
+    seeded_store(root);
+    poison_table(root, "seed_alg");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load_with_packs(root, sample_settings(), fsrs_cfg(), packs, &stores,
+                                          error, sizeof error),
+                -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+    free(registry);
+    free(pack);
+}
+
+BT_TEST(persist, save_failures_after_open_report_the_db_path) {
+    const char *root = ta_temp_dir("persist", "poison-saves");
+    seeded_store(root);
+    bt_settings settings = sample_settings();
+    bt_srs_store srs;
+    bt_srs_store_init(&srs);
+    bt_solve_log solves;
+    bt_solve_log_init(&solves);
+    bt_user_algs algs;
+    bt_user_algs_init(&algs);
+    char error[BT_APP_ERROR_MAX];
+    poison_table(root, "settings");
+    BT_CHECK_EQ(bt_app_save_settings(root, &settings, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+    poison_table(root, "card");
+    BT_CHECK_EQ(bt_app_save_srs(root, &srs, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+    poison_table(root, "solves");
+    BT_CHECK_EQ(bt_app_save_solves(root, &solves, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+    poison_table(root, "user_alg");
+    BT_CHECK_EQ(bt_app_save_user_algs(root, &algs, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "blind-trainer.db") != NULL);
+    bt_srs_store_free(&srs);
+    bt_solve_log_free(&solves);
+    bt_user_algs_free(&algs);
+}
+
+BT_TEST(persist, hidden_events_sort_and_dedup_across_failing_packs) {
+    const char *root = ta_temp_dir("persist", "hidden-dedup");
+    const char *registry_three[3][5] = {
+        {"zz.tsv", "event-zz", "cll", "cll", "1"},
+        {"aa.tsv", "event-aa", "sarah", "sarah", "1"},
+        {"zz2.tsv", "event-zz", "l4e", "l4e", "1"},
+    };
+    char *registry = registry_text(registry_three, 3);
+    const char *packs = write_packs(root, registry, "zz.tsv", "wrong\theader\n");
+    char path[TA_PATH_MAX];
+    snprintf(path, sizeof path, "%s/aa.tsv", packs);
+    ta_write_file(path, "wrong\theader\n");
+    snprintf(path, sizeof path, "%s/zz2.tsv", packs);
+    ta_write_file(path, "wrong\theader\n");
+    bt_stores stores;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_stores_load_with_packs(root, sample_settings(), fsrs_cfg(), packs, &stores,
+                                          error, sizeof error),
+                0);
+    const char *hidden[2] = {"event-aa", "event-zz"};
+    BT_CHECK(hidden_equals(&stores.seeds, hidden, 2));
+    BT_CHECK_EQ(stores.seeds.warnings.count, 3);
+    bt_stores_free(&stores);
+    free(registry);
 }
