@@ -12,7 +12,7 @@ TOOL = slog.Tool("lane-build")
 REPO = Path(__file__).resolve().parent.parent
 HUB = REPO / "config" / "config.json"
 LANE_ROOT = REPO / "artifacts" / "lane"
-REDIRECTED_DIRS = ("bin", "bin_cov", "obj", "obj_cov", "gen", "test_tmp")
+REDIRECTED_DIRS = ("bin", "bin_cov", "obj", "obj_cov", "gen", "test_tmp", "env")
 REDIRECTED_RAYLIB = ("obj_dir",)
 
 
