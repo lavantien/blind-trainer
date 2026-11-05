@@ -107,6 +107,14 @@ BT_TEST(verify_lib, simcheck_rejects_each_malformed_shape) {
                                "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
                                "cherry\tedge\t2\tUF-UB-UL\t9\t4294967296\tCYCLE_A\tc\n",
                                "qtm 4294967296 is not a number"));
+    BT_CHECK(simcheck_error_is("rowidplus",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t+\tUF-UB-UL\t9\t12\tCYCLE_A\tclean\n",
+                               "rowid + is not a number"));
+    BT_CHECK(simcheck_error_is("qtmplus",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t2\tUF-UB-UL\t9\t+\tCYCLE_A\tclean\n",
+                               "qtm + is not a number"));
 }
 
 BT_TEST(verify_lib, simcheck_accepts_leading_plus_in_rowid_and_qtm) {

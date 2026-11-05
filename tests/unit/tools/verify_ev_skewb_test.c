@@ -32,6 +32,18 @@ BT_TEST(verify_ev_skewb, a_rotation_only_alg_fails_tier1_as_empty) {
     verify_section_free(&result);
 }
 
+BT_TEST(verify_ev_skewb, an_unknown_token_alg_fails_tier1_with_the_engine_message) {
+    bt_seed_row rows_items[1] = {sarah_row("sarah.probe", "Z")};
+    bt_seed_rows rows = {rows_items, 1};
+    verify_section_result result;
+    verify_skewb_verify_sarah(&rows, &result);
+    BT_CHECK_EQ(result.count, 1);
+    BT_CHECK(!result.rows[0].tier1_ok);
+    BT_CHECK(result.rows[0].tier1_err[0] != '\0');
+    BT_CHECK(strstr(result.rows[0].tier1_err, "Z") != NULL);
+    verify_section_free(&result);
+}
+
 BT_TEST(verify_ev_skewb, sarah_rows_pass_tier1_after_rotation_stripping) {
     bt_seed_row rows_items[3] = {
         sarah_row("sarah.01", "L F' L'"),
