@@ -53,8 +53,8 @@ static char *read_bytes(const char *path, size_t *len) {
     return bytes;
 }
 
-static int spawn_memofreq(const char *config_path, int *code, char *out, size_t out_cap,
-                          char *err, size_t err_cap) {
+static int spawn_memofreq(const char *config_path, int *code, char *out, size_t out_cap, char *err,
+                          size_t err_cap) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "memofreq.exe");
     const char *prior = getenv("BT_CONFIG");
@@ -90,9 +90,8 @@ BT_TEST(memofreq, a_small_full_run_writes_freq_json_and_reports_the_sha) {
     scratch_dir("success", data_ga);
     char paths[BT_PATH_MAX + 64];
     snprintf(paths, sizeof paths, "{\"data_ga\": \"%s\"}", data_ga);
-    write_memofreq_config(
-        data_ga, paths, "{\"samples\": 30000, \"seed\": 20261012}",
-        "{\"ring_bytes\": 65536, \"max_threads\": 8, \"line_max\": 256}");
+    write_memofreq_config(data_ga, paths, "{\"samples\": 30000, \"seed\": 20261012}",
+                          "{\"ring_bytes\": 65536, \"max_threads\": 8, \"line_max\": 256}");
     char config_path[BT_PATH_MAX];
     snprintf(config_path, sizeof config_path, "%s/config.json", data_ga);
     int code = -1;
@@ -120,8 +119,7 @@ BT_TEST(memofreq, a_small_full_run_writes_freq_json_and_reports_the_sha) {
             BT_CHECK_EQ(data.seed, (unsigned long long)20261012);
             bt_ga_freq_data_free(&data);
         } else {
-            bt_harness_fail(__FILE__, __LINE__, "written freq.json does not parse: %s",
-                            parse_err);
+            bt_harness_fail(__FILE__, __LINE__, "written freq.json does not parse: %s", parse_err);
         }
         free(bytes);
     }
@@ -160,8 +158,7 @@ BT_TEST(memofreq, a_config_without_the_memofreq_section_exits_1) {
 BT_TEST(memofreq, a_config_without_paths_data_ga_exits_1) {
     char data_ga[BT_PATH_MAX];
     scratch_dir("no-path", data_ga);
-    write_text(data_ga, "config.json",
-               "{\"memofreq\": {\"samples\": 30000, \"seed\": 20261012}}");
+    write_text(data_ga, "config.json", "{\"memofreq\": {\"samples\": 30000, \"seed\": 20261012}}");
     char config_path[BT_PATH_MAX];
     snprintf(config_path, sizeof config_path, "%s/config.json", data_ga);
     int code = -1;
@@ -218,26 +215,25 @@ BT_TEST(memofreq, freq_data_text_prints_the_schema_with_empty_and_filled_section
     bt_strbuf text;
     bt_strbuf_init(&text, 512);
     BT_CHECK_EQ(bt_mf_freq_data_text(&data, &text), 0);
-    const char *want =
-        "{\n"
-        "  \"cases\": [\n"
-        "    {\n"
-        "      \"orbit\": \"edge\",\n"
-        "      \"letters\": \"AB\",\n"
-        "      \"count\": 120\n"
-        "    }\n"
-        "  ],\n"
-        "  \"adjacent\": [\n"
-        "    {\n"
-        "      \"from\": 0,\n"
-        "      \"to\": 17,\n"
-        "      \"count\": 3\n"
-        "    }\n"
-        "  ],\n"
-        "  \"cooccurring\": [],\n"
-        "  \"total_draws\": 1000,\n"
-        "  \"seed\": 20261012\n"
-        "}";
+    const char *want = "{\n"
+                       "  \"cases\": [\n"
+                       "    {\n"
+                       "      \"orbit\": \"edge\",\n"
+                       "      \"letters\": \"AB\",\n"
+                       "      \"count\": 120\n"
+                       "    }\n"
+                       "  ],\n"
+                       "  \"adjacent\": [\n"
+                       "    {\n"
+                       "      \"from\": 0,\n"
+                       "      \"to\": 17,\n"
+                       "      \"count\": 3\n"
+                       "    }\n"
+                       "  ],\n"
+                       "  \"cooccurring\": [],\n"
+                       "  \"total_draws\": 1000,\n"
+                       "  \"seed\": 20261012\n"
+                       "}";
     BT_CHECK_EQ(text.data, want);
     bt_strbuf_free(&text);
     bt_ga_freq_data empty = {0};
@@ -246,5 +242,83 @@ BT_TEST(memofreq, freq_data_text_prints_the_schema_with_empty_and_filled_section
     BT_CHECK(strstr(text.data, "\"cases\": [],") != NULL);
     BT_CHECK(strstr(text.data, "\"adjacent\": [],") != NULL);
     BT_CHECK(strstr(text.data, "\"cooccurring\": [],") != NULL);
+    bt_strbuf_free(&text);
+}
+
+BT_TEST(memofreq, freq_data_text_escapes_and_separates_multiple_rows) {
+    bt_ga_case_row cases[3];
+    snprintf(cases[0].orbit, sizeof cases[0].orbit, "edge");
+    snprintf(cases[0].letters, sizeof cases[0].letters, "AB");
+    cases[0].count = 1;
+    snprintf(cases[1].orbit, sizeof cases[1].orbit, "e\"d\\g");
+    snprintf(cases[1].letters, sizeof cases[1].letters, "a\\b");
+    cases[1].count = 2;
+    snprintf(cases[2].orbit, sizeof cases[2].orbit,
+             "c\x01"
+             "f\x1f");
+    snprintf(cases[2].letters, sizeof cases[2].letters,
+             "\xE9"
+             "t");
+    cases[2].count = 3;
+    bt_ga_pair_count adjacent[2] = {{0, 1, 5}, {1, 2, 6}};
+    bt_ga_pair_count cooccurring[2] = {{3, 4, 7}, {5, 6, 8}};
+    bt_ga_freq_data data = {0};
+    data.cases = cases;
+    data.cases_count = 3;
+    data.adjacent = adjacent;
+    data.adjacent_count = 2;
+    data.cooccurring = cooccurring;
+    data.cooccurring_count = 2;
+    data.total_draws = 9;
+    data.seed = 424242;
+    bt_strbuf text;
+    bt_strbuf_init(&text, 512);
+    BT_CHECK_EQ(bt_mf_freq_data_text(&data, &text), 0);
+    const char *want = "{\n"
+                       "  \"cases\": [\n"
+                       "    {\n"
+                       "      \"orbit\": \"edge\",\n"
+                       "      \"letters\": \"AB\",\n"
+                       "      \"count\": 1\n"
+                       "    },\n"
+                       "    {\n"
+                       "      \"orbit\": \"e\\\"d\\\\g\",\n"
+                       "      \"letters\": \"a\\\\b\",\n"
+                       "      \"count\": 2\n"
+                       "    },\n"
+                       "    {\n"
+                       "      \"orbit\": \"c\\u0001f\\u001f\",\n"
+                       "      \"letters\": \"\xE9t\",\n"
+                       "      \"count\": 3\n"
+                       "    }\n"
+                       "  ],\n"
+                       "  \"adjacent\": [\n"
+                       "    {\n"
+                       "      \"from\": 0,\n"
+                       "      \"to\": 1,\n"
+                       "      \"count\": 5\n"
+                       "    },\n"
+                       "    {\n"
+                       "      \"from\": 1,\n"
+                       "      \"to\": 2,\n"
+                       "      \"count\": 6\n"
+                       "    }\n"
+                       "  ],\n"
+                       "  \"cooccurring\": [\n"
+                       "    {\n"
+                       "      \"from\": 3,\n"
+                       "      \"to\": 4,\n"
+                       "      \"count\": 7\n"
+                       "    },\n"
+                       "    {\n"
+                       "      \"from\": 5,\n"
+                       "      \"to\": 6,\n"
+                       "      \"count\": 8\n"
+                       "    }\n"
+                       "  ],\n"
+                       "  \"total_draws\": 9,\n"
+                       "  \"seed\": 424242\n"
+                       "}";
+    BT_CHECK_EQ(text.data, want);
     bt_strbuf_free(&text);
 }

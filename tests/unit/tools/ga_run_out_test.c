@@ -76,44 +76,42 @@ BT_TEST(ga_run_out, report_text_serializes_the_full_schema) {
     sha_line('s', syllables_line, sizeof syllables_line);
     bt_strbuf want;
     bt_strbuf_init(&want, 1024);
-    bt_strbuf_append_str(
-        &want,
-        "{\n"
-        "  \"run_config\": {\n"
-        "    \"ga\": {\n"
-        "      \"seed\": 11\n"
-        "    }\n"
-        "  },\n"
-        "  \"inventory\": {\n"
-        "    \"generated\": 100,\n"
-        "    \"kept\": 10,\n"
-        "    \"dropped_not_in_wordlist\": 90,\n"
-        "    \"wordlist_size\": 10,\n"
-        "    \"wordlist_covered\": 9\n"
-        "  },\n"
-        "  \"pool_size\": 15,\n"
-        "  \"pool_top\": [\n"
-        "    [\n"
-        "      \"ma\",\n"
-        "      500\n"
-        "    ]\n"
-        "  ],\n"
-        "  \"best_fitness\": 0.654321,\n"
-        "  \"best_parts\": [\n"
-        "    0.1,\n"
-        "    0.2,\n"
-        "    0.3\n"
-        "  ],\n"
-        "  \"best_generation\": 4,\n"
-        "  \"generations_run\": 7,\n"
-        "  \"per_gen_best\": [\n"
-        "    0.5,\n"
-        "    0.25\n"
-        "  ],\n"
-        "  \"stagnation_tail\": 3,\n"
-        "  \"max_stagnation\": 9,\n"
-        "  \"evaluations\": 42,\n"
-        "  \"eval_used_cuda\": 0,\n");
+    bt_strbuf_append_str(&want, "{\n"
+                                "  \"run_config\": {\n"
+                                "    \"ga\": {\n"
+                                "      \"seed\": 11\n"
+                                "    }\n"
+                                "  },\n"
+                                "  \"inventory\": {\n"
+                                "    \"generated\": 100,\n"
+                                "    \"kept\": 10,\n"
+                                "    \"dropped_not_in_wordlist\": 90,\n"
+                                "    \"wordlist_size\": 10,\n"
+                                "    \"wordlist_covered\": 9\n"
+                                "  },\n"
+                                "  \"pool_size\": 15,\n"
+                                "  \"pool_top\": [\n"
+                                "    [\n"
+                                "      \"ma\",\n"
+                                "      500\n"
+                                "    ]\n"
+                                "  ],\n"
+                                "  \"best_fitness\": 0.654321,\n"
+                                "  \"best_parts\": [\n"
+                                "    0.1,\n"
+                                "    0.2,\n"
+                                "    0.3\n"
+                                "  ],\n"
+                                "  \"best_generation\": 4,\n"
+                                "  \"generations_run\": 7,\n"
+                                "  \"per_gen_best\": [\n"
+                                "    0.5,\n"
+                                "    0.25\n"
+                                "  ],\n"
+                                "  \"stagnation_tail\": 3,\n"
+                                "  \"max_stagnation\": 9,\n"
+                                "  \"evaluations\": 42,\n"
+                                "  \"eval_used_cuda\": 0,\n");
     bt_strbuf_appendf(&want, "  \"freq_sha256\": %s,\n", freq_line);
     bt_strbuf_appendf(&want, "  \"syllables_sha256\": %s\n", syllables_line);
     bt_strbuf_append_str(&want, "}");
@@ -183,26 +181,24 @@ BT_TEST(ga_run_out, assignment_text_prints_two_cases_pretty) {
     sha_line('s', syllables_line, sizeof syllables_line);
     bt_strbuf want;
     bt_strbuf_init(&want, 512);
-    bt_strbuf_append_str(
-        &want,
-        "{\n"
-        "  \"cases\": [\n"
-        "    {\n"
-        "      \"orbit\": \"edge\",\n"
-        "      \"letters\": \"AB\",\n"
-        "      \"syllable\": \"ma\",\n"
-        "      \"frequency\": 500\n"
-        "    },\n"
-        "    {\n"
-        "      \"orbit\": \"corner\",\n"
-        "      \"letters\": \"QT\",\n"
-        "      \"syllable\": \"khong\",\n"
-        "      \"frequency\": 7\n"
-        "    }\n"
-        "  ],\n"
-        "  \"pool_size\": 2,\n"
-        "  \"seed\": 77,\n"
-        "  \"best_fitness\": 0.5,\n");
+    bt_strbuf_append_str(&want, "{\n"
+                                "  \"cases\": [\n"
+                                "    {\n"
+                                "      \"orbit\": \"edge\",\n"
+                                "      \"letters\": \"AB\",\n"
+                                "      \"syllable\": \"ma\",\n"
+                                "      \"frequency\": 500\n"
+                                "    },\n"
+                                "    {\n"
+                                "      \"orbit\": \"corner\",\n"
+                                "      \"letters\": \"QT\",\n"
+                                "      \"syllable\": \"khong\",\n"
+                                "      \"frequency\": 7\n"
+                                "    }\n"
+                                "  ],\n"
+                                "  \"pool_size\": 2,\n"
+                                "  \"seed\": 77,\n"
+                                "  \"best_fitness\": 0.5,\n");
     bt_strbuf_appendf(&want, "  \"freq_sha256\": %s,\n", freq_line);
     bt_strbuf_appendf(&want, "  \"syllables_sha256\": %s\n", syllables_line);
     bt_strbuf_append_str(&want, "}");
@@ -278,30 +274,29 @@ BT_TEST(ga_run_out, json_value_text_covers_the_remaining_shapes) {
     bt_strbuf text;
     bt_strbuf_init(&text, 512);
     BT_CHECK_EQ(bt_gr_json_value_text(value, &text), 0);
-    const char *want =
-        "{\n"
-        "  \"arr\": [],\n"
-        "  \"bs\": \"c\\\\d\",\n"
-        "  \"ctl\": \"e\\u0001f\",\n"
-        "  \"f15\": 1000000000000000.0,\n"
-        "  \"neg_fixed\": -12.5,\n"
-        "  \"neg_sci\": -1e-07,\n"
-        "  \"nest\": {\n"
-        "    \"in\": [\n"
-        "      1,\n"
-        "      [\n"
-        "        2,\n"
-        "        3\n"
-        "      ],\n"
-        "      {\n"
-        "        \"deep\": true\n"
-        "      }\n"
-        "    ]\n"
-        "  },\n"
-        "  \"obj\": {},\n"
-        "  \"q\": \"a\\\"b\",\n"
-        "  \"zero\": 0.0\n"
-        "}";
+    const char *want = "{\n"
+                       "  \"arr\": [],\n"
+                       "  \"bs\": \"c\\\\d\",\n"
+                       "  \"ctl\": \"e\\u0001f\",\n"
+                       "  \"f15\": 1000000000000000.0,\n"
+                       "  \"neg_fixed\": -12.5,\n"
+                       "  \"neg_sci\": -1e-07,\n"
+                       "  \"nest\": {\n"
+                       "    \"in\": [\n"
+                       "      1,\n"
+                       "      [\n"
+                       "        2,\n"
+                       "        3\n"
+                       "      ],\n"
+                       "      {\n"
+                       "        \"deep\": true\n"
+                       "      }\n"
+                       "    ]\n"
+                       "  },\n"
+                       "  \"obj\": {},\n"
+                       "  \"q\": \"a\\\"b\",\n"
+                       "  \"zero\": 0.0\n"
+                       "}";
     BT_CHECK_EQ(text.data, want);
     bt_strbuf_free(&text);
     bt_json_free(value);
@@ -339,4 +334,152 @@ BT_TEST(ga_run_out, json_value_text_rejects_a_null_value) {
     bt_strbuf_init(&text, 64);
     BT_CHECK_EQ(bt_gr_json_value_text(NULL, &text), -1);
     bt_strbuf_free(&text);
+}
+
+BT_TEST(ga_run_out, json_value_text_prints_null_and_false_literals) {
+    bt_json_value *value = parse_json("{\"f\": false, \"n\": null}");
+    bt_strbuf text;
+    bt_strbuf_init(&text, 64);
+    BT_CHECK_EQ(bt_gr_json_value_text(value, &text), 0);
+    BT_CHECK_EQ(text.data, "{\n  \"f\": false,\n  \"n\": null\n}");
+    bt_strbuf_free(&text);
+    bt_json_free(value);
+}
+
+BT_TEST(ga_run_out, cases_text_compact_separates_two_rows) {
+    bt_gr_syllable_case cases[2];
+    memset(cases, 0, sizeof cases);
+    snprintf(cases[0].orbit, sizeof cases[0].orbit, "edge");
+    snprintf(cases[0].letters, sizeof cases[0].letters, "AB");
+    snprintf(cases[0].syllable, sizeof cases[0].syllable, "lam");
+    cases[0].frequency = 9;
+    snprintf(cases[1].orbit, sizeof cases[1].orbit, "corner");
+    snprintf(cases[1].letters, sizeof cases[1].letters, "QM");
+    snprintf(cases[1].syllable, sizeof cases[1].syllable, "quail");
+    cases[1].frequency = 4;
+    bt_strbuf text;
+    bt_strbuf_init(&text, 128);
+    BT_CHECK_EQ(bt_gr_cases_text_compact(cases, 2, &text), 0);
+    BT_CHECK_EQ(
+        text.data,
+        "[{\"orbit\":\"edge\",\"letters\":\"AB\",\"syllable\":\"lam\",\"frequency\":9},"
+        "{\"orbit\":\"corner\",\"letters\":\"QM\",\"syllable\":\"quail\",\"frequency\":4}]");
+    bt_strbuf_free(&text);
+}
+
+BT_TEST(ga_run_out, assignment_text_prints_an_empty_case_list_and_scientific_fitness) {
+    bt_gr_syllable_assignment assignment;
+    memset(&assignment, 0, sizeof assignment);
+    assignment.pool_size = 7;
+    assignment.seed = 99;
+    assignment.best_fitness = 1.25e-7F;
+    memset(assignment.freq_sha256, 'f', 64);
+    memset(assignment.syllables_sha256, 'y', 64);
+    bt_strbuf text;
+    bt_strbuf_init(&text, 256);
+    BT_CHECK_EQ(bt_gr_assignment_text(&assignment, &text), 0);
+    char freq_line[BT_GA_SHA256_HEX_LEN + 8];
+    char syllables_line[BT_GA_SHA256_HEX_LEN + 8];
+    sha_line('f', freq_line, sizeof freq_line);
+    sha_line('y', syllables_line, sizeof syllables_line);
+    bt_strbuf want;
+    bt_strbuf_init(&want, 256);
+    bt_strbuf_append_str(&want, "{\n"
+                                "  \"cases\": [],\n"
+                                "  \"pool_size\": 7,\n"
+                                "  \"seed\": 99,\n"
+                                "  \"best_fitness\": 1.25e-07,\n");
+    bt_strbuf_appendf(&want, "  \"freq_sha256\": %s,\n", freq_line);
+    bt_strbuf_appendf(&want, "  \"syllables_sha256\": %s\n", syllables_line);
+    bt_strbuf_append_str(&want, "}");
+    BT_CHECK_EQ(text.len, want.len);
+    BT_CHECK(memcmp(text.data, want.data, text.len) == 0);
+    bt_strbuf_free(&want);
+    bt_strbuf_free(&text);
+}
+
+BT_TEST(ga_run_out, report_text_renders_every_float_form_and_multi_row_sections) {
+    bt_gr_ga_report report;
+    memset(&report, 0, sizeof report);
+    report.run_config = parse_json("{\"seed\": 7}");
+    report.pool_size = 9;
+    snprintf(report.pool_top[0].text, BT_GA_TEXT_MAX, "ab");
+    report.pool_top[0].frequency = 12;
+    snprintf(report.pool_top[1].text, BT_GA_TEXT_MAX, "cd");
+    report.pool_top[1].frequency = 34;
+    report.pool_top_count = 2;
+    report.best_fitness = 123.0F;
+    report.best_parts[0] = 1.5F;
+    report.best_parts[1] = 0.015625F;
+    report.best_parts[2] = 0.0F;
+    report.best_generation = 3;
+    report.generations_run = 4;
+    float per_gen[4] = {123.0F, 1.5F, 0.015625F, 1.25e-7F};
+    report.per_gen_best = malloc(sizeof per_gen);
+    memcpy(report.per_gen_best, per_gen, sizeof per_gen);
+    report.per_gen_count = 4;
+    report.stagnation_tail = 2;
+    report.max_stagnation = 5;
+    report.evaluations = 77;
+    report.eval_used_cuda = 0;
+    memset(report.freq_sha256, 'f', 64);
+    memset(report.syllables_sha256, 's', 64);
+    bt_strbuf text;
+    bt_strbuf_init(&text, 1024);
+    BT_CHECK_EQ(bt_gr_report_text(&report, &text), 0);
+    char freq_line[BT_GA_SHA256_HEX_LEN + 8];
+    char syllables_line[BT_GA_SHA256_HEX_LEN + 8];
+    sha_line('f', freq_line, sizeof freq_line);
+    sha_line('s', syllables_line, sizeof syllables_line);
+    bt_strbuf want;
+    bt_strbuf_init(&want, 1024);
+    bt_strbuf_append_str(&want, "{\n"
+                                "  \"run_config\": {\n"
+                                "    \"seed\": 7\n"
+                                "  },\n"
+                                "  \"inventory\": {\n"
+                                "    \"generated\": 0,\n"
+                                "    \"kept\": 0,\n"
+                                "    \"dropped_not_in_wordlist\": 0,\n"
+                                "    \"wordlist_size\": 0,\n"
+                                "    \"wordlist_covered\": 0\n"
+                                "  },\n"
+                                "  \"pool_size\": 9,\n"
+                                "  \"pool_top\": [\n"
+                                "    [\n"
+                                "      \"ab\",\n"
+                                "      12\n"
+                                "    ],\n"
+                                "    [\n"
+                                "      \"cd\",\n"
+                                "      34\n"
+                                "    ]\n"
+                                "  ],\n"
+                                "  \"best_fitness\": 123.0,\n"
+                                "  \"best_parts\": [\n"
+                                "    1.5,\n"
+                                "    0.015625,\n"
+                                "    0.0\n"
+                                "  ],\n"
+                                "  \"best_generation\": 3,\n"
+                                "  \"generations_run\": 4,\n"
+                                "  \"per_gen_best\": [\n"
+                                "    123.0,\n"
+                                "    1.5,\n"
+                                "    0.015625,\n"
+                                "    1.25e-07\n"
+                                "  ],\n"
+                                "  \"stagnation_tail\": 2,\n"
+                                "  \"max_stagnation\": 5,\n"
+                                "  \"evaluations\": 77,\n"
+                                "  \"eval_used_cuda\": 0,\n");
+    bt_strbuf_appendf(&want, "  \"freq_sha256\": %s,\n", freq_line);
+    bt_strbuf_appendf(&want, "  \"syllables_sha256\": %s\n", syllables_line);
+    bt_strbuf_append_str(&want, "}");
+    BT_CHECK_EQ(text.len, want.len);
+    BT_CHECK(memcmp(text.data, want.data, text.len) == 0);
+    bt_strbuf_free(&want);
+    bt_strbuf_free(&text);
+    bt_json_free((bt_json_value *)report.run_config);
+    free(report.per_gen_best);
 }
