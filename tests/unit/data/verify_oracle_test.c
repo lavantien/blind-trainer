@@ -304,7 +304,7 @@ BT_TEST(verify_oracle, twists_verdict_reports_opposite_simulated_signs) {
     bt_corpus_free(&corpus);
 }
 
-BT_TEST(verify_oracle, parity_verdict_reports_orientation_defects_but_never_fails_on_them) {
+BT_TEST(verify_oracle, parity_verdicts_stay_ok_and_orientation_notes_are_gone) {
     bt_corpus corpus;
     loaded(&corpus);
     const bt_corpus_row *clean_row =
@@ -324,14 +324,8 @@ BT_TEST(verify_oracle, parity_verdict_reports_orientation_defects_but_never_fail
         bt_verdict twisted;
         bt_verify(&twisted_row->alg, twisted_row->position, BT_SHEET_PARITY, &twisted);
         BT_CHECK(bt_verdict_ok(&twisted));
-        size_t twist_notes = 0;
-        for (size_t i = 0; i < twisted.note_count; i++) {
-            if (twisted.notes[i].kind == BT_NOTE_TWIST) {
-                twist_notes += 1;
-            }
-            BT_CHECK(twisted.notes[i].kind != BT_NOTE_FLIP);
-        }
-        BT_CHECK(twist_notes == 2);
+        BT_CHECK(twisted.problem_count == 0);
+        BT_CHECK(twisted.note_count == 0);
         bt_verdict_free(&twisted);
     }
     bt_corpus_free(&corpus);

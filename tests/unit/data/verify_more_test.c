@@ -12,6 +12,9 @@ static const char FLIP[] = "M' U M' U M' U2 M U M U M U2";
 static const char FLIP_UR_UL[] = "U M' U M' U M' U2 M U M U M U2 U'";
 static const char EDGE_CYCLE[] = "M2 U M U2 M' U M2";
 static const char CORNER_CYCLE[] = "R U R' D' R U' R' D";
+static const char PARITY_UF_UL[] = "U' R U R' F' R U R' U' R' F R2 U' R'";
+static const char FLIP_UF_UL[] = "L E2 L2 E L U L' E' L2 E2 L' U'";
+static const char TWIST_UFR_UFL[] = "R' D' R D R' D' R U' R' D R D' R' D R U";
 
 static bt_alg alg_of(const char *text) {
     bt_alg alg;
@@ -149,19 +152,16 @@ BT_TEST(verify_more, t_perm_verifies_as_parity_without_orientation_notes) {
     bt_alg_free(&alg);
 }
 
-BT_TEST(verify_more, parity_with_flipped_swaps_reports_flip_notes_only) {
+BT_TEST(verify_more, parity_with_flipped_swaps_fails_with_wrong_cycle_problems) {
     char text[256];
     snprintf(text, sizeof text, "%s %s", TPERM, FLIP_UR_UL);
     bt_alg alg = alg_of(text);
     bt_verdict verdict;
     bt_verify(&alg, "UR-UL, UFR-UBR", BT_SHEET_PARITY, &verdict);
-    BT_CHECK(bt_verdict_ok(&verdict));
-    BT_CHECK(verdict.note_count == 2);
-    BT_CHECK(bt_verdict_contains_note(&verdict, BT_NOTE_FLIP, "UR", 0));
-    BT_CHECK(bt_verdict_contains_note(&verdict, BT_NOTE_FLIP, "UL", 0));
-    for (size_t i = 0; i < verdict.note_count; i++) {
-        BT_CHECK(verdict.notes[i].kind == BT_NOTE_FLIP);
-    }
+    BT_CHECK(!bt_verdict_ok(&verdict));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UR", "UL", NULL));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UL", "UR", NULL));
+    BT_CHECK(verdict.note_count == 0);
     bt_verdict_free(&verdict);
     bt_alg_free(&alg);
 }
@@ -278,7 +278,7 @@ BT_TEST(verify_more, solved_cube_reports_missing_flips_and_twists_with_zero_note
     bt_alg_free(&alg);
 }
 
-BT_TEST(verify_more, solved_cube_reports_both_parity_swaps_displaced) {
+BT_TEST(verify_more, solved_cube_reports_both_parity_swaps_unsatisfied) {
     bt_alg alg;
     bt_alg_init(&alg);
     bt_verdict verdict;
@@ -286,10 +286,10 @@ BT_TEST(verify_more, solved_cube_reports_both_parity_swaps_displaced) {
     BT_CHECK(bt_verdict_ok(&verdict) == false);
     BT_CHECK(verdict.problem_count == 4);
     for (size_t i = 0; i < verdict.problem_count; i++) {
-        BT_CHECK(verdict.problems[i].kind == BT_PROBLEM_DISPLACED);
+        BT_CHECK(verdict.problems[i].kind == BT_PROBLEM_WRONG_CYCLE);
     }
-    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_DISPLACED, "UR", "UL", "UR"));
-    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_DISPLACED, "UBR", "UFR", "UBR"));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UR", "UL", "UR"));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UBR", "UFR", "UBR"));
     BT_CHECK(verdict.note_count == 0);
     bt_verdict_free(&verdict);
     bt_alg_free(&alg);
@@ -500,5 +500,42 @@ BT_TEST(verify_more, bad_ltct_positions_report_their_reason) {
         }
         bt_verdict_free(&verdict);
     }
+    bt_alg_free(&alg);
+}
+
+BT_TEST(verify_more, corpus_parity_row_verifies_clean_with_no_orientation_notes) {
+    bt_alg alg = alg_of(PARITY_UF_UL);
+    bt_verdict verdict;
+    bt_verify(&alg, "UF-UL, UFR-UFL", BT_SHEET_PARITY, &verdict);
+    BT_CHECK(bt_verdict_ok(&verdict));
+    BT_CHECK(verdict.problem_count == 0);
+    BT_CHECK(verdict.note_count == 0);
+    bt_verdict_free(&verdict);
+    bt_alg_free(&alg);
+}
+
+BT_TEST(verify_more, parity_with_residual_edge_flips_fails_verification) {
+    char text[256];
+    snprintf(text, sizeof text, "%s %s", PARITY_UF_UL, FLIP_UF_UL);
+    bt_alg alg = alg_of(text);
+    bt_verdict verdict;
+    bt_verify(&alg, "UF-UL, UFR-UFL", BT_SHEET_PARITY, &verdict);
+    BT_CHECK(!bt_verdict_ok(&verdict));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UF", "UL", NULL));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UL", "UF", NULL));
+    bt_verdict_free(&verdict);
+    bt_alg_free(&alg);
+}
+
+BT_TEST(verify_more, parity_with_residual_corner_twists_fails_verification) {
+    char text[256];
+    snprintf(text, sizeof text, "%s %s", PARITY_UF_UL, TWIST_UFR_UFL);
+    bt_alg alg = alg_of(text);
+    bt_verdict verdict;
+    bt_verify(&alg, "UF-UL, UFR-UFL", BT_SHEET_PARITY, &verdict);
+    BT_CHECK(!bt_verdict_ok(&verdict));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UFR", "UFL", NULL));
+    BT_CHECK(bt_verdict_contains_problem(&verdict, BT_PROBLEM_WRONG_CYCLE, "UFL", "UFR", NULL));
+    bt_verdict_free(&verdict);
     bt_alg_free(&alg);
 }

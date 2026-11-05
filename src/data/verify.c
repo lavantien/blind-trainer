@@ -725,6 +725,33 @@ static void note_orientation(const bt_cube *cube, bt_verdict *verdict, bt_piece 
     }
 }
 
+static void check_sticker_swapped(const bt_cube *cube, bt_verdict *verdict, uint8_t first,
+                                  uint8_t second) {
+    uint8_t got_first = bt_cube_position_of(cube, first);
+    uint8_t got_second = bt_cube_position_of(cube, second);
+    if (got_first == second && got_second == first) {
+        return;
+    }
+    if (got_first != second) {
+        bt_problem problem;
+        memset(&problem, 0, sizeof problem);
+        problem.kind = BT_PROBLEM_WRONG_CYCLE;
+        name_into(problem.sticker, sizeof problem.sticker, first);
+        name_into(problem.expected, sizeof problem.expected, second);
+        name_into(problem.actual, sizeof problem.actual, got_first);
+        problems_push(verdict, &problem);
+    }
+    if (got_second != first) {
+        bt_problem problem;
+        memset(&problem, 0, sizeof problem);
+        problem.kind = BT_PROBLEM_WRONG_CYCLE;
+        name_into(problem.sticker, sizeof problem.sticker, second);
+        name_into(problem.expected, sizeof problem.expected, first);
+        name_into(problem.actual, sizeof problem.actual, got_second);
+        problems_push(verdict, &problem);
+    }
+}
+
 static void verify_parity(const bt_cube *cube, bt_verdict *verdict, const char *position) {
     char detail[BT_VERIFY_DETAIL_MAX];
     char parts[2][BT_VERIFY_DETAIL_MAX];
@@ -756,11 +783,8 @@ static void verify_parity(const bt_cube *cube, bt_verdict *verdict, const char *
         exempt[exempt_count++] = corner.pieces[i];
     }
     residue_problems(cube, verdict, exempt, exempt_count);
-    check_swapped(cube, verdict, edge.pieces[0], edge.pieces[1]);
-    check_swapped(cube, verdict, corner.pieces[0], corner.pieces[1]);
-    for (size_t i = 0; i < exempt_count; i++) {
-        note_orientation(cube, verdict, exempt[i]);
-    }
+    check_sticker_swapped(cube, verdict, edge.stickers[0], edge.stickers[1]);
+    check_sticker_swapped(cube, verdict, corner.stickers[0], corner.stickers[1]);
 }
 
 static void verify_ltct(const bt_cube *cube, bt_verdict *verdict, const char *position) {

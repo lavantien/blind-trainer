@@ -383,7 +383,7 @@ BT_TEST(fuzzkill_data, verify_reports_displaced_and_center_problems) {
     bt_verdict parity;
     bt_verify(&combo_alg, parity_position, BT_SHEET_PARITY, &parity);
     BT_CHECK(bt_verdict_ok(&parity) == 0);
-    BT_CHECK(bt_verdict_contains_problem(&parity, BT_PROBLEM_DISPLACED, NULL, NULL, NULL));
+    BT_CHECK(bt_verdict_contains_problem(&parity, BT_PROBLEM_WRONG_CYCLE, NULL, NULL, NULL));
     bt_verdict_free(&parity);
     bt_alg_free(&combo_alg);
     bt_alg_free(&m2_alg);
