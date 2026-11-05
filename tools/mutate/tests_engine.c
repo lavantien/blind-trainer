@@ -302,6 +302,97 @@ static bt_json_value *area_config(const char *body) {
     return value;
 }
 
+BT_TEST(mutate, prepare_scratch_refuses_unwritable_layouts) {
+    bt_mut_engine engine;
+    engine_for("prepblk", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    char source[BT_MUT_PATH_MAX];
+    char include[BT_MUT_PATH_MAX];
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/markerblk", engine.scratch_root);
+    bt_test_mkdirs(dir);
+    char marker_dir[BT_MUT_PATH_MAX];
+    snprintf(marker_dir, BT_MUT_PATH_MAX, "%s/marker.txt", dir);
+    bt_test_mkdirs(marker_dir);
+    BT_CHECK_EQ(bt_mut_prepare_scratch(&engine, "markerblk", "src/alg.c", "int a;\n", 7, NULL,
+                                       source, include),
+                -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot write") != NULL);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "marker.txt") != NULL);
+
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/stemblk", engine.scratch_root);
+    bt_test_mkdirs(dir);
+    char stem_dir[BT_MUT_PATH_MAX];
+    snprintf(stem_dir, BT_MUT_PATH_MAX, "%s/alg.c", dir);
+    bt_test_mkdirs(stem_dir);
+    BT_CHECK_EQ(bt_mut_prepare_scratch(&engine, "stemblk", "src/alg.c", "int a;\n", 7, NULL, source,
+                                       include),
+                -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot write") != NULL);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "alg.c") != NULL);
+
+    bt_mut_mutant_list list;
+    enumerate_fixture(&list);
+    bt_mut_mutant broken = list.items[0];
+    broken.edit_count = 1;
+    broken.edits[0].offset = 900;
+    broken.edits[0].len = 50;
+    BT_CHECK_EQ(bt_mut_prepare_scratch(&engine, "applyblk", "src/alg.c", "int a;\n", 7, &broken,
+                                       source, include),
+                -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot apply mutant") != NULL);
+    bt_mut_mutants_free(&list);
+}
+
+BT_TEST(mutate, prepare_scratch_copies_and_skips_dep_tokens_by_rule) {
+    char root[BT_MUT_PATH_MAX];
+    fake_root_make("depcopy", 1, 0, "core", 0, root);
+    char dep_dir[BT_MUT_PATH_MAX];
+    snprintf(dep_dir, BT_MUT_PATH_MAX, "%s/build/obj/d0/src", root);
+    bt_test_mkdirs(dep_dir);
+    char dep_path[BT_MUT_PATH_MAX];
+    snprintf(dep_path, BT_MUT_PATH_MAX, "%s/alg.d", dep_dir);
+    char body[2048];
+    snprintf(body, sizeof body,
+             "%s/copy.h C:/x/y.h %s/blocker/x.h %s/build/obj/d0/src/inside.obj:\n", root, root,
+             root);
+    bt_mut_write_file(dep_path, body, strlen(body));
+    char copy_src[BT_MUT_PATH_MAX];
+    snprintf(copy_src, BT_MUT_PATH_MAX, "%s/copy.h", root);
+    bt_mut_write_file(copy_src, "h", 1);
+    bt_mut_engine engine;
+    engine_for("depcopy", MUT_TEST_TIMEOUT_MS, NULL, &engine);
+    snprintf(engine.repo_root, BT_MUT_PATH_MAX, "%s", root);
+    snprintf(engine.scratch_root, BT_MUT_PATH_MAX, "%s/scratch-depcopy", g_dir);
+    bt_mut_rmtree(engine.scratch_root);
+    char source[BT_MUT_PATH_MAX];
+    char include[BT_MUT_PATH_MAX];
+    BT_CHECK_EQ(
+        bt_mut_prepare_scratch(&engine, "ok", "src/alg.c", "int a;\n", 7, NULL, source, include),
+        0);
+    char copied[BT_MUT_PATH_MAX];
+    snprintf(copied, BT_MUT_PATH_MAX, "%s/ok/inputs/copy.h", engine.scratch_root);
+    FILE *file = fopen(copied, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fclose(file);
+    }
+    BT_CHECK(strstr(include, "/inputs") != NULL);
+
+    char dir[BT_MUT_PATH_MAX];
+    snprintf(dir, BT_MUT_PATH_MAX, "%s/copyblk", engine.scratch_root);
+    bt_test_mkdirs(dir);
+    char nested[BT_MUT_PATH_MAX];
+    snprintf(nested, BT_MUT_PATH_MAX, "%s/inputs/copy.h", dir);
+    bt_test_mkdirs(nested);
+    BT_CHECK_EQ(bt_mut_prepare_scratch(&engine, "copyblk", "src/alg.c", "int a;\n", 7, NULL, source,
+                                       include),
+                -1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "cannot copy input") != NULL);
+    bt_mut_build_free(&engine.build);
+    bt_mut_rmtree(engine.scratch_root);
+    bt_mut_rmtree(root);
+}
+
 BT_TEST(mutate, area_map_rejects_malformed_src_deps) {
     const char *not_object = "{\"build\": {\"src_deps\": 5}}";
     const char *not_array = "{\"build\": {\"src_deps\": {\"core\": 5}}}";
