@@ -901,7 +901,7 @@ BT_TEST(jobwrap, exe_alloc_fails_inside_a_capped_job_and_aborts) {
     BT_CHECK(code == 3 || code == 0xC0000409);
 }
 
-BT_TEST(jobwrap, exe_run_usage_verdict_exits_2_with_the_run_error) {
+BT_TEST(jobwrap, exe_run_failure_verdict_exits_3_with_the_trace_dump) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "jobwrap.exe");
     char sleeper[BT_PATH_MAX];
@@ -920,5 +920,5 @@ BT_TEST(jobwrap, exe_run_usage_verdict_exits_2_with_the_run_error) {
     SetEnvironmentVariableA("BT_CONFIG", had > 0 && had < BT_PATH_MAX ? saved : NULL);
     drop_config_dir(dir);
     BT_CHECK_EQ(wait, WAIT_OBJECT_0);
-    BT_CHECK_EQ(code, 2U);
+    BT_CHECK_EQ(code, 3U);
 }

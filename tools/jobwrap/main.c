@@ -110,9 +110,6 @@ int wmain(int argc, wchar_t **argv) {
         bt_trace_shutdown();
         exit((int)code);
     }
-    if (verdict == BT_JOBWRAP_RUN_USAGE) {
-        return usage_exit(err);
-    }
     bt_trace_dump();
     bt_trace_shutdown();
     return 3;
