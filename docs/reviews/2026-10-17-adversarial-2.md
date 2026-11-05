@@ -4,13 +4,13 @@
 
 | field | value |
 | --- | --- |
-| wave or scope | full adoption on main, plan adopt-all-the-good-polymorphic-bonbon, bt-data, bt-puzzles, bt-app, bt-verify, tooling, Makefile |
+| wave or scope | full adoption on main: bt-data, bt-puzzles, bt-app, bt-verify, tooling, Makefile |
 | reviewer 1 | reviewer-1 (independent, not read) |
 | reviewer 2 | reviewer-2 (this record) |
 | date range | 2026-10-17 to 2026-10-18 |
 | final verdict | findings open, reviewer 2 records only, no code edits in scope |
 
-Exclusions honored: the 8 known bt-data seedpack survivors, the commutator survivors, and the verify survivors under fix by agent-a-seedpack, agent-b-commutator, agent-c-verify were not judged. Findings below target landed behavior outside those in-flight areas.
+Exclusions honored: the 8 known bt-data seedpack survivors, the commutator survivors, and the verify survivors under separate fixes at review time were not judged. Findings below target landed behavior outside those in-flight areas.
 
 ## findings
 
