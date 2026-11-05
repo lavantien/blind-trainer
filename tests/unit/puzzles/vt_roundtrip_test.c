@@ -52,7 +52,7 @@ static void vt_check_roundtrip(const bt_pz_engine *eng, const char *text) {
 }
 
 static void vt_state_eq_pair(const bt_pz_engine *eng, bool (*eq)(const void *, const void *),
-                            size_t state_size, const char *text) {
+                             size_t state_size, const char *text) {
     bt_pz_error err;
     void *alg = bt_pz_alg_create();
     BT_CHECK(eng->parse_alg(eng, text, strlen(text), alg, &err));
@@ -111,6 +111,39 @@ BT_TEST(vt, fto_formats_reparse_and_apply_identically) {
     bt_fto fto = bt_fto_new();
     bt_pz_engine eng = bt_fto_engine(&fto);
     vt_check_roundtrip(&eng, "U BR U BR' F U F'");
+}
+
+BT_TEST(vt, sq1_parse_move_wrapper_takes_single_moves_only) {
+    bt_pz_engine eng = bt_pz_sq1_engine();
+    bt_pz_error err;
+    bt_pz_sq1_move mv;
+    BT_CHECK(eng.parse_move(&eng, "(1,0)", 5, &mv, &err));
+    BT_CHECK_EQ((int)mv.top, 1);
+    BT_CHECK_EQ((int)mv.bottom, 0);
+    BT_CHECK(mv.slash == false);
+    BT_CHECK(eng.parse_move(&eng, "/", 1, &mv, &err));
+    BT_CHECK(mv.slash == true);
+    BT_CHECK(!eng.parse_move(&eng, "(1,0)/(2,0)", 11, &mv, &err));
+    BT_CHECK(!eng.parse_move(&eng, "U", 1, &mv, &err));
+}
+
+BT_TEST(vt, mega_apply_rejects_unpinned_moves_with_their_parameters) {
+    bt_pz_engine eng = bt_mega_engine();
+    void *alg = bt_pz_alg_create();
+    bt_mega_move unpinned_face = {.spin = 0, .face = BT_MEGA_BL, .steps = 2};
+    bt_pz_alg_push(&eng, alg, &unpinned_face);
+    bt_mega_state state;
+    bt_mega_solved_state(&state);
+    bt_pz_error err;
+    BT_CHECK(!eng.apply_alg(&eng, &state, alg, &err));
+    BT_CHECK_EQ(err.token, "turn 4 2");
+    bt_pz_alg_destroy(alg);
+    alg = bt_pz_alg_create();
+    bt_mega_move unpinned_spin = {.spin = 1, .face = 0, .steps = 2};
+    bt_pz_alg_push(&eng, alg, &unpinned_spin);
+    BT_CHECK(!eng.apply_alg(&eng, &state, alg, &err));
+    BT_CHECK_EQ(err.token, "spin 2");
+    bt_pz_alg_destroy(alg);
 }
 
 BT_TEST(vt, state_eq_separates_solved_from_moved) {
@@ -211,6 +244,7 @@ static void vt_death_default_parse_move_size_over_cap(void) {
 BT_TEST(vt, geometry_guards_abort_through_the_fatal_path) {
     bt_death_expect_abort("vt.alg_at_rejects_an_out_of_range_index", "index out of range",
                           vt_death_alg_at_out_of_range);
-    bt_death_expect_abort("vt.default_parse_rejects_an_oversized_move", "move size over the scratch cap",
+    bt_death_expect_abort("vt.default_parse_rejects_an_oversized_move",
+                          "move size over the scratch cap",
                           vt_death_default_parse_move_size_over_cap);
 }
