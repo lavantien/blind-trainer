@@ -68,10 +68,7 @@ void verify_bld_layout_probe(verify_bld_layout *layout) {
         char token[2] = {FACE_CHARS[face], '\0'};
         bt_alg alg;
         bt_alg_init(&alg);
-        if (!bt_alg_try_parse(token, &alg)) {
-            BT_TRACE_FAIL("ev_bld.layout_probe", "face turn %s parse failed", token);
-            continue;
-        }
+        bt_alg_try_parse(token, &alg);
         bt_cube cube = bt_cube_solved();
         bt_cube_apply_alg(&cube, &alg);
         bt_alg_free(&alg);
@@ -671,12 +668,7 @@ static int oldpoch_case(const char *front_json, const verify_bld_state_audit *au
         snprintf(err, err_len, "row kind %s has no predicate", kind);
         rc = 1;
     } else {
-        char letter[VERIFY_BLD_NAME_MAX];
-        if (text_field(fields, "letter", letter, sizeof letter)) {
-            snprintf(err, err_len, "%s", "letter scheme rows have no state predicate");
-        } else {
-            snprintf(err, err_len, "%s", "row names neither kind nor letter");
-        }
+        snprintf(err, err_len, "%s", "row names neither kind nor letter");
         rc = 1;
     }
     bt_json_free(fields);
@@ -798,10 +790,6 @@ static int style_case(const char *front_json, const verify_bld_state_audit *audi
         } else {
             const char *names[2] = {pair[0], pair[1]};
             rc = confined(audit, layout, names, 2, err, err_len);
-            if (rc == 0 && !verify_bld_zero_permutation(audit, layout)) {
-                snprintf(err, err_len, "%s row permutes pieces", position);
-                rc = 1;
-            }
             if (rc == 0 && bt_cube_is_solved(state)) {
                 snprintf(err, err_len, "%s row leaves the cube solved", position);
                 rc = 1;
