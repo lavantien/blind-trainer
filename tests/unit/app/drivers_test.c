@@ -146,6 +146,33 @@ static void restore_appdata(const char *saved) {
     _putenv(setting);
 }
 
+static const char *config_with_title(const char *tag, const char *title) {
+    static char config_path[TA_PATH_MAX];
+    const char *dir = ta_temp_dir("drivers", tag);
+    snprintf(config_path, sizeof config_path, "%s/config.json", dir);
+    char text[512];
+    snprintf(text, sizeof text,
+             "{\"app\":{\"window\":{\"width\":320,\"height\":240,\"title\":\"%s\"},"
+             "\"memo\":{\"cadence_ms\":800,\"mode\":\"per-orbit\"},\"drill\":{\"reps\":4}}}",
+             title);
+    ta_write_file(config_path, text);
+    return config_path;
+}
+
+static void swap_config(const char *path, char *saved, size_t saved_len) {
+    const char *current = getenv("BT_CONFIG");
+    snprintf(saved, saved_len, "%s", current != NULL && current[0] != '\0' ? current : "");
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", path);
+    _putenv(setting);
+}
+
+static void unswap_config(const char *saved) {
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", saved);
+    _putenv(setting);
+}
+
 typedef struct {
     const char *title;
     volatile int posted;
@@ -168,6 +195,9 @@ static unsigned __stdcall smoke_close_poster(void *raw) {
 BT_TEST(drivers, smoke_interrupted_by_window_close_exits_nonzero) {
     char saved_appdata[TA_PATH_MAX];
     sandbox_appdata("smoke-close-user", saved_appdata, sizeof saved_appdata);
+    char saved_config[TA_PATH_MAX];
+    swap_config(config_with_title("smoke-close-config", "drivers interrupted probe"), saved_config,
+                sizeof saved_config);
     BT_CHECK(bt_app_focus_sentinel_acquire());
     bt_app_ctx ctx;
     bt_app_shot_mode mode;
@@ -190,6 +220,7 @@ BT_TEST(drivers, smoke_interrupted_by_window_close_exits_nonzero) {
     BT_CHECK(probe.posted);
     BT_CHECK_EQ(code, 1);
     bt_app_focus_sentinel_release();
+    unswap_config(saved_config);
     restore_appdata(saved_appdata);
 }
 

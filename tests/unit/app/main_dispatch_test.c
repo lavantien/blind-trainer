@@ -38,6 +38,19 @@ static void dispatch_restore(const char *saved) {
     _putenv(setting);
 }
 
+static const char *dispatch_config_with_title(const char *tag, const char *title) {
+    static char config_path[TA_PATH_MAX];
+    const char *dir = ta_temp_dir("dispatch", tag);
+    snprintf(config_path, sizeof config_path, "%s/config.json", dir);
+    char text[512];
+    snprintf(text, sizeof text,
+             "{\"app\":{\"window\":{\"width\":320,\"height\":240,\"title\":\"%s\"},"
+             "\"memo\":{\"cadence_ms\":800,\"mode\":\"per-orbit\"},\"drill\":{\"reps\":4}}}",
+             title);
+    ta_write_file(config_path, text);
+    return config_path;
+}
+
 BT_TEST(main_dispatch, rejects_two_shot_flags_with_usage_error) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "bt-app.exe");
@@ -125,10 +138,19 @@ BT_TEST(main_dispatch, reports_a_font_failure_and_exits_one) {
 BT_TEST(main_dispatch, interactive_close_returns_zero) {
     char saved_appdata[TA_PATH_MAX];
     dispatch_appdata("interactive-user", saved_appdata, sizeof saved_appdata);
+    const char *config_path =
+        dispatch_config_with_title("interactive-config", "dispatch interactive probe");
+    const char *saved_config = getenv("BT_CONFIG");
+    char saved_config_text[TA_PATH_MAX * 2];
+    snprintf(saved_config_text, sizeof saved_config_text, "%s",
+             saved_config != NULL ? saved_config : "");
+    char setting[TA_PATH_MAX * 2];
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
+    _putenv(setting);
     BT_CHECK(bt_app_focus_sentinel_acquire());
     dispatch_close_probe probe;
     memset(&probe, 0, sizeof probe);
-    probe.title = "blind trainer";
+    probe.title = "dispatch interactive probe";
     uintptr_t thread = _beginthreadex(NULL, 0, dispatch_close_poster, &probe, 0, NULL);
     BT_CHECK(thread != 0);
     char exe[BT_PATH_MAX];
@@ -141,6 +163,8 @@ BT_TEST(main_dispatch, interactive_close_returns_zero) {
     for (int attempt = 0; attempt < 100 && !probe.posted; attempt++) {
         Sleep(20);
     }
+    snprintf(setting, sizeof setting, "BT_CONFIG=%s", saved_config_text);
+    _putenv(setting);
     fprintf(stderr, "main_dispatch: interactive rc %d code %d posted %d\n", rc, code, probe.posted);
     BT_CHECK(probe.posted);
     BT_CHECK_EQ(rc, 0);

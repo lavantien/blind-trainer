@@ -1,0 +1,217 @@
+2026-11-06T04:23:34 [entry] test-unit app
+2026-11-06T04:23:34 [skip] compile src\app\config.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\driver_keys.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\fonts.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\logic.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\net.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\open_url.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\persist.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\replay_scene.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\smoke.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\states.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\theme.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\ui.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\usage.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\usage_script.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\views\algs\browse.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\views\algs\detail.c up to date
+2026-11-06T04:23:34 [skip] compile src\app\views\algs\display.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\algs\layout.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\case_drill_view.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\drill.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\drill_card.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\drill_view.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\fatal.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\frame.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\images.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\memo.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\menu.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\net_view.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\replay.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\solve.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\state.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\views\stats.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\window.c up to date
+2026-11-06T04:23:35 [skip] compile src\app\window_focus.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\bt_harness.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\bt_trace.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\config.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\fsrs_math.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\json.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\paths.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\rng.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\sha256.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\space.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\strbuf.c up to date
+2026-11-06T04:23:35 [skip] compile src\common\when.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\alg.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\analysis.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\cube.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\expand.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\lib.c up to date
+2026-11-06T04:23:35 [skip] compile src\core\moves.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\commutator.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\corpus.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\db.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\digest.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\fsrs.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\import.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\migrations_embedded.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\notation.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\paths.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_algs.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_cards.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_seeds.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_settings.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_solves.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_srs.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\repo_user.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\seedpack\hashing.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\seedpack\mod.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\seedpack\parse.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\seedpack\registry.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\seedpack\rulings.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\srs.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\tsv.c up to date
+2026-11-06T04:23:35 [skip] compile src\data\verify.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\alloc.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\dist.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\eval.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\features.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\ga.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\hash.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\inventory.c up to date
+2026-11-06T04:23:35 [skip] compile src\ga\lib.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\fto.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\lib.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\mega.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\nxn.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\pyra.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\skewb.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\sq1.c up to date
+2026-11-06T04:23:35 [skip] compile src\puzzles\tier1.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\classifier.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\lib.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\memo.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\pairs.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\scheme.c up to date
+2026-11-06T04:23:35 [skip] compile src\scheme\scramble.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\e2e_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\fonts_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\logic_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\net_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\open_url_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\replay_scene_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\smoke_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\solve_more_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\theme_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\ui_draw_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\ui_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\usage_script_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\usage_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_algs_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_browse_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_case_drill_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_case_drill_view_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_detail_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_display_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_draw_b_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_draw_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_drill_card_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_fatal_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_flow_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_images_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_memo_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_menu_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_replay_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_solve_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_state_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\view_stats_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\views_case_drill_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\views_solve_test.c up to date
+2026-11-06T04:23:35 [skip] compile tests\unit\app\window_test.c up to date
+2026-11-06T04:23:35 [skip] compile vendor\sqlite\sqlite3.c up to date
+2026-11-06T04:23:38 [repro] 362 object timestamps zeroed
+2026-11-06T04:23:38 [compile] 230 compiled, 230 ok
+2026-11-06T04:24:11 [summary] 46 passed, 0 failed
+2026-11-06T04:24:11 [exit] test-unit code=0
+src/app regions: 6841/7984 (85.7%)
+src/app/boot.c: 87/94
+  dark lines: 23 25 25 25 27-28 28 28 77 77-82
+src/app/config.c: 155/179
+  dark lines: 9 13-41 15 15 15 15-17 16 17-18 18-41 18 18 18 18-21 20 21-22 21 22-41 23 23 23 23 23 23 23 23-26 25 25 25 25 26-27 27-41 28 28 28 28-31 30 31-32 32-41 34 34
+src/app/driver_keys.c: 92/108
+  dark lines: 12-34 21 23 25 25 25 32-33 65-71 68 94 94-96 104 104-106 114 114-116
+  dark fns: bt_app_driver_key_char
+src/app/drivers.c: 133/173
+  dark lines: 11 23 25 25 25 32-98 35-36 38-39 41-42 44-45 47-48 50-51 51-53 53-54 56-57 59-60 62-63 65-66 68-69 71-72 74-75 75-77 77-78 78-80 80-81 83-84 86-87 89-90 92-93 95-96 114 114-117 120 120 122 122-127 123 211 224 224-228
+src/app/fonts.c: 113/121
+  dark lines: 19 19-21 48 48-54 48 48 48-51 51 51-54 58 58-61 83 83-85 89 89-91
+src/app/logic.c: 251/282
+  dark lines: 6 12 23 25 25 25 54 54-56 57 57-59 68 68 316 316-321 322 322-326 323 323 323 323-325 341 341-349 352 352-358 404 404-408 419 419-423
+src/app/main.c: 44/53
+  dark lines: 23 25 25 25 30 30-33 43 43-48 52 52 72 72-74
+src/app/net.c: 97/106
+  dark lines: 23 25 25 25 49 49-53 62-83 65-66 68-69 71-72 74-75 77-78 80-81 81-83
+src/app/open_url.c: 57/81
+  dark lines: 21 23 25 25 25 53-72 56 56 57 57 57 57 57 57-67 59 60 60 60 60 61 61 61-63 63 63-66 67 67-69
+  dark fns: open_url.c:open_url_platform
+src/app/persist.c: 287/354
+  dark lines: 23 25 25 25 86 86-89 106 106-109 111 111-115 124 124 124 124-126 127 127 127 127-130 131 131-134 136 136-140 197-203 233 233-239 272 272-275 318 318-323 349 349-353 355 355-359 360 360-364 365 365-368 409 409-415 426
+  dark fns: persist.c:prefix_db_shown
+src/app/replay_scene.c: 355/382
+  dark lines: 23 25 25 25 32-33 33 48-49 49 65-77 67-68 69-70 71-72 73-74 75-76 111 111-113 122-123 123-126 126 144-150 146-147 148-149 169-178 172-173 175-176 187-193 189-190 191-192 200-234 205-206 212-213 218-219 227-228 258-264 260-261 262-263 288 288-290 365 365-367
+src/app/smoke.c: 106/111
+  dark lines: 29 49 49-51 60 60-62 116-174 134-135 160-161 161-164 171-172 172-174
+src/app/ui.c: 323/379
+  dark lines: 11 23 25 25 25 56 56-58 59 59-61 62 62-64 86 86-88 92 92-94 96 96-98 112 112-114 116 116-118 147 147-149 150 150-152 175 175-180 181 181-183 198 198-200 278 278-280 333 333 334 334-336 385 385-387 390
+src/app/usage.c: 150/177
+  dark lines: 23 25 25 25 62 62-64 63 82-83 83-88 83 83 83-85 85-86 86-87 103 103-107 133 133-135 149 149-153 171 171 186 186-188 201-213 203-204 205-206 207-208 209-210 211-212 214-215 215 219-231 221-222 222-223 223-224 224-225 225-226 226-227 227-228
+src/app/usage_script.c: 36/40
+  dark lines: 23 23-26 25 25 25
+src/app/views/algs/browse.c: 348/408
+  dark lines: 11 13 13-15 14 23 25 25 25 26 26-29 56 56-60 131 131-134 221 221-226 225 276 276-281 278 286 286-291 290 301 301-305 304 308 308-312 311 357 366 366-369 370 389 389-392 436 436-439 453 453-456 458
+src/app/views/algs/detail.c: 229/289
+  dark lines: 23 25 25 25 41 72 72-75 84 84-87 95 95-98 167 167-174 179-190 181 181 181-188 188-189 189 207 207-209 210 210-212 217 217-219 219 219-221 221 221-224 224 224-226 236 236-238 255 255-259 265 265-270 276 276-278 305
+  dark fns: detail.c:tier1_engine_check
+src/app/views/algs/display.c: 84/87
+  dark lines: 23 50 50-53 60 60-66
+src/app/views/algs/layout.c: 108/111
+  dark lines: 23 41-66 45-46 50-51 51-54 54-55 58-59 62-63 212 212-215
+src/app/views/algs/mod.c: 585/687
+  dark lines: 22 23 23 24 25 25 25 25 27 30 30-32 34 154 154-160 158 204-205 205-206 271 271-286 274 274 274-277 278 278 278-281 282 282 282-285 317 317 317 317-320 345 345-349 348 373 373 410 410-412 417
+src/app/views/case_drill.c: 378/443
+  dark lines: 23 25 25 25 109 109-112 147 147-150 155 155-158 166 191 191-195 197 197-206 211 211-214 220 220-223 240 241 241-243 244 244-246 278 278-280 291 291-299 294 294 294 294-297 309 309-311 313-314 314 320 320-323 382 382-385
+src/app/views/case_drill_view.c: 161/175
+  dark lines: 23 25 25 25 59 61 80 80-82 141 164 170 170-172 190 217 217-219 287 287-289 322 322-326
+src/app/views/drill.c: 306/336
+  dark lines: 23 25 25 25 70 70-74 178 219 219-226 233 233-236 362 362-364 376-391 379-380 382-383 385-386 388-389 434-440 491 491-493 540 540-543 545 545-548 550 550-552 554 554-557 574 574-577 580 580-583 597-598 598-599 610 610-612
+  dark fns: drill.c:clear_pair
+src/app/views/drill_card.c: 175/222
+  dark lines: 15-47 19-20 23-24 23 25 25 25 27-28 31-32 35-36 39-40 40-43 43-44 44-47 55 55-58 67 84 84 157 157-160 192 192-197 203 203-207 209 209-213 219 219-223 220 220 220 221 221 221 222 222 222 229 229-233
+src/app/views/drill_view.c: 81/92
+  dark lines: 23 25 25 25 37 37 197 197-201 202 202-207
+src/app/views/fatal.c: 27/33
+  dark lines: 23 25 25 25 38 54 54-58
+src/app/views/frame.c: 9/10
+  dark lines: 54
+src/app/views/memo.c: 280/334
+  dark lines: 18 22 23 25 25 25 68 68-70 117 117-120 140 140-144 151 151 151-160 152 152 152-156 156-157 157-160 162 162-166 171 171-178 172 172 172-176 176-177 177-178 199 199 260 260-262 278 278 287 287-289 307 307-309 350
+src/app/views/menu.c: 126/152
+  dark lines: 10 21 21-23 23 25 25 25 30-58 33-34 37-38 40-41 47-48 51-52 55-56 56-58 63-79 65-66 67-68 69-70 70-71 71-72 73-74 75-76 77-78 78-79 104 104-108 107 116 116-121 120 137 137 187 187-189 206 206-208 227 272 272-276
+src/app/views/replay.c: 133/145
+  dark lines: 25 25 25 30 30-33 87 105 105-107 108 108-110 114 114 117 117-119 128 128 129 129 134 134
+src/app/views/settings.c: 181/202
+  dark lines: 23 25 25 25 81 81-83 112 112-114 189 189-192 212 215 215-217 218 218-222 223 223-226 246-247 247 267 267-270 316 316-322 318 318 318-321 340 340-342 360 360-364
+src/app/views/solve.c: 406/447
+  dark lines: 21 23 25 25 25 35 35-38 40 40-43 157 157-161 356 356-361 395-400 406 406-410 409 453-459 498 498-501 517 517-520 598 598-600 608 608-610 647 647-649 657 657 657 657 657-662 723 723-727
+  dark fns: bt_view_solve_app_free, bt_view_solve_enter_phase
+src/app/views/state.c: 194/227
+  dark lines: 23 25 25 25 67 67-71 70 97 121 121-123 130 130-132 138 138-140 149 149-151 173 173-178 181 182 183 186 186-193 201 201-207 253
+src/app/views/stats.c: 243/294
+  dark lines: 23 25 25 25 33 33 34-35 35 44-45 45-49 45 45 45-47 46 46 46 46 47-48 48 94 94-98 108 108 109 109 109 109-114 160 162 162-169 164 193 193-201 249 249 250 250-255 254 324 324-327
+src/app/window.c: 179/216
+  dark lines: 23 25 25 25 26 26-28 34 35 35-37 55 58 58-60 89 90 90-92 123 123-125 125 125-127 129 129 130 130 131 131 171 171 171 171-173 187 187-191 203 203-209 218 218-223 242 242-246
+src/app/window_focus.c: 203/315
+  dark lines: 20 20-24 23 25 25 25 72 72-74 72 72 72-74 91 91-93 94 94-96 118 118 118 119 119-121 132 132-136 143 143 146 146-148 147 162 162-164 170 170-172 171 173 173 173 173-175 180-192 181 181 181
+  dark fns: window_focus.c:cursor_lands_on_watched_window, window_focus.c:give_foreground_back
