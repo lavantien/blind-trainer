@@ -1,11 +1,26 @@
 #include "common/bt_harness.h"
 #include "common/bt_trace.h"
 
+#include <signal.h>
+
 #ifdef _WIN32
 #include <direct.h>
 #else
 #include <sys/stat.h>
 #endif
+
+__attribute__((weak)) int __llvm_profile_write_file(void);
+
+static void bt_harness_sigabrt(int sig) {
+    if (__llvm_profile_write_file != NULL) {
+        __llvm_profile_write_file();
+    }
+    signal(sig, SIG_DFL);
+}
+
+static void bt_harness_install_sigabrt_writer(void) {
+    signal(SIGABRT, bt_harness_sigabrt);
+}
 
 FILE *bt_test_open_scratch(const char *name) {
 #ifdef _WIN32
@@ -80,6 +95,7 @@ BT_NORETURN void bt_harness_exit_failure(void) {
 }
 
 int bt_harness_run(const char *suite, const bt_test_entry *tests, size_t count) {
+    bt_harness_install_sigabrt_writer();
     g_passed = 0;
     g_failed = 0;
     for (size_t i = 0; i < count; i++) {
