@@ -161,6 +161,8 @@ static bool expand_peek_is(const expand_tokens *tokens, uint8_t kind) {
 
 static bool expand_seq(expand_tokens *tokens, size_t depth, expand_stop stop, bt_alg *out);
 
+static bool expand_sum(expand_tokens *tokens, size_t depth, expand_stop stop, bt_alg *out);
+
 static bool alg_append(bt_alg *dst, const bt_alg *src) {
     for (size_t i = 0; i < src->len; i++) {
         if (!bt_alg_push(dst, src->items[i])) {
@@ -179,6 +181,155 @@ static bool alg_append_inverse(bt_alg *dst, const bt_alg *src) {
     return true;
 }
 
+static bool core_tail_kind(uint8_t kind) {
+    return (kind == TOK_MV || kind == TOK_LPAREN || kind == TOK_LBRACKET || kind == TOK_COLON) != 0;
+}
+
+static bool core_tail_is_closed(const expand_tokens *tokens) {
+    if (tokens->index >= tokens->len) {
+        return false;
+    }
+    return core_tail_kind(tokens->items[tokens->index].kind);
+}
+
+static bool expand_core(expand_tokens *tokens, size_t depth, bt_alg *out);
+
+static bool expand_group_paren(expand_tokens *tokens, size_t depth, bt_alg *out) {
+    if (depth >= BT_EXPAND_MAX_DEPTH) {
+        return false;
+    }
+    tokens->index += 1;
+    bt_alg inner;
+    bt_alg_init(&inner);
+    if (!expand_sum(tokens, depth + 1, STOP_PAREN, &inner)) {
+        bt_alg_free(&inner);
+        return false;
+    }
+    if (!expand_peek_is(tokens, TOK_RPAREN)) {
+        bt_alg_free(&inner);
+        return false;
+    }
+    tokens->index += 1;
+    size_t repeat = 1;
+    if (expand_peek_is(tokens, TOK_COUNT)) {
+        repeat = tokens->items[tokens->index].count;
+        tokens->index += 1;
+    }
+    if (repeat == 0 || repeat > BT_EXPAND_REPEAT_LIMIT) {
+        bt_alg_free(&inner);
+        return false;
+    }
+    if (inner.len > BT_EXPAND_EXPAND_LIMIT / repeat) {
+        bt_alg_free(&inner);
+        return false;
+    }
+    bool ok = true;
+    for (size_t r = 0; ok && r < repeat; r++) {
+        ok = alg_append(out, &inner);
+    }
+    bt_alg_free(&inner);
+    return ok;
+}
+
+static bool expand_group_bracket(expand_tokens *tokens, size_t depth, bt_alg *out) {
+    if (depth >= BT_EXPAND_MAX_DEPTH) {
+        return false;
+    }
+    tokens->index += 1;
+    bt_alg first;
+    bt_alg_init(&first);
+    if (!expand_sum(tokens, depth + 1, STOP_BRACKET, &first)) {
+        bt_alg_free(&first);
+        return false;
+    }
+    if (expand_peek_is(tokens, TOK_COMMA)) {
+        tokens->index += 1;
+        bt_alg second;
+        bt_alg_init(&second);
+        if (!expand_sum(tokens, depth + 1, STOP_BRACKET, &second)) {
+            bt_alg_free(&first);
+            bt_alg_free(&second);
+            return false;
+        }
+        if (!expand_peek_is(tokens, TOK_RBRACKET)) {
+            bt_alg_free(&first);
+            bt_alg_free(&second);
+            return false;
+        }
+        tokens->index += 1;
+        bool ok = alg_append(out, &first);
+        if (ok) {
+            ok = alg_append(out, &second);
+        }
+        if (ok) {
+            ok = alg_append_inverse(out, &first);
+        }
+        if (ok) {
+            ok = alg_append_inverse(out, &second);
+        }
+        bt_alg_free(&first);
+        bt_alg_free(&second);
+        return ok;
+    }
+    if (expand_peek_is(tokens, TOK_RBRACKET)) {
+        tokens->index += 1;
+        bool ok = alg_append(out, &first);
+        bt_alg_free(&first);
+        return ok;
+    }
+    bt_alg_free(&first);
+    return false;
+}
+
+static bool expand_core(expand_tokens *tokens, size_t depth, bt_alg *out) {
+    if (tokens->index >= tokens->len) {
+        return false;
+    }
+    uint8_t kind = tokens->items[tokens->index].kind;
+    if (kind == TOK_LPAREN) {
+        return expand_group_paren(tokens, depth, out);
+    }
+    if (kind == TOK_LBRACKET) {
+        return expand_group_bracket(tokens, depth, out);
+    }
+    if (kind != TOK_MV) {
+        return false;
+    }
+    bt_alg setup;
+    bt_alg_init(&setup);
+    if (!bt_alg_push(&setup, tokens->items[tokens->index].mv)) {
+        return false;
+    }
+    tokens->index += 1;
+    if (!expand_peek_is(tokens, TOK_COLON)) {
+        bool ok = alg_append(out, &setup);
+        bt_alg_free(&setup);
+        return ok;
+    }
+    if (depth >= BT_EXPAND_MAX_DEPTH) {
+        bt_alg_free(&setup);
+        return false;
+    }
+    tokens->index += 1;
+    bt_alg core;
+    bt_alg_init(&core);
+    if (!expand_core(tokens, depth + 1, &core) || core_tail_is_closed(tokens)) {
+        bt_alg_free(&setup);
+        bt_alg_free(&core);
+        return false;
+    }
+    bool ok = alg_append(out, &setup);
+    if (ok) {
+        ok = alg_append(out, &core);
+    }
+    if (ok) {
+        ok = alg_append_inverse(out, &setup);
+    }
+    bt_alg_free(&setup);
+    bt_alg_free(&core);
+    return ok;
+}
+
 static bool expand_unit(expand_tokens *tokens, size_t depth, expand_stop stop, bt_alg *out) {
     bt_alg setup;
     bt_alg_init(&setup);
@@ -187,6 +338,10 @@ static bool expand_unit(expand_tokens *tokens, size_t depth, expand_stop stop, b
         return false;
     }
     if (expand_peek_is(tokens, TOK_COLON)) {
+        if (tokens->items[tokens->index - 1].kind != TOK_MV) {
+            bt_alg_free(&setup);
+            return false;
+        }
         if (depth >= BT_EXPAND_MAX_DEPTH) {
             bt_alg_free(&setup);
             return false;
@@ -194,7 +349,7 @@ static bool expand_unit(expand_tokens *tokens, size_t depth, expand_stop stop, b
         tokens->index += 1;
         bt_alg core;
         bt_alg_init(&core);
-        if (!expand_unit(tokens, depth + 1, stop, &core)) {
+        if (!expand_core(tokens, depth + 1, &core) || core_tail_is_closed(tokens)) {
             bt_alg_free(&setup);
             bt_alg_free(&core);
             return false;
@@ -245,92 +400,11 @@ static bool expand_seq(expand_tokens *tokens, size_t depth, expand_stop stop, bt
             return false;
         }
         if (tok.kind == TOK_LPAREN) {
-            if (depth >= BT_EXPAND_MAX_DEPTH) {
-                return false;
-            }
-            tokens->index += 1;
-            bt_alg inner;
-            bt_alg_init(&inner);
-            if (!expand_sum(tokens, depth + 1, STOP_PAREN, &inner)) {
-                bt_alg_free(&inner);
-                return false;
-            }
-            if (!expand_peek_is(tokens, TOK_RPAREN)) {
-                bt_alg_free(&inner);
-                return false;
-            }
-            tokens->index += 1;
-            size_t repeat = 1;
-            if (expand_peek_is(tokens, TOK_COUNT)) {
-                repeat = tokens->items[tokens->index].count;
-                tokens->index += 1;
-            }
-            if (repeat == 0 || repeat > BT_EXPAND_REPEAT_LIMIT) {
-                bt_alg_free(&inner);
-                return false;
-            }
-            if (inner.len > BT_EXPAND_EXPAND_LIMIT / repeat) {
-                bt_alg_free(&inner);
-                return false;
-            }
-            bool ok = true;
-            for (size_t r = 0; ok && r < repeat; r++) {
-                ok = alg_append(out, &inner);
-            }
-            bt_alg_free(&inner);
-            if (!ok) {
+            if (!expand_group_paren(tokens, depth, out)) {
                 return false;
             }
         } else if (tok.kind == TOK_LBRACKET) {
-            if (depth >= BT_EXPAND_MAX_DEPTH) {
-                return false;
-            }
-            tokens->index += 1;
-            bt_alg first;
-            bt_alg_init(&first);
-            if (!expand_sum(tokens, depth + 1, STOP_BRACKET, &first)) {
-                bt_alg_free(&first);
-                return false;
-            }
-            if (expand_peek_is(tokens, TOK_COMMA)) {
-                tokens->index += 1;
-                bt_alg second;
-                bt_alg_init(&second);
-                if (!expand_sum(tokens, depth + 1, STOP_BRACKET, &second)) {
-                    bt_alg_free(&first);
-                    bt_alg_free(&second);
-                    return false;
-                }
-                if (!expand_peek_is(tokens, TOK_RBRACKET)) {
-                    bt_alg_free(&first);
-                    bt_alg_free(&second);
-                    return false;
-                }
-                tokens->index += 1;
-                bool ok = alg_append(out, &first);
-                if (ok) {
-                    ok = alg_append(out, &second);
-                }
-                if (ok) {
-                    ok = alg_append_inverse(out, &first);
-                }
-                if (ok) {
-                    ok = alg_append_inverse(out, &second);
-                }
-                bt_alg_free(&first);
-                bt_alg_free(&second);
-                if (!ok) {
-                    return false;
-                }
-            } else if (expand_peek_is(tokens, TOK_RBRACKET)) {
-                tokens->index += 1;
-                bool ok = alg_append(out, &first);
-                bt_alg_free(&first);
-                if (!ok) {
-                    return false;
-                }
-            } else {
-                bt_alg_free(&first);
+            if (!expand_group_bracket(tokens, depth, out)) {
                 return false;
             }
         } else if (tok.kind == TOK_MV) {
@@ -383,6 +457,9 @@ bool bt_expand(const char *text, bt_alg *out) {
     bt_alg moves;
     bt_alg_init(&moves);
     bool ok = expand_sum(&tokens, 0, STOP_END, &moves);
+    if (ok && tokens.index != tokens.len) {
+        ok = false;
+    }
     free(tokens.items);
     if (!ok || moves.len > BT_EXPAND_EXPAND_LIMIT) {
         bt_alg_free(&moves);

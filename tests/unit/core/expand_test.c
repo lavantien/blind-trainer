@@ -558,3 +558,29 @@ BT_TEST(expand, colon_chains_are_depth_bounded_and_fail_closed) {
     bt_alg_free(&out);
     bt_strbuf_free(&chain);
 }
+
+BT_TEST(expand, trailing_moves_after_a_conjugate_fail_closed) {
+    const char *bad[] = {
+        "R2 U':[S,R2] U",
+        "R2 U':[S,R2] U D'",
+        "R:[R,U] : D",
+        "(R U)2 : D",
+    };
+    for (size_t i = 0; i < 4; i++) {
+        bt_alg out;
+        bt_alg_init(&out);
+        BT_CHECK(!bt_expand(bad[i], &out));
+        bt_alg_free(&out);
+    }
+}
+
+BT_TEST(expand, the_plus_form_appends_after_a_conjugate) {
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 64);
+    fmt_of("R2 U':[S,R2] + U", &sb);
+    BT_CHECK_EQ(sb.data, "R2 U' S R2 S' R2 U R2 U");
+    bt_strbuf_free(&sb);
+    bt_cube got = state_of_text("R2 U':[S,R2] + U");
+    bt_cube want = repeated_ref("R2 U' S R2 S' R2 U R2 U", 1);
+    BT_CHECK(bt_cube_eq(&got, &want));
+}
