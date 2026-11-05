@@ -280,3 +280,40 @@ BT_TEST(json, lone_surrogate_escapes_are_rejected) {
         BT_CHECK(strstr(error.message, "surrogate") != NULL);
     }
 }
+
+BT_TEST(json, escaped_nul_is_rejected) {
+    parse_err("\"a\\u0000b\"", 1, 9, "escaped nul");
+    parse_err("\"\\u0000\"", 1, 8, "escaped nul");
+    parse_err("{\"k\\u0000ey\":1}", 1, 10, "escaped nul");
+}
+
+BT_TEST(json, object_growth_paths_survive_replace_and_extend) {
+    bt_json_value *object = bt_json_new_object();
+    BT_CHECK(object != NULL);
+    for (int i = 0; i < 8; i++) {
+        char key[8];
+        snprintf(key, sizeof key, "k%d", i);
+        BT_CHECK_EQ(bt_json_object_set(object, key, bt_json_new_integer(i)), 0);
+    }
+    BT_CHECK_EQ(bt_json_object_set(object, "k3", bt_json_new_bool(1)), 0);
+    BT_CHECK_EQ(bt_json_object_set(object, "extra", bt_json_new_string("v")), 0);
+    bt_json_value *array = bt_json_new_array();
+    BT_CHECK(array != NULL);
+    for (int i = 0; i < 5; i++) {
+        BT_CHECK_EQ(bt_json_array_push(array, bt_json_new_integer(i)), 0);
+    }
+    BT_CHECK_EQ(bt_json_object_set(object, "arr", array), 0);
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    BT_CHECK_EQ(bt_json_serialize(object, &sb), 0);
+    BT_CHECK(strcmp(sb.data,
+                    "{\"arr\":[0,1,2,3,4],\"extra\":\"v\",\"k0\":0,\"k1\":1,\"k2\":2,\"k3\":true,"
+                    "\"k4\":4,\"k5\":5,\"k6\":6,\"k7\":7}") == 0);
+    bt_json_value *reparsed = NULL;
+    parse_ok(sb.data, &reparsed);
+    BT_CHECK_EQ(bt_json_integer_or(bt_json_get(reparsed, "k7"), -1), 7);
+    BT_CHECK_EQ(bt_json_at(bt_json_get(reparsed, "arr"), 4)->as.number, 4);
+    bt_json_free(reparsed);
+    bt_strbuf_free(&sb);
+    bt_json_free(object);
+}

@@ -325,6 +325,10 @@ static int parse_escaped_codepoint(bt_json_reader *reader, bt_strbuf *sb) {
     if (read_hex4(reader, &codepoint) != 0) {
         return -1;
     }
+    if (codepoint == 0) {
+        fail_here(reader, "escaped nul in string");
+        return -1;
+    }
     if (codepoint >= 0xD800 && codepoint <= 0xDBFF) {
         if (reader->end - reader->cursor < 2 || reader->cursor[0] != '\\' ||
             reader->cursor[1] != 'u') {
@@ -594,8 +598,14 @@ static bt_json_value *parse_object(bt_json_reader *reader, int depth) {
         }
         size_t count = object->as.object.count;
         char **keys = (char **)realloc(object->as.object.keys, (count + 1) * sizeof(char *));
+        if (keys != NULL) {
+            object->as.object.keys = keys;
+        }
         bt_json_value **values = (bt_json_value **)realloc(object->as.object.values,
                                                            (count + 1) * sizeof(bt_json_value *));
+        if (values != NULL) {
+            object->as.object.values = values;
+        }
         if (keys == NULL || values == NULL) {
             free(key);
             bt_json_free(value);
@@ -603,8 +613,6 @@ static bt_json_value *parse_object(bt_json_reader *reader, int depth) {
             fail_here(reader, "object growth failed");
             return NULL;
         }
-        object->as.object.keys = keys;
-        object->as.object.values = values;
         object->as.object.keys[count] = key;
         object->as.object.values[count] = value;
         object->as.object.count = count + 1;
@@ -818,21 +826,25 @@ int bt_json_object_set(bt_json_value *object, const char *key, bt_json_value *va
     }
     size_t count = object->as.object.count;
     char **keys = (char **)realloc(object->as.object.keys, (count + 1) * sizeof(char *));
+    if (keys != NULL) {
+        object->as.object.keys = keys;
+    }
     bt_json_value **values =
         (bt_json_value **)realloc(object->as.object.values, (count + 1) * sizeof(bt_json_value *));
+    if (values != NULL) {
+        object->as.object.values = values;
+    }
     if (keys == NULL || values == NULL) {
         BT_TRACE_FAIL("json.object_set", "growth failed");
         BT_TRACE_EXIT("json.object_set");
         return -1;
     }
-    keys[count] = text_dup(key);
-    if (keys[count] == NULL) {
+    object->as.object.keys[count] = text_dup(key);
+    if (object->as.object.keys[count] == NULL) {
         BT_TRACE_FAIL("json.object_set", "key copy failed");
         BT_TRACE_EXIT("json.object_set");
         return -1;
     }
-    object->as.object.keys = keys;
-    object->as.object.values = values;
     object->as.object.values[count] = value;
     object->as.object.count = count + 1;
     BT_TRACE_EXIT("json.object_set");
