@@ -30,6 +30,97 @@ BT_TEST(verify_lib, artifacts_dir_from_root_only_keeps_the_base_drive) {
     BT_CHECK(strcmp(out, "C:/rg/verify") == 0);
 }
 
+static void scratch_simcheck(const char *tag, const char *body, char root_out[BT_PATH_MAX]) {
+    char temp[BT_PATH_MAX];
+    DWORD n = GetTempPathA(BT_PATH_MAX, temp);
+    BT_CHECK(n > 0 && n < BT_PATH_MAX);
+    snprintf(root_out, BT_PATH_MAX, "%sbt-simcheck-%s-%lu", temp, tag, GetCurrentProcessId());
+    CreateDirectoryA(root_out, NULL);
+    if (body != NULL) {
+        char path[BT_PATH_MAX];
+        snprintf(path, sizeof path, "%s/simcheck.tsv", root_out);
+        FILE *file = fopen(path, "wb");
+        BT_CHECK(file != NULL);
+        if (file != NULL) {
+            fputs(body, file);
+            fclose(file);
+        }
+    }
+}
+
+static void drop_scratch_simcheck(const char *root) {
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s/simcheck.tsv", root);
+    DeleteFileA(path);
+    RemoveDirectoryA(root);
+}
+
+static int simcheck_error_is(const char *tag, const char *body, const char *needle) {
+    char root[BT_PATH_MAX];
+    scratch_simcheck(tag, body, root);
+    verify_sim_map map;
+    verify_sim_map_init(&map);
+    char err[VERIFY_ERR_MAX];
+    err[0] = '\0';
+    int rc = verify_load_simcheck(root, &map, err, sizeof err);
+    verify_sim_map_free(&map);
+    drop_scratch_simcheck(root);
+    BT_CHECK(rc != 0);
+    BT_CHECK(strstr(err, needle) != NULL);
+    return 1;
+}
+
+BT_TEST(verify_lib, simcheck_rejects_each_malformed_shape) {
+    BT_CHECK(simcheck_error_is("absent", NULL, "simcheck.tsv"));
+    BT_CHECK(simcheck_error_is(
+        "header", "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnotes\n", "header changed"));
+    BT_CHECK(simcheck_error_is("shortrow",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t2\tUF-UB-UL\t9\t12\tCYCLE_A\n",
+                               "has 7 columns"));
+    BT_CHECK(simcheck_error_is("solver",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "stranger\tedge\t2\tUF-UB-UL\t9\t12\tCYCLE_A\tclean\n",
+                               "solver stranger is unknown"));
+    BT_CHECK(simcheck_error_is("sheet",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tcenters\t2\tUF-UB-UL\t9\t12\tCYCLE_A\tclean\n",
+                               "sheet centers is unknown"));
+    BT_CHECK(simcheck_error_is("rowid",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\ttwo\tUF-UB-UL\t9\t12\tCYCLE_A\tclean\n",
+                               "rowid two is not a number"));
+    BT_CHECK(simcheck_error_is("qtm",
+                               "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                               "cherry\tedge\t2\tUF-UB-UL\t9\t1e3\tCYCLE_A\tclean\n",
+                               "qtm 1e3 is not a number"));
+    BT_CHECK(simcheck_error_is("empty", "", "simcheck.tsv is empty"));
+}
+
+BT_TEST(verify_lib, simcheck_accepts_blank_lines_and_replaces_duplicates) {
+    char root[BT_PATH_MAX];
+    scratch_simcheck("dupes",
+                     "solver\tsheet\trowid\tposition\tmoves\tqtm\tmatch\tnote\n"
+                     "\n"
+                     "cherry\tedge\t2\tUF-UB-UL\t9\t12\tCYCLE_A\tclean\n"
+                     "cherry\tedge\t2\tUF-UB-UR\t9\t13\tCYCLE_A\treplaced\n",
+                     root);
+    verify_sim_map map;
+    verify_sim_map_init(&map);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_load_simcheck(root, &map, err, sizeof err), 0);
+    BT_CHECK_EQ(map.count, 1U);
+    const verify_sim_row *row = verify_sim_map_get(&map, BT_SOLVER_CHERRY, BT_SHEET_EDGE, 2);
+    BT_CHECK(row != NULL);
+    if (row != NULL) {
+        BT_CHECK_EQ(strcmp(row->position, "UF-UB-UR"), 0);
+        BT_CHECK_EQ(row->qtm, 13U);
+    }
+    BT_CHECK(verify_sim_map_get(&map, BT_SOLVER_EGGINS, BT_SHEET_EDGE, 2) == NULL);
+    verify_sim_map_free(&map);
+    drop_scratch_simcheck(root);
+}
+
 BT_TEST(verify_lib, mkdirs_skip_existing_drive_root) {
     char temp[BT_PATH_MAX];
     DWORD n = GetTempPathA(BT_PATH_MAX, temp);
