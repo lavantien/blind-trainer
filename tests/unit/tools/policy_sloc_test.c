@@ -93,3 +93,22 @@ BT_TEST(policy_sloc, an_empty_file_stays_silent) {
     BT_CHECK_EQ(policy_cap_finding("", 0, "src/e.c", 1, &finding), 0);
     BT_CHECK_EQ(policy_cap_finding("\n\n  \n", 4, "src/e.c", 1, &finding), 0);
 }
+
+BT_TEST(policy_sloc, multibyte_code_lines_count_as_source) {
+    const char *over = "int a;\nint \xc3\xa9x;\nint b;\nint c;\nint d;\n";
+    policy_finding finding = {0};
+    int rc = policy_cap_finding(over, strlen(over), "src/mb.c", 4, &finding);
+    BT_CHECK_EQ(rc, 1);
+    BT_CHECK_EQ(finding.line, 5);
+    BT_CHECK(strcmp(finding.detail, "5 non-blank lines over cap 4") == 0);
+    policy_finding_free(&finding);
+}
+
+BT_TEST(policy_sloc, a_truncated_multibyte_tail_counts_as_a_line) {
+    const char *over = "a\nb\nc\nd\n\xc2";
+    policy_finding finding = {0};
+    int rc = policy_cap_finding(over, strlen(over), "src/tail.c", 4, &finding);
+    BT_CHECK_EQ(rc, 1);
+    BT_CHECK_EQ(finding.line, 5);
+    policy_finding_free(&finding);
+}

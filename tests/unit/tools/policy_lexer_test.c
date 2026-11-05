@@ -260,3 +260,52 @@ BT_TEST(policy_lexer, pseudo_fuzz_over_adversarial_alphabet_never_panics) {
         policy_masked_free(&py_masked);
     }
 }
+
+BT_TEST(policy_lexer, multibyte_char_literals_close_by_lead_width) {
+    const char *two = "char a = '\xc3\xa9';";
+    const char *three = "char b = '\xe2\x82\xac';";
+    const char *four = "char c = '\xf0\x9f\x8e\x80';";
+    policy_masked masked;
+    mask_c(two, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    spaces_between("char a = '", 2, "';", masked.text);
+    policy_masked_free(&masked);
+    mask_c(three, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    spaces_between("char b = '", 3, "';", masked.text);
+    policy_masked_free(&masked);
+    mask_c(four, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    spaces_between("char c = '", 4, "';", masked.text);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, unterminated_prefixed_string_masks_to_the_end) {
+    const char *text = "int a = 1; u8\"no close";
+    policy_masked masked;
+    mask_c(text, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    spaces_between("int a = 1; u8\"", 8, "", masked.text);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, char_literals_with_broken_escapes_stay_loud) {
+    const char *short_hex = "int a = '\\u12';";
+    policy_masked masked;
+    mask_c(short_hex, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    BT_CHECK(strstr(masked.text, "\\u12") != NULL);
+    policy_masked_free(&masked);
+    const char *trailing_backslash = "int b = 9; '\\";
+    mask_c(trailing_backslash, &masked);
+    BT_CHECK_EQ(masked.comment_count, 0);
+    BT_CHECK(strcmp(masked.text, trailing_backslash) == 0);
+    policy_masked_free(&masked);
+}
+
+BT_TEST(policy_lexer, short_paths_and_unknown_kinds_resolve_quietly) {
+    BT_CHECK_EQ(policy_lang_of_path(""), POLICY_LANG_C);
+    BT_CHECK_EQ(policy_lang_of_path(".py"), POLICY_LANG_PY);
+    BT_CHECK_EQ(policy_lang_of_path("a"), POLICY_LANG_C);
+    BT_CHECK(strcmp(policy_comment_kind_str((policy_comment_kind)99), "unknown") == 0);
+}

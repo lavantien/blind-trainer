@@ -399,3 +399,93 @@ BT_TEST(policy_lib, selftest_proves_both_detection_directions) {
     }
     policy_util_rm_rf(workdir);
 }
+
+BT_TEST(policy_lib, parse_allowlist_strips_a_carriage_return_tail) {
+    const char *text = "src/a.c\t42\tlegacy\r\nsrc/b.c\t7\twhy\r\n";
+    policy_allowlist allow = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = policy_parse_allowlist(text, "crlf.tsv", &allow, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(allow.count, 2);
+    BT_CHECK(strcmp(allow.entries[0].justification, "legacy") == 0);
+    BT_CHECK(strcmp(allow.entries[1].justification, "why") == 0);
+    policy_allowlist_free(&allow);
+}
+
+BT_TEST(policy_lib, constants_mode_fails_closed_when_the_hub_lacks_the_policy_section) {
+    char root[POLICY_UTIL_PATH_MAX];
+    policy_util_scratch("run-cfg-missing", root);
+    plant(root, "src/clean.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "allow.txt", "# allow\n");
+    bt_json_value *config = parse_cfg("{\"sloc\": {\"max_file_lines\": 8}}");
+    policy_outcome outcome = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = run(root, POLICY_MODE_CONSTANTS, config, "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strcmp(err, "config section missing: policy") == 0);
+    bt_json_free(config);
+    policy_util_rm_rf(root);
+}
+
+static HANDLE lock_exclusive(const char root[POLICY_UTIL_PATH_MAX], const char *rel) {
+    char path[POLICY_UTIL_PATH_MAX];
+    policy_util_join(path, root, rel);
+    char native[POLICY_UTIL_PATH_MAX];
+    snprintf(native, POLICY_UTIL_PATH_MAX, "%s", path);
+    for (char *cursor = native; *cursor != '\0'; cursor++) {
+        if (*cursor == '/') {
+            *cursor = '\\';
+        }
+    }
+    wchar_t wide[POLICY_UTIL_PATH_MAX];
+    MultiByteToWideChar(CP_UTF8, 0, native, -1, wide, POLICY_UTIL_PATH_MAX);
+    return CreateFileW(wide, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+}
+
+BT_TEST(policy_lib, an_unreadable_source_fails_every_mode_mid_scan) {
+    char root[POLICY_UTIL_PATH_MAX];
+    policy_util_scratch("run-locked", root);
+    plant(root, "src/a.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "src/b.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "allow.txt", "# allow\n");
+    HANDLE lock = lock_exclusive(root, "src/a.c");
+    BT_CHECK(lock != INVALID_HANDLE_VALUE);
+    policy_outcome outcome = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = run(root, POLICY_MODE_COMMENTS, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strncmp(err, "read ", 5) == 0);
+    BT_CHECK(strstr(err, "src/a.c") != NULL);
+    rc = run(root, POLICY_MODE_CONSTANTS, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strstr(err, "src/a.c") != NULL);
+    rc = run(root, POLICY_MODE_SLOC, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strstr(err, "src/a.c") != NULL);
+    CloseHandle(lock);
+    rc = run(root, POLICY_MODE_BOTH, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, 0);
+    policy_outcome_free(&outcome);
+    policy_util_rm_rf(root);
+}
+
+BT_TEST(policy_lib, extension_sweep_handles_uppercase_and_dotless_names) {
+    char root[POLICY_UTIL_PATH_MAX];
+    policy_util_scratch("run-ext-arms", root);
+    plant(root, "src/a.c", POLICY_CLEAN_FIXTURE);
+    plant(root, "src/UPPER.CPP", "int x;\n");
+    plant(root, "tools/Makefile", "all:\n");
+    plant(root, "src/.gitignore", "x\n");
+    plant(root, "src/trailing.", "x\n");
+    plant(root, "allow.txt", "# allow\n");
+    policy_outcome outcome = {0};
+    char err[POLICY_ERR_MAX];
+    int rc = run(root, POLICY_MODE_BOTH, selftest_cfg(), "allow.txt", &outcome, err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(outcome.finding_count, 1);
+    BT_CHECK(strcmp(outcome.findings[0].path, "src/UPPER.CPP") == 0);
+    BT_CHECK(strcmp(outcome.findings[0].kind, "extension") == 0);
+    BT_CHECK(strcmp(outcome.findings[0].detail, "unexpected .CPP file") == 0);
+    policy_outcome_free(&outcome);
+    policy_util_rm_rf(root);
+}
