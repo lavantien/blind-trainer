@@ -660,6 +660,75 @@ BT_TEST(ga_upgrade, upgrades_check_names_each_rejected_shape) {
     BT_CHECK(bt_ga_upgrades_check(&clean, &params, err));
 }
 
+BT_TEST(ga_upgrade, upgrades_check_rejects_elite_reaching_the_population) {
+    bt_ga_params params = upgrade_params(424242, 6, 3, 6);
+    bt_ga_upgrades upgrades = no_upgrades();
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_upgrades_check(&upgrades, &params, err));
+    BT_CHECK_EQ(err, "population must exceed elite");
+    params.elite = 5;
+    BT_CHECK(bt_ga_upgrades_check(&upgrades, &params, err));
+}
+
+BT_TEST(ga_upgrade, config_upgrades_rejects_a_negative_migrate_count_and_a_typed_policy) {
+    bt_json_value *config = upgrade_config_from_literal("{\"ga\":{\"islands\":{\"migrate_count\":-1}}}");
+    bt_ga_upgrades upgrades;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.islands.migrate_count") != NULL);
+    bt_json_free(config);
+    config = upgrade_config_from_literal("{\"ga\":{\"elite_carry\":{\"policy\":7}}}");
+    BT_CHECK(!bt_ga_config_upgrades(config, &upgrades, err));
+    BT_CHECK(strstr(err, "ga.elite_carry.policy") != NULL);
+    bt_json_free(config);
+}
+
+BT_TEST(ga_upgrade, config_params_rejects_a_missing_tournament) {
+    bt_json_value *config = upgrade_config_from_literal(
+        "{\"ga\":{\"seed\":7,\"population\":30,\"generations\":20,\"elite\":2}}");
+    bt_ga_params params;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_config_params(config, &params, err));
+    BT_CHECK(strstr(err, "/ga/tournament") != NULL);
+    bt_json_free(config);
+}
+
+BT_TEST(ga_upgrade, two_islands_take_the_best_across_the_initial_populations) {
+    static const char *const POOL19[] = {
+        "a",   "am",   "an",  "ang",  "anh", "ba",  "ban", "bang", "banh", "be",
+        "bem", "ben",  "bi",  "bia",  "bin", "binh", "biên", "biêng", "biêt",
+    };
+    bt_ga_features *feats = calloc(19, sizeof *feats);
+    float *lengths = calloc(19, sizeof *lengths);
+    for (size_t i = 0; i < 19; i++) {
+        feats[i] = bt_ga_parse_or_abort(POOL19[i]);
+        lengths[i] = 3.0F;
+    }
+    bt_ga_pair_weight cooc[6] = {{0, 1, 0.9F}, {1, 2, 0.7F}, {3, 4, 0.6F},
+                                 {5, 6, 0.5F}, {7, 8, 0.4F}, {2, 6, 0.3F}};
+    bt_ga_pair_weight adj[3] = {{0, 1, 0.8F}, {3, 4, 0.5F}, {5, 6, 0.2F}};
+    bt_ga_env *env = malloc(sizeof *env);
+    char err[BT_GA_ERR_MAX];
+    if (!bt_ga_build_env(19, lengths, 19, feats, 19, 9, cooc, 6, adj, 3, env, err)) {
+        BT_ABORT("build_env: %s", err);
+    }
+    bt_ga_params params = upgrade_params(1, 10, 1, 2);
+    bt_ga_upgrades islands = no_upgrades();
+    islands.island_count = 2;
+    bt_ga_run_outcome *outcome = bt_ga_run_ex(env, &params, &islands);
+    BT_CHECK(outcome != NULL);
+    if (outcome != NULL) {
+        BT_CHECK_EQ(outcome->best_count, (size_t)9);
+        BT_CHECK(bt_ga_injective(outcome->best, outcome->best_count));
+        BT_CHECK_EQ(outcome->per_gen_count, (size_t)2);
+        bt_ga_run_outcome_free(outcome);
+    }
+    bt_ga_env_free(env);
+    free(env);
+    free(feats);
+    free(lengths);
+}
+
 static void run_ex_with_island_count_overflow(void) {
     bt_ga_env *env = upgrade_env(6);
     bt_ga_params params = upgrade_params(424242, 8, 6, 2);

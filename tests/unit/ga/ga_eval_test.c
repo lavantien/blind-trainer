@@ -1,3 +1,4 @@
+#include "ga/alloc.h"
 #include "ga/eval.h"
 #include "ga/ga.h"
 
@@ -417,4 +418,34 @@ static void die_on_capacity_overflow(void) {
 BT_TEST(ga_eval, population_count_over_capacity_aborts) {
     bt_ga_death_expect("die_on_eval_capacity", "count 8 exceeds the eval capacity 4",
                        die_on_capacity_overflow);
+}
+
+static void *session_fault_alloc(size_t bytes, const char *site, void *user) {
+    (void)user;
+    if (strcmp(site, "ga.eval.session") == 0) {
+        return NULL;
+    }
+    return malloc(bytes);
+}
+
+static void session_fault_free(void *block, void *user) {
+    (void)user;
+    free(block);
+}
+
+static void die_on_eval_session_alloc_real(void) {
+    bt_ga_features *feats = NULL;
+    float *lengths = NULL;
+    bt_ga_env *env = make_env(&feats, &lengths);
+    bt_ga_params params = make_params();
+    bt_ga_alloc_install(session_fault_alloc, session_fault_free, NULL);
+    bt_ga_eval *eval = bt_ga_eval_create(env, &params, 4);
+    bt_ga_eval_destroy(eval);
+    bt_ga_alloc_reset();
+    free_env(env, feats, lengths);
+}
+
+BT_TEST(ga_eval, session_allocation_failure_aborts) {
+    bt_ga_death_expect("die_on_eval_session", "allocation failed at ga.eval.session",
+                       die_on_eval_session_alloc_real);
 }

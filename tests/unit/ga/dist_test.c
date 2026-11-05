@@ -5,6 +5,8 @@
 #include "common/json.h"
 #include "common/strbuf.h"
 
+#include "ga/alloc.h"
+
 #include "ga_test_util.h"
 
 BT_TEST(dist, freq_data_round_trips_through_json) {
@@ -231,4 +233,138 @@ BT_TEST(dist, freq_data_eq_distinguishes_every_field) {
     cases_count[0].count = 121;
     shifted.cases = cases_count;
     BT_CHECK_EQ(bt_ga_freq_data_eq(&a, &shifted), 0);
+}
+
+static void write_freq_fixture(const char *name, const char *body) {
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("dist-test", dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/%s", dir, name);
+    FILE *file = fopen(path, "wb");
+    if (file == NULL) {
+        BT_ABORT("cannot write %s", path);
+    }
+    fwrite(body, 1, strlen(body), file);
+    fclose(file);
+}
+
+BT_TEST(dist, load_rejects_each_malformed_shape) {
+    static const char *const rows[] = {
+        "{\"adjacent\":[],\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":{},\"adjacent\":[],\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[7],\"adjacent\":[],\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[{\"letters\":\"AB\",\"count\":1}],\"adjacent\":[],\"cooccurring\":[],"
+        "\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[{\"orbit\":5,\"letters\":\"AB\",\"count\":1}],\"adjacent\":[],"
+        "\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[{\"orbit\":\"edge\",\"count\":1}],\"adjacent\":[],\"cooccurring\":[],"
+        "\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[{\"orbit\":\"edge\",\"letters\":\"AB\"}],\"adjacent\":[],"
+        "\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[{\"orbit\":\"edge\",\"letters\":\"AB\",\"count\":-1}],\"adjacent\":[],"
+        "\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":\"x\",\"cooccurring\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[{\"to\":1,\"count\":1}],\"cooccurring\":[],"
+        "\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[{\"from\":1,\"count\":1}],\"cooccurring\":[],"
+        "\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[{\"from\":1,\"to\":1}],\"cooccurring\":[],"
+        "\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[],\"total_draws\":1,\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[],\"cooccurring\":[],\"seed\":2}",
+        "{\"cases\":[],\"adjacent\":[],\"cooccurring\":[],\"total_draws\":1}",
+    };
+    for (size_t i = 0; i < sizeof rows / sizeof rows[0]; i++) {
+        char name[32];
+        snprintf(name, sizeof name, "shape-%zu.json", i);
+        write_freq_fixture(name, rows[i]);
+        char dir[BT_PATH_MAX];
+        bt_ga_scratch("dist-test", dir);
+        char path[BT_PATH_MAX];
+        snprintf(path, BT_PATH_MAX, "%s/%s", dir, name);
+        bt_ga_freq_data data;
+        char err[128];
+        if (bt_ga_load_freq_data(path, &data, err)) {
+            bt_harness_fail(__FILE__, __LINE__, "shape %zu parsed but must be rejected", i);
+        }
+    }
+}
+
+BT_TEST(dist, load_reports_a_missing_file) {
+    bt_ga_freq_data data;
+    char err[128];
+    BT_CHECK(!bt_ga_load_freq_data("build/test-tmp/dist-test-absent.json", &data, err));
+    BT_CHECK(strstr(err, "read ") == err);
+}
+
+BT_TEST(dist, config_memofreq_names_each_missing_key) {
+    bt_json_error error;
+    bt_json_value *samples_missing = NULL;
+    const char *samples_body = "{\"memofreq\": {\"seed\": 5}}";
+    if (bt_json_parse(samples_body, strlen(samples_body), &samples_missing, &error) != 0) {
+        BT_ABORT("fixture does not parse: %s", error.message);
+    }
+    uint64_t samples = 0;
+    uint64_t seed = 0;
+    char err[128];
+    BT_CHECK(!bt_ga_config_memofreq(samples_missing, &samples, &seed, err));
+    BT_CHECK_EQ(err, "config section missing: memofreq.samples");
+    bt_json_free(samples_missing);
+    bt_json_value *seed_missing = NULL;
+    const char *seed_body = "{\"memofreq\": {\"samples\": 5}}";
+    if (bt_json_parse(seed_body, strlen(seed_body), &seed_missing, &error) != 0) {
+        BT_ABORT("fixture does not parse: %s", error.message);
+    }
+    BT_CHECK(!bt_ga_config_memofreq(seed_missing, &samples, &seed, err));
+    BT_CHECK_EQ(err, "config section missing: memofreq.seed");
+    bt_json_free(seed_missing);
+}
+
+static void *site_fault_alloc(size_t bytes, const char *site, void *user) {
+    const char *armed = user;
+    if (strcmp(armed, site) == 0) {
+        return NULL;
+    }
+    return malloc(bytes);
+}
+
+static void site_fault_free(void *block, void *user) {
+    (void)user;
+    free(block);
+}
+
+BT_TEST(dist, load_reports_each_allocation_site_failure) {
+    static const char *const sites[] = {
+        "ga.dist.read_buffer",
+        "ga.dist.cases",
+        "ga.dist.adjacent",
+        "ga.dist.cooccurring",
+    };
+    static const char *const wants[] = {
+        "allocation failed reading",
+        "freq cases allocation failed",
+        "freq adjacent allocation failed",
+        "freq cooccurring allocation failed",
+    };
+    for (size_t i = 0; i < sizeof sites / sizeof sites[0]; i++) {
+        write_freq_fixture("alloc-fault.json",
+                           "{\"cases\":[{\"orbit\":\"edge\",\"letters\":\"AB\",\"count\":1}],"
+                           "\"adjacent\":[{\"from\":0,\"to\":1,\"count\":1}],"
+                           "\"cooccurring\":[{\"from\":0,\"to\":1,\"count\":1}],"
+                           "\"total_draws\":1,\"seed\":2}");
+        bt_ga_alloc_install(site_fault_alloc, site_fault_free, (void *)sites[i]);
+        char dir[BT_PATH_MAX];
+        bt_ga_scratch("dist-test", dir);
+        char path[BT_PATH_MAX];
+        snprintf(path, BT_PATH_MAX, "%s/alloc-fault.json", dir);
+        bt_ga_freq_data data;
+        char err[128];
+        int ok = bt_ga_load_freq_data(path, &data, err);
+        bt_ga_alloc_reset();
+        if (ok) {
+            bt_harness_fail(__FILE__, __LINE__, "site %s must fail the load", sites[i]);
+        }
+        BT_CHECK(strstr(err, wants[i]) != NULL);
+    }
 }

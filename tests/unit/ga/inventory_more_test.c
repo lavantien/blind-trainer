@@ -1,9 +1,13 @@
+#include "ga/alloc.h"
+#include "ga/features.h"
 #include "ga/inventory.h"
 
 #include "common/bt_harness.h"
 #include "common/json.h"
 
 #include "ga_test_util.h"
+
+#include <string.h>
 
 static void write_file(const char *path, const char *text) {
     FILE *file = fopen(path, "wb");
@@ -204,4 +208,138 @@ BT_TEST(inventory_more, loaders_trim_unicode_whitespace_and_parse_u64_like_rust)
     BT_CHECK(!bt_ga_load_syllable_frequencies(path, &freqs, err));
     BT_CHECK(strstr(err, "row 1") != NULL);
     bt_ga_scratch_remove("more-align");
+}
+
+BT_TEST(inventory_more, loaders_strip_carriage_returns_from_crlf_files) {
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("more-crlf", dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/words.txt", dir);
+    write_file(path, "ma\r\nm\xc3\xa1\r\n");
+    bt_ga_strset set;
+    char err[BT_GA_ERR_MAX];
+    if (!bt_ga_load_wordlist(path, &set, err)) {
+        BT_ABORT("wordlist load failed: %s", err);
+    }
+    BT_CHECK_EQ((long long)set.count, 2LL);
+    BT_CHECK(bt_ga_strset_contains(&set, "ma"));
+    BT_CHECK(!bt_ga_strset_contains(&set, "na"));
+    bt_ga_strset_free(&set);
+    snprintf(path, BT_PATH_MAX, "%s/freqs.tsv", dir);
+    write_file(path, "1\t500\tma\r\n2\t7\r\n");
+    bt_ga_freqs freqs;
+    if (!bt_ga_load_syllable_frequencies(path, &freqs, err)) {
+        BT_ABORT("freqs load failed: %s", err);
+    }
+    BT_CHECK_EQ((long long)freqs.count, 1LL);
+    BT_CHECK_EQ((unsigned long long)bt_ga_freqs_get(&freqs, "ma"), 500ULL);
+    BT_CHECK_EQ((unsigned long long)bt_ga_freqs_get(&freqs, "absent"), 0ULL);
+    bt_ga_freqs_free(&freqs);
+    bt_ga_scratch_remove("more-crlf");
+}
+
+BT_TEST(inventory_more, build_pool_accepts_an_empty_inventory) {
+    bt_ga_freqs freqs;
+    freqs.keys = NULL;
+    freqs.values = NULL;
+    freqs.count = 0;
+    bt_ga_pool_entry *pool = NULL;
+    size_t pool_count = 99;
+    bt_ga_build_pool(NULL, 0, &freqs, 10, &pool, &pool_count);
+    BT_CHECK_EQ((long long)pool_count, 0LL);
+    bt_ga_pool_free(pool);
+}
+
+static void *site_fault_alloc(size_t bytes, const char *site, void *user) {
+    const char *armed = user;
+    if (strcmp(armed, site) == 0) {
+        return NULL;
+    }
+    return malloc(bytes);
+}
+
+static void site_fault_free(void *block, void *user) {
+    (void)user;
+    free(block);
+}
+
+BT_TEST(inventory_more, wordlist_read_reports_the_allocation_site) {
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("more-readfault", dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/words.txt", dir);
+    write_file(path, "ma\n");
+    bt_ga_alloc_install(site_fault_alloc, site_fault_free, (void *)"ga.read_file.buffer");
+    bt_ga_strset set;
+    char err[BT_GA_ERR_MAX];
+    int ok = bt_ga_load_wordlist(path, &set, err);
+    bt_ga_alloc_reset();
+    BT_CHECK(!ok);
+    BT_CHECK(strstr(err, "allocation failed reading") != NULL);
+    bt_ga_scratch_remove("more-readfault");
+}
+
+static size_t zero_onset_words(const char *out[], size_t want) {
+    char dir[BT_PATH_MAX];
+    bt_ga_vietnamese_dir(dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/syllables-7184-abc.txt", dir);
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+        return 0;
+    }
+    char line[64];
+    size_t kept = 0;
+    while (kept < want && fgets(line, sizeof line, file) != NULL) {
+        size_t len = strlen(line);
+        while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
+            line[--len] = '\0';
+        }
+        if (len == 0 || line[0] == '#') {
+            continue;
+        }
+        bt_ga_features feat;
+        if (bt_ga_parse(line, &feat) && !feat.has_onset) {
+            out[kept++] = _strdup(line);
+        }
+    }
+    fclose(file);
+    return kept;
+}
+
+static void free_words(const char *out[], size_t count) {
+    for (size_t i = 0; i < count; i++) {
+        free((void *)out[i]);
+    }
+}
+
+BT_TEST(inventory_more, inventory_growth_reports_its_allocation_sites) {
+    const char *words[120];
+    size_t word_count = zero_onset_words(words, 120);
+    BT_CHECK(word_count >= 66);
+    static const char *const sites[] = {
+        "ga.build_inventory.covered_grow",
+        "ga.build_inventory.list_grow",
+    };
+    static const char *const wants[] = {
+        "inventory covered growth allocation failed",
+        "inventory list growth allocation failed",
+    };
+    for (size_t s = 0; s < sizeof sites / sizeof sites[0]; s++) {
+        bt_ga_strset wordlist;
+        bt_ga_wordlist_from(words, word_count, &wordlist);
+        bt_ga_alloc_install(site_fault_alloc, site_fault_free, (void *)sites[s]);
+        bt_ga_inventory_entry *entries = NULL;
+        size_t count = 0;
+        bt_ga_inventory_report report;
+        char err[BT_GA_ERR_MAX];
+        int ok = bt_ga_build_inventory(&wordlist, &entries, &count, &report, err);
+        bt_ga_alloc_reset();
+        BT_CHECK(!ok);
+        BT_CHECK_EQ(count, (size_t)0);
+        BT_CHECK(entries == NULL);
+        BT_CHECK(strstr(err, wants[s]) != NULL);
+        bt_ga_strset_free(&wordlist);
+    }
+    free_words(words, word_count);
 }
