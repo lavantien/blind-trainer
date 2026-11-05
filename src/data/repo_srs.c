@@ -1,5 +1,6 @@
 #include "data/repo_srs.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdio.h>
@@ -58,7 +59,7 @@ void bt_srs_store_free(bt_srs_store *store) {
 int bt_srs_store_set(bt_srs_store *store, const char *key, const bt_card *card) {
     if (store->count == store->cap) {
         size_t cap = store->cap == 0 ? 8 : store->cap * 2;
-        bt_srs_entry *grown = realloc(store->items, cap * sizeof *grown);
+        bt_srs_entry *grown = bt_realloc(store->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
@@ -82,7 +83,7 @@ int bt_srs_store_set(bt_srs_store *store, const char *key, const bt_card *card) 
             break;
         }
     }
-    char *key_copy = malloc(strlen(key) + 1);
+    char *key_copy = bt_malloc(strlen(key) + 1);
     if (key_copy == NULL) {
         return -1;
     }
@@ -374,7 +375,7 @@ static int rows_push(bt_srs_card_row **rows, size_t *count, size_t *cap,
                      const bt_srs_card_row *row) {
     if (*count == *cap) {
         size_t grown_cap = *cap == 0 ? 8 : *cap * 2;
-        bt_srs_card_row *grown = realloc(*rows, grown_cap * sizeof *grown);
+        bt_srs_card_row *grown = bt_realloc(*rows, grown_cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
@@ -471,7 +472,7 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             };
             if (row.card.review_count == row.card.review_cap) {
                 size_t cap = row.card.review_cap == 0 ? 4 : row.card.review_cap * 2;
-                bt_review_entry *grown = realloc(row.card.reviews, cap * sizeof *grown);
+                bt_review_entry *grown = bt_realloc(row.card.reviews, cap * sizeof *grown);
                 if (grown == NULL) {
                     sqlite3_finalize(reviews);
                     sqlite3_finalize(cards);
@@ -650,7 +651,7 @@ static int card_from_json(const bt_json_value *node, bt_card *card) {
         };
         if (card->review_count == card->review_cap) {
             size_t cap = card->review_cap == 0 ? 4 : card->review_cap * 2;
-            bt_review_entry *grown = realloc(card->reviews, cap * sizeof *grown);
+            bt_review_entry *grown = bt_realloc(card->reviews, cap * sizeof *grown);
             if (grown == NULL) {
                 bt_card_free(card);
                 return -1;

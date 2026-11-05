@@ -1,5 +1,6 @@
 #include "data/repo_settings.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -69,7 +70,7 @@ int bt_repo_settings_load_text(const bt_db *db, const char *key, char **out, bt_
     if (step == SQLITE_ROW) {
         const unsigned char *text = sqlite3_column_text(stmt, 0);
         size_t len = (size_t)sqlite3_column_bytes(stmt, 0);
-        char *copy = malloc(len + 1);
+        char *copy = bt_malloc(len + 1);
         if (copy == NULL) {
             sqlite3_finalize(stmt);
             err->kind = BT_DB_ERR_QUERY;

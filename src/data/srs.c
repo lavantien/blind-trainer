@@ -1,5 +1,6 @@
 #include "data/srs.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -26,7 +27,7 @@ int bt_card_clone(const bt_card *src, bt_card *dst) {
     *dst = *src;
     dst->reviews = NULL;
     if (src->review_count > 0) {
-        dst->reviews = malloc(src->review_count * sizeof *dst->reviews);
+        dst->reviews = bt_malloc(src->review_count * sizeof *dst->reviews);
         if (dst->reviews == NULL) {
             BT_TRACE_FAIL("srs.card_clone", "out of memory for %zu reviews", src->review_count);
             return -1;
@@ -132,7 +133,7 @@ int bt_replay_sm2(const bt_review_entry *entries, size_t count, const bt_fsrs_co
 static int push_review(bt_card *card, bt_review_entry entry) {
     if (card->review_count == card->review_cap) {
         size_t cap = card->review_cap == 0 ? 4 : card->review_cap * 2;
-        bt_review_entry *grown = realloc(card->reviews, cap * sizeof *grown);
+        bt_review_entry *grown = bt_realloc(card->reviews, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }

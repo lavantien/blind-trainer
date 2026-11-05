@@ -1,5 +1,6 @@
 #include "data/corpus.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <errno.h>
@@ -80,7 +81,7 @@ void bt_overlay_error_string(const bt_overlay_error *err, char *out, size_t out_
 
 static char *text_dup(const char *src) {
     size_t len = strlen(src);
-    char *out = malloc(len + 1);
+    char *out = bt_malloc(len + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -118,7 +119,7 @@ int bt_corpus_from_rows(bt_corpus_row *rows, size_t count, bt_corpus *out) {
 }
 
 static int rows_push(bt_corpus *out, bt_corpus_row row) {
-    bt_corpus_row *grown = realloc(out->rows, (out->count + 1) * sizeof *grown);
+    bt_corpus_row *grown = bt_realloc(out->rows, (out->count + 1) * sizeof *grown);
     if (grown == NULL) {
         return -1;
     }
@@ -147,7 +148,7 @@ int bt_corpus_load(const char *root, bt_corpus *out, bt_corpus_error *err) {
             fseek(file, 0, SEEK_END);
             long size = ftell(file);
             fseek(file, 0, SEEK_SET);
-            char *text = malloc((size_t)size + 1);
+            char *text = bt_malloc((size_t)size + 1);
             if (text == NULL) {
                 fclose(file);
                 bt_corpus_free(out);

@@ -1,5 +1,6 @@
 #include "data/repo_cards.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -26,7 +27,7 @@ void bt_case_cards_free(bt_case_cards *cards) {
 static int cards_insert_sorted(bt_case_cards *cards, const bt_case_ref *key, const bt_card *card) {
     if (cards->count == cards->cap) {
         size_t cap = cards->cap == 0 ? 8 : cards->cap * 2;
-        bt_case_card_entry *grown = realloc(cards->items, cap * sizeof *grown);
+        bt_case_card_entry *grown = bt_realloc(cards->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }

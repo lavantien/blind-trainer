@@ -1,5 +1,6 @@
 #include "data/repo_seeds.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -16,7 +17,7 @@ static void db_error(bt_db *db, bt_seed_error *err, const char *step) {
 
 static char *text_dup(const char *text) {
     size_t len = strlen(text);
-    char *out = malloc(len + 1);
+    char *out = bt_malloc(len + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -201,7 +202,7 @@ int bt_seed_all(bt_db *db, const char *packs_root, bt_seed_report **out_reports,
         BT_TRACE_FAIL("repo_seeds.seed_all", "registry failed");
         return -1;
     }
-    bt_seed_report *reports = calloc(count, sizeof *reports);
+    bt_seed_report *reports = bt_calloc(count, sizeof *reports);
     if (reports == NULL) {
         bt_seedpack_free_entries(entries);
         BT_TRACE_FAIL("repo_seeds.seed_all", "alloc failed");
@@ -261,7 +262,7 @@ int bt_load_seed_rows(bt_db *db, bt_seed_rows *out, bt_seed_error *err) {
     }
     int step = sqlite3_step(stmt);
     while (step == SQLITE_ROW) {
-        bt_seed_row *grown = realloc(out->items, (out->count + 1) * sizeof *grown);
+        bt_seed_row *grown = bt_realloc(out->items, (out->count + 1) * sizeof *grown);
         if (grown == NULL) {
             sqlite3_finalize(stmt);
             bt_seed_rows_free(out);

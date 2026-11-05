@@ -1,5 +1,6 @@
 #include "data/seedpack/normalizer.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <ctype.h>
@@ -65,12 +66,12 @@ static int notes_push(bt_normalized *out, const char *fmt, ...) {
     va_start(ap, fmt);
     vsnprintf(buffer, sizeof buffer, fmt, ap);
     va_end(ap);
-    char **grown = realloc(out->notes, (out->note_count + 1) * sizeof *grown);
+    char **grown = bt_realloc(out->notes, (out->note_count + 1) * sizeof *grown);
     if (grown == NULL) {
         return -1;
     }
     out->notes = grown;
-    out->notes[out->note_count] = malloc(strlen(buffer) + 1);
+    out->notes[out->note_count] = bt_malloc(strlen(buffer) + 1);
     if (out->notes[out->note_count] == NULL) {
         return -1;
     }
@@ -80,7 +81,7 @@ static int notes_push(bt_normalized *out, const char *fmt, ...) {
 }
 
 static char *dup_range(const char *start, size_t len) {
-    char *out = malloc(len + 1);
+    char *out = bt_malloc(len + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -141,7 +142,7 @@ static int str_assign(char **dst, const char *fmt, ...) {
     if (needed < 0) {
         return -1;
     }
-    char *next = malloc((size_t)needed + 1);
+    char *next = bt_malloc((size_t)needed + 1);
     if (next == NULL) {
         return -1;
     }
@@ -223,7 +224,7 @@ static int build_repeated(char **out, const char *content, size_t count) {
     if (total > BT_SEEDPACK_EXPAND_LIMIT) {
         return -1;
     }
-    char *joined = malloc(total + 1);
+    char *joined = bt_malloc(total + 1);
     if (joined == NULL) {
         return -2;
     }
@@ -476,7 +477,7 @@ static bool strip_grouping_parens(const char *alg_text, char *current, bt_normal
 }
 
 static bool is_auf_inner(const char *inner) {
-    char *copy = malloc(strlen(inner) + 1);
+    char *copy = bt_malloc(strlen(inner) + 1);
     if (copy == NULL) {
         return false;
     }
@@ -664,7 +665,7 @@ static bool normalize_cube(const char *raw, bt_normalized *out, bt_normalize_err
         }
     }
     size_t token_cap = 16;
-    tokens = malloc(token_cap * sizeof *tokens);
+    tokens = bt_malloc(token_cap * sizeof *tokens);
     if (tokens == NULL) {
         goto done;
     }
@@ -679,7 +680,7 @@ static bool normalize_cube(const char *raw, bt_normalized *out, bt_normalize_err
         }
         if (token_count == token_cap) {
             token_cap *= 2;
-            char **grown = realloc(tokens, token_cap * sizeof *grown);
+            char **grown = bt_realloc(tokens, token_cap * sizeof *grown);
             if (grown == NULL) {
                 goto done;
             }
@@ -799,7 +800,7 @@ static bool normalize_sq1(const char *raw, bt_normalized *out, bt_normalize_erro
         set_error(err, BT_NORMALIZE_ERR_EMPTY_ALG, trimmed, NULL);
         goto done;
     }
-    parts = malloc(part_cap * sizeof *parts);
+    parts = bt_malloc(part_cap * sizeof *parts);
     if (parts == NULL) {
         goto done;
     }
@@ -874,13 +875,13 @@ static bool normalize_sq1(const char *raw, bt_normalized *out, bt_normalize_erro
         }
         if (part_count == part_cap) {
             part_cap *= 2;
-            char **grown = realloc(parts, part_cap * sizeof *grown);
+            char **grown = bt_realloc(parts, part_cap * sizeof *grown);
             if (grown == NULL) {
                 goto done;
             }
             parts = grown;
         }
-        parts[part_count] = malloc(strlen(tuple) + 1);
+        parts[part_count] = bt_malloc(strlen(tuple) + 1);
         if (parts[part_count] == NULL) {
             goto done;
         }

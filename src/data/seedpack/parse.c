@@ -1,5 +1,6 @@
 #include "data/seedpack/parse.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/strbuf.h"
@@ -26,7 +27,7 @@ static bool valid_source_at(const char *text) {
 }
 
 static char *dup_range(const char *start, size_t len) {
-    char *out = malloc(len + 1);
+    char *out = bt_malloc(len + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -342,7 +343,7 @@ int bt_seedpack_parse_pack(const bt_pack_entry *entry, const char *text, bt_seed
                 BT_TRACE_FAIL("seedpack.parse_pack", "alloc failed in %s", file);
                 return -1;
             }
-            bt_seed_row *grown = realloc(out->items, (out->count + 1) * sizeof *grown);
+            bt_seed_row *grown = bt_realloc(out->items, (out->count + 1) * sizeof *grown);
             if (grown == NULL) {
                 free(source_url);
                 free(front_json);
@@ -417,7 +418,7 @@ int bt_seedpack_load_pack(const char *packs_root, const bt_pack_entry *entry, bt
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         err->kind = BT_SEED_ERR_IO;

@@ -1,5 +1,6 @@
 #include "data/paths.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "common/strbuf.h"
@@ -19,7 +20,7 @@ static const char *const USER_DIR_KINDS[] = {"algs", "srs", "solves", "settings"
 
 static char *dup_str(const char *text) {
     size_t len = strlen(text) + 1;
-    char *copy = malloc(len);
+    char *copy = bt_malloc(len);
     if (copy != NULL) {
         memcpy(copy, text, len);
     }
@@ -58,7 +59,7 @@ static int read_file_text(const char *path, char **out, size_t *out_len) {
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         return -1;
@@ -392,7 +393,7 @@ static void entry_key(char *out, size_t out_len, const char *sheet_file, const c
 static int algs_insert_sorted(bt_user_algs *algs, const char *key, const char *alg) {
     if (algs->count == algs->cap) {
         size_t cap = algs->cap == 0 ? 8 : algs->cap * 2;
-        bt_user_alg_entry *grown = realloc(algs->items, cap * sizeof *grown);
+        bt_user_alg_entry *grown = bt_realloc(algs->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }

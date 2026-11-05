@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/sha256.h"
 #include "data/tsv.h"
@@ -57,7 +58,7 @@ static char *read_sheet(const char *path, size_t *out_len, char *err, size_t err
         fclose(file);
         return NULL;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         snprintf(err, err_len, "read %s: out of memory", path);
         BT_TRACE_FAIL("digest.read_sheet", "oom %s", path);

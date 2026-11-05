@@ -1,5 +1,6 @@
 #include "data/tsv.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -14,7 +15,7 @@ static const char *HEADER_CELLS[BT_TSV_COLUMNS] = {
 };
 
 static char *cell_dup(const char *text, size_t len) {
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         return NULL;
     }
@@ -100,7 +101,7 @@ int bt_sheet_row_eq(const bt_sheet_row *a, const bt_sheet_row *b) {
 }
 
 static int row_push(bt_tsv_rows *out, size_t line_number, char *cells[BT_TSV_COLUMNS]) {
-    bt_tsv_line *grown = realloc(out->items, (out->count + 1) * sizeof *grown);
+    bt_tsv_line *grown = bt_realloc(out->items, (out->count + 1) * sizeof *grown);
     if (grown == NULL) {
         return -1;
     }

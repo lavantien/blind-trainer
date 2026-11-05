@@ -1,5 +1,6 @@
 #include "data/seedpack/registry.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 
@@ -86,7 +87,7 @@ int bt_seedpack_parse_registry(const char *text, bt_pack_entry **out_entries, si
         BT_TRACE_FAIL("seedpack.parse_registry", "registry is not an array");
         return -1;
     }
-    bt_pack_entry *entries = calloc(root->as.array.count, sizeof *entries);
+    bt_pack_entry *entries = bt_calloc(root->as.array.count, sizeof *entries);
     if (entries == NULL) {
         bt_json_free(root);
         registry_json_error(err, "out of memory");
@@ -266,7 +267,7 @@ int bt_seedpack_load_registry(const char *packs_root, bt_pack_entry **out_entrie
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         err->kind = BT_SEED_ERR_IO;

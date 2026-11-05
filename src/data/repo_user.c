@@ -1,5 +1,6 @@
 #include "data/repo_user.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -96,7 +97,7 @@ static void db_step_error(const bt_db *db, bt_db_error *err, bt_db_error_kind ki
 static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key, const char *alg) {
     if (ov->count == ov->cap) {
         size_t cap = ov->cap == 0 ? 8 : ov->cap * 2;
-        bt_override_entry *grown = realloc(ov->items, cap * sizeof *grown);
+        bt_override_entry *grown = bt_realloc(ov->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
@@ -107,7 +108,7 @@ static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key, con
     for (size_t i = 0; i < ov->count; i++) {
         int cmp = bt_case_ref_cmp(&ov->items[i].ref, key);
         if (cmp == 0) {
-            char *copy = malloc(strlen(alg) + 1);
+            char *copy = bt_malloc(strlen(alg) + 1);
             if (copy == NULL) {
                 return -1;
             }
@@ -121,7 +122,7 @@ static int overrides_insert_sorted(bt_overrides *ov, const bt_case_ref *key, con
             break;
         }
     }
-    char *alg_copy = malloc(strlen(alg) + 1);
+    char *alg_copy = bt_malloc(strlen(alg) + 1);
     if (alg_copy == NULL) {
         return -1;
     }

@@ -1,6 +1,7 @@
 #include "data/db.h"
 #include "data/migrations_embedded.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <direct.h>
@@ -92,7 +93,7 @@ const char *bt_db_migration_sql(int index) {
         fseek(file, 0, SEEK_END);
         long size = ftell(file);
         fseek(file, 0, SEEK_SET);
-        char *text = malloc((size_t)size + 1);
+        char *text = bt_malloc((size_t)size + 1);
         if (text == NULL) {
             fclose(file);
             BT_TRACE_FAIL("db.migration_sql", "out of memory for %s", path);

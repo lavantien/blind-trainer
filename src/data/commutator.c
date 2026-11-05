@@ -1,5 +1,6 @@
 #include "data/commutator.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "core/cube.h"
 
@@ -178,7 +179,7 @@ static char *trim_dup(const char *start, size_t len) {
         end -= 1;
     }
     size_t trimmed = end - begin;
-    char *out = malloc(trimmed + 1);
+    char *out = bt_malloc(trimmed + 1);
     if (out == NULL) {
         return NULL;
     }
@@ -194,7 +195,7 @@ static bool split_depth_zero(const char *text, char sep, bt_parts *out) {
     size_t start = 0;
     size_t len = strlen(text);
     size_t cap = 8;
-    out->parts = malloc(cap * sizeof *out->parts);
+    out->parts = bt_malloc(cap * sizeof *out->parts);
     if (out->parts == NULL) {
         return false;
     }
@@ -215,7 +216,7 @@ static bool split_depth_zero(const char *text, char sep, bt_parts *out) {
         if (ch == sep && depth == 0) {
             if (out->count == cap) {
                 cap *= 2;
-                char **grown = realloc(out->parts, cap * sizeof *grown);
+                char **grown = bt_realloc(out->parts, cap * sizeof *grown);
                 if (grown == NULL) {
                     parts_free(out);
                     return false;
@@ -236,7 +237,7 @@ static bool split_depth_zero(const char *text, char sep, bt_parts *out) {
         return false;
     }
     if (out->count == cap) {
-        char **grown = realloc(out->parts, (cap + 1) * sizeof *grown);
+        char **grown = bt_realloc(out->parts, (cap + 1) * sizeof *grown);
         if (grown == NULL) {
             parts_free(out);
             return false;
@@ -325,7 +326,7 @@ static bool parse_unit(const char *text, unsigned depth, bt_unit *unit) {
         }
         unit->has_setup = true;
     }
-    char *core_copy = malloc(strlen(core_text) + 1);
+    char *core_copy = bt_malloc(strlen(core_text) + 1);
     if (core_copy == NULL) {
         parts_free(&parts);
         return false;
@@ -368,7 +369,7 @@ static bool parse_core(const char *text, unsigned depth, bt_unit *unit) {
     }
     if (parts.count == 1) {
         bool has_bracket = strchr(parts.parts[0], '[') != NULL;
-        char *inner = malloc(strlen(parts.parts[0]) + 1);
+        char *inner = bt_malloc(strlen(parts.parts[0]) + 1);
         if (inner == NULL) {
             parts_free(&parts);
             return false;
@@ -399,7 +400,7 @@ static bool parse_expr(const char *text, unsigned depth, bt_unit **out_units, si
         return false;
     }
     size_t count = parts.count;
-    bt_unit *units = calloc(count, sizeof *units);
+    bt_unit *units = bt_calloc(count, sizeof *units);
     if (units == NULL) {
         parts_free(&parts);
         return false;
@@ -459,7 +460,7 @@ static bool flatten(const bt_unit *units, size_t count, const bt_alg *inherited,
             has_setup = true;
         }
         if (unit->kind == BT_CORE_COMM) {
-            bt_expanded *grown = realloc(out->items, (out->count + 1) * sizeof *grown);
+            bt_expanded *grown = bt_realloc(out->items, (out->count + 1) * sizeof *grown);
             if (grown == NULL) {
                 if (has_setup) {
                     bt_alg_free(&setup);
@@ -523,7 +524,7 @@ bool bt_decompose_verified(const char *text, const bt_alg *alg, bt_expanded_list
     }
     bt_cube reference = bt_cube_solved();
     bt_cube_apply_alg(&reference, alg);
-    bool *chosen = calloc(out->count, sizeof *chosen);
+    bool *chosen = bt_calloc(out->count, sizeof *chosen);
     if (chosen == NULL) {
         bt_expanded_list_free(out);
         BT_TRACE_FAIL("commutator.decompose_verified", "chosen alloc failed");

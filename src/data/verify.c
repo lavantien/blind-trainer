@@ -1,5 +1,6 @@
 #include "data/verify.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "core/analysis.h"
 #include "scheme/scheme.h"
@@ -173,7 +174,7 @@ bool bt_verdict_contains_note(const bt_verdict *verdict, bt_note_kind kind, cons
 }
 
 static int problems_push(bt_verdict *verdict, const bt_problem *problem) {
-    bt_problem *grown = realloc(verdict->problems, (verdict->problem_count + 1) * sizeof *grown);
+    bt_problem *grown = bt_realloc(verdict->problems, (verdict->problem_count + 1) * sizeof *grown);
     if (grown == NULL) {
         return -1;
     }
@@ -184,7 +185,7 @@ static int problems_push(bt_verdict *verdict, const bt_problem *problem) {
 }
 
 static int notes_push(bt_verdict *verdict, const bt_note *note) {
-    bt_note *grown = realloc(verdict->notes, (verdict->note_count + 1) * sizeof *grown);
+    bt_note *grown = bt_realloc(verdict->notes, (verdict->note_count + 1) * sizeof *grown);
     if (grown == NULL) {
         return -1;
     }

@@ -1,5 +1,6 @@
 #include "data/repo_solves.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <stdlib.h>
@@ -23,7 +24,7 @@ void bt_solve_log_free(bt_solve_log *log) {
 int bt_solve_log_push(bt_solve_log *log, bt_solve_record record) {
     if (log->count == log->cap) {
         size_t cap = log->cap == 0 ? 8 : log->cap * 2;
-        bt_solve_record *grown = realloc(log->items, cap * sizeof *grown);
+        bt_solve_record *grown = bt_realloc(log->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
