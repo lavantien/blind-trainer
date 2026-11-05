@@ -63,8 +63,18 @@ void *bt_app_focus_foreground_window(void) {
     return foreground;
 }
 
+static int focus_env_fail(const char *name) {
+    const char *forced = getenv(name);
+    return forced != NULL && forced[0] != '\0' ? 1 : 0;
+}
+
 int bt_app_focus_cursor_pos(long *x, long *y) {
     BT_TRACE_ENTER("app.focus_cursor_pos");
+    if (focus_env_fail("BT_APP_FOCUS_CURSOR_FAIL")) {
+        BT_TRACE_FAIL("app.focus_cursor_pos", "forced by env");
+        BT_TRACE_EXIT("app.focus_cursor_pos");
+        return 0;
+    }
     POINT point;
     int ok = GetCursorPos(&point) != 0;
     if (ok && x != NULL && y != NULL) {
@@ -107,6 +117,10 @@ enum {
 
 static int sentinel_class_ready(void) {
     static int ready = 0;
+    if (focus_env_fail("BT_APP_FOCUS_CLASS_FAIL")) {
+        BT_TRACE_FAIL("app.focus_sentinel_acquire", "class registration forced off");
+        return 0;
+    }
     if (ready) {
         return 1;
     }
@@ -225,7 +239,7 @@ int bt_app_focus_sentinel_acquire(void) {
 void bt_app_focus_sentinel_release(void) {
     BT_TRACE_ENTER("app.focus_sentinel_release");
     if (g_sentinel_window != NULL) {
-        if (GetForegroundWindow() == g_sentinel_window) {
+        if (GetForegroundWindow() == g_sentinel_window || focus_env_fail("BT_APP_FOCUS_GIVEBACK")) {
             give_foreground_back(g_sentinel_baseline);
         }
         DestroyWindow(g_sentinel_window);

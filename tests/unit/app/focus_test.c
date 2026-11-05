@@ -2,6 +2,7 @@
 #include "app/window_focus.h"
 
 #include "common.h"
+#include "common/alloc.h"
 
 #define WIN32_LEAN_AND_MEAN
 #ifndef NOMINMAX
@@ -151,4 +152,32 @@ BT_TEST(focus, driver_posts_fail_on_destroyed_targets) {
     BT_CHECK_EQ(bt_app_driver_key_down(window, VK_SPACE), 0);
     BT_CHECK_EQ(bt_app_driver_key_up(window, VK_SPACE), 0);
     BT_CHECK_EQ(bt_app_driver_close_request(window), 0);
+}
+
+BT_TEST(focus, cursor_pos_reports_failure_when_forced) {
+    long x = 0;
+    long y = 0;
+    _putenv("BT_APP_FOCUS_CURSOR_FAIL=1");
+    BT_CHECK_EQ(bt_app_focus_cursor_pos(&x, &y), 0);
+    _putenv("BT_APP_FOCUS_CURSOR_FAIL=");
+    BT_CHECK_EQ(bt_app_focus_cursor_pos(&x, &y), 1);
+}
+
+BT_TEST(focus, sentinel_acquire_fails_when_class_registration_is_forced_off) {
+    _putenv("BT_APP_FOCUS_CLASS_FAIL=1");
+    BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 0);
+    _putenv("BT_APP_FOCUS_CLASS_FAIL=");
+    BT_CHECK(bt_app_focus_sentinel_acquire());
+    _putenv("BT_APP_FOCUS_GIVEBACK=1");
+    bt_app_focus_sentinel_release();
+    _putenv("BT_APP_FOCUS_GIVEBACK=");
+}
+
+BT_TEST(focus, watch_start_fails_closed_when_allocation_fails) {
+    bt_alloc_fail_arm(0);
+    BT_CHECK(bt_app_focus_watch_start("probe", GetCurrentProcessId()) == NULL);
+    bt_alloc_fail_disarm();
+    void *watch = bt_app_focus_watch_start("probe", GetCurrentProcessId());
+    BT_CHECK(watch != NULL);
+    bt_app_focus_watch_stop(watch);
 }
