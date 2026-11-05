@@ -294,18 +294,20 @@ BT_TEST(repo_errors, srs_insert_card_prepare_fails_stage_by_stage) {
         const char *step;
     } cases[] = {
         {"card-table", "", "insert card"},
-        {"state-table",
-         "CREATE TABLE card(id INTEGER PRIMARY KEY, event TEXT, method TEXT, stage TEXT, "
-         "case_key TEXT, created_at INTEGER, updated_at INTEGER)",
-         "insert srs_state",
+        {
+            "state-table",
+            "CREATE TABLE card(id INTEGER PRIMARY KEY, event TEXT, method TEXT, stage TEXT, "
+            "case_key TEXT, created_at INTEGER, updated_at INTEGER)",
+            "insert srs_state",
         },
-        {"log-table",
-         "CREATE TABLE card(id INTEGER PRIMARY KEY, event TEXT, method TEXT, stage TEXT, "
-         "case_key TEXT, created_at INTEGER, updated_at INTEGER);"
-         "CREATE TABLE srs_state(card_id INTEGER PRIMARY KEY, due_day INTEGER, interval_days "
-         "INTEGER, reps INTEGER, lapses INTEGER, last_review_day INTEGER, stability REAL, "
-         "difficulty REAL)",
-         "insert review_log",
+        {
+            "log-table",
+            "CREATE TABLE card(id INTEGER PRIMARY KEY, event TEXT, method TEXT, stage TEXT, "
+            "case_key TEXT, created_at INTEGER, updated_at INTEGER);"
+            "CREATE TABLE srs_state(card_id INTEGER PRIMARY KEY, due_day INTEGER, interval_days "
+            "INTEGER, reps INTEGER, lapses INTEGER, last_review_day INTEGER, stability REAL, "
+            "difficulty REAL)",
+            "insert review_log",
         },
     };
     for (int i = 0; i < 3; i++) {
@@ -417,11 +419,10 @@ BT_TEST(repo_errors, srs_load_rows_rejects_null_text_columns) {
                        "INTEGER, reviewed_day INTEGER, interval_before INTEGER, interval_after "
                        "INTEGER, elapsed_days INTEGER)",
                        &db, path, sizeof path);
-    raw_exec(&db,
-             "INSERT INTO card(id, event, method, stage, case_key, created_at, updated_at) "
-             "VALUES (1, '3bld', '3style', NULL, 'UF', 1, 1);"
-             "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, "
-             "last_review_day, stability, difficulty) VALUES (1, 2, 1, 1, 0, 1, NULL, NULL)");
+    raw_exec(&db, "INSERT INTO card(id, event, method, stage, case_key, created_at, updated_at) "
+                  "VALUES (1, '3bld', '3style', NULL, 'UF', 1, 1);"
+                  "INSERT INTO srs_state(card_id, due_day, interval_days, reps, lapses, "
+                  "last_review_day, stability, difficulty) VALUES (1, 2, 1, 1, 0, 1, NULL, NULL)");
     bt_fsrs_config cfg;
     bt_fsrs_config_defaults(&cfg);
     bt_srs_load_error err;
@@ -642,8 +643,8 @@ BT_TEST(repo_errors, algs_split_and_join_key_edges) {
     char tiny[4];
     BT_CHECK(bt_repo_algs_split_key("edge", tiny, sizeof tiny, case_key, sizeof case_key) != 0);
     BT_CHECK(bt_repo_algs_split_key("edge", tiny, sizeof tiny, tiny, sizeof tiny) != 0);
-    BT_CHECK(bt_repo_algs_split_key("edgeless/UF", tiny, sizeof tiny, case_key,
-                                    sizeof case_key) != 0);
+    BT_CHECK(bt_repo_algs_split_key("edgeless/UF", tiny, sizeof tiny, case_key, sizeof case_key) !=
+             0);
     char joined[BT_REPO_ALGS_KEY_MAX];
     BT_CHECK(bt_repo_algs_join_key("edge", "", joined, sizeof joined) == 0);
     BT_CHECK(strcmp(joined, "edge") == 0);
@@ -697,7 +698,8 @@ BT_TEST(repo_errors, algs_load_rejects_null_columns) {
     char path[BT_TU_PATH_MAX];
     open_latest_schema("algs-null-column",
                        "CREATE TABLE user_alg(event TEXT, method TEXT, stage TEXT, case_key TEXT, "
-                       "alg TEXT)", &db, path, sizeof path);
+                       "alg TEXT)",
+                       &db, path, sizeof path);
     raw_exec(&db, "INSERT INTO user_alg(event, method, stage, case_key, alg) VALUES "
                   "('3bld', '3style', 'edge', 'UF', NULL)");
     bt_user_algs algs;
@@ -757,7 +759,7 @@ BT_TEST(repo_errors, user_upsert_covers_update_and_insert_paths) {
     BT_CHECK(bt_repo_user_upsert(&db, &ref, "second alg", &err) == 0);
     sqlite3_stmt *stmt = NULL;
     BT_CHECK(sqlite3_prepare_v2(bt_db_conn(&db), "SELECT alg FROM user_alg WHERE case_key = 'T'",
-                               -1, &stmt, NULL) == SQLITE_OK);
+                                -1, &stmt, NULL) == SQLITE_OK);
     BT_CHECK(sqlite3_step(stmt) == SQLITE_ROW);
     BT_CHECK_EQ((const char *)sqlite3_column_text(stmt, 0), "second alg");
     sqlite3_finalize(stmt);
@@ -785,7 +787,8 @@ BT_TEST(repo_errors, user_upsert_remove_and_load_failures) {
     bt_db narrow;
     open_latest_schema("user-narrow-table",
                        "CREATE TABLE user_alg(event TEXT, method TEXT, stage TEXT, case_key TEXT, "
-                       "alg TEXT, updated_at INTEGER)", &narrow, path, sizeof path);
+                       "alg TEXT, updated_at INTEGER)",
+                       &narrow, path, sizeof path);
     raw_exec(&narrow, "INSERT INTO user_alg(event, method, stage, case_key, alg, updated_at) "
                       "VALUES ('3x3', 'cfop', 'pll', 'J', 'seed', 1)");
     BT_CHECK(bt_repo_user_upsert(&narrow, &ref, "alg", &err) != 0);
@@ -795,7 +798,7 @@ BT_TEST(repo_errors, user_upsert_remove_and_load_failures) {
     bt_db blocked;
     open_memory(&blocked);
     raw_exec(&blocked, "INSERT INTO user_alg(event, method, stage, case_key, alg, created_at, "
-                      "updated_at) VALUES ('3x3', 'cfop', 'pll', 'J', 'seed', 1, 1)");
+                       "updated_at) VALUES ('3x3', 'cfop', 'pll', 'J', 'seed', 1, 1)");
     raw_exec(&blocked, "CREATE TRIGGER block_insert BEFORE INSERT ON user_alg "
                        "BEGIN SELECT RAISE(ABORT, 'no inserts'); END;"
                        "CREATE TRIGGER block_delete BEFORE DELETE ON user_alg "
@@ -817,7 +820,8 @@ BT_TEST(repo_errors, user_load_all_rejects_null_columns) {
     char path[BT_TU_PATH_MAX];
     open_latest_schema("user-null-column",
                        "CREATE TABLE user_alg(event TEXT, method TEXT, stage TEXT, case_key TEXT, "
-                       "alg TEXT)", &db, path, sizeof path);
+                       "alg TEXT)",
+                       &db, path, sizeof path);
     raw_exec(&db, "INSERT INTO user_alg(event, method, stage, case_key, alg) VALUES "
                   "('3x3', 'cfop', 'pll', 'J', NULL)");
     bt_overrides ov;
@@ -938,7 +942,8 @@ BT_TEST(repo_errors, seeds_pack_tx_prepare_failures_without_and_with_narrow_tabl
     bt_db narrow;
     open_latest_schema("seeds-narrow-table",
                        "CREATE TABLE seed_alg(event TEXT, method TEXT, stage TEXT, case_key TEXT, "
-                       "content_hash TEXT)", &narrow, path, sizeof path);
+                       "content_hash TEXT)",
+                       &narrow, path, sizeof path);
     BT_CHECK(bt_seed_pack_tx(&narrow, "pack.tsv", &row, 1, &report, &err) != 0);
     BT_CHECK(strcmp(err.db.step, "insert seed_alg") == 0);
     bt_db_close(&narrow);
@@ -983,7 +988,8 @@ BT_TEST(repo_errors, seeds_pack_tx_reports_stale_null_keys_and_insert_step_failu
     open_latest_schema("seeds-null-key",
                        "CREATE TABLE seed_alg(event TEXT, method TEXT, stage TEXT, case_key TEXT, "
                        "alg TEXT, front_json TEXT, source_url TEXT, source_at TEXT, "
-                       "content_hash TEXT)", &db, path, sizeof path);
+                       "content_hash TEXT)",
+                       &db, path, sizeof path);
     raw_exec(&db, "INSERT INTO seed_alg(event, method, stage, case_key, alg, front_json, "
                   "source_url, source_at, content_hash) VALUES ('3x3', 'cfop', 'pll', NULL, "
                   "'R U R', '{}', 'u', 'a', 'hash-1')");
