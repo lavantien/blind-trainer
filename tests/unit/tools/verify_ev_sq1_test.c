@@ -179,9 +179,10 @@ BT_TEST(verify_ev_sq1, family_resolution_prefers_the_heavier_later_shape) {
     const verify_sq1_case *cases[3] = {&light, &heavy_a, &heavy_b};
     verify_sq1_family_index index;
     verify_sq1_resolve_family_keys(cases, 3, &index);
-    BT_CHECK_EQ(index.key_count, 1U);
+    BT_CHECK_EQ(index.key_count, 2U);
     BT_CHECK_EQ(index.ambiguous_count, 0U);
     BT_CHECK_EQ(index.keys[0].key_len, BT_PZ_SQ1_PIECES_PER_LAYER);
+    BT_CHECK_EQ(index.keys[1].key_len, BT_PZ_SQ1_PIECES_PER_LAYER);
     verify_sq1_family_index_free(&index);
 }
 
