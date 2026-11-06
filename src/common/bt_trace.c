@@ -1,4 +1,5 @@
 #include "common/bt_trace.h"
+#include "common/alloc.h"
 
 #include <stdarg.h>
 #include <stdatomic.h>
@@ -74,7 +75,7 @@ int bt_trace_init(size_t ring_bytes, size_t max_threads, size_t line_max) {
         return -1;
     }
     for (size_t i = 0; i < max_threads; i++) {
-        g_slots[i].ring = malloc(ring_bytes);
+        g_slots[i].ring = bt_malloc(ring_bytes);
         if (g_slots[i].ring == NULL) {
             for (size_t j = 0; j < i; j++) {
                 free(g_slots[j].ring);

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 bt_tier1_status bt_verify_tier1(const bt_pz_engine *eng, const char *text, bt_tier1_error *err) {
@@ -21,8 +22,8 @@ bt_tier1_status bt_verify_tier1(const bt_pz_engine *eng, const char *text, bt_ti
     }
     inverse = bt_pz_alg_create();
     eng->invert_alg(eng, alg, inverse);
-    forward = malloc(eng->state_size);
-    reverse = malloc(eng->state_size);
+    forward = bt_malloc(eng->state_size);
+    reverse = bt_malloc(eng->state_size);
     if (forward == NULL || reverse == NULL) {
         BT_TRACE_FAIL("bt_verify_tier1", "state malloc failed");
         bt_trace_dump();

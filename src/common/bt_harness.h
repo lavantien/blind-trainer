@@ -26,6 +26,9 @@ int bt_harness_run(const char *suite, const bt_test_entry *tests, size_t count);
 void bt_harness_fail(const char *file, int line, const char *fmt, ...);
 BT_NORETURN void bt_harness_exit_failure(void);
 FILE *bt_test_open_scratch(const char *name);
+void bt_harness_alloc_arm(size_t ok_count);
+void bt_harness_alloc_disarm(void);
+size_t bt_harness_alloc_failures(void);
 
 void bt_harness_check_str(const char *file, int line, const char *actual_expr,
                           const char *expected_expr, const char *actual, const char *expected);

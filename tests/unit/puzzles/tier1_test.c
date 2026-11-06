@@ -1,7 +1,9 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/strbuf.h"
 #include "puzzles/geometry.h"
 #include "puzzles/tier1.h"
+#include "unit/core/death_test.h"
 
 #include <string.h>
 
@@ -21,13 +23,15 @@ typedef struct {
     bool counter_shifts_forward;
     bool slash_needs_solved;
     bool counter_lands_off;
+    size_t fail_apply_call;
+    size_t seen_apply_calls;
 } cycle_cfg;
 
 typedef struct {
     int32_t turn;
 } cycle_state;
 
-static bt_pz_engine cycle_engine(const cycle_cfg *cfg) {
+static bt_pz_engine cycle_engine(cycle_cfg *cfg) {
     return (bt_pz_engine){
         .name = "cycle",
         .self = cfg,
@@ -118,8 +122,13 @@ static void cycle_invert_alg(const bt_pz_engine *eng, const void *alg, void *out
 
 static bool cycle_apply_alg(const bt_pz_engine *eng, void *state, const void *alg,
                             bt_pz_error *err) {
-    const cycle_cfg *cfg = eng->self;
+    cycle_cfg *cfg = (cycle_cfg *)eng->self;
     cycle_state *turn_state = state;
+    cfg->seen_apply_calls++;
+    if (cfg->fail_apply_call == cfg->seen_apply_calls) {
+        bt_pz_error_set(err, BT_PZ_ERR_APPLY, "f", strlen("f"));
+        return false;
+    }
     size_t len = bt_pz_alg_len(alg);
     for (size_t i = 0; i < len; i++) {
         const cycle_move *mv = bt_pz_alg_at(eng, alg, i);
@@ -162,7 +171,7 @@ static void cycle_facelets(const bt_pz_engine *eng, const void *state, bt_pz_gri
     out->faces[0].rows[0].cells[0] = (uint8_t)turn_state->turn;
 }
 
-static bt_pz_engine cycle_engine_full(const cycle_cfg *cfg) {
+static bt_pz_engine cycle_engine_full(cycle_cfg *cfg) {
     bt_pz_engine eng = cycle_engine(cfg);
     eng.parse_move = cycle_parse_move;
     eng.parse_alg = bt_pz_alg_default_parse;
@@ -181,6 +190,8 @@ static cycle_cfg cycle_sound(void) {
         .counter_shifts_forward = false,
         .slash_needs_solved = false,
         .counter_lands_off = false,
+        .fail_apply_call = 0,
+        .seen_apply_calls = 0,
     };
 }
 
@@ -358,6 +369,53 @@ BT_TEST(tier1, cycle_invert_replaces_a_reused_out_alg) {
     bt_strbuf_free(&sb);
     bt_pz_alg_destroy(alg);
     bt_pz_alg_destroy(reused);
+}
+
+BT_TEST(tier1, an_apply_failure_on_either_round_trip_reports_apply) {
+    cycle_cfg cfg = cycle_sound();
+    cfg.fail_apply_call = 2;
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    bt_tier1_error err;
+    BT_CHECK_EQ(bt_verify_tier1(&eng, "a", &err), (int)BT_TIER1_APPLY);
+    BT_CHECK_EQ(err.cause.kind, (int)BT_PZ_ERR_APPLY);
+    cycle_cfg reverse_cfg = cycle_sound();
+    reverse_cfg.fail_apply_call = 4;
+    bt_pz_engine reverse_eng = cycle_engine_full(&reverse_cfg);
+    BT_CHECK_EQ(bt_verify_tier1(&reverse_eng, "a", &err), (int)BT_TIER1_APPLY);
+    BT_CHECK_EQ(err.cause.kind, (int)BT_PZ_ERR_APPLY);
+}
+
+BT_TEST(tier1, a_null_error_sink_keeps_the_statuses) {
+    cycle_cfg cfg = cycle_sound();
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    BT_CHECK_EQ(bt_verify_tier1(&eng, "a b", NULL), (int)BT_TIER1_OK);
+    cycle_cfg failing = cycle_sound();
+    failing.fail_apply_call = 1;
+    bt_pz_engine failing_eng = cycle_engine_full(&failing);
+    BT_CHECK_EQ(bt_verify_tier1(&failing_eng, "a", NULL), (int)BT_TIER1_APPLY);
+    BT_CHECK_EQ(bt_verify_tier1(&failing_eng, "q", NULL), (int)BT_TIER1_PARSE);
+}
+
+static void tier1_death_state_malloc_fails(uint32_t arm) {
+    bt_alloc_fail_arm(arm);
+    cycle_cfg cfg = cycle_sound();
+    bt_pz_engine eng = cycle_engine_full(&cfg);
+    (void)bt_verify_tier1(&eng, "a", NULL);
+}
+
+static void tier1_death_forward_malloc(void) {
+    tier1_death_state_malloc_fails(4);
+}
+
+static void tier1_death_reverse_malloc(void) {
+    tier1_death_state_malloc_fails(5);
+}
+
+BT_TEST(tier1, a_state_malloc_failure_aborts_the_verification) {
+    bt_death_expect_abort("tier1.forward_malloc", "state malloc failed",
+                          tier1_death_forward_malloc);
+    bt_death_expect_abort("tier1.reverse_malloc", "state malloc failed",
+                          tier1_death_reverse_malloc);
 }
 
 BT_TEST(tier1, tier1_error_displays_its_cause) {

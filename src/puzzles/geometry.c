@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/space.h"
 
@@ -66,7 +67,7 @@ static void bt_pz_fatal(const char *unit, const char *what) {
 
 void *bt_pz_alg_create(void) {
     BT_TRACE_ENTER("bt_pz_alg_create");
-    bt_pz_alg *alg = malloc(sizeof *alg);
+    bt_pz_alg *alg = bt_malloc(sizeof *alg);
     if (alg == NULL) {
         bt_pz_fatal("bt_pz_alg_create", "malloc");
     }
@@ -92,7 +93,7 @@ void bt_pz_alg_push(const bt_pz_engine *eng, void *alg, const void *move) {
     bt_pz_alg *vec = alg;
     if (vec->len == vec->cap) {
         size_t want = vec->cap == 0 ? 8 : vec->cap * 2;
-        uint8_t *grown = realloc(vec->items, want * eng->move_size);
+        uint8_t *grown = bt_realloc(vec->items, want * eng->move_size);
         if (grown == NULL) {
             bt_pz_fatal("bt_pz_alg_push", "realloc");
         }

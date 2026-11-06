@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #define BT_CONFIG_DEFAULT_PATH "config/config.json"
@@ -24,7 +25,7 @@ static char *read_file(const char *path, size_t *len) {
         fclose(file);
         return NULL;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         return NULL;
