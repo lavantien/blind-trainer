@@ -98,7 +98,10 @@ bool bt_expanded_eq(const bt_expanded *a, const bt_expanded *b) {
     if (a->has_setup && !bt_alg_eq(&a->setup, &b->setup)) {
         return false;
     }
-    return (bt_alg_eq(&a->a, &b->a) && bt_alg_eq(&a->b, &b->b)) != 0;
+    if (!bt_alg_eq(&a->a, &b->a)) {
+        return false;
+    }
+    return bt_alg_eq(&a->b, &b->b);
 }
 
 static void unit_free(bt_unit *unit) {
@@ -129,22 +132,14 @@ static bt_alg unit_expansion(const bt_unit *unit) {
     if (unit->has_setup) {
         alg_append(&out, &unit->setup);
     }
-    if (unit->kind == BT_CORE_COMM) {
-        alg_append(&out, &unit->comm_a);
-        alg_append(&out, &unit->comm_b);
-        bt_alg a_inv = bt_alg_inverse(&unit->comm_a);
-        bt_alg b_inv = bt_alg_inverse(&unit->comm_b);
-        alg_append(&out, &a_inv);
-        alg_append(&out, &b_inv);
-        bt_alg_free(&a_inv);
-        bt_alg_free(&b_inv);
-    } else {
-        for (size_t i = 0; i < unit->sub_count; i++) {
-            bt_alg sub = unit_expansion(&unit->subs[i]);
-            alg_append(&out, &sub);
-            bt_alg_free(&sub);
-        }
-    }
+    alg_append(&out, &unit->comm_a);
+    alg_append(&out, &unit->comm_b);
+    bt_alg a_inv = bt_alg_inverse(&unit->comm_a);
+    bt_alg b_inv = bt_alg_inverse(&unit->comm_b);
+    alg_append(&out, &a_inv);
+    alg_append(&out, &b_inv);
+    bt_alg_free(&a_inv);
+    bt_alg_free(&b_inv);
     if (unit->has_setup) {
         bt_alg setup_inv = bt_alg_inverse(&unit->setup);
         alg_append(&out, &setup_inv);
@@ -276,11 +271,6 @@ static bool parse_slot(const char *text, unsigned depth, bt_alg *out) {
             bt_alg_free(&sub);
         }
         units_free(units, count);
-        if (bt_alg_len(out) == 0) {
-            bt_alg_free(out);
-            bt_alg_init(out);
-            return false;
-        }
         return true;
     }
     char err[64];
