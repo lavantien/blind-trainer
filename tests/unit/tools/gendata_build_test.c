@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/strbuf.h"
@@ -588,4 +589,94 @@ BT_TEST(gendata_build, manifest_counts_orbits_and_special_classes) {
     bt_gd_synth_hit_free(&hit);
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
+}
+
+enum { GD_BUILD_DERIVE_SWEEP_MAX = 64 };
+
+static void mirror_pair_cases(bt_gd_cases_file *cases) {
+    cases->cases = malloc(2 * sizeof(bt_gd_case_entry));
+    cases->count = 2;
+    cases->cases[0] = (bt_gd_case_entry){
+        .orbit = _strdup("edge"),
+        .t1 = 29,
+        .t2 = 30,
+        .t1_letter = 'F',
+        .t2_letter = 'G',
+        .t1_name = _strdup("LF"),
+        .t2_name = _strdup("LD"),
+        .covered = false,
+        .vendor_algs = NULL,
+        .vendor_count = 0,
+    };
+    cases->cases[1] = (bt_gd_case_entry){
+        .orbit = _strdup("edge"),
+        .t1 = 30,
+        .t2 = 29,
+        .t1_letter = 'G',
+        .t2_letter = 'F',
+        .t1_name = _strdup("LD"),
+        .t2_name = _strdup("LF"),
+        .covered = true,
+        .vendor_algs = malloc(sizeof(bt_gd_vendor_alg)),
+        .vendor_count = 1,
+    };
+    *cases->cases[1].vendor_algs = (bt_gd_vendor_alg){
+        .solver = _strdup("cherry"),
+        .rowid = 2,
+        .position = _strdup("UF-LD-LF"),
+        .alg = _strdup("R2 U' S R2 S' R2 U R2"),
+        .qtm = 12,
+        .htm = 9,
+        .ok = true,
+        .problems = NULL,
+        .problem_count = 0,
+        .notes = NULL,
+        .note_count = 0,
+        .commutator = _strdup("R2 U':[S,R2]"),
+        .recon_link = _strdup(""),
+        .youtube_link = _strdup(""),
+    };
+}
+
+static bool derived_row_complete(const bt_gd_case_entry *entry) {
+    if (entry->vendor_count == 0) {
+        return true;
+    }
+    const bt_gd_vendor_alg *alg = &entry->vendor_algs[0];
+    return (bool)(alg->solver != NULL && alg->position != NULL && alg->alg != NULL &&
+                  alg->commutator != NULL && alg->recon_link != NULL && alg->youtube_link != NULL);
+}
+
+BT_TEST(gendata_build, derive_attaches_a_problem_carrying_inverse_for_a_foreign_mirror) {
+    bt_gd_cases_file cases;
+    mirror_pair_cases(&cases);
+    bt_gd_derive_mirrored_inverses(&cases);
+    BT_CHECK_EQ(cases.cases[0].vendor_count, 1U);
+    const bt_gd_vendor_alg *derived = &cases.cases[0].vendor_algs[0];
+    BT_CHECK_EQ(strcmp(derived->solver, "cherry"), 0);
+    BT_CHECK(!derived->ok);
+    BT_CHECK(derived->problem_count > 0);
+    for (size_t p = 0; p < derived->problem_count; p++) {
+        BT_CHECK(derived->problems[p] != NULL);
+    }
+    BT_CHECK(cases.cases[0].covered);
+    bt_gd_cases_file_free(&cases);
+    size_t armed = 0;
+    for (;;) {
+        mirror_pair_cases(&cases);
+        bt_alloc_fail_arm(armed);
+        bt_gd_derive_mirrored_inverses(&cases);
+        bt_alloc_fail_disarm();
+        BT_CHECK(cases.cases[0].vendor_count <= 1U);
+        BT_CHECK(derived_row_complete(&cases.cases[0]));
+        if (cases.cases[0].vendor_count == 1U) {
+            BT_CHECK(cases.cases[0].vendor_algs[0].problem_count > 0);
+            bt_gd_cases_file_free(&cases);
+            break;
+        }
+        bt_gd_cases_file_free(&cases);
+        armed += 1;
+        BT_CHECK(armed < GD_BUILD_DERIVE_SWEEP_MAX);
+    }
+    BT_CHECK(armed > 2);
 }

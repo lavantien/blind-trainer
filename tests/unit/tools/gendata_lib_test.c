@@ -1,5 +1,6 @@
 #include "gendata/lib.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -275,6 +276,7 @@ BT_TEST(gendata_lib, synth_params_hash_fails_when_the_serializer_runs_out_of_mem
         int rc = bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err);
         bt_alloc_fail_disarm();
         if (rc == 0) {
+            bt_json_free(config);
             break;
         }
         BT_CHECK_EQ(strcmp(err, "synth section serialization failed"), 0);
@@ -283,4 +285,75 @@ BT_TEST(gendata_lib, synth_params_hash_fails_when_the_serializer_runs_out_of_mem
         BT_CHECK(armed < 64);
     }
     BT_CHECK(armed > 0);
+}
+
+enum { GD_LIB_SERDE_SWEEP_MAX = 64 };
+
+static void sweep_serde_allocation(const char *text) {
+    size_t armed = 0;
+    for (;;) {
+        bt_json_error jerr;
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+        char hash[65];
+        char err[96];
+        err[0] = '\0';
+        bt_alloc_fail_arm(armed);
+        int rc = bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err);
+        bt_alloc_fail_disarm();
+        bt_json_free(config);
+        if (rc == 0) {
+            break;
+        }
+        BT_CHECK_EQ(strcmp(err, "synth section serialization failed"), 0);
+        armed += 1;
+        BT_CHECK(armed < GD_LIB_SERDE_SWEEP_MAX);
+    }
+    BT_CHECK(armed > 0);
+}
+
+BT_TEST(gendata_lib, serde_allocation_failure_covers_every_digit_form) {
+    static const char *texts[] = {
+        "{\"synth\": {\"i\": 1200.0}}",   "{\"synth\": {\"n\": -12.5}}",
+        "{\"synth\": {\"f\": 0.00125}}",  "{\"synth\": {\"s\": 5e-7}}",
+        "{\"synth\": {\"d\": -1.25e20}}", "{\"synth\": {\"z\": 0.0}}",
+    };
+    for (size_t i = 0; i < sizeof texts / sizeof texts[0]; i++) {
+        sweep_serde_allocation(texts[i]);
+    }
+}
+
+BT_TEST(gendata_lib, serde_allocation_failure_covers_every_string_and_array_arm) {
+    sweep_serde_allocation("{\"synth\": {\"t\": \"e\\\"f\\\\g\\bh\\fi\\nj\\rk\\tl\\u0001m"
+                           "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                           "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}");
+    sweep_serde_allocation("{\"synth\": {\"t\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                           "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaae\\\"f\\\\g\\bh\\fi\\nj\\rk"
+                           "\\tl\\u0001m\"}}");
+    sweep_serde_allocation(
+        "{\"synth\": {\"aaaaaaaaaaa\": [10.5, 0.25, 7.5e-9, \"xy\", 3, 1200.0]}}");
+    static const size_t key_lengths[2] = {27, 59};
+    for (size_t k = 0; k < sizeof key_lengths / sizeof key_lengths[0]; k++) {
+        char key[64];
+        memset(key, 'a', key_lengths[k]);
+        key[key_lengths[k]] = '\0';
+        char text[160];
+        snprintf(text, sizeof text,
+                 "{\"synth\": {\"%s\": [10.5, 0.25, 7.5e-9, \"xy\", 3, 1200.0]}}", key);
+        sweep_serde_allocation(text);
+    }
+}
+
+BT_TEST(gendata_lib, synth_params_hash_rejects_a_non_finite_number) {
+    bt_json_value *config = bt_json_new_object();
+    bt_json_value *synth = bt_json_new_object();
+    BT_CHECK_EQ(bt_json_object_set(synth, "hot", bt_json_new_number(HUGE_VAL)), 0);
+    BT_CHECK_EQ(bt_json_object_set(config, "synth", synth), 0);
+    char hash[65];
+    char err[96];
+    err[0] = '\0';
+    BT_CHECK_EQ(bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err),
+                -1);
+    BT_CHECK_EQ(strcmp(err, "synth section serialization failed"), 0);
+    bt_json_free(config);
 }

@@ -54,6 +54,8 @@ def main():
     for stale in profraw_dir.glob("*.profraw"):
         stale.unlink()
     child_env = {
+        **os.environ,
+        "BT_CONFIG": "",
         "LLVM_PROFILE_FILE": str(profraw_dir / "%p.profraw"),
         "BT_BIN_DIR": str(cov_dir / "bin"),
         "BT_REF_GROUND": "ref_ground",

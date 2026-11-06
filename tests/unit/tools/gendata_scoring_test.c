@@ -593,3 +593,59 @@ BT_TEST(gendata_scoring, unscoreable_sequences_rank_below_every_scoring_one) {
     bt_alg_free(&plain);
     bt_alg_free(&rotation);
 }
+
+BT_TEST(gendata_scoring, rank_orders_a_negative_total_below_a_zero_one) {
+    static const char *text = "{\"synth\": {\"scoring\": {"
+                              "\"preferred\": [\"U\", \"D\", \"R\"],"
+                              "\"preferred_edge\": [\"U\", \"D\", \"R\", \"M\", \"E\", \"S\"],"
+                              "\"penalty_other\": -10.0,"
+                              "\"weight_len\": 0.0,"
+                              "\"weight_subset\": 1.0,"
+                              "\"weight_regrip\": 0.0,"
+                              "\"weight_finger\": 0.0,"
+                              "\"finger_cost\": {"
+                              "\"U\": [0.0, 0.0], \"D\": [0.0, 0.0], \"L\": [0.0, 0.0],"
+                              "\"R\": [0.0, 0.0], \"F\": [0.0, 0.0], \"B\": [0.0, 0.0]"
+                              "}}}}";
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+    bt_gd_scoring_cfg cfg;
+    char err[128];
+    BT_CHECK_EQ(bt_gd_scoring_from_config(config, &cfg, err, sizeof err), 0);
+    bt_json_free(config);
+    bt_alg outside = {0};
+    bt_alg inside = {0};
+    char bad[64];
+    BT_CHECK(bt_alg_parse("F", &outside, bad, sizeof bad));
+    BT_CHECK(bt_alg_parse("U", &inside, bad, sizeof bad));
+    bt_gd_score_parts parts;
+    BT_CHECK(bt_gd_score(outside.items, outside.len, BT_ORBIT_CORNER, &cfg, &parts));
+    assert_close(parts.total, -10.0F);
+    BT_CHECK(bt_gd_rank_cmp(outside.items, outside.len, inside.items, inside.len, BT_ORBIT_CORNER,
+                            &cfg) < 0);
+    BT_CHECK(bt_gd_rank_cmp(inside.items, inside.len, outside.items, outside.len, BT_ORBIT_CORNER,
+                            &cfg) > 0);
+    bt_alg_free(&inside);
+    bt_alg_free(&outside);
+}
+
+BT_TEST(gendata_scoring, finger_cost_accepts_integer_halves) {
+    static const char *text =
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\"], \"preferred_edge\": [\"U\"], \"penalty_other\": 2.0,"
+        "\"weight_len\": 1.0, \"weight_subset\": 2.0, \"weight_regrip\": 1.5,"
+        "\"weight_finger\": 0.5, \"finger_cost\": {"
+        "\"U\": [1, 0], \"D\": [1, 0], \"L\": [2, 1],"
+        "\"R\": [2, 1], \"F\": [3, 2], \"B\": [3, 2]}}}}";
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+    bt_gd_scoring_cfg cfg;
+    char err[128];
+    BT_CHECK_EQ(bt_gd_scoring_from_config(config, &cfg, err, sizeof err), 0);
+    bt_json_free(config);
+    assert_close(cfg.finger_cost[BT_FACE_U][0], 1.0F);
+    assert_close(cfg.finger_cost[BT_FACE_U][1], 0.0F);
+    assert_close(cfg.finger_cost[BT_FACE_B][1], 2.0F);
+}

@@ -53,6 +53,25 @@ static bt_gd_special_entry special_fixture(const char *solver, const char *class
     };
 }
 
+BT_TEST(gendata_model, vendor_alg_serializes_a_not_ok_row_with_its_problems) {
+    bt_gd_vendor_alg alg = vendor_alg_fixture("eggins", 9);
+    alg.ok = false;
+    bt_json_value *value = bt_gd_vendor_alg_to_json(&alg);
+    BT_CHECK(value != NULL);
+    bt_strbuf text;
+    bt_strbuf_init(&text, 0);
+    BT_CHECK_EQ(bt_gd_json_pretty(value, &text), 0);
+    BT_CHECK(strstr(text.data, "\"ok\": false") != NULL);
+    bt_gd_vendor_alg back;
+    BT_CHECK_EQ(bt_gd_vendor_alg_from_json(value, &back, NULL, 0), 0);
+    BT_CHECK(!back.ok);
+    BT_CHECK(bt_gd_vendor_alg_eq(&alg, &back));
+    bt_gd_vendor_alg_free(&alg);
+    bt_gd_vendor_alg_free(&back);
+    bt_strbuf_free(&text);
+    bt_json_free(value);
+}
+
 BT_TEST(gendata_model, vendor_alg_round_trips_and_keeps_its_field_names) {
     bt_gd_vendor_alg alg = vendor_alg_fixture("cherry", 4);
     bt_json_value *value = bt_gd_vendor_alg_to_json(&alg);
