@@ -50,7 +50,21 @@ lane-cov-mut3 replacing the 429-killed predecessor. Toolset probe passed. Inheri
 - Measurer hardened with one retry per stem after a transient spawn failure: the 04:47 run had 5 policy driver spawn failures with empty output from a just-relinked exe lock (the plain suite was green, the rerun clean).
 - Transient exe-lock flake added to the known-issues list for the hub's wave-end coverage run: spawn-heavy suites can fail once right after relink.
 
-## final, 08:40
+## follow-on batch, 08:52
+
+- 8f986be: both policy suites formatted for the fmt gate.
+- da6a7d3: literal 12 centralized as FX_RETURN_COL and EXPONENT_FLOAT_MUTANTS at tests_ops.c file scope, policy scan no longer flags it. Same commit links the alloc seam object into the ws fixture: the core lane's db5f9e7 gave bt_trace a seam dependency and the ws baseline stopped linking, now green.
+- 5e53421: 12 allocation sites across fs.c, token.c, operators.c, mutants-gate lib.c routed through bt_malloc, bt_realloc, bt_calloc, with arm(0) fail closed tests in both suites (read_file, tokenize, paths_push, enumerate, gate_run, gate_merge).
+- 1f6b53b: bt_mut_mkdirs' only failure path, its to_wide allocation, now driven through the seam, converting the last classified mkdirs arm from unreachable to covered.
+
+## unreachability proofs, item 5
+
+- fs.c read_file seek and tell arms: fopen("rb") on a directory fails at open on the MSVC CRT, so only regular files reach fseek(END)/ftell/fseek(SET), and those calls are specified to succeed on seekable file handles, which every CRT file handle backed by a Windows file is. Proof re-derivation: read fs.c lines 21-39 plus the CRT fopen contract.
+- fs.c read_file short read: the byte count comes from ftell on the same handle with no writer between the calls, the fixtures never mutate mid-read, so fread cannot come back short. Same shape for write_file's short write and fclose arms: they require disk full or quota exhaustion, not an honest driver.
+- gate main.c read_arg seek, tell, oom, short read arms: same regular-file argument as fs.c, the directory case fails at fopen on this CRT.
+- engine.c run_one compile spawn failure for the missing-clang case is drivable but the link spawn failure for the same override is preempted by the compile failing first with a stub exe present, and with a real clang the link spawn cannot fail while the compile spawn succeeded, proof: engine.c 666-717 order.
+- report.c 144-145 class arms are bt_strbuf init and serialize arms living in common, ownership is the common routing lane, not this one.
+- Remaining mkdirs error paths in prepare_scratch (cannot create scratch, cannot create inputs, cannot create input dir) call bt_mut_mkdirs whose Windows body ignores CreateDirectoryW results and returns 0 unconditionally, fs.c 131-155, so those arms are unreachable on this platform by construction, and the one reachable failure inside mkdirs is now seam-driven per 1f6b53b.
 
 Commits this lane: a236e79 policy batch, 03a5093 report fail closed plus driver verbs, b53149c scratch root and orphan pid, 8637924 gate driver edges, ad2176e exponent literals, 1c3e6d6 obj root resolution, 0eaa6b3 engine refusal paths and fake roots, 483c579 area map shapes, e9e1831 prepare scratch write failures and dep copy rules, 159158d tokenizer edges, 68abbf3 gate violations and allowlist trims, 534f006 scratch suite split under the sloc cap plus the fsutil suffix fix and the measurer, 430007b spawn refusal arms, link argv overflow, continuation spans. Two root-cause fixes landed in product code: report refuses an unreadable ledger, and the policy junction planter writes a valid reparse buffer.
 
