@@ -909,9 +909,7 @@ bt_json_value *bt_gd_manifest_to_json(const bt_gd_manifest *manifest) {
         set_string(root, "generator", manifest->generator) != 0 ||
         set_string(root, "synth_params_sha256", manifest->synth_params_sha256) != 0 ||
         set_string(root, "corpus_sha256", manifest->corpus_sha256) != 0 ||
-        set_integer(root, "corpus_rows", (long long)manifest->corpus_rows) != 0 ||
-        set_integer(root, "rows_in_pair_space", (long long)manifest->rows_in_pair_space) != 0 ||
-        set_integer(root, "rows_other_buffer", (long long)manifest->rows_other_buffer) != 0) {
+        set_integer(root, "corpus_rows", (long long)manifest->corpus_rows) != 0) {
         bt_json_free(root);
         BT_TRACE_FAIL("gd.model.manifest_to_json", "header member dropped");
         return NULL;
@@ -934,6 +932,12 @@ bt_json_value *bt_gd_manifest_to_json(const bt_gd_manifest *manifest) {
         bt_json_free(files);
         bt_json_free(root);
         BT_TRACE_FAIL("gd.model.manifest_to_json", "corpus_files member dropped");
+        return NULL;
+    }
+    if (set_integer(root, "rows_in_pair_space", (long long)manifest->rows_in_pair_space) != 0 ||
+        set_integer(root, "rows_other_buffer", (long long)manifest->rows_other_buffer) != 0) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "row count member dropped");
         return NULL;
     }
     bt_json_value *cases = bt_json_new_object();
