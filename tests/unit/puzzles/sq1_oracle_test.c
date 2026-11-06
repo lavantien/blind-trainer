@@ -4,6 +4,7 @@
 #include "puzzles/sq1.h"
 #include "puzzles/tier1.h"
 #include "unit/core/common.h"
+#include "unit/core/death_test.h"
 
 #include <string.h>
 
@@ -334,6 +335,12 @@ BT_TEST(sq1_oracle, grammar_rejects_pack_hazards_and_garbage) {
         {"1,0,2", "1,0,2"},
         {"1,0)(2,3)", "1,0)(2,3)"},
         {"1 0", "1"},
+        {"(1;2)", "(1;2)"},
+        {"(1,x)", "(1,x)"},
+        {"1,x", "1,x"},
+        {"0,0", "0,0"},
+        {"7,0", "7,0"},
+        {"\xC3", "\xC3"},
     };
     for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
         BT_CHECK(sq1_parse_fails(cases[i].text, cases[i].token));
@@ -765,4 +772,15 @@ BT_TEST(sq1_oracle, parse_rejects_a_two_digit_turn_out_of_the_engine_domain) {
     bt_pz_error_message(&err, &sb);
     BT_CHECK(strstr(sb.data, "unknown token") != NULL);
     bt_strbuf_free(&sb);
+}
+
+static void sq1_death_shape_cap_too_small(void) {
+    bt_pz_sq1_state state;
+    bt_pz_sq1_solved_state(&state);
+    uint8_t out[1];
+    (void)bt_pz_sq1_canonical_shape(&state, 0, out, 1);
+}
+
+BT_TEST(sq1_oracle, canonical_shape_aborts_when_the_caller_cap_is_too_small) {
+    bt_death_expect_abort("sq1.shape_cap", "cap 1 below count", sq1_death_shape_cap_too_small);
 }

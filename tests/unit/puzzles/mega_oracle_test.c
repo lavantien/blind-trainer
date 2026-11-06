@@ -5,6 +5,7 @@
 
 #include "common/bt_harness.h"
 #include "common/rng.h"
+#include "unit/core/death_test.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -445,9 +446,9 @@ BT_TEST(mega_oracle, graph_distances_pin_the_antipodes) {
         {BT_MEGA_L, BT_MEGA_UR}, {BT_MEGA_BR, BT_MEGA_DL}, {BT_MEGA_BL, BT_MEGA_DR},
     };
     for (size_t source = 0; source < BT_MEGA_FACES; source++) {
-        size_t far = antipode_of(source);
-        BT_CHECK(far != source);
-        BT_CHECK(antipode_of(far) == source);
+        size_t distant = antipode_of(source);
+        BT_CHECK(distant != source);
+        BT_CHECK(antipode_of(distant) == source);
     }
     for (size_t i = 0; i < 6; i++) {
         BT_CHECK(antipode_of(pairs[i][0]) == pairs[i][1]);
@@ -967,4 +968,23 @@ BT_TEST(mega_oracle, quarter_one_own_ring_cycle_is_pinned_after_a_neighbor_turn)
     for (size_t i = 0; i < 4; i++) {
         BT_CHECK_EQ(bt_mega_color(&state, 0, slots[i]), values[i]);
     }
+}
+
+static void mega_death_format_unpinned_move(void) {
+    bt_mega_move mv = {0, 0, 9};
+    bt_pz_engine eng = bt_mega_engine();
+    void *alg = bt_pz_alg_create();
+    bt_pz_alg_push(&eng, alg, &mv);
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 32);
+    bt_mega_format_alg(alg, &sb);
+    bt_strbuf_free(&sb);
+    bt_pz_alg_destroy(alg);
+}
+
+BT_TEST(mega_oracle, format_aborts_on_a_move_outside_the_pinned_table) {
+    bt_mega_move mv = {0, 0, 9};
+    BT_CHECK(!bt_mega_is_pinned_move(mv));
+    bt_death_expect_abort("mega.format_unpinned", "move outside the pinned table",
+                          mega_death_format_unpinned_move);
 }

@@ -426,6 +426,12 @@ BT_TEST(tier1, tier1_error_displays_its_cause) {
     char text[96];
     tier1_message(&err, text, sizeof text);
     BT_CHECK_EQ(text, "tier 1 parse failed: unknown token: q");
+    cycle_cfg apply_cfg = cycle_sound();
+    apply_cfg.fail_apply_call = 1;
+    bt_pz_engine apply_eng = cycle_engine_full(&apply_cfg);
+    BT_CHECK_EQ(bt_verify_tier1(&apply_eng, "a", &err), (int)BT_TIER1_APPLY);
+    tier1_message(&err, text, sizeof text);
+    BT_CHECK_EQ(text, "tier 1 apply failed: illegal move: f");
     bt_tier1_error forward = {.status = BT_TIER1_FORWARD};
     tier1_message(&forward, text, sizeof text);
     BT_CHECK_EQ(text, "tier 1 round trip failed: alg then inverse");

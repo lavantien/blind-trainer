@@ -1,6 +1,8 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/strbuf.h"
 #include "puzzles/geometry.h"
+#include "unit/core/death_test.h"
 
 #include <string.h>
 
@@ -75,4 +77,23 @@ BT_TEST(geometry, grid_eq_compares_faces_rows_and_cells) {
     fill_grid(&b, 2, 2, 3);
     BT_CHECK(bt_pz_grid_eq(&a, &b));
     BT_CHECK(bt_pz_grid_eq(&a, &a));
+}
+
+static void geometry_death_alg_create_oom(void) {
+    bt_alloc_fail_arm(0);
+    (void)bt_pz_alg_create();
+}
+
+static void geometry_death_alg_push_oom(void) {
+    bt_alloc_fail_arm(1);
+    bt_pz_engine eng = {.name = "geometry_death", .move_size = 4};
+    void *alg = bt_pz_alg_create();
+    uint8_t move[4] = {0};
+    bt_pz_alg_push(&eng, alg, move);
+}
+
+BT_TEST(geometry, allocation_failures_abort_through_the_trace_dump) {
+    bt_death_expect_abort("geometry.alg_create_oom", "malloc failed",
+                          geometry_death_alg_create_oom);
+    bt_death_expect_abort("geometry.alg_push_oom", "realloc failed", geometry_death_alg_push_oom);
 }
