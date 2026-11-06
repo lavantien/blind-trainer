@@ -448,7 +448,7 @@ int bt_rv_inflate_raw(const unsigned char *in, size_t in_len, unsigned char **ou
     *out_len = 0;
     err[0] = '\0';
     rv_sink sink = {.data = NULL, .len = 0, .cap = 0, .err = err, .err_cap = err_cap, .failed = 0};
-    if (rv_sink_reserve(&sink, 65536) != 0 ||
+    if (rv_sink_reserve(&sink, RV_SINK_PREALLOC) != 0 ||
         rv_inflate_stream(in, in_len, &sink, err, err_cap) != 0) {
         free(sink.data);
         BT_TRACE_FAIL("rv.inflate_raw", "%s", err);

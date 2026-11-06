@@ -153,6 +153,26 @@ BT_TEST(verify_ev_cfop, an_unknown_alg_token_names_the_core_error) {
     verify_section_free(&section);
 }
 
+BT_TEST(verify_ev_cfop, an_inner_slice_token_holds_no_canonical_move) {
+    bt_seed_row storage;
+    memset(&storage, 0, sizeof storage);
+    snprintf(storage.case_key, sizeof storage.case_key, "%s", "pll.inner");
+    storage.alg = (char *)"2U";
+    storage.front_json = (char *)"{\"case\":\"P\"}";
+    storage.source_url = (char *)"https://example.test";
+    storage.source_at = (char *)"2026-10-10";
+    bt_seed_rows rows;
+    rows.items = &storage;
+    rows.count = 1;
+    verify_section_result section;
+    verify_cfop_verify_pll(&rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_FAIL);
+    BT_CHECK(strstr(section.rows[0].tier2.fail, "holds no canonical move") != NULL);
+    verify_section_free(&section);
+}
+
 BT_TEST(verify_ev_cfop, a_single_frame_must_satisfy_both_conjuncts) {
     verify_bld_layout layout;
     verify_bld_layout_probe(&layout);

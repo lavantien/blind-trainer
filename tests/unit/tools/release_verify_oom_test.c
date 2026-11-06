@@ -81,6 +81,146 @@ BT_TEST(release_verify_oom, inflate_names_its_sink_starvation) {
     BT_CHECK(strstr(err, "out of memory") != NULL);
 }
 
+static size_t oom_zlib_wrap(const unsigned char *deflated, size_t dlen, const unsigned char *raw,
+                            size_t raw_len, unsigned char *stream) {
+    size_t at = 0;
+    stream[at++] = 0x78;
+    stream[at++] = 0x01;
+    memcpy(stream + at, deflated, dlen);
+    at += dlen;
+    uint32_t adler = rv_util_adler32(raw, raw_len);
+    stream[at++] = (unsigned char)(adler >> 24U);
+    stream[at++] = (unsigned char)(adler >> 16U);
+    stream[at++] = (unsigned char)(adler >> 8U);
+    stream[at++] = (unsigned char)adler;
+    return at;
+}
+
+BT_TEST(release_verify_oom, inflate_names_its_literal_growth_starvation) {
+    size_t raw_len = RV_SINK_PREALLOC + 8;
+    size_t cap = raw_len * 2 + 64;
+    unsigned char *raw = malloc(raw_len);
+    unsigned char *deflated = malloc(cap);
+    unsigned char *stream = malloc(cap + 8);
+    if (raw == NULL || deflated == NULL || stream == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "out of memory for the literal starvation probe");
+        free(raw);
+        free(deflated);
+        free(stream);
+        return;
+    }
+    memset(raw, 'A', raw_len);
+    size_t dlen = rv_util_deflate_fixed(raw, raw_len, deflated, cap);
+    size_t at = oom_zlib_wrap(deflated, dlen, raw, raw_len, stream);
+    unsigned char *out = NULL;
+    size_t out_len = 0;
+    char err[BT_RV_ERR_MAX];
+    bt_alloc_fail_arm(1);
+    int rc = bt_rv_inflate_zlib(stream, at, &out, &out_len, err, sizeof err);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strstr(err, "out of memory") != NULL);
+    free(raw);
+    free(deflated);
+    free(stream);
+}
+
+BT_TEST(release_verify_oom, inflate_names_its_stored_growth_starvation) {
+    size_t first_len = RV_SINK_PREALLOC - 1;
+    size_t raw_len = first_len + 2;
+    unsigned char *raw = malloc(raw_len);
+    unsigned char *stream = malloc(raw_len + 32);
+    if (raw == NULL || stream == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "out of memory for the stored starvation probe");
+        free(raw);
+        free(stream);
+        return;
+    }
+    memset(raw, 'S', first_len);
+    memset(raw + first_len, 'T', 2);
+    stream[0] = 0x78;
+    stream[1] = 0x01;
+    rv_bitwriter writer = {.data = stream, .len = 2, .cap = raw_len + 32, .bits = 0, .cnt = 0};
+    rv_bits_put_lsb(&writer, 0U, 3);
+    stream[writer.len++] = (unsigned char)(writer.bits & 0xFFU);
+    writer.bits = 0;
+    writer.cnt = 0;
+    uint16_t len16 = (uint16_t)first_len;
+    uint16_t nlen16 = (uint16_t)~len16;
+    stream[writer.len++] = (unsigned char)(len16 & 0xFFU);
+    stream[writer.len++] = (unsigned char)(len16 >> 8U);
+    stream[writer.len++] = (unsigned char)(nlen16 & 0xFFU);
+    stream[writer.len++] = (unsigned char)(nlen16 >> 8U);
+    memcpy(stream + writer.len, raw, first_len);
+    writer.len += first_len;
+    rv_bits_put_lsb(&writer, 1U, 3);
+    stream[writer.len++] = (unsigned char)(writer.bits & 0xFFU);
+    len16 = 2;
+    nlen16 = (uint16_t)~len16;
+    stream[writer.len++] = (unsigned char)(len16 & 0xFFU);
+    stream[writer.len++] = (unsigned char)(len16 >> 8U);
+    stream[writer.len++] = (unsigned char)(nlen16 & 0xFFU);
+    stream[writer.len++] = (unsigned char)(nlen16 >> 8U);
+    stream[writer.len++] = 'T';
+    stream[writer.len++] = 'T';
+    uint32_t adler = rv_util_adler32(raw, raw_len);
+    stream[writer.len++] = (unsigned char)(adler >> 24U);
+    stream[writer.len++] = (unsigned char)(adler >> 16U);
+    stream[writer.len++] = (unsigned char)(adler >> 8U);
+    stream[writer.len++] = (unsigned char)adler;
+    unsigned char *out = NULL;
+    size_t out_len = 0;
+    char err[BT_RV_ERR_MAX];
+    bt_alloc_fail_arm(1);
+    int rc = bt_rv_inflate_zlib(stream, writer.len, &out, &out_len, err, sizeof err);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strstr(err, "out of memory") != NULL);
+    free(raw);
+    free(stream);
+}
+
+BT_TEST(release_verify_oom, inflate_names_its_match_growth_starvation) {
+    size_t literal_count = RV_SINK_PREALLOC - 6;
+    size_t match_len = 258;
+    size_t raw_len = literal_count + match_len;
+    size_t cap = literal_count * 2 + 64;
+    unsigned char *raw = malloc(raw_len);
+    unsigned char *deflated = malloc(cap);
+    unsigned char *stream = malloc(cap + 8);
+    if (raw == NULL || deflated == NULL || stream == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "out of memory for the match starvation probe");
+        free(raw);
+        free(deflated);
+        free(stream);
+        return;
+    }
+    memset(raw, 'A', raw_len);
+    rv_bitwriter writer = {.data = deflated, .len = 0, .cap = cap, .bits = 0, .cnt = 0};
+    rv_bits_put_lsb(&writer, 3U, 3);
+    for (size_t at = 0; at < literal_count; at++) {
+        rv_fixed_lit(&writer, 'A');
+    }
+    rv_fixed_lit(&writer, 285);
+    rv_bits_put(&writer, 0U, 5);
+    rv_fixed_lit(&writer, 256);
+    if (writer.cnt > 0) {
+        deflated[writer.len++] = (unsigned char)(writer.bits & 0xFFU);
+    }
+    size_t at = oom_zlib_wrap(deflated, writer.len, raw, raw_len, stream);
+    unsigned char *out = NULL;
+    size_t out_len = 0;
+    char err[BT_RV_ERR_MAX];
+    bt_alloc_fail_arm(1);
+    int rc = bt_rv_inflate_zlib(stream, at, &out, &out_len, err, sizeof err);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(strstr(err, "out of memory") != NULL);
+    free(raw);
+    free(deflated);
+    free(stream);
+}
+
 BT_TEST(release_verify_oom, run_names_a_config_read_starvation) {
     char root[BT_PATH_MAX];
     oom_scratch("run", root);

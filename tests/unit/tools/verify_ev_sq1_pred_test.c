@@ -165,6 +165,27 @@ BT_TEST(verify_ev_sq1_pred, cubeshape_tier2_names_every_failure) {
     free(wrong.keys);
 }
 
+BT_TEST(verify_ev_sq1_pred, tier2_carries_the_invariant_failure_and_the_late_ambiguous_hit) {
+    verify_sq1_case case_;
+    crafted_case(&case_, "{\"case\": \"a / b\"}", RING_Q, RING_P);
+    verify_tier2 broken = verify_sq1_cubeshape_tier2(&case_, &(verify_sq1_family_index){0});
+    BT_CHECK(broken.kind == VERIFY_TIER2_FAIL);
+    BT_CHECK(strstr(broken.fail, "ring sums") != NULL);
+
+    crafted_case(&case_, "{\"case\": \"a / b\"}", RING_P, RING_P);
+    verify_sq1_family_index late;
+    late.keys = NULL;
+    late.key_count = 0;
+    late.ambiguous = malloc(2 * sizeof *late.ambiguous);
+    snprintf(late.ambiguous[0], VERIFY_SQ1_NAME_MAX, "%s", "b");
+    snprintf(late.ambiguous[1], VERIFY_SQ1_NAME_MAX, "%s", "a");
+    late.ambiguous_count = 2;
+    verify_tier2 named = verify_sq1_cubeshape_tier2(&case_, &late);
+    BT_CHECK(named.kind == VERIFY_TIER2_FAIL);
+    BT_CHECK(strstr(named.fail, "ambiguous") != NULL);
+    free(late.ambiguous);
+}
+
 static void rotate_ring(uint8_t *units, size_t len, size_t shift) {
     uint8_t copy[BT_PZ_SQ1_UNITS];
     memcpy(copy, units, len);
