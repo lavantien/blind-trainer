@@ -367,11 +367,11 @@ static void oom_staging_child(void) {
     char config_file[BT_PATH_MAX];
     rv_util_join(config_file, config_dir, "config.json");
     rv_util_write(config_file, "x");
-    char fonts_dir[BT_PATH_MAX];
-    rv_util_join(fonts_dir, root, "fonts");
-    rv_util_mkdir_p(fonts_dir);
+    char fonts_base[BT_PATH_MAX];
+    rv_util_join(fonts_base, root, "fonts");
+    rv_util_mkdir_p(fonts_base);
     char font_file[BT_PATH_MAX];
-    rv_util_join(font_file, fonts_dir, "f.ttf");
+    rv_util_join(font_file, fonts_base, "f.ttf");
     rv_util_write(font_file, "x");
     bt_rv_file_set set = {0};
     char err[BT_RV_ERR_MAX];
