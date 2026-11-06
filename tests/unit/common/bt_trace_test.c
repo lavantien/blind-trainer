@@ -163,7 +163,7 @@ BT_TEST(trace, a_unit_longer_than_the_line_stack_is_clamped) {
     bt_trace_shutdown();
 }
 
-static unsigned __stdcall trace_extra_thread(void *arg) {
+static DWORD WINAPI trace_extra_thread(void *arg) {
     (void)arg;
     bt_trace_enter("other_thread");
     bt_trace_exit("other_thread");
@@ -173,10 +173,10 @@ static unsigned __stdcall trace_extra_thread(void *arg) {
 BT_TEST(trace, threads_beyond_the_slot_budget_emit_nothing) {
     BT_CHECK_EQ(bt_trace_init(4096, 1, 256), 0);
     bt_trace_enter("main_thread");
-    uintptr_t handle = _beginthreadex(NULL, 0, trace_extra_thread, NULL, 0, NULL);
-    BT_CHECK(handle != 0);
-    WaitForSingleObject((HANDLE)handle, INFINITE);
-    CloseHandle((HANDLE)handle);
+    HANDLE thread = CreateThread(NULL, 0, trace_extra_thread, NULL, 0, NULL);
+    BT_CHECK(thread != NULL);
+    WaitForSingleObject(thread, INFINITE);
+    CloseHandle(thread);
     FILE *sink = bt_test_open_scratch("bt_trace_sink");
     BT_CHECK(sink != NULL);
     bt_trace_dump_to(sink);
