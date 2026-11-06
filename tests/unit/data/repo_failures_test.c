@@ -1,3 +1,5 @@
+#include "../tools/spawn_util.h"
+
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "data/db.h"
@@ -521,9 +523,14 @@ BT_TEST(repo_failures, a_write_denied_parent_directory_fails_at_mkdir) {
     char ro[BT_TU_PATH_MAX];
     snprintf(ro, sizeof ro, "%s/ro", dir);
     _mkdir(ro);
-    char deny[BT_TU_PATH_MAX + 64];
-    snprintf(deny, sizeof deny, "icacls \"%s\" /deny *S-1-1-0:(NP)(WD,AD)", ro);
-    BT_CHECK(system(deny) == 0);
+    const char *deny[] = {ro, "/deny", "*S-1-1-0:(NP)(WD,AD)", NULL};
+    int deny_code = -1;
+    char deny_out[512];
+    char deny_err[512];
+    BT_CHECK_EQ(bt_spawn_capture("icacls", deny, NULL, 30000, &deny_code, deny_out, sizeof deny_out,
+                                 deny_err, sizeof deny_err),
+                0);
+    BT_CHECK_EQ(deny_code, 0);
 
     char path[BT_TU_PATH_MAX];
     snprintf(path, sizeof path, "%s/sub/db.sqlite", ro);
@@ -536,9 +543,12 @@ BT_TEST(repo_failures, a_write_denied_parent_directory_fails_at_mkdir) {
     BT_CHECK(strstr(text, "create db dir ") == text);
     BT_CHECK(db.conn == NULL);
 
-    char allow[BT_TU_PATH_MAX + 64];
-    snprintf(allow, sizeof allow, "icacls \"%s\" /remove:d *S-1-1-0", ro);
-    system(allow);
+    const char *allow[] = {ro, "/remove:d", "*S-1-1-0", NULL};
+    int allow_code = -1;
+    char allow_out[512];
+    char allow_err[512];
+    bt_spawn_capture("icacls", allow, NULL, 30000, &allow_code, allow_out, sizeof allow_out,
+                     allow_err, sizeof allow_err);
 }
 
 BT_TEST(repo_failures, a_directory_at_the_backup_target_fails_the_backup) {
