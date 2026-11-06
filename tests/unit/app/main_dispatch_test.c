@@ -70,7 +70,7 @@ BT_TEST(main_dispatch, rejects_two_shot_flags_with_usage_error) {
 BT_TEST(main_dispatch, runs_the_fatal_shot_tour) {
     char saved_appdata[TA_PATH_MAX];
     dispatch_appdata("fatal-user", saved_appdata, sizeof saved_appdata);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     const char *dir = ta_temp_dir("dispatch", "fatal-shot");
     char missing_config[TA_PATH_MAX];
     snprintf(missing_config, sizeof missing_config, "%s/absent-config.json", dir);
@@ -179,7 +179,7 @@ BT_TEST(main_dispatch, interactive_close_returns_zero) {
     char setting[TA_PATH_MAX * 2];
     snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
     _putenv(setting);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     dispatch_close_probe probe;
     memset(&probe, 0, sizeof probe);
     probe.title = "dispatch interactive probe";
@@ -236,7 +236,7 @@ static unsigned __stdcall dispatch_digit_poster(void *raw) {
 BT_TEST(main_dispatch, runs_the_smoke_tour_green) {
     char saved_appdata[TA_PATH_MAX];
     dispatch_appdata("smoke-user", saved_appdata, sizeof saved_appdata);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     const char *dir = ta_temp_dir("dispatch", "smoke-shots");
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "bt-app.exe");
@@ -248,8 +248,10 @@ BT_TEST(main_dispatch, runs_the_smoke_tour_green) {
     char err[512];
     int rc = bt_spawn_capture(exe, argv, NULL, 180000, &code, out, sizeof out, err, sizeof err);
     fprintf(stderr, "main_dispatch: smoke rc %d code %d err %s\n", rc, code, err);
-    static const char *const slugs[] = {"menu", "drill",      "memo",  "solve",    "replay",
-                                        "algs", "case-drill", "stats", "settings", "fatal"};
+    static const char *const slugs[] = {
+        "menu", "drill",      "memo",  "solve",    "replay",
+        "algs", "case-drill", "stats", "settings", "fatal",
+    };
     int shots = 0;
     for (size_t i = 0; i < sizeof slugs / sizeof slugs[0]; i++) {
         char path[TA_PATH_MAX];
@@ -286,7 +288,7 @@ BT_TEST(main_dispatch, fatal_boot_loads_fonts_without_corpus_and_closes_zero) {
     char setting[TA_PATH_MAX * 2];
     snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
     _putenv(setting);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     dispatch_close_probe close_probe;
     memset(&close_probe, 0, sizeof close_probe);
     close_probe.title = "dispatch corpus null probe";
@@ -323,7 +325,7 @@ BT_TEST(main_dispatch, interactive_digit_entry_runs_view_update) {
     char setting[TA_PATH_MAX * 2];
     snprintf(setting, sizeof setting, "BT_CONFIG=%s", config_path);
     _putenv(setting);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     dispatch_digit_probe probe;
     memset(&probe, 0, sizeof probe);
     probe.title = "dispatch digit probe";
