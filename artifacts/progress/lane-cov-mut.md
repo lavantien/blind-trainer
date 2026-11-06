@@ -49,3 +49,29 @@ lane-cov-mut3 replacing the 429-killed predecessor. Toolset probe passed. Inheri
 - Measurement 04:48: 1572 dark. Real-file gains: engine.c 168 to 108, report 17, main.c 73. But the assert-arm residual grows with every added test: tests.c count 1169 to 1260 with dark 292, tests_engine 65 to 107, tests_ops 105 to 137. Net movement is small because each new BT_CHECK contributes a structurally untaken arm. ESCALATE 3 is now the deciding factor for the endgame: without a hub policy on assertion arms, test files can never read 100% no matter how many tests land. I keep closing reachable dark in non-test sources and add tests only where they close real paths.
 - Measurer hardened with one retry per stem after a transient spawn failure: the 04:47 run had 5 policy driver spawn failures with empty output from a just-relinked exe lock (the plain suite was green, the rerun clean).
 - Transient exe-lock flake added to the known-issues list for the hub's wave-end coverage run: spawn-heavy suites can fail once right after relink.
+
+## final, 08:40
+
+Commits this lane: a236e79 policy batch, 03a5093 report fail closed plus driver verbs, b53149c scratch root and orphan pid, 8637924 gate driver edges, ad2176e exponent literals, 1c3e6d6 obj root resolution, 0eaa6b3 engine refusal paths and fake roots, 483c579 area map shapes, e9e1831 prepare scratch write failures and dep copy rules, 159158d tokenizer edges, 68abbf3 gate violations and allowlist trims, 534f006 scratch suite split under the sloc cap plus the fsutil suffix fix and the measurer, 430007b spawn refusal arms, link argv overflow, continuation spans. Two root-cause fixes landed in product code: report refuses an unreadable ledger, and the policy junction planter writes a valid reparse buffer.
+
+Measured end state, last full run before the final two commits: 1600 dark of 9048 regions over the three areas, from 1974 dark at handoff. Non-test sources closed to: engine 87, gate lib 46, token 44, fs 65, spawn 49, operators 66, main 73, gate main 47, ledger 30, buildcmd 30, union 30, report 17, policy lib 67, policy tails under 15 each. The remaining mass is classified: assertion arms in the 5 test files (hub ruled them out of my residue, macro restructure deferred to a dedicated lane), OOM arms in every allocator wrapper, IO defensive arms in fs and read_arg, and the Windows-unreachable mkdirs error paths. ESCALATE 4: the core lane's new src/common/bt_harness.c includes profile/InstrProf.h under instrumentation and my instrumented clone cannot compile it, the hub coverage run needs the clang resource include or that include needs a guard, this breaks scoped measurement for every lane. ESCALATE 5: policy flags tools/mutate/tests_ops.c:73 literal 12 recurring, it is a test count expectation, hub owns constants_allow.txt. ESCALATE 6: lint failures in other lanes' in-flight files (ga_run_inputs_test.c trailing commas, sleeper_test.c trailing comma) will fail the tools lint gate at wave end until those lanes format them.
+
+Oracle ledger: driver exits from the usage text the tools print, ledger and union formats pinned by the committed suites, fixture files authored in test-tmp, float variant arithmetic derived from the numeric tweak rules, scratch ownership from the marker and creation clock contract, allowlist grammar from the parser's own error strings.
+
+Reading log:
+read artifacts/progress/lane-cov-mut.md full - inherited state and escalations
+read tools/mutate/main.c full - driver verbs for spawn coverage
+read tools/mutate/report.c full - fail closed fix
+read tools/mutate/scratch.c full - orphan judgment branches
+read tools/mutate/engine.c 68-260, 260-470, 455-630, 655-905 - obj root, targets, prepare scratch, run one, engine run
+read tools/mutate/ledger.c 100-140 - missing file semantics
+read tools/mutate/mutate.h structs and api - signatures for crafted fixtures
+read tools/mutate/operators.c 140-270 - numeric core and variants
+read tools/mutate/token.c 80-140 - continuation arms
+read tools/mutants-gate/main.c full - driver edges
+read tools/mutants-gate/lib.c 340-460 - allowlist grammar
+read tools/mutants-gate/tests.c fixtures and table - idiom and registration
+read tests/unit/tools/mutate_test.c full - driver spawn idiom
+read tests/unit/tools/mutants_gate_test.c full - gate driver fixtures
+read tests/unit/tools/spawn_util.h full - timeout and bin path contracts
+read tools/mutate/tests.c, tests_ops.c, tests_engine.c partial - extensions and the split
