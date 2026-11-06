@@ -6,7 +6,7 @@
 #include "data/corpus.h"
 #include "gendata/build.h"
 
-void bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t digest_rows, char ***out,
-                 size_t *count);
+int bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t digest_rows, char ***out,
+                size_t *count);
 
 #endif

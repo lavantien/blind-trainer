@@ -23,30 +23,38 @@ static int push(char ***out, size_t *count, const char *text) {
     return 0;
 }
 
-void bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t digest_rows, char ***out,
-                 size_t *count) {
+int bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t digest_rows, char ***out,
+                size_t *count) {
     BT_TRACE_ENTER("gd.audit.audit");
     *out = NULL;
     *count = 0;
     for (size_t i = 0; i < built->offender_count; i++) {
-        push(out, count, built->offenders[i]);
+        if (push(out, count, built->offenders[i]) != 0) {
+            goto fail;
+        }
     }
     char line[192];
     size_t total_rows = bt_corpus_total_rows(corpus);
     if (total_rows != (size_t)BT_DATA_TOTAL_ROWS) {
         snprintf(line, sizeof line, "corpus holds %zu rows, expected %d", total_rows,
                  BT_DATA_TOTAL_ROWS);
-        push(out, count, line);
+        if (push(out, count, line) != 0) {
+            goto fail;
+        }
     }
     if (digest_rows != (size_t)BT_DATA_TOTAL_ROWS) {
         snprintf(line, sizeof line, "corpus digest counted %zu rows, expected %d", digest_rows,
                  BT_DATA_TOTAL_ROWS);
-        push(out, count, line);
+        if (push(out, count, line) != 0) {
+            goto fail;
+        }
     }
     if (built->cases.count != (size_t)BT_GD_TOTAL_CASES) {
         snprintf(line, sizeof line, "case catalog holds %zu entries, expected %d",
                  built->cases.count, BT_GD_TOTAL_CASES);
-        push(out, count, line);
+        if (push(out, count, line) != 0) {
+            goto fail;
+        }
     }
     static const struct {
         const char *orbit;
@@ -70,19 +78,25 @@ void bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t diges
         if (entries != orbits[o].total) {
             snprintf(line, sizeof line, "%s case catalog holds %zu entries, expected %zu",
                      orbits[o].orbit, entries, orbits[o].total);
-            push(out, count, line);
+            if (push(out, count, line) != 0) {
+                goto fail;
+            }
             continue;
         }
         if (hit != orbits[o].covered) {
             snprintf(line, sizeof line, "%s covered cases are %zu, expected %zu", orbits[o].orbit,
                      hit, orbits[o].covered);
-            push(out, count, line);
+            if (push(out, count, line) != 0) {
+                goto fail;
+            }
         }
     }
     if (built->specials.count != (size_t)BT_GD_TOTAL_SPECIALS) {
         snprintf(line, sizeof line, "specials hold %zu entries, expected %d", built->specials.count,
                  BT_GD_TOTAL_SPECIALS);
-        push(out, count, line);
+        if (push(out, count, line) != 0) {
+            goto fail;
+        }
     }
     for (size_t i = 0; i < BT_GD_SPECIAL_COUNTS_LEN; i++) {
         size_t found = 0;
@@ -97,8 +111,18 @@ void bt_gd_audit(const bt_gd_built *built, const bt_corpus *corpus, size_t diges
             snprintf(line, sizeof line, "%s/%s holds %zu entries, expected %zu",
                      BT_GD_SPECIAL_COUNTS[i].solver, BT_GD_SPECIAL_COUNTS[i].class_name, found,
                      BT_GD_SPECIAL_COUNTS[i].rows);
-            push(out, count, line);
+            if (push(out, count, line) != 0) {
+                goto fail;
+            }
         }
     }
     BT_TRACE_EXIT("gd.audit.audit");
+    return 0;
+fail:
+    bt_gd_string_list_free(*out, *count);
+    *out = NULL;
+    *count = 0;
+    BT_TRACE_FAIL("gd.audit.audit", "offender push failed under allocation failure");
+    BT_TRACE_EXIT("gd.audit.audit");
+    return -1;
 }

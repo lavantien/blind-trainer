@@ -12,7 +12,7 @@
 #include "data/corpus.h"
 #include "data/digest.h"
 
-BT_TEST(gendata_audit, audit_drops_offenders_when_allocation_fails) {
+BT_TEST(gendata_audit, audit_fails_closed_when_an_offender_push_starves) {
     bt_gd_built built = {0};
     built.offenders = malloc(sizeof(char *));
     built.offenders[0] = _strdup("cherry/edge.tsv/9 broken");
@@ -22,8 +22,9 @@ BT_TEST(gendata_audit, audit_drops_offenders_when_allocation_fails) {
     char **offenders = NULL;
     size_t count = 0;
     bt_alloc_fail_arm(0);
-    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    int rc = bt_gd_audit(&built, &corpus, 0, &offenders, &count);
     bt_alloc_fail_disarm();
+    BT_CHECK_EQ(rc, -1);
     BT_CHECK_EQ(count, 0U);
     BT_CHECK(offenders == NULL);
     bt_gd_string_list_free(offenders, count);
@@ -38,7 +39,7 @@ BT_TEST(gendata_audit, audit_lists_every_shortfall_on_an_empty_build) {
     bt_gd_build(&corpus, &built);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, 3, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 3, &offenders, &count), 0);
     BT_CHECK_EQ(count, 12U);
     static const char *const want[12] = {
         "corpus holds 0 rows, expected 1077",         "corpus digest counted 3 rows, expected 1077",
@@ -123,7 +124,7 @@ BT_TEST(gendata_audit, audit_accepts_a_build_that_matches_every_constant) {
     BT_CHECK_EQ(bt_corpus_from_rows(rows, BT_DATA_TOTAL_ROWS, &corpus), 0);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, BT_DATA_TOTAL_ROWS, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, BT_DATA_TOTAL_ROWS, &offenders, &count), 0);
     BT_CHECK_EQ(count, 0U);
     bt_gd_string_list_free(offenders, count);
     bt_gd_built_free(&built);
@@ -142,7 +143,7 @@ BT_TEST(gendata_audit, audit_copies_build_offenders_before_the_shortfalls) {
     bt_corpus_init(&corpus);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 0, &offenders, &count), 0);
     BT_CHECK(count >= 2);
     BT_CHECK_EQ(strcmp(offenders[0], "cherry/edge.tsv/9 broken"), 0);
     BT_CHECK_EQ(strcmp(offenders[1], "eggins/corner.tsv/4 also broken"), 0);
@@ -172,7 +173,7 @@ BT_TEST(gendata_audit, audit_names_catalog_total_and_per_orbit_entry_drift) {
     bt_corpus_init(&corpus);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 0, &offenders, &count), 0);
     bool total_drift = false;
     bool edge_drift = false;
     bool corner_drift = false;
@@ -228,7 +229,7 @@ BT_TEST(gendata_audit, audit_names_covered_drift_when_entry_counts_hold) {
     bt_corpus_init(&corpus);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 0, &offenders, &count), 0);
     bool edge_covered_drift = false;
     bool corner_covered_drift = false;
     for (size_t i = 0; i < count; i++) {

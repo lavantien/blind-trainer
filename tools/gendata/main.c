@@ -162,7 +162,13 @@ static int run(bt_gd_errors *errors) {
     bt_gd_build(&corpus, &built);
     char **audit_offenders = NULL;
     size_t audit_count = 0;
-    bt_gd_audit(&built, &corpus, digest.rows, &audit_offenders, &audit_count);
+    if (bt_gd_audit(&built, &corpus, digest.rows, &audit_offenders, &audit_count) != 0) {
+        errors_push(errors, "audit failed: out of memory");
+        bt_gd_built_free(&built);
+        bt_corpus_free(&corpus);
+        BT_TRACE_FAIL("gd.main.run", "audit allocation failed");
+        return -1;
+    }
     if (audit_count != 0) {
         for (size_t i = 0; i < audit_count; i++) {
             errors_push(errors, audit_offenders[i]);

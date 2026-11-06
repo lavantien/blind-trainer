@@ -320,7 +320,7 @@ BT_TEST(gendata_vendor_pins, audit_passes_on_the_real_corpus) {
     bt_gd_build(&corpus, &built);
     char **offenders = NULL;
     size_t count = 0;
-    bt_gd_audit(&built, &corpus, 1077, &offenders, &count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 1077, &offenders, &count), 0);
     BT_CHECK_EQ(count, 0U);
     bt_gd_string_list_free(offenders, count);
     bt_gd_built_free(&built);

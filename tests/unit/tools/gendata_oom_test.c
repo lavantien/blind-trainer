@@ -851,29 +851,33 @@ BT_TEST(gendata_oom, manifest_from_json_fails_closed_until_the_budget_covers_eve
     bt_json_free(value);
 }
 
-BT_TEST(gendata_oom, audit_offenders_stay_complete_at_every_budget) {
+BT_TEST(gendata_oom, audit_fails_closed_at_every_starved_budget) {
     bt_gd_built built;
     memset(&built, 0, sizeof built);
     bt_corpus corpus;
     bt_corpus_init(&corpus);
     char **want = NULL;
     size_t want_count = 0;
-    bt_gd_audit(&built, &corpus, 0, &want, &want_count);
+    BT_CHECK_EQ(bt_gd_audit(&built, &corpus, 0, &want, &want_count), 0);
     BT_CHECK(want_count > 4);
     bt_gd_string_list_free(want, want_count);
+    bool saw_complete = false;
     for (size_t k = 0; k <= want_count * 2 + 4; k++) {
         char **got = NULL;
         size_t got_count = 0;
         bt_alloc_fail_arm(k);
-        bt_gd_audit(&built, &corpus, 0, &got, &got_count);
+        int rc = bt_gd_audit(&built, &corpus, 0, &got, &got_count);
         bt_alloc_fail_disarm();
-        for (size_t i = 0; i < got_count; i++) {
-            BT_CHECK(got[i] != NULL);
+        if (rc != 0) {
+            BT_CHECK_EQ(rc, -1);
+            BT_CHECK_EQ(got_count, 0U);
+            BT_CHECK(got == NULL);
+            continue;
         }
-        if (k >= want_count * 2) {
-            BT_CHECK_EQ(got_count, want_count);
-        }
+        BT_CHECK_EQ(got_count, want_count);
+        saw_complete = true;
         bt_gd_string_list_free(got, got_count);
     }
+    BT_CHECK(saw_complete);
     bt_corpus_free(&corpus);
 }
