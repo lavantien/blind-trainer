@@ -89,6 +89,18 @@ BT_TEST(ga_run_io, cross_check_fails_closed_when_cases_file_size_overflows_ftell
     bt_json_free(config);
 }
 
+BT_TEST(ga_run_io, load_freq_data_fails_closed_when_the_file_size_overflows_ftell) {
+    char dir[BT_PATH_MAX];
+    io_scratch_dir("freq-oversize", dir);
+    char freq_path[BT_PATH_MAX];
+    snprintf(freq_path, sizeof freq_path, "%s/freq.json", dir);
+    bt_ga_make_oversize(freq_path);
+    bt_ga_freq_data data;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK_EQ(bt_ga_load_freq_data(freq_path, &data, err), 0);
+    BT_CHECK(strstr(err, "read ") != NULL);
+}
+
 static char *read_bytes(const char *path, size_t *len) {
     FILE *file = fopen(path, "rb");
     if (file == NULL) {

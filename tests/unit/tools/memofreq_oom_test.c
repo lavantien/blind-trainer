@@ -212,6 +212,91 @@ static const unsigned MF_WALK_SPAWN_TIMEOUT_MS = 30000;
 static const unsigned MF_FULL_SPAWN_TIMEOUT_MS = 120000;
 static const size_t MF_FULL_BUDGET = 100000000;
 static const size_t MF_WALK_STEPS = 13;
+static const size_t MF_COUNT_SPAN = 16;
+static const size_t MF_ZERO_HIT_BOUND = 8192;
+static const size_t MF_CONFIG_BOUND_MAX = 1U << 16U;
+static const size_t MF_SWEEP_PREFILL = 16;
+static const size_t MF_SWEEP_BUDGETS = 10;
+static const char *const MF_SWEEP_FILLER = "0123456789abcdef";
+
+static void sweep_freq_data_text(const char *what, const bt_ga_freq_data *data) {
+    bt_strbuf probe;
+    bt_strbuf_init(&probe, 65536);
+    int rc = bt_mf_freq_data_text(data, &probe);
+    size_t total = probe.len;
+    bt_strbuf_free(&probe);
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "%s does not render at a full budget", what);
+        return;
+    }
+    for (size_t d = 0; d <= total; d++) {
+        size_t first_ok = MF_SWEEP_BUDGETS;
+        for (size_t k = 0; k < MF_SWEEP_BUDGETS; k++) {
+            bt_strbuf out;
+            bt_strbuf_init(&out, MF_SWEEP_PREFILL + 1 + d);
+            bt_strbuf_append_str(&out, MF_SWEEP_FILLER);
+            bt_alloc_fail_arm(k);
+            int row_rc = bt_mf_freq_data_text(data, &out);
+            bt_alloc_fail_disarm();
+            bt_strbuf_free(&out);
+            if (row_rc == 0) {
+                if (first_ok == MF_SWEEP_BUDGETS) {
+                    first_ok = k;
+                }
+            } else if (first_ok != MF_SWEEP_BUDGETS) {
+                bt_harness_fail(__FILE__, __LINE__,
+                                "%s budget %zu failed at capacity %zu after success at %zu", what,
+                                k, d, first_ok);
+                return;
+            }
+        }
+        if (first_ok == MF_SWEEP_BUDGETS) {
+            bt_harness_fail(__FILE__, __LINE__,
+                            "%s never succeeds at capacity %zu within %zu budgets", what, d,
+                            MF_SWEEP_BUDGETS);
+            return;
+        }
+    }
+}
+
+BT_TEST(memofreq_oom, freq_data_text_fail_arms_land_on_every_append_position) {
+    bt_ga_freq_data data;
+    memset(&data, 0, sizeof data);
+    data.cases = malloc(2 * sizeof *data.cases);
+    snprintf(data.cases[0].orbit, sizeof data.cases[0].orbit, "edge");
+    snprintf(data.cases[0].letters, sizeof data.cases[0].letters, "a\"b");
+    data.cases[0].count = 9;
+    snprintf(data.cases[1].orbit, sizeof data.cases[1].orbit, "corner");
+    snprintf(data.cases[1].letters, sizeof data.cases[1].letters, "c\\d\001e");
+    data.cases[1].count = 0;
+    data.cases_count = 2;
+    data.adjacent = malloc(2 * sizeof *data.adjacent);
+    data.adjacent[0].from = 4;
+    data.adjacent[0].to = 9;
+    data.adjacent[0].count = 3;
+    data.adjacent[1].from = 5;
+    data.adjacent[1].to = 8;
+    data.adjacent[1].count = 1;
+    data.adjacent_count = 2;
+    data.cooccurring = malloc(2 * sizeof *data.cooccurring);
+    data.cooccurring[0].from = 2;
+    data.cooccurring[0].to = 7;
+    data.cooccurring[0].count = 8;
+    data.cooccurring[1].from = 1;
+    data.cooccurring[1].to = 6;
+    data.cooccurring[1].count = 2;
+    data.cooccurring_count = 2;
+    data.total_draws = 100;
+    data.seed = 7;
+    sweep_freq_data_text("full rows", &data);
+    free(data.cooccurring);
+    free(data.adjacent);
+    free(data.cases);
+
+    bt_ga_freq_data empty;
+    memset(&empty, 0, sizeof empty);
+    sweep_freq_data_text("empty rows", &empty);
+}
 
 static void oom_scratch_dir(const char *name, char out[BT_PATH_MAX]) {
     char root[BT_PATH_MAX];
@@ -326,5 +411,75 @@ BT_TEST(memofreq_oom, exe_fails_closed_across_sampled_budgets_and_completes_at_a
     }
     if (!freq_json_exists(full_ga)) {
         bt_harness_fail(__FILE__, __LINE__, "full budget wrote no freq.json");
+    }
+}
+
+BT_TEST(memofreq_oom, exe_reports_count_frequencies_failures_from_inside_the_count_stage) {
+    char walk_ga[BT_PATH_MAX];
+    oom_scratch_dir("spawn-count", walk_ga);
+    oom_write_config(walk_ga, MF_WALK_SAMPLES);
+    char config_path[BT_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config.json", walk_ga);
+    int code = -1;
+    char out[4096];
+    char err[4096];
+    size_t hi = 1;
+    while (hi < MF_CONFIG_BOUND_MAX) {
+        if (spawn_memofreq_armed(config_path, hi, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
+                                 err, sizeof err) != 0) {
+            bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", hi);
+            return;
+        }
+        if (strstr(err, "load config failed") == NULL) {
+            break;
+        }
+        hi *= 2;
+    }
+    if (hi >= MF_CONFIG_BOUND_MAX) {
+        bt_harness_fail(__FILE__, __LINE__, "the config stage never completes its allocations");
+        return;
+    }
+    size_t lo = 0;
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2;
+        if (spawn_memofreq_armed(config_path, mid, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
+                                 err, sizeof err) != 0) {
+            bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", mid);
+            return;
+        }
+        if (strstr(err, "load config failed") == NULL) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    for (size_t b = lo; b < lo + MF_COUNT_SPAN; b++) {
+        if (spawn_memofreq_armed(config_path, b, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
+                                 err, sizeof err) != 0) {
+            bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", b);
+            return;
+        }
+        if (code != 1) {
+            bt_harness_fail(__FILE__, __LINE__, "budget %zu exited %d instead of 1", b, code);
+            return;
+        }
+        if (freq_json_exists(walk_ga)) {
+            bt_harness_fail(__FILE__, __LINE__, "budget %zu left a freq.json behind", b);
+            return;
+        }
+        if (strstr(err, "load config failed") != NULL) {
+            bt_harness_fail(__FILE__, __LINE__, "budget %zu still failed inside the config stage",
+                            b);
+            return;
+        }
+    }
+    if (spawn_memofreq_armed(config_path, lo + MF_ZERO_HIT_BOUND, MF_WALK_SPAWN_TIMEOUT_MS, &code,
+                             out, sizeof out, err, sizeof err) != 0 ||
+        code != 1) {
+        bt_harness_fail(__FILE__, __LINE__, "the upper stage probe did not fail closed");
+        return;
+    }
+    if (strstr(err, "never appeared over") == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "the upper stage probe never reached the zero hits");
     }
 }

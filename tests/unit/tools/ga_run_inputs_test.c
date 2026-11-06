@@ -1,6 +1,7 @@
 #include "ga-run/lib.h"
 #include "scheme/pairs.h"
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/paths.h"
@@ -50,7 +51,8 @@ static bt_json_value *config_with_paths(const char *vendor_abs, const char *ref_
     return config;
 }
 
-static void write_full_cases(const char *vendor, const char *drop, const char *bump) {
+static void write_full_cases(const char *vendor, const char *drop, const char *bump,
+                             unsigned t2_delta) {
     bt_strbuf text;
     bt_strbuf_init(&text, 65536);
     bt_strbuf_append_str(&text, "{\"cases\": [");
@@ -75,7 +77,8 @@ static void write_full_cases(const char *vendor, const char *drop, const char *b
             need_sep = 1;
         }
         if (drop == NULL || strcmp(drop, "t2") != 0) {
-            bt_strbuf_appendf(&text, "%s\"t2\": %u", need_sep ? ", " : "", (unsigned)case_id->t2);
+            bt_strbuf_appendf(&text, "%s\"t2\": %u", need_sep ? ", " : "",
+                              (unsigned)case_id->t2 + t2_delta);
             need_sep = 1;
         }
         if (drop == NULL || strcmp(drop, "t1_letter") != 0) {
@@ -129,7 +132,7 @@ BT_TEST(ga_run_inputs, cross_check_names_each_rejected_vendor_shape) {
         {"t2_letter", "cases.json row missing t2_letter"},
     };
     for (size_t i = 0; i < sizeof row_shapes / sizeof row_shapes[0]; i++) {
-        write_full_cases(vendor, row_shapes[i].drop, NULL);
+        write_full_cases(vendor, row_shapes[i].drop, NULL, 0);
         bt_json_value *config = config_with_paths(vendor, "ref_doc");
         bt_gr_offenders offenders = {0};
         BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
@@ -141,7 +144,7 @@ BT_TEST(ga_run_inputs, cross_check_names_each_rejected_vendor_shape) {
         bt_gr_offenders_free(&offenders);
         bt_json_free(config);
     }
-    write_full_cases(vendor, NULL, "ax");
+    write_full_cases(vendor, NULL, "ax", 0);
     bt_json_value *config = config_with_paths(vendor, "ref_doc");
     bt_gr_offenders offenders = {0};
     BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
@@ -414,4 +417,80 @@ BT_TEST(ga_run_inputs, build_report_handles_an_empty_per_generation_series) {
     BT_CHECK(report.per_gen_best != NULL);
     bt_gr_report_free(&report);
     bt_gr_offenders_free(&report_offenders);
+}
+
+BT_TEST(ga_run_inputs, cross_check_reports_a_row_value_mismatch) {
+    char vendor[BT_PATH_MAX];
+    scratch_dir("xcheck-mismatch", vendor);
+    write_full_cases(vendor, NULL, NULL, 1);
+    bt_json_value *config = config_with_paths(vendor, "ref_doc");
+    BT_CHECK(config != NULL);
+    bt_gr_offenders offenders = {0};
+    BT_CHECK_EQ(bt_gr_cross_check_cases(config, &offenders), -1);
+    BT_CHECK(offenders.count >= 1);
+    if (offenders.count >= 1 && strstr(offenders.items[0], "cases.json row mismatch") == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "mismatch row said: %s", offenders.items[0]);
+    }
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+}
+
+BT_TEST(ga_run_inputs, cross_check_fails_closed_when_the_cases_read_malloc_fails) {
+    char vendor[BT_PATH_MAX];
+    scratch_dir("xcheck-readfault", vendor);
+    write_full_cases(vendor, NULL, NULL, 0);
+    bt_json_value *config = config_with_paths(vendor, "ref_doc");
+    BT_CHECK(config != NULL);
+    bt_gr_offenders offenders = {0};
+    bt_alloc_fail_arm(0);
+    int rc = bt_gr_cross_check_cases(config, &offenders);
+    bt_alloc_fail_disarm();
+    if (rc != -1) {
+        bt_harness_fail(__FILE__, __LINE__,
+                        "starved read malloc let cross_check return %d with %zu offenders", rc,
+                        offenders.count);
+    }
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+}
+
+static const char *const GR_EMPTY_PAIRS_FREQ_JSON =
+    "{\"cases\": [{\"orbit\": \"edge\", \"letters\": \"ab\", \"count\": 3}], \"adjacent\": [], "
+    "\"cooccurring\": [], \"total_draws\": 100, \"seed\": 7}";
+
+BT_TEST(ga_run_inputs, load_accepts_freq_data_with_empty_pair_tables) {
+    char data_ga[BT_PATH_MAX];
+    scratch_dir("empty-pairs", data_ga);
+    write_text(data_ga, "freq.json", GR_EMPTY_PAIRS_FREQ_JSON);
+    char paths[BT_PATH_MAX + 128];
+    snprintf(paths, sizeof paths,
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"artifacts\": "
+             "\"build/test-tmp/ga-run-inputs\", \"data_ga\": \"%s\"}",
+             data_ga);
+    char config_text[BT_PATH_MAX * 2 + 1024];
+    snprintf(config_text, sizeof config_text, "{\"paths\": %s, \"ga\": %s}", paths, GA_TINY);
+    write_text(data_ga, "config.json", config_text);
+    const char *prior = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", prior != NULL ? prior : "");
+    char config_path[BT_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config.json", data_ga);
+    _putenv_s("BT_CONFIG", config_path);
+    bt_gr_run_inputs inputs;
+    bt_gr_offenders offenders = {0};
+    int rc = bt_gr_load_run_inputs(&inputs, &offenders);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "load rejected empty pair tables: %s",
+                        offenders.count > 0 ? offenders.items[0] : "(no offender)");
+    } else {
+        BT_CHECK_EQ(inputs.freq.adjacent_count, (size_t)0);
+        BT_CHECK_EQ(inputs.freq.cooccurring_count, (size_t)0);
+        bt_gr_run_inputs_free(&inputs);
+    }
+    bt_gr_offenders_free(&offenders);
 }

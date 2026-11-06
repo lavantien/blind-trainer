@@ -7,6 +7,7 @@
 #include "common/paths.h"
 #include "common/strbuf.h"
 #include "data/paths.h"
+#include "ga/alloc.h"
 #include "ga/dist.h"
 #include "ga/hash.h"
 #include "ga/inventory.h"
@@ -202,6 +203,35 @@ static size_t smallest_success(const char *config_path, int (*armed)(const char 
 
 static size_t load_budget_cache;
 
+static size_t run_all_budget_cache;
+
+static size_t run_all_full_budget(const char *config_path, size_t floor) {
+    if (run_all_armed(config_path, floor) == 0) {
+        bt_harness_fail(__FILE__, __LINE__, "run_all succeeded at the bare load budget %zu", floor);
+        return 0;
+    }
+    size_t hi = floor + 1024;
+    if (run_all_armed(config_path, hi) != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "run_all fails above load budget plus 1024");
+        return 0;
+    }
+    size_t lo = floor;
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2;
+        if (run_all_armed(config_path, mid) == 0) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    if (lo <= floor || lo > floor + 1024) {
+        bt_harness_fail(__FILE__, __LINE__, "run_all budget %zu sits outside the expected band",
+                        lo);
+        return 0;
+    }
+    return lo;
+}
+
 BT_TEST(ga_run_oom, load_fails_closed_across_the_entry_allocations) {
     char config_path[BT_PATH_MAX];
     make_tiny_env("walk", config_path);
@@ -244,29 +274,11 @@ BT_TEST(ga_run_oom, run_all_write_stage_fails_closed_at_each_final_site) {
             return;
         }
     }
-    if (run_all_armed(config_path, floor) == 0) {
-        bt_harness_fail(__FILE__, __LINE__, "run_all succeeded at the bare load budget %zu", floor);
+    size_t lo = run_all_full_budget(config_path, floor);
+    if (lo == 0) {
         return;
     }
-    size_t hi = floor + 1024;
-    if (run_all_armed(config_path, hi) != 0) {
-        bt_harness_fail(__FILE__, __LINE__, "run_all fails above load budget plus 1024");
-        return;
-    }
-    size_t lo = floor;
-    while (lo < hi) {
-        size_t mid = lo + (hi - lo) / 2;
-        if (run_all_armed(config_path, mid) == 0) {
-            hi = mid;
-        } else {
-            lo = mid + 1;
-        }
-    }
-    if (lo <= floor || lo > floor + 1024) {
-        bt_harness_fail(__FILE__, __LINE__, "run_all budget %zu sits outside the expected band",
-                        lo);
-        return;
-    }
+    run_all_budget_cache = lo;
     for (size_t delta = 1; delta <= 10; delta++) {
         if (run_all_armed(config_path, lo - delta) != -1) {
             bt_harness_fail(__FILE__, __LINE__, "budget %zu below full did not fail closed",
@@ -309,6 +321,18 @@ static bt_json_value *parse_json(const char *text) {
         return NULL;
     }
     return value;
+}
+
+static bt_json_value *heap_order_object(void) {
+    char text[2048];
+    size_t at = 0;
+    at += (size_t)snprintf(text + at, sizeof text - at, "{");
+    for (size_t i = 0; i < 20; i++) {
+        at += (size_t)snprintf(text + at, sizeof text - at, "%s\"key%02zu\": %zu",
+                               i > 0 ? ", " : "", i, i);
+    }
+    snprintf(text + at, sizeof text - at, "}");
+    return parse_json(text);
 }
 
 static void fixture_report(bt_gr_ga_report *report) {
@@ -385,15 +409,7 @@ BT_TEST(ga_run_oom, markdown_render_fails_closed_until_the_budget_covers_every_a
 }
 
 BT_TEST(ga_run_oom, json_value_text_heap_order_fails_closed) {
-    char text[2048];
-    size_t at = 0;
-    at += (size_t)snprintf(text + at, sizeof text - at, "{");
-    for (size_t i = 0; i < 20; i++) {
-        at += (size_t)snprintf(text + at, sizeof text - at, "%s\"key%02zu\": %zu",
-                               i > 0 ? ", " : "", i, i);
-    }
-    snprintf(text + at, sizeof text - at, "}");
-    bt_json_value *object = parse_json(text);
+    bt_json_value *object = heap_order_object();
     BT_CHECK(object != NULL);
     int results[64];
     for (size_t k = 0; k < 64; k++) {
@@ -462,4 +478,395 @@ BT_TEST(ga_run_oom, assignment_and_case_rows_fail_closed_until_the_budget_covers
     check_budget_walk(text_results, 32);
     check_budget_walk(compact_results, 32);
     free(assignment.cases);
+}
+
+enum {
+    GR_SWEEP_PREFILL = 16,
+    GR_SWEEP_BUDGETS = 12,
+    GR_RUN_ALL_TAIL_FIRST = 11,
+    GR_RUN_ALL_TAIL_LAST = 16,
+};
+
+static const char *const GR_SWEEP_FILLER = "0123456789abcdef";
+
+typedef int (*gr_sweep_writer)(void *fixture, bt_strbuf *out);
+
+static int sweep_write_report(void *fixture, bt_strbuf *out) {
+    return bt_gr_report_text(fixture, out);
+}
+
+static int sweep_write_assignment(void *fixture, bt_strbuf *out) {
+    return bt_gr_assignment_text(fixture, out);
+}
+
+static int sweep_write_json(void *fixture, bt_strbuf *out) {
+    return bt_gr_json_value_text(fixture, out);
+}
+
+static int sweep_write_display(void *fixture, bt_strbuf *out) {
+    const double *value = fixture;
+    return bt_gr_display_f64(out, *value);
+}
+
+typedef struct {
+    bt_gr_syllable_case *cases;
+    size_t count;
+} gr_cases_fixture;
+
+static int sweep_write_compact(void *fixture, bt_strbuf *out) {
+    gr_cases_fixture *holder = fixture;
+    return bt_gr_cases_text_compact(holder->cases, holder->count, out);
+}
+
+static void sweep_writer(const char *what, gr_sweep_writer writer, void *fixture) {
+    bt_strbuf probe;
+    bt_strbuf_init(&probe, 65536);
+    int rc = writer(fixture, &probe);
+    size_t total = probe.len;
+    bt_strbuf_free(&probe);
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "%s does not render at a full budget", what);
+        return;
+    }
+    for (size_t d = 0; d <= total; d++) {
+        size_t first_ok = GR_SWEEP_BUDGETS;
+        for (size_t k = 0; k < GR_SWEEP_BUDGETS; k++) {
+            bt_strbuf out;
+            bt_strbuf_init(&out, GR_SWEEP_PREFILL + 1 + d);
+            bt_strbuf_append_str(&out, GR_SWEEP_FILLER);
+            bt_alloc_fail_arm(k);
+            int row_rc = writer(fixture, &out);
+            bt_alloc_fail_disarm();
+            bt_strbuf_free(&out);
+            if (row_rc == 0) {
+                if (first_ok == GR_SWEEP_BUDGETS) {
+                    first_ok = k;
+                }
+            } else if (first_ok != GR_SWEEP_BUDGETS) {
+                bt_harness_fail(__FILE__, __LINE__,
+                                "%s budget %zu failed at capacity %zu after success at %zu", what,
+                                k, d, first_ok);
+                return;
+            }
+        }
+        if (first_ok == GR_SWEEP_BUDGETS) {
+            bt_harness_fail(__FILE__, __LINE__,
+                            "%s never succeeds at capacity %zu within %d budgets", what, d,
+                            GR_SWEEP_BUDGETS);
+            return;
+        }
+    }
+}
+
+static const char *const GR_RICH_JSON_TEXT =
+    "{\"a\": null, \"b\": true, \"c\": false, \"d\": 42, \"e\": -1e20, \"f\": 0.015625, "
+    "\"g\": \"quote\\\"inside\", \"h\": \"back\\\\slash\", \"i\": \"ctrl\\u0001byte\", \"j\": [], "
+    "\"k\": {}, \"l\": [1, \"two\", 3.5, [4, 5], {\"m\": 6}], \"n\": 120000.0, \"o\": 0.5}";
+
+BT_TEST(ga_run_oom, json_value_text_fail_arms_land_on_every_append_position) {
+    bt_json_value *rich = parse_json(GR_RICH_JSON_TEXT);
+    BT_CHECK(rich != NULL);
+    if (rich != NULL) {
+        sweep_writer("rich json", sweep_write_json, rich);
+        bt_json_free(rich);
+    }
+    bt_json_value *heap = heap_order_object();
+    BT_CHECK(heap != NULL);
+    if (heap != NULL) {
+        sweep_writer("heap order json", sweep_write_json, heap);
+        bt_json_free(heap);
+    }
+}
+
+BT_TEST(ga_run_oom, json_value_text_rejects_an_unknown_value_type) {
+    bt_json_value *value = parse_json("null");
+    BT_CHECK(value != NULL);
+    if (value == NULL) {
+        return;
+    }
+    bt_json_type saved = value->type;
+    value->type = (bt_json_type)7777;
+    bt_strbuf out;
+    bt_strbuf_init(&out, 64);
+    BT_CHECK_EQ(bt_gr_json_value_text(value, &out), -1);
+    bt_strbuf_free(&out);
+    value->type = saved;
+    bt_json_free(value);
+}
+
+BT_TEST(ga_run_oom, display_f64_fail_arms_land_on_every_append_position) {
+    static const double forms[] = {120000.0, 12.25, 0.015625, -0.015625, 1e20};
+    for (size_t i = 0; i < sizeof forms / sizeof forms[0]; i++) {
+        sweep_writer("display form", sweep_write_display, (void *)&forms[i]);
+    }
+}
+
+static void fixture_report_forms(bt_gr_ga_report *report) {
+    fixture_report(report);
+    report->best_fitness = 120000.0F;
+    report->best_parts[0] = 1e-7F;
+    report->best_parts[1] = -0.015625F;
+    report->best_parts[2] = 12.25F;
+    report->per_gen_best[0] = 0.015625F;
+    report->per_gen_best[1] = 1e13F;
+    report->per_gen_best[2] = 100.0F;
+}
+
+static void fixture_report_empty(bt_gr_ga_report *report) {
+    fixture_report(report);
+    bt_json_free((bt_json_value *)report->run_config);
+    report->run_config = parse_json("{}");
+    free(report->per_gen_best);
+    report->per_gen_best = NULL;
+    report->per_gen_count = 0;
+    report->pool_top_count = 0;
+}
+
+BT_TEST(ga_run_oom, report_text_fail_arms_land_on_every_append_position) {
+    bt_gr_ga_report report;
+    fixture_report(&report);
+    sweep_writer("report", sweep_write_report, &report);
+    fixture_report_forms(&report);
+    sweep_writer("report forms", sweep_write_report, &report);
+    fixture_report_free(&report);
+
+    bt_gr_ga_report empty;
+    fixture_report_empty(&empty);
+    sweep_writer("empty report", sweep_write_report, &empty);
+    fixture_report_free(&empty);
+}
+
+static void fixture_assignment_empty(bt_gr_syllable_assignment *assignment) {
+    memset(assignment, 0, sizeof *assignment);
+    assignment->pool_size = 0;
+    assignment->seed = 1;
+    assignment->best_fitness = 0.25F;
+    memset(assignment->freq_sha256, 'f', 64);
+    memset(assignment->syllables_sha256, 's', 64);
+}
+
+static void fixture_compact_cases(bt_gr_syllable_case *cases) {
+    memset(cases, 0, 2 * sizeof *cases);
+    snprintf(cases[0].orbit, sizeof cases[0].orbit, "edge");
+    snprintf(cases[0].letters, sizeof cases[0].letters, "a\"b");
+    snprintf(cases[0].syllable, sizeof cases[0].syllable, "s\\l\001x");
+    cases[0].frequency = 7;
+    snprintf(cases[1].orbit, sizeof cases[1].orbit, "corner");
+    snprintf(cases[1].letters, sizeof cases[1].letters, "c\\d");
+    snprintf(cases[1].syllable, sizeof cases[1].syllable, "t\"u");
+    cases[1].frequency = 9000000000ULL;
+}
+
+BT_TEST(ga_run_oom, assignment_and_compact_fail_arms_land_on_every_append_position) {
+    bt_gr_syllable_assignment assignment;
+    fixture_assignment(&assignment);
+    sweep_writer("assignment", sweep_write_assignment, &assignment);
+    free(assignment.cases);
+
+    bt_gr_syllable_assignment empty;
+    fixture_assignment_empty(&empty);
+    sweep_writer("empty assignment", sweep_write_assignment, &empty);
+
+    bt_gr_syllable_case cases[2];
+    fixture_compact_cases(cases);
+    gr_cases_fixture holder = {.cases = cases, .count = 2};
+    sweep_writer("compact rows", sweep_write_compact, &holder);
+
+    gr_cases_fixture none = {.cases = NULL, .count = 0};
+    sweep_writer("compact empty", sweep_write_compact, &none);
+}
+
+static void fixture_assignment_inputs(bt_gr_run_inputs *inputs, bt_ga_run_outcome *outcome) {
+    memset(inputs, 0, sizeof *inputs);
+    memset(outcome, 0, sizeof *outcome);
+    size_t case_count = bt_ga_case_count();
+    inputs->pool = malloc(case_count * sizeof *inputs->pool);
+    inputs->freq.cases = malloc(case_count * sizeof *inputs->freq.cases);
+    outcome->best = malloc(case_count * sizeof *outcome->best);
+    for (size_t i = 0; i < case_count; i++) {
+        snprintf(inputs->pool[i].text, BT_GA_TEXT_MAX, "syl-%zu", i);
+        inputs->pool[i].frequency = (uint64_t)(case_count - i);
+        snprintf(inputs->freq.cases[i].orbit, sizeof inputs->freq.cases[i].orbit, "edge");
+        snprintf(inputs->freq.cases[i].letters, sizeof inputs->freq.cases[i].letters, "ab");
+        inputs->freq.cases[i].count = (uint64_t)i;
+        outcome->best[i] = (uint32_t)i;
+    }
+    inputs->pool_count = case_count;
+    inputs->freq.cases_count = case_count;
+    inputs->freq_bytes = malloc(5);
+    snprintf(inputs->freq_bytes, 5, "freq");
+    inputs->freq_bytes_len = 4;
+    inputs->params.seed = 5;
+    outcome->best_count = case_count;
+    outcome->best_fitness = 0.5F;
+}
+
+static void fixture_assignment_inputs_free(bt_gr_run_inputs *inputs, bt_ga_run_outcome *outcome) {
+    free(inputs->pool);
+    free(inputs->freq.cases);
+    free(inputs->freq_bytes);
+    free(outcome->best);
+}
+
+BT_TEST(ga_run_oom, build_assignment_fails_closed_at_its_allocations) {
+    bt_gr_run_inputs inputs;
+    bt_ga_run_outcome outcome;
+    fixture_assignment_inputs(&inputs, &outcome);
+    int results[GR_SWEEP_BUDGETS];
+    for (size_t k = 0; k < GR_SWEEP_BUDGETS; k++) {
+        bt_gr_syllable_assignment assignment;
+        bt_gr_offenders offenders = {0};
+        bt_alloc_fail_arm(k);
+        results[k] = bt_gr_build_assignment(&inputs, &outcome, &assignment, &offenders);
+        bt_alloc_fail_disarm();
+        if (results[k] == 0) {
+            bt_gr_assignment_free(&assignment);
+        }
+        bt_gr_offenders_free(&offenders);
+    }
+    check_budget_walk(results, GR_SWEEP_BUDGETS);
+    if (results[0] != -1 || results[1] != -1) {
+        bt_harness_fail(__FILE__, __LINE__, "the first two budgets did not both fail: %d and %d",
+                        results[0], results[1]);
+        return;
+    }
+    fixture_assignment_inputs_free(&inputs, &outcome);
+}
+
+BT_TEST(ga_run_oom, build_report_fails_closed_at_the_per_generation_allocation) {
+    static bt_ga_pool_entry pool[2];
+    memset(pool, 0, sizeof pool);
+    snprintf(pool[0].text, BT_GA_TEXT_MAX, "ma");
+    pool[0].frequency = 9;
+    snprintf(pool[1].text, BT_GA_TEXT_MAX, "nem");
+    pool[1].frequency = 4;
+    bt_gr_run_inputs inputs;
+    memset(&inputs, 0, sizeof inputs);
+    inputs.pool = pool;
+    inputs.pool_count = 2;
+    bt_ga_run_outcome outcome;
+    memset(&outcome, 0, sizeof outcome);
+    outcome.best_fitness = 0.5F;
+    outcome.per_gen_best = malloc(3 * sizeof *outcome.per_gen_best);
+    outcome.per_gen_count = 3;
+    bt_gr_syllable_assignment assignment;
+    memset(&assignment, 0, sizeof assignment);
+    int results[2];
+    for (size_t k = 0; k < 2; k++) {
+        bt_gr_ga_report report;
+        bt_gr_offenders offenders = {0};
+        bt_alloc_fail_arm(k);
+        results[k] = bt_gr_build_report(&inputs, &outcome, &assignment, NULL, &report, &offenders);
+        bt_alloc_fail_disarm();
+        if (results[k] == 0) {
+            bt_gr_report_free(&report);
+        }
+        bt_gr_offenders_free(&offenders);
+    }
+    if (results[0] != -1 || results[1] != 0) {
+        bt_harness_fail(__FILE__, __LINE__,
+                        "build_report budgets behaved as %d then %d, expected -1 then 0",
+                        results[0], results[1]);
+    }
+    free(outcome.per_gen_best);
+}
+
+static void *site_fault_alloc(size_t bytes, const char *site, void *user) {
+    const char *armed = user;
+    if (site != NULL && strcmp(armed, site) == 0) {
+        return NULL;
+    }
+    return malloc(bytes);
+}
+
+static void site_fault_free(void *block, void *user) {
+    (void)user;
+    free(block);
+}
+
+static void load_under_site_fault(const char *config_path, const char *site, int *rc, char *first,
+                                  size_t cap) {
+    const char *prior = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", prior != NULL ? prior : "");
+    _putenv_s("BT_CONFIG", config_path);
+    bt_gr_run_inputs inputs;
+    bt_gr_offenders offenders = {0};
+    bt_ga_alloc_install(site_fault_alloc, site_fault_free, (void *)site);
+    *rc = bt_gr_load_run_inputs(&inputs, &offenders);
+    bt_ga_alloc_reset();
+    if (*rc == 0) {
+        bt_gr_run_inputs_free(&inputs);
+    }
+    snprintf(first, cap, "%s", offenders.count > 0 ? offenders.items[0] : "");
+    bt_gr_offenders_free(&offenders);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+}
+
+BT_TEST(ga_run_oom, load_fails_closed_when_the_inventory_build_allocation_fails) {
+    char config_path[BT_PATH_MAX];
+    make_tiny_env("site-inventory", config_path);
+    int rc = 0;
+    char first[256];
+    load_under_site_fault(config_path, "ga.build_inventory.list_grow", &rc, first, sizeof first);
+    if (rc != -1) {
+        bt_harness_fail(__FILE__, __LINE__, "inventory site fault let the load return %d saying %s",
+                        rc, first);
+        return;
+    }
+    if (strstr(first, "inventory list growth allocation failed") == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "inventory site fault said: %s", first);
+    }
+}
+
+BT_TEST(ga_run_oom, load_fails_closed_when_the_env_table_allocation_fails) {
+    char config_path[BT_PATH_MAX];
+    make_tiny_env("site-env", config_path);
+    int rc = 0;
+    char first[256];
+    load_under_site_fault(config_path, "ga.build_env.conf_table", &rc, first, sizeof first);
+    if (rc != -1) {
+        bt_harness_fail(__FILE__, __LINE__, "env site fault let the load return %d saying %s", rc,
+                        first);
+        return;
+    }
+    if (strstr(first, "table allocation failed") == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "env site fault said: %s", first);
+    }
+}
+
+BT_TEST(ga_run_oom, run_all_write_tail_extends_the_fail_closed_walk_below_the_writers) {
+    char config_path[BT_PATH_MAX];
+    make_tiny_env("tail-band", config_path);
+    size_t lo = run_all_budget_cache;
+    if (lo == 0) {
+        size_t floor = load_budget_cache;
+        if (floor == 0) {
+            floor = smallest_success(config_path, load_armed);
+            if (floor == 0) {
+                return;
+            }
+        }
+        lo = run_all_full_budget(config_path, floor);
+        if (lo == 0) {
+            return;
+        }
+        run_all_budget_cache = lo;
+    }
+    if (lo <= GR_RUN_ALL_TAIL_LAST) {
+        bt_harness_fail(__FILE__, __LINE__, "run_all budget %zu is implausibly small", lo);
+        return;
+    }
+    for (size_t delta = GR_RUN_ALL_TAIL_FIRST; delta <= GR_RUN_ALL_TAIL_LAST; delta++) {
+        int rc = run_all_armed(config_path, lo - delta);
+        if (rc != -1) {
+            bt_harness_fail(__FILE__, __LINE__, "budget %zu below full did not fail closed",
+                            lo - delta);
+            return;
+        }
+    }
 }
