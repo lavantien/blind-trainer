@@ -6,6 +6,7 @@
 #include <string.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/paths.h"
 #include "release-verify/png.h"
@@ -287,13 +288,14 @@ int bt_rv_packaged_window_dims(const char *staging, const char *config_file, uns
     const bt_json_value *window = app != NULL ? bt_json_get(app, "window") : NULL;
     const bt_json_value *width_value = window != NULL ? bt_json_get(window, "width") : NULL;
     const bt_json_value *height_value = window != NULL ? bt_json_get(window, "height") : NULL;
-    if (width_value == NULL || !bt_json_is_integer(width_value) || width_value->integer < 0 ||
-        width_value->integer > 4294967295LL || height_value == NULL ||
-        !bt_json_is_integer(height_value) || height_value->integer < 0 ||
-        height_value->integer > 4294967295LL) {
+    int width_bad = width_value == NULL || !bt_json_is_integer(width_value) ||
+                    width_value->integer < 0 || width_value->integer > 4294967295LL;
+    int height_bad = height_value == NULL || !bt_json_is_integer(height_value) ||
+                     height_value->integer < 0 || height_value->integer > 4294967295LL;
+    if (width_bad || height_bad) {
         bt_json_free(value);
         snprintf(err, err_cap, "packaged config app.window.%s missing",
-                 width_value == NULL || !bt_json_is_integer(width_value) ? "width" : "height");
+                 width_bad ? "width" : "height");
         BT_TRACE_FAIL("rv.packaged_window_dims", "%s", err);
         BT_TRACE_EXIT("rv.packaged_window_dims");
         return -1;
@@ -371,13 +373,13 @@ int bt_rv_check_shot_dir(const char *dir, const bt_rv_release_cfg *cfg, unsigned
         if (found.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             continue;
         }
-        char **grown = realloc(names, (name_count + 1) * sizeof *grown);
+        char **grown = bt_realloc(names, (name_count + 1) * sizeof *grown);
         if (grown == NULL) {
             fputs("bt-release-verify: out of memory\n", stderr);
             abort();
         }
         names = grown;
-        names[name_count] = malloc(strlen(found.cFileName) + 1);
+        names[name_count] = bt_malloc(strlen(found.cFileName) + 1);
         if (names[name_count] == NULL) {
             fputs("bt-release-verify: out of memory\n", stderr);
             abort();
