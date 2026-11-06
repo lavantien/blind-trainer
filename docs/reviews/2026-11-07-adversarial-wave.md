@@ -8,7 +8,7 @@
 | reviewer 1 | adv-wave-r1, independent read-only pass |
 | reviewer 2 | adv-wave-r2, independent read-only pass |
 | date range | 2026-11-07 to 2026-11-07 |
-| final verdict | findings fixed, commit range pending the fix lane |
+| final verdict | clean, findings fixed at 5df9edc..826fbdc with verification repairs through f2e6078 |
 
 The two reviewers worked independently over the same commit range, one attacking the restructures, macro semantics, and tooling changes, the other the fail-closed conversions, allocation band pins, the data chain, and CI dependencies. Neither saw the other's findings before adjudication.
 
