@@ -187,7 +187,7 @@ void bt_ga_mutate_swap(uint32_t *chrom, size_t n, bt_rng *rng) {
 
 void bt_ga_mutate_replace(uint32_t *chrom, size_t n, bt_rng *rng, size_t pool_size) {
     BT_TRACE_ENTER("ga.mutate_replace");
-    size_t used_bytes = pool_size > 0 ? pool_size : 1;
+    size_t used_bytes = pool_size;
     uint8_t *used = bt_ga_alloc(used_bytes, "ga.mutate_replace.used");
     if (used == NULL) {
         bt_ga_abort("ga.mutate_replace", "ga mutate_replace",
@@ -335,7 +335,7 @@ static size_t bt_ga_distinct_count(uint32_t **population, size_t pop, size_t cas
     ctx.population = population;
     ctx.case_count = case_count;
     qsort_s(scratch_order, pop, sizeof *scratch_order, bt_ga_distinct_cmp, &ctx);
-    size_t distinct = pop > 0 ? 1 : 0;
+    size_t distinct = 1;
     for (size_t i = 1; i < pop; i++) {
         if (bt_ga_chrom_cmp(population[scratch_order[i - 1]], population[scratch_order[i]],
                             case_count) != 0) {
@@ -500,9 +500,6 @@ bt_ga_run_outcome *bt_ga_run_ex(const bt_ga_env *env, const bt_ga_params *params
     float *staging_scores = NULL;
     size_t migrant_rows = 0;
     if (islands >= 2 && upgrades->migrate_every > 0) {
-        if (upgrades->migrate_count != 0 && islands > SIZE_MAX / upgrades->migrate_count) {
-            bt_ga_abort("ga.run", "ga run", "allocation size overflow at ga.run.migrants");
-        }
         migrant_rows = islands * upgrades->migrate_count;
         staging = bt_ga_run_alloc_n(migrant_rows, sizeof *staging, "ga.run.migrants");
         staging_scores =
