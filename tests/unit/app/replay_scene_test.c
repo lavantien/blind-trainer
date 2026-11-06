@@ -479,3 +479,69 @@ BT_TEST(replay, cfg_reads_the_hub_section_and_falls_back_to_defaults) {
     BT_CHECK_EQ(from_partial.distance, 7.0F);
     BT_CHECK_EQ(from_partial.secs_per_move, defaults.secs_per_move);
 }
+
+BT_TEST(replay, cell_at_builds_the_table_when_queried_first) {
+    const bt_replay_cell *cell =
+        bt_replay_cell_at((bt_replay_i3){0, 1, 0}, (bt_replay_i3){0, 1, 0});
+    BT_CHECK(cell != NULL);
+    BT_CHECK_EQ(cell->slot, 48U);
+    BT_CHECK_EQ(cell->face, 0U);
+    BT_CHECK(bt_replay_cell_at((bt_replay_i3){5, 5, 5}, (bt_replay_i3){5, 5, 5}) == NULL);
+}
+
+BT_TEST(replay, corner_and_edge_pos_default_to_zero_off_their_chairs) {
+    BT_CHECK_EQ(bt_replay_corner_pos(0, 1), 0U);
+    BT_CHECK_EQ(bt_replay_corner_pos(1, 1), 0U);
+    BT_CHECK_EQ(bt_replay_edge_pos(0, 0), 0U);
+    BT_CHECK_EQ(bt_replay_edge_pos(1, 1), 0U);
+}
+
+BT_TEST(replay, cfg_from_rejects_each_malformed_field_and_restores_defaults) {
+    bt_replay_cfg defaults = replay_cfg_defaults();
+    const char *fields[6] = {"secs_per_move", "yaw_deg",  "pitch_deg",
+                             "distance",      "zoom_min", "zoom_max"};
+    for (int at = 0; at < 6; at++) {
+        char text[128];
+        snprintf(text, sizeof text, "{\"app\":{\"replay\":{\"%s\":\"nope\"}}}", fields[at]);
+        bt_json_value *bad = fixture_json(text);
+        bt_replay_cfg parsed;
+        bt_replay_cfg_from(bad, &parsed);
+        bt_json_free(bad);
+        check_cfg_eq(&parsed, &defaults);
+    }
+    const char *clamps[4] = {
+        "{\"app\":{\"replay\":{\"pitch_clamp_deg\":5}}}",
+        "{\"app\":{\"replay\":{\"pitch_clamp_deg\":[-70.0]}}}",
+        "{\"app\":{\"replay\":{\"pitch_clamp_deg\":[\"x\",70.0]}}}",
+        "{\"app\":{\"replay\":{\"pitch_clamp_deg\":[-70.0,\"y\"]}}}",
+    };
+    for (int at = 0; at < 4; at++) {
+        bt_json_value *bad = fixture_json(clamps[at]);
+        bt_replay_cfg parsed;
+        bt_replay_cfg_from(bad, &parsed);
+        bt_json_free(bad);
+        check_cfg_eq(&parsed, &defaults);
+    }
+}
+
+BT_TEST(replay, distance_floor_rises_for_a_tall_narrow_window) {
+    float wide = bt_replay_distance_floor(1000.0F, 300.0F, 10.0F);
+    float tall = bt_replay_distance_floor(300.0F, 1000.0F, 10.0F);
+    BT_CHECK(wide > 0.0F);
+    BT_CHECK(tall > 0.0F);
+    BT_CHECK(tall > wide);
+}
+
+BT_TEST(replay, tick_with_zero_secs_per_move_finishes_in_one_frame) {
+    bt_move moves[2];
+    moves[0] = bt_move_of_face(BT_FACE_R, 1);
+    moves[1] = bt_move_of_face(BT_FACE_U, 1);
+    bt_replay_playback playback;
+    bt_replay_playback_init(&playback, bt_cube_solved(), moves, 2);
+    bt_replay_playback_toggle(&playback);
+    BT_CHECK(playback.playing);
+    bt_replay_playback_tick(&playback, 0.1, 0.0);
+    BT_CHECK(bt_replay_playback_finished(&playback));
+    BT_CHECK_EQ(playback.index, (size_t)2);
+    BT_CHECK(!playback.playing);
+}
