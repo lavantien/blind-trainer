@@ -255,6 +255,21 @@ BT_TEST(view_case_drill, a_state_malloc_failure_fails_the_facelet_build) {
     BT_CHECK(strcmp(error, "out of memory") == 0);
 }
 
+BT_TEST(view_case_drill, an_unappliable_inverse_fails_the_facelet_build) {
+    bt_pz_grid grid;
+    char error[BT_CASE_DRILL_TEXT_MAX];
+    const char *candidates[2] = {"/ 1,0", "/ 11,0"};
+    int rejected = 0;
+    for (int at = 0; at < 2; at++) {
+        error[0] = '\0';
+        if (!bt_case_drill_facelets("sq1", 0, 0, candidates[at], &grid, error, sizeof error) &&
+            strstr(error, "illegal move") != NULL) {
+            rejected = 1;
+        }
+    }
+    BT_CHECK(rejected);
+}
+
 BT_TEST(view_case_drill, case_facelets_applies_the_inverse_alg_to_solved) {
     bt_pz_grid shown;
     char error[BT_CASE_DRILL_TEXT_MAX];
