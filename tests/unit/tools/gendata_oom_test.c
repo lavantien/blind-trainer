@@ -1012,8 +1012,11 @@ static bt_json_value *build_manifest_value(void) {
 }
 
 BT_TEST(gendata_oom, to_json_serializers_fail_closed_at_every_starved_budget) {
-    bt_json_value *(*builders[3])(void) = {build_cases_value, build_specials_value,
-                                           build_manifest_value};
+    bt_json_value *(*builders[3])(void) = {
+        build_cases_value,
+        build_specials_value,
+        build_manifest_value,
+    };
     for (size_t at = 0; at < 3; at++) {
         bt_alloc_fail_arm(0);
         bt_json_value *starved = builders[at]();
