@@ -22,5 +22,6 @@ void *bt_app_driver_find_window(const char *title);
 int bt_app_driver_mouse_move(void *hwnd, int x, int y);
 int bt_app_driver_mouse_left_down(void *hwnd, int x, int y);
 int bt_app_driver_mouse_left_up(void *hwnd, int x, int y);
+int bt_app_driver_mouse_wheel(void *hwnd, int steps);
 
 #endif

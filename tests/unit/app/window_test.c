@@ -237,3 +237,188 @@ BT_TEST(window, probe_input_poll_runs_clean_without_devices) {
     bt_app_ctx_free(&ctx);
     bt_app_window_close();
 }
+
+static void pump_frame(void) {
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_app_window_frame_end();
+}
+
+BT_TEST(window, forced_window_failure_fails_both_open_paths) {
+    bt_app_config config = load_config();
+    _putenv("BT_APP_WINDOW_FAIL=1");
+    BT_CHECK(!bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                 &config.render));
+    BT_CHECK(!bt_app_window_open_driven(config.window.width, config.window.height,
+                                        config.window.title, &config.render));
+    _putenv("BT_APP_WINDOW_FAIL=");
+    BT_CHECK(!bt_app_window_ready());
+}
+
+BT_TEST(window, vsync_flag_is_honored_on_a_normal_open) {
+    bt_app_config config = load_config();
+    config.render.vsync = 1;
+    BT_CHECK(bt_app_window_open(config.window.width, config.window.height, config.window.title,
+                                &config.render));
+    BT_CHECK(bt_app_window_ready());
+    pump_frame();
+    bt_app_window_close();
+}
+
+BT_TEST(window, capture_to_a_missing_directory_reports_failure) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    for (unsigned frame = 0; frame < 3; frame++) {
+        pump_frame();
+    }
+    BT_CHECK(!bt_app_window_capture("Z:/bt-no-such-dir-8471/shot.png"));
+    bt_app_window_close();
+}
+
+BT_TEST(window, posted_keys_and_wheel_reach_the_input_poll) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    void *hwnd = GetWindowHandle();
+    bt_ui_input input;
+    BT_CHECK(bt_app_driver_mouse_wheel(hwnd, 1));
+    pump_frame();
+    bt_ui_input_clear(&input);
+    bt_app_poll_input(&input);
+    BT_CHECK_EQ(input.wheel, 1);
+    BT_CHECK(bt_app_driver_mouse_wheel(hwnd, -1));
+    pump_frame();
+    bt_ui_input_clear(&input);
+    bt_app_poll_input(&input);
+    BT_CHECK_EQ(input.wheel, -1);
+    const unsigned int vks[5] = {BT_VK_ESCAPE, BT_VK_RETURN, BT_VK_BACK, BT_VK_UP, BT_VK_DOWN};
+    for (int at = 0; at < 5; at++) {
+        BT_CHECK(bt_app_driver_key_down(hwnd, vks[at]));
+        pump_frame();
+        bt_ui_input_clear(&input);
+        bt_app_poll_input(&input);
+        BT_CHECK_EQ(input.escape, vks[at] == BT_VK_ESCAPE ? 1 : 0);
+        BT_CHECK_EQ(input.enter, vks[at] == BT_VK_RETURN ? 1 : 0);
+        BT_CHECK_EQ(input.backspace, vks[at] == BT_VK_BACK ? 1 : 0);
+        BT_CHECK_EQ(input.arrow_up, vks[at] == BT_VK_UP ? 1 : 0);
+        BT_CHECK_EQ(input.arrow_down, vks[at] == BT_VK_DOWN ? 1 : 0);
+        BT_CHECK(bt_app_driver_key_up(hwnd, vks[at]));
+        pump_frame();
+    }
+    bt_ui_input_clear(&input);
+    bt_app_poll_input(&input);
+    BT_CHECK(!input.escape && !input.enter && !input.backspace);
+    BT_CHECK(!input.arrow_up && !input.arrow_down);
+    bt_app_window_close();
+}
+
+static void fonts_fixture_config(const char *tag, const char *fonts_json, char out[BT_PATH_MAX]) {
+    const char *dir = ta_temp_dir("window", tag);
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\config.json", dir);
+    ta_write_file(path, fonts_json);
+    snprintf(out, BT_PATH_MAX, "%s", path);
+}
+
+static void copy_font_file(const char *dst_dir, const char *name) {
+    char root[BT_PATH_MAX];
+    bt_paths_workspace_root(root);
+    char src[BT_PATH_MAX];
+    char dst[BT_PATH_MAX];
+    snprintf(src, sizeof src, "%s\\assets\\fonts\\%s", root, name);
+    snprintf(dst, sizeof dst, "%s\\%s", dst_dir, name);
+    FILE *in = fopen(src, "rb");
+    FILE *out = fopen(dst, "wb");
+    if (in == NULL || out == NULL) {
+        if (in != NULL) {
+            fclose(in);
+        }
+        if (out != NULL) {
+            fclose(out);
+        }
+        BT_ABORT("font copy %s", src);
+    }
+    char buf[4096];
+    size_t got;
+    while ((got = fread(buf, 1, sizeof buf, in)) > 0) {
+        fwrite(buf, 1, got, out);
+    }
+    fclose(in);
+    fclose(out);
+}
+
+BT_TEST(window, fonts_load_reads_face_names_and_paths_from_the_config) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    char cfg[BT_PATH_MAX];
+    fonts_fixture_config("fontsjson",
+                         "{\"app\":{\"fonts\":{\"regular\":\"NotoSans-Regular.ttf\","
+                         "\"bold\":\"NotoSans-Bold.ttf\",\"codepoint_ranges\":[[32,126]]}},"
+                         "\"paths\":{\"fonts\":\"assets/fonts\"}}",
+                         cfg);
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_app_fonts_load(cfg, NULL, NULL, 0, &book, error, sizeof error), 0);
+    BT_CHECK(book.regular != NULL && book.bold != NULL);
+    BT_CHECK(book.glyph_count >= 90);
+    BT_CHECK(bt_app_fonts_current() != NULL);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+}
+
+BT_TEST(window, fonts_load_fails_when_the_bold_face_is_missing) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    const char *dir = ta_temp_dir("window", "fontsbold");
+    copy_font_file(dir, "NotoSans-Regular.ttf");
+    char cfg[BT_PATH_MAX];
+    char json[512];
+    char slashed[BT_PATH_MAX];
+    snprintf(slashed, sizeof slashed, "%s", dir);
+    for (char *at = slashed; *at != '\0'; at++) {
+        if (*at == '\\') {
+            *at = '/';
+        }
+    }
+    snprintf(json, sizeof json,
+             "{\"app\":{\"fonts\":{\"codepoint_ranges\":[[32,126]]}},\"paths\":{\"fonts\":\"%s\"}}",
+             slashed);
+    fonts_fixture_config("fontsbold", json, cfg);
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_app_fonts_load(cfg, NULL, NULL, 0, &book, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "font load failed") != NULL);
+    BT_CHECK(bt_app_fonts_current() == NULL);
+    bt_app_window_close();
+}
+
+BT_TEST(window, fonts_load_rejects_a_font_missing_a_requested_codepoint) {
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    char cfg[BT_PATH_MAX];
+    fonts_fixture_config("fontscjk",
+                         "{\"app\":{\"fonts\":{\"codepoint_ranges\":[[32,126],[20013,20013]]}},"
+                         "\"paths\":{\"fonts\":\"assets/fonts\"}}",
+                         cfg);
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_app_fonts_load(cfg, NULL, NULL, 0, &book, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "holds") != NULL);
+    bt_app_window_close();
+}
+
+BT_TEST(window, fonts_load_reports_a_codepoint_set_overflow) {
+    char cfg[BT_PATH_MAX];
+    fonts_fixture_config("fontsoverflow",
+                         "{\"app\":{\"fonts\":{\"codepoint_ranges\":[[32,2200]]}},"
+                         "\"paths\":{\"fonts\":\"assets/fonts\"}}",
+                         cfg);
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    BT_CHECK_EQ(bt_app_fonts_load(cfg, NULL, NULL, 0, &book, error, sizeof error), -1);
+    BT_CHECK(strstr(error, "codepoint set exceeds") != NULL);
+}

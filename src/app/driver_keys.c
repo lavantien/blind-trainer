@@ -117,3 +117,13 @@ int bt_app_driver_mouse_left_up(void *hwnd, int x, int y) {
     BT_TRACE_EXIT("app.driver_mouse_left_up");
     return ok;
 }
+
+int bt_app_driver_mouse_wheel(void *hwnd, int steps) {
+    BT_TRACE_ENTER("app.driver_mouse_wheel");
+    int ok = PostMessageW((HWND)hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, steps * WHEEL_DELTA), 0) != 0;
+    if (!ok) {
+        BT_TRACE_FAIL("app.driver_mouse_wheel", "wheel %d not delivered", steps);
+    }
+    BT_TRACE_EXIT("app.driver_mouse_wheel");
+    return ok;
+}
