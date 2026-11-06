@@ -309,6 +309,7 @@ static bool sq1_scan(const char *text, size_t len, void *alg, bt_pz_error *err) 
                 return false;
             }
             bt_pz_sq1_move mv;
+            memset(&mv, 0, sizeof mv);
             if (!sq1_parse_paren(text + index, offset + 1, &mv, err)) {
                 return false;
             }
@@ -316,6 +317,7 @@ static bool sq1_scan(const char *text, size_t len, void *alg, bt_pz_error *err) 
             index = index + offset + 1;
         } else {
             bt_pz_sq1_move mv;
+            memset(&mv, 0, sizeof mv);
             size_t used = 0;
             if (!sq1_parse_bare(text + index, len - index, &mv, &used, err)) {
                 return false;

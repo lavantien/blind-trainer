@@ -153,6 +153,7 @@ bool bt_pz_alg_default_parse(const bt_pz_engine *eng, const char *text, size_t l
         while (at < len && bt_space_len(text, at, len) == 0) {
             at++;
         }
+        memset(scratch, 0, eng->move_size);
         if (!eng->parse_move(eng, text + start, at - start, scratch, err)) {
             BT_TRACE_FAIL("bt_pz_alg_default_parse", "token rejected at %zu", start);
             free(staged.items);
