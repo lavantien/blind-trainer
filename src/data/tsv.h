@@ -20,6 +20,7 @@ typedef enum {
     BT_TSV_ERR_COLUMN_COUNT,
     BT_TSV_ERR_EMPTY_FIELD,
     BT_TSV_ERR_LONG_LINE,
+    BT_TSV_ERR_OOM,
 } bt_tsv_error_kind;
 
 typedef struct {

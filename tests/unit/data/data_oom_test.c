@@ -75,6 +75,8 @@ BT_TEST(data_oom, tsv_parse_fails_closed_under_every_allocation_failure) {
         int rc = bt_tsv_parse_sheet(SHEET_TEXT, &rows, &err);
         bt_alloc_fail_disarm();
         BT_CHECK(rc != 0);
+        BT_CHECK_EQ(err.kind, BT_TSV_ERR_OOM);
+        BT_CHECK_EQ((int)bt_alloc_fail_count() > 0, 1);
         bt_tsv_rows_free(&rows);
     }
     bt_tsv_rows rows;
@@ -98,6 +100,11 @@ BT_TEST(data_oom, tsv_error_strings_name_each_rejection_kind) {
     BT_CHECK(bt_tsv_parse_sheet(EMPTY_FIELD_TEXT, &rows, &err) != 0);
     bt_tsv_error_string(&err, text, sizeof text);
     BT_CHECK(strstr(text, "Alg column is empty") != NULL);
+    bt_alloc_fail_arm(0);
+    BT_CHECK(bt_tsv_parse_sheet(SHEET_TEXT, &rows, &err) != 0);
+    bt_alloc_fail_disarm();
+    bt_tsv_error_string(&err, text, sizeof text);
+    BT_CHECK(strstr(text, "out of memory") != NULL);
 }
 
 BT_TEST(data_oom, commutator_decompose_fails_closed_under_allocation_failure) {

@@ -79,6 +79,9 @@ void bt_tsv_error_string(const bt_tsv_error *err, char *out, size_t out_len) {
         snprintf(out, out_len, "line %zu: exceeds the %d character limit", err->line,
                  BT_TSV_LINE_MAX);
         break;
+    case BT_TSV_ERR_OOM:
+        snprintf(out, out_len, "line %zu: out of memory", err->line);
+        break;
     }
     BT_TRACE_EXIT("tsv.error_string");
 }
@@ -252,6 +255,8 @@ int bt_tsv_parse_sheet(const char *text, bt_tsv_rows *out, bt_tsv_error *err) {
                     free(owned[k]);
                 }
                 bt_tsv_rows_free(out);
+                err->kind = BT_TSV_ERR_OOM;
+                err->line = line_number;
                 BT_TRACE_FAIL("tsv.parse_sheet", "allocation failed at line %zu", line_number);
                 return -1;
             }
@@ -261,6 +266,8 @@ int bt_tsv_parse_sheet(const char *text, bt_tsv_rows *out, bt_tsv_error *err) {
                 free(owned[i]);
             }
             bt_tsv_rows_free(out);
+            err->kind = BT_TSV_ERR_OOM;
+            err->line = line_number;
             BT_TRACE_FAIL("tsv.parse_sheet", "row push failed at line %zu", line_number);
             return -1;
         }
