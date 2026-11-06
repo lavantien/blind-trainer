@@ -50,10 +50,7 @@ static int narrow(const wchar_t *text, char *out, size_t out_cap) {
 
 static int widen_pattern(const char *dir, wchar_t *out, size_t out_cap) {
     char narrow_pattern[BT_PATH_MAX + 8];
-    int wrote = snprintf(narrow_pattern, sizeof narrow_pattern, "%s/*", dir);
-    if (wrote < 0 || (size_t)wrote >= sizeof narrow_pattern) {
-        return -1;
-    }
+    snprintf(narrow_pattern, sizeof narrow_pattern, "%s/*", dir);
     return widen(narrow_pattern, out, out_cap);
 }
 
