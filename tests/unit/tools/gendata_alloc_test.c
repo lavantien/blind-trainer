@@ -14,6 +14,7 @@
 #include "common/strbuf.h"
 #include "core/alg.h"
 #include "data/corpus.h"
+#include "scheme/pairs.h"
 #include "scheme/scheme.h"
 
 enum {
@@ -30,6 +31,11 @@ enum {
     GD_ALLOC_DEEP_EDGE_T2 = 25,
     GD_ALLOC_STARVED_NODE_BUDGET = 1000,
     GD_ALLOC_STARVED_TOTAL_FLOOR = 3000,
+    GD_ALLOC_NODE_BUDGET = 100000000,
+    GD_ALLOC_CORNER_TOTAL_FLOOR = 300000,
+    GD_ALLOC_CORNER_TOTAL_CAP = 302000,
+    GD_ALLOC_BAND_FROM_END = 11530,
+    GD_ALLOC_BAND_TO_END = 11400,
 };
 
 static void test_scoring(bt_gd_scoring_cfg *cfg) {
@@ -210,7 +216,7 @@ static size_t synth_case_total(bt_orbit orbit, uint8_t t1, uint8_t t2, bt_gd_syn
 }
 
 BT_TEST(gendata_alloc, synth_case_at_flat_limits_walks_the_hit_path_allocations) {
-    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = 100000000};
+    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = GD_ALLOC_NODE_BUDGET};
     size_t failures = 0;
     size_t total =
         synth_case_total(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim);
@@ -230,7 +236,7 @@ BT_TEST(gendata_alloc, synth_case_at_flat_limits_walks_the_hit_path_allocations)
 }
 
 BT_TEST(gendata_alloc, synth_case_zero_insert_limits_walk_every_setup_allocation) {
-    bt_gd_synth_limits lim = {.max_setup = 1, .max_insert = 0, .node_budget = 100000000};
+    bt_gd_synth_limits lim = {.max_setup = 1, .max_insert = 0, .node_budget = GD_ALLOC_NODE_BUDGET};
     size_t failures = 0;
     size_t total =
         synth_case_total(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim);
@@ -258,6 +264,42 @@ BT_TEST(gendata_alloc, synth_case_starved_budget_walks_the_hit_path_dense) {
         synth_case_armed(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim, k,
                          &failures);
     }
+    BT_CHECK_EQ(failures, 0U);
+}
+
+static void corner_pair_ids(uint8_t *t1, uint8_t *t2) {
+    bt_case cases[BT_PAIRS_MAX];
+    size_t count = bt_scheme_enumerate_cases(BT_ORBIT_CORNER, cases);
+    for (size_t i = 0; i < count; i++) {
+        char letters[2];
+        bt_scheme_case_letters(&cases[i], letters);
+        if (letters[0] == 'A' && letters[1] == 'B') {
+            *t1 = cases[i].t1;
+            *t2 = cases[i].t2;
+            return;
+        }
+    }
+    BT_ABORT("%s", "corner pair A B must exist");
+}
+
+BT_TEST(gendata_alloc, corner_pair_deep_setup_walks_the_commutator_band) {
+    uint8_t t1 = 0;
+    uint8_t t2 = 0;
+    corner_pair_ids(&t1, &t2);
+    bt_gd_synth_limits lim = {
+        .max_setup = 1,
+        .max_insert = 3,
+        .node_budget = GD_ALLOC_NODE_BUDGET,
+    };
+    size_t failures = 0;
+    size_t total = synth_case_total(BT_ORBIT_CORNER, t1, t2, &lim);
+    BT_CHECK(total > GD_ALLOC_CORNER_TOTAL_FLOOR);
+    BT_CHECK(total < GD_ALLOC_CORNER_TOTAL_CAP);
+    for (size_t k = total > GD_ALLOC_BAND_FROM_END ? total - GD_ALLOC_BAND_FROM_END : 0;
+         k <= total - GD_ALLOC_BAND_TO_END; k++) {
+        BT_CHECK(!synth_case_armed(BT_ORBIT_CORNER, t1, t2, &lim, k, &failures));
+    }
+    BT_CHECK(synth_case_armed(BT_ORBIT_CORNER, t1, t2, &lim, total, &failures));
     BT_CHECK_EQ(failures, 0U);
 }
 
@@ -307,7 +349,7 @@ static void synthesize_pair_cases(bt_gd_cases_file *cases) {
 }
 
 BT_TEST(gendata_alloc, synthesize_at_flat_limits_lands_atomic_or_not_at_all) {
-    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = 100000000};
+    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = GD_ALLOC_NODE_BUDGET};
     bt_gd_scoring_cfg cfg;
     test_scoring(&cfg);
     size_t hi = 1;
@@ -405,7 +447,7 @@ static bt_corpus corpus_of(bt_corpus_row *stack_rows, size_t count) {
 }
 
 static bool fast_hit(bt_alg *out) {
-    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = 100000000};
+    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 3, .node_budget = GD_ALLOC_NODE_BUDGET};
     bt_gd_scoring_cfg cfg;
     test_scoring(&cfg);
     bt_gd_synth_hit hit;
