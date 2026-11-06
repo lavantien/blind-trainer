@@ -595,3 +595,26 @@ BT_TEST(solve_more, review_parts_show_every_broken_line) {
     BT_CHECK(strstr(parts.broken, "pair 0 uncovered") != NULL);
     bt_view_solve_session_free(&session);
 }
+
+BT_TEST(solve_more, broken_push_refuses_past_the_cap) {
+    bt_solve_outcome outcome;
+    bt_solve_outcome_init(&outcome);
+    for (int i = 0; i < BT_SOLVE_BROKEN_MAX; i++) {
+        BT_CHECK_EQ(bt_solve_outcome_push_broken(&outcome, "UB"), 0);
+    }
+    BT_CHECK_EQ(bt_solve_outcome_push_broken(&outcome, "UB"), -1);
+    BT_CHECK_EQ(outcome.broken_count, (size_t)BT_SOLVE_BROKEN_MAX);
+    bt_solve_outcome_free(&outcome);
+}
+
+BT_TEST(solve_more, app_free_clears_the_session_and_enter_phase_is_safe) {
+    bt_view_solve_app_state app;
+    bt_view_solve_app_init(&app);
+    app.session.token_count = 3;
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_view_solve_enter_phase(&ctx, &app, BT_SOLVE_READY);
+    bt_view_solve_app_free(&app);
+    BT_CHECK(!app.initialized);
+    bt_app_ctx_free(&ctx);
+}

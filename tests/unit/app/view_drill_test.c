@@ -400,3 +400,15 @@ BT_TEST(view_drill, alg_size_for_survives_degenerate_measures) {
     BT_CHECK(bt_view_drill_alg_size_for(400.0F, 0.0F) == floor_size);
     BT_CHECK(bt_view_drill_alg_size_for(0.0F, 0.0F) == floor_size);
 }
+
+BT_TEST(view_drill, entering_without_a_pair_clears_the_session) {
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_drill_app_state *app = bt_view_drill_app();
+    app->has_pending = 0;
+    app->session.has_pin = 1;
+    app->session.reps_target = 5;
+    bt_view_drill_enter_state(&ctx, app);
+    BT_CHECK(!app->session.has_pin);
+    BT_CHECK_EQ(app->session.reps_target, 0);
+}
