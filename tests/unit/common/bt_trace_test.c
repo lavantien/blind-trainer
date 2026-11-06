@@ -1,5 +1,7 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/bt_trace.h"
+#include "unit/core/death_test.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -115,4 +117,86 @@ BT_TEST(trace, long_lines_are_clamped_to_line_max) {
 BT_TEST(trace, crash_handler_installs_and_removes) {
     BT_CHECK_EQ(bt_trace_install_crash_handler(), 0);
     BT_CHECK_EQ(bt_trace_remove_crash_handler(), 0);
+}
+
+BT_TEST(trace, init_rejects_thread_counts_out_of_range) {
+    BT_CHECK(bt_trace_init(4096, 0, 256) != 0);
+    BT_CHECK(bt_trace_init(4096, BT_TRACE_MAX_SLOTS + 1, 256) != 0);
+    bt_trace_shutdown();
+}
+
+BT_TEST(trace, init_failure_frees_the_rings_allocated_so_far) {
+    bt_alloc_fail_arm(1);
+    BT_CHECK(bt_trace_init(4096, 3, 256) != 0);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(bt_alloc_fail_count(), (size_t)1);
+    BT_CHECK_EQ(bt_trace_init(4096, 3, 256), 0);
+    bt_trace_shutdown();
+}
+
+BT_TEST(trace, a_line_wider_than_the_ring_is_dropped) {
+    FILE *sink = bt_test_open_scratch("bt_trace_sink");
+    BT_CHECK(sink != NULL);
+    BT_CHECK_EQ(bt_trace_init(8, 1, 256), 0);
+    bt_trace_enter("toolong");
+    bt_trace_dump_to(sink);
+    bt_trace_shutdown();
+    fseek(sink, 0, SEEK_END);
+    BT_CHECK_EQ(ftell(sink), 0);
+    fclose(sink);
+}
+
+BT_TEST(trace, format_errors_fail_closed_silently) {
+    BT_CHECK_EQ(bt_trace_init(4096, 1, 256), 0);
+    bt_trace_fail("unit", "%");
+    bt_trace_fail_at("unit", __FILE__, __LINE__, "%");
+    bt_trace_enter("short");
+    bt_trace_shutdown();
+}
+
+BT_TEST(trace, a_unit_longer_than_the_line_stack_is_clamped) {
+    BT_CHECK_EQ(bt_trace_init(4096, 1, 600), 0);
+    char unit[600];
+    memset(unit, 'u', sizeof unit - 1);
+    unit[sizeof unit - 1] = '\0';
+    bt_trace_enter(unit);
+    bt_trace_shutdown();
+}
+
+static unsigned __stdcall trace_extra_thread(void *arg) {
+    (void)arg;
+    bt_trace_enter("other_thread");
+    bt_trace_exit("other_thread");
+    return 0;
+}
+
+BT_TEST(trace, threads_beyond_the_slot_budget_emit_nothing) {
+    BT_CHECK_EQ(bt_trace_init(4096, 1, 256), 0);
+    bt_trace_enter("main_thread");
+    uintptr_t handle = _beginthreadex(NULL, 0, trace_extra_thread, NULL, 0, NULL);
+    BT_CHECK(handle != 0);
+    WaitForSingleObject((HANDLE)handle, INFINITE);
+    CloseHandle((HANDLE)handle);
+    FILE *sink = bt_test_open_scratch("bt_trace_sink");
+    BT_CHECK(sink != NULL);
+    bt_trace_dump_to(sink);
+    bt_trace_shutdown();
+    char buffer[4096];
+    memset(buffer, 0, sizeof buffer);
+    fseek(sink, 0, SEEK_SET);
+    size_t got = fread(buffer, 1, sizeof buffer - 1, sink);
+    fclose(sink);
+    BT_CHECK(got > 0);
+    BT_CHECK(strstr(buffer, "main_thread") != NULL);
+    BT_CHECK(strstr(buffer, "other_thread") == NULL);
+}
+
+static void trace_death_null_write(void) {
+    bt_trace_enter("doomed");
+    volatile int *bad = NULL;
+    *bad = 1;
+}
+
+BT_TEST(trace, the_crash_filter_dumps_the_ring_on_a_fatal_fault) {
+    bt_death_expect_code("trace.fault_dump", "doomed", -1073741819LL, trace_death_null_write);
 }

@@ -1,5 +1,50 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/strbuf.h"
+
+BT_TEST(strbuf, reserve_doubles_until_a_wide_append_fits) {
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    char wide[40];
+    memset(wide, 'w', sizeof wide - 1);
+    wide[sizeof wide - 1] = '\0';
+    BT_CHECK_EQ(bt_strbuf_append_str(&sb, wide), 0);
+    BT_CHECK_EQ(sb.cap, (size_t)64);
+    BT_CHECK_EQ(sb.len, (size_t)39);
+    bt_strbuf_free(&sb);
+}
+
+BT_TEST(strbuf, append_and_appendf_report_injected_allocation_failures) {
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    char wide[40];
+    memset(wide, 'w', sizeof wide - 1);
+    wide[sizeof wide - 1] = '\0';
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_strbuf_append_str(&sb, wide), -1);
+    BT_CHECK_EQ(bt_strbuf_appendf(&sb, "%s", wide), -1);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(sb.len, (size_t)0);
+    bt_strbuf_free(&sb);
+}
+
+BT_TEST(strbuf, join_reports_separator_and_part_allocation_failures) {
+    char wide[32];
+    memset(wide, 'w', 31);
+    wide[31] = '\0';
+    const char *wide_parts[2] = {wide, "x"};
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    bt_alloc_fail_arm(1);
+    BT_CHECK_EQ(bt_strbuf_join(&sb, "-", wide_parts, 2), -1);
+    bt_alloc_fail_disarm();
+    bt_strbuf_free(&sb);
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_strbuf_join(&sb, "-", wide_parts, 2), -1);
+    bt_alloc_fail_disarm();
+    bt_strbuf_free(&sb);
+}
 
 BT_TEST(strbuf, append_grows_and_keeps_exact_content) {
     bt_strbuf sb;
