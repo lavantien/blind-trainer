@@ -68,7 +68,7 @@ static void special_text(char *out, size_t pad, bool specials_first) {
     size_t at = 0;
     if (!specials_first) {
         for (size_t i = 0; i < pad; i++) {
-            out[at++] = 'a' + (char)(i % 26);
+            out[at++] = (char)('a' + i % 26);
         }
     }
     out[at++] = '"';
@@ -81,7 +81,7 @@ static void special_text(char *out, size_t pad, bool specials_first) {
     out[at++] = 1;
     if (specials_first) {
         for (size_t i = 0; i < pad; i++) {
-            out[at++] = 'a' + (char)(i % 26);
+            out[at++] = (char)('a' + i % 26);
         }
     }
     out[at] = '\0';
@@ -361,7 +361,7 @@ BT_TEST(gendata_alloc, synthesize_at_flat_limits_lands_atomic_or_not_at_all) {
         bt_alloc_fail_arm(hi);
         bt_gd_synthesize(&cases, &lim, &cfg, &edge, &corner);
         bt_alloc_fail_disarm();
-        bool complete = edge == 1 && cases.cases[1].vendor_count == 1;
+        bool complete = (bool)(edge == 1 && cases.cases[1].vendor_count == 1);
         bt_gd_cases_file_free(&cases);
         if (complete) {
             break;
@@ -379,7 +379,7 @@ BT_TEST(gendata_alloc, synthesize_at_flat_limits_lands_atomic_or_not_at_all) {
         bt_alloc_fail_arm(mid);
         bt_gd_synthesize(&cases, &lim, &cfg, &edge, &corner);
         bt_alloc_fail_disarm();
-        bool complete = edge == 1 && cases.cases[1].vendor_count == 1;
+        bool complete = (bool)(edge == 1 && cases.cases[1].vendor_count == 1);
         bt_gd_cases_file_free(&cases);
         if (complete) {
             hi = mid;
