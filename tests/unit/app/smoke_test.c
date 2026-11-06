@@ -347,3 +347,53 @@ BT_TEST(smoke, finish_accepts_a_bare_slug_file_name) {
     BT_CHECK_EQ(bt_smoke_finish(&tour), 0);
     remove("menu.png");
 }
+
+BT_TEST(smoke, shot_path_falls_back_to_unknown_past_the_states) {
+    bt_smoke_tour tour;
+    bt_smoke_tour_init(&tour, "shots");
+    char out[TA_PATH_MAX];
+    bt_smoke_shot_path(&tour, (bt_app_state)999, out);
+    BT_CHECK(strcmp(out, "shots/unknown.png") == 0);
+}
+
+BT_TEST(smoke, finish_rejects_short_tours_and_mislabeled_shots) {
+    const char *dir = ta_temp_dir("smoke", "finish-reject");
+    bt_smoke_tour short_tour;
+    bt_smoke_tour_init(&short_tour, dir);
+    short_tour.entered_count = 3;
+    BT_CHECK_EQ(bt_smoke_finish(&short_tour), 1);
+
+    bt_smoke_tour tour;
+    bt_smoke_tour_init(&tour, dir);
+    for (size_t i = 0; i < BT_APP_TOUR_COUNT; i++) {
+        tour.entered[i] = BT_APP_TOUR[i];
+        tour.shots[i].state = BT_APP_TOUR[i];
+        snprintf(tour.shots[i].path, sizeof tour.shots[i].path, "%s/%s.png", dir,
+                 bt_app_state_slug(BT_APP_TOUR[i]));
+        ta_write_file(tour.shots[i].path, "png");
+    }
+    tour.entered_count = BT_APP_TOUR_COUNT;
+    tour.shot_count = BT_APP_TOUR_COUNT;
+    tour.shots[BT_APP_TOUR_COUNT - 1].state = (bt_app_state)999;
+    BT_CHECK_EQ(bt_smoke_finish(&tour), 1);
+    tour.shots[BT_APP_TOUR_COUNT - 1].state = BT_APP_FATAL;
+    BT_CHECK_EQ(bt_smoke_finish(&tour), 0);
+}
+
+BT_TEST(smoke, a_dwell_that_never_lands_times_out_with_three) {
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    ctx.state = BT_APP_MENU;
+    bt_smoke_tour tour;
+    bt_smoke_tour_init(&tour, "shots");
+    tour.phase.kind = BT_SMOKE_DWELL;
+    tour.phase.state = BT_APP_ALGS;
+    tour.phase.stuck = 9.9F;
+    char request[BT_PATH_MAX];
+    int has_request = 0;
+    BT_CHECK_EQ(bt_smoke_step(&tour, &ctx, 1, 0.2F, request, &has_request), 3);
+    BT_CHECK_EQ(tour.phase.kind, BT_SMOKE_DONE);
+    BT_CHECK_EQ(tour.exit_code, 3);
+    bt_smoke_step(&tour, &ctx, 1, 0.0F, request, &has_request);
+    BT_CHECK_EQ(tour.exit_code, -1);
+}
