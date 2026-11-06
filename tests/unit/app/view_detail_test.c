@@ -426,3 +426,179 @@ BT_TEST(view_detail, centered_lines_stay_inside_the_detail_column) {
     bt_repo_browser_free(&browser);
     free_rows(rows, 3);
 }
+
+BT_TEST(view_detail, tier1_side_events_each_gate_their_own_engine) {
+    char error[BT_ALGS_TEXT_MAX];
+    BT_CHECK_EQ(bt_view_geometry_check("pyraminx", 0, 0, "R U R'", error, sizeof error), 0);
+    BT_CHECK(bt_view_geometry_check("pyraminx", 0, 0, "QQ", error, sizeof error) != 0);
+    BT_CHECK(error[0] != '\0');
+    BT_CHECK_EQ(bt_view_geometry_check("megaminx", 0, 0, "R U R'", error, sizeof error), 0);
+    BT_CHECK(bt_view_geometry_check("megaminx", 0, 0, "QQ", error, sizeof error) != 0);
+    BT_CHECK_EQ(bt_view_geometry_check("fto", 0, 0, "R U R'", error, sizeof error), 0);
+    BT_CHECK(bt_view_geometry_check("fto", 0, 0, "QQ", error, sizeof error) != 0);
+    BT_CHECK_EQ(bt_view_geometry_check("sq1", 0, 0, "/", error, sizeof error), 0);
+    BT_CHECK(bt_view_geometry_check("sq1", 0, 0, "QQ", error, sizeof error) != 0);
+    BT_CHECK(bt_view_geometry_check("skewb", 0, 0, "QQ", error, sizeof error) != 0);
+}
+
+BT_TEST(view_detail, bigcube_sizes_clamp_into_the_supported_cube_range) {
+    char error[BT_ALGS_TEXT_MAX];
+    BT_CHECK_EQ(bt_view_geometry_check("bigcube", 1, 1, "R U R'", error, sizeof error), 0);
+    BT_CHECK_EQ(bt_view_geometry_check("bigcube", 1, -3, "R U R'", error, sizeof error), 0);
+    BT_CHECK_EQ(bt_view_geometry_check("bigcube", 1, 9, "R U R'", error, sizeof error), 0);
+    BT_CHECK_EQ(bt_view_geometry_check("bigcube", 1, 99, "R U R'", error, sizeof error), 0);
+}
+
+BT_TEST(view_detail, effective_alg_falls_back_to_an_empty_seed) {
+    bt_case_ref case_ref;
+    bt_case_ref_of(&case_ref, "2x2", "cll", "cll", "cll.1");
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_effective_alg effective = bt_view_effective_alg(&case_ref, NULL, &store);
+    BT_CHECK(strcmp(effective.alg, "") == 0);
+    BT_CHECK(!effective.overridden);
+    bt_overrides_free(&store);
+}
+
+static bt_repo_browser case_directly_under_its_event(void) {
+    bt_repo_browser browser;
+    memset(&browser, 0, sizeof browser);
+    bt_repo_node *event = malloc(sizeof *event);
+    bt_repo_node *child = malloc(sizeof *child);
+    if (event == NULL || child == NULL) {
+        BT_ABORT("fixture nodes out of memory");
+    }
+    memset(event, 0, sizeof *event);
+    snprintf(event->label, sizeof event->label, "%s", "2x2");
+    event->kind = BT_REPO_EVENT;
+    memset(child, 0, sizeof *child);
+    snprintf(child->label, sizeof child->label, "%s", "c.1");
+    child->kind = BT_REPO_CASE;
+    child->has_case = 1;
+    child->case_alg = dup_text("R U R'");
+    child->case_source_url = dup_text("");
+    child->case_source_at = dup_text("");
+    event->children = child;
+    event->children_count = 1;
+    browser.arms = event;
+    browser.arm_count = 1;
+    browser.repo_focused = 1;
+    browser.depth = 1;
+    browser.path[0] = 0;
+    return browser;
+}
+
+BT_TEST(view_detail, a_case_directly_under_its_event_has_no_site) {
+    bt_repo_browser browser = case_directly_under_its_event();
+    bt_case_site site;
+    BT_CHECK(!bt_view_case_site_of(&browser, &site));
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    bt_detail_line lines[BT_DETAIL_LINES_MAX];
+    size_t count = 0;
+    bt_view_repo_detail_lines(&browser, &store, &draft, lines, BT_DETAIL_LINES_MAX, &count);
+    expect_line(lines, count, 0, BT_DETAIL_META, "repo > 2x2");
+    expect_line(lines, count, 1, BT_DETAIL_TITLE, "c.1");
+    expect_line(lines, count, 2, BT_DETAIL_ALG, "R U R'");
+    expect_line(lines, count, 3, BT_DETAIL_META, "source  ");
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_detail, detail_lines_stop_at_the_caller_capacity) {
+    bt_seed_row rows[3];
+    bt_repo_browser browser = armed(rows);
+    bigcube_case_browser(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    bt_detail_line lines[2];
+    size_t count = 99;
+    bt_view_repo_detail_lines(&browser, &store, &draft, lines, 2, &count);
+    BT_CHECK_EQ(count, (size_t)2);
+    expect_line(lines, count, 1, BT_DETAIL_TITLE, "par.1");
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+    free_rows(rows, 3);
+}
+
+BT_TEST(view_detail, detail_lines_report_no_repository_without_a_node) {
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    browser.arm = 1;
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    bt_detail_line lines[BT_DETAIL_LINES_MAX];
+    size_t count = 0;
+    bt_view_repo_detail_lines(&browser, &store, &draft, lines, BT_DETAIL_LINES_MAX, &count);
+    expect_line(lines, count, 0, BT_DETAIL_META, "repo");
+    expect_line(lines, count, 1, BT_DETAIL_META, "no repository");
+    BT_CHECK_EQ(count, (size_t)2);
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_detail, bld_case_detail_lines_include_the_expanded_alg) {
+    bt_seed_row rows[1];
+    bt_pack_entry packs[1];
+    make_pack("3bld", "3style", "edges", 0, &packs[0]);
+    make_row("3bld", "3style", "edges", "sp.1", &rows[0]);
+    free(rows[0].alg);
+    rows[0].alg = dup_text("R R U");
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    browser.arms = bt_repo_arms(packs, 1, &hidden, rows, 1, &browser.arm_count);
+    bt_str_list_free(&hidden);
+    bt_repo_deeper(&browser);
+    bt_repo_move(&browser, 1);
+    bt_repo_deeper(&browser);
+    bt_repo_deeper(&browser);
+    bt_repo_deeper(&browser);
+    BT_CHECK(strcmp(bt_repo_browser_node(&browser)->label, "sp.1") == 0);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    bt_detail_line lines[BT_DETAIL_LINES_MAX];
+    size_t count = lines_of(&browser, &store, &draft, lines);
+    expect_line(lines, count, 2, BT_DETAIL_ALG, "R R U");
+    expect_line(lines, count, 3, BT_DETAIL_META, "seed");
+    expect_line(lines, count, 4, BT_DETAIL_META, "expand R2 U");
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+    free_rows(rows, 1);
+}
+
+BT_TEST(view_detail, a_draft_error_surfaces_as_a_warning_line) {
+    bt_seed_row rows[3];
+    bt_repo_browser browser = armed(rows);
+    bigcube_case_browser(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_view_override_draft draft;
+    bt_view_override_draft_default(&draft);
+    draft.has_error = 1;
+    snprintf(draft.error, sizeof draft.error, "%s", "alg does not parse in the bt-core notation");
+    bt_detail_line lines[BT_DETAIL_LINES_MAX];
+    size_t count = lines_of(&browser, &store, &draft, lines);
+    expect_line(lines, count, count - 1, BT_DETAIL_WARN,
+                "alg does not parse in the bt-core notation");
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+    free_rows(rows, 3);
+}
+
+BT_TEST(view_detail, the_shared_draft_starts_defaulted) {
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(!draft->has_case);
+    BT_CHECK(!draft->has_error);
+    BT_CHECK(draft->text[0] == '\0');
+    BT_CHECK(!draft->site.has_size);
+}

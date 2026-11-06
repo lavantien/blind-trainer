@@ -3,6 +3,8 @@
 #include "app/views/case_drill.h"
 #include "app/views/drill.h"
 #include "app/views/state.h"
+#include "data/db.h"
+#include "data/paths.h"
 
 #include "common.h"
 
@@ -518,5 +520,237 @@ BT_TEST(algs_more, update_types_frame_chars_into_the_override_draft) {
     bt_view_algs_update(&ctx);
     bt_app_frame_input_set(NULL);
     BT_CHECK(strcmp(draft->text, "xy") == 0);
+    bt_app_ctx_free(&ctx);
+}
+
+static void blocked_user_root(const char *tag, char out[BT_PATH_MAX]) {
+    const char *dir = ta_temp_dir("algs_more", tag);
+    char blocker[BT_PATH_MAX];
+    snprintf(blocker, sizeof blocker, "%s\\blocker", dir);
+    ta_write_file(blocker, "x");
+    snprintf(out, BT_PATH_MAX, "%s\\blocker\\under", dir);
+}
+
+BT_TEST(algs_more, override_open_without_a_case_site_returns_early) {
+    bt_app_ctx ctx = algs_ctx("openearly");
+    install_cll_repo(&ctx);
+    bt_view_override_cancel();
+    bt_view_override_open(&ctx);
+    BT_CHECK(!bt_view_algs_draft()->has_case);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_open_prefers_the_stored_override_text) {
+    bt_app_ctx ctx = algs_ctx("openstored");
+    install_cll_repo(&ctx);
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    bt_overrides_put(bt_view_algs_overrides(), &key, "L U L'");
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    BT_CHECK(strcmp(bt_view_algs_draft()->text, "L U L'") == 0);
+    bt_app_ctx_free(&ctx);
+}
+
+static void install_caseless_alg_repo(bt_app_ctx *ctx) {
+    bt_view_algs_enter(ctx);
+    bt_repo_browser *repo = bt_view_algs_repo();
+    bt_repo_browser_free(repo);
+    bt_repo_node *arms = malloc(2 * sizeof *arms);
+    bt_repo_node *method = malloc(sizeof *method);
+    bt_repo_node *stage = malloc(sizeof *stage);
+    bt_repo_node *leaf = malloc(sizeof *leaf);
+    if (arms == NULL || method == NULL || stage == NULL || leaf == NULL) {
+        BT_ABORT("fixture nodes out of memory");
+    }
+    memset(arms, 0, 2 * sizeof *arms);
+    snprintf(arms[0].label, sizeof arms[0].label, "%s", "letters");
+    arms[0].kind = BT_REPO_LETTERS;
+    snprintf(arms[1].label, sizeof arms[1].label, "%s", "2x2");
+    arms[1].kind = BT_REPO_EVENT;
+    memset(method, 0, sizeof *method);
+    snprintf(method->label, sizeof method->label, "%s", "cll");
+    method->kind = BT_REPO_METHOD;
+    memset(stage, 0, sizeof *stage);
+    snprintf(stage->label, sizeof stage->label, "%s", "cll");
+    stage->kind = BT_REPO_STAGE;
+    memset(leaf, 0, sizeof *leaf);
+    snprintf(leaf->label, sizeof leaf->label, "%s", "cll.1");
+    leaf->kind = BT_REPO_CASE;
+    leaf->has_case = 1;
+    stage->children = leaf;
+    stage->children_count = 1;
+    method->children = stage;
+    method->children_count = 1;
+    arms[1].children = method;
+    arms[1].children_count = 1;
+    repo->arms = arms;
+    repo->arm_count = 2;
+    repo->arm = 0;
+    repo->depth = 0;
+    repo->repo_focused = 0;
+}
+
+BT_TEST(algs_more, override_open_falls_back_to_an_empty_seed_when_the_row_alg_was_lost) {
+    bt_app_ctx ctx = algs_ctx("openseedlost");
+    install_caseless_alg_repo(&ctx);
+    bt_repo_browser *repo = bt_view_algs_repo();
+    bt_repo_deeper(repo);
+    bt_repo_move(repo, 1);
+    bt_repo_deeper(repo);
+    bt_repo_deeper(repo);
+    bt_repo_deeper(repo);
+    const bt_repo_node *node = bt_repo_browser_node(repo);
+    BT_CHECK(node != NULL);
+    BT_CHECK_EQ(node->kind, BT_REPO_CASE);
+    BT_CHECK(node->case_alg == NULL);
+    bt_view_override_open(&ctx);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(draft->has_case);
+    BT_CHECK(draft->text[0] == '\0');
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_submit_without_an_open_draft_returns_early) {
+    bt_app_ctx ctx = algs_ctx("submitearly");
+    install_cll_repo(&ctx);
+    bt_view_override_cancel();
+    bt_view_override_submit(&ctx, "F R F'");
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_submit_trims_outer_space_and_a_blank_submit_cancels) {
+    bt_app_ctx ctx = algs_ctx("subtrim");
+    install_cll_repo(&ctx);
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(draft->has_case);
+    bt_view_override_submit(&ctx, "  F R F'  ");
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    const char *stored = bt_overrides_get(bt_view_algs_overrides(), &key);
+    BT_CHECK(stored != NULL);
+    BT_CHECK(strcmp(stored, "F R F'") == 0);
+    bt_view_override_open(&ctx);
+    BT_CHECK(draft->has_case);
+    bt_view_override_submit(&ctx, "   ");
+    BT_CHECK(!draft->has_case);
+    stored = bt_overrides_get(bt_view_algs_overrides(), &key);
+    BT_CHECK(stored != NULL);
+    BT_CHECK(strcmp(stored, "F R F'") == 0);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_submit_rejects_text_that_fails_the_geometry_gate) {
+    bt_app_ctx ctx = algs_ctx("submitbadalg");
+    install_cll_repo(&ctx);
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    bt_view_override_submit(&ctx, "QQ");
+    BT_CHECK(draft->has_case);
+    BT_CHECK(draft->has_error);
+    BT_CHECK(draft->error[0] != '\0');
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_submit_reports_a_db_open_failure) {
+    bt_app_ctx ctx = algs_ctx("submitdbfail");
+    char gone[BT_PATH_MAX];
+    blocked_user_root("submitdbfail-user", gone);
+    snprintf(ctx.paths.user_root, sizeof ctx.paths.user_root, "%s", gone);
+    install_cll_repo(&ctx);
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(draft->has_case);
+    bt_view_override_submit(&ctx, "F R F'");
+    BT_CHECK(draft->has_case);
+    BT_CHECK(draft->has_error);
+    BT_CHECK(draft->error[0] != '\0');
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_delete_without_a_site_or_a_stored_override_returns_early) {
+    bt_app_ctx ctx = algs_ctx("delearly");
+    install_cll_repo(&ctx);
+    bt_view_override_delete(&ctx);
+    repo_walk_to_case(&ctx);
+    bt_view_override_delete(&ctx);
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_delete_reports_a_db_open_failure) {
+    bt_app_ctx ctx = algs_ctx("deldbfail");
+    install_cll_repo(&ctx);
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    bt_view_override_submit(&ctx, "F R F'");
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(bt_overrides_contains(bt_view_algs_overrides(), &key));
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(ctx.paths.user_root, db_path);
+    BT_CHECK_EQ(remove(db_path), 0);
+    BT_CHECK_EQ(_mkdir(db_path), 0);
+    bt_view_override_delete(&ctx);
+    BT_CHECK(bt_overrides_contains(bt_view_algs_overrides(), &key));
+    BT_CHECK(bt_view_algs_draft()->has_error);
+    BT_CHECK_EQ(_rmdir(db_path), 0);
+    bt_app_ctx_free(&ctx);
+}
+
+static void drop_user_alg_table(const char *user_root) {
+    char db_path[BT_PATH_MAX];
+    bt_data_db_path_at(user_root, db_path);
+    bt_db db;
+    bt_db_error err;
+    BT_CHECK_EQ(bt_db_open_at(db_path, &db, &err), 0);
+    BT_CHECK_EQ(bt_db_exec(&db, "DROP TABLE user_alg", "drop user_alg", &err), 0);
+    bt_db_close(&db);
+}
+
+BT_TEST(algs_more, override_submit_reports_an_upsert_failure_on_a_broken_schema) {
+    bt_app_ctx ctx = algs_ctx("submitdrop");
+    install_cll_repo(&ctx);
+    drop_user_alg_table(ctx.paths.user_root);
+    repo_walk_to_case(&ctx);
+    bt_view_override_open(&ctx);
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    BT_CHECK(draft->has_case);
+    bt_view_override_submit(&ctx, "F R F'");
+    BT_CHECK(draft->has_case);
+    BT_CHECK(draft->has_error);
+    BT_CHECK(draft->error[0] != '\0');
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    BT_CHECK(!bt_overrides_contains(bt_view_algs_overrides(), &key));
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, override_delete_reports_a_remove_failure_on_a_broken_schema) {
+    bt_app_ctx ctx = algs_ctx("deldrop");
+    install_cll_repo(&ctx);
+    bt_case_ref key;
+    bt_case_ref_of(&key, "2x2", "cll", "cll", "cll.1");
+    bt_overrides_put(bt_view_algs_overrides(), &key, "L U L'");
+    drop_user_alg_table(ctx.paths.user_root);
+    repo_walk_to_case(&ctx);
+    bt_view_override_delete(&ctx);
+    BT_CHECK(bt_overrides_contains(bt_view_algs_overrides(), &key));
+    BT_CHECK(bt_view_algs_draft()->has_error);
     bt_app_ctx_free(&ctx);
 }
