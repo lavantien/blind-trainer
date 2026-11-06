@@ -103,7 +103,8 @@ def file_rows(export):
         seen = set()
         for seg in entry.get("segments", []):
             line, col, count, has_count = seg[0], seg[1], seg[2], seg[3]
-            if has_count and count == 0 and (line, col) not in seen:
+            is_gap = len(seg) > 5 and bool(seg[5])
+            if has_count and count == 0 and not is_gap and (line, col) not in seen:
                 seen.add((line, col))
                 uncovered.append(line)
         rows[rel] = {
