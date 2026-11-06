@@ -186,6 +186,15 @@ static int run(bt_gd_errors *errors) {
     bt_gd_derive_mirrored_inverses(&built.cases);
     bt_json_value *cases_value = bt_gd_cases_file_to_json(&built.cases);
     bt_json_value *specials_value = bt_gd_specials_file_to_json(&built.specials);
+    if (cases_value == NULL || specials_value == NULL) {
+        bt_json_free(cases_value);
+        bt_json_free(specials_value);
+        errors_push(errors, "serialize gendata outputs failed: out of memory");
+        bt_gd_built_free(&built);
+        bt_corpus_free(&corpus);
+        BT_TRACE_FAIL("gd.main.run", "output serialization failed");
+        return -1;
+    }
     bt_strbuf cases_text;
     bt_strbuf specials_text;
     bt_strbuf_init(&cases_text, 0);
@@ -201,6 +210,18 @@ static int run(bt_gd_errors *errors) {
     bt_gd_manifest record;
     bt_gd_manifest_make(&built, &digest, cases_sha, specials_sha, params_sha256, stamp, &record);
     bt_json_value *manifest_value = bt_gd_manifest_to_json(&record);
+    if (manifest_value == NULL) {
+        bt_strbuf_free(&cases_text);
+        bt_strbuf_free(&specials_text);
+        bt_json_free(specials_value);
+        bt_json_free(cases_value);
+        bt_gd_manifest_free(&record);
+        bt_gd_built_free(&built);
+        bt_corpus_free(&corpus);
+        errors_push(errors, "serialize manifest failed: out of memory");
+        BT_TRACE_FAIL("gd.main.run", "manifest serialization failed");
+        return -1;
+    }
     bt_strbuf manifest_text;
     bt_strbuf_init(&manifest_text, 0);
     bt_gd_json_pretty(manifest_value, &manifest_text);

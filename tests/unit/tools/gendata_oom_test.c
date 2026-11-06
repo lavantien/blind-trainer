@@ -881,3 +881,144 @@ BT_TEST(gendata_oom, audit_fails_closed_at_every_starved_budget) {
     BT_CHECK(saw_complete);
     bt_corpus_free(&corpus);
 }
+
+static bt_gd_vendor_alg oom_vendor_alg(void) {
+    bt_gd_vendor_alg alg = {0};
+    alg.solver = _strdup("cherry");
+    alg.rowid = 2;
+    alg.position = _strdup("UF-UB-UR");
+    alg.alg = _strdup("R U R'");
+    alg.qtm = 4;
+    alg.htm = 3;
+    alg.ok = false;
+    alg.problem_count = 1;
+    alg.problems = malloc(sizeof(char *));
+    alg.problems[0] = _strdup("centers moved");
+    alg.note_count = 1;
+    alg.notes = malloc(sizeof(char *));
+    alg.notes[0] = _strdup("flip:UF");
+    alg.commutator = _strdup("[R,U]");
+    alg.recon_link = _strdup("");
+    alg.youtube_link = _strdup("");
+    return alg;
+}
+
+static bt_gd_cases_file oom_cases_file(void) {
+    bt_gd_cases_file file = {0};
+    file.count = 1;
+    file.cases = malloc(sizeof(bt_gd_case_entry));
+    bt_gd_case_entry *entry = &file.cases[0];
+    memset(entry, 0, sizeof *entry);
+    entry->orbit = _strdup("edge");
+    entry->t1 = 24;
+    entry->t2 = 25;
+    entry->t1_letter = 'A';
+    entry->t2_letter = 'B';
+    entry->t1_name = _strdup("UB");
+    entry->t2_name = _strdup("UR");
+    entry->covered = true;
+    entry->vendor_count = 1;
+    entry->vendor_algs = malloc(sizeof(bt_gd_vendor_alg));
+    entry->vendor_algs[0] = oom_vendor_alg();
+    return file;
+}
+
+static bt_gd_specials_file oom_specials_file(void) {
+    bt_gd_specials_file file = {0};
+    file.count = 1;
+    file.specials = malloc(sizeof(bt_gd_special_entry));
+    bt_gd_special_entry *special = &file.specials[0];
+    memset(special, 0, sizeof *special);
+    special->class_name = _strdup("flips");
+    special->solver = _strdup("eggins");
+    special->rowid = 3;
+    special->position = _strdup("UF-UB");
+    special->alg = _strdup("M' U M U2");
+    special->qtm = 6;
+    special->htm = 4;
+    special->ok = true;
+    special->commutator = _strdup("");
+    special->recon_link = _strdup("");
+    special->youtube_link = _strdup("");
+    return file;
+}
+
+static bt_gd_manifest oom_manifest(void) {
+    bt_gd_manifest manifest = {0};
+    manifest.generated_at = _strdup("2026-11-07T00:00:00Z");
+    manifest.generator = _strdup("bt-gendata");
+    manifest.synth_params_sha256 = _strdup("aa");
+    manifest.corpus_sha256 = _strdup("bb");
+    manifest.corpus_rows = 1;
+    manifest.corpus_file_count = 1;
+    manifest.corpus_files = malloc(sizeof(bt_gd_corpus_file_entry));
+    memset(manifest.corpus_files, 0, sizeof(bt_gd_corpus_file_entry));
+    manifest.corpus_files[0].solver = _strdup("cherry");
+    manifest.corpus_files[0].sheet = _strdup("edge");
+    manifest.corpus_files[0].rows = 1;
+    manifest.corpus_files[0].sha256 = _strdup("cc");
+    manifest.rows_in_pair_space = 1;
+    manifest.rows_other_buffer = 0;
+    manifest.cases.path = _strdup("cases.json");
+    manifest.cases.sha256 = _strdup("dd");
+    manifest.cases.entries = 1;
+    manifest.cases.edge = (bt_gd_orbit_coverage){1, 1, 0};
+    manifest.cases.corner = (bt_gd_orbit_coverage){0, 0, 0};
+    manifest.specials.path = _strdup("specials.json");
+    manifest.specials.sha256 = _strdup("ee");
+    manifest.specials.entries = 1;
+    manifest.specials.count_count = 1;
+    manifest.specials.counts = malloc(sizeof(bt_gd_class_count));
+    manifest.specials.counts[0].solver = _strdup("cherry");
+    manifest.specials.counts[0].class_name = _strdup("flips");
+    manifest.specials.counts[0].rows = 1;
+    return manifest;
+}
+
+static size_t sweep_to_json_null(bt_json_value *(*build)(void)) {
+    size_t k = 0;
+    while (k < GD_OOM_WALK_MAX) {
+        bt_alloc_fail_arm(k);
+        bt_json_value *value = build();
+        bt_alloc_fail_disarm();
+        if (value != NULL) {
+            bt_json_free(value);
+            break;
+        }
+        k += 1;
+    }
+    return k;
+}
+
+static bt_json_value *build_cases_value(void) {
+    bt_gd_cases_file file = oom_cases_file();
+    bt_json_value *value = bt_gd_cases_file_to_json(&file);
+    bt_gd_cases_file_free(&file);
+    return value;
+}
+
+static bt_json_value *build_specials_value(void) {
+    bt_gd_specials_file file = oom_specials_file();
+    bt_json_value *value = bt_gd_specials_file_to_json(&file);
+    bt_gd_specials_file_free(&file);
+    return value;
+}
+
+static bt_json_value *build_manifest_value(void) {
+    bt_gd_manifest manifest = oom_manifest();
+    bt_json_value *value = bt_gd_manifest_to_json(&manifest);
+    bt_gd_manifest_free(&manifest);
+    return value;
+}
+
+BT_TEST(gendata_oom, to_json_serializers_fail_closed_at_every_starved_budget) {
+    bt_json_value *(*builders[3])(void) = {build_cases_value, build_specials_value,
+                                           build_manifest_value};
+    for (size_t at = 0; at < 3; at++) {
+        bt_alloc_fail_arm(0);
+        bt_json_value *starved = builders[at]();
+        bt_alloc_fail_disarm();
+        BT_CHECK(starved == NULL);
+        BT_CHECK(sweep_to_json_null(builders[at]) < GD_OOM_WALK_MAX);
+    }
+}

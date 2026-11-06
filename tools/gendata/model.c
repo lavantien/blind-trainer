@@ -192,6 +192,22 @@ static int set_integer(bt_json_value *object, const char *key, long long value) 
     return bt_json_object_set(object, key, bt_json_new_integer(value));
 }
 
+static int set_member(bt_json_value *object, const char *key, bt_json_value *value) {
+    if (value == NULL || bt_json_object_set(object, key, value) != 0) {
+        bt_json_free(value);
+        return -1;
+    }
+    return 0;
+}
+
+static int push_member(bt_json_value *array, bt_json_value *item) {
+    if (item == NULL || bt_json_array_push(array, item) != 0) {
+        bt_json_free(item);
+        return -1;
+    }
+    return 0;
+}
+
 static int get_string(const bt_json_value *object, const char *key, char **out, char *err,
                       size_t err_len) {
     const bt_json_value *node = bt_json_get(object, key);
@@ -246,8 +262,14 @@ static int get_bool(const bt_json_value *object, const char *key, bool *out, cha
 
 static bt_json_value *string_vec_to_json(char *const *items, size_t count) {
     bt_json_value *array = bt_json_new_array();
+    if (array == NULL) {
+        return NULL;
+    }
     for (size_t i = 0; i < count; i++) {
-        push_string(array, items[i]);
+        if (push_string(array, items[i]) != 0) {
+            bt_json_free(array);
+            return NULL;
+        }
     }
     return array;
 }
@@ -312,18 +334,38 @@ bool bt_gd_vendor_alg_eq(const bt_gd_vendor_alg *a, const bt_gd_vendor_alg *b) {
 
 static bt_json_value *vendor_alg_core_to_json(const bt_gd_vendor_alg *alg) {
     bt_json_value *object = bt_json_new_object();
-    set_string(object, "solver", alg->solver);
-    set_integer(object, "rowid", (long long)alg->rowid);
-    set_string(object, "position", alg->position);
-    set_string(object, "alg", alg->alg);
-    set_integer(object, "qtm", alg->qtm);
-    set_integer(object, "htm", alg->htm);
-    bt_json_object_set(object, "ok", bt_json_new_bool(alg->ok ? 1 : 0));
-    bt_json_object_set(object, "problems", string_vec_to_json(alg->problems, alg->problem_count));
-    bt_json_object_set(object, "notes", string_vec_to_json(alg->notes, alg->note_count));
-    set_string(object, "commutator", alg->commutator);
-    set_string(object, "recon_link", alg->recon_link);
-    set_string(object, "youtube_link", alg->youtube_link);
+    if (object == NULL) {
+        return NULL;
+    }
+    if (set_string(object, "solver", alg->solver) != 0 ||
+        set_integer(object, "rowid", (long long)alg->rowid) != 0 ||
+        set_string(object, "position", alg->position) != 0 ||
+        set_string(object, "alg", alg->alg) != 0 || set_integer(object, "qtm", alg->qtm) != 0 ||
+        set_integer(object, "htm", alg->htm) != 0 ||
+        bt_json_object_set(object, "ok", bt_json_new_bool(alg->ok ? 1 : 0)) != 0) {
+        bt_json_free(object);
+        return NULL;
+    }
+    bt_json_value *problems = string_vec_to_json(alg->problems, alg->problem_count);
+    bt_json_value *notes = string_vec_to_json(alg->notes, alg->note_count);
+    if (problems == NULL || notes == NULL ||
+        bt_json_object_set(object, "problems", problems) != 0) {
+        bt_json_free(problems);
+        bt_json_free(notes);
+        bt_json_free(object);
+        return NULL;
+    }
+    if (bt_json_object_set(object, "notes", notes) != 0) {
+        bt_json_free(notes);
+        bt_json_free(object);
+        return NULL;
+    }
+    if (set_string(object, "commutator", alg->commutator) != 0 ||
+        set_string(object, "recon_link", alg->recon_link) != 0 ||
+        set_string(object, "youtube_link", alg->youtube_link) != 0) {
+        bt_json_free(object);
+        return NULL;
+    }
     return object;
 }
 
@@ -409,31 +451,71 @@ bool bt_gd_cases_file_eq(const bt_gd_cases_file *a, const bt_gd_cases_file *b) {
     return true;
 }
 
+static bt_json_value *case_entry_to_json(const bt_gd_case_entry *entry) {
+    bt_json_value *object = bt_json_new_object();
+    if (object == NULL) {
+        return NULL;
+    }
+    char letter[2] = {entry->t1_letter, '\0'};
+    int ok = set_string(object, "orbit", entry->orbit) == 0 &&
+             set_integer(object, "t1", entry->t1) == 0 &&
+             set_integer(object, "t2", entry->t2) == 0 &&
+             set_string(object, "t1_letter", letter) == 0;
+    letter[0] = entry->t2_letter;
+    if (ok) {
+        ok = set_string(object, "t2_letter", letter) == 0 &&
+             set_string(object, "t1_name", entry->t1_name) == 0 &&
+             set_string(object, "t2_name", entry->t2_name) == 0 &&
+             bt_json_object_set(object, "covered", bt_json_new_bool(entry->covered ? 1 : 0)) == 0;
+    }
+    if (!ok) {
+        bt_json_free(object);
+        return NULL;
+    }
+    bt_json_value *vendor = bt_json_new_array();
+    if (vendor == NULL) {
+        bt_json_free(object);
+        return NULL;
+    }
+    for (size_t v = 0; v < entry->vendor_count; v++) {
+        if (push_member(vendor, vendor_alg_core_to_json(&entry->vendor_algs[v])) != 0) {
+            bt_json_free(vendor);
+            bt_json_free(object);
+            return NULL;
+        }
+    }
+    if (bt_json_object_set(object, "vendor_algs", vendor) != 0) {
+        bt_json_free(vendor);
+        bt_json_free(object);
+        return NULL;
+    }
+    return object;
+}
+
 bt_json_value *bt_gd_cases_file_to_json(const bt_gd_cases_file *file) {
     BT_TRACE_ENTER("gd.model.cases_file_to_json");
     bt_json_value *root = bt_json_new_object();
     bt_json_value *cases = bt_json_new_array();
-    for (size_t i = 0; i < file->count; i++) {
-        const bt_gd_case_entry *entry = &file->cases[i];
-        bt_json_value *object = bt_json_new_object();
-        set_string(object, "orbit", entry->orbit);
-        set_integer(object, "t1", entry->t1);
-        set_integer(object, "t2", entry->t2);
-        char letter[2] = {entry->t1_letter, '\0'};
-        set_string(object, "t1_letter", letter);
-        letter[0] = entry->t2_letter;
-        set_string(object, "t2_letter", letter);
-        set_string(object, "t1_name", entry->t1_name);
-        set_string(object, "t2_name", entry->t2_name);
-        bt_json_object_set(object, "covered", bt_json_new_bool(entry->covered ? 1 : 0));
-        bt_json_value *vendor = bt_json_new_array();
-        for (size_t v = 0; v < entry->vendor_count; v++) {
-            bt_json_array_push(vendor, vendor_alg_core_to_json(&entry->vendor_algs[v]));
-        }
-        bt_json_object_set(object, "vendor_algs", vendor);
-        bt_json_array_push(cases, object);
+    if (root == NULL || cases == NULL) {
+        bt_json_free(cases);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.cases_file_to_json", "root allocation failed");
+        return NULL;
     }
-    bt_json_object_set(root, "cases", cases);
+    for (size_t i = 0; i < file->count; i++) {
+        if (push_member(cases, case_entry_to_json(&file->cases[i])) != 0) {
+            bt_json_free(cases);
+            bt_json_free(root);
+            BT_TRACE_FAIL("gd.model.cases_file_to_json", "case entry dropped");
+            return NULL;
+        }
+    }
+    if (bt_json_object_set(root, "cases", cases) != 0) {
+        bt_json_free(cases);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.cases_file_to_json", "cases member dropped");
+        return NULL;
+    }
     BT_TRACE_EXIT("gd.model.cases_file_to_json");
     return root;
 }
@@ -566,22 +648,46 @@ bool bt_gd_specials_file_eq(const bt_gd_specials_file *a, const bt_gd_specials_f
 
 static bt_json_value *special_core_to_json(const bt_gd_special_entry *special, bool with_class) {
     bt_json_value *object = bt_json_new_object();
-    if (with_class) {
-        set_string(object, "class", special->class_name);
+    if (object == NULL) {
+        return NULL;
     }
-    set_string(object, "solver", special->solver);
-    set_integer(object, "rowid", (long long)special->rowid);
-    set_string(object, "position", special->position);
-    set_string(object, "alg", special->alg);
-    set_integer(object, "qtm", special->qtm);
-    set_integer(object, "htm", special->htm);
-    bt_json_object_set(object, "ok", bt_json_new_bool(special->ok ? 1 : 0));
-    bt_json_object_set(object, "problems",
-                       string_vec_to_json(special->problems, special->problem_count));
-    bt_json_object_set(object, "notes", string_vec_to_json(special->notes, special->note_count));
-    set_string(object, "commutator", special->commutator);
-    set_string(object, "recon_link", special->recon_link);
-    set_string(object, "youtube_link", special->youtube_link);
+    int ok = 1;
+    if (with_class) {
+        ok = set_string(object, "class", special->class_name) == 0;
+    }
+    if (ok) {
+        ok = set_string(object, "solver", special->solver) == 0 &&
+             set_integer(object, "rowid", (long long)special->rowid) == 0 &&
+             set_string(object, "position", special->position) == 0 &&
+             set_string(object, "alg", special->alg) == 0 &&
+             set_integer(object, "qtm", special->qtm) == 0 &&
+             set_integer(object, "htm", special->htm) == 0 &&
+             bt_json_object_set(object, "ok", bt_json_new_bool(special->ok ? 1 : 0)) == 0;
+    }
+    if (!ok) {
+        bt_json_free(object);
+        return NULL;
+    }
+    bt_json_value *problems = string_vec_to_json(special->problems, special->problem_count);
+    bt_json_value *notes = string_vec_to_json(special->notes, special->note_count);
+    if (problems == NULL || notes == NULL ||
+        bt_json_object_set(object, "problems", problems) != 0) {
+        bt_json_free(problems);
+        bt_json_free(notes);
+        bt_json_free(object);
+        return NULL;
+    }
+    if (bt_json_object_set(object, "notes", notes) != 0) {
+        bt_json_free(notes);
+        bt_json_free(object);
+        return NULL;
+    }
+    if (set_string(object, "commutator", special->commutator) != 0 ||
+        set_string(object, "recon_link", special->recon_link) != 0 ||
+        set_string(object, "youtube_link", special->youtube_link) != 0) {
+        bt_json_free(object);
+        return NULL;
+    }
     return object;
 }
 
@@ -589,10 +695,26 @@ bt_json_value *bt_gd_specials_file_to_json(const bt_gd_specials_file *file) {
     BT_TRACE_ENTER("gd.model.specials_file_to_json");
     bt_json_value *root = bt_json_new_object();
     bt_json_value *specials = bt_json_new_array();
-    for (size_t i = 0; i < file->count; i++) {
-        bt_json_array_push(specials, special_core_to_json(&file->specials[i], true));
+    if (root == NULL || specials == NULL) {
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.specials_file_to_json", "root allocation failed");
+        return NULL;
     }
-    bt_json_object_set(root, "specials", specials);
+    for (size_t i = 0; i < file->count; i++) {
+        if (push_member(specials, special_core_to_json(&file->specials[i], true)) != 0) {
+            bt_json_free(specials);
+            bt_json_free(root);
+            BT_TRACE_FAIL("gd.model.specials_file_to_json", "special entry dropped");
+            return NULL;
+        }
+    }
+    if (bt_json_object_set(root, "specials", specials) != 0) {
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.specials_file_to_json", "specials member dropped");
+        return NULL;
+    }
     BT_TRACE_EXIT("gd.model.specials_file_to_json");
     return root;
 }
@@ -663,9 +785,15 @@ int bt_gd_specials_file_from_json(const bt_json_value *value, bt_gd_specials_fil
 
 static bt_json_value *coverage_to_json(const bt_gd_orbit_coverage *coverage) {
     bt_json_value *object = bt_json_new_object();
-    set_integer(object, "total", (long long)coverage->total);
-    set_integer(object, "covered", (long long)coverage->covered);
-    set_integer(object, "uncovered", (long long)coverage->uncovered);
+    if (object == NULL) {
+        return NULL;
+    }
+    if (set_integer(object, "total", (long long)coverage->total) != 0 ||
+        set_integer(object, "covered", (long long)coverage->covered) != 0 ||
+        set_integer(object, "uncovered", (long long)coverage->uncovered) != 0) {
+        bt_json_free(object);
+        return NULL;
+    }
     return object;
 }
 
@@ -680,10 +808,16 @@ static int coverage_from_json(const bt_json_value *object, bt_gd_orbit_coverage 
 
 static bt_json_value *corpus_file_to_json(const bt_gd_corpus_file_entry *entry) {
     bt_json_value *object = bt_json_new_object();
-    set_string(object, "solver", entry->solver);
-    set_string(object, "sheet", entry->sheet);
-    set_integer(object, "rows", (long long)entry->rows);
-    set_string(object, "sha256", entry->sha256);
+    if (object == NULL) {
+        return NULL;
+    }
+    if (set_string(object, "solver", entry->solver) != 0 ||
+        set_string(object, "sheet", entry->sheet) != 0 ||
+        set_integer(object, "rows", (long long)entry->rows) != 0 ||
+        set_string(object, "sha256", entry->sha256) != 0) {
+        bt_json_free(object);
+        return NULL;
+    }
     return object;
 }
 
@@ -767,39 +901,112 @@ bool bt_gd_manifest_eq(const bt_gd_manifest *a, const bt_gd_manifest *b) {
 bt_json_value *bt_gd_manifest_to_json(const bt_gd_manifest *manifest) {
     BT_TRACE_ENTER("gd.model.manifest_to_json");
     bt_json_value *root = bt_json_new_object();
-    set_string(root, "generated_at", manifest->generated_at);
-    set_string(root, "generator", manifest->generator);
-    set_string(root, "synth_params_sha256", manifest->synth_params_sha256);
-    set_string(root, "corpus_sha256", manifest->corpus_sha256);
-    set_integer(root, "corpus_rows", (long long)manifest->corpus_rows);
-    bt_json_value *files = bt_json_new_array();
-    for (size_t i = 0; i < manifest->corpus_file_count; i++) {
-        bt_json_array_push(files, corpus_file_to_json(&manifest->corpus_files[i]));
+    if (root == NULL) {
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "root allocation failed");
+        return NULL;
     }
-    bt_json_object_set(root, "corpus_files", files);
-    set_integer(root, "rows_in_pair_space", (long long)manifest->rows_in_pair_space);
-    set_integer(root, "rows_other_buffer", (long long)manifest->rows_other_buffer);
+    if (set_string(root, "generated_at", manifest->generated_at) != 0 ||
+        set_string(root, "generator", manifest->generator) != 0 ||
+        set_string(root, "synth_params_sha256", manifest->synth_params_sha256) != 0 ||
+        set_string(root, "corpus_sha256", manifest->corpus_sha256) != 0 ||
+        set_integer(root, "corpus_rows", (long long)manifest->corpus_rows) != 0 ||
+        set_integer(root, "rows_in_pair_space", (long long)manifest->rows_in_pair_space) != 0 ||
+        set_integer(root, "rows_other_buffer", (long long)manifest->rows_other_buffer) != 0) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "header member dropped");
+        return NULL;
+    }
+    bt_json_value *files = bt_json_new_array();
+    if (files == NULL) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "files array allocation failed");
+        return NULL;
+    }
+    for (size_t i = 0; i < manifest->corpus_file_count; i++) {
+        if (push_member(files, corpus_file_to_json(&manifest->corpus_files[i])) != 0) {
+            bt_json_free(files);
+            bt_json_free(root);
+            BT_TRACE_FAIL("gd.model.manifest_to_json", "corpus file entry dropped");
+            return NULL;
+        }
+    }
+    if (bt_json_object_set(root, "corpus_files", files) != 0) {
+        bt_json_free(files);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "corpus_files member dropped");
+        return NULL;
+    }
     bt_json_value *cases = bt_json_new_object();
-    set_string(cases, "path", manifest->cases.path);
-    set_string(cases, "sha256", manifest->cases.sha256);
-    set_integer(cases, "entries", (long long)manifest->cases.entries);
-    bt_json_object_set(cases, "edge", coverage_to_json(&manifest->cases.edge));
-    bt_json_object_set(cases, "corner", coverage_to_json(&manifest->cases.corner));
-    bt_json_object_set(root, "cases", cases);
+    if (cases == NULL) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "cases object allocation failed");
+        return NULL;
+    }
+    if (set_string(cases, "path", manifest->cases.path) != 0 ||
+        set_string(cases, "sha256", manifest->cases.sha256) != 0 ||
+        set_integer(cases, "entries", (long long)manifest->cases.entries) != 0 ||
+        set_member(cases, "edge", coverage_to_json(&manifest->cases.edge)) != 0 ||
+        set_member(cases, "corner", coverage_to_json(&manifest->cases.corner)) != 0) {
+        bt_json_free(cases);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "cases member dropped");
+        return NULL;
+    }
+    if (bt_json_object_set(root, "cases", cases) != 0) {
+        bt_json_free(cases);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "cases section dropped");
+        return NULL;
+    }
     bt_json_value *specials = bt_json_new_object();
-    set_string(specials, "path", manifest->specials.path);
-    set_string(specials, "sha256", manifest->specials.sha256);
-    set_integer(specials, "entries", (long long)manifest->specials.entries);
+    if (specials == NULL) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "specials object allocation failed");
+        return NULL;
+    }
+    if (set_string(specials, "path", manifest->specials.path) != 0 ||
+        set_string(specials, "sha256", manifest->specials.sha256) != 0 ||
+        set_integer(specials, "entries", (long long)manifest->specials.entries) != 0) {
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "specials member dropped");
+        return NULL;
+    }
     bt_json_value *counts = bt_json_new_array();
+    if (counts == NULL) {
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "counts array allocation failed");
+        return NULL;
+    }
     for (size_t i = 0; i < manifest->specials.count_count; i++) {
         bt_json_value *count = bt_json_new_object();
-        set_string(count, "solver", manifest->specials.counts[i].solver);
-        set_string(count, "class", manifest->specials.counts[i].class_name);
-        set_integer(count, "rows", (long long)manifest->specials.counts[i].rows);
-        bt_json_array_push(counts, count);
+        if (count == NULL ||
+            set_string(count, "solver", manifest->specials.counts[i].solver) != 0 ||
+            set_string(count, "class", manifest->specials.counts[i].class_name) != 0 ||
+            set_integer(count, "rows", (long long)manifest->specials.counts[i].rows) != 0 ||
+            bt_json_array_push(counts, count) != 0) {
+            bt_json_free(count);
+            bt_json_free(counts);
+            bt_json_free(specials);
+            bt_json_free(root);
+            BT_TRACE_FAIL("gd.model.manifest_to_json", "class count entry dropped");
+            return NULL;
+        }
     }
-    bt_json_object_set(specials, "counts", counts);
-    bt_json_object_set(root, "specials", specials);
+    if (bt_json_object_set(specials, "counts", counts) != 0) {
+        bt_json_free(counts);
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "counts member dropped");
+        return NULL;
+    }
+    if (bt_json_object_set(root, "specials", specials) != 0) {
+        bt_json_free(specials);
+        bt_json_free(root);
+        BT_TRACE_FAIL("gd.model.manifest_to_json", "specials section dropped");
+        return NULL;
+    }
     BT_TRACE_EXIT("gd.model.manifest_to_json");
     return root;
 }
