@@ -23,6 +23,7 @@ Lanes over a shared checkout, no worktrees: app (src/app, tests/unit/app), data 
 - Five lane disposals for 30 minute silence (app twice, ga twice, mut once), each relaunched from its progress file. Two of them had run their whole life without a single progress line, so briefs now demand a first line within 5 minutes.
 - Core's fault-seam routing made bt_trace depend on the alloc object and broke the ws fixture link. mut repaired that fixture in da6a7d3, core owns the full link-list sweep.
 - The 500M gendata probe proved corner N-I solvable inside the shape limits, so the hub-budget failure was search-order starvation, fixed by the mirrored-inverse derivation 010cf3b. Regen covered 818 of 818, the superset check found exactly the 1 derived gain and zero regressions.
+- Third real defect of the wave: bt_strbuf_reserve hung forever on a zero-cap strbuf after a failed init, because cap doubling never leaves 0. gendata3 applied the minimal guard in src/common/strbuf.c (flagged, outside its set) and core4 reviews plus pins it with a direct red-green suite test.
 
 ## current state, 2026-11-06 09:0x local
 
