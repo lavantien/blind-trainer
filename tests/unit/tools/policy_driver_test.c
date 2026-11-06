@@ -220,14 +220,18 @@ static void spawn_fixture(const char *root, const char *config, const char *cons
                           int want_code, const char *want_out, const char *want_err) {
     char exe[POLICY_UTIL_PATH_MAX];
     policy_util_join(exe, root, "pol-bin/policy.exe");
+    char saved_config[POLICY_UTIL_PATH_MAX] = {0};
     const char *saved = getenv("BT_CONFIG");
+    if (saved != NULL && saved[0] != '\0') {
+        snprintf(saved_config, sizeof saved_config, "%s", saved);
+    }
     BT_CHECK_EQ(_putenv_s("BT_CONFIG", config), 0);
     char out[16384];
     char err[4096];
     int code = -1;
     int rc = bt_spawn_capture(exe, argv, root, 120000, &code, out, sizeof out, err, sizeof err);
-    if (saved != NULL && saved[0] != '\0') {
-        BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved), 0);
+    if (saved_config[0] != '\0') {
+        BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved_config), 0);
     } else {
         BT_CHECK_EQ(_putenv_s("BT_CONFIG", ""), 0);
     }
