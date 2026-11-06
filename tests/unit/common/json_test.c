@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/strbuf.h"
@@ -316,4 +318,97 @@ BT_TEST(json, object_growth_paths_survive_replace_and_extend) {
     bt_json_free(reparsed);
     bt_strbuf_free(&sb);
     bt_json_free(object);
+}
+
+BT_TEST(json, backspace_formfeed_and_carriage_escapes_decode) {
+    bt_json_value *value = NULL;
+    parse_ok("\"\\b\\f\\r\"", &value);
+    BT_CHECK_EQ(value->type, BT_JSON_STRING);
+    BT_CHECK(strcmp(value->as.string, "\b\f\r") == 0);
+    bt_json_free(value);
+}
+
+BT_TEST(json, lowercase_hex_escapes_decode) {
+    bt_json_value *value = NULL;
+    parse_ok("\"\\u00e6\"", &value);
+    BT_CHECK(strcmp(value->as.string, "\xC3\xA6") == 0);
+    bt_json_free(value);
+}
+
+BT_TEST(json, malformed_unicode_escapes_are_rejected) {
+    parse_err("\"\\u00g0\"", 1, 6, "invalid hex");
+    parse_err("\"\\u00", 1, 6, "unexpected end");
+    parse_err("\"\\ud800\\uzzzz\"", 1, 10, "invalid hex");
+}
+
+BT_TEST(json, malformed_escapes_and_unterminated_strings_are_rejected) {
+    parse_err("\"\\", 1, 3, "unterminated escape");
+    parse_err("\"\\q\"", 1, 3, "invalid escape");
+    parse_err("\"abc", 1, 5, "unterminated string");
+}
+
+BT_TEST(json, truncated_multibyte_sequences_are_rejected) {
+    parse_err("\"\xC3", 1, 2, "utf-8");
+    parse_err("\"\xF0\x80\x80\x80", 1, 2, "utf-8");
+}
+
+BT_TEST(json, unterminated_containers_are_rejected) {
+    parse_err("{\"a\":1", 1, 7, "unexpected end inside object");
+    parse_err("[1", 1, 3, "unexpected end inside array");
+}
+
+BT_TEST(json, integer_or_truncates_and_falls_back) {
+    bt_json_value *value = NULL;
+    parse_ok("2.9", &value);
+    BT_CHECK(bt_json_integer_or(value, -9) == 2);
+    bt_json_free(value);
+    parse_ok("\"s\"", &value);
+    BT_CHECK(bt_json_integer_or(value, 5) == 5);
+    bt_json_free(value);
+    BT_CHECK(bt_json_integer_or(NULL, -4) == -4);
+}
+
+BT_TEST(json, builder_guards_reject_invalid_arguments) {
+    bt_json_value *array = bt_json_new_array();
+    bt_json_value *object = bt_json_new_object();
+    bt_json_value *number = bt_json_new_integer(3);
+    BT_CHECK(array != NULL && object != NULL && number != NULL);
+    BT_CHECK_EQ(bt_json_array_push(NULL, number), -1);
+    BT_CHECK_EQ(bt_json_array_push(array, NULL), -1);
+    BT_CHECK_EQ(bt_json_array_push(number, number), -1);
+    BT_CHECK_EQ(bt_json_object_set(NULL, "k", number), -1);
+    BT_CHECK_EQ(bt_json_object_set(object, NULL, number), -1);
+    BT_CHECK_EQ(bt_json_object_set(object, "k", NULL), -1);
+    BT_CHECK_EQ(bt_json_object_set(array, "k", number), -1);
+    BT_CHECK(bt_json_get(NULL, "k") == NULL);
+    BT_CHECK(bt_json_get(array, "k") == NULL);
+    BT_CHECK(bt_json_get(object, NULL) == NULL);
+    bt_json_free(array);
+    bt_json_free(object);
+    bt_json_free(number);
+}
+
+BT_TEST(json, serialize_escapes_every_special_byte) {
+    bt_json_value *value = bt_json_new_string("q\"w\\e\br\nt\ff\vg\rh\ti");
+    BT_CHECK(value != NULL);
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    BT_CHECK_EQ(bt_json_serialize(value, &sb), 0);
+    BT_CHECK(strcmp(sb.data, "\"q\\\"w\\\\e\\br\\nt\\ff\\u000bg\\rh\\ti\"") == 0);
+    bt_strbuf_free(&sb);
+    bt_json_free(value);
+}
+
+BT_TEST(json, serialize_rejects_non_finite_and_missing_values) {
+    bt_strbuf sb;
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 16), 0);
+    bt_json_value *inf = bt_json_new_number(HUGE_VAL);
+    bt_json_value *not_a_number = bt_json_new_number(nan(""));
+    BT_CHECK(inf != NULL && not_a_number != NULL);
+    BT_CHECK_EQ(bt_json_serialize(inf, &sb), -1);
+    BT_CHECK_EQ(bt_json_serialize(not_a_number, &sb), -1);
+    BT_CHECK_EQ(bt_json_serialize(NULL, &sb), -1);
+    bt_json_free(inf);
+    bt_json_free(not_a_number);
+    bt_strbuf_free(&sb);
 }

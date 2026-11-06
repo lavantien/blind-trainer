@@ -1,3 +1,4 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/config.h"
 
@@ -114,4 +115,38 @@ BT_TEST(config, default_hub_loads_without_env_override) {
     BT_CHECK_EQ(bt_config_int(cfg, "trace.ring_bytes", &ring_bytes), 0);
     BT_CHECK_EQ(ring_bytes, 65536);
     clear_config_env();
+}
+
+BT_TEST(config, value_lookup_rejects_null_and_malformed_paths) {
+    load_fixture();
+    const bt_json_value *cfg = bt_config_load();
+    BT_CHECK(bt_config_value(NULL, "app") == NULL);
+    BT_CHECK(bt_config_value(cfg, NULL) == NULL);
+    BT_CHECK(bt_config_value(cfg, "app..reps") == NULL);
+    BT_CHECK(bt_config_value(cfg, ".app") == NULL);
+    BT_CHECK(bt_config_value(cfg, "app.reps.x") == NULL);
+    char long_path[256];
+    memset(long_path, 'k', sizeof long_path - 1);
+    long_path[sizeof long_path - 1] = '\0';
+    BT_CHECK(bt_config_value(cfg, long_path) == NULL);
+}
+
+BT_TEST(config, int_rejects_fractional_and_f64_rejects_non_numbers) {
+    load_fixture();
+    const bt_json_value *cfg = bt_config_load();
+    long long number = 0;
+    BT_CHECK_EQ(bt_config_int(cfg, "app.ratio", &number), -1);
+    double value = 0;
+    BT_CHECK_EQ(bt_config_f64(cfg, "app.title", &value), -1);
+    BT_CHECK_EQ(bt_config_f64(cfg, "app.on", &value), -1);
+}
+
+BT_TEST(config, try_load_reports_read_allocation_starvation) {
+    write_fixture("config_oom.json", "{\"k\":1}");
+    bt_json_value *value = NULL;
+    bt_alloc_fail_arm(0);
+    int rc = bt_config_try_load("build/test-tmp/config_oom.json", &value);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(rc, -1);
+    BT_CHECK(value == NULL);
 }

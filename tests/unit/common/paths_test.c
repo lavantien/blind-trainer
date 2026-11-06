@@ -188,3 +188,98 @@ BT_TEST(paths, join_keeps_the_base_prefix_on_root_push) {
     bt_paths_join("\\\\srv\\share\\data", "leaf", out);
     BT_CHECK(strcmp(out, "\\\\srv\\share\\data/leaf") == 0);
 }
+
+BT_TEST(paths, join_treats_null_push_as_the_base_copy) {
+    char out[BT_PATH_MAX];
+    bt_paths_join("R:/ws", NULL, out);
+    BT_CHECK(strcmp(out, "R:/ws") == 0);
+    bt_paths_join(NULL, NULL, out);
+    BT_CHECK(strcmp(out, "") == 0);
+}
+
+BT_TEST(paths, rooted_push_without_a_prefix_base_passes_through) {
+    char out[BT_PATH_MAX];
+    bt_paths_join(NULL, "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+    bt_paths_join("", "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+    bt_paths_join("relative", "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+}
+
+BT_TEST(paths, unc_base_without_a_share_loses_the_prefix) {
+    char out[BT_PATH_MAX];
+    bt_paths_join("//server", "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+    bt_paths_join("//server/", "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+    bt_paths_join("//server//share", "/leaf", out);
+    BT_CHECK(strcmp(out, "/leaf") == 0);
+}
+
+BT_TEST(paths, join_overflow_truncates_at_the_path_max) {
+    char big[BT_PATH_MAX];
+    memset(big, 'a', sizeof big - 1);
+    big[sizeof big - 1] = '\0';
+    char out[BT_PATH_MAX];
+    bt_paths_join(big, "leaf", out);
+    BT_CHECK_EQ(strlen(out), BT_PATH_MAX - 1);
+}
+
+typedef struct {
+    char name[16];
+    char old[BT_PATH_MAX];
+} paths_env;
+
+static void paths_env_save(paths_env *guard, const char *name) {
+    snprintf(guard->name, sizeof guard->name, "%s", name);
+    const char *current = getenv(name);
+    snprintf(guard->old, sizeof guard->old, "%s", current ? current : "");
+}
+
+static void paths_env_restore(const paths_env *guard) {
+    _putenv_s(guard->name, guard->old);
+}
+
+BT_TEST(paths, user_root_falls_back_to_tmp_then_slash_tmp) {
+    paths_env temp;
+    paths_env_save(&temp, "TEMP");
+    paths_env tmp;
+    paths_env_save(&tmp, "TMP");
+    _putenv_s("TEMP", "");
+    _putenv_s("TMP", "Q:/tmproot");
+    char out[BT_PATH_MAX];
+    bt_paths_user_root_from(NULL, NULL, NULL, out);
+    BT_CHECK(strcmp(out, "Q:/tmproot/blind-trainer") == 0);
+    _putenv_s("TMP", "");
+    bt_paths_user_root_from(NULL, NULL, NULL, out);
+    BT_CHECK(strcmp(out, "/tmp/blind-trainer") == 0);
+    paths_env_restore(&tmp);
+    paths_env_restore(&temp);
+}
+
+BT_TEST(paths, user_root_reads_the_process_environment) {
+    char out[BT_PATH_MAX];
+    bt_paths_user_root(out);
+    BT_CHECK(strstr(out, "/blind-trainer") != NULL);
+}
+
+BT_TEST(paths, config_path_joins_the_override_onto_the_workspace_root) {
+    paths_env guard;
+    paths_env_save(&guard, "BT_CONFIG");
+    _putenv_s("BT_CONFIG", "alt/hub.json");
+    char out[BT_PATH_MAX];
+    bt_paths_config_path(out);
+    const char *suffix = "/alt/hub.json";
+    size_t len = strlen(out);
+    BT_CHECK(len >= strlen(suffix));
+    BT_CHECK(strcmp(out + len - strlen(suffix), suffix) == 0);
+    paths_env_restore(&guard);
+}
+
+BT_TEST(paths, write_atomic_fails_on_unopenable_and_directory_targets) {
+    BT_CHECK_EQ(bt_paths_write_atomic("build/test-tmp/absent-dir/out.json", "x", 1), -1);
+    make_dir("build/test-tmp/as-dir.json");
+    BT_CHECK_EQ(bt_paths_write_atomic("build/test-tmp/as-dir.json", "x", 1), -1);
+    _rmdir("build/test-tmp/as-dir.json");
+}
