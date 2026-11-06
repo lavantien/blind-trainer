@@ -313,16 +313,22 @@ BT_TEST(seedpack_errors, normalizer_cube_dialect_shapes) {
 
 BT_TEST(seedpack_errors, normalizer_cube_rejects_each_bad_shape) {
     const char *bad[] = {
-        "8R",     "[R U*3", "[R [U]*2]", "[R U]3", "[R U]*3 x", "(R)0",
-        "(R)100", "(R",     ") R",       "R )",    "(",
+        "8R",        "[R U*3",
+        "[R [U]*2]", "[R U]3",
+        "[R U]*3 x", "(R)0",
+        "(R)100",    "(R",
+        ") R",       "R )",
+        "(",         ",",
+        "[R]*",      "[R]*10000000000000000000000000000000",
     };
     bt_normalize_error_kind kinds[] = {
         BT_NORMALIZE_ERR_UNKNOWN_TOKEN, BT_NORMALIZE_ERR_BAD_REPEAT, BT_NORMALIZE_ERR_BAD_REPEAT,
         BT_NORMALIZE_ERR_BAD_REPEAT,    BT_NORMALIZE_ERR_BAD_REPEAT, BT_NORMALIZE_ERR_BAD_REPEAT,
         BT_NORMALIZE_ERR_BAD_REPEAT,    BT_NORMALIZE_ERR_UNBALANCED, BT_NORMALIZE_ERR_UNBALANCED,
-        BT_NORMALIZE_ERR_UNBALANCED,    BT_NORMALIZE_ERR_UNBALANCED,
+        BT_NORMALIZE_ERR_UNBALANCED,    BT_NORMALIZE_ERR_UNBALANCED, BT_NORMALIZE_ERR_EMPTY_ALG,
+        BT_NORMALIZE_ERR_BAD_REPEAT,    BT_NORMALIZE_ERR_BAD_REPEAT,
     };
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 14; i++) {
         bt_normalized normalized;
         bt_normalize_error err;
         err.kind = BT_NORMALIZE_ERR_EMPTY_ALG;
@@ -377,8 +383,9 @@ BT_TEST(seedpack_errors, normalizer_sq1_dialect_shapes) {
         {"(U) / (1,0)", "/ (1,0)", "auf prefix stripped"},
         {"(1,0) *", "(1,0)", "equator marker"},
         {"(2,-1) / (-4,5)", "(2,-1) / (-4,5)", NULL},
+        {"(U  D2) / (1,0)", "/ (1,0)", "auf prefix stripped: (U  D2)"},
     };
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 9; i++) {
         bt_normalized normalized;
         bt_normalize_error err;
         BT_CHECK(bt_seedpack_normalize_alg("sq1", ok_cases[i].raw, &normalized, &err) == true);
@@ -416,8 +423,11 @@ BT_TEST(seedpack_errors, normalizer_sq1_rejects_each_bad_shape) {
         {"", BT_NORMALIZE_ERR_EMPTY_ALG},
         {"   ", BT_NORMALIZE_ERR_EMPTY_ALG},
         {"(U)", BT_NORMALIZE_ERR_EMPTY_ALG},
+        {"(,3)", BT_NORMALIZE_ERR_UNKNOWN_TOKEN},
+        {"(U3) / (1,0)", BT_NORMALIZE_ERR_UNKNOWN_TOKEN},
+        {"5", BT_NORMALIZE_ERR_UNKNOWN_TOKEN},
     };
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 15; i++) {
         bt_normalized normalized;
         bt_normalize_error err;
         err.kind = BT_NORMALIZE_ERR_EMPTY_ALG;

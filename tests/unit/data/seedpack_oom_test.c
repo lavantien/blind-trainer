@@ -110,3 +110,120 @@ BT_TEST(seedpack_oom, parse_pack_skips_whitespace_only_lines_between_rows) {
     BT_CHECK_EQ(rows.items[0].case_key, "T");
     bt_seed_rows_free(&rows);
 }
+
+BT_TEST(seedpack_oom, group_repeat_expansion_fails_closed_under_each_allocation_failure) {
+    for (size_t ok = 0; ok < 18; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("3x3", "(R U)3", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "R U R U R U");
+        }
+        bt_normalized_free(&normalized);
+    }
+    bt_normalized normalized;
+    bt_normalize_error err;
+    BT_CHECK(bt_seedpack_normalize_alg("3x3", "(R U)3", &normalized, &err));
+    BT_CHECK_EQ(normalized.alg, "R U R U R U");
+    bt_normalized_free(&normalized);
+}
+
+BT_TEST(seedpack_oom, token_growth_and_the_x_note_fail_closed) {
+    for (size_t ok = 0; ok < 24; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("3x3", "X R U R U R U R U R U R U R U R U R U",
+                                              &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "x R U R U R U R U R U R U R U R U R U");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
+    bt_normalized normalized;
+    bt_normalize_error err;
+    BT_CHECK(bt_seedpack_normalize_alg("3x3", "X R U R U R U R U R U R U R U R U R U", &normalized,
+                                       &err));
+    BT_CHECK_EQ(normalized.alg, "x R U R U R U R U R U R U R U R U R U");
+    BT_CHECK((int)normalized.note_count > 0);
+    bt_normalized_free(&normalized);
+}
+
+BT_TEST(seedpack_oom, chain_split_and_prose_paths_fail_closed) {
+    for (size_t ok = 0; ok < 12; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("3x3", "R U -> drill note", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "R U");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
+    for (size_t ok = 0; ok < 8; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("3x3", "rotate the whole cube", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
+    bt_normalized normalized;
+    bt_normalize_error err;
+    BT_CHECK(bt_seedpack_normalize_alg("3x3", "R U -> drill note", &normalized, &err));
+    BT_CHECK_EQ(normalized.alg, "R U");
+    bt_normalized_free(&normalized);
+}
+
+BT_TEST(seedpack_oom, sq1_notes_and_part_growth_fail_closed) {
+    for (size_t ok = 0; ok < 15; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("sq1", "(U  D2) (0,-6)", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "(0,6)");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
+    for (size_t ok = 0; ok < 13; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("sq1", "0,-6 /", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "(0,6) /");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
+    for (size_t ok = 0; ok < 31; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("sq1", "////////////////////", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "/ / / / / / / / / / / / / / / / / / / /");
+        }
+        bt_normalized_free(&normalized);
+    }
+    bt_normalized normalized;
+    bt_normalize_error err;
+    BT_CHECK(bt_seedpack_normalize_alg("sq1", "0,-6 /", &normalized, &err));
+    BT_CHECK_EQ(normalized.alg, "(0,6) /");
+    bt_normalized_free(&normalized);
+}
