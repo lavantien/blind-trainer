@@ -42,10 +42,13 @@ static const char *dispatch_config_with_title(const char *tag, const char *title
     static char config_path[TA_PATH_MAX];
     const char *dir = ta_temp_dir("dispatch", tag);
     snprintf(config_path, sizeof config_path, "%s/config.json", dir);
-    char text[512];
+    char text[1024];
     snprintf(text, sizeof text,
              "{\"app\":{\"window\":{\"width\":320,\"height\":240,\"title\":\"%s\"},"
-             "\"memo\":{\"cadence_ms\":800,\"mode\":\"per-orbit\"},\"drill\":{\"reps\":4}}}",
+             "\"memo\":{\"cadence_ms\":800,\"mode\":\"per-orbit\"},\"drill\":{\"reps\":4}},"
+             "\"srs\":{\"fsrs\":{\"weights\":[0.4,0.2,1.0,3.0,15.0,7.0,0.5,1.4,0.004,1.5,0.1,"
+             "1.0,1.9,0.1,0.3,2.2,0.2,3.0,0.5],\"request_retention\":0.9,"
+             "\"interval_clamp_days\":[1,365]}}}",
              title);
     ta_write_file(config_path, text);
     return config_path;
@@ -222,7 +225,7 @@ static unsigned __stdcall dispatch_digit_poster(void *raw) {
         if (bt_app_driver_key_down(hwnd, probe->vk) && bt_app_driver_key_up(hwnd, probe->vk)) {
             probe->posted = 1;
         }
-        if (attempt >= 10) {
+        if (attempt >= 20) {
             probe->closed = bt_app_driver_close_request(hwnd);
         }
         Sleep(300);
