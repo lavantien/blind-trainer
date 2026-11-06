@@ -193,15 +193,15 @@ BT_TEST(alg, parse_token_rejects_inner_wides_inner_slices_and_bad_suffixes) {
 BT_TEST(alg, parse_reports_the_offending_token) {
     bt_alg alg;
     bt_alg_init(&alg);
-    char err[64];
-    BT_CHECK(!bt_alg_parse("R X", &alg, err, sizeof err));
-    BT_CHECK_EQ(err, "X");
-    char long_token[80];
-    memset(long_token, 'R', sizeof long_token - 1);
-    long_token[sizeof long_token - 1] = '\0';
-    BT_CHECK(!bt_alg_parse(long_token, &alg, err, sizeof err));
-    BT_CHECK_EQ(strlen(err), (size_t)63);
-    BT_CHECK_EQ(err[0], 'R');
+    char err_token[64];
+    BT_CHECK(!bt_alg_parse("R X", &alg, err_token, sizeof err_token));
+    BT_CHECK_EQ(err_token, "X");
+    char text[80];
+    memset(text, 'R', sizeof text - 1);
+    text[sizeof text - 1] = '\0';
+    BT_CHECK(!bt_alg_parse(text, &alg, err_token, sizeof err_token));
+    BT_CHECK_EQ(strlen(err_token), (size_t)63);
+    BT_CHECK_EQ(err_token[0], 'R');
     bt_alg_free(&alg);
 }
 
@@ -275,12 +275,12 @@ BT_TEST(alg, push_and_parse_report_injected_allocation_failures) {
 BT_TEST(alg, parse_keeps_a_huge_token_whole_inside_a_roomy_error_buffer) {
     bt_alg alg;
     bt_alg_init(&alg);
-    char err[128];
-    char long_token[72];
-    memset(long_token, 'R', sizeof long_token - 1);
-    long_token[sizeof long_token - 1] = '\0';
-    BT_CHECK(!bt_alg_parse(long_token, &alg, err, sizeof err));
-    BT_CHECK_EQ(strlen(err), (size_t)71);
+    char err_token[128];
+    char text[72];
+    memset(text, 'R', sizeof text - 1);
+    text[sizeof text - 1] = '\0';
+    BT_CHECK(!bt_alg_parse(text, &alg, err_token, sizeof err_token));
+    BT_CHECK_EQ(strlen(err_token), (size_t)71);
     bt_alg_free(&alg);
 }
 
