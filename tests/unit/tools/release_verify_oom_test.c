@@ -3,10 +3,16 @@
 #include <string.h>
 
 #include "common/alloc.h"
+#include "release-verify/exec.h"
 #include "release-verify/inflate.h"
 #include "release-verify/lib.h"
 #include "release-verify/png.h"
 #include "unit/core/death_test.h"
+
+enum {
+    OOM_STAGE_ALLOC_SLOTS = 6,
+    OOM_STAGING_ALLOC_SLOTS = 11,
+};
 
 static void oom_scratch(const char *tag, char out[BT_PATH_MAX]) {
     char base[BT_PATH_MAX];
@@ -295,6 +301,64 @@ BT_TEST(release_verify_oom, scrub_env_aborts_when_its_allocations_starve) {
         snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
         _putenv(setting);
         bt_death_expect_abort("release_verify_oom.scrub_env", "out of memory", oom_scrub_child);
+    }
+    _putenv("RV_OOM_K=");
+}
+
+static void oom_env_set_child(void) {
+    const char *args[] = {"a", NULL};
+    const char *vars[] = {"V=1", NULL};
+    bt_rv_env_pair extras[] = {{.key = "NEW", .value = "x"}};
+    bt_rv_child_spec spec;
+    const char *raw = getenv("RV_OOM_K");
+    size_t k = raw != NULL ? (size_t)strtoul(raw, NULL, 10) : 0;
+    bt_alloc_fail_arm(k);
+    bt_rv_stage_spec("prog", args, NULL, vars, extras, 1, &spec);
+}
+
+BT_TEST(release_verify_oom, stage_spec_aborts_when_its_env_growth_starves) {
+    for (size_t k = 0; k < OOM_STAGE_ALLOC_SLOTS; k++) {
+        char setting[32];
+        snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
+        _putenv(setting);
+        bt_death_expect_abort("release_verify_oom.env_set", "out of memory", oom_env_set_child);
+    }
+    _putenv("RV_OOM_K=");
+}
+
+static void oom_staging_child(void) {
+    char root[BT_PATH_MAX];
+    oom_scratch("staging-death", root);
+    char exe_file[BT_PATH_MAX];
+    rv_util_join(exe_file, root, "app.exe");
+    rv_util_write(exe_file, "x");
+    char config_dir[BT_PATH_MAX];
+    rv_util_join(config_dir, root, "config");
+    rv_util_mkdir_p(config_dir);
+    char config_file[BT_PATH_MAX];
+    rv_util_join(config_file, config_dir, "config.json");
+    rv_util_write(config_file, "x");
+    char fonts_dir[BT_PATH_MAX];
+    rv_util_join(fonts_dir, root, "fonts");
+    rv_util_mkdir_p(fonts_dir);
+    char font_file[BT_PATH_MAX];
+    rv_util_join(font_file, fonts_dir, "f.ttf");
+    rv_util_write(font_file, "x");
+    bt_rv_file_set set = {0};
+    char err[BT_RV_ERR_MAX];
+    const char *raw = getenv("RV_OOM_K");
+    size_t k = raw != NULL ? (size_t)strtoul(raw, NULL, 10) : 0;
+    bt_alloc_fail_arm(k);
+    bt_rv_staging_file_set(root, "app.exe", "config/config.json", "fonts", &set, err, sizeof err);
+}
+
+BT_TEST(release_verify_oom, staging_file_set_aborts_when_its_pairs_pushes_starve) {
+    for (size_t k = 0; k < OOM_STAGING_ALLOC_SLOTS; k++) {
+        char setting[32];
+        snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
+        _putenv(setting);
+        bt_death_expect_abort("release_verify_oom.staging_files", "out of memory",
+                              oom_staging_child);
     }
     _putenv("RV_OOM_K=");
 }
