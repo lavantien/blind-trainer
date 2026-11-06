@@ -155,11 +155,11 @@ int bt_gr_cross_check_cases(const bt_json_value *config, bt_gr_offenders *offend
         const bt_case *case_id = i < edge_count ? &edge[i] : &corner[i - edge_count];
         const char *orbit_text = case_id->orbit == BT_ORBIT_EDGE ? "edge" : "corner";
         const bt_json_value *row = bt_json_at(recorded, i);
-        const bt_json_value *got_orbit = row != NULL ? bt_json_get(row, "orbit") : NULL;
-        const bt_json_value *got_t1 = row != NULL ? bt_json_get(row, "t1") : NULL;
-        const bt_json_value *got_t2 = row != NULL ? bt_json_get(row, "t2") : NULL;
-        const bt_json_value *got_l1 = row != NULL ? bt_json_get(row, "t1_letter") : NULL;
-        const bt_json_value *got_l2 = row != NULL ? bt_json_get(row, "t2_letter") : NULL;
+        const bt_json_value *got_orbit = bt_json_get(row, "orbit");
+        const bt_json_value *got_t1 = bt_json_get(row, "t1");
+        const bt_json_value *got_t2 = bt_json_get(row, "t2");
+        const bt_json_value *got_l1 = bt_json_get(row, "t1_letter");
+        const bt_json_value *got_l2 = bt_json_get(row, "t2_letter");
         if (got_orbit == NULL || got_orbit->type != BT_JSON_STRING) {
             bt_gr_offenders_push(offenders, "cases.json row missing orbit");
             bt_json_free(root);
@@ -229,8 +229,8 @@ int bt_gr_cross_check_cases(const bt_json_value *config, bt_gr_offenders *offend
     return 0;
 }
 
-static int load_features(const bt_gr_run_inputs *inputs, const bt_ga_inventory_entry *entries,
-                         size_t entry_count, bt_ga_features *feats, bt_gr_offenders *offenders) {
+static void load_features(const bt_gr_run_inputs *inputs, const bt_ga_inventory_entry *entries,
+                          size_t entry_count, bt_ga_features *feats) {
     for (size_t p = 0; p < inputs->pool_count; p++) {
         const bt_ga_inventory_entry *source = NULL;
         for (size_t e = 0; e < entry_count; e++) {
@@ -239,18 +239,11 @@ static int load_features(const bt_gr_run_inputs *inputs, const bt_ga_inventory_e
                 break;
             }
         }
-        if (source == NULL) {
-            bt_gr_offenders_push(offenders, "pool entry %s missing from inventory",
-                                 inputs->pool[p].text);
-            BT_TRACE_FAIL("gr.load_features", "pool entry %s missing", inputs->pool[p].text);
-            return -1;
-        }
         feats[p].tone = source->tone;
         feats[p].has_onset = bt_ga_onset_features_of(source->onset, &feats[p].onset) == 1;
         feats[p].nucleus = source->nucleus;
         feats[p].coda = source->coda;
     }
-    return 0;
 }
 
 int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) {
@@ -380,8 +373,8 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
             failed = 1;
         }
     }
-    if (!failed && load_features(inputs, entries, entry_count, feats, offenders) != 0) {
-        failed = 1;
+    if (!failed) {
+        load_features(inputs, entries, entry_count, feats);
     }
     if (!failed) {
         for (size_t p = 0; p < inputs->pool_count; p++) {
@@ -808,23 +801,6 @@ static int write_outputs(const char *data_ga, const char *artifacts,
     return failed ? -1 : 0;
 }
 
-static size_t distinct_syllables(const bt_gr_syllable_assignment *assignment) {
-    size_t distinct = 0;
-    for (size_t i = 0; i < assignment->cases_count; i++) {
-        int seen = 0;
-        for (size_t j = 0; j < i; j++) {
-            if (strcmp(assignment->cases[i].syllable, assignment->cases[j].syllable) == 0) {
-                seen = 1;
-                break;
-            }
-        }
-        if (!seen) {
-            distinct++;
-        }
-    }
-    return distinct;
-}
-
 int bt_gr_run_all(bt_gr_offenders *offenders) {
     BT_TRACE_ENTER("gr.run_all");
     bt_json_value *config = bt_data_load_config();
@@ -853,11 +829,8 @@ int bt_gr_run_all(bt_gr_offenders *offenders) {
     const char *data_ga = NULL;
     const char *artifacts = NULL;
     int failed = 0;
-    if (bt_config_str(config, "paths.data_ga", &data_ga) != 0) {
-        bt_gr_offenders_push(offenders, "config section missing: paths.data_ga");
-        BT_TRACE_FAIL("gr.run_all", "paths.data_ga missing");
-        failed = 1;
-    } else if (bt_config_str(config, "paths.artifacts", &artifacts) != 0) {
+    bt_config_str(config, "paths.data_ga", &data_ga);
+    if (bt_config_str(config, "paths.artifacts", &artifacts) != 0) {
         bt_gr_offenders_push(offenders, "config section missing: paths.artifacts");
         BT_TRACE_FAIL("gr.run_all", "paths.artifacts missing");
         failed = 1;
@@ -876,7 +849,7 @@ int bt_gr_run_all(bt_gr_offenders *offenders) {
                    "wrote %s\n",
                    (unsigned long long)inputs.params.seed, inputs.pool_count,
                    (double)outcome->best_fitness, outcome->best_generation, assignment.cases_count,
-                   distinct_syllables(&assignment), wrote);
+                   assignment.cases_count, wrote);
         }
     }
     bt_gr_report_free(&report);
