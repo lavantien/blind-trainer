@@ -454,3 +454,69 @@ BT_TEST(algs_more, detail_line_styles_map_to_font_and_color) {
     bt_view_algs_style_metrics(BT_ALGS_STYLE_MICRO, &size, &color);
     BT_CHECK(size == bt_theme_table()->font_micro);
 }
+
+BT_TEST(algs_more, unit_spans_render_the_b_first_pair_flipped) {
+    bt_expanded unit;
+    memset(&unit, 0, sizeof unit);
+    char err_token[64];
+    BT_CHECK(bt_alg_parse("R", &unit.a, err_token, sizeof err_token));
+    BT_CHECK(bt_alg_parse("U", &unit.b, err_token, sizeof err_token));
+    unit.b_first = true;
+    bt_view_algs_span spans[BT_ALGS_SPANS_MAX];
+    size_t count = bt_view_algs_unit_spans(&unit, spans);
+    BT_CHECK(count >= 4);
+    int at_u = -1;
+    int at_r = -1;
+    for (size_t i = 0; i < count; i++) {
+        if (strcmp(spans[i].text, "U") == 0) {
+            at_u = (int)i;
+        }
+        if (strcmp(spans[i].text, "R") == 0) {
+            at_r = (int)i;
+        }
+    }
+    BT_CHECK(at_u >= 0);
+    BT_CHECK(at_r >= 0);
+    BT_CHECK(at_u < at_r);
+}
+
+BT_TEST(algs_more, detail_lines_report_a_commutator_that_does_not_verify) {
+    bt_app_ctx ctx = algs_ctx("badcomm");
+    bt_corpus_row row = covered_row(COVERED_ALG, "not a commutator");
+    load_rows(&ctx, &row, 1);
+    query_algs(&ctx, "ab");
+    bt_view_algs_detail_line *lines = NULL;
+    size_t count =
+        bt_view_algs_detail_lines(&ctx.vendor_corpus, &bt_view_algs_app()->browser, &lines);
+    BT_CHECK(count > 0);
+    char joined[BT_ALGS_TEXT_MAX * 8];
+    joined[0] = '\0';
+    for (size_t i = 0; i < count; i++) {
+        strncat(joined, lines[i].text, sizeof joined - strlen(joined) - 1);
+        strncat(joined, "\n", sizeof joined - strlen(joined) - 1);
+    }
+    BT_CHECK(strstr(joined, "commutator not a commutator") != NULL);
+    free(lines);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(algs_more, update_types_frame_chars_into_the_override_draft) {
+    bt_app_ctx ctx = algs_ctx("draftchars");
+    bt_view_algs_enter(&ctx);
+    bt_view_algs_app_state *app = bt_view_algs_app();
+    app->query_focused = 0;
+    ctx.input_focus = 0;
+    bt_view_override_draft *draft = bt_view_algs_draft();
+    draft->has_case = 1;
+    draft->text[0] = '\0';
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.chars[0] = 'x';
+    input.chars[1] = 'y';
+    input.char_count = 2;
+    bt_app_frame_input_set(&input);
+    bt_view_algs_update(&ctx);
+    bt_app_frame_input_set(NULL);
+    BT_CHECK(strcmp(draft->text, "xy") == 0);
+    bt_app_ctx_free(&ctx);
+}
