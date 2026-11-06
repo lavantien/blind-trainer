@@ -84,3 +84,7 @@ Classification pass over the remaining regions with the source read: my first pe
 ## 2026-11-06 04:20 relaunch
 
 Predecessor killed at 00:48 by the provider window limit. Toolset probe passed. Inherited uncommitted: tests/unit/ga/dist_test.c, ga_eval_test.c, ga_upgrade_test.c, inventory_more_test.c (authored failure-path tests, unmeasured), plus the new green suites ga_run_out_test.c, ga_run_flow_test.c, memofreq_test.c. Resuming: verify inherited tests green in the refreshed lane tree, measure, then close the remaining inventory (lib.c input branches, memofreq lib.c 76, inventory.c 33, ga.c 19, eval.c 4, dist.c residual, memofreq main residual 10).
+
+## 2026-11-06 05:02 relaunch 3, continuation
+
+Lane tree recreated. Core lane's log confirms the seam is landed: bt_alloc_fail_arm(ok_count), bt_alloc_fail_disarm, bt_alloc_fail_count, harness wrappers auto-disarm per test, json.c and strbuf.c routed through bt_malloc/bt_calloc/bt_realloc. Plan per the 4 rulings: class 2 dead-arm removals first with per-site proofs, then class 1 by routing my files' direct allocations through the seam and arming around the calls under test, then class 4 abort guard judged against the death-test idiom, then class 3 drive-or-escalate. Self-measure with playground/cov_scope_ga.py between batches.
