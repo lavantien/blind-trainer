@@ -342,7 +342,10 @@ static int spawn_alloc_under_cap(const char *mb, char *err, size_t err_cap, DWOR
     char log[BT_PATH_MAX];
     snprintf(log, sizeof log, "%sbt-sleeper-alloc-%lu.log", base, GetCurrentProcessId());
     SECURITY_ATTRIBUTES inherit = {
-        .nLength = sizeof inherit, .lpSecurityDescriptor = NULL, .bInheritHandle = TRUE};
+        .nLength = sizeof inherit,
+        .lpSecurityDescriptor = NULL,
+        .bInheritHandle = TRUE,
+    };
     HANDLE sink =
         CreateFileA(log, GENERIC_WRITE, 0, &inherit, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
     if (sink == INVALID_HANDLE_VALUE) {

@@ -39,10 +39,10 @@ static const verify_row_outcome *single(verify_section_result *section) {
         BT_CHECK(outcome != NULL);                                                                 \
         if (outcome != NULL) {                                                                     \
             BT_CHECK_EQ(outcome->tier1_ok, true);                                                  \
-            BT_CHECK(outcome->tier2.kind == tier2_kind);                                           \
-            if (reason_needle != NULL) {                                                           \
+            BT_CHECK(outcome->tier2.kind == (tier2_kind));                                         \
+            if ((reason_needle) != NULL) {                                                         \
                 const char *text =                                                                 \
-                    tier2_kind == VERIFY_TIER2_FAIL ? outcome->tier2.fail : outcome->tier2.skip;   \
+                    (tier2_kind) == VERIFY_TIER2_FAIL ? outcome->tier2.fail : outcome->tier2.skip; \
                 BT_CHECK(text != NULL && strstr(text, reason_needle) != NULL);                     \
             }                                                                                      \
         }                                                                                          \
