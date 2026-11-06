@@ -1,5 +1,6 @@
 #include "app/persist.h"
 #include "app/views/algs/browse.h"
+#include "common/alloc.h"
 #include "data/seedpack/mod.h"
 
 #include "common.h"
@@ -320,4 +321,131 @@ BT_TEST(view_browse, subtree_counts_feed_the_detail_summary) {
     BT_CHECK_EQ(bt_repo_count_kind(bigcube, BT_REPO_CASE), (size_t)7);
     bt_repo_browser_free(&browser);
     free_rows(rows, 4);
+}
+
+BT_TEST(view_browse, unsorted_pack_sizes_are_sorted_into_the_size_level) {
+    bt_pack_entry packs[1];
+    make_pack("bigcube", "yau", "parity", 1, &packs[0]);
+    memset(&packs[0].n, 0, sizeof packs[0].n);
+    packs[0].n.kind = BT_NSPEC_SIZES;
+    packs[0].n.size_count = 2;
+    packs[0].n.sizes[0] = 7;
+    packs[0].n.sizes[1] = 4;
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    browser.arms = bt_repo_arms(packs, 1, &hidden, NULL, 0, &browser.arm_count);
+    bt_str_list_free(&hidden);
+    const bt_repo_node *bigcube = &browser.arms[1];
+    BT_CHECK_EQ(bigcube->children_count, (size_t)2);
+    BT_CHECK(strcmp(bigcube->children[0].label, "4x4") == 0);
+    BT_CHECK(strcmp(bigcube->children[1].label, "7x7") == 0);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_browse, a_row_without_text_builds_a_case_with_empty_fields) {
+    bt_seed_row row;
+    memset(&row, 0, sizeof row);
+    snprintf(row.event, sizeof row.event, "%s", "2x2");
+    snprintf(row.method, sizeof row.method, "%s", "cll");
+    snprintf(row.stage, sizeof row.stage, "%s", "cll");
+    snprintf(row.case_key, sizeof row.case_key, "%s", "cll.9");
+    bt_pack_entry packs[1];
+    make_pack("2x2", "cll", "cll", 0, &packs[0]);
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    browser.arms = bt_repo_arms(packs, 1, &hidden, &row, 1, &browser.arm_count);
+    bt_str_list_free(&hidden);
+    const bt_repo_node *leaf = &browser.arms[1].children[0].children[0].children[0];
+    BT_CHECK_EQ(leaf->kind, BT_REPO_CASE);
+    BT_CHECK(leaf->has_case);
+    BT_CHECK(leaf->case_alg != NULL);
+    BT_CHECK(leaf->case_alg[0] == '\0');
+    BT_CHECK(leaf->case_source_url != NULL);
+    BT_CHECK(leaf->case_source_url[0] == '\0');
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_browse, arms_build_fails_closed_when_a_row_text_copy_fails) {
+    bt_seed_row row;
+    memset(&row, 0, sizeof row);
+    snprintf(row.event, sizeof row.event, "%s", "2x2");
+    snprintf(row.method, sizeof row.method, "%s", "cll");
+    snprintf(row.stage, sizeof row.stage, "%s", "cll");
+    snprintf(row.case_key, sizeof row.case_key, "%s", "cll.9");
+    bt_pack_entry packs[1];
+    make_pack("2x2", "cll", "cll", 0, &packs[0]);
+    bt_str_list hidden;
+    bt_str_list_init(&hidden);
+    size_t count = 99;
+    bt_alloc_fail_arm(1);
+    bt_repo_node *arms = bt_repo_arms(packs, 1, &hidden, &row, 1, &count);
+    bt_alloc_fail_disarm();
+    bt_str_list_free(&hidden);
+    BT_CHECK(arms == NULL);
+    BT_CHECK_EQ(count, (size_t)0);
+}
+
+BT_TEST(view_browse, shallower_and_move_guard_a_browser_without_a_list) {
+    bt_repo_browser browser;
+    bt_repo_browser_default(&browser);
+    bt_repo_shallower(&browser);
+    BT_CHECK(!browser.repo_focused);
+    browser.repo_focused = 1;
+    browser.depth = 2;
+    browser.path[0] = 99;
+    browser.path[1] = 0;
+    bt_repo_move(&browser, 1);
+    BT_CHECK_EQ(browser.depth, (size_t)2);
+    BT_CHECK_EQ(browser.path[1], (size_t)0);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_browse, list_at_and_list_rows_honor_small_caps_and_empty_lists) {
+    bt_seed_row rows[4];
+    bt_repo_browser browser = armed_browser(rows);
+    const bt_repo_node *entries[8];
+    BT_CHECK_EQ(bt_repo_list_at(&browser, entries, 2), (size_t)2);
+    BT_CHECK(entries[0] == &browser.arms[0]);
+    bt_repo_deeper(&browser);
+    bt_repo_move(&browser, 2);
+    bt_repo_deeper(&browser);
+    BT_CHECK_EQ(browser.depth, (size_t)1);
+    BT_CHECK_EQ(bt_repo_list_at(&browser, entries, 2), (size_t)2);
+    BT_CHECK(strcmp(entries[0]->label, "4x4") == 0);
+    bt_repo_list_row list_rows[2];
+    BT_CHECK_EQ(bt_repo_list_rows(&browser, 0, list_rows), (size_t)0);
+    BT_CHECK_EQ(bt_repo_list_rows(&browser, 2, list_rows), (size_t)2);
+    BT_CHECK(strcmp(list_rows[0].label, "> 4x4") == 0);
+    BT_CHECK(strcmp(list_rows[1].label, "  5x5") == 0);
+    browser.depth = 2;
+    browser.path[0] = 99;
+    browser.path[1] = 0;
+    BT_CHECK_EQ(bt_repo_list_rows(&browser, 2, list_rows), (size_t)0);
+    bt_repo_browser_free(&browser);
+    free_rows(rows, 4);
+}
+
+BT_TEST(view_browse, size_labels_parse_only_digit_x_forms) {
+    long long size = 0;
+    BT_CHECK(bt_repo_size_of_label("4x4", &size));
+    BT_CHECK_EQ(size, (long long)4);
+    BT_CHECK(bt_repo_size_of_label("12x", &size));
+    BT_CHECK_EQ(size, (long long)12);
+    BT_CHECK(!bt_repo_size_of_label("letters", &size));
+    BT_CHECK(!bt_repo_size_of_label("cll", &size));
+    BT_CHECK(!bt_repo_size_of_label("12", &size));
+    BT_CHECK(!bt_repo_size_of_label("", &size));
+}
+
+BT_TEST(view_browse, the_shared_repo_browser_returns_null_when_its_allocation_fails) {
+    bt_alloc_fail_arm(0);
+    BT_CHECK(bt_view_algs_repo() == NULL);
+    bt_alloc_fail_disarm();
+    bt_repo_browser *repo = bt_view_algs_repo();
+    BT_CHECK(repo != NULL);
+    BT_CHECK_EQ(repo->arm_count, (size_t)1);
 }
