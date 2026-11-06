@@ -97,6 +97,9 @@ BT_TEST(fuzz_helpers, repo_root_strips_trailing_ref_ground_and_passes_absolutes)
     char root[BT_PATH_MAX];
     fuzz_repo_root(root);
     BT_CHECK_EQ(root, "C:\\abs\\probe");
+    _putenv("BT_REF_GROUND=C:/abs/probe/ref_ground");
+    fuzz_repo_root(root);
+    BT_CHECK_EQ(root, "C:/abs/probe");
     _putenv("BT_REF_GROUND=C:\\abs\\probe");
     fuzz_repo_root(root);
     BT_CHECK_EQ(root, "C:\\abs\\probe");
@@ -170,6 +173,12 @@ BT_TEST(fuzz_helpers, replay_dir_skips_empty_and_locked_files_and_honors_the_run
     HANDLE hold =
         CreateFileA(locked, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     BT_CHECK(hold != INVALID_HANDLE_VALUE);
+    char good[BT_PATH_MAX];
+    snprintf(good, sizeof good, "%s\\good.bin", probe);
+    file = fopen(good, "wb");
+    BT_CHECK(file != NULL);
+    fputs("payload", file);
+    fclose(file);
     char setting[BT_PATH_MAX];
     snprintf(setting, sizeof setting, "BT_REF_GROUND=%s\\ref_ground", base);
     _putenv(setting);
@@ -181,7 +190,7 @@ BT_TEST(fuzz_helpers, replay_dir_skips_empty_and_locked_files_and_honors_the_run
     bounds.start = time(NULL);
     size_t ran = 0;
     BT_CHECK(fuzz_replay_dir("helper-probe", noop_body, &bounds, &ran));
-    BT_CHECK_EQ((long long)ran, 0LL);
+    BT_CHECK_EQ((long long)ran, 1LL);
     bounds.runs = 0;
     bounds.done = 0;
     ran = 0;
