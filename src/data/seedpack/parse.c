@@ -115,8 +115,7 @@ static int enrich_front_json(const char *raw, const bt_normalized *normalized, c
         }
     }
     bt_strbuf serialized;
-    bt_strbuf_init(&serialized, 128);
-    if (bt_json_serialize(front, &serialized) != 0) {
+    if (bt_strbuf_init(&serialized, 128) != 0 || bt_json_serialize(front, &serialized) != 0) {
         bt_strbuf_free(&serialized);
         bt_json_free(front);
         err->kind = BT_SEED_ERR_BAD_FRONT_JSON;
