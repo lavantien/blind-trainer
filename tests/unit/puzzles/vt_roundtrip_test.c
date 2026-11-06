@@ -188,7 +188,7 @@ BT_TEST(vt, grid_eq_separates_every_shape_of_drift) {
     bt_pz_grid base;
     eng.facelets(&eng, &state, &base);
     bt_pz_grid drift = base;
-    drift.faces[0].rows[0].cells[0] ^= 1;
+    drift.faces[0].rows[0].cells[0] ^= 1U;
     BT_CHECK(!bt_pz_grid_eq(&drift, &base));
     drift = base;
     drift.faces[1].rows[1].cols = 1;
