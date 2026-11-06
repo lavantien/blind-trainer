@@ -39,15 +39,14 @@ void bt_harness_check_int(const char *file, int line, const char *actual_expr,
                           const char *expected_expr, long long actual, long long expected);
 void bt_harness_check_f64(const char *file, int line, const char *actual_expr,
                           const char *expected_expr, double actual, double expected);
+void bt_harness_check(const char *file, int line, const char *expr, int ok);
+void bt_harness_check_near(const char *file, int line, const char *actual_expr,
+                           const char *expected_expr, double actual, double expected, double tol);
+void bt_harness_check_msg(const char *file, int line, int ok, const char *fmt, ...);
 
 #define BT_TEST(group, name) void bt_test_##group##_##name(void)
 
-#define BT_CHECK(cond)                                                                             \
-    do {                                                                                           \
-        if (!(cond)) {                                                                             \
-            bt_harness_fail(__FILE__, __LINE__, "check failed: %s", #cond);                        \
-        }                                                                                          \
-    } while (0)
+#define BT_CHECK(cond) bt_harness_check(__FILE__, __LINE__, #cond, !!(cond))
 
 #define BT_CHECK_EQ(actual, expected)                                                              \
     do {                                                                                           \
@@ -82,11 +81,7 @@ void bt_harness_check_f64(const char *file, int line, const char *actual_expr,
         double bt_a = (double)(actual);                                                            \
         double bt_b = (double)(expected);                                                          \
         double bt_t = (double)(tol);                                                               \
-        if (!(fabs(bt_a - bt_b) <= bt_t)) {                                                        \
-            bt_harness_fail(__FILE__, __LINE__,                                                    \
-                            "f64 near %s vs %s: got %.17g want %.17g tol %.17g", #actual,          \
-                            #expected, bt_a, bt_b, bt_t);                                          \
-        }                                                                                          \
+        bt_harness_check_near(__FILE__, __LINE__, #actual, #expected, bt_a, bt_b, bt_t);           \
     } while (0)
 
 #define BT_ABORT(...)                                                                              \

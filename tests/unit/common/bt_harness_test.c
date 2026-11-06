@@ -56,6 +56,14 @@ static void inner_fail_eq_str_null_expected(void) {
     BT_CHECK_EQ(actual, expected);
 }
 
+static void inner_fail_near(void) {
+    BT_CHECK_F64_NEAR(1.0, 2.0, 0.5);
+}
+
+static void inner_fail_check_msg(void) {
+    bt_harness_check_msg(__FILE__, __LINE__, 0, "msg %s", "pin");
+}
+
 BT_TEST(bt_harness, run_reports_failing_checks_per_kind_and_suite_status) {
     bt_test_entry entries[] = {
         {"inner_fail_check", inner_fail_check},
@@ -65,6 +73,8 @@ BT_TEST(bt_harness, run_reports_failing_checks_per_kind_and_suite_status) {
         {"inner_fail_eq_str", inner_fail_eq_str},
         {"inner_fail_eq_str_null_actual", inner_fail_eq_str_null_actual},
         {"inner_fail_eq_str_null_expected", inner_fail_eq_str_null_expected},
+        {"inner_fail_near", inner_fail_near},
+        {"inner_fail_check_msg", inner_fail_check_msg},
     };
     size_t count = sizeof entries / sizeof entries[0];
     BT_CHECK_EQ(bt_harness_run("bt_harness_inner_fail", entries, count), 1);

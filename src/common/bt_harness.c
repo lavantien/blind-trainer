@@ -43,14 +43,33 @@ static size_t g_failed;
 static int g_current_failed;
 static const char *g_current_name;
 
-void bt_harness_fail(const char *file, int line, const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
+static void bt_harness_vfail(const char *file, int line, const char *fmt, va_list ap) {
     printf("  check failed %s:%d: ", file, line);
     vprintf(fmt, ap);
     printf("\n");
-    va_end(ap);
     g_current_failed = 1;
+}
+
+void bt_harness_fail(const char *file, int line, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    bt_harness_vfail(file, line, fmt, ap);
+    va_end(ap);
+}
+
+void bt_harness_check(const char *file, int line, const char *expr, int ok) {
+    if (!ok) {
+        bt_harness_fail(file, line, "check failed: %s", expr);
+    }
+}
+
+void bt_harness_check_msg(const char *file, int line, int ok, const char *fmt, ...) {
+    if (!ok) {
+        va_list ap;
+        va_start(ap, fmt);
+        bt_harness_vfail(file, line, fmt, ap);
+        va_end(ap);
+    }
 }
 
 void bt_harness_check_str(const char *file, int line, const char *actual_expr,
@@ -85,6 +104,14 @@ void bt_harness_check_f64(const char *file, int line, const char *actual_expr,
     if (actual != expected) {
         bt_harness_fail(file, line, "%s vs %s: got %.17g want %.17g", actual_expr, expected_expr,
                         actual, expected);
+    }
+}
+
+void bt_harness_check_near(const char *file, int line, const char *actual_expr,
+                           const char *expected_expr, double actual, double expected, double tol) {
+    if (!(fabs(actual - expected) <= tol)) {
+        bt_harness_fail(file, line, "f64 near %s vs %s: got %.17g want %.17g tol %.17g",
+                        actual_expr, expected_expr, actual, expected, tol);
     }
 }
 

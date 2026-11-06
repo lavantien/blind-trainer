@@ -15,12 +15,7 @@
 #include <windows.h>
 #endif
 
-#define MUT_CHECK(cond, ...)                                                                       \
-    do {                                                                                           \
-        if (!(cond)) {                                                                             \
-            bt_harness_fail(__FILE__, __LINE__, __VA_ARGS__);                                      \
-        }                                                                                          \
-    } while (0)
+#define MUT_CHECK(cond, ...) bt_harness_check_msg(__FILE__, __LINE__, !!(cond), __VA_ARGS__)
 
 static void ensure_setup(void);
 static int bt_spawn_probe(char *argv[3], bt_mut_proc *proc);
