@@ -40,6 +40,7 @@ Lanes over a shared checkout, no worktrees: app (src/app, tests/unit/app), data 
 ## fourth window halt, 2026-11-06 14:19 to 18:09:41 local
 
 The window ceilinged at 14:19 local, gendata4 and verify7 died on 429, provider reset 19:09:41 GMT+8 equals 18:09:41 local. verify7 died writing its delivery summary at 523 dark from 785 (selftest 28 to 7) with the jobwrap and visual batches already landed, gendata4 died mid scoring-fixture fix, ga7 was parked on its monitored OOM suite. The resume tick ran at 18:20: seven delivered-idle agents disposed, the three live lanes resumed in place, 38 banked commits pushed as 494f9b1..aa79927, ci-watch-5 watching. The lint fix from the third halt rides in this push, so the run should clear the step that killed 42157060263.
+- verify7 delivered 785 to 506 across 12 commits: the crafted archive surface fully driven (zip, inflate including a valid dynamic-block round trip, png across every color type, filter, and paeth branch, exec sweeps), the jobwrap text matrix with the subpage rejection observed live as error 87, visual-diff over-long path drives, and a measurer fix that stopped counting llvm gap regions as uncovered (cfb3a4d), a question that also matters for the wave-end coverage number. Handoff to verify8: the ev matrices (about 185 regions), visual fs.c 81 through the proven in-memory pattern, the release-verify OOM routing batch, the verify smalls.
 
 ## third window halt, 2026-11-06 10:58 to 13:09:29 local
 
