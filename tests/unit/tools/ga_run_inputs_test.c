@@ -405,10 +405,13 @@ BT_TEST(ga_run_inputs, build_report_handles_an_empty_per_generation_series) {
     bt_gr_syllable_assignment assignment;
     memset(&assignment, 0, sizeof assignment);
     bt_gr_ga_report report;
-    bt_gr_build_report(&inputs, &outcome, &assignment, NULL, &report);
+    bt_gr_offenders report_offenders = {0};
+    BT_CHECK_EQ(
+        bt_gr_build_report(&inputs, &outcome, &assignment, NULL, &report, &report_offenders), 0);
     BT_CHECK_EQ(report.pool_top_count, (size_t)2);
     BT_CHECK_EQ(strcmp(report.pool_top[0].text, "ma"), 0);
     BT_CHECK_EQ(report.per_gen_count, (size_t)0);
     BT_CHECK(report.per_gen_best != NULL);
     bt_gr_report_free(&report);
+    bt_gr_offenders_free(&report_offenders);
 }

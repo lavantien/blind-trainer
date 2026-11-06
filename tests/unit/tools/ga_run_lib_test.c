@@ -704,7 +704,11 @@ BT_TEST(ga_run_lib, build_report_copies_run_state_and_the_pool_head) {
     bt_json_value *config = parse_json(
         "{\"ga\": {\"seed\": 11, \"population\": 30, \"generations\": 7, \"elite\": 2}}");
     bt_gr_ga_report report;
-    bt_gr_build_report(&inputs, &outcome, &assignment, config, &report);
+    bt_gr_offenders report_offenders = {0};
+    BT_CHECK_EQ(
+        bt_gr_build_report(&inputs, &outcome, &assignment, config, &report, &report_offenders), 0);
+    BT_CHECK_EQ(report_offenders.count, (size_t)0);
+    bt_gr_offenders_free(&report_offenders);
     BT_CHECK_EQ(report.pool_size, (size_t)15);
     BT_CHECK_EQ(report.pool_top_count, (size_t)10);
     BT_CHECK_EQ(report.pool_top[0].text, "syllable-0");
@@ -902,9 +906,12 @@ BT_TEST(ga_run_lib, report_carries_the_eval_lane_of_the_outcome) {
     memset(&assignment, 0, sizeof assignment);
     bt_json_value *config = parse_json("{}");
     bt_gr_ga_report report;
-    bt_gr_build_report(&inputs, &outcome, &assignment, config, &report);
+    bt_gr_offenders report_offenders = {0};
+    BT_CHECK_EQ(
+        bt_gr_build_report(&inputs, &outcome, &assignment, config, &report, &report_offenders), 0);
     BT_CHECK_EQ(report.eval_used_cuda, 1);
     bt_gr_report_free(&report);
+    bt_gr_offenders_free(&report_offenders);
     bt_json_free(config);
     free(outcome.best);
     free(outcome.per_gen_best);

@@ -1,5 +1,6 @@
 #include "memofreq/lib.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "common/paths.h"
@@ -28,17 +29,18 @@ static int offenders_push(bt_mf_offenders *list, const char *fmt, ...) {
     va_end(args);
     if (list->count == list->cap) {
         size_t cap = list->cap == 0 ? 8 : list->cap * 2;
-        char **grown = realloc(list->items, cap * sizeof *grown);
+        char **grown = bt_realloc(list->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
         list->items = grown;
         list->cap = cap;
     }
-    char *copy = _strdup(text);
+    char *copy = bt_malloc(strlen(text) + 1);
     if (copy == NULL) {
         return -1;
     }
+    memcpy(copy, text, strlen(text) + 1);
     list->items[list->count] = copy;
     list->count++;
     return 0;
@@ -162,7 +164,19 @@ static int run(const bt_json_value *config, bt_mf_offenders *offenders) {
     return 0;
 }
 
+static void arm_alloc_seam_from_env(void) {
+    const char *raw = getenv("BT_MEMOFREQ_ALLOC_FAIL_OK");
+    if (raw != NULL && raw[0] != '\0') {
+        char *end = NULL;
+        unsigned long long count = strtoull(raw, &end, 10);
+        if (end != raw) {
+            bt_alloc_fail_arm((size_t)count);
+        }
+    }
+}
+
 int main(void) {
+    arm_alloc_seam_from_env();
     bt_json_value *config = bt_data_load_config();
     long long ring_bytes = 0;
     long long max_threads = 0;

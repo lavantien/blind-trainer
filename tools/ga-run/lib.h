@@ -88,9 +88,9 @@ int bt_gr_build_assignment(const bt_gr_run_inputs *inputs, const bt_ga_run_outco
                            bt_gr_syllable_assignment *assignment, bt_gr_offenders *offenders);
 void bt_gr_assignment_free(bt_gr_syllable_assignment *assignment);
 
-void bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome *outcome,
-                        const bt_gr_syllable_assignment *assignment, const bt_json_value *config,
-                        bt_gr_ga_report *report);
+int bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome *outcome,
+                       const bt_gr_syllable_assignment *assignment, const bt_json_value *config,
+                       bt_gr_ga_report *report, bt_gr_offenders *offenders);
 void bt_gr_report_free(bt_gr_ga_report *report);
 
 int bt_gr_render_markdown(const bt_gr_ga_report *report, bt_strbuf *out);

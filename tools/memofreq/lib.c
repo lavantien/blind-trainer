@@ -1,5 +1,6 @@
 #include "memofreq/lib.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "data/paths.h"
 #include "scheme/memo.h"
@@ -121,7 +122,7 @@ bt_ga_pair_count *bt_mf_drain_pairs(const uint64_t *counts, size_t counts_count,
         BT_TRACE_EXIT("mf.drain_pairs");
         return NULL;
     }
-    bt_ga_pair_count *rows = malloc(kept * sizeof *rows);
+    bt_ga_pair_count *rows = bt_malloc(kept * sizeof *rows);
     if (rows == NULL) {
         *out_count = 0;
         BT_TRACE_FAIL("mf.drain_pairs", "allocation failed for %zu rows", kept);
@@ -162,11 +163,13 @@ void bt_mf_orbit_tables_build(bt_mf_orbit_tables *tables) {
 }
 
 static int draw_counts_alloc(bt_mf_draw_counts *counts) {
-    counts->cases = calloc(bt_mf_total_cases(), sizeof *counts->cases);
-    counts->edge_cooc = calloc(bt_mf_triangle(bt_mf_edge_count()), sizeof *counts->edge_cooc);
-    counts->corner_cooc = calloc(bt_mf_triangle(bt_mf_corner_count()), sizeof *counts->corner_cooc);
-    counts->edge_adj = calloc(bt_mf_triangle(bt_mf_edge_count()), sizeof *counts->edge_adj);
-    counts->corner_adj = calloc(bt_mf_triangle(bt_mf_corner_count()), sizeof *counts->corner_adj);
+    counts->cases = bt_calloc(bt_mf_total_cases(), sizeof *counts->cases);
+    counts->edge_cooc = bt_calloc(bt_mf_triangle(bt_mf_edge_count()), sizeof *counts->edge_cooc);
+    counts->corner_cooc =
+        bt_calloc(bt_mf_triangle(bt_mf_corner_count()), sizeof *counts->corner_cooc);
+    counts->edge_adj = bt_calloc(bt_mf_triangle(bt_mf_edge_count()), sizeof *counts->edge_adj);
+    counts->corner_adj =
+        bt_calloc(bt_mf_triangle(bt_mf_corner_count()), sizeof *counts->corner_adj);
     return counts->cases != NULL && counts->edge_cooc != NULL && counts->corner_cooc != NULL &&
                    counts->edge_adj != NULL && counts->corner_adj != NULL
                ? 0
@@ -278,13 +281,13 @@ bt_ga_freq_data *bt_mf_count_frequencies(uint64_t samples, uint64_t seed) {
     for (uint64_t draw = 0; draw < samples; draw++) {
         bt_mf_draw_counts_add_draw(&counts, &tables, bt_mf_draw_seed(seed, draw));
     }
-    bt_ga_freq_data *data = calloc(1, sizeof *data);
+    bt_ga_freq_data *data = bt_calloc(1, sizeof *data);
     if (data == NULL) {
         bt_mf_draw_counts_free(&counts);
         BT_TRACE_FAIL("mf.count_frequencies", "result allocation failed");
         return NULL;
     }
-    data->cases = malloc((tables.case_count > 0 ? tables.case_count : 1) * sizeof *data->cases);
+    data->cases = bt_malloc((tables.case_count > 0 ? tables.case_count : 1) * sizeof *data->cases);
     if (data->cases == NULL) {
         bt_mf_draw_counts_free(&counts);
         free(data);
@@ -317,10 +320,10 @@ bt_ga_freq_data *bt_mf_count_frequencies(uint64_t samples, uint64_t seed) {
                           bt_mf_edge_count(), &corner_cooc_count);
     data->adjacent_count = edge_adj_count + corner_adj_count;
     data->adjacent =
-        malloc((data->adjacent_count > 0 ? data->adjacent_count : 1) * sizeof *data->adjacent);
+        bt_malloc((data->adjacent_count > 0 ? data->adjacent_count : 1) * sizeof *data->adjacent);
     data->cooccurring_count = edge_cooc_count + corner_cooc_count;
-    data->cooccurring = malloc((data->cooccurring_count > 0 ? data->cooccurring_count : 1) *
-                               sizeof *data->cooccurring);
+    data->cooccurring = bt_malloc((data->cooccurring_count > 0 ? data->cooccurring_count : 1) *
+                                  sizeof *data->cooccurring);
     if (data->adjacent == NULL || data->cooccurring == NULL) {
         free(edge_adj);
         free(corner_adj);
@@ -370,7 +373,7 @@ char **bt_mf_zero_hit_cases(const bt_ga_freq_data *data, size_t *out_count) {
         BT_TRACE_EXIT("mf.zero_hit_cases");
         return NULL;
     }
-    char **items = malloc(misses * sizeof *items);
+    char **items = bt_malloc(misses * sizeof *items);
     if (items == NULL) {
         *out_count = 0;
         BT_TRACE_FAIL("mf.zero_hit_cases", "allocation failed for %zu misses", misses);
@@ -381,7 +384,14 @@ char **bt_mf_zero_hit_cases(const bt_ga_freq_data *data, size_t *out_count) {
         if (data->cases[i].count == 0) {
             char text[32];
             snprintf(text, sizeof text, "%s/%s", data->cases[i].orbit, data->cases[i].letters);
-            items[at] = _strdup(text);
+            items[at] = bt_malloc(strlen(text) + 1);
+            if (items[at] == NULL) {
+                bt_mf_str_list_free(items, at);
+                *out_count = 0;
+                BT_TRACE_FAIL("mf.zero_hit_cases", "row allocation failed at %zu", at);
+                return NULL;
+            }
+            memcpy(items[at], text, strlen(text) + 1);
             at++;
         }
     }

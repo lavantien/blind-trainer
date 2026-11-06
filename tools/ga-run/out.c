@@ -1,5 +1,6 @@
 #include "ga-run/out.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #include <math.h>
@@ -284,7 +285,7 @@ static int sorted_value(const bt_json_value *value, bt_strbuf *out, size_t depth
         size_t inline_slots[16];
         size_t slot_count = value->as.object.count;
         int heap_slots = slot_count > 16;
-        size_t *order = heap_slots ? malloc(slot_count * sizeof *order) : inline_slots;
+        size_t *order = heap_slots ? bt_malloc(slot_count * sizeof *order) : inline_slots;
         if (order == NULL) {
             return -1;
         }

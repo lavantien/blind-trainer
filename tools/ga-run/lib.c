@@ -1,5 +1,6 @@
 #include "ga-run/lib.h"
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "data/paths.h"
@@ -28,17 +29,18 @@ int bt_gr_offenders_push(bt_gr_offenders *list, const char *fmt, ...) {
     va_end(args);
     if (list->count == list->cap) {
         size_t cap = list->cap == 0 ? 8 : list->cap * 2;
-        char **grown = realloc(list->items, cap * sizeof *grown);
+        char **grown = bt_realloc(list->items, cap * sizeof *grown);
         if (grown == NULL) {
             return -1;
         }
         list->items = grown;
         list->cap = cap;
     }
-    char *copy = _strdup(text);
+    char *copy = bt_malloc(strlen(text) + 1);
     if (copy == NULL) {
         return -1;
     }
+    memcpy(copy, text, strlen(text) + 1);
     list->items[list->count] = copy;
     list->count++;
     return 0;
@@ -79,7 +81,7 @@ static char *read_file_bytes(const char *path, size_t *len, char err[BT_GA_ERR_M
         snprintf(err, BT_GA_ERR_MAX, "read %s", path);
         return NULL;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         snprintf(err, BT_GA_ERR_MAX, "read %s", path);
@@ -365,8 +367,8 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
     bt_ga_pair_weight *cooc = NULL;
     bt_ga_pair_weight *adj = NULL;
     if (!failed) {
-        lengths = malloc(inputs->pool_count * sizeof *lengths);
-        feats = calloc(inputs->pool_count, sizeof *feats);
+        lengths = bt_malloc(inputs->pool_count * sizeof *lengths);
+        feats = bt_calloc(inputs->pool_count, sizeof *feats);
         if (lengths == NULL || feats == NULL) {
             bt_gr_offenders_push(offenders, "pool table allocation failed");
             BT_TRACE_FAIL("gr.load_run_inputs", "pool table allocation failed");
@@ -390,10 +392,10 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
         for (size_t k = 0; k < inputs->freq.adjacent_count; k++) {
             adj_total += inputs->freq.adjacent[k].count;
         }
-        cooc = malloc((inputs->freq.cooccurring_count > 0 ? inputs->freq.cooccurring_count : 1) *
-                      sizeof *cooc);
-        adj = malloc((inputs->freq.adjacent_count > 0 ? inputs->freq.adjacent_count : 1) *
-                     sizeof *adj);
+        cooc = bt_malloc((inputs->freq.cooccurring_count > 0 ? inputs->freq.cooccurring_count : 1) *
+                         sizeof *cooc);
+        adj = bt_malloc((inputs->freq.adjacent_count > 0 ? inputs->freq.adjacent_count : 1) *
+                        sizeof *adj);
         if (cooc == NULL || adj == NULL) {
             bt_gr_offenders_push(offenders, "pair weight allocation failed");
             BT_TRACE_FAIL("gr.load_run_inputs", "pair weight allocation failed");
@@ -494,7 +496,7 @@ int bt_gr_build_assignment(const bt_gr_run_inputs *inputs, const bt_ga_run_outco
     bt_case corner[BT_PAIRS_MAX];
     size_t edge_count = bt_scheme_enumerate_cases(BT_ORBIT_EDGE, edge);
     bt_scheme_enumerate_cases(BT_ORBIT_CORNER, corner);
-    assignment->cases = malloc(case_count * sizeof *assignment->cases);
+    assignment->cases = bt_malloc(case_count * sizeof *assignment->cases);
     if (assignment->cases == NULL) {
         bt_gr_offenders_push(offenders, "assignment allocation failed");
         BT_TRACE_FAIL("gr.build_assignment", "allocation failed");
@@ -561,9 +563,9 @@ void bt_gr_assignment_free(bt_gr_syllable_assignment *assignment) {
     BT_TRACE_EXIT("gr.assignment_free");
 }
 
-void bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome *outcome,
-                        const bt_gr_syllable_assignment *assignment, const bt_json_value *config,
-                        bt_gr_ga_report *report) {
+int bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome *outcome,
+                       const bt_gr_syllable_assignment *assignment, const bt_json_value *config,
+                       bt_gr_ga_report *report, bt_gr_offenders *offenders) {
     BT_TRACE_ENTER("gr.build_report");
     memset(report, 0, sizeof *report);
     report->run_config = config;
@@ -580,8 +582,13 @@ void bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome 
     report->best_parts[2] = outcome->best_parts[2];
     report->best_generation = outcome->best_generation;
     report->generations_run = inputs->params.generations;
-    report->per_gen_best = malloc((outcome->per_gen_count > 0 ? outcome->per_gen_count : 1) *
-                                  sizeof *report->per_gen_best);
+    report->per_gen_best = bt_malloc((outcome->per_gen_count > 0 ? outcome->per_gen_count : 1) *
+                                     sizeof *report->per_gen_best);
+    if (report->per_gen_best == NULL) {
+        bt_gr_offenders_push(offenders, "per generation allocation failed");
+        BT_TRACE_FAIL("gr.build_report", "per generation allocation failed");
+        return -1;
+    }
     for (size_t i = 0; i < outcome->per_gen_count; i++) {
         report->per_gen_best[i] = outcome->per_gen_best[i];
     }
@@ -593,6 +600,7 @@ void bt_gr_build_report(const bt_gr_run_inputs *inputs, const bt_ga_run_outcome 
     snprintf(report->freq_sha256, BT_GA_SHA256_HEX_LEN, "%s", assignment->freq_sha256);
     snprintf(report->syllables_sha256, BT_GA_SHA256_HEX_LEN, "%s", assignment->syllables_sha256);
     BT_TRACE_EXIT("gr.build_report");
+    return 0;
 }
 
 void bt_gr_report_free(bt_gr_ga_report *report) {
@@ -825,7 +833,15 @@ int bt_gr_run_all(bt_gr_offenders *offenders) {
         return -1;
     }
     bt_gr_ga_report report;
-    bt_gr_build_report(&inputs, outcome, &assignment, config, &report);
+    if (bt_gr_build_report(&inputs, outcome, &assignment, config, &report, offenders) != 0) {
+        bt_gr_report_free(&report);
+        bt_gr_assignment_free(&assignment);
+        bt_ga_run_outcome_free(outcome);
+        bt_gr_run_inputs_free(&inputs);
+        bt_json_free(config);
+        BT_TRACE_FAIL("gr.run_all", "report rejected");
+        return -1;
+    }
     const char *data_ga = NULL;
     const char *artifacts = NULL;
     int failed = 0;
