@@ -120,7 +120,7 @@ static int make_junction(const char *link, const char *target) {
     unsigned short data_len = (unsigned short)(12 + bytes);
     unsigned char buffer[8192];
     memset(buffer, 0, sizeof buffer);
-    *(unsigned long *)(buffer + 0) = 0xA0000003u;
+    *(unsigned long *)(buffer + 0) = 0xA0000003U;
     *(unsigned short *)(buffer + 4) = data_len;
     *(unsigned short *)(buffer + 6) = 0;
     *(unsigned short *)(buffer + 8) = 0;
@@ -170,8 +170,8 @@ BT_TEST(policy_fsutil, reparse_directories_are_detected_and_skipped_by_scans) {
     policy_util_write(allow, "# allow\n");
     bt_json_value *config = NULL;
     bt_json_error json_err;
-    int parsed = bt_json_parse(POLICY_SELFTEST_CONFIG, strlen(POLICY_SELFTEST_CONFIG), &config,
-                               &json_err);
+    int parsed =
+        bt_json_parse(POLICY_SELFTEST_CONFIG, strlen(POLICY_SELFTEST_CONFIG), &config, &json_err);
     BT_CHECK_EQ(parsed, 0);
     int rc = policy_run_checks(root, POLICY_MODE_BOTH, config, allow, &outcome, err, sizeof err);
     BT_CHECK_EQ(rc, 0);
