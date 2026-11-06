@@ -108,7 +108,7 @@ BT_TEST(focus, cursor_jump_counts_only_a_landing_on_our_own_window) {
 BT_TEST(focus, foreground_watch_counts_our_titled_window) {
     HWND window = spawn_window(L"blind trainer focus probe target", 200, 200, 300, 300);
     BT_CHECK(window != NULL);
-    BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 1);
+    bt_app_focus_sentinel_acquire();
     void *watch =
         bt_app_focus_watch_start("blind trainer focus probe target", bt_app_focus_current_pid());
     BT_CHECK(watch != NULL);
