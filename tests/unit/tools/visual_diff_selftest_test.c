@@ -312,3 +312,52 @@ BT_TEST(visual_diff_selftest, run_selftest_passes_and_leaves_only_workdir_state)
     BT_CHECK_EQ(btvd_run_selftest(dir, err, sizeof err), 0);
     vd_util_rm_rf(dir);
 }
+
+BT_TEST(visual_diff_selftest, run_selftest_names_a_workdir_that_is_a_file) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("run-blocked", dir);
+    char blocker[VD_UTIL_PATH_MAX];
+    vd_util_join(blocker, dir, "blocker");
+    vd_util_write(blocker, "in the way");
+    char err[BTVD_ERR_MAX];
+    BT_CHECK(btvd_run_selftest(blocker, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "cannot write config") != NULL);
+    vd_util_rm_rf(dir);
+}
+
+BT_TEST(visual_diff_selftest, run_selftest_names_a_blocked_shots_dir) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("run-shots-blocked", dir);
+    char shots[VD_UTIL_PATH_MAX];
+    vd_util_join(shots, dir, "screenshots");
+    vd_util_write(shots, "in the way");
+    char err[BTVD_ERR_MAX];
+    BT_CHECK(btvd_run_selftest(dir, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "cannot create") != NULL);
+    vd_util_rm_rf(dir);
+}
+
+BT_TEST(visual_diff_selftest, tolerance_from_config_names_a_missing_config) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("tolerance-missing", dir);
+    uint16_t tolerance = 0;
+    char err[BTVD_ERR_MAX];
+    BT_CHECK(btvd_tolerance_from_config(dir, &tolerance, err, sizeof err) != 0);
+    BT_CHECK(err[0] != '\0');
+    vd_util_rm_rf(dir);
+}
+
+BT_TEST(visual_diff_selftest, execute_reports_a_compare_failure) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("execute-fail", dir);
+    char shots[BT_PATH_MAX];
+    char bases[BT_PATH_MAX];
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_materialize(dir, BTVD_SELFTEST_TOLERANCE, shots, bases, err, sizeof err), 0);
+    memset(shots, 'x', 1010);
+    shots[1010] = '\0';
+    btvd_selftest_checks checks;
+    BT_CHECK(btvd_execute(shots, bases, BTVD_SELFTEST_TOLERANCE, &checks, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "compare failed") != NULL);
+    vd_util_rm_rf(dir);
+}
