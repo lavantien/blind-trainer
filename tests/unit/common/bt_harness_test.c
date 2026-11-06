@@ -1,4 +1,5 @@
 #include "common/bt_harness.h"
+#include "unit/core/death_test.h"
 
 #include <direct.h>
 #include <process.h>
@@ -19,6 +20,54 @@ static void inner_pass(void) {
 BT_TEST(bt_harness, run_reports_green_suite) {
     bt_test_entry entries[] = {{"inner_pass", inner_pass}};
     BT_CHECK_EQ(bt_harness_run("bt_harness_inner", entries, 1), 0);
+}
+
+static void inner_fail_check(void) {
+    BT_CHECK(1 == 2);
+}
+
+static void inner_fail_eq_int(void) {
+    BT_CHECK_EQ(1, 2);
+}
+
+static void inner_fail_eq_u64(void) {
+    BT_CHECK_EQ(1ULL, 2ULL);
+}
+
+static void inner_fail_eq_f64(void) {
+    BT_CHECK_EQ(1.5, 2.5);
+}
+
+static void inner_fail_eq_str(void) {
+    const char *actual = "a";
+    const char *expected = "b";
+    BT_CHECK_EQ(actual, expected);
+}
+
+static void inner_fail_eq_str_null_actual(void) {
+    const char *actual = NULL;
+    const char *expected = "b";
+    BT_CHECK_EQ(actual, expected);
+}
+
+static void inner_fail_eq_str_null_expected(void) {
+    const char *actual = "a";
+    const char *expected = NULL;
+    BT_CHECK_EQ(actual, expected);
+}
+
+BT_TEST(bt_harness, run_reports_failing_checks_per_kind_and_suite_status) {
+    bt_test_entry entries[] = {
+        {"inner_fail_check", inner_fail_check},
+        {"inner_fail_eq_int", inner_fail_eq_int},
+        {"inner_fail_eq_u64", inner_fail_eq_u64},
+        {"inner_fail_eq_f64", inner_fail_eq_f64},
+        {"inner_fail_eq_str", inner_fail_eq_str},
+        {"inner_fail_eq_str_null_actual", inner_fail_eq_str_null_actual},
+        {"inner_fail_eq_str_null_expected", inner_fail_eq_str_null_expected},
+    };
+    size_t count = sizeof entries / sizeof entries[0];
+    BT_CHECK_EQ(bt_harness_run("bt_harness_inner_fail", entries, count), 1);
 }
 
 static bool coverage_instrumented(void) {
@@ -77,4 +126,12 @@ BT_TEST(bt_harness, an_aborting_child_still_writes_its_coverage_profile) {
     if (find != INVALID_HANDLE_VALUE) {
         FindClose(find);
     }
+}
+
+static void harness_death_abort_pin(void) {
+    BT_ABORT("pin");
+}
+
+BT_TEST(bt_harness, abort_macro_fails_then_exits_with_the_suite_code) {
+    bt_death_expect_code("harness.abort_pin", "abort: pin", 134, harness_death_abort_pin);
 }

@@ -85,3 +85,12 @@ BT_TEST(alloc, harness_wrappers_control_the_same_hook) {
     BT_CHECK(after != NULL);
     free(after);
 }
+
+BT_TEST(alloc, oversized_requests_report_real_allocation_failure) {
+    BT_CHECK(bt_malloc(SIZE_MAX) == NULL);
+    BT_CHECK(bt_calloc(SIZE_MAX, 2) == NULL);
+    void *block = bt_malloc(8);
+    BT_CHECK(block != NULL);
+    BT_CHECK(bt_realloc(block, SIZE_MAX) == NULL);
+    free(block);
+}
