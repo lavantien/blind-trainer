@@ -1588,8 +1588,18 @@ def coverage_suite_units(hub, suites, profile_dir):
     return units
 
 
-def profdata_merge_argv(tool, profraws, output):
-    return [str(tool), "merge", f"--output={output}", *[str(path) for path in profraws]]
+def write_response_file(args, path):
+    with open(path, "w", encoding="utf-8", newline="\n") as file:
+        for arg in args:
+            file.write(f'"{arg}"\n')
+    return f"@{path}"
+
+
+def profdata_merge_argv(tool, profraws, output, response_path):
+    response = write_response_file(
+        [f"--output={output}", *[str(path) for path in profraws]], response_path
+    )
+    return [str(tool), "merge", response]
 
 
 def coverage_export_exes(hub, root, suite_exes):
@@ -1598,19 +1608,17 @@ def coverage_export_exes(hub, root, suite_exes):
     return [*suite_exes, *extras]
 
 
-def cov_export_argv(hub, tool, exes, profdata):
+def cov_export_argv(hub, tool, exes, profdata, response_path):
     include = coverage_include_regex(hub)
     paths = [str(exe) for exe in exes]
-    argv = [
-        str(tool),
-        "export",
+    tail = [
         f"--instr-profile={profdata}",
         f"--include-filename-regex={include}",
         paths[0],
+        *[f"--object={exe}" for exe in paths[1:]],
     ]
-    for exe in paths[1:]:
-        argv.append(f"--object={exe}")
-    return argv
+    response = write_response_file(tail, response_path)
+    return [str(tool), "export", response]
 
 
 def coverage_badge_argv(hub, export_path):
@@ -1643,6 +1651,8 @@ def coverage_percent(output):
 def coverage_scrub(profiles_dir, profdata):
     shutil.rmtree(profiles_dir, ignore_errors=True)
     profdata.unlink(missing_ok=True)
+    for response in profdata.parent.glob("*-response.txt"):
+        response.unlink(missing_ok=True)
 
 
 def measured_dirty_paths(hub, root):
@@ -1709,13 +1719,19 @@ def tgt_coverage(args):
                 f"{len(profraws)} of {len(exes)} raw profiles landed under "
                 f"{paths['profiles']}"
             )
-        run(profdata_merge_argv(profdata_tool, profraws, paths["profdata"]), "coverage merge")
+        run(
+            profdata_merge_argv(
+                profdata_tool, profraws, paths["profdata"],
+                paths["profdata"].parent / "merge-response.txt",
+            ),
+            "coverage merge",
+        )
         if not paths["profdata"].is_file() or paths["profdata"].stat().st_size == 0:
             raise BtError(f"profdata merge left no artifact at {paths['profdata']}")
         proc = run(
             cov_export_argv(
                 hub, cov_tool, coverage_export_exes(hub, REPO_ROOT, exes),
-                paths["profdata"],
+                paths["profdata"], paths["profdata"].parent / "export-response.txt",
             ),
             "coverage export",
         )
