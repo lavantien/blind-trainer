@@ -906,7 +906,7 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
             tool_sources = sorted(tool_dir.glob("*.c"))
             if not tool_sources:
                 continue
-            if only is not None and only.replace("_", "-") not in tool_dir.name:
+            if only is not None and not only.replace("_", "-").startswith(tool_dir.name):
                 continue
             tool_objs = [objs_by_source[s] for s in tool_sources if s in objs_by_source]
             if not tool_objs:
