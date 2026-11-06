@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "common/alloc.h"
 #include "data/seedpack/registry.h"
 #include "data/seedpack/rulings.h"
 #include "verify/packs_report.h"
@@ -220,4 +221,54 @@ BT_TEST(verify_packs_report, registry_failure_keeps_the_real_error_and_the_audit
     bt_strbuf_free(&md);
     verify_pack_audit_free(&audit);
     tv_rm_rf(scratch);
+}
+
+BT_TEST(verify_packs_report, audit_sections_collapse_closed_when_their_growth_starves) {
+    char root[TV_PATH_MAX];
+    tv_scratch("packs-audit-oom", root);
+    char body[4096];
+    size_t used = (size_t)snprintf(body, sizeof body, "%s", "[");
+    for (size_t at = 0; at < 17; at++) {
+        used += (size_t)snprintf(body + used, sizeof body - used,
+                                 "%s{\"file\":\"p%zu.tsv\",\"event\":\"3x3\",\"method\":\"cfop\","
+                                 "\"stage\":\"s%zu\",\"expected_rows\":1}",
+                                 at == 0 ? "" : ",", at, at);
+        char name[32];
+        snprintf(name, sizeof name, "p%zu.tsv", at);
+        char path[TV_PATH_MAX];
+        tv_join(path, root, name);
+        char text[512];
+        snprintf(text, sizeof text,
+                 "case_key\talg\tfront_json\tsource_url\tsource_at\nk%zu\tR U R'\t{}\thttps://x"
+                 "\t2026-01-01\n",
+                 at);
+        tv_write_file(path, text);
+    }
+    snprintf(body + used, sizeof body - used, "%s", "]");
+    char registry[TV_PATH_MAX];
+    tv_join(registry, root, "registry.json");
+    tv_write_file(registry, body);
+
+    verify_pack_audit baseline;
+    verify_audit_packs(root, &baseline);
+    BT_CHECK_EQ(baseline.section_count, 17U);
+    verify_pack_audit_free(&baseline);
+
+    bool hit = false;
+    for (size_t k = 0; k < 2400 && !hit; k++) {
+        verify_pack_audit audit;
+        bt_alloc_fail_arm(k);
+        verify_audit_packs(root, &audit);
+        bt_alloc_fail_disarm();
+        bool load_offender = false;
+        for (size_t at = 0; at < audit.offenders.count; at++) {
+            if (strstr(audit.offenders.items[at], "fails to load") != NULL) {
+                load_offender = true;
+            }
+        }
+        hit = audit.section_count == 16 && !load_offender;
+        verify_pack_audit_free(&audit);
+    }
+    BT_CHECK(hit);
+    tv_rm_rf(root);
 }

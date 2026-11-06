@@ -62,7 +62,7 @@ static void arm_from_env(void) {
         return;
     }
     long count = strtol(raw, NULL, 10);
-    if (count > 0) {
+    if (count >= 0) {
         bt_alloc_fail_arm((size_t)count);
     }
 }

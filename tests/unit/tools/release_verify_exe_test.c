@@ -68,7 +68,7 @@ BT_TEST(release_verify_exe, alloc_starved_argv_exits_usage) {
     const char *argv[] = {"staging", "app.zip", NULL};
     char exe[BT_PATH_MAX];
     exe_path(exe);
-    const char *settings[2] = {"1", "2"};
+    const char *settings[3] = {"0", "1", "2"};
     for (size_t at = 0; at < 2; at++) {
         SetEnvironmentVariableA("BT_RV_ALLOC_FAIL_OK", settings[at]);
         int code = -1;
