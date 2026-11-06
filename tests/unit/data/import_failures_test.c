@@ -1,3 +1,4 @@
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "data/db.h"
 #include "data/import.h"
@@ -251,6 +252,85 @@ BT_TEST(import_failures, a_held_reader_fails_the_import_commit_and_rolls_back) {
     BT_CHECK(path_exists(path));
     assert_settings_absent(&db);
     assert_still_fresh(&db);
+    bt_db_close(&db);
+    tu_remove_tree(root);
+}
+
+BT_TEST(import_failures, a_directory_in_place_of_solves_fails_after_srs_loaded) {
+    const char *root = tu_temp_dir("bt-import-fail", "dir-solves");
+    char path[BT_TU_PATH_MAX];
+    bt_data_settings_path_at(root, path);
+    tu_write_file(path, SETTINGS_JSON);
+    bt_data_srs_path_at(root, path);
+    tu_write_file(path, SRS_JSON);
+    bt_data_solves_path_at(root, path);
+    tu_mkdir_p(path);
+    bt_db db;
+    open_at(&db, root);
+    char err[512];
+    BT_CHECK(bt_import_run(&db, root, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "solves.json") != NULL);
+    BT_CHECK(strstr(err, "read ") == err);
+    assert_still_fresh(&db);
+    bt_db_close(&db);
+    tu_remove_tree(root);
+}
+
+BT_TEST(import_failures, malformed_algs_json_fails_after_solves_loaded) {
+    const char *root = tu_temp_dir("bt-import-fail", "bad-algs");
+    char path[BT_TU_PATH_MAX];
+    bt_data_settings_path_at(root, path);
+    tu_write_file(path, SETTINGS_JSON);
+    bt_data_srs_path_at(root, path);
+    tu_write_file(path, SRS_JSON);
+    bt_data_solves_path_at(root, path);
+    tu_write_file(path, SOLVES_JSON);
+    bt_data_user_algs_path_at(root, path);
+    tu_write_file(path, "{\"entries\":");
+    bt_db db;
+    open_at(&db, root);
+    char err[512];
+    BT_CHECK(bt_import_run(&db, root, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "user algs json invalid") != NULL);
+    assert_still_fresh(&db);
+    bt_db_close(&db);
+    tu_remove_tree(root);
+}
+
+BT_TEST(import_failures, import_fails_closed_under_each_allocation_failure) {
+    const char *root = tu_temp_dir("bt-import-fail", "oom-sweep");
+    char path[BT_TU_PATH_MAX];
+    bt_data_settings_path_at(root, path);
+    tu_write_file(path, SETTINGS_JSON);
+    bt_data_srs_path_at(root, path);
+    tu_write_file(path, SRS_JSON);
+    bt_data_solves_path_at(root, path);
+    tu_write_file(path, SOLVES_JSON);
+    bt_data_user_algs_path_at(root, path);
+    tu_write_file(path, ALGS_JSON);
+    int saw_fail = 0;
+    for (size_t ok = 0; ok < 40; ok++) {
+        bt_db db;
+        open_at(&db, root);
+        char err[512];
+        err[0] = '\0';
+        bt_alloc_fail_arm(ok);
+        int rc = bt_import_run(&db, root, err, sizeof err);
+        bt_alloc_fail_disarm();
+        if (rc != 0) {
+            saw_fail = 1;
+            BT_CHECK(err[0] != '\0');
+        }
+        bt_db_close(&db);
+        char db_path[BT_TU_PATH_MAX];
+        bt_data_db_path_at(root, db_path);
+        remove(db_path);
+    }
+    BT_CHECK(saw_fail == 1);
+    bt_db db;
+    open_at(&db, root);
+    char err[512];
+    BT_CHECK(bt_import_run(&db, root, err, sizeof err) == 0);
     bt_db_close(&db);
     tu_remove_tree(root);
 }

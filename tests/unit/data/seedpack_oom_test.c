@@ -99,6 +99,30 @@ BT_TEST(seedpack_oom, parse_pack_fails_closed_under_each_allocation_failure) {
     bt_seed_rows_free(&rows);
 }
 
+BT_TEST(seedpack_oom, note_bearing_rows_fail_closed_through_the_enrich_arms) {
+    char text[512];
+    snprintf(text, sizeof text, "%s\nT\tR U -> drill note\t{}\thttps://x\t2026-01-01\n", HEADER);
+    bt_pack_entry entry = entry_of("3x3", 1);
+    for (size_t ok = 0; ok < 48; ok++) {
+        bt_seed_rows rows;
+        bt_seed_error err;
+        bt_alloc_fail_arm(ok);
+        int rc = bt_seedpack_parse_pack(&entry, text, &rows, &err);
+        bt_alloc_fail_disarm();
+        if (rc == 0) {
+            BT_CHECK_EQ((int)rows.count, 1);
+            BT_CHECK(strstr(rows.items[0].front_json, "loader_notes") != NULL);
+        }
+        bt_seed_rows_free(&rows);
+    }
+    bt_seed_rows rows;
+    bt_seed_error err;
+    BT_CHECK(bt_seedpack_parse_pack(&entry, text, &rows, &err) == 0);
+    BT_CHECK_EQ((int)rows.count, 1);
+    BT_CHECK(strstr(rows.items[0].front_json, "loader_notes") != NULL);
+    bt_seed_rows_free(&rows);
+}
+
 BT_TEST(seedpack_oom, parse_pack_skips_whitespace_only_lines_between_rows) {
     char text[512];
     snprintf(text, sizeof text, "%s\n \t \nT\tR U R'\t{}\thttps://x\t2026-01-01\n\n   \n", HEADER);

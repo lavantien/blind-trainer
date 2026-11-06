@@ -202,7 +202,7 @@ BT_TEST(paths_failures, user_algs_save_and_load_report_each_failure_shape) {
     BT_CHECK(bt_user_algs_save_at(&algs, dir, &err) != 0);
     BT_CHECK_EQ(err.kind, BT_PATHS_ERR_WRITE);
     _rmdir(algs_path);
-    for (size_t ok = 0; ok < 8; ok++) {
+    for (size_t ok = 0; ok < 16; ok++) {
         bt_alloc_fail_arm(ok);
         int rc = bt_user_algs_save_at(&algs, dir, &err);
         bt_alloc_fail_disarm();
@@ -227,4 +227,85 @@ BT_TEST(paths_failures, user_algs_save_and_load_report_each_failure_shape) {
     _rmdir(algs_path);
     bt_user_algs_free(&algs);
     tu_remove_tree(dir);
+}
+
+BT_TEST(paths_failures, load_config_returns_null_when_the_read_malloc_starves) {
+    const char *dir = paths_fail_dir("config-oom");
+    char config_path[BT_TU_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config.json", dir);
+    tu_write_file(config_path, "{\"paths\":{\"db_file\":\"x.db\"}}");
+    env_guard guard;
+    env_set(&guard, "BT_CONFIG", config_path);
+    bt_alloc_fail_arm(0);
+    bt_json_value *starved = bt_data_load_config();
+    bt_alloc_fail_disarm();
+    BT_CHECK(starved == NULL);
+    bt_json_value *config = bt_data_load_config();
+    BT_CHECK(config != NULL);
+    bt_json_free(config);
+    env_restore(&guard);
+    tu_remove_tree(dir);
+}
+
+BT_TEST(paths_failures, read_json_reports_a_read_error_for_a_directory) {
+    const char *dir = paths_fail_dir("read-json-dir");
+    bt_json_value *value = NULL;
+    BT_CHECK(bt_data_read_json(dir, &value) == BT_DATA_READ_ERROR);
+    BT_CHECK(value == NULL);
+    char missing[BT_TU_PATH_MAX];
+    snprintf(missing, sizeof missing, "%s/absent.json", dir);
+    BT_CHECK(bt_data_read_json(missing, &value) == BT_DATA_READ_MISSING);
+    tu_remove_tree(dir);
+}
+
+BT_TEST(paths_failures, write_json_atomic_accepts_a_bare_filename) {
+    const char *dir = paths_fail_dir("bare-json");
+    char previous[BT_TU_PATH_MAX];
+    BT_CHECK(_getcwd(previous, sizeof previous) != NULL);
+    BT_CHECK(_chdir(dir) == 0);
+    bt_json_value *root = NULL;
+    bt_json_error parse_err;
+    const char *text = "{\"k\":1}";
+    BT_CHECK(bt_json_parse(text, strlen(text), &root, &parse_err) == 0);
+    bt_paths_error err;
+    BT_CHECK(bt_data_write_json_atomic("bare.json", root, &err) == 0);
+    bt_json_free(root);
+    FILE *file = fopen("bare.json", "rb");
+    BT_CHECK(file != NULL);
+    fclose(file);
+    remove("bare.json");
+    BT_CHECK(_chdir(previous) == 0);
+    tu_remove_tree(dir);
+}
+
+BT_TEST(paths_failures, user_algs_from_json_starves_mid_insert) {
+    bt_json_value *root = NULL;
+    bt_json_error parse_err;
+    const char *text =
+        "{\"entries\":{\"sheet/UF\":{\"alg\":\"R U\"},\"sheet/UR\":{\"alg\":\"F2\"}}}";
+    BT_CHECK(bt_json_parse(text, strlen(text), &root, &parse_err) == 0);
+    int saw_fail = 0;
+    for (size_t ok = 0; ok < 8; ok++) {
+        bt_user_algs algs;
+        bt_user_algs_init(&algs);
+        bt_paths_error err;
+        bt_alloc_fail_arm(ok);
+        int rc = bt_user_algs_from_json(root, &algs, &err);
+        bt_alloc_fail_disarm();
+        if (rc != 0) {
+            saw_fail = 1;
+            BT_CHECK_EQ(err.kind, BT_PATHS_ERR_DESERIALIZE);
+        } else {
+            BT_CHECK((int)bt_user_algs_len(&algs) == 2);
+        }
+        bt_user_algs_free(&algs);
+    }
+    BT_CHECK(saw_fail == 1);
+    bt_user_algs algs;
+    bt_user_algs_init(&algs);
+    bt_paths_error err;
+    BT_CHECK(bt_user_algs_from_json(root, &algs, &err) == 0);
+    BT_CHECK((int)bt_user_algs_len(&algs) == 2);
+    bt_user_algs_free(&algs);
+    bt_json_free(root);
 }
