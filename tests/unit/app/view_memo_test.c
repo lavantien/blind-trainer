@@ -5,6 +5,9 @@
 #include "app/window.h"
 
 #include "app/views/images.h"
+#include "common/alloc.h"
+#include "data/fsrs.h"
+#include "scheme/scheme.h"
 
 #include "common.h"
 
@@ -558,4 +561,203 @@ static int run_status_oversized_word_clamped(const bt_app_font_book *book) {
 
 BT_TEST(view_memo, status_draw_clamps_an_oversized_line_to_the_content_width) {
     BT_CHECK(with_memo_fonts(run_status_oversized_word_clamped));
+}
+
+static void residue_with_every_kind(bt_memo *out) {
+    memset(out, 0, sizeof *out);
+    out->residue.has_parity = 1;
+    out->residue.parity.edge[0] = 0;
+    out->residue.parity.edge[1] = 1;
+    out->residue.parity.corner[0] = 2;
+    out->residue.parity.corner[1] = 3;
+    out->residue.flip_count = 2;
+    out->residue.flips[0] = 4;
+    out->residue.flips[1] = 5;
+    out->residue.twist_count = 1;
+    out->residue.twists[0].corner = 6;
+    out->residue.twists[0].quarter = 2;
+}
+
+BT_TEST(view_memo, residue_lines_report_parity_flips_and_twists) {
+    bt_memo memo;
+    residue_with_every_kind(&memo);
+    char lines[BT_MEMO_RESIDUE_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = 0;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, BT_MEMO_RESIDUE_MAX, &count) == 1);
+    BT_CHECK_EQ(count, (size_t)3);
+    char parity[BT_MEMO_TEXT_MAX];
+    snprintf(parity, sizeof parity, "parity %s-%s, %s-%s", bt_scheme_name_of(0),
+             bt_scheme_name_of(1), bt_scheme_name_of(2), bt_scheme_name_of(3));
+    BT_CHECK(strcmp(lines[0], parity) == 0);
+    char flip[BT_MEMO_TEXT_MAX];
+    snprintf(flip, sizeof flip, "flip %s & %s", bt_scheme_name_of(4), bt_scheme_name_of(5));
+    BT_CHECK(strcmp(lines[1], flip) == 0);
+    char twist[BT_MEMO_TEXT_MAX];
+    snprintf(twist, sizeof twist, "twist %s x2", bt_scheme_name_of(6));
+    BT_CHECK(strcmp(lines[2], twist) == 0);
+}
+
+BT_TEST(view_memo, residue_lines_fail_closed_when_the_capacity_runs_out) {
+    bt_memo memo;
+    residue_with_every_kind(&memo);
+    char lines[BT_MEMO_RESIDUE_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = 99;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, 0, &count) == 0);
+    BT_CHECK_EQ(count, (size_t)0);
+    count = 99;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, 2, &count) == 0);
+    BT_CHECK_EQ(count, (size_t)2);
+    memo.residue.has_parity = 0;
+    count = 99;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, 0, &count) == 0);
+    BT_CHECK_EQ(count, (size_t)0);
+    memo.residue.flip_count = 0;
+    memo.residue.twist_count = 0;
+    count = 99;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, 0, &count) == 0);
+    BT_CHECK_EQ(count, (size_t)0);
+}
+
+BT_TEST(view_memo, residue_lines_without_any_residue_say_so) {
+    bt_memo memo;
+    memset(&memo, 0, sizeof memo);
+    char lines[BT_MEMO_RESIDUE_MAX][BT_MEMO_TEXT_MAX];
+    size_t count = 0;
+    BT_CHECK(bt_memo_residue_lines(&memo, lines, BT_MEMO_RESIDUE_MAX, &count) == 1);
+    BT_CHECK_EQ(count, (size_t)1);
+    BT_CHECK(strcmp(lines[0], "residue none") == 0);
+}
+
+BT_TEST(view_memo, a_failed_syllable_malloc_leaves_the_token_on_letters) {
+    bt_syllable_book book = book_with("edge", "AB", "ta");
+    bt_memo memo;
+    memo_with_edge_pair('A', 'B', &memo);
+    bt_memo_token tokens[BT_MEMO_TOKENS_MAX];
+    size_t count = 0;
+    bt_alloc_fail_arm(0);
+    bt_memo_build_tokens(&memo, &book, tokens, &count);
+    bt_alloc_fail_disarm();
+    const bt_memo_token *ab = NULL;
+    for (size_t i = 0; i < count; i++) {
+        if (tokens[i].letters[0] == 'A' && tokens[i].letters[1] == 'B' &&
+            tokens[i].orbit == BT_ORBIT_EDGE) {
+            ab = &tokens[i];
+        }
+    }
+    BT_CHECK(ab != NULL);
+    BT_CHECK(ab->syllable == NULL);
+    char text[BT_MEMO_TEXT_MAX];
+    bt_memo_token_text(ab, BT_MEMO_SYLLABLES, text);
+    BT_CHECK(strcmp(text, "AB") == 0);
+    bt_syllable_book_free(&book);
+}
+
+BT_TEST(view_memo, rating_without_a_memo_writes_no_reviews) {
+    bt_memo_session session;
+    bt_memo_session_init(&session);
+    bt_stores stores = empty_stores();
+    bt_fsrs_config fsrs;
+    bt_fsrs_config_defaults(&fsrs);
+    bt_memo_rate_pairs(&stores, &fsrs, &session, BT_GRADE_GOOD, 100);
+    BT_CHECK_EQ(bt_srs_store_len(&stores.srs), (size_t)0);
+    bt_stores_free(&stores);
+}
+
+BT_TEST(view_memo, the_recent_trail_starts_after_the_recent_window) {
+    bt_memo_session session;
+    bt_memo_session_init(&session);
+    enum { TRAIL_TOKENS = 20 };
+    session.token_count = TRAIL_TOKENS;
+    for (size_t i = 0; i < TRAIL_TOKENS; i++) {
+        session.tokens[i].orbit = BT_ORBIT_EDGE;
+        session.tokens[i].letters[0] = (char)('A' + i / 10);
+        session.tokens[i].letters[1] = (char)('A' + i % 10);
+        session.tokens[i].syllable = NULL;
+        session.tokens[i].image = NULL;
+    }
+    session.shown = TRAIL_TOKENS;
+    bt_stores stores = empty_stores();
+    bt_memo_rows rows;
+    bt_memo_view_rows(BT_MEMO_STREAM, &session, &stores, &rows);
+    char expected[BT_MEMO_RECENT_MAX];
+    expected[0] = '\0';
+    for (size_t i = TRAIL_TOKENS - 1 - BT_MEMO_RECENT_TOKENS; i + 1 < TRAIL_TOKENS; i++) {
+        char text[BT_MEMO_TEXT_MAX];
+        bt_memo_token_text(&session.tokens[i], BT_MEMO_PER_ORBIT, text);
+        if (expected[0] != '\0') {
+            strcat(expected, " ");
+        }
+        strcat(expected, text);
+    }
+    BT_CHECK(strcmp(rows.recent, expected) == 0);
+    bt_stores_free(&stores);
+}
+
+BT_TEST(view_memo, a_zero_cadence_completes_the_stream_on_the_next_tick) {
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    ctx.stores.settings.memo_cadence_ms = 0;
+    ctx.memo_phase = BT_MEMO_STREAM;
+    bt_memo_app_state app;
+    bt_view_memo_app_init(&app);
+    app.session.token_count = 3;
+    BT_CHECK_EQ(app.session.shown, (size_t)0);
+    bt_view_memo_tick(&ctx, &app, 0.016F);
+    BT_CHECK_EQ(app.session.shown, (size_t)3);
+    BT_CHECK(ctx.memo_phase == BT_MEMO_RECALL);
+    bt_view_memo_app_free(&app);
+}
+
+BT_TEST(view_memo, row_draw_without_loaded_fonts_returns_before_touching_stores) {
+    BT_CHECK(bt_app_fonts_current() == NULL);
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_view_memo_row_draw(&ctx);
+}
+
+static int run_row_draw_without_stores(const bt_app_font_book *book) {
+    (void)book;
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_view_memo_row_draw(&ctx);
+    return 1;
+}
+
+BT_TEST(view_memo, row_draw_without_stores_returns_before_building_rows) {
+    BT_CHECK(with_memo_fonts(run_row_draw_without_stores));
+}
+
+enum {
+    WRAP_OVERLONG_CHARS = BT_MEMO_TEXT_MAX + 2,
+    WRAP_OVERLONG_WIDTH = 2000,
+};
+
+static int run_wrap_overlong_word(const bt_app_font_book *book) {
+    const bt_theme *theme = bt_theme_table();
+    float body = theme->font_body * theme->root_rem;
+    char word[WRAP_OVERLONG_CHARS + 1];
+    memset(word, 'a', WRAP_OVERLONG_CHARS);
+    word[WRAP_OVERLONG_CHARS] = '\0';
+    char text[BT_MEMO_TEXT_MAX * 2];
+    snprintf(text, sizeof text, "%s tail", word);
+    char lines[BT_MEMO_WRAP_MAX][BT_MEMO_TEXT_MAX];
+    size_t count =
+        bt_memo_wrap_lines(book->regular, text, body, (float)WRAP_OVERLONG_WIDTH, lines, 2, 1);
+    if (count != 1) {
+        return 0;
+    }
+    size_t len = strlen(lines[0]);
+    if (len < 4 || len > BT_MEMO_TEXT_MAX - 1 || strcmp(lines[0] + len - 3, "...") != 0) {
+        return 0;
+    }
+    if (memo_measure(book, lines[0], body) > (float)WRAP_OVERLONG_WIDTH + 0.5F) {
+        return 0;
+    }
+    size_t tight =
+        bt_memo_wrap_lines(book->regular, "ready", body, (float)WRAP_OVERLONG_WIDTH, lines, 1, 4);
+    return tight == 1 && strcmp(lines[0], "ready") == 0;
+}
+
+BT_TEST(view_memo, wrap_clamps_a_word_longer_than_the_line_buffer) {
+    BT_CHECK(with_memo_fonts(run_wrap_overlong_word));
 }
