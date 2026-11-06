@@ -369,3 +369,49 @@ BT_TEST(verify_exe, reports_a_clone_without_the_packs_root) {
     BT_CHECK(strstr(err, "packs") != NULL);
     rm_scratch_root(root);
 }
+
+BT_TEST(verify_exe, reports_a_config_without_the_ref_ground_section) {
+    char root[BT_PATH_MAX];
+    scratch_root("norefg", root);
+    char config[BT_PATH_MAX];
+    snprintf(config, sizeof config, "%s/minimal.json", root);
+    overwrite_file(config, "{}");
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify(NULL, "artifacts", config, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "paths.ref_ground") != NULL);
+    rm_scratch_root(root);
+}
+
+BT_TEST(verify_exe, reports_a_config_without_the_packs_section) {
+    char root[BT_PATH_MAX];
+    scratch_root("nopacksc", root);
+    char config[BT_PATH_MAX];
+    snprintf(config, sizeof config, "%s/minimal.json", root);
+    overwrite_file(config, "{\"paths\": {\"ref_ground\": \"ref_ground\"}}");
+    char artifacts[BT_PATH_MAX];
+    scratch_root("nopacksart", artifacts);
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify(NULL, artifacts, config, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "paths.packs") != NULL);
+    rm_scratch_root(root);
+    rm_scratch_root(artifacts);
+}
+
+BT_TEST(verify_exe, reports_a_truncated_backslash_artifacts_root) {
+    char artifacts[2300];
+    size_t used = (size_t)snprintf(artifacts, sizeof artifacts, "\\\\127.0.0.1\\no-such-share\\");
+    while (used + 3 < sizeof artifacts) {
+        artifacts[used++] = 'a';
+        artifacts[used++] = '\\';
+    }
+    artifacts[used] = '\0';
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify(NULL, artifacts, NULL, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "write \\/127.0.0.1/no-such-share/a/a") != NULL);
+}
