@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 EXPORT = Path(sys.argv[1] if len(sys.argv) > 1 else "artifacts/lane/lane-cov-ga/cov-build/export.json")
-PROBES = ("ga-run/out.c", "ga-run/lib.c", "memofreq/lib.c", "memofreq/main.c", "ga/ga.c", "ga/inventory.c")
+PROBES = ("ga-run/out.c", "ga-run/lib.c", "memofreq/lib.c", "memofreq/main.c", "ga/ga.c", "ga/inventory.c", "ga/dist.c")
 
 payload = json.loads(EXPORT.read_text(encoding="utf-8"))
 for data in payload.get("data", []):
