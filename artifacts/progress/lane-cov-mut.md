@@ -57,6 +57,52 @@ lane-cov-mut3 replacing the 429-killed predecessor. Toolset probe passed. Inheri
 - 5e53421: 12 allocation sites across fs.c, token.c, operators.c, mutants-gate lib.c routed through bt_malloc, bt_realloc, bt_calloc, with arm(0) fail closed tests in both suites (read_file, tokenize, paths_push, enumerate, gate_run, gate_merge).
 - 1f6b53b: bt_mut_mkdirs' only failure path, its to_wide allocation, now driven through the seam, converting the last classified mkdirs arm from unreachable to covered.
 
+## relaunch 4, 2026-11-06 19:0x
+
+lane-cov-mut4, generation 4, regression investigation. Toolset probe passed (all 6 tools). Task: mutate_driver.selftest_passes fails, mutate.exe selftest exits 1 at case mutate.engine_stages_the_suite_exe_inside_the_workspace (tests_engine.c:98, baseline verdict engine.c:854), plus a stale count pin 55 at tests/unit/tools/mutate_test.c:21 versus a 54 case table after the tests.c to tests_scratch.c split. Lint lane ruled non-causal, HEAD fails. Plan: reproduce under bt.py, read the baseline verdict path, bisect suspects (4bfecfd coverage_retry_unit, 4f9a6a9 strbuf zero-cap, db5f9e7 bt_trace alloc routing, suite exe relink changes), fix root cause red-green, fix the count pin to the true table count, lint, deliver.
+
+## relaunch 4 incidents
+
+- 19:0x reproduced: bt.py test-unit tools --only mutate_test fails only mutate_driver.selftest_passes, selftest prints "suite mutate: 53 passed, 1 failed" (54 cases in the table), only wsstage fails at tests_engine.c:98. Direct mutate.exe selftest runs fail identically, deterministic across 3 runs.
+- 19:1x manual replication of the engine baseline (compile fx_ws_target, link the 5 ws objects, stage into build/bin/mutate-run, run from repo root) passes end to end. A playground probe (playground/wsstage_probe.c) running the 21-test selftest prefix plus the real bt_test_mutate_engine_stages_the_suite_exe_inside_the_workspace function against the current shared objects passes. The current sources are correct.
+- 19:2x ROOT CAUSE: build/bin/mutate.exe is stale, linked 08:44:22 from tests.obj built 08:37 (before da6a7d3 08:47:26 added alloc.obj to the ws fixture link list) together with bt_trace.obj rebuilt 08:44:21 by db5f9e7 (bt_trace now needs the alloc seam symbols). That exe's ws baseline link misses alloc.obj, fails with unresolved externals, verdict BUILDERR, baseline refusal at engine.c:854. da6a7d3 fixed the source but was verified only in the lane clone, the shared tool exe was never relinked since 08:44:22.
+- Why every later run kept the stale exe: bt.py link_stage line 909 skips a tool exe when only.replace("_","-") is not in the tool dir name. With --only mutate_test the probe string is "mutate-test", the tool dir is "mutate", no match, link skipped, silently. The suite exe (line 940, only in stem) still relinks and runs, so the suite spawns the stale tool exe. Every regression-hunt run used --only mutate_test. The lint lane's rebuild also went through a filtered run, so its "HEAD fails identically" verdict ran the same stale binary. Tool dirs without a hyphen (mutate, policy) hit this, hyphenated dirs (mutants-gate, ga-run) do not.
+- Second defect confirmed: tests/unit/tools/mutate_test.c:21 pins "suite mutate: 55 passed, 0 failed" but the selftest table holds 54 cases, so even a correct exe fails the pin. Fix: pin states the true table count.
+
+## relaunch 4 verdict and escalation
+
+- 19:3x the reported second defect is the same staleness artifact, not real: the stale exe's table predates 5e53421 (08:50:27), which added mutate.allocation_arms_fail_closed as entry 55 and moved the pin 54 to 55 in the same commit. Current sources hold a 55 entry table and the pin at 55 is correct. Static count of the table in tools/mutate/tests.c: 55 entries, the missing name in the stale run was exactly allocation_arms_fail_closed. One root cause, no source defect in the area.
+- Fix applied: refreshed the shared build/bin/mutate.exe via python bt.py test-unit tools --only mutate (the filter form that matches the tool dir and relinks it), then re-verified the hub reproduction command --only mutate_test.
+
+ESCALATE 7 for the hub, two items:
+1. bt.py link_stage tool filter (bt.py:909) never matches a hyphen-less tool dir from a suite stem filter: only.replace("_", "-") turns mutate_test into "mutate-test", which is not in "mutate", so every `--only mutate_test` (and `--only policy_test`) run relinks the suite exe but silently skips the tool exe relink. A tool whose objects changed keeps serving its old binary, and the skip is invisible in the log. Proposed root fix, hub owns bt.py: drop the trailing suite marker before the containment test (match only, only.replace("_", "-"), or only.removesuffix("_test") against tool_dir.name), or reuse matched_tool_dir for the tool loop.
+2. The whole shared build/bin is one stale generation: every tool exe carries mtime 08:44:22 while later commits changed tools and src/common sources (mutate tests.c twice, strbuf.c in 4f9a6a9). Lane flows run in lane clones, so nothing in the shared tree relinked them for 10 hours. The hub should run one unfiltered build or test pass in the shared tree so the shared exes match HEAD before the wave-end gates, and the CI watcher flow should treat a tool exe older than its newest object as a build failure.
+
+## relaunch 4 delivery, 19:4x
+
+- Verification: python bt.py test-unit tools --only mutate relinked build/bin/mutate.exe at 19:17:51 and both mutate suites passed (tools_mutate_test, tools_mutate_oom_test). The hub reproduction command python bt.py test-unit tools --only mutate_test then passed 1 suite, 0 failed. Direct selftest on the refreshed exe prints "suite mutate: 55 passed, 0 failed" exit 0, the pin at tests/unit/tools/mutate_test.c:21 passes as written. No source file in the area changed, the regression needed no code fix.
+- Lint: python bt.py lint tools reports 85 clean, 4 failed, all 4 in the verify lane's in-flight files (release_verify_inflate_test.c, release_verify_png_test.c, release_verify_spawn_test.c, verify_ev_bigcube_test.c), the documented ESCALATE 6 debt class. No mutate-owned file failed.
+- Probe committed at playground/wsstage_probe.c: reproduces the engine ws baseline in isolation and runs the selftest prefix plus the real staging test in one process, the tool that separated stale-binary behavior from source behavior.
+- Probe artifacts purged: temp probe trees, staged ws exe, scratch logs, build/test-tmp probe binary.
+
+Reading log:
+read artifacts/progress/lane-cov-mut.md full - inherited state, escalations, lane history
+read tools/mutate/tests_engine.c 60-150, 205-340 - failing case, fake root tests
+read tools/mutate/engine.c 468-660, 652-905 - prepare_scratch, run_one, baseline verdict path
+read tools/mutate/buildcmd.c full - flag assembly and link argv
+read tools/mutate/tests.c 1-200, 740-1030 - setup, ws link list, selftest table
+read tools/mutate/mutate.h grep structs - engine and target fields for the probe
+read tools/mutate/tests_shared.h full - timeout constant, shared helpers
+read tools/mutate/spawn.c 85-312 - spawn capture, compile_file rc contract
+read src/common/paths.c grep workspace_root, config_path - workspace walk
+read tests/unit/tools/fixtures/fx_ws_main.c, fx_ws_target.c full - staged suite behavior
+read tests/unit/tools/mutate_test.c full - selftest pin and driver spawn idiom
+read tests/unit/tools/spawn_util.h 185-244 - repo root derivation
+read src/common/bt_harness.c 40-124 - in-process table runner
+read bt.py 868-952, 1341-1385, grep only/lint - link filter mechanism, lint area map
+read build/obj/70dcf3245464/tests/unit/tools/fixtures/fx_ws_target.d - dep inputs
+read scripts/commit_lane.py full - commit protocol
+
 ## unreachability proofs, item 5
 
 - fs.c read_file seek and tell arms: fopen("rb") on a directory fails at open on the MSVC CRT, so only regular files reach fseek(END)/ftell/fseek(SET), and those calls are specified to succeed on seekable file handles, which every CRT file handle backed by a Windows file is. Proof re-derivation: read fs.c lines 21-39 plus the CRT fopen contract.
