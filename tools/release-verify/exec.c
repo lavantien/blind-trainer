@@ -151,9 +151,6 @@ static int rv_quote_wide(const wchar_t *arg, wchar_t *out, size_t cap) {
     size_t used = 0;
     int needs = arg[0] == L'\0' || wcspbrk(arg, L" \t\"") != NULL;
     if (needs) {
-        if (used + 1 >= cap) {
-            return -1;
-        }
         out[used++] = L'"';
     }
     for (size_t i = 0; arg[i] != L'\0'; i++) {
