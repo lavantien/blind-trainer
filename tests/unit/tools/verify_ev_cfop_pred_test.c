@@ -6,6 +6,7 @@
 #include "core/cube.h"
 #include "verify/ev_bld.h"
 #include "verify/ev_cfop.h"
+#include "verify/packs.h"
 
 static void state_of(const char *alg_text, bt_cube *out) {
     bt_alg alg;
@@ -92,4 +93,79 @@ BT_TEST(verify_ev_cfop_pred, f2l_outcome_names_the_slot_failures) {
     verify_tier2 solved_layers =
         verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, "{\"slot\": \"fr\"}");
     BT_CHECK(strstr(solved_layers.fail, "first two layers are already solved") != NULL);
+}
+
+BT_TEST(verify_ev_cfop_pred, rewrite_names_a_leading_digit_token) {
+    char out[512];
+    BT_CHECK(verify_cfop_rewrite_to_fixed("2R", out, sizeof out) != 0);
+    BT_CHECK(strstr(out, "no canonical move") != NULL);
+}
+
+BT_TEST(verify_ev_cfop_pred, rewrite_tolerates_trailing_space_and_stacked_rotations) {
+    char out[512];
+    BT_CHECK_EQ(verify_cfop_rewrite_to_fixed("R U ", out, sizeof out), 0);
+    BT_CHECK_EQ(out, "R U");
+    BT_CHECK_EQ(verify_cfop_rewrite_to_fixed("x y R", out, sizeof out), 0);
+    BT_CHECK(out[0] != '\0');
+}
+
+BT_TEST(verify_ev_cfop_pred, f2l_reads_the_u_and_d_slot_letters_and_home_pairs) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    bt_cube state;
+    state_of("R", &state);
+    const char *home_slots[2] = {"UF", "fl"};
+    for (size_t at = 0; at < 2; at++) {
+        char front_json[32];
+        snprintf(front_json, sizeof front_json, "{\"slot\":\"%s\"}", home_slots[at]);
+        verify_tier2 outcome =
+            verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, front_json);
+        BT_CHECK_EQ(outcome.kind, VERIFY_TIER2_FAIL);
+        BT_CHECK(strstr(outcome.fail, "holds its pair solved") != NULL);
+    }
+    verify_tier2 displaced_slot =
+        verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, "{\"slot\":\"DF\"}");
+    BT_CHECK_EQ(displaced_slot.kind, VERIFY_TIER2_PASS);
+}
+
+BT_TEST(verify_ev_cfop_pred, f2l_names_a_state_with_no_solved_cross) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    bt_cube state;
+    state_of("U D'", &state);
+    verify_tier2 no_cross =
+        verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, "{\"slot\":\"fr\"}");
+    BT_CHECK_EQ(no_cross.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK(strstr(no_cross.fail, "no solved cross") != NULL);
+}
+
+static bt_seed_rows cfop_rows_holder;
+
+static void cfop_one_row(const char *alg) {
+    static bt_seed_row row;
+    memset(&row, 0, sizeof row);
+    snprintf(row.case_key, sizeof row.case_key, "%s", "pll.1");
+    row.alg = (char *)alg;
+    row.front_json = (char *)"{}";
+    row.source_url = (char *)"https://example.test";
+    row.source_at = (char *)"2026-10-10";
+    cfop_rows_holder.items = &row;
+    cfop_rows_holder.count = 1;
+}
+
+BT_TEST(verify_ev_cfop_pred, pll_rows_name_blank_and_parenthesized_rotation_algs) {
+    verify_section_result section;
+    cfop_one_row("");
+    verify_cfop_verify_pll(&cfop_rows_holder, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier1_err, "alg is empty");
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+    cfop_one_row("(x)");
+    verify_cfop_verify_pll(&cfop_rows_holder, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_PASS);
+    verify_section_free(&section);
 }

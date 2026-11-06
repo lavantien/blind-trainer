@@ -476,27 +476,11 @@ static void strip_parens(const char *text, char *out, size_t out_len) {
     out[used] = '\0';
 }
 
-static void verify_cfop(const bt_seed_rows *rows, const char *stage_name,
+static void verify_cfop(const bt_seed_rows *rows, verify_cfop_stage stage,
                         verify_section_result *out) {
     BT_TRACE_ENTER("ev_cfop.verify_cfop");
     verify_bld_layout layout;
     verify_bld_layout_probe(&layout);
-    verify_cfop_stage stage;
-    char stage_err[VERIFY_ERR_MAX];
-    if (verify_cfop_stage_of(stage_name, &stage, stage_err, sizeof stage_err) != 0) {
-        verify_section_init(out);
-        for (size_t at = 0; at < rows->count; at++) {
-            const bt_seed_row *row = &rows->items[at];
-            verify_row_outcome outcome = {0};
-            snprintf(outcome.case_key, sizeof outcome.case_key, "%s", row->case_key);
-            snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", stage_err);
-            outcome.tier2 = verify_tier2_skipped("tier 1 failed");
-            verify_section_push_row(out, &outcome);
-        }
-        BT_TRACE_FAIL("ev_cfop.verify_cfop", "stage %s", stage_name);
-        BT_TRACE_EXIT("ev_cfop.verify_cfop");
-        return;
-    }
     verify_section_init(out);
     for (size_t at = 0; at < rows->count; at++) {
         const bt_seed_row *row = &rows->items[at];
@@ -553,13 +537,13 @@ static void verify_cfop(const bt_seed_rows *rows, const char *stage_name,
 }
 
 void verify_cfop_verify_pll(const bt_seed_rows *rows, verify_section_result *out) {
-    verify_cfop(rows, "pll", out);
+    verify_cfop(rows, VERIFY_CFOP_PLL, out);
 }
 
 void verify_cfop_verify_oll(const bt_seed_rows *rows, verify_section_result *out) {
-    verify_cfop(rows, "oll", out);
+    verify_cfop(rows, VERIFY_CFOP_OLL, out);
 }
 
 void verify_cfop_verify_f2l(const bt_seed_rows *rows, verify_section_result *out) {
-    verify_cfop(rows, "f2l", out);
+    verify_cfop(rows, VERIFY_CFOP_F2L, out);
 }
