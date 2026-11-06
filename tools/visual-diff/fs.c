@@ -414,7 +414,7 @@ int btvd_fs_copy(const char *from, const char *to, char *err, size_t err_len) {
 }
 
 #ifdef _WIN32
-static int append_quoted_arg(wchar_t *line, size_t cap, size_t *at, const wchar_t *arg) {
+int btvd_fs_append_quoted_arg(wchar_t *line, size_t cap, size_t *at, const wchar_t *arg) {
     size_t backslashes = 0;
     if (*at + 2 >= cap) {
         return -1;
@@ -446,10 +446,10 @@ static int append_quoted_arg(wchar_t *line, size_t cap, size_t *at, const wchar_
         backslashes = 0;
         line[(*at)++] = *scan;
     }
-    if (*at + backslashes + 2 >= cap) {
+    if (*at + backslashes * 2 + 2 >= cap) {
         return -1;
     }
-    for (size_t rep = 0; rep < backslashes; rep++) {
+    for (size_t rep = 0; rep < backslashes * 2; rep++) {
         line[(*at)++] = L'\\';
     }
     line[(*at)++] = L'"';
@@ -466,14 +466,14 @@ int btvd_fs_spawn_wait(const char *exe, char *const *argv, size_t argc) {
     size_t at = 0;
     int broken = widen(exe, wide_exe, BT_PATH_MAX) != 0 ||
                  _wfullpath(wide_full, wide_exe, BT_PATH_MAX) == NULL ||
-                 append_quoted_arg(line, sizeof line / sizeof *line, &at, wide_full) != 0;
+                 btvd_fs_append_quoted_arg(line, sizeof line / sizeof *line, &at, wide_full) != 0;
     for (size_t idx = 0; broken == 0 && idx < argc; idx++) {
         if (widen(argv[idx], wide_arg, BT_PATH_MAX) != 0 || at >= sizeof line / sizeof *line - 1) {
             broken = 1;
             break;
         }
         line[at++] = L' ';
-        broken = append_quoted_arg(line, sizeof line / sizeof *line, &at, wide_arg) != 0;
+        broken = btvd_fs_append_quoted_arg(line, sizeof line / sizeof *line, &at, wide_arg) != 0;
     }
     int code = -1;
     if (broken == 0) {

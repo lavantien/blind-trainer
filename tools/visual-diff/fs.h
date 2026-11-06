@@ -6,6 +6,12 @@
 
 #include "lib.h"
 
+#ifdef _WIN32
+#include <wchar.h>
+
+int btvd_fs_append_quoted_arg(wchar_t *line, size_t cap, size_t *at, const wchar_t *arg);
+#endif
+
 int btvd_fs_is_dir(const char *path);
 int btvd_fs_is_file(const char *path);
 void btvd_fs_mkdir_p(const char *path);

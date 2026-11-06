@@ -222,9 +222,50 @@ BT_TEST(visual_diff_fs_edges, spawn_wait_hits_each_quote_cap_boundary) {
     at = quoted;
     budget = cap - 1015U - at;
     at += budget - fs_edge_push_fillers(args, &argc, budget);
-    fs_edge_quote_arg(args[argc++], cap - 9U - at, "x\\\\");
+    fs_edge_quote_arg(args[argc++], cap - 11U - at, "x\\\\");
     fs_edge_quote_arg(args[argc++], 0U, "y");
     BT_CHECK_EQ(fs_edge_spawn_cap(exe, args, argc), -1);
+}
+
+enum {
+    FS_EDGE_QUOTE_LINE_CAP = 16,
+    FS_EDGE_QUOTE_FIT_AT = 4,
+    FS_EDGE_QUOTE_OVER_AT = 5,
+    FS_EDGE_QUOTE_DOUBLED_AT = 14,
+};
+
+BT_TEST(visual_diff_fs_edges, append_quoted_arg_doubles_trailing_backslashes) {
+    wchar_t line[FS_EDGE_QUOTE_LINE_CAP];
+    size_t at = 0;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L"x\\"), 0);
+    BT_CHECK_EQ(at, 5U);
+    BT_CHECK(wcscmp(line, L"\"x\\\\\"") == 0);
+
+    at = 0;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L"x\\\\"), 0);
+    BT_CHECK_EQ(at, 7U);
+    BT_CHECK(wcscmp(line, L"\"x\\\\\\\\\"") == 0);
+
+    at = 0;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L"a\\b"), 0);
+    BT_CHECK_EQ(at, 5U);
+    BT_CHECK(wcscmp(line, L"\"a\\b\"") == 0);
+
+    at = 0;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L""), 0);
+    BT_CHECK_EQ(at, 2U);
+    BT_CHECK(wcscmp(line, L"\"\"") == 0);
+}
+
+BT_TEST(visual_diff_fs_edges, append_quoted_arg_tail_cap_reserves_the_doubled_backslashes) {
+    wchar_t line[FS_EDGE_QUOTE_LINE_CAP];
+    size_t at = FS_EDGE_QUOTE_FIT_AT;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L"\\\\\\\\"), 0);
+    BT_CHECK_EQ(at, FS_EDGE_QUOTE_DOUBLED_AT);
+    BT_CHECK(wcscmp(line + FS_EDGE_QUOTE_FIT_AT, L"\"\\\\\\\\\\\\\\\\\"") == 0);
+
+    at = FS_EDGE_QUOTE_OVER_AT;
+    BT_CHECK_EQ(btvd_fs_append_quoted_arg(line, FS_EDGE_QUOTE_LINE_CAP, &at, L"\\\\\\\\"), -1);
 }
 
 #endif
