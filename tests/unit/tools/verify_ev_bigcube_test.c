@@ -258,3 +258,163 @@ BT_TEST(verify_ev_bigcube, an_engine_init_failure_fails_the_row) {
     BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
     verify_section_free(&section);
 }
+
+BT_TEST(verify_ev_bigcube, an_overflowing_digit_run_skips_its_remaining_digits) {
+    size_t size = 0;
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(
+        verify_bigcube_tagged_size("parity9999999999999999999999999", &size, err, sizeof err), 1);
+    BT_CHECK_EQ(err, "tag parity9999999999999999999999999 holds no cube size");
+}
+
+static void crafted_state(size_t n, size_t index, uint8_t color, bt_pz_nxn *engine,
+                          bt_pz_nxn_state *out) {
+    BT_CHECK(bt_pz_nxn_init(engine, n));
+    bt_pz_nxn_solved_state(engine, out);
+    out->facelet[index] = color;
+}
+
+BT_TEST(verify_ev_bigcube, a_foreign_center_color_collapses_the_distinct_count) {
+    bt_pz_nxn engine;
+    bt_pz_nxn_state state;
+    BT_CHECK(bt_pz_nxn_init(&engine, 5));
+    bt_pz_nxn_solved_state(&engine, &state);
+    size_t base = 4 * BT_PZ_NXN_STRIDE * BT_PZ_NXN_STRIDE;
+    for (size_t row = 1; row + 1 < 5; row++) {
+        for (size_t col = 1; col + 1 < 5; col++) {
+            state.facelet[base + row * BT_PZ_NXN_STRIDE + col] = 0;
+        }
+    }
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bigcube_reduction_state(&engine, &state, err, sizeof err), -1);
+    BT_CHECK_EQ(err, "the six center blocks hold only 5 distinct colors");
+}
+
+BT_TEST(verify_ev_bigcube, a_foreign_corner_sticker_fails_the_corner_audit) {
+    bt_pz_nxn engine;
+    bt_pz_nxn_state state;
+    crafted_state(5, 0, 4, &engine, &state);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bigcube_reduction_state(&engine, &state, err, sizeof err), -1);
+    BT_CHECK_EQ(err, "some corner sticker left its face color");
+}
+
+BT_TEST(verify_ev_bigcube, a_foreign_midge_sticker_fails_the_midge_audit) {
+    bt_pz_nxn engine;
+    bt_pz_nxn_state state;
+    crafted_state(5, 2, 4, &engine, &state);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bigcube_reduction_state(&engine, &state, err, sizeof err), -1);
+    BT_CHECK_EQ(err, "some midge sticker left its face color");
+}
+
+BT_TEST(verify_ev_bigcube, an_empty_registry_holds_no_cube_sizes) {
+    bt_pack_entry entry = {0};
+    entry.n.kind = BT_NSPEC_SIZES;
+    size_t sizes[VERIFY_BIGCUBE_MAX_SIZES];
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(
+        verify_bigcube_row_sizes(&entry, "l2e01", sizes, VERIFY_BIGCUBE_MAX_SIZES, err, sizeof err),
+        -1);
+    BT_CHECK_EQ(err, "registry holds no cube sizes for this pack");
+}
+
+BT_TEST(verify_ev_bigcube, a_small_out_cap_clips_the_registry_sizes) {
+    bt_pack_entry entry;
+    bigcube_entry("reduction", 5, 3, &entry);
+    size_t sizes[VERIFY_BIGCUBE_MAX_SIZES];
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bigcube_row_sizes(&entry, "l2e01", sizes, 1, err, sizeof err), 1);
+    BT_CHECK_EQ(sizes[0], 5);
+}
+
+BT_TEST(verify_ev_bigcube, broken_front_json_names_the_json_error) {
+    char tag[64];
+    BT_CHECK_EQ(verify_bigcube_tag_of("{\"case\",", tag, sizeof tag), 1);
+    BT_CHECK(tag[0] != '\0');
+}
+
+BT_TEST(verify_ev_bigcube, reduction_rows_name_the_parse_and_empty_failures) {
+    bt_pack_entry entry;
+    bigcube_entry("reduction", 4, 1, &entry);
+    bt_seed_row storage[2];
+    bt_seed_rows first;
+    bigcube_row("l2e.bad", "{\"case\":\"l2e01\"}", "Z", &first, &storage[0]);
+    bt_seed_rows second;
+    bigcube_row("l2e.empty", "{\"case\":\"l2e01\"}", "", &second, &storage[1]);
+    bt_seed_rows rows = {storage, 2};
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 2);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK(err_contains(section.rows[0].tier1_err, "n=4:"));
+    BT_CHECK(err_contains(section.rows[0].tier1_err, "Z"));
+    BT_CHECK(!section.rows[1].tier1_ok);
+    BT_CHECK(err_contains(section.rows[1].tier1_err, "n=4: alg is empty"));
+    verify_section_free(&section);
+}
+
+static const char DOUBLE_SLICE_WING_PARITY[] = "Rw2 2U2 2F2 2U2 Rw2";
+
+BT_TEST(verify_ev_bigcube, the_double_slice_wing_parity_is_a_self_inverse_disturbance) {
+    bt_pz_nxn engine;
+    BT_CHECK(bt_pz_nxn_init(&engine, 4));
+    bt_pz_error pz_err;
+    void *alg = bt_pz_alg_create();
+    bt_pz_engine eng = bt_pz_nxn_engine(&engine);
+    BT_CHECK(eng.parse_alg(&eng, DOUBLE_SLICE_WING_PARITY, strlen(DOUBLE_SLICE_WING_PARITY), alg,
+                           &pz_err));
+    bt_pz_nxn_state state;
+    bt_pz_nxn_solved_state(&engine, &state);
+    bt_pz_nxn_apply_alg(&engine, &state, alg, &pz_err);
+    bt_pz_nxn_state twice = state;
+    bt_pz_nxn_apply_alg(&engine, &twice, alg, &pz_err);
+    bt_pz_nxn_state solved;
+    bt_pz_nxn_solved_state(&engine, &solved);
+    BT_CHECK(!bt_pz_nxn_state_eq(&state, &solved));
+    BT_CHECK(bt_pz_nxn_state_eq(&twice, &solved));
+    bt_pz_alg_destroy(alg);
+}
+
+BT_TEST(verify_ev_bigcube, a_two_line_disturbance_passes_the_reduction_band) {
+    bt_pack_entry entry;
+    bigcube_entry("reduction", 4, 1, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("l2e.wing", "{\"case\":\"l2e01\"}", DOUBLE_SLICE_WING_PARITY, &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_PASS);
+    verify_section_free(&section);
+}
+
+BT_TEST(verify_ev_bigcube, a_two_line_disturbance_passes_the_yau_band_at_its_tag) {
+    bt_pack_entry entry;
+    bigcube_entry("yau", 4, 1, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("parity.wing", "{\"case\":\"wing4\"}", DOUBLE_SLICE_WING_PARITY, &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_PASS);
+    verify_section_free(&section);
+}
+
+BT_TEST(verify_ev_bigcube, a_rotation_only_alg_disturbs_no_lines_and_fails_the_band) {
+    bt_pack_entry entry;
+    bigcube_entry("reduction", 4, 1, &entry);
+    bt_seed_row storage;
+    bt_seed_rows rows;
+    bigcube_row("l2e.rot", "{\"case\":\"l2e01\"}", "x", &rows, &storage);
+    verify_section_result section;
+    verify_bigcube_verify_parity(&entry, &rows, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK(err_contains(section.rows[0].tier2.fail, "disturbs 0 dedge lines"));
+    verify_section_free(&section);
+}
