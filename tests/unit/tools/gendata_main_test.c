@@ -235,6 +235,41 @@ BT_TEST(gendata_main, fresh_vendor_writes_outputs_then_skips_on_rerun) {
     BT_CHECK(strstr(out, "skip regeneration") != NULL);
 }
 
+BT_TEST(gendata_main, a_cases_file_with_a_stale_hash_regenerates_instead_of_skipping) {
+    char dir[BT_PATH_MAX];
+    fixture_dir(dir, "stale-hash");
+    char vendor[BT_PATH_MAX];
+    snprintf(vendor, sizeof vendor, "%s/vendor", dir);
+    rm_tree(vendor);
+    char config[BT_PATH_MAX];
+    snprintf(config, sizeof config, "%s/config.json", dir);
+    bt_json_value *hub = hub_config();
+    set_paths(hub, vendor, 1);
+    shrink_budget(hub);
+    write_config(hub, config);
+    bt_json_free(hub);
+    int code = -1;
+    char out[512];
+    char err[512];
+    spawn_gendata(config, "ref_ground", &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+    char cases[BT_PATH_MAX];
+    snprintf(cases, sizeof cases, "%s/cases.json", vendor);
+    FILE *truncate = fopen(cases, "wb");
+    BT_CHECK(truncate != NULL);
+    if (truncate != NULL) {
+        fwrite("{}\n", 1, 3, truncate);
+        fclose(truncate);
+    }
+    spawn_gendata(config, "ref_ground", &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(out, "skip regeneration") == NULL);
+    BT_CHECK(strstr(out, "gendata: 818 cases (") != NULL);
+    spawn_gendata(config, "ref_ground", &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(out, "skip regeneration") != NULL);
+}
+
 BT_TEST(gendata_main, vendor_path_under_a_file_fails_the_write) {
     char dir[BT_PATH_MAX];
     fixture_dir(dir, "blocked-vendor");

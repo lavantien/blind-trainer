@@ -647,36 +647,21 @@ static bool derived_row_complete(const bt_gd_case_entry *entry) {
                   alg->commutator != NULL && alg->recon_link != NULL && alg->youtube_link != NULL);
 }
 
-BT_TEST(gendata_build, derive_attaches_a_problem_carrying_inverse_for_a_foreign_mirror) {
+BT_TEST(gendata_build, derive_skips_a_mirror_inverse_that_fails_its_own_verify) {
     bt_gd_cases_file cases;
     mirror_pair_cases(&cases);
     bt_gd_derive_mirrored_inverses(&cases);
-    BT_CHECK_EQ(cases.cases[0].vendor_count, 1U);
-    const bt_gd_vendor_alg *derived = &cases.cases[0].vendor_algs[0];
-    BT_CHECK_EQ(strcmp(derived->solver, "cherry"), 0);
-    BT_CHECK(!derived->ok);
-    BT_CHECK(derived->problem_count > 0);
-    for (size_t p = 0; p < derived->problem_count; p++) {
-        BT_CHECK(derived->problems[p] != NULL);
-    }
-    BT_CHECK(cases.cases[0].covered);
+    BT_CHECK_EQ(cases.cases[0].vendor_count, 0U);
+    BT_CHECK(!cases.cases[0].covered);
     bt_gd_cases_file_free(&cases);
-    size_t armed = 0;
-    for (;;) {
+    for (size_t armed = 0; armed < GD_BUILD_DERIVE_SWEEP_MAX; armed++) {
         mirror_pair_cases(&cases);
         bt_alloc_fail_arm(armed);
         bt_gd_derive_mirrored_inverses(&cases);
         bt_alloc_fail_disarm();
-        BT_CHECK(cases.cases[0].vendor_count <= 1U);
+        BT_CHECK_EQ(cases.cases[0].vendor_count, 0U);
+        BT_CHECK(!cases.cases[0].covered);
         BT_CHECK(derived_row_complete(&cases.cases[0]));
-        if (cases.cases[0].vendor_count == 1U) {
-            BT_CHECK(cases.cases[0].vendor_algs[0].problem_count > 0);
-            bt_gd_cases_file_free(&cases);
-            break;
-        }
         bt_gd_cases_file_free(&cases);
-        armed += 1;
-        BT_CHECK(armed < GD_BUILD_DERIVE_SWEEP_MAX);
     }
-    BT_CHECK(armed > 2);
 }

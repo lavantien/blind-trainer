@@ -56,6 +56,31 @@ static int file_exists(const char *path) {
     return 1;
 }
 
+static int file_sha256_matches(const char *path, const char *want) {
+    FILE *file = fopen(path, "rb");
+    if (file == NULL) {
+        return 0;
+    }
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    if (size < 0) {
+        fclose(file);
+        return 0;
+    }
+    char *text = bt_malloc((size_t)size + 1);
+    if (text == NULL) {
+        fclose(file);
+        return 0;
+    }
+    size_t got = fread(text, 1, (size_t)size, file);
+    fclose(file);
+    char got_sha[BT_DIGEST_SHA256_HEX_LEN];
+    bt_digest_sha256_hex(text, got, got_sha);
+    free(text);
+    return strcmp(got_sha, want) == 0;
+}
+
 static int run(bt_gd_errors *errors) {
     BT_TRACE_ENTER("gd.main.run");
     bt_json_value *config = bt_data_load_config();
@@ -128,10 +153,12 @@ static int run(bt_gd_errors *errors) {
         }
     }
     bool outputs_present = false;
-    if (file_exists(cases_path) && file_exists(specials_path)) {
+    if (has_existing && file_exists(cases_path) && file_exists(specials_path) &&
+        file_sha256_matches(cases_path, existing.cases.sha256) &&
+        file_sha256_matches(specials_path, existing.specials.sha256)) {
         outputs_present = true;
     }
-    if (outputs_present && has_existing &&
+    if (outputs_present &&
         !bt_gd_regen_needed(&existing, has_existing, params_sha256, digest.sha256)) {
         puts("gendata: skip regeneration, synth params and corpus digest unchanged");
         if (has_existing) {

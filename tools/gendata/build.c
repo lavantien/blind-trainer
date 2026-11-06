@@ -213,6 +213,12 @@ void bt_gd_derive_mirrored_inverses(bt_gd_cases_file *cases) {
         bt_verdict_init(&verdict);
         bt_verify(&inverse, position, sheet, &verdict);
         bool ok = bt_verdict_ok(&verdict);
+        if (!ok) {
+            bt_verdict_free(&verdict);
+            bt_alg_free(&inverse);
+            bt_alg_free(&parsed);
+            continue;
+        }
         char **problems = NULL;
         size_t problem_count = 0;
         char **notes = NULL;
