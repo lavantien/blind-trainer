@@ -302,6 +302,40 @@ static bt_json_value *area_config(const char *body) {
     return value;
 }
 
+BT_TEST(mutate, spawn_refuses_a_missing_exe_and_an_overlong_command) {
+    bt_mut_proc proc;
+    char *argv[2] = {NULL, NULL};
+    char missing[BT_MUT_PATH_MAX];
+    snprintf(missing, BT_MUT_PATH_MAX, "%s/no-such-exe-%lu.exe", g_dir, GetCurrentProcessId());
+    BT_CHECK(bt_mut_spawn(missing, argv, NULL, 1000, &proc) != 0);
+    static char huge[BT_MUT_PATH_MAX * 3];
+    memset(huge, 'x', sizeof huge - 1);
+    char *wide_argv[2] = {huge, NULL};
+    BT_CHECK_EQ(bt_mut_spawn(missing, wide_argv, NULL, 1000, &proc), -1);
+}
+
+BT_TEST(mutate, engine_baseline_fails_when_link_objects_overflow_the_argv_cap) {
+    bt_mut_engine engine;
+    char stub[BT_MUT_PATH_MAX];
+    snprintf(stub, BT_MUT_PATH_MAX, "%s/stub-clang.exe", g_dir);
+    engine_for("linkover", MUT_TEST_TIMEOUT_MS, stub, &engine);
+    static char *objs[300];
+    static char obj_name[] = "overflow.obj";
+    for (size_t i = 0; i < 300; i++) {
+        objs[i] = obj_name;
+    }
+    bt_mut_target target;
+    memset(&target, 0, sizeof target);
+    snprintf(target.file, BT_MUT_PATH_MAX, "%s", FX_REL);
+    target.link_objs = objs;
+    target.link_obj_count = 300;
+    target.target_index = 0;
+    bt_mut_summary summary;
+    BT_CHECK_EQ(bt_mut_engine_run(&engine, &target, 1, "zzz-none", 0, &summary), 1);
+    BT_CHECK(strstr(bt_mut_engine_last_error(), "baseline run failed") != NULL);
+    bt_mut_build_free(&engine.build);
+}
+
 BT_TEST(mutate, prepare_scratch_refuses_unwritable_layouts) {
     bt_mut_engine engine;
     engine_for("prepblk", MUT_TEST_TIMEOUT_MS, NULL, &engine);

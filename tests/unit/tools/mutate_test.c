@@ -18,7 +18,7 @@ BT_TEST(mutate_driver, selftest_passes) {
     int rc = bt_spawn_capture(exe, argv, root, 110000, &code, out, sizeof out, err, sizeof err);
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, 0);
-    BT_CHECK(strstr(out, "suite mutate: 51 passed, 0 failed") != NULL);
+    BT_CHECK(strstr(out, "suite mutate: 54 passed, 0 failed") != NULL);
 }
 
 BT_TEST(mutate_driver, usage_without_args_exits_2) {
@@ -713,6 +713,24 @@ BT_TEST(mutate_driver, unknown_verb_prints_usage) {
     BT_CHECK_EQ(driver_spawn(argv, 30000, &code, out, sizeof out, err, sizeof err), 0);
     BT_CHECK_EQ(code, 2);
     BT_CHECK(strstr(err, "usage") != NULL);
+}
+
+BT_TEST(mutate_driver, list_with_a_missing_config_still_lists) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "mutate.exe");
+    char root[BT_PATH_MAX];
+    bt_test_repo_root(root);
+    char missing[BT_PATH_MAX];
+    snprintf(missing, BT_PATH_MAX, "%s/build/test-tmp/mutate-driver/absent-hub.json", root);
+    const char *argv[] = {"list", "--config", missing, "tests/unit/tools/fixtures/fx_target.c",
+                          NULL};
+    char out[16384];
+    char err[4096];
+    int code = -1;
+    int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(code, 0);
+    BT_CHECK(strstr(out, "NumericTweak") != NULL);
 }
 
 BT_TEST(mutate_driver, selftest_probe_prints_a_pid) {

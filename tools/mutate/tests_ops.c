@@ -82,6 +82,26 @@ BT_TEST(mutate, tokenizer_and_span_helpers_edge_inputs) {
     bt_mut_tokens_free(&tokens);
 }
 
+BT_TEST(mutate, line_continuations_join_pp_lines_and_strings) {
+    const char *src = "#define LONG(x) \\\n    ((x) + 1)\nconst char *s = \"ab\\\ncd\";\n";
+    bt_mut_tokens tokens;
+    BT_CHECK_EQ(bt_mut_tokenize(src, strlen(src), &tokens), 0);
+    int saw_pp_span = 0;
+    int saw_string_span = 0;
+    for (size_t i = 0; i < tokens.count; i++) {
+        if (tokens.items[i].kind == BT_MUT_TOK_PP && tokens.items[i].end_line == 2ULL) {
+            saw_pp_span = 1;
+        }
+        if (tokens.items[i].kind == BT_MUT_TOK_STRING && tokens.items[i].line == 3ULL &&
+            tokens.items[i].end_line == 4ULL) {
+            saw_string_span = 1;
+        }
+    }
+    BT_CHECK(saw_pp_span);
+    BT_CHECK(saw_string_span);
+    bt_mut_tokens_free(&tokens);
+}
+
 BT_TEST(mutate, comparison_swap_variants) {
     const char *src =
         "int f(int a, int b) {\n    if (a < b) {\n        return 1;\n    }\n    if (a "
