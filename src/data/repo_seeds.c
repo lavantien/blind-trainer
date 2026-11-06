@@ -55,6 +55,16 @@ int bt_seed_pack_tx(bt_db *db, const char *file, const bt_seed_row *rows, size_t
     }
     for (size_t i = 0; i < count; i++) {
         const bt_seed_row *row = &rows[i];
+        if (row->content_hash[0] == '\0') {
+            err->kind = BT_SEED_ERR_EMPTY_HASH;
+            snprintf(err->file, sizeof err->file, "%s", file);
+            snprintf(err->case_key, sizeof err->case_key, "%s", row->case_key);
+            sqlite3_finalize(check);
+            sqlite3_finalize(insert);
+            BT_TRACE_FAIL("repo_seeds.seed_pack_tx", "empty content hash on %s in %s",
+                          row->case_key, file);
+            return -1;
+        }
         sqlite3_reset(check);
         sqlite3_bind_text(check, 1, row->event, -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(check, 2, row->method, -1, SQLITE_TRANSIENT);

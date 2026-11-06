@@ -83,6 +83,37 @@ BT_TEST(seeds_failures, a_missing_pack_file_fails_seed_pack_with_io) {
     tu_remove_tree(root);
 }
 
+BT_TEST(seeds_failures, an_empty_content_hash_is_rejected_at_insert) {
+    bt_db db;
+    bt_db_error db_err;
+    BT_CHECK(bt_db_open_memory(&db, &db_err) == 0);
+    bt_seed_row row;
+    memset(&row, 0, sizeof row);
+    snprintf(row.event, sizeof row.event, "%s", "3x3");
+    snprintf(row.method, sizeof row.method, "%s", "cfop");
+    snprintf(row.stage, sizeof row.stage, "%s", "pll");
+    snprintf(row.case_key, sizeof row.case_key, "%s", "pll.A");
+    row.alg = _strdup("R U R'");
+    row.front_json = _strdup("{}");
+    row.source_url = _strdup("https://x");
+    row.source_at = _strdup("2026-01-01");
+    bt_seed_report report;
+    bt_seed_error err;
+    BT_CHECK(bt_seed_pack_tx(&db, "probe.tsv", &row, 1, &report, &err) != 0);
+    BT_CHECK(err.kind == BT_SEED_ERR_EMPTY_HASH);
+    char text[256];
+    bt_seed_error_string(&err, text, sizeof text);
+    BT_CHECK(strstr(text, "content hash is empty") != NULL);
+    long long stored = -1;
+    BT_CHECK_EQ(bt_seed_row_count(&db, &stored, &err), 0);
+    BT_CHECK_EQ(stored, 0LL);
+    free(row.alg);
+    free(row.front_json);
+    free(row.source_url);
+    free(row.source_at);
+    bt_db_close(&db);
+}
+
 BT_TEST(seeds_failures, an_open_transaction_fails_seed_pack_begin) {
     const char *root = packs_root("begin");
     write_pack(root, "probe.tsv", "A");

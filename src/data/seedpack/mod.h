@@ -66,6 +66,7 @@ typedef enum {
     BT_SEED_ERR_COUNT_DRIFT,
     BT_SEED_ERR_NORMALIZE,
     BT_SEED_ERR_DRIFT,
+    BT_SEED_ERR_EMPTY_HASH,
     BT_SEED_ERR_STALE,
     BT_SEED_ERR_DB,
 } bt_seed_error_kind;

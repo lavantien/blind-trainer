@@ -59,6 +59,9 @@ void bt_seed_error_string(const bt_seed_error *err, char *out, size_t out_len) {
         snprintf(out, out_len, "seed drift in pack %s row %s: stored hash %s, pack hash %s",
                  err->file, err->case_key, err->stored, err->packed);
         break;
+    case BT_SEED_ERR_EMPTY_HASH:
+        snprintf(out, out_len, "pack %s row %s: content hash is empty", err->file, err->case_key);
+        break;
     case BT_SEED_ERR_STALE:
         snprintf(out, out_len, "seed row %s no longer exists in pack %s", err->case_key, err->file);
         break;
