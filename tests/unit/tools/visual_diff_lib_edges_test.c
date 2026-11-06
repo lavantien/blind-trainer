@@ -572,6 +572,27 @@ BT_TEST(visual_diff_edges, update_reports_a_blocked_baseline_target) {
     vd_util_rm_rf(root);
 }
 
+BT_TEST(visual_diff_edges, run_survives_a_trace_section_that_init_rejects) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("edge-trace", root);
+    char config[VD_UTIL_PATH_MAX];
+    vd_util_join(config, root, "config.json");
+    vd_util_write(config, "{\"visual\": {\"tolerance\": 0}, \"trace\": {\"ring_bytes\": 0, "
+                          "\"max_threads\": 0, \"line_max\": 0}}");
+    char shots[VD_UTIL_PATH_MAX];
+    char bases[VD_UTIL_PATH_MAX];
+    vd_util_join(shots, root, "shots");
+    vd_util_join(bases, root, "bases");
+    vd_util_mkdir_p(shots);
+    vd_util_mkdir_p(bases);
+    char *argv[] = {shots, bases};
+    btvd_env env;
+    vd_util_env_for(&env, root, config, argv, 2);
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_run(&env, err, sizeof err), 0);
+    vd_util_rm_rf(root);
+}
+
 BT_TEST(visual_diff_edges, write_report_names_a_path_overflow) {
     char long_root[BT_PATH_MAX];
     memset(long_root, 'x', VD_EDGE_LONG);
