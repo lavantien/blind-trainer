@@ -270,6 +270,16 @@ BT_TEST(view_case_drill, an_unappliable_inverse_fails_the_facelet_build) {
     BT_CHECK(rejected);
 }
 
+BT_TEST(view_case_drill, set_pending_returns_without_the_singleton_under_oom) {
+    bt_drill_case_queue queue;
+    bt_drill_case_queue_init(&queue);
+    bt_alloc_fail_arm(0);
+    bt_view_case_drill_set_pending(&queue);
+    bt_alloc_fail_disarm();
+    bt_drill_case_queue_free(&queue);
+    BT_CHECK(bt_view_case_drill_app() != NULL);
+}
+
 BT_TEST(view_case_drill, case_facelets_applies_the_inverse_alg_to_solved) {
     bt_pz_grid shown;
     char error[BT_CASE_DRILL_TEXT_MAX];
