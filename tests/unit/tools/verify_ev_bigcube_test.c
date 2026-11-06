@@ -279,7 +279,7 @@ BT_TEST(verify_ev_bigcube, a_foreign_center_color_collapses_the_distinct_count) 
     bt_pz_nxn_state state;
     BT_CHECK(bt_pz_nxn_init(&engine, 5));
     bt_pz_nxn_solved_state(&engine, &state);
-    size_t base = 4 * BT_PZ_NXN_STRIDE * BT_PZ_NXN_STRIDE;
+    size_t base = (size_t)4 * BT_PZ_NXN_STRIDE * BT_PZ_NXN_STRIDE;
     for (size_t row = 1; row + 1 < 5; row++) {
         for (size_t col = 1; col + 1 < 5; col++) {
             state.facelet[base + row * BT_PZ_NXN_STRIDE + col] = 0;
@@ -306,6 +306,16 @@ BT_TEST(verify_ev_bigcube, a_foreign_midge_sticker_fails_the_midge_audit) {
     char err[VERIFY_ERR_MAX];
     BT_CHECK_EQ(verify_bigcube_reduction_state(&engine, &state, err, sizeof err), -1);
     BT_CHECK_EQ(err, "some midge sticker left its face color");
+}
+
+BT_TEST(verify_ev_bigcube, an_odd_disturbed_segment_count_fails_the_pairing_audit) {
+    bt_pz_nxn engine;
+    bt_pz_nxn_state state;
+    crafted_state(4, 1, 5, &engine, &state);
+    state.facelet[2] = 5;
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bigcube_reduction_state(&engine, &state, err, sizeof err), -1);
+    BT_CHECK(strstr(err, "half-lines disturbed") != NULL);
 }
 
 BT_TEST(verify_ev_bigcube, an_empty_registry_holds_no_cube_sizes) {

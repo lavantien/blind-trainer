@@ -41,7 +41,7 @@ enum {
     INF_END = 256,
     INF_GROWTH_HALF = 40000,
     INF_GROWTH_TOTAL = 80000,
-    INF_GROWTH_CAP = 1 << 16,
+    INF_GROWTH_CAP = 1U << 16U,
     INF_BUF = 131072,
 };
 
@@ -64,8 +64,8 @@ static void stored_block(rv_bitwriter *writer, unsigned final, const unsigned ch
     rv_bits_put_lsb(writer, 0, INF_TYPE_STORED_PAD);
     rv_bits_put_lsb(writer, (unsigned)(len & 0xFFU), 8);
     rv_bits_put_lsb(writer, (unsigned)((len >> 8U) & 0xFFU), 8);
-    rv_bits_put_lsb(writer, (unsigned)((~len & 0xFFU)), 8);
-    rv_bits_put_lsb(writer, (unsigned)(((~len >> 8U) & 0xFFU)), 8);
+    rv_bits_put_lsb(writer, (unsigned)(~len & 0xFFU), 8);
+    rv_bits_put_lsb(writer, (unsigned)((~len >> 8U) & 0xFFU), 8);
     for (size_t at = 0; at < len; at++) {
         rv_bits_put_lsb(writer, data[at], 8);
     }
@@ -110,7 +110,7 @@ BT_TEST(release_verify, inflate_raw_rejects_a_stored_length_mismatch) {
     rv_bits_put_lsb(&writer, 0, INF_TYPE_STORED_PAD);
     rv_bits_put_lsb(&writer, 8, 8);
     rv_bits_put_lsb(&writer, 0, 8);
-    rv_bits_put_lsb(&writer, (unsigned)~8U & 0xFFU, 8);
+    rv_bits_put_lsb(&writer, ~8U & 0xFFU, 8);
     rv_bits_put_lsb(&writer, 0, 8);
     for (size_t at = 0; at < sizeof data; at++) {
         rv_bits_put_lsb(&writer, data[at], 8);

@@ -114,8 +114,8 @@ BT_TEST(verify_ev_cfop_pred, f2l_reads_the_u_and_d_slot_letters_and_home_pairs) 
     verify_bld_layout_probe(&layout);
     bt_cube state;
     state_of("R", &state);
-    const char *home_slots[2] = {"UF", "fl"};
-    for (size_t at = 0; at < 2; at++) {
+    const char *home_slots[3] = {"UF", "uf", "fl"};
+    for (size_t at = 0; at < 3; at++) {
         char front_json[32];
         snprintf(front_json, sizeof front_json, "{\"slot\":\"%s\"}", home_slots[at]);
         verify_tier2 outcome =
@@ -123,9 +123,14 @@ BT_TEST(verify_ev_cfop_pred, f2l_reads_the_u_and_d_slot_letters_and_home_pairs) 
         BT_CHECK_EQ(outcome.kind, VERIFY_TIER2_FAIL);
         BT_CHECK(strstr(outcome.fail, "holds its pair solved") != NULL);
     }
-    verify_tier2 displaced_slot =
-        verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, "{\"slot\":\"DF\"}");
-    BT_CHECK_EQ(displaced_slot.kind, VERIFY_TIER2_PASS);
+    const char *displaced_slots[2] = {"DF", "df"};
+    for (size_t at = 0; at < 2; at++) {
+        char front_json[32];
+        snprintf(front_json, sizeof front_json, "{\"slot\":\"%s\"}", displaced_slots[at]);
+        verify_tier2 outcome =
+            verify_cfop_stage_outcome(VERIFY_CFOP_F2L, &state, &layout, front_json);
+        BT_CHECK_EQ(outcome.kind, VERIFY_TIER2_PASS);
+    }
 }
 
 BT_TEST(verify_ev_cfop_pred, f2l_names_a_state_with_no_solved_cross) {

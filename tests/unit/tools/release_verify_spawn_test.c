@@ -138,7 +138,8 @@ static void bat_tiny(rv_bat *bat, const char *tail) {
 static void write_fake_db(const char *path) {
     unsigned char bytes[RV_SPAWN_DB_BYTES];
     memset(bytes, 0, sizeof bytes);
-    memcpy(bytes, "SQLite format 3\0", 16);
+    static const unsigned char header[16] = "SQLite format 3";
+    memcpy(bytes, header, sizeof header);
     unsigned int version = (unsigned int)BT_RV_LATEST_USER_VERSION;
     bytes[60] = (unsigned char)(version >> 24U);
     bytes[61] = (unsigned char)(version >> 16U);

@@ -158,6 +158,17 @@ BT_TEST(verify_ev_sq1, a_u_slice_state_passes_cp_but_not_eo) {
     BT_CHECK_EQ(eo.fail, "edges already oriented");
 }
 
+BT_TEST(verify_ev_sq1, a_corner_swap_state_fails_the_later_stage_predicates) {
+    verify_sq1_case case_;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"square / square\"}", &case_);
+    verify_tier2 cp = verify_sq1_stage_outcome(VERIFY_SQ1_STAGE_CP, &case_);
+    BT_CHECK_EQ(cp.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(cp.fail, "corners not oriented");
+    verify_tier2 ep = verify_sq1_stage_outcome(VERIFY_SQ1_STAGE_EP, &case_);
+    BT_CHECK_EQ(ep.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(ep.fail, "corners not oriented");
+}
+
 BT_TEST(verify_ev_sq1, family_resolution_skips_cases_with_broken_front_json) {
     verify_sq1_case broken;
     case_with_front("(1,0) / (-1,0)", "{bad", &broken);

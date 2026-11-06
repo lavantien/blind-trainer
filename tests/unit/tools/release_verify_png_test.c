@@ -24,19 +24,17 @@ enum {
     PNG_TEST_SIG_LEN = 8,
     PNG_TEST_WIDE_W = 1320,
     PNG_TEST_WIDE_H = 795,
-    PNG_TEST_READ_CAP = 1 << 20,
-    PNG_TEST_BUF = 1 << 21,
+    PNG_TEST_READ_CAP = 1U << 20U,
+    PNG_TEST_BUF = 1U << 21U,
     PNG_TEST_BAD_FILTER = 5,
 };
 
-enum {
-    PNG_TEST_SKIP_IDAT = 1,
-    PNG_TEST_BAD_IHDR_CRC = 2,
-    PNG_TEST_JUNK_FIRST = 4,
-    PNG_TEST_SIG_ONLY = 8,
-    PNG_TEST_JUNK_IDAT = 16,
-    PNG_TEST_NO_IEND = 32,
-};
+static const unsigned PNG_TEST_SKIP_IDAT = 1U;
+static const unsigned PNG_TEST_BAD_IHDR_CRC = 2U;
+static const unsigned PNG_TEST_JUNK_FIRST = 4U;
+static const unsigned PNG_TEST_SIG_ONLY = 8U;
+static const unsigned PNG_TEST_JUNK_IDAT = 16U;
+static const unsigned PNG_TEST_NO_IEND = 32U;
 
 typedef struct {
     unsigned char *buf;
@@ -93,9 +91,14 @@ static void build_png(const char *path, uint32_t width, uint32_t height, unsigne
         bt_harness_fail(__FILE__, __LINE__, "png fixture out of memory");
         return;
     }
-    png_out out = {.buf = store, .len = 0, .cap = PNG_TEST_BUF};
-    static const unsigned char signature[PNG_TEST_SIG_LEN] = {0x89, 0x50, 0x4e, 0x47,
-                                                              0x0d, 0x0a, 0x1a, 0x0a};
+    png_out out = {
+        .buf = store,
+        .len = 0,
+        .cap = PNG_TEST_BUF,
+    };
+    static const unsigned char signature[PNG_TEST_SIG_LEN] = {
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+    };
     png_put(&out, signature, PNG_TEST_SIG_LEN);
     if ((flags & PNG_TEST_SIG_ONLY) == 0) {
         if ((flags & PNG_TEST_JUNK_FIRST) != 0) {
