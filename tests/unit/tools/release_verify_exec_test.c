@@ -126,7 +126,7 @@ BT_TEST(release_verify, command_line_doubles_trailing_backslashes_only_inside_qu
 BT_TEST(release_verify, run_child_reports_each_unbuildable_command_line) {
     static char wide[6][1500];
     static char huge[2100];
-    static char slashes[1100];
+    static char slashes[2100];
     memset(huge, 'x', sizeof huge - 1);
     memset(slashes, '\\', sizeof slashes - 1);
     const char *wide_args[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
