@@ -5,6 +5,7 @@
 #include <string.h>
 
 #ifdef _WIN32
+#include <wchar.h>
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -134,6 +135,99 @@ BT_TEST(visual_diff_fs_edges, spawn_wait_reports_missing_exes_and_bad_args) {
     char *long_argv[4] = {arg, arg, arg, arg};
     BT_CHECK_EQ(btvd_fs_spawn_wait("build/bin/visual-diff.exe", long_argv, 4), -1);
 }
+
+#ifdef _WIN32
+
+enum {
+    FS_EDGE_QUOTE_ARG_CAP = 1023,
+    FS_EDGE_QUOTE_SLOTS = 8,
+    FS_EDGE_QUOTE_FILLER = 1022,
+};
+
+static size_t fs_edge_line_cap(void) {
+    return (size_t)BT_PATH_MAX * 4U;
+}
+
+static size_t fs_edge_exe_quoted_len(const char *exe) {
+    wchar_t wide[BT_PATH_MAX];
+    wchar_t full[BT_PATH_MAX];
+    if (MultiByteToWideChar(CP_UTF8, 0, exe, -1, wide, BT_PATH_MAX) == 0) {
+        return 0;
+    }
+    if (_wfullpath(full, wide, BT_PATH_MAX) == NULL) {
+        return 0;
+    }
+    return wcslen(full) + 2U;
+}
+
+static size_t fs_edge_push_fillers(char args[FS_EDGE_QUOTE_SLOTS][FS_EDGE_QUOTE_ARG_CAP],
+                                   size_t *argc, size_t budget) {
+    while (budget >= FS_EDGE_QUOTE_FILLER + 3U) {
+        fs_edge_fill(args[(*argc)++], FS_EDGE_QUOTE_FILLER);
+        budget -= FS_EDGE_QUOTE_FILLER + 3U;
+    }
+    if (budget >= 4U) {
+        fs_edge_fill(args[(*argc)++], budget - 3U);
+        return 0;
+    }
+    return budget;
+}
+
+static void fs_edge_quote_arg(char out[FS_EDGE_QUOTE_ARG_CAP], size_t filler, const char *tail) {
+    memset(out, 'x', filler);
+    memcpy(out + filler, tail, strlen(tail));
+    out[filler + strlen(tail)] = '\0';
+}
+
+static int fs_edge_spawn_cap(const char *exe, char args[FS_EDGE_QUOTE_SLOTS][FS_EDGE_QUOTE_ARG_CAP],
+                             size_t argc) {
+    char *argv[FS_EDGE_QUOTE_SLOTS];
+    for (size_t at = 0; at < argc; at++) {
+        argv[at] = args[at];
+    }
+    return btvd_fs_spawn_wait(exe, argv, argc);
+}
+
+BT_TEST(visual_diff_fs_edges, spawn_wait_hits_each_quote_cap_boundary) {
+    const char *exe = "Z:/no/such/exe.exe";
+    size_t quoted = fs_edge_exe_quoted_len(exe);
+    BT_CHECK(quoted > 0);
+    size_t cap = fs_edge_line_cap();
+    char args[FS_EDGE_QUOTE_SLOTS][FS_EDGE_QUOTE_ARG_CAP];
+
+    size_t argc = 0;
+    size_t at = quoted;
+    size_t budget = cap - 2U - at;
+    at += budget - fs_edge_push_fillers(args, &argc, budget);
+    fs_edge_quote_arg(args[argc++], 0U, "y");
+    BT_CHECK_EQ(at, cap - 2U);
+    BT_CHECK_EQ(fs_edge_spawn_cap(exe, args, argc), -1);
+
+    argc = 0;
+    at = quoted;
+    budget = cap - 1015U - at;
+    at += budget - fs_edge_push_fillers(args, &argc, budget);
+    fs_edge_quote_arg(args[argc++], cap - 9U - at, "x\\\"");
+    fs_edge_quote_arg(args[argc++], 0U, "y");
+    BT_CHECK_EQ(fs_edge_spawn_cap(exe, args, argc), -1);
+
+    argc = 0;
+    at = quoted;
+    budget = cap - 1015U - at;
+    at += budget - fs_edge_push_fillers(args, &argc, budget);
+    fs_edge_quote_arg(args[argc++], cap - 7U - at, "x\\\\");
+    BT_CHECK_EQ(fs_edge_spawn_cap(exe, args, argc), -1);
+
+    argc = 0;
+    at = quoted;
+    budget = cap - 1015U - at;
+    at += budget - fs_edge_push_fillers(args, &argc, budget);
+    fs_edge_quote_arg(args[argc++], cap - 9U - at, "x\\\\");
+    fs_edge_quote_arg(args[argc++], 0U, "y");
+    BT_CHECK_EQ(fs_edge_spawn_cap(exe, args, argc), -1);
+}
+
+#endif
 
 #ifdef _WIN32
 

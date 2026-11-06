@@ -272,7 +272,7 @@ static void oom_zip_child(void) {
 
 BT_TEST(release_verify_oom, zip_check_aborts_when_its_allocations_starve) {
     char setting[32];
-    for (size_t k = 0; k < 4; k++) {
+    for (size_t k = 0; k < 10; k++) {
         snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
         _putenv(setting);
         bt_death_expect_abort("release_verify_oom.zip_check", "out of memory", oom_zip_child);
@@ -290,9 +290,11 @@ static void oom_scrub_child(void) {
 }
 
 BT_TEST(release_verify_oom, scrub_env_aborts_when_its_allocations_starve) {
-    _putenv("RV_OOM_K=0");
-    bt_death_expect_abort("release_verify_oom.scrub_array", "out of memory", oom_scrub_child);
-    _putenv("RV_OOM_K=1");
-    bt_death_expect_abort("release_verify_oom.scrub_entry", "out of memory", oom_scrub_child);
+    for (size_t k = 0; k < 6; k++) {
+        char setting[32];
+        snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
+        _putenv(setting);
+        bt_death_expect_abort("release_verify_oom.scrub_env", "out of memory", oom_scrub_child);
+    }
     _putenv("RV_OOM_K=");
 }

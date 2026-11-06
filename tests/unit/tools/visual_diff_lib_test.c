@@ -831,6 +831,29 @@ BT_TEST(visual_diff_lib, decode_rejects_pngs_with_zeroed_chunk_crcs) {
     vd_util_rm_rf(dir);
 }
 
+BT_TEST(visual_diff_lib, decode_converts_a_truecolor_png_to_rgba) {
+    static const unsigned char rgb_png[82] = {
+        137, 80,  78, 71, 13, 10,  26, 10,  0,   0,  0,   13, 73,  72,  68,  82,  0,
+        0,   0,   2,  0,  0,  0,   2,  8,   2,   0,  0,   0,  253, 212, 154, 115, 0,
+        0,   0,   25, 73, 68, 65,  84, 120, 1,   1,  14,  0,  241, 255, 0,   200, 10,
+        10,  200, 10, 10, 0,  200, 10, 10,  200, 10, 10,  27, 22,  3,   113, 198, 20,
+        146, 32,  0,  0,  0,  0,   73, 69,  78,  68, 174, 66, 96,  130};
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("truecolor", dir);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, dir, "truecolor.png");
+    vd_util_write_bytes(path, rgb_png, sizeof rgb_png);
+    btvd_image decoded;
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_decode(path, &decoded, err, sizeof err), 0);
+    BT_CHECK_EQ(decoded.width, 2U);
+    BT_CHECK_EQ(decoded.height, 2U);
+    BT_CHECK_EQ(decoded.pixels[12], 200U);
+    BT_CHECK_EQ(decoded.pixels[15], 255U);
+    vd_util_free_image(&decoded);
+    vd_util_rm_rf(dir);
+}
+
 BT_TEST(visual_diff_lib, run_fails_with_exit_diff_on_crc_corrupted_baseline) {
     char root[VD_UTIL_PATH_MAX];
     vd_util_scratch("run-crc", root);
