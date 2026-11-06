@@ -40,6 +40,11 @@ jobs:
         run: python bt.py check
       - name: build
         run: python bt.py build
+      - name: derived data
+        shell: pwsh
+        run: |
+          python bt.py memofreq
+          if ($LASTEXITCODE -ne 0) { exit 1 }
       - name: test
         shell: pwsh
         run: |
@@ -47,7 +52,7 @@ jobs:
             python bt.py test-unit $area
             if ($LASTEXITCODE -ne 0) { exit 1 }
           }
-          python bt.py test-unit tools --without ga_run_lib
+          python bt.py test-unit tools
           if ($LASTEXITCODE -ne 0) { exit 1 }
           python -m unittest discover -s tests/python
           if ($LASTEXITCODE -ne 0) { exit 1 }

@@ -1823,7 +1823,7 @@ def run_policy_exe(exe, argv, label, logger, env=None, echo=False, timeout=300):
     return code
 
 
-def tool_run(hub, build_label, exe_name, argv, label, env=None):
+def tool_run(hub, build_label, exe_name, argv, label, env=None, timeout=300):
     logger = Logger()
     logger.entry(label)
     try:
@@ -1831,7 +1831,7 @@ def tool_run(hub, build_label, exe_name, argv, label, env=None):
     except (BtError, OSError, KeyError, ValueError) as e:
         logger.fail(build_label, f"{type(e).__name__}: {e}")
         return 1
-    return run_policy_exe(exe, argv, label, logger, env=env)
+    return run_policy_exe(exe, argv, label, logger, env=env, timeout=timeout)
 
 
 def tgt_policy(args):
@@ -2141,7 +2141,7 @@ def tgt_memofreq(args):
     """memo pair frequency monte carlo"""
     hub = load_hub()
     return tool_run(hub, "memofreq-build", "memofreq.exe", [], "memofreq",
-                    env=child_env(hub))
+                    env=child_env(hub), timeout=900)
 
 
 def tgt_ga(args):
