@@ -1,4 +1,5 @@
 #include "app/boot.h"
+#include "app/driver_keys.h"
 #include "app/views/frame.h"
 #include "app/views/settings.h"
 #include "app/views/state.h"
@@ -316,6 +317,19 @@ BT_TEST(view_settings, text_width_measures_the_widest_label_and_hint) {
     float measured = bt_view_settings_text_width(book.regular);
     BT_CHECK(measured >= widest - 0.01F);
     BT_CHECK(measured <= widest + 0.01F);
+    float widest_label = 0.0F;
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        float label_w =
+            MeasureTextEx(regular, labels[i], theme->font_body * theme->root_rem, 1.0F).x;
+        if (label_w > widest_label) {
+            widest_label = label_w;
+        }
+    }
+    for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
+        float hint_w =
+            MeasureTextEx(regular, hints[i], theme->font_small * theme->root_rem, 1.0F).x;
+        BT_CHECK(hint_w < widest_label);
+    }
     float pad = theme->spacing_rem * theme->root_rem;
     bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F, measured);
     for (int i = 0; i < BT_SETTINGS_ROW_COUNT; i++) {
@@ -325,4 +339,143 @@ BT_TEST(view_settings, text_width_measures_the_widest_label_and_hint) {
     }
     bt_app_fonts_unload(&book);
     bt_app_window_close();
+}
+
+BT_TEST(view_settings, keys_route_mode_selection_through_the_guard_arms) {
+    bt_app_ctx ctx;
+    fixture_settings_ctx("keys-guards", &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    bt_view_settings_key(&ctx, app, 'x');
+    BT_CHECK(!app->widgets.mode_select.open);
+    int none[1] = {'x'};
+    bt_view_settings_keys(&ctx, app, none, 1);
+    BT_CHECK(!app->widgets.mode_select.open);
+    app->widgets.mode_select.open = 1;
+    int second[1] = {'2'};
+    bt_view_settings_keys(&ctx, app, second, 1);
+    BT_CHECK_EQ(app->widgets.mode_select.cursor, 1);
+    app->widgets.mode_select.open = 0;
+    ctx.input_focus = 1;
+    int third[1] = {'3'};
+    bt_view_settings_keys(&ctx, app, third, 1);
+    BT_CHECK(!app->widgets.mode_select.open);
+    ctx.input_focus = 0;
+    int first[1] = {'1'};
+    bt_view_settings_keys(&ctx, app, first, 1);
+    BT_CHECK(app->widgets.mode_select.open);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(view_settings, update_state_applies_a_reps_only_change) {
+    bt_app_ctx ctx;
+    fixture_settings_ctx("reps-only", &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    app->draft.drill_reps = 9;
+    app->changed = 1;
+    bt_view_settings_update_state(&ctx, app);
+    BT_CHECK_EQ(ctx.stores.settings.drill_reps, 9U);
+    BT_CHECK_EQ(ctx.stores.settings.memo_cadence_ms, 800U);
+    BT_CHECK_EQ(ctx.stores.settings.memo_mode, BT_MEMO_SYLLABLES);
+    BT_CHECK(!app->changed);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(view_settings, update_reads_pressed_keys_from_the_frame) {
+    if (!bt_app_window_open_driven(640, 480, "view settings update test", NULL)) {
+        BT_CHECK(0);
+        return;
+    }
+    void *hwnd = GetWindowHandle();
+    bt_app_ctx ctx;
+    fixture_settings_ctx("update-keys", &ctx);
+    bt_settings_app_state *app = bt_view_settings_app();
+    bt_view_settings_app_init(app);
+    bt_view_settings_enter_state(&ctx, app);
+    ctx.input_focus = 0;
+    BT_CHECK(bt_app_driver_key_down(hwnd, '1'));
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_app_window_frame_end();
+    bt_view_settings_update(&ctx);
+    BT_CHECK(app->widgets.mode_select.open);
+    BT_CHECK_EQ(app->widgets.mode_select.cursor, 0);
+    bt_app_driver_key_up(hwnd, '1');
+    bt_app_window_frame_begin();
+    ClearBackground(bt_app_color(bt_theme_background()));
+    bt_app_window_frame_end();
+    bt_app_ctx_free(&ctx);
+    bt_app_window_close();
+}
+
+static int with_settings_fonts(int (*run)(const bt_app_font_book *)) {
+    if (!bt_app_window_open_driven(640, 480, "view settings fonts test", NULL)) {
+        return 0;
+    }
+    bt_app_font_book book;
+    char error[BT_APP_ERROR_MAX];
+    char config_path[BT_PATH_MAX];
+    bt_data_config_path(config_path);
+    if (bt_app_fonts_load(config_path, NULL, NULL, 0, &book, error, sizeof error) != 0) {
+        bt_app_window_close();
+        BT_ABORT("fonts: %s", error);
+    }
+    int ok = run(&book);
+    bt_app_fonts_unload(&book);
+    bt_app_window_close();
+    return ok;
+}
+
+static int run_draw_edits_cadence(const bt_app_font_book *book) {
+    bt_settings settings = fixture_settings();
+    bt_settings_draft draft;
+    bt_view_settings_draft_from(&settings, &draft);
+    bt_settings_widgets widgets;
+    memset(&widgets, 0, sizeof widgets);
+    float text_w = bt_view_settings_text_width(book->regular);
+    bt_view_settings_layout layout = bt_view_settings_layout_for(640.0F, 480.0F, text_w);
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    input.x = layout.controls[0].x + layout.controls[0].height * 0.25F;
+    input.y = layout.controls[0].y + layout.controls[0].height * 0.5F;
+    input.click = 1;
+    int changed = 0;
+    int focus = 0;
+    bt_view_settings_draw(&draft, &changed, &focus, &widgets, book->regular, book->bold, 640.0F,
+                          480.0F, &input);
+    return changed && draft.memo_cadence_ms == 799;
+}
+
+BT_TEST(view_settings, draw_edits_the_cadence_through_its_step_buttons) {
+    BT_CHECK(with_settings_fonts(run_draw_edits_cadence));
+}
+
+static int run_draw_invalid_mode(const bt_app_font_book *book) {
+    bt_settings settings = fixture_settings();
+    bt_settings_draft draft;
+    bt_view_settings_draft_from(&settings, &draft);
+    draft.memo_mode = (bt_memo_mode)77;
+    bt_settings_widgets widgets;
+    memset(&widgets, 0, sizeof widgets);
+    bt_ui_input input;
+    bt_ui_input_clear(&input);
+    int changed = 0;
+    int focus = 0;
+    bt_view_settings_draw(&draft, &changed, &focus, &widgets, book->regular, book->bold, 640.0F,
+                          480.0F, &input);
+    return !changed && draft.memo_mode == (bt_memo_mode)77;
+}
+
+BT_TEST(view_settings, draw_defaults_an_invalid_mode_selection_to_the_first_row) {
+    BT_CHECK(with_settings_fonts(run_draw_invalid_mode));
+}
+
+BT_TEST(view_settings, row_draw_without_loaded_fonts_returns_before_reading_state) {
+    BT_CHECK(bt_app_fonts_current() == NULL);
+    bt_app_ctx ctx;
+    memset(&ctx, 0, sizeof ctx);
+    bt_view_settings_row_draw(&ctx);
 }
