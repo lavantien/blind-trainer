@@ -52,7 +52,10 @@ void bt_verdict_free(bt_verdict *verdict) {
 }
 
 bool bt_verdict_ok(const bt_verdict *verdict) {
-    return verdict->problem_count == 0 && !verdict->allocation_failed;
+    if (verdict->allocation_failed) {
+        return false;
+    }
+    return verdict->problem_count == 0;
 }
 
 static void problem_string(const bt_problem *problem, char *out, size_t out_len) {
