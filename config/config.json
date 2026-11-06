@@ -311,6 +311,13 @@
     ],
     "jobs": 0,
     "test_timeout_secs": 300,
+    "suite_timeout_secs": {
+      "tools_ga_run_oom_test": 900,
+      "tools_gendata_alloc_test": 900,
+      "tools_gendata_build_test": 1200,
+      "tools_gendata_synth_test": 1200,
+      "tools_policy_driver_test": 900
+    },
     "src_deps": {
       "core": [],
       "scheme": [

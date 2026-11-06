@@ -157,6 +157,11 @@ def run(argv, label, cwd=None, check=True, env=None, timeout=None):
 
 
 def run_units_env(units, jobs=1, timeout=None):
+    def resolve_timeout(label):
+        if callable(timeout):
+            return int(timeout(label))
+        return timeout
+
     def execute(unit):
         label, argv, env = unit
         unit_argv = [str(part) for part in argv]
@@ -165,7 +170,7 @@ def run_units_env(units, jobs=1, timeout=None):
                 unit_argv,
                 capture_output=True,
                 text=True,
-                timeout=timeout,
+                timeout=resolve_timeout(label),
                 check=False,
                 env=env,
             )
@@ -1458,13 +1463,20 @@ def run_mutants_plans(mutate_argv, plans, env, root):
     run([*mutate_argv, *mutants_union_argv(plans, root)], "union outcomes", env=env)
 
 
+def suite_timeout_of(hub, suite):
+    overrides = build_cfg(hub).get("suite_timeout_secs", {})
+    return int(overrides.get(suite, build_cfg(hub)["test_timeout_secs"]))
+
+
 def run_suite_exes(hub, suites):
     bin_dir = REPO_ROOT / dirs_cfg(hub)["bin"]
-    timeout = build_cfg(hub)["test_timeout_secs"]
     units = [
         (suite["exe_name"], [bin_dir / f"{suite['exe_name']}.exe"]) for suite in suites
     ]
-    results = run_units(units, jobs=jobs_of(hub), timeout=timeout, env=child_env(hub))
+    results = run_units(
+        units, jobs=jobs_of(hub), timeout=lambda name: suite_timeout_of(hub, name),
+        env=child_env(hub),
+    )
     for result in results:
         if result.returncode != 0:
             print(f"[fail] {result.label}", flush=True)
