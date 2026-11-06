@@ -489,3 +489,136 @@ BT_TEST(visual_diff_edges, fs_rm_rf_removes_files_and_nested_trees) {
     BT_CHECK(!btvd_fs_is_file(file));
     vd_util_rm_rf(root);
 }
+
+enum {
+    VD_EDGE_LONG = 1010,
+    VD_EDGE_PNG_SIG = 8,
+    VD_EDGE_CHUNK_HEAD = 12,
+};
+
+BT_TEST(visual_diff_edges, decode_reports_a_chunk_length_overrun) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("edge-crc", root);
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {0, 0, 0, 255};
+    vd_util_solid_image(&solid, 2, 2, solid_rgba);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, root, "shot.png");
+    vd_util_write_png(path, &solid);
+    unsigned char bytes[VD_UTIL_PATH_MAX];
+    size_t len = vd_util_read_bytes(path, bytes, sizeof bytes);
+    BT_CHECK(len > VD_EDGE_PNG_SIG + VD_EDGE_CHUNK_HEAD);
+    if (len > VD_EDGE_PNG_SIG + VD_EDGE_CHUNK_HEAD) {
+        bytes[VD_EDGE_PNG_SIG + 2] = 0x7F;
+        bytes[VD_EDGE_PNG_SIG + 3] = 0xFF;
+        char write_err[BTVD_ERR_MAX];
+        BT_CHECK_EQ(btvd_fs_write_bytes(path, bytes, len, write_err, sizeof write_err), 0);
+        btvd_image image;
+        char err[BTVD_ERR_MAX];
+        BT_CHECK(btvd_decode(path, &image, err, sizeof err) != 0);
+        BT_CHECK(strstr(err, "chunk crc invalid") != NULL);
+    }
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(root);
+}
+
+BT_TEST(visual_diff_edges, png_names_matches_an_uppercase_extension) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("edge-upper", root);
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {9, 9, 9, 255};
+    vd_util_solid_image(&solid, 1, 1, solid_rgba);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, root, "SHOT.PNG");
+    vd_util_write_png(path, &solid);
+    btvd_strvec names = {0};
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_png_names(root, &names, err, sizeof err), 0);
+    BT_CHECK_EQ(names.count, 1U);
+    BT_CHECK(names.count == 1 && strcmp(names.items[0], "SHOT.PNG") == 0);
+    btvd_strvec_free(&names);
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(root);
+}
+
+BT_TEST(visual_diff_edges, update_reports_a_blocked_baseline_target) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("edge-update", root);
+    char shots[VD_UTIL_PATH_MAX];
+    char bases[VD_UTIL_PATH_MAX];
+    vd_util_join(shots, root, "shots");
+    vd_util_join(bases, root, "bases");
+    vd_util_mkdir_p(shots);
+    vd_util_mkdir_p(bases);
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {1, 1, 1, 255};
+    vd_util_solid_image(&solid, 1, 1, solid_rgba);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, shots, "shot.png");
+    vd_util_write_png(path, &solid);
+    char blocked[VD_UTIL_PATH_MAX];
+    vd_util_join(blocked, bases, "shot.png");
+    vd_util_mkdir_p(blocked);
+    btvd_args args;
+    snprintf(args.screenshots, sizeof args.screenshots, "%s", shots);
+    snprintf(args.baselines, sizeof args.baselines, "%s", bases);
+    args.update = 1;
+    btvd_strvec updated = {0};
+    char err[BTVD_ERR_MAX];
+    BT_CHECK(btvd_run_update(&args, &updated, err, sizeof err) != 0);
+    BT_CHECK(err[0] != '\0');
+    btvd_strvec_free(&updated);
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(root);
+}
+
+BT_TEST(visual_diff_edges, write_report_names_a_path_overflow) {
+    char long_root[BT_PATH_MAX];
+    memset(long_root, 'x', VD_EDGE_LONG);
+    long_root[VD_EDGE_LONG] = '\0';
+    char path[BT_PATH_MAX];
+    char err[BTVD_ERR_MAX];
+    BT_CHECK(btvd_write_report("body", long_root, path, sizeof path, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "path too long") != NULL);
+}
+
+BT_TEST(visual_diff_edges, run_reports_a_compare_failure_and_a_report_write_failure) {
+    char root[VD_UTIL_PATH_MAX];
+    vd_util_scratch("edge-run", root);
+    char bases[VD_UTIL_PATH_MAX];
+    char shots[VD_UTIL_PATH_MAX];
+    vd_util_join(bases, root, "bases");
+    vd_util_join(shots, root, "shots");
+    vd_util_mkdir_p(bases);
+    vd_util_mkdir_p(shots);
+    btvd_image solid;
+    unsigned char solid_rgba[4] = {4, 4, 4, 255};
+    vd_util_solid_image(&solid, 1, 1, solid_rgba);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, bases, "base.png");
+    vd_util_write_png(path, &solid);
+    char config[VD_UTIL_PATH_MAX];
+    vd_util_write_config(root, config, 0);
+    char long_shots[BT_PATH_MAX];
+    memset(long_shots, 'x', 1020);
+    long_shots[1020] = '\0';
+    char *long_argv[] = {long_shots, bases};
+    btvd_env env;
+    vd_util_env_for(&env, root, config, long_argv, 2);
+    char err[BTVD_ERR_MAX];
+    BT_CHECK_EQ(btvd_run(&env, err, sizeof err), -1);
+    BT_CHECK(strstr(err, "compare failed") != NULL);
+    char shot_png[VD_UTIL_PATH_MAX];
+    vd_util_join(shot_png, shots, "base.png");
+    vd_util_write_png(shot_png, &solid);
+    char *short_argv[] = {shots, bases};
+    vd_util_env_for(&env, root, config, short_argv, 2);
+    char long_artifacts[BT_PATH_MAX];
+    memset(long_artifacts, 'x', VD_EDGE_LONG);
+    long_artifacts[VD_EDGE_LONG] = '\0';
+    env.artifacts = long_artifacts;
+    BT_CHECK_EQ(btvd_run(&env, err, sizeof err), -1);
+    BT_CHECK(strstr(err, "cannot write report") != NULL);
+    vd_util_free_image(&solid);
+    vd_util_rm_rf(root);
+}
