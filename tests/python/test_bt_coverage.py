@@ -108,32 +108,35 @@ class CoverageScopeTests(unittest.TestCase):
 
 
 class CoverageCommandTests(unittest.TestCase):
-    def test_profdata_merge_argv_uses_output_and_positions_profraws(self):
+    def test_profdata_merge_argv_writes_output_and_profraws_to_a_response_file(self):
         raws = [Path("a.profraw"), Path("b.profraw")]
         out = Path("merged.profdata")
-        argv = bt.profdata_merge_argv(Path("llvm-profdata.exe"), raws, out)
-        self.assertEqual(argv[0], "llvm-profdata.exe")
-        self.assertEqual(argv[1], "merge")
-        self.assertIn(f"--output={out}", argv)
-        self.assertEqual(argv[-2:], [str(raws[0]), str(raws[1])])
+        with tempfile.TemporaryDirectory() as tmp:
+            response = Path(tmp) / "merge-response.txt"
+            argv = bt.profdata_merge_argv(Path("llvm-profdata.exe"), raws, out, response)
+            self.assertEqual(argv[:2], ["llvm-profdata.exe", "merge"])
+            self.assertEqual(argv[2], f"@{response}")
+            lines = response.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(lines[0], f'"--output={out}"')
+            self.assertEqual(lines[1:], [f'"{raws[0]}"', f'"{raws[1]}"'])
 
-    def test_cov_export_argv_leads_with_primary_and_objects_after(self):
+    def test_cov_export_argv_writes_primary_and_objects_to_a_response_file(self):
         hub = sample_hub()
         exes = [Path("bin/one.exe"), Path("bin/two.exe"), Path("bin/three.exe")]
         prof = Path("merged.profdata")
-        argv = bt.cov_export_argv(hub, Path("llvm-cov.exe"), exes, prof)
-        self.assertEqual(argv[0], "llvm-cov.exe")
-        self.assertEqual(argv[1], "export")
-        self.assertIn(f"--instr-profile={prof}", argv)
-        self.assertIn(
-            f"--include-filename-regex={bt.coverage_include_regex(hub)}", argv
-        )
-        self.assertEqual(
-            argv[argv.index(f"--instr-profile={prof}") + 2], str(exes[0])
-        )
-        for exe in exes[1:]:
-            self.assertIn(f"--object={exe}", argv)
-        self.assertNotIn(f"--object={exes[0]}", argv)
+        with tempfile.TemporaryDirectory() as tmp:
+            response = Path(tmp) / "export-response.txt"
+            argv = bt.cov_export_argv(hub, Path("llvm-cov.exe"), exes, prof, response)
+            self.assertEqual(argv[:2], ["llvm-cov.exe", "export"])
+            self.assertEqual(argv[2], f"@{response}")
+            lines = response.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(lines[0], f'"--instr-profile={prof}"')
+            self.assertEqual(
+                lines[1],
+                f'"--include-filename-regex={bt.coverage_include_regex(hub)}"',
+            )
+            self.assertEqual(lines[2], f'"{exes[0]}"')
+            self.assertEqual(lines[3:], [f'"--object={exe}"' for exe in exes[1:]])
 
     def test_coverage_export_exes_feed_every_instrumented_exe_to_llvm_cov(self):
         hub = sample_hub()
@@ -153,8 +156,14 @@ class CoverageCommandTests(unittest.TestCase):
             self.assertEqual(objects[: len(suites)], suites)
             self.assertEqual(objects[len(suites) :], sorted(extras))
             self.assertEqual(len(objects), len(set(objects)))
+            with tempfile.TemporaryDirectory() as rtmp:
+                response = Path(rtmp) / "export-response.txt"
+                bt.cov_export_argv(
+                    hub, Path("llvm-cov.exe"), objects, Path("m.profdata"), response
+                )
+                body = response.read_text(encoding="utf-8")
             for exe in extras:
-                self.assertIn(f"--object={exe}", bt.cov_export_argv(hub, Path("llvm-cov.exe"), objects, Path("m.profdata")))
+                self.assertIn(f'"--object={exe}"', body)
 
     def test_coverage_badge_argv_runs_the_script_isolated_with_the_export(self):
         hub = sample_hub()
