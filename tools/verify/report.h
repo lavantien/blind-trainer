@@ -66,6 +66,8 @@ typedef struct {
 } verify_report;
 
 void verify_note_text(const bt_note *note, char *out, size_t out_len);
+size_t verify_report_row_problems(const bt_verdict *verdict, bool has_record,
+                                  char (*out)[VERIFY_REPORT_PROBLEM_LEN]);
 void verify_report_reasons(const verify_report_row_outcome *row, bt_strbuf *out);
 void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
                          const char *generated_at, const char *corpus_sha256, verify_report *out);

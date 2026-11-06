@@ -7,6 +7,7 @@
 #include "data/paths.h"
 
 #include "common.h"
+#include "common/alloc.h"
 
 enum {
     KEY_SLASH = 47,
@@ -312,6 +313,16 @@ BT_TEST(algs_more, meta_line_badges_verification_and_problem_counts) {
     broken.youtube_link = _strdup("");
     bt_view_algs_meta_line(&broken, meta);
     BT_CHECK(strcmp(meta, "eggins qtm 0 htm 0 [6 problem(s)]") == 0);
+
+    bt_alloc_fail_arm(0);
+    bt_view_algs_meta_line(&broken, meta);
+    bt_alloc_fail_disarm();
+    BT_CHECK(strcmp(meta, "eggins qtm 0 htm 0 [out of memory while verifying]") == 0);
+    free(broken.position);
+    free(broken.alg_text);
+    free(broken.commutator);
+    free(broken.recon_link);
+    free(broken.youtube_link);
 }
 
 static void repo_walk_to_case(bt_app_ctx *ctx) {

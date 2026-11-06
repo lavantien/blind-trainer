@@ -146,6 +146,76 @@ static void row_from_corpus(const bt_corpus *base, bt_solver solver, bt_sheet_cl
     out->youtube_link = verify_xstrdup(row->youtube_link);
 }
 
+static void report_death_row_at_budget(size_t budget) {
+    char root[TV_PATH_MAX];
+    tv_ref_ground(root);
+    bt_corpus base;
+    bt_corpus_error err;
+    if (bt_corpus_load(root, &base, &err) != 0) {
+        exit(3);
+    }
+    bt_corpus_row *rows = malloc(1 * sizeof *rows);
+    if (rows == NULL) {
+        exit(3);
+    }
+    row_from_corpus(&base, BT_SOLVER_CHERRY, BT_SHEET_EDGE, 2, &rows[0]);
+    bt_corpus corpus;
+    bt_corpus_from_rows(rows, 1, &corpus);
+    verify_sim_map sim;
+    verify_sim_map_init(&sim);
+    bt_corpus_digest digest;
+    memset(&digest, 0, sizeof digest);
+    bt_alloc_fail_arm(budget);
+    verify_report report;
+    verify_build_report(&corpus, &sim, "t", digest.sha256, &report);
+    exit(4);
+}
+
+static void report_death_row_strings(void) {
+    report_death_row_at_budget(2);
+}
+
+static void report_death_row_problems_array(void) {
+    report_death_row_at_budget(4);
+}
+
+BT_TEST(verify_report, build_report_exits_when_a_row_string_starves) {
+    bt_death_expect_code("verify_report.row_strings", "", 1, report_death_row_strings);
+}
+
+BT_TEST(verify_report, build_report_exits_when_the_problem_table_starves) {
+    bt_death_expect_code("verify_report.row_problems", "", 1, report_death_row_problems_array);
+}
+
+BT_TEST(verify_report, row_problems_carry_the_out_of_memory_line_for_a_starved_verdict) {
+    bt_verdict verdict;
+    bt_verdict_init(&verdict);
+    verdict.allocation_failed = true;
+    char (*problems)[VERIFY_REPORT_PROBLEM_LEN] = malloc(3 * sizeof *problems);
+    BT_CHECK(problems != NULL);
+    BT_CHECK_EQ(verify_report_row_problems(&verdict, true, problems), 1U);
+    BT_CHECK_EQ(problems[0], "out of memory while verifying");
+    BT_CHECK_EQ(verify_report_row_problems(&verdict, false, problems), 2U);
+    BT_CHECK_EQ(problems[0], "out of memory while verifying");
+    BT_CHECK_EQ(problems[1], "missing simcheck record");
+    bt_verdict mixed;
+    bt_verdict_init(&mixed);
+    mixed.problems = malloc(sizeof *mixed.problems);
+    BT_CHECK(mixed.problems != NULL);
+    mixed.problem_count = 1;
+    bt_problem problem = {0};
+    problem.kind = BT_PROBLEM_CENTERS_MOVED;
+    mixed.problems[0] = problem;
+    mixed.allocation_failed = true;
+    BT_CHECK_EQ(verify_report_row_problems(&mixed, false, problems), 3U);
+    BT_CHECK_EQ(problems[0], "centers moved");
+    BT_CHECK_EQ(problems[1], "out of memory while verifying");
+    BT_CHECK_EQ(problems[2], "missing simcheck record");
+    free(mixed.problems);
+    free(problems);
+    bt_verdict_free(&verdict);
+}
+
 BT_TEST(verify_report, build_report_groups_rows_and_tallies_sheets) {
     char root[TV_PATH_MAX];
     tv_ref_ground(root);
@@ -517,6 +587,39 @@ BT_TEST(verify_report, to_json_renders_null_simchecks_problems_and_failures) {
     BT_CHECK(strstr(text.data, "failures") != NULL);
     bt_strbuf_free(&text);
     bt_json_free(value);
+    row.problems = NULL;
+    verify_report_row_free(&row);
+}
+
+BT_TEST(verify_report, to_json_fails_closed_at_every_starved_budget) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 7, "UF-UB-UR", &row);
+    static char problems[1][VERIFY_REPORT_PROBLEM_LEN] = {"qtm disagrees"};
+    row.problems = (char (*)[VERIFY_REPORT_PROBLEM_LEN])problems;
+    row.problem_count = 1;
+    verify_report report = {0};
+    snprintf(report.generated_at, sizeof report.generated_at, "%s", "2026-11-07T00:00:00Z");
+    snprintf(report.generator, sizeof report.generator, "%s", "verify");
+    report.rows = &row;
+    report.row_count = 1;
+    report.failures = &row;
+    report.failure_count = 1;
+    size_t budget = 0;
+    while (budget < 8192) {
+        bt_json_value *value = (bt_json_value *)1;
+        bt_alloc_fail_arm(budget);
+        int rc = verify_report_to_json(&report, &value);
+        bt_alloc_fail_disarm();
+        if (rc == 0) {
+            BT_CHECK(value != NULL);
+            bt_json_free(value);
+            break;
+        }
+        BT_CHECK_EQ(rc, -1);
+        BT_CHECK(value == NULL);
+        budget += 1;
+    }
+    BT_CHECK(budget < 8192);
     row.problems = NULL;
     verify_report_row_free(&row);
 }

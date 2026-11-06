@@ -228,6 +228,8 @@ void bt_view_algs_meta_line(const bt_corpus_row *row, char out[BT_ALGS_TEXT_MAX]
     char badge[32];
     if (bt_verdict_ok(&verdict)) {
         snprintf(badge, sizeof badge, "%s", "verified");
+    } else if (verdict.problem_count == 0) {
+        snprintf(badge, sizeof badge, "%s", "out of memory while verifying");
     } else {
         snprintf(badge, sizeof badge, "%zu problem(s)", verdict.problem_count);
     }

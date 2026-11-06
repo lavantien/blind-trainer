@@ -195,7 +195,10 @@ static int run(verify_strlist *offenders) {
         goto fail;
     }
     bt_json_value *json = NULL;
-    verify_report_to_json(&report, &json);
+    if (verify_report_to_json(&report, &json) != 0) {
+        verify_strlist_push(offenders, "serialize report.json failed: out of memory");
+        goto fail;
+    }
     bt_strbuf json_text;
     bt_strbuf_init(&json_text, 4096);
     int serialize_failed = bt_json_serialize(json, &json_text);

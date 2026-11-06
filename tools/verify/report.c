@@ -79,14 +79,40 @@ void verify_report_reasons(const verify_report_row_outcome *row, bt_strbuf *out)
     BT_TRACE_EXIT("report.reasons");
 }
 
+static void *report_need(void *ptr) {
+    if (ptr == NULL) {
+        BT_TRACE_FAIL("report.build_report", "row allocation failed");
+        exit(1);
+    }
+    return ptr;
+}
+
+size_t verify_report_row_problems(const bt_verdict *verdict, bool has_record,
+                                  char (*out)[VERIFY_REPORT_PROBLEM_LEN]) {
+    size_t count = 0;
+    for (size_t at = 0; at < verdict->problem_count; at++) {
+        bt_problem_string(&verdict->problems[at], out[count], VERIFY_REPORT_PROBLEM_LEN);
+        count += 1;
+    }
+    if (verdict->allocation_failed) {
+        snprintf(out[count], VERIFY_REPORT_PROBLEM_LEN, "%s", "out of memory while verifying");
+        count += 1;
+    }
+    if (!has_record) {
+        snprintf(out[count], VERIFY_REPORT_PROBLEM_LEN, "%s", "missing simcheck record");
+        count += 1;
+    }
+    return count;
+}
+
 static verify_report_row_outcome clone_row(const verify_report_row_outcome *row) {
     verify_report_row_outcome copy = *row;
-    copy.position = verify_xstrdup(row->position);
-    copy.alg = verify_xstrdup(row->alg);
+    copy.position = report_need(verify_xstrdup(row->position));
+    copy.alg = report_need(verify_xstrdup(row->alg));
     copy.simcheck_position =
-        row->simcheck_position == NULL ? NULL : verify_xstrdup(row->simcheck_position);
+        row->simcheck_position == NULL ? NULL : report_need(verify_xstrdup(row->simcheck_position));
     if (row->problem_count > 0) {
-        copy.problems = bt_malloc(row->problem_count * sizeof *copy.problems);
+        copy.problems = report_need(bt_malloc(row->problem_count * sizeof *copy.problems));
         for (size_t at = 0; at < row->problem_count; at++) {
             snprintf(copy.problems[at], VERIFY_REPORT_PROBLEM_LEN, "%s", row->problems[at]);
         }
@@ -94,7 +120,7 @@ static verify_report_row_outcome clone_row(const verify_report_row_outcome *row)
         copy.problems = NULL;
     }
     if (row->note_count > 0) {
-        copy.notes = bt_malloc(row->note_count * sizeof *copy.notes);
+        copy.notes = report_need(bt_malloc(row->note_count * sizeof *copy.notes));
         for (size_t at = 0; at < row->note_count; at++) {
             snprintf(copy.notes[at], VERIFY_REPORT_NOTE_LEN, "%s", row->notes[at]);
         }
@@ -164,36 +190,30 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
         snprintf(outcome.solver, sizeof outcome.solver, "%s", bt_solver_dir(row->solver));
         snprintf(outcome.sheet, sizeof outcome.sheet, "%s", bt_sheet_class_file(row->sheet));
         outcome.rowid = row->rowid;
-        outcome.position = verify_xstrdup(row->position);
-        outcome.alg = verify_xstrdup(row->alg_text);
+        outcome.position = report_need(verify_xstrdup(row->position));
+        outcome.alg = report_need(verify_xstrdup(row->alg_text));
         outcome.qtm = qtm;
         outcome.htm = htm;
         outcome.has_simcheck = record != NULL;
         if (record != NULL) {
             outcome.simcheck_qtm = record->qtm;
-            outcome.simcheck_position = verify_xstrdup(record->position);
+            outcome.simcheck_position = report_need(verify_xstrdup(record->position));
         }
         outcome.verify_ok = bt_verdict_ok(&verdict);
-        if (verdict.problem_count > 0) {
-            outcome.problems = bt_malloc((verdict.problem_count + 1) * sizeof *outcome.problems);
-        }
-        size_t problem_count = 0;
-        for (size_t problem_at = 0; problem_at < verdict.problem_count; problem_at++) {
-            bt_problem_string(&verdict.problems[problem_at], outcome.problems[problem_count],
-                              VERIFY_REPORT_PROBLEM_LEN);
-            problem_count += 1;
+        size_t problem_slots = verdict.problem_count;
+        if (verdict.allocation_failed) {
+            problem_slots += 1;
         }
         if (record == NULL) {
-            if (outcome.problems == NULL) {
-                outcome.problems = bt_malloc(2 * sizeof *outcome.problems);
-            }
-            snprintf(outcome.problems[problem_count], VERIFY_REPORT_PROBLEM_LEN, "%s",
-                     "missing simcheck record");
-            problem_count += 1;
+            problem_slots += 1;
         }
-        outcome.problem_count = problem_count;
+        if (problem_slots > 0) {
+            outcome.problems = report_need(bt_malloc(problem_slots * sizeof *outcome.problems));
+            outcome.problem_count =
+                verify_report_row_problems(&verdict, record != NULL, outcome.problems);
+        }
         if (verdict.note_count > 0) {
-            outcome.notes = bt_malloc(verdict.note_count * sizeof *outcome.notes);
+            outcome.notes = report_need(bt_malloc(verdict.note_count * sizeof *outcome.notes));
             for (size_t note_at = 0; note_at < verdict.note_count; note_at++) {
                 verify_note_text(&verdict.notes[note_at], outcome.notes[note_at],
                                  VERIFY_REPORT_NOTE_LEN);
@@ -343,76 +363,180 @@ void verify_render_markdown(const verify_report *report, bt_strbuf *out) {
     BT_TRACE_EXIT("report.render_markdown");
 }
 
+static int report_set_member(bt_json_value *object, const char *key, bt_json_value *value) {
+    if (value == NULL || bt_json_object_set(object, key, value) != 0) {
+        bt_json_free(value);
+        return -1;
+    }
+    return 0;
+}
+
+static int report_push_item(bt_json_value *array, bt_json_value *item) {
+    if (item == NULL || bt_json_array_push(array, item) != 0) {
+        bt_json_free(item);
+        return -1;
+    }
+    return 0;
+}
+
 static bt_json_value *row_to_json(const verify_report_row_outcome *row) {
     bt_json_value *object = bt_json_new_object();
-    bt_json_object_set(object, "solver", bt_json_new_string(row->solver));
-    bt_json_object_set(object, "sheet", bt_json_new_string(row->sheet));
-    bt_json_object_set(object, "rowid", bt_json_new_integer((long long)row->rowid));
-    bt_json_object_set(object, "position", bt_json_new_string(row->position));
-    bt_json_object_set(object, "alg", bt_json_new_string(row->alg));
-    bt_json_object_set(object, "qtm", bt_json_new_integer(row->qtm));
-    bt_json_object_set(object, "htm", bt_json_new_integer(row->htm));
-    if (row->has_simcheck) {
-        bt_json_object_set(object, "simcheck_qtm", bt_json_new_integer(row->simcheck_qtm));
-        bt_json_object_set(object, "simcheck_position", bt_json_new_string(row->simcheck_position));
-    } else {
-        bt_json_object_set(object, "simcheck_qtm", bt_json_new_null());
-        bt_json_object_set(object, "simcheck_position", bt_json_new_null());
+    if (object == NULL) {
+        return NULL;
     }
-    bt_json_object_set(object, "verify_ok", bt_json_new_bool((int)row->verify_ok));
+    int ok = report_set_member(object, "solver", bt_json_new_string(row->solver)) == 0 &&
+             report_set_member(object, "sheet", bt_json_new_string(row->sheet)) == 0 &&
+             report_set_member(object, "rowid", bt_json_new_integer((long long)row->rowid)) == 0 &&
+             report_set_member(object, "position", bt_json_new_string(row->position)) == 0 &&
+             report_set_member(object, "alg", bt_json_new_string(row->alg)) == 0 &&
+             report_set_member(object, "qtm", bt_json_new_integer(row->qtm)) == 0 &&
+             report_set_member(object, "htm", bt_json_new_integer(row->htm)) == 0 &&
+             report_set_member(object, "verify_ok", bt_json_new_bool((int)row->verify_ok)) == 0;
+    if (ok && row->has_simcheck) {
+        ok = report_set_member(object, "simcheck_qtm", bt_json_new_integer(row->simcheck_qtm)) ==
+                 0 &&
+             report_set_member(object, "simcheck_position",
+                               bt_json_new_string(row->simcheck_position)) == 0;
+    } else if (ok) {
+        ok = report_set_member(object, "simcheck_qtm", bt_json_new_null()) == 0 &&
+             report_set_member(object, "simcheck_position", bt_json_new_null()) == 0;
+    }
     bt_json_value *problems = bt_json_new_array();
-    for (size_t at = 0; at < row->problem_count; at++) {
-        bt_json_array_push(problems, bt_json_new_string(row->problems[at]));
-    }
-    bt_json_object_set(object, "problems", problems);
     bt_json_value *notes = bt_json_new_array();
-    for (size_t at = 0; at < row->note_count; at++) {
-        bt_json_array_push(notes, bt_json_new_string(row->notes[at]));
+    if (problems == NULL || notes == NULL) {
+        bt_json_free(problems);
+        bt_json_free(notes);
+        bt_json_free(object);
+        return NULL;
     }
-    bt_json_object_set(object, "notes", notes);
-    bt_json_object_set(object, "qtm_match", bt_json_new_bool((int)row->qtm_match));
-    bt_json_object_set(object, "position_match", bt_json_new_bool((int)row->position_match));
-    bt_json_object_set(object, "pass", bt_json_new_bool((int)row->pass));
+    for (size_t at = 0; ok && at < row->problem_count; at++) {
+        ok = report_push_item(problems, bt_json_new_string(row->problems[at])) == 0;
+    }
+    for (size_t at = 0; ok && at < row->note_count; at++) {
+        ok = report_push_item(notes, bt_json_new_string(row->notes[at])) == 0;
+    }
+    int problems_attached = 0;
+    int notes_attached = 0;
+    if (ok && bt_json_object_set(object, "problems", problems) == 0) {
+        problems_attached = 1;
+        if (bt_json_object_set(object, "notes", notes) == 0) {
+            notes_attached = 1;
+            ok = report_set_member(object, "qtm_match", bt_json_new_bool((int)row->qtm_match)) ==
+                     0 &&
+                 report_set_member(object, "position_match",
+                                   bt_json_new_bool((int)row->position_match)) == 0 &&
+                 report_set_member(object, "pass", bt_json_new_bool((int)row->pass)) == 0;
+        } else {
+            ok = 0;
+        }
+    } else if (ok) {
+        ok = 0;
+    }
+    if (!problems_attached) {
+        bt_json_free(problems);
+    }
+    if (!notes_attached) {
+        bt_json_free(notes);
+    }
+    if (!ok) {
+        bt_json_free(object);
+        return NULL;
+    }
     return object;
+}
+
+static bt_json_value *sheet_summary_to_json(const verify_sheet_summary *sheet) {
+    bt_json_value *entry = bt_json_new_object();
+    if (entry == NULL) {
+        return NULL;
+    }
+    if (report_set_member(entry, "solver", bt_json_new_string(sheet->solver)) != 0 ||
+        report_set_member(entry, "sheet", bt_json_new_string(sheet->sheet)) != 0 ||
+        report_set_member(entry, "rows", bt_json_new_integer((long long)sheet->rows)) != 0 ||
+        report_set_member(entry, "passed", bt_json_new_integer((long long)sheet->passed)) != 0 ||
+        report_set_member(entry, "failed", bt_json_new_integer((long long)sheet->failed)) != 0 ||
+        report_set_member(entry, "qtm_agreed", bt_json_new_integer((long long)sheet->qtm_agreed)) !=
+            0 ||
+        report_set_member(entry, "position_agreed",
+                          bt_json_new_integer((long long)sheet->position_agreed)) != 0) {
+        bt_json_free(entry);
+        return NULL;
+    }
+    return entry;
 }
 
 int verify_report_to_json(const verify_report *report, bt_json_value **out) {
     BT_TRACE_ENTER("report.to_json");
+    *out = NULL;
     bt_json_value *root = bt_json_new_object();
-    bt_json_object_set(root, "generated_at", bt_json_new_string(report->generated_at));
-    bt_json_object_set(root, "generator", bt_json_new_string(report->generator));
-    bt_json_object_set(root, "corpus_sha256", bt_json_new_string(report->corpus_sha256));
-    bt_json_object_set(root, "corpus_rows", bt_json_new_integer((long long)report->corpus_rows));
-    bt_json_object_set(root, "simcheck_total",
-                       bt_json_new_integer((long long)report->simcheck_total));
-    bt_json_object_set(root, "simcheck_matched",
-                       bt_json_new_integer((long long)report->simcheck_matched));
+    if (root == NULL ||
+        report_set_member(root, "generated_at", bt_json_new_string(report->generated_at)) != 0 ||
+        report_set_member(root, "generator", bt_json_new_string(report->generator)) != 0 ||
+        report_set_member(root, "corpus_sha256", bt_json_new_string(report->corpus_sha256)) != 0 ||
+        report_set_member(root, "corpus_rows",
+                          bt_json_new_integer((long long)report->corpus_rows)) != 0 ||
+        report_set_member(root, "simcheck_total",
+                          bt_json_new_integer((long long)report->simcheck_total)) != 0 ||
+        report_set_member(root, "simcheck_matched",
+                          bt_json_new_integer((long long)report->simcheck_matched)) != 0) {
+        bt_json_free(root);
+        BT_TRACE_FAIL("report.to_json", "header member dropped");
+        BT_TRACE_EXIT("report.to_json");
+        return -1;
+    }
     bt_json_value *sheets = bt_json_new_array();
-    for (size_t at = 0; at < BT_DIGEST_FILES; at++) {
-        const verify_sheet_summary *sheet = &report->sheets[at];
-        bt_json_value *entry = bt_json_new_object();
-        bt_json_object_set(entry, "solver", bt_json_new_string(sheet->solver));
-        bt_json_object_set(entry, "sheet", bt_json_new_string(sheet->sheet));
-        bt_json_object_set(entry, "rows", bt_json_new_integer((long long)sheet->rows));
-        bt_json_object_set(entry, "passed", bt_json_new_integer((long long)sheet->passed));
-        bt_json_object_set(entry, "failed", bt_json_new_integer((long long)sheet->failed));
-        bt_json_object_set(entry, "qtm_agreed", bt_json_new_integer((long long)sheet->qtm_agreed));
-        bt_json_object_set(entry, "position_agreed",
-                           bt_json_new_integer((long long)sheet->position_agreed));
-        bt_json_array_push(sheets, entry);
-    }
-    bt_json_object_set(root, "sheets", sheets);
     bt_json_value *rows = bt_json_new_array();
-    for (size_t at = 0; at < report->row_count; at++) {
-        bt_json_array_push(rows, row_to_json(&report->rows[at]));
-    }
-    bt_json_object_set(root, "rows", rows);
     bt_json_value *failures = bt_json_new_array();
-    for (size_t at = 0; at < report->failure_count; at++) {
-        bt_json_array_push(failures, row_to_json(&report->failures[at]));
+    int sheets_attached = 0;
+    int rows_attached = 0;
+    int failures_attached = 0;
+    if (sheets == NULL || rows == NULL || failures == NULL) {
+        goto drop;
     }
-    bt_json_object_set(root, "failures", failures);
-    *out = root;
+    for (size_t at = 0; at < BT_DIGEST_FILES; at++) {
+        bt_json_value *entry = sheet_summary_to_json(&report->sheets[at]);
+        if (entry == NULL || report_push_item(sheets, entry) != 0) {
+            goto drop;
+        }
+    }
+    for (size_t at = 0; at < report->row_count; at++) {
+        bt_json_value *item = row_to_json(&report->rows[at]);
+        if (item == NULL || report_push_item(rows, item) != 0) {
+            goto drop;
+        }
+    }
+    for (size_t at = 0; at < report->failure_count; at++) {
+        bt_json_value *item = row_to_json(&report->failures[at]);
+        if (item == NULL || report_push_item(failures, item) != 0) {
+            goto drop;
+        }
+    }
+    if (bt_json_object_set(root, "sheets", sheets) == 0) {
+        sheets_attached = 1;
+        if (bt_json_object_set(root, "rows", rows) == 0) {
+            rows_attached = 1;
+            if (bt_json_object_set(root, "failures", failures) == 0) {
+                failures_attached = 1;
+            }
+        }
+    }
+    if (sheets_attached && rows_attached && failures_attached) {
+        *out = root;
+        BT_TRACE_EXIT("report.to_json");
+        return 0;
+    }
+drop:
+    if (!sheets_attached) {
+        bt_json_free(sheets);
+    }
+    if (!rows_attached) {
+        bt_json_free(rows);
+    }
+    if (!failures_attached) {
+        bt_json_free(failures);
+    }
+    bt_json_free(root);
+    BT_TRACE_FAIL("report.to_json", "member dropped under allocation failure");
     BT_TRACE_EXIT("report.to_json");
-    return 0;
+    return -1;
 }
