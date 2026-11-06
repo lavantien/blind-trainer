@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 #include "core/alg.h"
@@ -46,28 +47,23 @@ static const char *class_debug(const bt_classification *class) {
 }
 
 static int offenders_push(bt_gd_built *built, const char *text) {
-    char **grown = realloc(built->offenders, (built->offender_count + 1) * sizeof(char *));
+    char **grown = bt_realloc(built->offenders, (built->offender_count + 1) * sizeof(char *));
     if (grown == NULL) {
         return -1;
     }
     built->offenders = grown;
-    built->offenders[built->offender_count] = _strdup(text);
+    built->offenders[built->offender_count] = bt_gd_strdup(text);
+    if (built->offenders[built->offender_count] == NULL) {
+        return -1;
+    }
     built->offender_count++;
     return 0;
-}
-
-static void note_text(const bt_note *note, char *out, size_t out_len) {
-    if (note->kind == BT_NOTE_FLIP) {
-        snprintf(out, out_len, "flip:%s", note->piece);
-    } else {
-        snprintf(out, out_len, "twist:%s:%+d", note->piece, (int)note->twist);
-    }
 }
 
 static int verdict_strings(const bt_verdict *verdict, char ***problems, size_t *problem_count,
                            char ***notes, size_t *note_count) {
     *problem_count = verdict->problem_count;
-    *problems = *problem_count > 0 ? malloc(*problem_count * sizeof(char *)) : NULL;
+    *problems = *problem_count > 0 ? bt_malloc(*problem_count * sizeof(char *)) : NULL;
     if (*problems == NULL && *problem_count > 0) {
         *problem_count = 0;
         *note_count = 0;
@@ -77,10 +73,18 @@ static int verdict_strings(const bt_verdict *verdict, char ***problems, size_t *
     for (size_t i = 0; i < verdict->problem_count; i++) {
         char text[BT_VERIFY_DETAIL_MAX + 32];
         bt_problem_string(&verdict->problems[i], text, sizeof text);
-        (*problems)[i] = _strdup(text);
+        (*problems)[i] = bt_gd_strdup(text);
+        if ((*problems)[i] == NULL) {
+            bt_gd_string_list_free(*problems, i);
+            *problems = NULL;
+            *problem_count = 0;
+            *note_count = 0;
+            BT_TRACE_FAIL("gd.build.verdict_strings", "problem string duplication failed");
+            return -1;
+        }
     }
     *note_count = verdict->note_count;
-    *notes = *note_count > 0 ? malloc(*note_count * sizeof(char *)) : NULL;
+    *notes = *note_count > 0 ? bt_malloc(*note_count * sizeof(char *)) : NULL;
     if (*notes == NULL && *note_count > 0) {
         bt_gd_string_list_free(*problems, *problem_count);
         *problems = NULL;
@@ -91,8 +95,19 @@ static int verdict_strings(const bt_verdict *verdict, char ***problems, size_t *
     }
     for (size_t i = 0; i < verdict->note_count; i++) {
         char text[64];
-        note_text(&verdict->notes[i], text, sizeof text);
-        (*notes)[i] = _strdup(text);
+        snprintf(text, sizeof text, "twist:%s:%+d", verdict->notes[i].piece,
+                 (int)verdict->notes[i].twist);
+        (*notes)[i] = bt_gd_strdup(text);
+        if ((*notes)[i] == NULL) {
+            bt_gd_string_list_free(*notes, i);
+            bt_gd_string_list_free(*problems, *problem_count);
+            *problems = NULL;
+            *problem_count = 0;
+            *notes = NULL;
+            *note_count = 0;
+            BT_TRACE_FAIL("gd.build.verdict_strings", "note string duplication failed");
+            return -1;
+        }
     }
     return 0;
 }
@@ -101,10 +116,18 @@ static int vendor_alg_of_row(const bt_corpus_row *row, bool ok, char **problems,
                              size_t problem_count, char **notes, size_t note_count,
                              bt_gd_vendor_alg *out) {
     memset(out, 0, sizeof *out);
-    out->solver = _strdup(bt_solver_dir(row->solver));
+    out->solver = bt_gd_strdup(bt_solver_dir(row->solver));
+    out->position = bt_gd_strdup(row->position);
+    out->alg = bt_gd_strdup(row->alg_text);
+    out->commutator = bt_gd_strdup(row->commutator);
+    out->recon_link = bt_gd_strdup(row->recon_link);
+    out->youtube_link = bt_gd_strdup(row->youtube_link);
+    if (out->solver == NULL || out->position == NULL || out->alg == NULL ||
+        out->commutator == NULL || out->recon_link == NULL || out->youtube_link == NULL) {
+        bt_gd_vendor_alg_free(out);
+        return -1;
+    }
     out->rowid = row->rowid;
-    out->position = _strdup(row->position);
-    out->alg = _strdup(row->alg_text);
     out->qtm = bt_alg_qtm(&row->alg);
     out->htm = bt_alg_htm(&row->alg);
     out->ok = ok;
@@ -112,9 +135,6 @@ static int vendor_alg_of_row(const bt_corpus_row *row, bool ok, char **problems,
     out->problem_count = problem_count;
     out->notes = notes;
     out->note_count = note_count;
-    out->commutator = _strdup(row->commutator);
-    out->recon_link = _strdup(row->recon_link);
-    out->youtube_link = _strdup(row->youtube_link);
     return 0;
 }
 
@@ -175,7 +195,20 @@ void bt_gd_derive_mirrored_inverses(bt_gd_cases_file *cases) {
         if (!bt_alg_try_parse(source->alg, &parsed)) {
             continue;
         }
-        bt_alg inverse = bt_alg_inverse(&parsed);
+        bt_alg inverse;
+        bt_alg_init(&inverse);
+        bool inverse_ok = true;
+        for (size_t i = parsed.len; i > 0; i--) {
+            if (!bt_alg_push(&inverse, bt_move_invert(parsed.items[i - 1]))) {
+                inverse_ok = false;
+                break;
+            }
+        }
+        if (!inverse_ok) {
+            bt_alg_free(&inverse);
+            bt_alg_free(&parsed);
+            continue;
+        }
         bt_verdict verdict;
         bt_verdict_init(&verdict);
         bt_verify(&inverse, position, sheet, &verdict);
@@ -194,12 +227,34 @@ void bt_gd_derive_mirrored_inverses(bt_gd_cases_file *cases) {
         bt_strbuf text;
         bt_strbuf_init(&text, 0);
         bt_alg_format(&inverse, &text);
+        if (text.data == NULL) {
+            bt_gd_string_list_free(problems, problem_count);
+            bt_gd_string_list_free(notes, note_count);
+            bt_strbuf_free(&text);
+            bt_alg_free(&inverse);
+            bt_alg_free(&parsed);
+            continue;
+        }
         bt_gd_vendor_alg derived;
         memset(&derived, 0, sizeof derived);
-        derived.solver = _strdup(source->solver);
+        derived.solver = bt_gd_strdup(source->solver);
+        derived.position = bt_gd_strdup(position);
+        derived.alg = bt_gd_strdup(text.data);
+        derived.commutator = bt_gd_strdup(text.data);
+        derived.recon_link = bt_gd_strdup(source->recon_link);
+        derived.youtube_link = bt_gd_strdup(source->youtube_link);
+        if (derived.solver == NULL || derived.position == NULL || derived.alg == NULL ||
+            derived.commutator == NULL || derived.recon_link == NULL ||
+            derived.youtube_link == NULL) {
+            bt_gd_vendor_alg_free(&derived);
+            bt_gd_string_list_free(problems, problem_count);
+            bt_gd_string_list_free(notes, note_count);
+            bt_strbuf_free(&text);
+            bt_alg_free(&inverse);
+            bt_alg_free(&parsed);
+            continue;
+        }
         derived.rowid = source->rowid;
-        derived.position = _strdup(position);
-        derived.alg = _strdup(text.data);
         derived.qtm = bt_alg_qtm(&inverse);
         derived.htm = bt_alg_htm(&inverse);
         derived.ok = ok;
@@ -207,10 +262,7 @@ void bt_gd_derive_mirrored_inverses(bt_gd_cases_file *cases) {
         derived.problem_count = problem_count;
         derived.notes = notes;
         derived.note_count = note_count;
-        derived.commutator = _strdup(text.data);
-        derived.recon_link = _strdup(source->recon_link);
-        derived.youtube_link = _strdup(source->youtube_link);
-        bt_gd_vendor_alg *grown = realloc(entry->vendor_algs, sizeof(bt_gd_vendor_alg));
+        bt_gd_vendor_alg *grown = bt_realloc(entry->vendor_algs, sizeof(bt_gd_vendor_alg));
         if (grown != NULL) {
             entry->vendor_algs = grown;
             entry->vendor_algs[0] = derived;
@@ -230,7 +282,7 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
     BT_TRACE_ENTER("gd.build.build");
     memset(out, 0, sizeof *out);
     out->cases.count = 0;
-    out->cases.cases = malloc(BT_GD_TOTAL_CASES * sizeof(bt_gd_case_entry));
+    out->cases.cases = bt_malloc(BT_GD_TOTAL_CASES * sizeof(bt_gd_case_entry));
     if (out->cases.cases == NULL) {
         BT_TRACE_FAIL("gd.build.build", "cases table allocation failed");
         return;
@@ -240,20 +292,29 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
         bt_case enumerated[BT_PAIRS_MAX];
         size_t enumerated_count = bt_scheme_enumerate_cases(orbit, enumerated);
         for (size_t i = 0; i < enumerated_count; i++) {
-            bt_gd_case_entry *entry = &out->cases.cases[out->cases.count++];
+            bt_gd_case_entry *entry = &out->cases.cases[out->cases.count];
             char letters[2];
             bt_scheme_case_letters(&enumerated[i], letters);
             memset(entry, 0, sizeof *entry);
-            entry->orbit = _strdup(orbit_name(orbit));
+            entry->orbit = bt_gd_strdup(orbit_name(orbit));
+            entry->t1_name = bt_gd_strdup(bt_scheme_name_of(enumerated[i].t1));
+            entry->t2_name = bt_gd_strdup(bt_scheme_name_of(enumerated[i].t2));
+            if (entry->orbit == NULL || entry->t1_name == NULL || entry->t2_name == NULL) {
+                free(entry->orbit);
+                free(entry->t1_name);
+                free(entry->t2_name);
+                bt_gd_built_free(out);
+                BT_TRACE_FAIL("gd.build.build", "case entry strings allocation failed");
+                return;
+            }
             entry->t1 = enumerated[i].t1;
             entry->t2 = enumerated[i].t2;
             entry->t1_letter = letters[0];
             entry->t2_letter = letters[1];
-            entry->t1_name = _strdup(bt_scheme_name_of(enumerated[i].t1));
-            entry->t2_name = _strdup(bt_scheme_name_of(enumerated[i].t2));
             entry->covered = false;
             entry->vendor_algs = NULL;
             entry->vendor_count = 0;
+            out->cases.count++;
         }
     }
     for (size_t row_index = 0; row_index < corpus->count; row_index++) {
@@ -282,7 +343,8 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
             }
             char offender[BT_PATH_MAX + 256];
             snprintf(offender, sizeof offender, "%s/%s/%zu %s: %s", bt_solver_dir(row->solver),
-                     bt_sheet_class_file(row->sheet), row->rowid, row->position, joined.data);
+                     bt_sheet_class_file(row->sheet), row->rowid, row->position,
+                     joined.data != NULL ? joined.data : "");
             offenders_push(out, offender);
             bt_strbuf_free(&joined);
         }
@@ -353,11 +415,18 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
                     goto next_row;
                 }
                 bt_gd_vendor_alg alg;
-                vendor_alg_of_row(row, ok, problems, problem_count, notes, note_count, &alg);
-                bt_gd_vendor_alg *grown =
-                    realloc(out->cases.cases[slot].vendor_algs,
-                            (out->cases.cases[slot].vendor_count + 1) * sizeof(bt_gd_vendor_alg));
+                if (vendor_alg_of_row(row, ok, problems, problem_count, notes, note_count, &alg) !=
+                    0) {
+                    goto next_row;
+                }
+                bt_gd_vendor_alg *grown = bt_realloc(out->cases.cases[slot].vendor_algs,
+                                                     (out->cases.cases[slot].vendor_count + 1) *
+                                                         sizeof(bt_gd_vendor_alg));
                 if (grown == NULL) {
+                    alg.problems = NULL;
+                    alg.problem_count = 0;
+                    alg.notes = NULL;
+                    alg.note_count = 0;
                     bt_gd_vendor_alg_free(&alg);
                     goto next_row;
                 }
@@ -367,7 +436,7 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
                 strings_owned = true;
             }
         } else {
-            bt_gd_special_entry *grown = realloc(
+            bt_gd_special_entry *grown = bt_realloc(
                 out->specials.specials, (out->specials.count + 1) * sizeof(bt_gd_special_entry));
             if (grown == NULL) {
                 goto next_row;
@@ -375,11 +444,27 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
             out->specials.specials = grown;
             bt_gd_special_entry *special = &out->specials.specials[out->specials.count];
             memset(special, 0, sizeof *special);
-            special->class_name = _strdup(bt_sheet_class_file(row->sheet));
-            special->solver = _strdup(bt_solver_dir(row->solver));
+            special->class_name = bt_gd_strdup(bt_sheet_class_file(row->sheet));
+            special->solver = bt_gd_strdup(bt_solver_dir(row->solver));
+            special->position = bt_gd_strdup(row->position);
+            special->alg = bt_gd_strdup(row->alg_text);
+            special->commutator = bt_gd_strdup(row->commutator);
+            special->recon_link = bt_gd_strdup(row->recon_link);
+            special->youtube_link = bt_gd_strdup(row->youtube_link);
+            if (special->class_name == NULL || special->solver == NULL ||
+                special->position == NULL || special->alg == NULL || special->commutator == NULL ||
+                special->recon_link == NULL || special->youtube_link == NULL) {
+                free(special->class_name);
+                free(special->solver);
+                free(special->position);
+                free(special->alg);
+                free(special->commutator);
+                free(special->recon_link);
+                free(special->youtube_link);
+                bt_gd_specials_file_free(&out->specials);
+                goto next_row;
+            }
             special->rowid = row->rowid;
-            special->position = _strdup(row->position);
-            special->alg = _strdup(row->alg_text);
             special->qtm = bt_alg_qtm(&row->alg);
             special->htm = bt_alg_htm(&row->alg);
             special->ok = ok;
@@ -387,9 +472,6 @@ void bt_gd_build(const bt_corpus *corpus, bt_gd_built *out) {
             special->problem_count = problem_count;
             special->notes = notes;
             special->note_count = note_count;
-            special->commutator = _strdup(row->commutator);
-            special->recon_link = _strdup(row->recon_link);
-            special->youtube_link = _strdup(row->youtube_link);
             out->specials.count++;
             strings_owned = true;
         }
@@ -428,25 +510,51 @@ void bt_gd_manifest_make(const bt_gd_built *built, const bt_corpus_digest *diges
                          bt_gd_manifest *out) {
     BT_TRACE_ENTER("gd.build.manifest");
     memset(out, 0, sizeof *out);
-    out->generated_at = _strdup(generated_at);
-    out->generator = _strdup(bt_gd_crate_id());
-    out->synth_params_sha256 = _strdup(synth_params_sha256);
-    out->corpus_sha256 = _strdup(digest->sha256);
+    out->generated_at = bt_gd_strdup(generated_at);
+    out->generator = bt_gd_strdup(bt_gd_crate_id());
+    out->synth_params_sha256 = bt_gd_strdup(synth_params_sha256);
+    out->corpus_sha256 = bt_gd_strdup(digest->sha256);
+    if (out->generated_at == NULL || out->generator == NULL || out->synth_params_sha256 == NULL ||
+        out->corpus_sha256 == NULL) {
+        bt_gd_manifest_free(out);
+        BT_TRACE_FAIL("gd.build.manifest", "header strings allocation failed");
+        return;
+    }
     out->corpus_rows = digest->rows;
-    out->corpus_file_count = digest->file_count;
     out->corpus_files = digest->file_count > 0
-                            ? malloc(digest->file_count * sizeof(bt_gd_corpus_file_entry))
+                            ? bt_malloc(digest->file_count * sizeof(bt_gd_corpus_file_entry))
                             : NULL;
+    if (out->corpus_files == NULL && digest->file_count > 0) {
+        bt_gd_manifest_free(out);
+        BT_TRACE_FAIL("gd.build.manifest", "corpus file table allocation failed");
+        return;
+    }
+    out->corpus_file_count = digest->file_count;
     for (size_t i = 0; i < digest->file_count; i++) {
-        out->corpus_files[i].solver = _strdup(digest->files[i].solver);
-        out->corpus_files[i].sheet = _strdup(digest->files[i].sheet);
+        out->corpus_files[i].solver = bt_gd_strdup(digest->files[i].solver);
+        out->corpus_files[i].sheet = bt_gd_strdup(digest->files[i].sheet);
+        out->corpus_files[i].sha256 = bt_gd_strdup(digest->files[i].sha256);
+        if (out->corpus_files[i].solver == NULL || out->corpus_files[i].sheet == NULL ||
+            out->corpus_files[i].sha256 == NULL) {
+            out->corpus_file_count = i + 1;
+            bt_gd_manifest_free(out);
+            BT_TRACE_FAIL("gd.build.manifest", "corpus file strings allocation failed");
+            return;
+        }
         out->corpus_files[i].rows = digest->files[i].rows;
-        out->corpus_files[i].sha256 = _strdup(digest->files[i].sha256);
     }
     out->rows_in_pair_space = built->rows_in_pair_space;
     out->rows_other_buffer = built->rows_other_buffer;
-    out->cases.path = _strdup("cases.json");
-    out->cases.sha256 = _strdup(cases_sha256);
+    out->cases.path = bt_gd_strdup("cases.json");
+    out->cases.sha256 = bt_gd_strdup(cases_sha256);
+    out->specials.path = bt_gd_strdup("specials.json");
+    out->specials.sha256 = bt_gd_strdup(specials_sha256);
+    if (out->cases.path == NULL || out->cases.sha256 == NULL || out->specials.path == NULL ||
+        out->specials.sha256 == NULL) {
+        bt_gd_manifest_free(out);
+        BT_TRACE_FAIL("gd.build.manifest", "artifact strings allocation failed");
+        return;
+    }
     out->cases.entries = built->cases.count;
     for (size_t i = 0; i < built->cases.count; i++) {
         bt_gd_orbit_coverage *slot = strcmp(built->cases.cases[i].orbit, "edge") == 0
@@ -459,11 +567,14 @@ void bt_gd_manifest_make(const bt_gd_built *built, const bt_corpus_digest *diges
             slot->uncovered++;
         }
     }
-    out->specials.path = _strdup("specials.json");
-    out->specials.sha256 = _strdup(specials_sha256);
     out->specials.entries = built->specials.count;
+    out->specials.counts = bt_malloc(BT_GD_SPECIAL_COUNTS_LEN * sizeof(bt_gd_class_count));
+    if (out->specials.counts == NULL) {
+        bt_gd_manifest_free(out);
+        BT_TRACE_FAIL("gd.build.manifest", "class counts allocation failed");
+        return;
+    }
     out->specials.count_count = BT_GD_SPECIAL_COUNTS_LEN;
-    out->specials.counts = malloc(BT_GD_SPECIAL_COUNTS_LEN * sizeof(bt_gd_class_count));
     for (size_t i = 0; i < BT_GD_SPECIAL_COUNTS_LEN; i++) {
         size_t rows = 0;
         for (size_t s = 0; s < built->specials.count; s++) {
@@ -473,8 +584,14 @@ void bt_gd_manifest_make(const bt_gd_built *built, const bt_corpus_digest *diges
                 rows++;
             }
         }
-        out->specials.counts[i].solver = _strdup(BT_GD_SPECIAL_COUNTS[i].solver);
-        out->specials.counts[i].class_name = _strdup(BT_GD_SPECIAL_COUNTS[i].class_name);
+        out->specials.counts[i].solver = bt_gd_strdup(BT_GD_SPECIAL_COUNTS[i].solver);
+        out->specials.counts[i].class_name = bt_gd_strdup(BT_GD_SPECIAL_COUNTS[i].class_name);
+        if (out->specials.counts[i].solver == NULL || out->specials.counts[i].class_name == NULL) {
+            out->specials.count_count = i + 1;
+            bt_gd_manifest_free(out);
+            BT_TRACE_FAIL("gd.build.manifest", "class count strings allocation failed");
+            return;
+        }
         out->specials.counts[i].rows = rows;
     }
     BT_TRACE_EXIT("gd.build.manifest");

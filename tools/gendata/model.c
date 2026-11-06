@@ -5,7 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
+#include "common/strbuf.h"
+#include "gendata/lib.h"
 
 static int append_indent(bt_strbuf *out, size_t depth) {
     for (size_t i = 0; i < depth; i++) {
@@ -196,7 +199,11 @@ static int get_string(const bt_json_value *object, const char *key, char **out, 
         snprintf(err, err_len, "missing field `%s`", key);
         return -1;
     }
-    *out = _strdup(node->as.string);
+    *out = bt_gd_strdup(node->as.string);
+    if (*out == NULL) {
+        snprintf(err, err_len, "field `%s` duplication failed", key);
+        return -1;
+    }
     return 0;
 }
 
@@ -252,8 +259,9 @@ static int string_vec_from_json(const bt_json_value *array, char ***out, size_t 
         return -1;
     }
     *count = array->as.array.count;
-    *out = malloc(*count * sizeof(char *));
+    *out = bt_malloc(*count * sizeof(char *));
     if (*out == NULL && *count > 0) {
+        *count = 0;
         snprintf(err, err_len, "%s", "allocation failed");
         return -1;
     }
@@ -266,7 +274,14 @@ static int string_vec_from_json(const bt_json_value *array, char ***out, size_t 
             *count = 0;
             return -1;
         }
-        (*out)[i] = _strdup(node->as.string);
+        (*out)[i] = bt_gd_strdup(node->as.string);
+        if ((*out)[i] == NULL) {
+            snprintf(err, err_len, "%s", "allocation failed");
+            string_vec_free(*out, i + 1);
+            *out = NULL;
+            *count = 0;
+            return -1;
+        }
     }
     return 0;
 }
@@ -432,8 +447,9 @@ static int cases_file_from_json(const bt_json_value *value, bt_gd_cases_file *ou
         return -1;
     }
     out->count = cases->as.array.count;
-    out->cases = malloc(out->count * sizeof(bt_gd_case_entry));
+    out->cases = bt_malloc(out->count * sizeof(bt_gd_case_entry));
     if (out->cases == NULL && out->count > 0) {
+        out->count = 0;
         snprintf(err, err_len, "%s", "allocation failed");
         return -1;
     }
@@ -473,9 +489,10 @@ static int cases_file_from_json(const bt_json_value *value, bt_gd_cases_file *ou
         if (full) {
             entry->vendor_count = vendor->as.array.count;
             entry->vendor_algs = entry->vendor_count > 0
-                                     ? malloc(entry->vendor_count * sizeof(bt_gd_vendor_alg))
+                                     ? bt_malloc(entry->vendor_count * sizeof(bt_gd_vendor_alg))
                                      : NULL;
             if (entry->vendor_algs == NULL && entry->vendor_count > 0) {
+                entry->vendor_count = 0;
                 snprintf(err, err_len, "%s", "allocation failed");
                 out->count = i + 1;
                 bt_gd_cases_file_free(out);
@@ -624,8 +641,9 @@ int bt_gd_specials_file_from_json(const bt_json_value *value, bt_gd_specials_fil
         return -1;
     }
     out->count = specials->as.array.count;
-    out->specials = malloc(out->count * sizeof(bt_gd_special_entry));
+    out->specials = bt_malloc(out->count * sizeof(bt_gd_special_entry));
     if (out->specials == NULL && out->count > 0) {
+        out->count = 0;
         snprintf(err, err_len, "%s", "allocation failed");
         BT_TRACE_FAIL("gd.model.specials_file_from_json", err);
         return -1;
@@ -810,14 +828,14 @@ int bt_gd_manifest_from_json(const bt_json_value *value, bt_gd_manifest *out, ch
         bt_gd_manifest_free(out);
         return -1;
     }
-    out->corpus_file_count = files->as.array.count;
-    out->corpus_files = malloc(out->corpus_file_count * sizeof(bt_gd_corpus_file_entry));
-    if (out->corpus_files == NULL && out->corpus_file_count > 0) {
+    out->corpus_files = bt_malloc(files->as.array.count * sizeof(bt_gd_corpus_file_entry));
+    if (out->corpus_files == NULL && files->as.array.count > 0) {
         snprintf(err, err_len, "%s", "allocation failed");
         BT_TRACE_FAIL("gd.model.manifest_from_json", err);
         bt_gd_manifest_free(out);
         return -1;
     }
+    out->corpus_file_count = files->as.array.count;
     for (size_t i = 0; i < out->corpus_file_count; i++) {
         if (corpus_file_from_json(bt_json_at(files, i), &out->corpus_files[i], err, err_len) != 0) {
             out->corpus_file_count = i + 1;
@@ -843,14 +861,14 @@ int bt_gd_manifest_from_json(const bt_json_value *value, bt_gd_manifest *out, ch
         bt_gd_manifest_free(out);
         return -1;
     }
-    out->specials.count_count = counts->as.array.count;
-    out->specials.counts = malloc(out->specials.count_count * sizeof(bt_gd_class_count));
-    if (out->specials.counts == NULL && out->specials.count_count > 0) {
+    out->specials.counts = bt_malloc(counts->as.array.count * sizeof(bt_gd_class_count));
+    if (out->specials.counts == NULL && counts->as.array.count > 0) {
         snprintf(err, err_len, "%s", "allocation failed");
         BT_TRACE_FAIL("gd.model.manifest_from_json", err);
         bt_gd_manifest_free(out);
         return -1;
     }
+    out->specials.count_count = counts->as.array.count;
     for (size_t i = 0; i < out->specials.count_count; i++) {
         const bt_json_value *count = bt_json_at(counts, i);
         out->specials.counts[i] = (bt_gd_class_count){0};

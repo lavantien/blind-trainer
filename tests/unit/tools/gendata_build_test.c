@@ -466,6 +466,55 @@ BT_TEST(gendata_build, build_counts_other_buffer_walks_without_covering) {
     bt_corpus_free(&corpus);
 }
 
+BT_TEST(gendata_build, twists_rows_carry_their_twist_notes_into_specials) {
+    bt_alg alg = {0};
+    char bad[64];
+    BT_CHECK(bt_alg_parse("R' D' R D R' D' R U' R' D R D' R' D R U", &alg, bad, sizeof bad));
+    bt_corpus_row rows[1] = {
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_TWISTS, 3, "UFR & UFL", &alg),
+    };
+    bt_corpus corpus = corpus_of(rows, 1);
+    bt_gd_built built;
+    bt_gd_build(&corpus, &built);
+    BT_CHECK_EQ(built.offender_count, 0U);
+    BT_CHECK_EQ(built.specials.count, 1U);
+    const bt_gd_special_entry *special = &built.specials.specials[0];
+    BT_CHECK_EQ(strcmp(special->class_name, "twists"), 0);
+    BT_CHECK(special->ok);
+    BT_CHECK_EQ(special->note_count, 2U);
+    BT_CHECK_EQ(strcmp(special->notes[0], "twist:UFR:+1"), 0);
+    BT_CHECK_EQ(strcmp(special->notes[1], "twist:UFL:-1"), 0);
+    BT_CHECK_EQ(special->problem_count, 0U);
+    bt_alg_free(&alg);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(gendata_build, ltct_rows_carry_their_corner_and_bracket_twist_notes) {
+    bt_alg alg = {0};
+    char bad[64];
+    BT_CHECK(bt_alg_parse("U R U2 R D R' U' R D' R2 U R U2 R'", &alg, bad, sizeof bad));
+    bt_corpus_row rows[1] = {
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_LTCT, 2, "UF-UR, UBR-LUB[FUR]", &alg),
+    };
+    bt_corpus corpus = corpus_of(rows, 1);
+    bt_gd_built built;
+    bt_gd_build(&corpus, &built);
+    BT_CHECK_EQ(built.offender_count, 0U);
+    BT_CHECK_EQ(built.specials.count, 1U);
+    const bt_gd_special_entry *special = &built.specials.specials[0];
+    BT_CHECK_EQ(strcmp(special->class_name, "ltct"), 0);
+    BT_CHECK(special->ok);
+    BT_CHECK_EQ(special->note_count, 3U);
+    BT_CHECK_EQ(strcmp(special->notes[0], "twist:UBR:-1"), 0);
+    BT_CHECK_EQ(strcmp(special->notes[1], "twist:UBL:-1"), 0);
+    BT_CHECK_EQ(strcmp(special->notes[2], "twist:UFR:-1"), 0);
+    BT_CHECK_EQ(special->problem_count, 0U);
+    bt_alg_free(&alg);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
+
 BT_TEST(gendata_build, manifest_counts_orbits_and_special_classes) {
     bt_case cases[BT_PAIRS_MAX];
     bt_scheme_enumerate_cases(BT_ORBIT_EDGE, cases);
