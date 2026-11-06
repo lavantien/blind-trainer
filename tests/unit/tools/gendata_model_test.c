@@ -294,6 +294,8 @@ static void mutate_field(bt_json_value *object, const malformed_field *field) {
         bt_json_object_set(object, field->key, array);
         break;
     }
+    default:
+        break;
     }
 }
 
@@ -649,7 +651,7 @@ BT_TEST(gendata_model, vendor_alg_eq_rejects_every_field_mismatch) {
             right.htm += 1;
             break;
         case 6:
-            right.ok = !right.ok;
+            right.ok = (bool)!right.ok;
             break;
         case 7:
             bt_gd_string_list_free(right.problems, right.problem_count);
@@ -667,6 +669,8 @@ BT_TEST(gendata_model, vendor_alg_eq_rejects_every_field_mismatch) {
             break;
         case 11:
             replace_string(&right.youtube_link, "https://other");
+            break;
+        default:
             break;
         }
         BT_CHECK(!bt_gd_vendor_alg_eq(&left, &right));
@@ -722,7 +726,7 @@ BT_TEST(gendata_model, cases_file_eq_rejects_entry_and_vendor_mismatch) {
             right.cases[0].t2_letter = 'Z';
             break;
         case 6:
-            right.cases[0].covered = !right.cases[0].covered;
+            right.cases[0].covered = (bool)!right.cases[0].covered;
             break;
         case 7:
             replace_string(&right.cases[0].t1_name, "UR");
@@ -732,6 +736,8 @@ BT_TEST(gendata_model, cases_file_eq_rejects_entry_and_vendor_mismatch) {
             break;
         case 9:
             right.cases[0].vendor_algs[0].rowid += 1;
+            break;
+        default:
             break;
         }
         BT_CHECK(!bt_gd_cases_file_eq(&left, &right));
@@ -776,7 +782,7 @@ BT_TEST(gendata_model, specials_file_eq_rejects_every_field_mismatch) {
             right.specials[0].htm += 1;
             break;
         case 8:
-            right.specials[0].ok = !right.specials[0].ok;
+            right.specials[0].ok = (bool)!right.specials[0].ok;
             break;
         case 9:
             right.specials[0].problems = malloc(sizeof(char *));
@@ -796,6 +802,8 @@ BT_TEST(gendata_model, specials_file_eq_rejects_every_field_mismatch) {
             break;
         case 13:
             replace_string(&right.specials[0].youtube_link, "x");
+            break;
+        default:
             break;
         }
         BT_CHECK(!bt_gd_specials_file_eq(&left, &right));
@@ -889,6 +897,8 @@ BT_TEST(gendata_model, manifest_eq_rejects_every_field_mismatch) {
             break;
         case 25:
             replace_string(&right.specials.counts[0].class_name, "twists");
+            break;
+        default:
             break;
         }
         BT_CHECK(!bt_gd_manifest_eq(&left, &right));

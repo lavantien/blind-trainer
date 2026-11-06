@@ -22,7 +22,7 @@ enum {
     GD_OOM_WALK_MAX = 512,
 };
 
-static const size_t GD_OOM_DOUBLE_CAP = 1u << 22;
+static const size_t GD_OOM_DOUBLE_CAP = 1U << 22U;
 
 static void synth_limits(bt_gd_synth_limits *out) {
     out->max_setup = 2;
@@ -158,8 +158,25 @@ static bt_corpus corpus_of(bt_corpus_row *stack_rows, size_t count) {
 }
 
 static bool vendor_alg_complete(const bt_gd_vendor_alg *alg) {
-    return alg->solver != NULL && alg->position != NULL && alg->alg != NULL &&
-           alg->commutator != NULL && alg->recon_link != NULL && alg->youtube_link != NULL;
+    return (bool)(alg->solver != NULL && alg->position != NULL && alg->alg != NULL &&
+                  alg->commutator != NULL && alg->recon_link != NULL && alg->youtube_link != NULL);
+}
+
+static bool mirror_filled(const bt_gd_case_entry *mirror) {
+    if (mirror->vendor_count != 1) {
+        return false;
+    }
+    return vendor_alg_complete(&mirror->vendor_algs[0]);
+}
+
+static bool walk_completed(size_t edge, const bt_gd_cases_file *walk) {
+    if (edge != 1) {
+        return false;
+    }
+    if (walk->cases[1].vendor_count != 1) {
+        return false;
+    }
+    return vendor_alg_complete(&walk->cases[1].vendor_algs[0]);
 }
 
 static void check_built_invariants(const bt_gd_built *built) {
@@ -459,9 +476,9 @@ static bool manifest_is_complete(const bt_gd_manifest *manifest) {
 }
 
 static bool manifest_is_empty(const bt_gd_manifest *manifest) {
-    return manifest->generated_at == NULL && manifest->corpus_files == NULL &&
-           manifest->corpus_file_count == 0 && manifest->specials.count_count == 0 &&
-           manifest->specials.counts == NULL && manifest->cases.entries == 0;
+    return (bool)(manifest->generated_at == NULL && manifest->corpus_files == NULL &&
+                  manifest->corpus_file_count == 0 && manifest->specials.count_count == 0 &&
+                  manifest->specials.counts == NULL && manifest->cases.entries == 0);
 }
 
 BT_TEST(gendata_oom, manifest_make_is_complete_or_empty_at_every_budget) {
@@ -558,7 +575,7 @@ BT_TEST(gendata_oom, derive_fills_the_mirror_or_leaves_it_clean_at_every_budget)
         bt_gd_derive_mirrored_inverses(&built.cases);
         bt_alloc_fail_disarm();
         const bt_gd_case_entry *mirror = &built.cases.cases[target];
-        bool filled = mirror->vendor_count == 1 && vendor_alg_complete(&mirror->vendor_algs[0]);
+        bool filled = mirror_filled(mirror);
         check_built_invariants(&built);
         bt_gd_built_free(&built);
         if (filled) {
@@ -576,7 +593,7 @@ BT_TEST(gendata_oom, derive_fills_the_mirror_or_leaves_it_clean_at_every_budget)
         bt_gd_derive_mirrored_inverses(&built.cases);
         bt_alloc_fail_disarm();
         const bt_gd_case_entry *mirror = &built.cases.cases[target];
-        bool filled = mirror->vendor_count == 1 && vendor_alg_complete(&mirror->vendor_algs[0]);
+        bool filled = mirror_filled(mirror);
         check_built_invariants(&built);
         bt_gd_built_free(&built);
         if (filled) {
@@ -684,8 +701,7 @@ BT_TEST(gendata_oom, synth_generated_rows_land_atomic_or_not_at_all) {
         bt_alloc_fail_arm(hi);
         bt_gd_synthesize(&walk, &lim, &cfg, &edge, &corner);
         bt_alloc_fail_disarm();
-        bool complete = edge == 1 && walk.cases[1].vendor_count == 1 &&
-                        vendor_alg_complete(&walk.cases[1].vendor_algs[0]);
+        bool complete = walk_completed(edge, &walk);
         if (!complete) {
             BT_CHECK_EQ(walk.cases[1].vendor_count, 0U);
             BT_CHECK_EQ(edge, 0U);

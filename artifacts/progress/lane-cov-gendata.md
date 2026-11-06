@@ -73,7 +73,7 @@ Mission 1: alg coverage 100 via corner N-I fix. Mission 2: tools/gendata region 
 - 14:1x INLINE CLAIM VERDICT, gen3 classification refuted. llvm-cov region walk (playground/cov_regions_gendata.py, log gendata-gen4-regions.log): of the dark regions only 2 are outlined-copy artifacts (orbit_debug Corner arm, pretty_string quote arm) plus 26 folded duplicates, both compiler generated. The 18 scoring.c regions are source arms: parse fallbacks (lane shapes, non-numbers, finger overflow), letter branches for L, F, B never fed by any fixture, and rank paths over unscoreable sequences. The gen3 "inline artifact" label was wrong for all of them. Dead by proof instead: bt_gd_score finger and regrip failure arms (a rotation is rejected by preferred_lane_of first, so finger_face_of can never fail inside bt_gd_score) and f32_total_key's negative branch (every weight and cost is floored at zero, totals are never negative).
 - 14:1x coverage after the oom suite (gendata-gen4-covscope.log): tool dark regions 147, build.c 52, synth.c 36, model.c 18, lib.c 23, scoring.c 18. The bulk is failure arms the binary-search probes step over, so the oom suite now walks linear windows: every budget from zero to 48, and every budget in the 40 below each found full budget, for synth_case, build, manifest_make, derive, and synthesize. New test also drives every offender class (Solved, FlipPair, TwistPair, Parity, Ltct) plus a three-style row that fails verification and attaches not ok, which also feeds derive the not-ok mirror for the best_mirror_alg fallback arms. 11 tests green.
 - 14:2x scoring fixture batch: lane shape errors (non-array, two-letter, non-string entries), non-number weight, finger_cost non-object, finger half non-number, finger half overflowing float at 1e39, an all-nine-letter config, and rank ordering with a rotation sequence. First draft had a brace bug in the array-shaped finger_cost row, fixed. Window reset landed mid batch, resumed at the fix.
-## gen4 delivery summary
+- 19:0x lint sweep from the hub: gendata_model_test.c and gendata_oom_test.c carried strict-config findings. Fixed with the repo idioms: bool toggles and compound predicates take the explicit (bool) cast (same idiom as ev_nxn.c and replay_scene.c), every variant switch gains a default label, and the shift literal takes uppercase U suffixes. Both suites green after the fixes, the 4 remaining tidy failures in the tools area belong to the release and verify lanes.
 
 - Commits: 119beae refactor(gendata) seam routing plus dead note arms over lib, synth, audit, main. f656d88 fix(gendata) allocation failure arms keep counts and frees consistent over build and model, with the gendata_oom suite, the twist and ltct note rows, and the measurer tools. 135fd7b test(gendata) budget windows, offender classes, and scoring parse fixtures.
 - Tool dark regions 162 at gen4 start down to 99: build.c 17, lib.c 23, model.c 18, scoring.c 6, synth.c 35, audit.c, out.c, and main.c at 0 (final maps gendata-gen4-covscope3.log and gendata-gen4-regions3.log). scoring went 18 to 6 in the last batch.
@@ -98,6 +98,10 @@ Mission 1: alg coverage 100 via corner N-I fix. Mission 2: tools/gendata region 
 - read scripts/{lane_build.py,commit_lane.py help} - lane clone and commit gate
 - read data/vendor/{specials.json queries, cases.json queries}, ref_ground/cherry/{ltct,twists}.tsv heads - note pins and fixture rows
 - read artifacts/progress/gendata-gen4-*.log - run evidence for every batch
+
+## gen5, 19:0x
+
+- 19:01 relaunched as gen5. Toolset probe green: Read, Glob, Grep, Edit, Write, PowerShell all verified. Mission: drive the ~70 reachable dark regions to covered (serde float forms lib.c, pretty separators model.c, mid-search alloc arms synth.c, build offender arms), budget arms through bounded linear windows per the gen4 pricing verdict, allocation arms through bt_alloc_fail_arm. Compiler artifacts and dead-by-proof stay for the wave-end batch.
 
 ## gen3 reading log
 
