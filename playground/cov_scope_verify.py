@@ -21,7 +21,17 @@ GROUPS = {
     "sleeper": ["sleeper"],
     "release": ["release"],
 }
+TOOLS = {
+    "verify": "verify",
+    "visual": "visual-diff",
+    "jobwrap": "jobwrap",
+    "sleeper": "sleeper",
+    "release": "release-verify",
+}
 LLVM = Path(os.environ.get("BT_LLVM", r"C:\Program Files\LLVM\bin"))
+
+sys.path.insert(0, str(REPO))
+import bt
 
 
 def sh(argv, env=None, cwd=None, check=True):
@@ -58,6 +68,51 @@ def rm_tree(path):
     shutil.rmtree(path, ignore_errors=True)
 
 
+def tool_link_inputs(cov, tool):
+    obj_root = Path(cov["build"]["dirs"]["obj_cov"]) / bt.objects_dirname(cov)
+    sources = [s for s in sorted(REPO.glob("src/**/*.c")) if s.name != "main.c"]
+    sources += [REPO / rel for rel, _ in bt.VENDOR_UNITS]
+    sources += sorted((REPO / "tools" / tool).glob("*.c"))
+    inputs = [bt.object_path(obj_root, REPO, s) for s in sources]
+    lib = cov.get("build", {}).get("raylib_build", {}).get("lib", "")
+    if lib:
+        inputs.append(REPO / lib)
+    return sources, inputs
+
+
+def tool_exe_stale(cov, tool):
+    exe = Path(cov["build"]["dirs"]["bin_cov"]) / f"{tool}.exe"
+    if not exe.is_file():
+        return True
+    exe_time = exe.stat().st_mtime
+    sources, inputs = tool_link_inputs(cov, tool)
+    for path in [*sources, *inputs]:
+        if not path.is_file() or path.stat().st_mtime >= exe_time:
+            return True
+    return False
+
+
+def ensure_tool_exes(cov, groups, env):
+    tools = sorted({TOOLS[group] for group in groups if group in TOOLS})
+    stale = [tool for tool in tools if tool_exe_stale(cov, tool)]
+    if not stale:
+        return
+    profiles = LANE / "prof-tools"
+    rm_tree(profiles)
+    profiles.mkdir(parents=True, exist_ok=True)
+    env["LLVM_PROFILE_FILE"] = str(profiles / PROFILE_PATTERN)
+    for tool in stale:
+        proc = sh(
+            [sys.executable, "bt.py", "test-unit", "tools", "--only", tool.replace("-", "_")],
+            env=env,
+            check=False,
+        )
+        if tool_exe_stale(cov, tool):
+            sys.stderr.write(proc.stdout[-4000:] + proc.stderr[-4000:])
+            raise SystemExit(f"cov-scope: tool exe still stale after relink: {tool}")
+        print(f"cov-scope: relinked stale tool exe {tool}")
+
+
 def run_suites(cov, groups):
     bin_cov = Path(cov["build"]["dirs"]["bin_cov"])
     profdata = LANE / "scoped.profdata"
@@ -66,6 +121,7 @@ def run_suites(cov, groups):
     env["BT_REF_GROUND"] = "ref_ground"
     env["BT_ARTIFACTS"] = "artifacts"
     env["BT_BIN_DIR"] = str(bin_cov)
+    ensure_tool_exes(cov, groups, env)
     for group in groups:
         profiles = LANE / f"prof-{group}"
         rm_tree(profiles)
