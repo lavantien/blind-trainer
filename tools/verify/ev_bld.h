@@ -54,7 +54,6 @@ int verify_bld_transposed(const verify_bld_state_audit *audit, const verify_bld_
 bool verify_bld_zero_permutation(const verify_bld_state_audit *audit,
                                  const verify_bld_layout *layout);
 void verify_bld_case_cube(const bt_alg *alg, bt_cube *out);
-int verify_bld_round_trip(const bt_alg *alg, char *err, size_t err_len);
 int verify_bld_parse_pair(const char *spec, char sep, char out[2][VERIFY_BLD_NAME_MAX], char *err,
                           size_t err_len);
 int verify_bld_parity_swaps(const char *swaps, char edge[2][VERIFY_BLD_NAME_MAX],

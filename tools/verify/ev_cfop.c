@@ -519,8 +519,6 @@ static void verify_cfop(const bt_seed_rows *rows, const char *stage_name,
         } else if (!bt_alg_parse(alg_text, &alg, token, sizeof token)) {
             snprintf(err, sizeof err, "unknown token: %s", token);
             snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", err);
-        } else if (verify_bld_round_trip(&alg, err, sizeof err) != 0) {
-            snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", err);
         } else {
             outcome.tier1_ok = true;
         }

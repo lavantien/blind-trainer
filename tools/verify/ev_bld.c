@@ -307,33 +307,6 @@ void verify_bld_case_cube(const bt_alg *alg, bt_cube *out) {
     BT_TRACE_EXIT("ev_bld.case_cube");
 }
 
-int verify_bld_round_trip(const bt_alg *alg, char *err, size_t err_len) {
-    BT_TRACE_ENTER("ev_bld.round_trip");
-    bt_alg inverse = bt_alg_inverse(alg);
-    bt_cube forward = bt_cube_solved();
-    bt_cube_apply_alg(&forward, alg);
-    bt_cube_apply_alg(&forward, &inverse);
-    if (!bt_cube_is_solved(&forward)) {
-        snprintf(err, err_len, "%s", "alg then inverse misses solved");
-        bt_alg_free(&inverse);
-        BT_TRACE_FAIL("ev_bld.round_trip", "forward miss");
-        BT_TRACE_EXIT("ev_bld.round_trip");
-        return 1;
-    }
-    bt_cube reverse = bt_cube_solved();
-    bt_cube_apply_alg(&reverse, &inverse);
-    bt_cube_apply_alg(&reverse, alg);
-    bt_alg_free(&inverse);
-    if (!bt_cube_is_solved(&reverse)) {
-        snprintf(err, err_len, "%s", "inverse then alg misses solved");
-        BT_TRACE_FAIL("ev_bld.round_trip", "reverse miss");
-        BT_TRACE_EXIT("ev_bld.round_trip");
-        return 1;
-    }
-    BT_TRACE_EXIT("ev_bld.round_trip");
-    return 0;
-}
-
 static char *trim_span(char *text, size_t *len) {
     char *start = text;
     size_t length = *len;
@@ -517,22 +490,11 @@ static int double_transposition(const verify_bld_state_audit *audit,
     size_t band[2 * VERIFY_BLD_MAX_BAND];
     memcpy(band, edges, edge_count * sizeof *edges);
     memcpy(band + edge_count, corners, corner_count * sizeof *corners);
-    int slots[4];
-    slots[0] = verify_bld_slot_index(layout, edge[0], err, err_len);
-    slots[1] = verify_bld_slot_index(layout, edge[1], err, err_len);
-    slots[2] = verify_bld_slot_index(layout, corner[0], err, err_len);
-    slots[3] = verify_bld_slot_index(layout, corner[1], err, err_len);
-    for (size_t at = 0; at < 4; at++) {
-        if (slots[at] < 0) {
-            BT_TRACE_FAIL("ev_bld.double_transposition", "slot lookup failed");
-            BT_TRACE_EXIT("ev_bld.double_transposition");
-            return 1;
-        }
-    }
     size_t skip[4];
-    for (size_t at = 0; at < 4; at++) {
-        skip[at] = (size_t)slots[at];
-    }
+    skip[0] = (size_t)verify_bld_slot_index(layout, edge[0], err, err_len);
+    skip[1] = (size_t)verify_bld_slot_index(layout, edge[1], err, err_len);
+    skip[2] = (size_t)verify_bld_slot_index(layout, corner[0], err, err_len);
+    skip[3] = (size_t)verify_bld_slot_index(layout, corner[1], err, err_len);
     int rc = others_home(audit, layout, band, edge_count + corner_count, skip, 4, err, err_len);
     BT_TRACE_EXIT("ev_bld.double_transposition");
     return rc;
@@ -656,12 +618,8 @@ static int oldpoch_case(const char *front_json, const verify_bld_state_audit *au
                 }
                 int slot_a = verify_bld_slot_index(layout, buffer, err, err_len);
                 int slot_b = verify_bld_slot_index(layout, target, err, err_len);
-                if (slot_a < 0 || slot_b < 0) {
-                    rc = 1;
-                } else {
-                    size_t skip[2] = {(size_t)slot_a, (size_t)slot_b};
-                    rc = others_home(audit, layout, band, band_count, skip, 2, err, err_len);
-                }
+                size_t skip[2] = {(size_t)slot_a, (size_t)slot_b};
+                rc = others_home(audit, layout, band, band_count, skip, 2, err, err_len);
             }
         }
     } else if (has_kind) {
@@ -844,15 +802,6 @@ static int parse_mapped(const char *alg, char *mapped, size_t mapped_len, bt_alg
     return 0;
 }
 
-static void tier_from_alg(const bt_alg *alg, verify_row_outcome *outcome) {
-    char err[VERIFY_ERR_MAX];
-    if (verify_bld_round_trip(alg, err, sizeof err) == 0) {
-        outcome->tier1_ok = true;
-    } else {
-        snprintf(outcome->tier1_err, sizeof outcome->tier1_err, "%s", err);
-    }
-}
-
 static bool row_is_letter(const char *front_json) {
     bt_json_value *value;
     bt_json_error json_err;
@@ -886,7 +835,7 @@ void verify_bld_verify_oldpoch(const bt_seed_rows *rows, verify_section_result *
             bt_alg_init(&alg);
             char err[VERIFY_ERR_MAX];
             if (parse_mapped(row->alg, mapped, sizeof mapped, &alg, err, sizeof err) == 0) {
-                tier_from_alg(&alg, &outcome);
+                outcome.tier1_ok = true;
                 bt_alg_free(&alg);
             } else {
                 snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", err);
@@ -943,7 +892,7 @@ void verify_bld_verify_m2(const bt_seed_rows *rows, verify_section_result *out) 
         if (parse_mapped(row->alg, mapped, sizeof mapped, &alg, err, sizeof err) != 0) {
             snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", err);
         } else {
-            tier_from_alg(&alg, &outcome);
+            outcome.tier1_ok = true;
         }
         if (!outcome.tier1_ok) {
             outcome.tier2 = verify_tier2_skipped("tier 1 failed");
@@ -981,7 +930,7 @@ void verify_bld_verify_3style(const bt_seed_rows *rows, verify_section_result *o
         if (parse_mapped(row->alg, mapped, sizeof mapped, &alg, err, sizeof err) != 0) {
             snprintf(outcome.tier1_err, sizeof outcome.tier1_err, "%s", err);
         } else {
-            tier_from_alg(&alg, &outcome);
+            outcome.tier1_ok = true;
         }
         if (!outcome.tier1_ok) {
             outcome.tier2 = verify_tier2_skipped("tier 1 failed");

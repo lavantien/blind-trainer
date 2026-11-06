@@ -361,3 +361,48 @@ BT_TEST(verify_ev_bld_kinds, parse_pair_trims_spaces_around_names) {
     BT_CHECK(verify_bld_parse_pair("UF-UB-UR", '-', pair, err, sizeof err) != 0);
     BT_CHECK(strstr(err, "does not hold two names") != NULL);
 }
+
+BT_TEST(verify_ev_bld_kinds, slot_helpers_name_a_bad_second_name) {
+    verify_bld_layout layout;
+    verify_bld_layout_probe(&layout);
+    bt_cube solved = bt_cube_solved();
+    verify_bld_state_audit audit;
+    verify_bld_audit(&solved, &layout, &audit);
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_bld_transposed(&audit, &layout, "UF", "XX", err, sizeof err), 1);
+    BT_CHECK(strstr(err, "non-face letter") != NULL);
+}
+
+BT_TEST(verify_ev_bld_kinds, parity_swaps_name_a_first_half_without_a_pair) {
+    char edge[2][VERIFY_BLD_NAME_MAX];
+    char corner[2][VERIFY_BLD_NAME_MAX];
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK(verify_bld_parity_swaps("URUL+UFR-UBR", edge, corner, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "pair spec URUL does not hold two names") != NULL);
+}
+
+BT_TEST(verify_ev_bld_kinds, oldpoch_corner_twist_rejects_disturbance_outside_the_names) {
+    one_row(TWIST_UFR_UBR, "{\"kind\":\"corner twist\",\"twists\":\"UFR\"}");
+    RUN_AND_CHECK(verify_bld_verify_oldpoch, VERIFY_TIER2_FAIL, "moved outside the named slots");
+}
+
+BT_TEST(verify_ev_bld_kinds, oldpoch_parity_swaps_reject_a_wrong_corner_pair) {
+    one_row(T_PERM, "{\"kind\":\"parity\",\"swaps\":\"UR-UL+UFR-UBL\"}");
+    RUN_AND_CHECK(verify_bld_verify_oldpoch, VERIFY_TIER2_FAIL, "UFR and UBL are not transposed");
+}
+
+BT_TEST(verify_ev_bld_kinds, oldpoch_corner_twist_rejects_too_many_names) {
+    one_row(TWIST_UFR_UBR,
+            "{\"kind\":\"corner twist\",\"twists\":\"UFR+UBR+UR+UF+UL+FR+FL+BR+BL\"}");
+    RUN_AND_CHECK(verify_bld_verify_oldpoch, VERIFY_TIER2_FAIL, "too many names");
+}
+
+BT_TEST(verify_ev_bld_kinds, m2_broken_json_fails_tier2) {
+    one_row(T_PERM, "{bad");
+    RUN_AND_CHECK(verify_bld_verify_m2, VERIFY_TIER2_FAIL, NULL);
+}
+
+BT_TEST(verify_ev_bld_kinds, style_broken_json_fails_tier2) {
+    one_row(T_PERM, "{bad");
+    RUN_AND_CHECK(verify_bld_verify_3style, VERIFY_TIER2_FAIL, NULL);
+}
