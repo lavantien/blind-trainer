@@ -105,14 +105,9 @@ const char *bt_db_migration_sql(int index) {
         migration_sql_cache[index] = text;
         return text;
     }
-    const char *embedded = bt_db_embedded_migration_sql((size_t)index);
-    if (embedded != NULL) {
-        BT_TRACE_ENTER("db.migration_sql");
-        BT_TRACE_EXIT("db.migration_sql");
-        return embedded;
-    }
-    BT_TRACE_FAIL("db.migration_sql", "unreadable %s", path);
-    return NULL;
+    BT_TRACE_ENTER("db.migration_sql");
+    BT_TRACE_EXIT("db.migration_sql");
+    return bt_db_embedded_migration_sql((size_t)index);
 }
 
 void bt_db_backup_path(const char *path, char *out, size_t out_len) {
@@ -157,9 +152,6 @@ static int has_parent(const char *path, char *parent, size_t parent_len) {
         return 0;
     }
     *sep = '\0';
-    if (parent[0] == '\0') {
-        return 0;
-    }
     return 1;
 }
 
