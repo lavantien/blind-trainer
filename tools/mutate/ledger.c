@@ -224,6 +224,19 @@ int bt_mut_ledger_save(const char *path, const bt_mut_ledger *ledger) {
                  row->test_exe == NULL ? "" : row->test_exe);
         used += (size_t)needed;
     }
+    if (rc == 0) {
+        char parent[BT_MUT_PATH_MAX];
+        snprintf(parent, sizeof parent, "%s", path);
+        char *slash = strrchr(parent, '/');
+        char *back = strrchr(parent, '\\');
+        char *sep = slash != NULL && (back == NULL || slash > back) ? slash : back;
+        if (sep != NULL && sep != parent) {
+            *sep = '\0';
+            if (bt_mut_mkdirs(parent) != 0) {
+                rc = -1;
+            }
+        }
+    }
     if (rc == 0 && bt_paths_write_atomic(path, buffer, used) != 0) {
         rc = -1;
     }
