@@ -48,10 +48,14 @@ def run_suites(env):
     RAW.mkdir(parents=True, exist_ok=True)
     for stale in RAW.glob("*.profraw"):
         stale.unlink()
-    for area in AREAS:
-        sh([sys.executable, "bt.py", "test-unit", area], env=env)
-    for area, stem in EXTRA_SUITES:
-        sh([sys.executable, "bt.py", "test-unit", area, "--only", stem], env=env)
+    invocations = [(area,) for area in AREAS] + list(EXTRA_SUITES)
+    for index, target in enumerate(invocations):
+        scoped = dict(env)
+        scoped["LLVM_PROFILE_FILE"] = str(RAW / f"{index}-%p.profraw")
+        argv = [sys.executable, "bt.py", "test-unit", *target[:1]]
+        if len(target) > 1:
+            argv += ["--only", target[1]]
+        sh(argv, env=scoped)
 
 
 def merge_and_export(env):

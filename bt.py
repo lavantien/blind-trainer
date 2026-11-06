@@ -1549,13 +1549,26 @@ def tgt_test_unit(args):
     return code
 
 
+def coverage_retry_unit(unit):
+    label, argv, env = unit
+    retry_env = dict(env)
+    profile = retry_env.get("LLVM_PROFILE_FILE")
+    if profile:
+        retry_env["LLVM_PROFILE_FILE"] = str(
+            Path(profile).with_name(f"retry-{Path(profile).name}")
+        )
+    return (label, argv, retry_env)
+
+
 def coverage_run_with_retry(units, jobs, timeout, logger, executor=run_units_env):
     results = executor(units, jobs=jobs, timeout=timeout)
     failed = [result for result in results if result.returncode != 0]
     if not failed:
         return results
     retry = [
-        unit for unit, result in zip(units, results) if result.returncode != 0
+        coverage_retry_unit(unit)
+        for unit, result in zip(units, results)
+        if result.returncode != 0
     ]
     for result in failed:
         logger.fail(result.label, result.output[-2000:] or "no output")
