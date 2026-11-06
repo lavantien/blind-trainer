@@ -179,6 +179,18 @@ class CoverageCommandTests(unittest.TestCase):
             hub["build"]["tools"].get("python", "") or sys.executable,
         )
 
+    def test_write_response_file_escapes_embedded_quotes_and_tail_backslashes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            response = Path(tmp) / "escape-response.txt"
+            bt.write_response_file(
+                ['--name="x y"', "C:\\dir\\", 'a\\"b', "plain"], response
+            )
+            lines = response.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(lines[0], '"--name=\\"x y\\""')
+        self.assertEqual(lines[1], '"C:\\dir\\\\"')
+        self.assertEqual(lines[2], '"a\\\\\\"b"')
+        self.assertEqual(lines[3], '"plain"')
+
 
 class CoverageStageTests(unittest.TestCase):
     def setUp(self):
@@ -420,6 +432,33 @@ class CoverageRetryTests(unittest.TestCase):
         )
         self.assertEqual([r.returncode for r in final], [0])
         self.assertEqual(calls, [8])
+
+    def test_suite_timeout_of_resolves_overrides_and_the_flat_default(self):
+        hub = sample_hub()
+        hub["build"]["suite_timeout_secs"] = {"heavy_suite": 900}
+        self.assertEqual(bt.suite_timeout_of(hub, "heavy_suite"), 900)
+        self.assertEqual(
+            bt.suite_timeout_of(hub, "other_suite"), hub["build"]["test_timeout_secs"]
+        )
+
+    def test_coverage_retry_hands_the_resolver_to_the_serial_rerun(self):
+        seen = []
+
+        def executor(units, jobs=1, timeout=None):
+            seen.append(timeout)
+            if len(seen) == 1:
+                return [bt.UnitResult("a", 0, ""), bt.UnitResult("b", 3, "boom")]
+            return [bt.UnitResult("b", 0, "")]
+
+        def resolver(name):
+            return 42 if name == "b" else 7
+
+        final = bt.coverage_run_with_retry(
+            [("a", [], {}), ("b", [], {})], jobs=8, timeout=resolver,
+            logger=bt.Logger(), executor=executor,
+        )
+        self.assertEqual([r.returncode for r in final], [0])
+        self.assertEqual(seen, [resolver, resolver])
 
 
 class CoverageTreeGuardTests(unittest.TestCase):

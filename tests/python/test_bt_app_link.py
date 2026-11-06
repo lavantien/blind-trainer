@@ -127,3 +127,58 @@ class AppExeLinkTests(unittest.TestCase):
                 None,
             )
         )
+
+
+class ToolLinkFilterTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        for rel in (
+            "src/common/x.c",
+            "vendor/sqlite/sqlite3.c",
+            "tools/release-verify/main.c",
+            "tools/verify/main.c",
+        ):
+            target = self.root / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("int t;\n", encoding="utf-8")
+        self.stub = self.root / "clang_stub.py"
+        self.stub.write_text(
+            "import sys\n"
+            "from pathlib import Path\n"
+            "argv = sys.argv[1:]\n"
+            "if '-o' in argv:\n"
+            "    out = Path(argv[argv.index('-o') + 1])\n"
+            "    out.parent.mkdir(parents=True, exist_ok=True)\n"
+            "    out.write_bytes(b'stub')\n",
+            encoding="utf-8",
+        )
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def compiler(self):
+        return [sys.executable, "-I", str(self.stub)]
+
+    def linked(self, only):
+        hub = sample_hub()
+        generated = bt.generate_stage(hub, self.root)
+        obj_root, entries = bt.compile_stage(
+            hub, self.root, self.compiler(), bt.Logger(), extra=generated
+        )
+        bt.link_stage(
+            hub, self.root, self.compiler(), bt.Logger(), obj_root, entries, only=only
+        )
+        bin_dir = self.root / hub["build"]["dirs"]["bin"]
+        return sorted(path.name for path in bin_dir.glob("*.exe"))
+
+    def test_short_release_filter_relinks_release_verify(self):
+        self.assertIn("release-verify.exe", self.linked("release"))
+
+    def test_underscore_filter_relinks_release_verify(self):
+        self.assertIn("release-verify.exe", self.linked("release_verify"))
+
+    def test_verify_filter_links_verify_without_release_verify(self):
+        names = self.linked("verify")
+        self.assertIn("verify.exe", names)
+        self.assertNotIn("release-verify.exe", names)

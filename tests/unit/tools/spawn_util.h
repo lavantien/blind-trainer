@@ -55,14 +55,19 @@ static inline int bt_spawn_quote(const char *arg, char *out, size_t cap) {
     return 0;
 }
 
+enum { BT_SPAWN_PARTS_MAX = 32 };
+
 static inline int bt_spawn_command(const char *exe, const char *const argv[], char *out,
                                    size_t cap) {
     size_t used = 0;
     out[0] = '\0';
-    const char *parts[32];
+    const char *parts[BT_SPAWN_PARTS_MAX];
     size_t count = 0;
     parts[count++] = exe;
     for (size_t i = 0; argv[i] != NULL; i++) {
+        if (count >= BT_SPAWN_PARTS_MAX) {
+            return -1;
+        }
         parts[count++] = argv[i];
     }
     for (size_t i = 0; i < count; i++) {
@@ -219,6 +224,22 @@ static inline int bt_spawn_child(wchar_t wide_cmd[BT_PATH_MAX * 4], const wchar_
     return 0;
 }
 
+static inline int bt_spawn_diag_starts_with(const char *diag, const char *prefix) {
+    return strncmp(diag, prefix, strlen(prefix)) == 0;
+}
+
+static inline int bt_spawn_error_is_transient(const char *diag) {
+    if (bt_spawn_diag_starts_with(diag, "stdout pipe failed") ||
+        bt_spawn_diag_starts_with(diag, "stderr pipe failed")) {
+        return 1;
+    }
+    unsigned long code = 0;
+    if (sscanf(diag, "CreateProcessW failed: %lu", &code) != 1) {
+        return 0;
+    }
+    return code != ERROR_FILE_NOT_FOUND && code != ERROR_PATH_NOT_FOUND;
+}
+
 static inline int bt_spawn_capture(const char *exe, const char *const argv[], const char *cwd,
                                    unsigned timeout_ms, int *exit_code, char *out, size_t out_cap,
                                    char *err, size_t err_cap) {
@@ -244,17 +265,27 @@ static inline int bt_spawn_capture(const char *exe, const char *const argv[], co
         bt_spawn_backslashes(cwd_native);
         MultiByteToWideChar(CP_UTF8, 0, cwd_native, -1, wide_cwd, BT_PATH_MAX);
     }
+    char first_diag[256];
+    first_diag[0] = '\0';
     for (int attempt = 1;; attempt++) {
         int rc = bt_spawn_child(wide_cmd, cwd != NULL ? wide_cwd : NULL, timeout_ms, exit_code, out,
                                 out_cap, err, err_cap);
-        if (rc != -1 || attempt >= BT_SPAWN_ATTEMPTS) {
+        if (rc != -1) {
             return rc;
         }
-        char last_diag[256];
-        snprintf(last_diag, sizeof last_diag, "%s", g_bt_spawn_diag);
+        if (first_diag[0] == '\0') {
+            snprintf(first_diag, sizeof first_diag, "%s", g_bt_spawn_diag);
+        }
+        if (!bt_spawn_error_is_transient(first_diag) || attempt >= BT_SPAWN_ATTEMPTS) {
+            if (attempt > 1) {
+                snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "%s, retried %d time(s)",
+                         first_diag, attempt - 1);
+            } else {
+                snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "%s", first_diag);
+            }
+            return rc;
+        }
         Sleep(BT_SPAWN_RETRY_SLEEP_MS);
-        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "%s, retry %d of %d", last_diag, attempt,
-                 BT_SPAWN_ATTEMPTS - 1);
     }
 }
 

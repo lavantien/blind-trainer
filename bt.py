@@ -911,8 +911,10 @@ def link_stage(hub, root, compiler, logger, obj_root, entries, only=None, cuda=N
             tool_sources = sorted(tool_dir.glob("*.c"))
             if not tool_sources:
                 continue
-            if only is not None and not only.replace("_", "-").startswith(tool_dir.name):
-                continue
+            if only is not None:
+                stem = only.replace("_", "-")
+                if not stem.startswith(tool_dir.name) and not tool_dir.name.startswith(stem):
+                    continue
             tool_objs = [objs_by_source[s] for s in tool_sources if s in objs_by_source]
             if not tool_objs:
                 continue
@@ -1600,10 +1602,16 @@ def coverage_suite_units(hub, suites, profile_dir):
     return units
 
 
+def escape_response_arg(arg):
+    body = re.sub(r"(\\+)(?=\")", r"\1\1", arg)
+    body = body.replace('"', '\\"')
+    return re.sub(r"(\\+)$", r"\1\1", body)
+
+
 def write_response_file(args, path):
     with open(path, "w", encoding="utf-8", newline="\n") as file:
         for arg in args:
-            file.write(f'"{arg}"\n')
+            file.write(f'"{escape_response_arg(arg)}"\n')
     return f"@{path}"
 
 
@@ -1717,7 +1725,7 @@ def tgt_coverage(args):
         paths["profiles"].mkdir(parents=True, exist_ok=True)
         units = coverage_suite_units(hub, discover_test_suites(REPO_ROOT), paths["profiles"])
         results = coverage_run_with_retry(
-            units, jobs=jobs_of(hub), timeout=build_cfg(hub)["test_timeout_secs"],
+            units, jobs=jobs_of(hub), timeout=lambda name: suite_timeout_of(hub, name),
             logger=logger,
         )
         failed = [r for r in results if r.returncode != 0]
