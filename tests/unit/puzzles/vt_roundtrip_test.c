@@ -150,6 +150,14 @@ BT_TEST(vt, state_eq_separates_solved_from_moved) {
     bt_pz_nxn nxn;
     BT_CHECK(bt_pz_nxn_init(&nxn, 3));
     bt_pz_engine eng = bt_pz_nxn_engine(&nxn);
+    bt_pz_nxn other;
+    BT_CHECK(bt_pz_nxn_init(&other, 4));
+    bt_pz_engine other_eng = bt_pz_nxn_engine(&other);
+    bt_pz_nxn_state solved3;
+    bt_pz_nxn_state solved4;
+    eng.solved_state(&eng, &solved3);
+    other_eng.solved_state(&other_eng, &solved4);
+    BT_CHECK(!bt_pz_nxn_state_eq(&solved3, &solved4));
     vt_state_eq_pair(&eng, (bool (*)(const void *, const void *))bt_pz_nxn_state_eq,
                      sizeof(bt_pz_nxn_state), "R");
     bt_pz_engine sq1 = bt_pz_sq1_engine();
