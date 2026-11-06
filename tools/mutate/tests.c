@@ -117,6 +117,7 @@ static char g_slot_obj[BT_MUT_PATH_MAX];
 static char g_ws_slot_obj[BT_MUT_PATH_MAX];
 static char g_ws_link_paths[BT_MUT_PATH_MAX];
 static char g_ws_link_trace[BT_MUT_PATH_MAX];
+static char g_ws_link_alloc[BT_MUT_PATH_MAX];
 
 static void common_obj_path(const char *name, char out[BT_MUT_PATH_MAX]) {
     char base[BT_MUT_PATH_MAX];
@@ -150,13 +151,15 @@ void ws_fixture_target(bt_mut_target *target) {
     snprintf(g_ws_slot_obj, BT_MUT_PATH_MAX, "%s/obj/fx_ws_target.obj", g_dir);
     common_obj_path("paths", g_ws_link_paths);
     common_obj_path("bt_trace", g_ws_link_trace);
-    static char *objs[4];
+    common_obj_path("alloc", g_ws_link_alloc);
+    static char *objs[5];
     objs[0] = g_ws_slot_obj;
     objs[1] = g_fx_ws_main_obj;
     objs[2] = g_ws_link_paths;
     objs[3] = g_ws_link_trace;
+    objs[4] = g_ws_link_alloc;
     target->link_objs = objs;
-    target->link_obj_count = 4;
+    target->link_obj_count = 5;
     target->target_index = 0;
 }
 

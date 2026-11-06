@@ -5,6 +5,11 @@
 
 #include "common/bt_harness.h"
 
+enum {
+    FX_RETURN_COL = 12,
+    EXPONENT_FLOAT_MUTANTS = 12,
+};
+
 static long find_token(const bt_mut_tokens *tokens, const char *text) {
     for (size_t i = 0; i < tokens->count; i++) {
         const char *candidate = bt_mut_token_text(tokens, &tokens->items[i]);
@@ -70,10 +75,10 @@ BT_TEST(mutate, tokenizer_and_span_helpers_edge_inputs) {
     BT_CHECK_EQ(bt_mut_tokenize(src, strlen(src), &tokens), 0);
     BT_CHECK_EQ(bt_mut_offset_at(src, 1, 1), 0ULL);
     BT_CHECK_EQ(bt_mut_offset_at(src, 99, 99), (size_t)-1);
-    size_t three = bt_mut_offset_at(src, 2, 12);
+    size_t three = bt_mut_offset_at(src, 2, FX_RETURN_COL);
     const char *fname = bt_mut_function_at(&tokens, three);
     BT_CHECK(fname != NULL && strcmp(fname, "f") == 0);
-    size_t four = bt_mut_offset_at(src, 5, 12);
+    size_t four = bt_mut_offset_at(src, 5, FX_RETURN_COL);
     fname = bt_mut_function_at(&tokens, four);
     BT_CHECK(fname != NULL && strcmp(fname, "g") == 0);
     size_t second_int = bt_mut_offset_at(src, 4, 1);
@@ -186,7 +191,7 @@ BT_TEST(mutate, exponent_literals_are_float_tweaks) {
             numeric++;
         }
     }
-    BT_CHECK_EQ(numeric, 12ULL);
+    BT_CHECK_EQ(numeric, (long long)EXPONENT_FLOAT_MUTANTS);
     BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "1501.0", 1) != NULL);
     BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "1499.0", 1) != NULL);
     BT_CHECK(bt_mut_find(&list, BT_MUT_NUMERIC_TWEAK, "1.5e3", "0.0", 1) != NULL);
@@ -254,7 +259,7 @@ BT_TEST(mutate, tokenizer_kinds_and_positions) {
     BT_CHECK(ident >= 0 && tokens.items[ident].kind == BT_MUT_TOK_IDENT);
     BT_CHECK(number >= 0 && tokens.items[number].kind == BT_MUT_TOK_NUMBER);
     BT_CHECK_EQ(tokens.items[number].line, 2ULL);
-    BT_CHECK_EQ(tokens.items[number].col, 12ULL);
+    BT_CHECK_EQ(tokens.items[number].col, (long long)FX_RETURN_COL);
     BT_CHECK(ret >= 0 && tokens.items[ret].kind == BT_MUT_TOK_KEYWORD);
     BT_CHECK(tokens.count >= 1 && tokens.items[tokens.count - 1].kind == BT_MUT_TOK_PP);
     BT_CHECK(strncmp(bt_mut_token_text(&tokens, &tokens.items[tokens.count - 1]), "#define", 7) ==
