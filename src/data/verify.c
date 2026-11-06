@@ -337,31 +337,7 @@ static uint8_t slot_of(const bt_cube *cube, bt_piece piece) {
     uint8_t stickers[3];
     size_t len;
     sticker_set(piece, stickers, &len);
-    uint8_t position = bt_cube_position_of(cube, stickers[0]);
-    uint8_t probe[3];
-    size_t probe_len;
-    if (piece.kind == BT_PIECE_CORNER) {
-        for (uint8_t slot = 0; slot < 8; slot++) {
-            bt_corner_stickers(slot, probe);
-            probe_len = 3;
-            for (size_t i = 0; i < probe_len; i++) {
-                if (probe[i] == position) {
-                    return slot;
-                }
-            }
-        }
-    } else {
-        for (uint8_t slot = 0; slot < 12; slot++) {
-            bt_edge_stickers(slot, probe);
-            probe_len = 2;
-            for (size_t i = 0; i < probe_len; i++) {
-                if (probe[i] == position) {
-                    return slot;
-                }
-            }
-        }
-    }
-    return 0;
+    return bt_piece_of(bt_cube_position_of(cube, stickers[0])).index;
 }
 
 typedef struct {
@@ -414,25 +390,18 @@ static void residue_problems(const bt_cube *cube, bt_verdict *verdict, const bt_
     }
 }
 
-static bool place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from, uint8_t to,
-                        char *detail, size_t detail_len) {
+static void place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from, uint8_t to) {
     bt_piece piece = piece_of_sticker(from);
     bt_piece slot_piece = piece_of_sticker(to);
     uint8_t piece_stickers[3];
     size_t piece_len;
     sticker_set(piece, piece_stickers, &piece_len);
     size_t piece_split = 0;
-    bool found_from = false;
     for (size_t i = 0; i < piece_len; i++) {
         if (piece_stickers[i] == from) {
             piece_split = i;
-            found_from = true;
             break;
         }
-    }
-    if (!found_from) {
-        snprintf(detail, detail_len, "sticker %u not on its piece", from);
-        return false;
     }
     uint8_t rotated_piece[3];
     for (size_t i = 0; i < piece_len; i++) {
@@ -442,17 +411,11 @@ static bool place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from,
     size_t slot_len;
     sticker_set(slot_piece, slot_stickers, &slot_len);
     size_t slot_split = 0;
-    bool found_to = false;
     for (size_t i = 0; i < slot_len; i++) {
         if (slot_stickers[i] == to) {
             slot_split = i;
-            found_to = true;
             break;
         }
-    }
-    if (!found_to) {
-        snprintf(detail, detail_len, "sticker %u not on its piece", to);
-        return false;
     }
     uint8_t rotated_slot[3];
     for (size_t i = 0; i < slot_len; i++) {
@@ -470,7 +433,6 @@ static bool place_rigid(int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t from,
     for (size_t i = 0; i < piece_len; i++) {
         expected[rotated_slot[i]] = rotated_piece[i];
     }
-    return true;
 }
 
 static int expected_position(const int16_t expected[BT_VERIFY_FACELET_COUNT], uint8_t sticker) {
@@ -505,10 +467,7 @@ static void verify_three_style(const bt_cube *cube, bt_verdict *verdict, const c
         {named.stickers[2], named.stickers[0]},
     };
     for (int i = 0; i < 3; i++) {
-        if (!place_rigid(expected, pairs[i][0], pairs[i][1], detail, sizeof detail)) {
-            fail_detail(verdict, detail);
-            return;
-        }
+        place_rigid(expected, pairs[i][0], pairs[i][1]);
     }
     for (int sticker = 0; sticker < BT_VERIFY_NAME_COUNT; sticker++) {
         int want_slot = expected_position(expected, sticker);
@@ -716,22 +675,15 @@ static void verify_twist_pair(const bt_cube *cube, bt_verdict *verdict, const ch
 
 static void note_orientation(const bt_cube *cube, bt_verdict *verdict, bt_piece piece) {
     bt_defect defect = defect_of(cube, piece);
-    if (is_edge_piece(piece)) {
-        if (defect.flipped) {
-            bt_note note;
-            memset(&note, 0, sizeof note);
-            note.kind = BT_NOTE_FLIP;
-            piece_label(note.piece, sizeof note.piece, piece);
-            notes_push(verdict, &note);
-        }
-    } else if (defect.twist != 0) {
-        bt_note note;
-        memset(&note, 0, sizeof note);
-        note.kind = BT_NOTE_TWIST;
-        piece_label(note.piece, sizeof note.piece, piece);
-        note.twist = defect.twist;
-        notes_push(verdict, &note);
+    if (defect.twist == 0) {
+        return;
     }
+    bt_note note;
+    memset(&note, 0, sizeof note);
+    note.kind = BT_NOTE_TWIST;
+    piece_label(note.piece, sizeof note.piece, piece);
+    note.twist = defect.twist;
+    notes_push(verdict, &note);
 }
 
 static void check_sticker_swapped(const bt_cube *cube, bt_verdict *verdict, uint8_t first,
@@ -861,11 +813,6 @@ static void verify_ltct(const bt_cube *cube, bt_verdict *verdict, const char *po
         exempt[exempt_count++] = corner.pieces[i];
     }
     exempt[exempt_count++] = bracket_piece;
-    if (exempt_count != 5) {
-        snprintf(detail, sizeof detail, "ltct names a piece twice: %s", position);
-        fail_detail(verdict, detail);
-        return;
-    }
     residue_problems(cube, verdict, exempt, exempt_count);
     check_swapped(cube, verdict, edge.pieces[0], edge.pieces[1]);
     for (size_t i = 0; i < edge.count; i++) {

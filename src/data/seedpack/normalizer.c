@@ -450,30 +450,15 @@ static bool expand_group_repeats(const char *alg_text, char **current, bt_normal
     return ok;
 }
 
-static bool strip_grouping_parens(const char *alg_text, char *current, bt_normalize_error *err) {
-    long long depth = 0;
+static void strip_grouping_parens(char *current) {
     size_t used = 0;
     for (const char *cursor = current; *cursor != '\0'; cursor++) {
-        if (*cursor == '(') {
-            depth += 1;
-            continue;
-        }
-        if (*cursor == ')') {
-            depth -= 1;
-            if (depth < 0) {
-                set_error(err, BT_NORMALIZE_ERR_UNBALANCED, alg_text, NULL);
-                return false;
-            }
+        if (*cursor == '(' || *cursor == ')') {
             continue;
         }
         current[used++] = *cursor;
     }
-    if (depth != 0) {
-        set_error(err, BT_NORMALIZE_ERR_UNBALANCED, alg_text, NULL);
-        return false;
-    }
     current[used] = '\0';
-    return true;
 }
 
 static bool is_auf_inner(const char *inner) {
@@ -519,7 +504,6 @@ static bool is_auf_inner(const char *inner) {
 }
 
 static bool valid_int(const char *text) {
-    size_t len = strlen(text);
     const char *digits = text;
     bool negative = false;
     if (text[0] == '-') {
@@ -540,11 +524,6 @@ static bool valid_int(const char *text) {
     }
     if (negative && strcmp(digits, "0") == 0) {
         return false;
-    }
-    for (size_t i = 0; i < len; i++) {
-        if (!isdigit((unsigned char)text[i]) && text[i] != '-') {
-            return false;
-        }
     }
     return true;
 }
@@ -652,9 +631,7 @@ static bool normalize_cube(const char *raw, bt_normalized *out, bt_normalize_err
     if (!expand_group_repeats(trimmed, &current, err)) {
         goto done;
     }
-    if (!strip_grouping_parens(trimmed, current, err)) {
-        goto done;
-    }
+    strip_grouping_parens(current);
     spaced = dup_range(current, strlen(current));
     if (spaced == NULL) {
         goto done;

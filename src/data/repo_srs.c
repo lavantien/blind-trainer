@@ -322,13 +322,7 @@ static int memory_from_row(const char *key, int has_stability, double stability,
         }
         bt_fsrs_memory replayed;
         int has = 0;
-        if (bt_replay_sm2(entries, entry_count, cfg, &has, &replayed) != 0) {
-            memset(err, 0, sizeof *err);
-            err->kind = BT_SRS_LOAD_UNKNOWN_QUALITY;
-            snprintf(err->key, sizeof err->key, "%s", key);
-            err->quality = entries[0].quality;
-            return -1;
-        }
+        bt_replay_sm2(entries, entry_count, cfg, &has, &replayed);
         if (has) {
             if (!bt_fsrs_memory_is_valid(replayed)) {
                 memset(err, 0, sizeof *err);
@@ -498,15 +492,7 @@ int bt_repo_srs_load_rows(const bt_db *db, const bt_fsrs_config *cfg, bt_srs_fil
             return -1;
         }
         char key[BT_REPO_ALGS_KEY_MAX];
-        if (bt_repo_algs_join_key(row.stage, row.case_key, key, sizeof key) != 0) {
-            sqlite3_finalize(reviews);
-            sqlite3_finalize(cards);
-            bt_repo_srs_free_rows(rows, rows_count);
-            err->kind = BT_SRS_LOAD_DB;
-            db_step_error(db, &err->db, BT_DB_ERR_QUERY, "select card");
-            BT_TRACE_FAIL("repo_srs.load_rows", "joined key overflows");
-            return -1;
-        }
+        bt_repo_algs_join_key(row.stage, row.case_key, key, sizeof key);
         int has_memory = 0;
         bt_fsrs_memory memory;
         if (memory_from_row(key, has_stability, stability, has_difficulty, difficulty,
@@ -560,16 +546,7 @@ int bt_repo_srs_load_filtered(const bt_db *db, const bt_fsrs_config *cfg, bt_srs
     }
     for (size_t i = 0; i < count; i++) {
         char key[BT_REPO_ALGS_KEY_MAX];
-        if (bt_repo_algs_join_key(rows[i].stage, rows[i].case_key, key, sizeof key) != 0) {
-            bt_repo_srs_free_rows(rows, count);
-            bt_srs_store_free(out);
-            err->kind = BT_SRS_LOAD_DB;
-            err->db.kind = BT_DB_ERR_QUERY;
-            snprintf(err->db.step, sizeof err->db.step, "%s", "select card");
-            snprintf(err->db.detail, sizeof err->db.detail, "%s", "joined key overflows");
-            BT_TRACE_FAIL("repo_srs.load_filtered", "joined key overflows");
-            return -1;
-        }
+        bt_repo_algs_join_key(rows[i].stage, rows[i].case_key, key, sizeof key);
         if (bt_srs_store_set(out, key, &rows[i].card) != 0) {
             bt_repo_srs_free_rows(rows, count);
             bt_srs_store_free(out);

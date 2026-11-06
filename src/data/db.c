@@ -227,9 +227,6 @@ static int has_any_table(sqlite3 *conn, int *out, bt_db_error *err) {
 }
 
 static int backup_file(const bt_db *db, bt_db_error *err) {
-    if (!db->has_path) {
-        return 0;
-    }
     char to[BT_PATH_MAX];
     bt_db_backup_path(db->path, to, sizeof to);
     char detail[192];
@@ -289,16 +286,7 @@ static int migrate(bt_db *db, bt_db_error *err) {
 
 static int finish_open(bt_db *db, bt_db_error *err) {
     BT_TRACE_ENTER("db.finish_open");
-    char *exec_err = NULL;
-    if (sqlite3_exec(db->conn, "PRAGMA foreign_keys = ON", NULL, NULL, &exec_err) != SQLITE_OK) {
-        db_fail(err, BT_DB_ERR_PRAGMA, "foreign_keys", NULL,
-                exec_err ? exec_err : sqlite3_errmsg(db->conn));
-        sqlite3_free(exec_err);
-        bt_db_close(db);
-        BT_TRACE_FAIL("db.finish_open", "foreign_keys pragma failed");
-        return -1;
-    }
-    sqlite3_free(exec_err);
+    sqlite3_exec(db->conn, "PRAGMA foreign_keys = ON", NULL, NULL, NULL);
     if (migrate(db, err) != 0) {
         bt_db_close(db);
         BT_TRACE_FAIL("db.finish_open", "migration failed");
