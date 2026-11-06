@@ -102,9 +102,13 @@ BT_TEST(gendata_oom, synth_case_fails_closed_below_the_full_allocation_budget) {
         }
     }
     BT_CHECK(lo > 8);
-    for (size_t delta = 1; delta <= 8; delta++) {
+    for (size_t k = 0; k <= 24 && k < lo; k++) {
         BT_CHECK(!synth_case_armed(BT_ORBIT_EDGE, GD_OOM_FAST_EDGE_T1, GD_OOM_FAST_EDGE_T2, &lim,
-                                   &cfg, lo - delta));
+                                   &cfg, k));
+    }
+    for (size_t k = lo > 24 ? lo - 24 : 0; k < lo; k++) {
+        BT_CHECK(!synth_case_armed(BT_ORBIT_EDGE, GD_OOM_FAST_EDGE_T1, GD_OOM_FAST_EDGE_T2, &lim,
+                                   &cfg, k));
     }
     BT_CHECK(
         synth_case_armed(BT_ORBIT_EDGE, GD_OOM_FAST_EDGE_T1, GD_OOM_FAST_EDGE_T2, &lim, &cfg, lo));
@@ -276,6 +280,14 @@ BT_TEST(gendata_oom, build_stays_consistent_and_frees_clean_at_every_budget) {
         check_built_invariants(&built);
         bt_gd_built_free(&built);
     }
+    for (size_t k = lo > 48 ? lo - 48 : 0; k <= lo; k++) {
+        bt_gd_built built;
+        bt_alloc_fail_arm(k);
+        bt_gd_build(&corpus, &built);
+        bt_alloc_fail_disarm();
+        check_built_invariants(&built);
+        bt_gd_built_free(&built);
+    }
     bt_gd_built built;
     bt_alloc_fail_arm(lo);
     bt_gd_build(&corpus, &built);
@@ -285,6 +297,102 @@ BT_TEST(gendata_oom, build_stays_consistent_and_frees_clean_at_every_budget) {
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
     bt_alg_free(&twist);
+    bt_gd_synth_hit_free(&hit);
+}
+
+static bt_gd_synth_hit fast_hit(void);
+static bt_corpus fast_corpus(const bt_gd_synth_hit *hit);
+
+BT_TEST(gendata_oom, build_names_every_offender_class_and_survives_allocation_failure) {
+    bt_gd_synth_hit hit = fast_hit();
+    char wrong_walk[96];
+    snprintf(wrong_walk, sizeof wrong_walk, "%s-%s-%s",
+             bt_scheme_name_of(BT_SCHEME_EDGE_BUFFER_STICKER),
+             bt_scheme_name_of(GD_OOM_FAST_EDGE_T2), bt_scheme_name_of(GD_OOM_FAST_EDGE_T1));
+    bt_alg solved = alg_of("");
+    bt_alg flip = alg_of("M' U M' U M' U2 M U M U M U2");
+    bt_alg twist = alg_of("R' D' R D R' D' R U' R' D R D' R' D R U");
+    bt_alg parity = alg_of("R U R' U' R' F R2 U' R' U' R U R' F'");
+    bt_alg ltct = alg_of("U R U2 R D R' U' R D' R2 U R U2 R'");
+    bt_corpus_row rows[6] = {
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_EDGE, 1, "UF-UB-UR", &solved),
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_EDGE, 2, "UF-UB-UR", &flip),
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_EDGE, 3, "UF-UB-UR", &twist),
+        row_of(BT_SOLVER_EGGINS, BT_SHEET_EDGE, 4, "UF-UB-UR", &parity),
+        row_of(BT_SOLVER_EGGINS, BT_SHEET_EDGE, 5, "UF-UB-UR", &ltct),
+        row_of(BT_SOLVER_CHERRY, BT_SHEET_EDGE, 6, wrong_walk, &hit.alg),
+    };
+    bt_corpus corpus = corpus_of(rows, 6);
+    bt_gd_built built;
+    bt_gd_build(&corpus, &built);
+    BT_CHECK_EQ(built.offender_count, 11U);
+    bool saw_solved = false;
+    bool saw_flip = false;
+    bool saw_twist = false;
+    bool saw_parity = false;
+    bool saw_ltct = false;
+    bool saw_problems = false;
+    for (size_t i = 0; i < built.offender_count; i++) {
+        if (strstr(built.offenders[i], ": Solved") != NULL) {
+            saw_solved = true;
+        }
+        if (strstr(built.offenders[i], ": FlipPair") != NULL) {
+            saw_flip = true;
+        }
+        if (strstr(built.offenders[i], ": TwistPair") != NULL) {
+            saw_twist = true;
+        }
+        if (strstr(built.offenders[i], ": Parity") != NULL) {
+            saw_parity = true;
+        }
+        if (strstr(built.offenders[i], ": Ltct") != NULL) {
+            saw_ltct = true;
+        }
+        if (strncmp(built.offenders[i], "cherry/edge/6 ", 14) == 0) {
+            saw_problems = true;
+        }
+    }
+    BT_CHECK(saw_solved);
+    BT_CHECK(saw_flip);
+    BT_CHECK(saw_twist);
+    BT_CHECK(saw_parity);
+    BT_CHECK(saw_ltct);
+    BT_CHECK(saw_problems);
+    BT_CHECK_EQ(built.rows_in_pair_space, 1U);
+    bool saw_not_ok = false;
+    for (size_t i = 0; i < built.cases.count; i++) {
+        if (built.cases.cases[i].vendor_count == 1 && !built.cases.cases[i].vendor_algs[0].ok) {
+            saw_not_ok = true;
+        }
+    }
+    BT_CHECK(saw_not_ok);
+    bt_gd_derive_mirrored_inverses(&built.cases);
+    check_built_invariants(&built);
+    bt_gd_built_free(&built);
+    for (size_t k = 0; k <= 80; k++) {
+        bt_gd_built armed;
+        bt_alloc_fail_arm(k);
+        bt_gd_build(&corpus, &armed);
+        bt_gd_derive_mirrored_inverses(&armed.cases);
+        bt_alloc_fail_disarm();
+        check_built_invariants(&armed);
+        bt_gd_built_free(&armed);
+    }
+    for (size_t k = 0; k <= 48; k++) {
+        bt_gd_built armed;
+        bt_gd_build(&corpus, &armed);
+        bt_alloc_fail_arm(k);
+        bt_gd_derive_mirrored_inverses(&armed.cases);
+        bt_alloc_fail_disarm();
+        check_built_invariants(&armed);
+        bt_gd_built_free(&armed);
+    }
+    bt_corpus_free(&corpus);
+    bt_alg_free(&ltct);
+    bt_alg_free(&parity);
+    bt_alg_free(&twist);
+    bt_alg_free(&flip);
+    bt_alg_free(&solved);
     bt_gd_synth_hit_free(&hit);
 }
 
@@ -402,6 +510,14 @@ BT_TEST(gendata_oom, manifest_make_is_complete_or_empty_at_every_budget) {
         BT_CHECK(manifest_is_empty(&manifest));
         bt_gd_manifest_free(&manifest);
     }
+    for (size_t k = lo > 32 ? lo - 32 : 0; k < lo; k++) {
+        bt_gd_manifest manifest;
+        bt_alloc_fail_arm(k);
+        bt_gd_manifest_make(&built, &digest, "cc", "pp", "ss", "stamp", &manifest);
+        bt_alloc_fail_disarm();
+        BT_CHECK(manifest_is_empty(&manifest));
+        bt_gd_manifest_free(&manifest);
+    }
     bt_gd_built_free(&built);
     bt_corpus_free(&corpus);
     bt_gd_synth_hit_free(&hit);
@@ -473,6 +589,15 @@ BT_TEST(gendata_oom, derive_fills_the_mirror_or_leaves_it_clean_at_every_budget)
         bt_gd_built built;
         bt_gd_build(&corpus, &built);
         bt_alloc_fail_arm(lo - delta);
+        bt_gd_derive_mirrored_inverses(&built.cases);
+        bt_alloc_fail_disarm();
+        check_built_invariants(&built);
+        bt_gd_built_free(&built);
+    }
+    for (size_t k = lo > 24 ? lo - 24 : 0; k < lo; k++) {
+        bt_gd_built built;
+        bt_gd_build(&corpus, &built);
+        bt_alloc_fail_arm(k);
         bt_gd_derive_mirrored_inverses(&built.cases);
         bt_alloc_fail_disarm();
         check_built_invariants(&built);
@@ -572,6 +697,23 @@ BT_TEST(gendata_oom, synth_generated_rows_land_atomic_or_not_at_all) {
         hi *= 2;
     }
     BT_CHECK(hi < GD_OOM_DOUBLE_CAP);
+    for (size_t k = hi > 24 ? hi - 24 : 0; k < hi; k++) {
+        bt_gd_cases_file walk;
+        synth_walk_cases(&walk);
+        size_t edge = 0;
+        size_t corner = 0;
+        bt_alloc_fail_arm(k);
+        bt_gd_synthesize(&walk, &lim, &cfg, &edge, &corner);
+        bt_alloc_fail_disarm();
+        if (walk.cases[1].vendor_count != 0) {
+            BT_CHECK_EQ(walk.cases[1].vendor_count, 1U);
+            BT_CHECK(vendor_alg_complete(&walk.cases[1].vendor_algs[0]));
+            BT_CHECK_EQ(edge, 1U);
+        } else {
+            BT_CHECK_EQ(edge, 0U);
+        }
+        bt_gd_cases_file_free(&walk);
+    }
 }
 
 BT_TEST(gendata_oom, vendor_alg_from_json_fails_closed_until_the_budget_covers_every_field) {

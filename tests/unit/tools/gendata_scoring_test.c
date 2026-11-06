@@ -472,3 +472,124 @@ BT_TEST(gendata_scoring, rank_order_is_total) {
         }
     }
 }
+
+BT_TEST(gendata_scoring, parse_rejects_wrong_lane_shapes_and_non_numbers) {
+    static const char *const bad_configs[5] = {
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": 3,"
+        "\"preferred_edge\": [\"U\"], \"penalty_other\": 2.0, \"weight_len\": 1.0,"
+        "\"weight_subset\": 2.0, \"weight_regrip\": 1.5, \"weight_finger\": 0.5,"
+        "\"finger_cost\": {\"U\": [0.2, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"UU\"],"
+        "\"preferred_edge\": [\"U\"], \"penalty_other\": 2.0, \"weight_len\": 1.0,"
+        "\"weight_subset\": 2.0, \"weight_regrip\": 1.5, \"weight_finger\": 0.5,"
+        "\"finger_cost\": {\"U\": [0.2, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [3],"
+        "\"preferred_edge\": [\"U\"], \"penalty_other\": 2.0, \"weight_len\": 1.0,"
+        "\"weight_subset\": 2.0, \"weight_regrip\": 1.5, \"weight_finger\": 0.5,"
+        "\"finger_cost\": {\"U\": [0.2, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\"], \"preferred_edge\": [\"U\"], \"penalty_other\": 2.0,"
+        "\"weight_len\": \"1\","
+        "\"weight_subset\": 2.0, \"weight_regrip\": 1.5, \"weight_finger\": 0.5,"
+        "\"finger_cost\": {\"U\": [0.2, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\"], \"preferred_edge\": [\"U\"], \"penalty_other\": 2.0,"
+        "\"weight_len\": 1.0, \"weight_subset\": 2.0, \"weight_regrip\": 1.5,"
+        "\"weight_finger\": 0.5, \"finger_cost\": []}}}",
+    };
+    static const char *const errors[5] = {
+        "synth.scoring.preferred entries must be single lanes from U D L R F B M E S",
+        "synth.scoring.preferred entries must be single lanes from U D L R F B M E S",
+        "synth.scoring.preferred entries must be single lanes from U D L R F B M E S",
+        "synth.scoring.weight_len must be a finite number >= 0",
+        "synth.scoring.finger_cost must hold exactly the lanes U D L R F B",
+    };
+    for (size_t k = 0; k < 5; k++) {
+        bt_json_error jerr;
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(bad_configs[k], strlen(bad_configs[k]), &config, &jerr), 0);
+        bt_gd_scoring_cfg cfg;
+        char err[128];
+        BT_CHECK(bt_gd_scoring_from_config(config, &cfg, err, sizeof err) != 0);
+        BT_CHECK_EQ(strcmp(err, errors[k]), 0);
+        bt_json_free(config);
+    }
+}
+
+BT_TEST(gendata_scoring, parse_rejects_finger_cost_non_numbers_and_overflow) {
+    static const char *const bad_configs[2] = {
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\"], \"preferred_edge\": [\"U\"], \"penalty_other\": 2.0,"
+        "\"weight_len\": 1.0, \"weight_subset\": 2.0, \"weight_regrip\": 1.5,"
+        "\"weight_finger\": 0.5, \"finger_cost\": {"
+        "\"U\": [\"x\", 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\"], \"preferred_edge\": [\"U\"], \"penalty_other\": 2.0,"
+        "\"weight_len\": 1.0, \"weight_subset\": 2.0, \"weight_regrip\": 1.5,"
+        "\"weight_finger\": 0.5, \"finger_cost\": {"
+        "\"U\": [1e39, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}",
+    };
+    for (size_t k = 0; k < 2; k++) {
+        bt_json_error jerr;
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(bad_configs[k], strlen(bad_configs[k]), &config, &jerr), 0);
+        bt_gd_scoring_cfg cfg;
+        char err[128];
+        BT_CHECK(bt_gd_scoring_from_config(config, &cfg, err, sizeof err) != 0);
+        BT_CHECK_EQ(strcmp(err, "synth.scoring.finger_cost.U must be [cw, ccw] finite numbers"), 0);
+        bt_json_free(config);
+    }
+}
+
+BT_TEST(gendata_scoring, parse_accepts_every_lane_letter) {
+    static const char *text =
+        "{\"synth\": {\"scoring\": {"
+        "\"preferred\": [\"U\", \"D\", \"L\", \"R\", \"F\", \"B\", \"M\", \"E\", \"S\"],"
+        "\"preferred_edge\": [\"U\", \"D\", \"L\", \"R\", \"F\", \"B\", \"M\", \"E\", \"S\"],"
+        "\"penalty_other\": 2.0, \"weight_len\": 1.0, \"weight_subset\": 2.0,"
+        "\"weight_regrip\": 1.5, \"weight_finger\": 0.5,"
+        "\"finger_cost\": {"
+        "\"U\": [0.2, 0.2], \"D\": [0.2, 0.2], \"L\": [0.4, 0.4],"
+        "\"R\": [0.4, 0.4], \"F\": [0.8, 0.8], \"B\": [0.8, 0.8]}}}}";
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+    bt_gd_scoring_cfg cfg;
+    char err[128];
+    BT_CHECK_EQ(bt_gd_scoring_from_config(config, &cfg, err, sizeof err), 0);
+    for (size_t lane = 0; lane < 9; lane++) {
+        BT_CHECK(cfg.preferred[lane]);
+        BT_CHECK(cfg.preferred_edge[lane]);
+    }
+    bt_json_free(config);
+}
+
+BT_TEST(gendata_scoring, unscoreable_sequences_rank_below_every_scoring_one) {
+    bt_gd_scoring_cfg cfg;
+    reference(&cfg);
+    bt_alg rotation = {0};
+    char bad[64];
+    BT_CHECK(bt_alg_parse("x U", &rotation, bad, sizeof bad));
+    bt_alg plain = {0};
+    BT_CHECK(bt_alg_parse("U", &plain, bad, sizeof bad));
+    bt_gd_score_parts parts;
+    BT_CHECK(!bt_gd_score(rotation.items, rotation.len, BT_ORBIT_EDGE, &cfg, &parts));
+    BT_CHECK(bt_gd_rank_cmp(rotation.items, rotation.len, plain.items, plain.len, BT_ORBIT_EDGE,
+                            &cfg) > 0);
+    BT_CHECK(bt_gd_rank_cmp(plain.items, plain.len, rotation.items, rotation.len, BT_ORBIT_EDGE,
+                            &cfg) < 0);
+    BT_CHECK_EQ(bt_gd_rank_cmp(rotation.items, rotation.len, rotation.items, rotation.len,
+                               BT_ORBIT_EDGE, &cfg),
+                0);
+    bt_alg_free(&plain);
+    bt_alg_free(&rotation);
+}
