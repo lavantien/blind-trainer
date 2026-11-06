@@ -138,6 +138,24 @@ Mission 1: alg coverage 100 via corner N-I fix. Mission 2: tools/gendata region 
 - 22:04 batch 3 written: synth_case_starved_budget_walks_the_hit_path_dense, a full dense walk at node_budget 1000 over the 3277-allocation verifying sequence (floor 3000, cap 4096). Alloc suite green under my own watch at 73s. The 4 deep-setup commutator arms ([439] [440] [441] [443]) stay open: they need a deep-setup verifier, only corner-AB and edge-AB qualify, and no budget makes their sequences walkable within the 300s suite cap. Final measurement running as covscope3 and regions3.
 - 22:17 batch 3 verified (gendata-gen7-covscope3.log, regions3, region_diff exit 0): the starved walk closed exactly the 10 predicted hit-path arms (alg_from_vec [387], commutator_of [419] [430] [431], hits_push [500] [508] [513], search_with [622] [626] [633]). Tool dark regions 99 at gen4 to 38 by the summary metric, 91 to 33 by the function-region metric, 58 closed, 0 opened, across the 3 gen7 commits. The remaining 33 decompose with probe evidence: 25 dead by proof (build [371] [381] [409] [478] class_debug, lib serde_shortest_digits [117] [148] serde_value [219] [289], model [143], scoring bt_gd_score [118] [125], synth cycle_slots [240] [244] search_with [560] [564] layer_of [119] setups_by_depth [148] vendor_alg_from_verdict problems arms all 7), 4 compiler artifacts (orbit_debug inlined-dup, serde_float folded dup, 2 scoring folded dups), 4 reachable only through a deep-setup verifier (commutator_of [439] [440] [441] [443]) where the only qualifying pairs cost 300952 or 896683 allocations and the budget sweep found no shrink between no-hit and full price. The reachable drive is complete to the bounded-pricing frontier.
 
+## gen7 reading log
+
+- read artifacts/progress/lane-cov-gendata.md full - resume context, gen3 to gen6 state
+- read artifacts/progress/gendata-gen6-suites1.log full - predecessor suite run evidence
+- read scripts/lane_build.py full, scripts/commit_lane.py argparse - lane clone and commit gate mechanics
+- read bt.py 98-118, 1330-1395, 1385-1429, 1514-1545 - hub loading, lint scoping, child_env, test-unit filter
+- read tests/unit/tools/spawn_util.h 195-265 - BT_CONFIG repo root derivation and BT_BIN_DIR override
+- read the batch diffs of gendata_{build,lib,model,scoring,synth}_test.c and cov_scope_gendata.py - gen5 batch audit
+- read tests/unit/tools/gendata_alloc_test.c full, playground/gendata/{alloc_total_probe.py,region_diff.py,alloc_total_probe_main.c} full - inherited new files audit
+- read playground/cov_scope_gendata.py, playground/cov_regions_gendata.py full - measurement chain
+- read artifacts/progress/gendata-gen4-regions3.log full - dark region baseline
+- read tools/gendata/synth.c 100-180, 262-400, 415-500, 490-545, 550-680, 755-843 - allocation arms, plateau break, hit path, vendor attach
+- read tools/gendata/build.c 20-100, 200-250, 415-484 - offender, verdict_strings, derive, row tail arms
+- read tools/gendata/lib.c 48-160, 155-300 - serde string, float, value arms
+- read tools/gendata/model.c 10-144 - pretty arms
+- read tools/gendata/scoring.c 288-317 - finger integer arm
+- read artifacts/progress/gendata-gen7-*.log - run evidence for every batch
+
 ## gen3 reading log
 
 - read artifacts/progress/lane-cov-gendata.md 1-29 - resume context and prior ground truth
