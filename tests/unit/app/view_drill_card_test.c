@@ -1,6 +1,7 @@
 #include "app/views/drill_card.h"
 
 #include "app/views/images.h"
+#include "common/alloc.h"
 
 #include "common.h"
 
@@ -534,4 +535,167 @@ BT_TEST(view_drill_card, reps_and_rate_lines_report_no_pair_without_sides) {
     BT_CHECK(count == 1);
     BT_CHECK(strcmp(lines[0], "no pair") == 0);
     bt_drill_session_free(&session);
+}
+
+BT_TEST(view_drill_card, row_style_metrics_cover_the_micro_and_unknown_styles) {
+    float size = 0.0F;
+    bt_theme_color color;
+    bt_row_style_metrics(BT_ROW_MICRO, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_micro);
+    BT_CHECK(colors_equal(color, bt_theme_text_muted()));
+    bt_row_style_metrics((bt_row_style)99, &size, &color);
+    BT_CHECK(size == bt_theme_table()->font_body);
+    BT_CHECK(colors_equal(color, bt_theme_text_primary()));
+}
+
+BT_TEST(view_drill_card, build_sides_survives_a_failed_alg_copy_with_empty_algs) {
+    bt_corpus corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "");
+    bt_case case_id = edge_case('A', 'B');
+    bt_drill_side a;
+    bt_drill_side b;
+    bt_drill_side_init(&a);
+    bt_drill_side_init(&b);
+    bt_alloc_fail_arm(0);
+    BT_CHECK(bt_view_build_sides(&corpus, &case_id, &a, &b));
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(bt_alg_len(&a.alg), 0U);
+    BT_CHECK_EQ(bt_alg_len(&b.alg), 0U);
+    BT_CHECK(b.alg_text[0] == '\0');
+    bt_drill_side_free(&a);
+    bt_drill_side_free(&b);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(view_drill_card, a_user_solver_row_builds_a_non_vendor_side) {
+    bt_corpus_row rows[1] = {
+        heap_row(BT_SOLVER_USER, BT_SHEET_EDGE, "UF-UB-UR", "R2 U' S R2 S' R2 U R2", "")};
+    bt_corpus corpus = corpus_of_rows(rows, 1);
+    bt_case case_id = edge_case('A', 'B');
+    bt_drill_side a;
+    bt_drill_side b;
+    bt_drill_side_init(&a);
+    bt_drill_side_init(&b);
+    BT_CHECK(bt_view_build_sides(&corpus, &case_id, &a, &b));
+    BT_CHECK(!a.vendor);
+    BT_CHECK(strcmp(a.solver_label, bt_solver_dir(BT_SOLVER_USER)) == 0);
+    bt_drill_side_free(&a);
+    bt_drill_side_free(&b);
+    bt_corpus_free(&corpus);
+}
+
+static bt_alg alg_of_text(const char *text) {
+    bt_alg alg;
+    memset(&alg, 0, sizeof alg);
+    char err_token[64];
+    if (!bt_alg_parse(text, &alg, err_token, sizeof err_token)) {
+        BT_ABORT("fixture alg %s: %s", text, err_token);
+    }
+    return alg;
+}
+
+BT_TEST(view_drill_card, mechanic_spans_stop_at_the_span_budget_on_every_push) {
+    bt_alg combo = alg_of_text("S R2 S' R2 U R2 U' R2");
+    bt_alg setup = alg_of_text("R2 U' S R2 S' R2 U R2");
+    bt_alg single = alg_of_text("S R2 S' R2");
+    bt_card_content content;
+    memset(&content, 0, sizeof content);
+    content.span_count = BT_CARD_SPANS_MAX;
+    BT_CHECK(!bt_view_mechanic_spans("[S,R2] + [U,R2]", &combo, &content));
+    BT_CHECK_EQ(content.span_count, (size_t)BT_CARD_SPANS_MAX);
+    BT_CHECK(!content.has_mechanics);
+    content.span_count = BT_CARD_SPANS_MAX;
+    BT_CHECK(!bt_view_mechanic_spans("R2 U':[S,R2]", &setup, &content));
+    content.span_count = BT_CARD_SPANS_MAX - 4;
+    BT_CHECK(!bt_view_mechanic_spans("[S,R2]", &single, &content));
+    BT_CHECK_EQ(content.span_count, (size_t)BT_CARD_SPANS_MAX);
+    content.span_count = BT_CARD_SPANS_MAX - 5;
+    BT_CHECK(!bt_view_mechanic_spans("[S,R2] + [U,R2]", &combo, &content));
+    BT_CHECK_EQ(content.span_count, (size_t)BT_CARD_SPANS_MAX);
+    bt_alg_free(&combo);
+    bt_alg_free(&setup);
+    bt_alg_free(&single);
+}
+
+BT_TEST(view_drill_card, mechanic_spans_render_the_b_first_order) {
+    bt_alg alg = alg_of_text("U R U' R'");
+    bt_card_content content;
+    memset(&content, 0, sizeof content);
+    BT_CHECK(bt_view_mechanic_spans("[R,U]", &alg, &content));
+    char joined[BT_CARD_TEXT_MAX * 4];
+    bt_view_span_text(&content, joined, sizeof joined);
+    BT_CHECK(strcmp(joined, "[U, R]") == 0);
+    BT_CHECK(strcmp(content.spans[1].text, "U") == 0);
+    BT_CHECK(colors_equal(content.spans[1].color, bt_theme_interchange()));
+    BT_CHECK(strcmp(content.spans[3].text, "R") == 0);
+    BT_CHECK(colors_equal(content.spans[3].color, bt_theme_teal()));
+    bt_alg_free(&alg);
+}
+
+BT_TEST(view_drill_card, card_content_reports_a_pinned_pair_without_coverage) {
+    bt_stores stores = stores_with_reps(4);
+    bt_syllable_book book;
+    bt_syllable_book_init(&book);
+    bt_corpus corpus;
+    memset(&corpus, 0, sizeof corpus);
+    bt_card_content content;
+    bt_view_card_content(&(bt_drill_session){0}, &corpus, &book, &stores, 0, &content);
+    BT_CHECK_EQ(content.row_count, (size_t)1);
+    BT_CHECK(strcmp(content.rows[0].text, "no covered pairs, esc menu") == 0);
+    BT_CHECK(content.rows[0].style == BT_ROW_MUTED);
+    bt_drill_session pinned;
+    bt_drill_session_init(&pinned);
+    pinned.has_pin = 1;
+    pinned.pin = edge_case('A', 'B');
+    bt_view_card_content(&pinned, &corpus, &book, &stores, 0, &content);
+    BT_CHECK_EQ(content.row_count, (size_t)1);
+    BT_CHECK(strcmp(content.rows[0].text, "pair AB uncovered, esc menu") == 0);
+    bt_drill_session_free(&pinned);
+    bt_syllable_book_free(&book);
+    bt_stores_free(&stores);
+}
+
+BT_TEST(view_drill_card, card_rows_stop_at_the_row_budget_mid_alt_list) {
+    enum { ALT_ROWS = 60 };
+    bt_corpus_row rows[ALT_ROWS];
+    for (size_t i = 0; i < ALT_ROWS; i++) {
+        rows[i] = edge_row("UF-UB-UR", "R2 U' S R2 S' R2 U R2", "");
+    }
+    bt_corpus corpus = corpus_of_rows(rows, ALT_ROWS);
+    bt_stores stores = stores_with_reps(4);
+    bt_drill_session session;
+    bt_drill_session_init(&session);
+    bt_view_install_pair(&session, &corpus, &stores, edge_case('A', 'B'));
+    bt_syllable_book book;
+    bt_syllable_book_init(&book);
+    bt_card_content content;
+    bt_view_card_content(&session, &corpus, &book, &stores, 0, &content);
+    BT_CHECK_EQ(content.row_count, (size_t)BT_CARD_ROWS_MAX);
+    size_t alt_rows = 0;
+    for (size_t i = 0; i < content.row_count; i++) {
+        if (strncmp(content.rows[i].text, "alt ", 4) == 0) {
+            alt_rows++;
+        }
+    }
+    BT_CHECK(alt_rows > 0);
+    bt_syllable_book_free(&book);
+    bt_drill_session_free(&session);
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
+}
+
+BT_TEST(view_drill_card, reps_and_rate_lines_fail_closed_below_three_lines) {
+    bt_corpus corpus = single_pair_corpus("R2 U' S R2 S' R2 U R2", "");
+    bt_stores stores = stores_with_reps(4);
+    bt_drill_session session;
+    bt_drill_session_init(&session);
+    bt_view_install_pair(&session, &corpus, &stores, edge_case('A', 'B'));
+    char lines[2][BT_CARD_TEXT_MAX];
+    size_t count = 9;
+    bt_view_reps_lines(&session, lines, 2, &count);
+    BT_CHECK_EQ(count, (size_t)0);
+    bt_view_rate_lines(&session, lines, 2, &count);
+    BT_CHECK_EQ(count, (size_t)0);
+    bt_drill_session_free(&session);
+    bt_stores_free(&stores);
+    bt_corpus_free(&corpus);
 }
