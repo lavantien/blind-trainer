@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
 import ci_badge
+import alg_coverage_badge
 from badgesvg import GREY, GREEN, RED, YELLOW, badge_svg
 
 PASSED_RUN = (
@@ -94,10 +95,14 @@ class BadgeSvgEscapeTests(unittest.TestCase):
         self.assertIn("&quot;hi&quot;", svg)
 
     def test_committed_alg_coverage_render_is_unchanged(self):
-        badge_dir = Path(__file__).resolve().parents[2] / "docs" / "badges"
+        repo = Path(__file__).resolve().parents[2]
+        manifest = json.loads(
+            (repo / "ref_ground" / "vendor" / "manifest.json").read_text(encoding="utf-8")
+        )
+        percent = alg_coverage_badge.compute(manifest)[0]
         self.assertEqual(
-            (badge_dir / "alg-coverage.svg").read_bytes(),
-            badge_svg("alg coverage", "99.9%", 99.9).encode("utf-8"),
+            (repo / "docs" / "badges" / "alg-coverage.svg").read_bytes(),
+            badge_svg("alg coverage", f"{percent:.1f}%", percent).encode("utf-8"),
         )
 
     def test_committed_coverage_badge_renders_its_recorded_counts(self):
