@@ -12,7 +12,36 @@
 enum {
     OOM_STAGE_ALLOC_SLOTS = 6,
     OOM_STAGING_ALLOC_SLOTS = 11,
+    OOM_READER_TALK_BYTES = 700,
+    OOM_READER_OUT_INIT_K = 11,
+    OOM_READER_ERR_INIT_K = 12,
+    OOM_READER_GROWTH_K = 13,
 };
+
+static void oom_reader_env(char vars[3][BT_PATH_MAX]) {
+    const char *path = getenv("PATH");
+    const char *systemroot = getenv("SYSTEMROOT");
+    const char *comspec = getenv("COMSPEC");
+    snprintf(vars[0], BT_PATH_MAX, "PATH=%s", path != NULL ? path : "");
+    snprintf(vars[1], BT_PATH_MAX, "SYSTEMROOT=%s", systemroot != NULL ? systemroot : "");
+    snprintf(vars[2], BT_PATH_MAX, "COMSPEC=%s", comspec != NULL ? comspec : "");
+}
+
+static void oom_reader_run(char vars[3][BT_PATH_MAX], size_t k) {
+    static char filler[OOM_READER_TALK_BYTES + 1];
+    memset(filler, 'a', OOM_READER_TALK_BYTES);
+    filler[OOM_READER_TALK_BYTES] = '\0';
+    const char *talk_args[] = {"/c", "echo", filler, NULL};
+    const char *env_vars[4] = {vars[0], vars[1], vars[2], NULL};
+    bt_rv_child_spec spec;
+    bt_rv_stage_spec("cmd.exe", talk_args, NULL, env_vars, NULL, 0, &spec);
+    bt_rv_run_result result;
+    bt_alloc_fail_arm(k);
+    bt_rv_run_child(&spec, 30000, &result);
+    bt_alloc_fail_disarm();
+    bt_rv_run_result_free(&result);
+    bt_rv_child_spec_free(&spec);
+}
 
 static void oom_scratch(const char *tag, char out[BT_PATH_MAX]) {
     char base[BT_PATH_MAX];
@@ -359,6 +388,24 @@ BT_TEST(release_verify_oom, staging_file_set_aborts_when_its_pairs_pushes_starve
         _putenv(setting);
         bt_death_expect_abort("release_verify_oom.staging_files", "out of memory",
                               oom_staging_child);
+    }
+    _putenv("RV_OOM_K=");
+}
+
+static void oom_reader_child(void) {
+    char vars[3][BT_PATH_MAX];
+    oom_reader_env(vars);
+    const char *raw = getenv("RV_OOM_K");
+    size_t k = raw != NULL ? (size_t)strtoul(raw, NULL, 10) : 0;
+    oom_reader_run(vars, k);
+}
+
+BT_TEST(release_verify_oom, run_child_reader_starvations_abort_at_the_final_strdups) {
+    for (size_t k = OOM_READER_OUT_INIT_K; k <= OOM_READER_GROWTH_K; k++) {
+        char setting[32];
+        snprintf(setting, sizeof setting, "RV_OOM_K=%zu", k);
+        _putenv(setting);
+        bt_death_expect_abort("release_verify_oom.readers", "out of memory", oom_reader_child);
     }
     _putenv("RV_OOM_K=");
 }
