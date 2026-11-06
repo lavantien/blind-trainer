@@ -3,6 +3,7 @@
 #include "app/views/state.h"
 
 #include "common.h"
+#include "common/alloc.h"
 
 #include "sqlite3.h"
 
@@ -312,6 +313,124 @@ BT_TEST(views_case_drill, two_rating_keys_in_one_frame_grade_once) {
     const bt_card *card = bt_case_cards_get(&app->cards.cards, &key);
     BT_CHECK(card != NULL);
     BT_CHECK_EQ(card->reps, (unsigned int)1);
+    bt_app_ctx_free(&ctx);
+}
+
+static void reset_case_drill_cards(bt_view_case_drill_app_state *app) {
+    bt_case_cards_free(&app->cards.cards);
+    bt_case_cards_init(&app->cards.cards);
+    app->cards.has_load_error = 0;
+    app->cards.load_error[0] = '\0';
+}
+
+static bt_drill_case one_live_case(const char *case_key) {
+    bt_drill_case drill;
+    memset(&drill, 0, sizeof drill);
+    bt_case_ref_of(&drill.case_ref, "2x2", "cll", "cll", case_key);
+    snprintf(drill.seed_alg, sizeof drill.seed_alg, "%s", "R U R'");
+    snprintf(drill.alg, sizeof drill.alg, "%s", "R U R'");
+    return drill;
+}
+
+static void blocked_user_root(const char *tag, char out[BT_PATH_MAX]) {
+    const char *dir = ta_temp_dir("views_case_drill", tag);
+    char blocker[BT_PATH_MAX];
+    snprintf(blocker, sizeof blocker, "%s\\blocker", dir);
+    ta_write_file(blocker, "x");
+    snprintf(out, BT_PATH_MAX, "%s\\blocker\\under", dir);
+}
+
+BT_TEST(views_case_drill, cards_enter_reports_a_db_open_failure_and_carries_it_into_the_session) {
+    bt_app_ctx ctx = drill_fixture("dbopenfail");
+    char gone[BT_PATH_MAX];
+    blocked_user_root("dbopenfail-user", gone);
+    snprintf(ctx.paths.user_root, sizeof ctx.paths.user_root, "%s", gone);
+    bt_view_case_drill_app_state *app = bt_view_case_drill_app();
+    reset_case_drill_cards(app);
+    bt_view_case_drill_cards_enter(&ctx);
+    BT_CHECK(app->cards.has_load_error);
+    BT_CHECK(app->cards.load_error[0] != '\0');
+    bt_drill_case_queue queue;
+    bt_drill_case_queue_init(&queue);
+    bt_drill_case drill = one_live_case("cll.9");
+    bt_drill_case_queue_push(&queue, &drill);
+    bt_view_case_drill_set_pending(&queue);
+    bt_view_case_drill_enter_state(&ctx, app);
+    BT_CHECK(app->session.has_save_error);
+    BT_CHECK(strcmp(app->session.save_error, app->cards.load_error) == 0);
+    bt_drill_case_queue_free(&queue);
+    bt_drill_case_queue_free(&app->session.queue);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_case_drill, enter_state_without_pending_returns_to_algs) {
+    bt_app_ctx ctx = drill_fixture("emptypending");
+    ctx.state = BT_APP_CASE_DRILL;
+    bt_view_case_drill_app_state *app = bt_view_case_drill_app();
+    app->pending.count = 0;
+    bt_view_case_drill_enter_state(&ctx, app);
+    BT_CHECK(ctx.state == BT_APP_ALGS);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_case_drill, key_and_frame_guards_hold_without_a_live_card_flow) {
+    bt_app_ctx ctx = drill_fixture("keyguards");
+    bt_view_case_drill_app_state *app = bt_view_case_drill_app();
+    reset_case_drill_cards(app);
+    app->session.has_current = 0;
+    app->session.done = 0;
+    app->session.has_save_error = 0;
+    ctx.case_drill_phase = BT_CASE_DRILL_SHOW;
+    bt_view_case_drill_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.case_drill_phase == BT_CASE_DRILL_SHOW);
+    ctx.case_drill_phase = BT_CASE_DRILL_GRADE;
+    bt_view_case_drill_key(&ctx, app, KEY_ONE);
+    BT_CHECK_EQ(app->session.done, (size_t)0);
+    app->session.has_current = 1;
+    bt_view_case_drill_key(&ctx, app, KEY_D);
+    BT_CHECK_EQ(app->session.done, (size_t)0);
+    bt_alloc_fail_arm(0);
+    bt_view_case_drill_key(&ctx, app, KEY_ONE);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(app->session.done, (size_t)0);
+    BT_CHECK(!app->session.has_save_error);
+    int other_keys[1] = {KEY_D};
+    bt_view_case_drill_frame(&ctx, app, other_keys, 1);
+    int space_keys[1] = {KEY_SPACE};
+    ctx.case_drill_phase = BT_CASE_DRILL_GRADE;
+    bt_view_case_drill_frame(&ctx, app, space_keys, 1);
+    int rating_keys[1] = {KEY_ONE};
+    ctx.case_drill_phase = BT_CASE_DRILL_SHOW;
+    bt_view_case_drill_frame(&ctx, app, rating_keys, 1);
+    BT_CHECK_EQ(app->session.done, (size_t)0);
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(views_case_drill, grading_survives_a_dead_db_and_finishes_the_queue) {
+    bt_app_ctx ctx = drill_fixture("deaddb");
+    bt_view_case_drill_app_state *app = bt_view_case_drill_app();
+    reset_case_drill_cards(app);
+    bt_view_case_drill_cards_enter(&ctx);
+    BT_CHECK(!app->cards.has_load_error);
+    bt_drill_case_queue queue;
+    bt_drill_case_queue_init(&queue);
+    bt_drill_case drill = one_live_case("cll.8");
+    bt_drill_case_queue_push(&queue, &drill);
+    bt_view_case_drill_set_pending(&queue);
+    bt_view_case_drill_enter_state(&ctx, app);
+    BT_CHECK(app->session.has_current);
+    BT_CHECK(ctx.case_drill_phase == BT_CASE_DRILL_SHOW);
+    bt_view_case_drill_key(&ctx, app, KEY_SPACE);
+    BT_CHECK(ctx.case_drill_phase == BT_CASE_DRILL_GRADE);
+    char gone[BT_PATH_MAX];
+    blocked_user_root("deaddb-user", gone);
+    snprintf(ctx.paths.user_root, sizeof ctx.paths.user_root, "%s", gone);
+    bt_view_case_drill_key(&ctx, app, KEY_ONE);
+    BT_CHECK(app->session.has_save_error);
+    BT_CHECK_EQ(app->session.done, (size_t)1);
+    BT_CHECK(ctx.state == BT_APP_ALGS);
+    bt_drill_case_queue_free(&queue);
+    bt_drill_case_queue_free(&app->session.queue);
     bt_app_ctx_free(&ctx);
 }
 

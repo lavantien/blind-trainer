@@ -3,6 +3,7 @@
 #include "puzzles/nxn.h"
 
 #include "common.h"
+#include "common/alloc.h"
 
 static char *dup_text(const char *text) {
     char *out = malloc(strlen(text) + 1);
@@ -599,5 +600,130 @@ BT_TEST(view_case_drill, a_non_numeric_size_label_has_no_size) {
     bt_case_site site;
     BT_CHECK(bt_view_case_site_of(&browser, &site));
     BT_CHECK(!site.has_size);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_case_drill, facelets_renders_bigcube_with_clamped_sizes) {
+    bt_pz_grid grid;
+    char error[BT_CASE_DRILL_TEXT_MAX];
+    BT_CHECK(bt_case_drill_facelets("bigcube", 0, 0, "R U R'", &grid, error, sizeof error));
+    BT_CHECK_EQ(grid.face_count, (size_t)6);
+    BT_CHECK(bt_case_drill_facelets("bigcube", 1, 1, "R U R'", &grid, error, sizeof error));
+    BT_CHECK(bt_case_drill_facelets("bigcube", 1, 9, "R U R'", &grid, error, sizeof error));
+    BT_CHECK(bt_case_drill_facelets("bigcube", 1, 5, "R", &grid, error, sizeof error));
+    BT_CHECK_EQ(grid.faces[0].row_count, (size_t)5);
+}
+
+BT_TEST(view_case_drill, themed_grid_rejects_unknown_events_and_short_grids) {
+    bt_pz_grid grid;
+    uniform_grid(&grid, 6, 2, 2);
+    bt_pz_grid themed;
+    BT_CHECK(!bt_case_drill_themed_grid(&grid, "clock", &themed));
+    bt_pz_grid short_grid;
+    uniform_grid(&short_grid, 1, 2, 2);
+    BT_CHECK(!bt_case_drill_themed_grid(&short_grid, "3x3", &themed));
+}
+
+BT_TEST(view_case_drill, themed_grid_keeps_colors_beyond_the_remap_table) {
+    bt_pz_grid grid;
+    uniform_grid(&grid, 6, 2, 2);
+    grid.faces[0].rows[0].cells[0] = 9;
+    bt_pz_grid themed;
+    BT_CHECK(bt_case_drill_themed_grid(&grid, "3x3", &themed));
+    BT_CHECK_EQ(themed.faces[0].rows[0].cells[0], (unsigned char)9);
+    BT_CHECK_EQ(themed.faces[0].rows[0].cells[1], (unsigned char)0);
+}
+
+static void fixed_tree(bt_repo_browser *browser) {
+    bt_repo_browser_default(browser);
+    bt_repo_node *arm = &browser->arms[0];
+    snprintf(arm->label, sizeof arm->label, "%s", "bigcube");
+    arm->kind = BT_REPO_EVENT;
+    arm->children = calloc(2, sizeof *arm->children);
+    arm->children_count = 2;
+    bt_repo_node *letters = &arm->children[0];
+    snprintf(letters->label, sizeof letters->label, "%s", "letters");
+    letters->kind = BT_REPO_LETTERS;
+    bt_repo_node *method = &arm->children[1];
+    snprintf(method->label, sizeof method->label, "%s", "yau");
+    method->kind = BT_REPO_METHOD;
+    method->children = calloc(1, sizeof *method->children);
+    method->children_count = 1;
+    bt_repo_node *size = &method->children[0];
+    snprintf(size->label, sizeof size->label, "%s", "4x4");
+    size->kind = BT_REPO_SIZE;
+    size->children = calloc(1, sizeof *size->children);
+    size->children_count = 1;
+    bt_repo_node *stage = &size->children[0];
+    snprintf(stage->label, sizeof stage->label, "%s", "parity");
+    stage->kind = BT_REPO_STAGE;
+    stage->children = calloc(2, sizeof *stage->children);
+    stage->children_count = 2;
+    bt_repo_node *live = &stage->children[0];
+    snprintf(live->label, sizeof live->label, "%s", "par.1");
+    live->kind = BT_REPO_CASE;
+    live->has_case = 1;
+    live->case_alg = dup_text("R U R'");
+    live->case_source_url = dup_text("u");
+    live->case_source_at = dup_text("d");
+    bt_repo_node *dead = &stage->children[1];
+    snprintf(dead->label, sizeof dead->label, "%s", "par.2");
+    dead->kind = BT_REPO_CASE;
+    dead->has_case = 0;
+    browser->arm_count = 1;
+    browser->arm = 0;
+    browser->repo_focused = 1;
+    browser->depth = 0;
+}
+
+BT_TEST(view_case_drill, collect_cases_walks_size_nodes_and_skips_dead_ends) {
+    bt_repo_browser browser;
+    fixed_tree(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_drill_case_queue cases;
+    bt_drill_case_queue_init(&cases);
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, &cases), (size_t)1);
+    BT_CHECK_EQ(cases.count, (size_t)1);
+    BT_CHECK(cases.items[0].has_size);
+    BT_CHECK_EQ(cases.items[0].size, (long long)4);
+    BT_CHECK(strcmp(cases.items[0].case_ref.event, "bigcube") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.method, "yau") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.stage, "parity") == 0);
+    BT_CHECK(strcmp(cases.items[0].case_ref.case_key, "par.1") == 0);
+    bt_drill_case_queue_free(&cases);
+    bt_overrides_free(&store);
+    bt_repo_browser_free(&browser);
+}
+
+BT_TEST(view_case_drill, collect_cases_fails_closed_at_the_edges) {
+    bt_repo_browser browser;
+    fixed_tree(&browser);
+    bt_overrides store;
+    bt_overrides_init(&store);
+    bt_drill_case_queue cases;
+    bt_drill_case_queue_init(&cases);
+    browser.arm = browser.arm_count;
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, &cases), (size_t)0);
+    browser.arm = 0;
+    browser.depth = 4;
+    browser.path[0] = 1;
+    browser.path[1] = 0;
+    browser.path[2] = 0;
+    browser.path[3] = 0;
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, &cases), (size_t)0);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(bt_case_drill_collect_cases(&browser, &store, &cases), (size_t)1);
+    browser.depth = 5;
+    browser.path[4] = 0;
+    bt_case_card_store cards;
+    memset(&cards, 0, sizeof cards);
+    bt_drill_case_queue out;
+    bt_drill_case_queue_init(&out);
+    BT_CHECK_EQ(bt_case_drill_request(&browser, &store, &cards, 0, &out), 0);
+    bt_drill_case_queue_free(&out);
+    bt_drill_case_queue_free(&cases);
+    bt_overrides_free(&store);
     bt_repo_browser_free(&browser);
 }
