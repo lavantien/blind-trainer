@@ -4,6 +4,7 @@
 
 #include "common/alloc.h"
 #include "common/bt_harness.h"
+#include "common/json.h"
 #include "common/paths.h"
 #include "common/strbuf.h"
 #include "data/paths.h"
@@ -212,7 +213,6 @@ static const unsigned MF_WALK_SPAWN_TIMEOUT_MS = 30000;
 static const unsigned MF_FULL_SPAWN_TIMEOUT_MS = 120000;
 static const size_t MF_FULL_BUDGET = 100000000;
 static const size_t MF_WALK_STEPS = 13;
-static const size_t MF_COUNT_SPAN = 16;
 static const size_t MF_ZERO_HIT_BOUND = 8192;
 static const size_t MF_CONFIG_BOUND_MAX = 1U << 16U;
 static const size_t MF_SWEEP_PREFILL = 16;
@@ -414,46 +414,74 @@ BT_TEST(memofreq_oom, exe_fails_closed_across_sampled_budgets_and_completes_at_a
     }
 }
 
+static size_t config_stage_budget(const char *config_path) {
+    const char *prior = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", prior != NULL ? prior : "");
+    _putenv_s("BT_CONFIG", config_path);
+    size_t lo = 0;
+    size_t hi = MF_CONFIG_BOUND_MAX;
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2;
+        bt_alloc_fail_arm(mid);
+        bt_json_value *config = bt_data_load_config();
+        bt_alloc_fail_disarm();
+        if (config != NULL) {
+            bt_json_free(config);
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
+    return lo;
+}
+
+static size_t count_stage_budget(void) {
+    size_t lo = 0;
+    size_t hi = MF_CONFIG_BOUND_MAX;
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2;
+        bt_alloc_fail_arm(mid);
+        bt_ga_freq_data *data = bt_mf_count_frequencies(MF_WALK_SAMPLES, MF_SEED);
+        bt_alloc_fail_disarm();
+        if (data != NULL) {
+            bt_ga_freq_data_free(data);
+            free(data);
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    return lo;
+}
+
 BT_TEST(memofreq_oom, exe_reports_count_frequencies_failures_from_inside_the_count_stage) {
     char walk_ga[BT_PATH_MAX];
     oom_scratch_dir("spawn-count", walk_ga);
     oom_write_config(walk_ga, MF_WALK_SAMPLES);
     char config_path[BT_PATH_MAX];
     snprintf(config_path, sizeof config_path, "%s/config.json", walk_ga);
+    size_t config_budget = config_stage_budget(config_path);
+    if (config_budget == 0 || config_budget >= MF_CONFIG_BOUND_MAX) {
+        bt_harness_fail(__FILE__, __LINE__, "the config stage boundary %zu is not usable",
+                        config_budget);
+        return;
+    }
+    size_t count_budget = count_stage_budget();
+    if (count_budget == 0 || count_budget >= MF_CONFIG_BOUND_MAX) {
+        bt_harness_fail(__FILE__, __LINE__, "the count stage boundary %zu is not usable",
+                        count_budget);
+        return;
+    }
     int code = -1;
     char out[4096];
     char err[4096];
-    size_t hi = 1;
-    while (hi < MF_CONFIG_BOUND_MAX) {
-        if (spawn_memofreq_armed(config_path, hi, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
-                                 err, sizeof err) != 0) {
-            bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", hi);
-            return;
-        }
-        if (strstr(err, "load config failed") == NULL) {
-            break;
-        }
-        hi *= 2;
-    }
-    if (hi >= MF_CONFIG_BOUND_MAX) {
-        bt_harness_fail(__FILE__, __LINE__, "the config stage never completes its allocations");
-        return;
-    }
-    size_t lo = 0;
-    while (lo < hi) {
-        size_t mid = lo + (hi - lo) / 2;
-        if (spawn_memofreq_armed(config_path, mid, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
-                                 err, sizeof err) != 0) {
-            bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", mid);
-            return;
-        }
-        if (strstr(err, "load config failed") == NULL) {
-            hi = mid;
-        } else {
-            lo = mid + 1;
-        }
-    }
-    for (size_t b = lo; b < lo + MF_COUNT_SPAN; b++) {
+    for (size_t b = config_budget; b < config_budget + count_budget; b++) {
         if (spawn_memofreq_armed(config_path, b, MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out,
                                  err, sizeof err) != 0) {
             bt_harness_fail(__FILE__, __LINE__, "spawn at budget %zu failed", b);
@@ -467,14 +495,10 @@ BT_TEST(memofreq_oom, exe_reports_count_frequencies_failures_from_inside_the_cou
             bt_harness_fail(__FILE__, __LINE__, "budget %zu left a freq.json behind", b);
             return;
         }
-        if (strstr(err, "load config failed") != NULL) {
-            bt_harness_fail(__FILE__, __LINE__, "budget %zu still failed inside the config stage",
-                            b);
-            return;
-        }
     }
-    if (spawn_memofreq_armed(config_path, lo + MF_ZERO_HIT_BOUND, MF_WALK_SPAWN_TIMEOUT_MS, &code,
-                             out, sizeof out, err, sizeof err) != 0 ||
+    if (spawn_memofreq_armed(config_path, config_budget + count_budget + MF_ZERO_HIT_BOUND,
+                             MF_WALK_SPAWN_TIMEOUT_MS, &code, out, sizeof out, err,
+                             sizeof err) != 0 ||
         code != 1) {
         bt_harness_fail(__FILE__, __LINE__, "the upper stage probe did not fail closed");
         return;

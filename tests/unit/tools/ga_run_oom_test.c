@@ -561,7 +561,8 @@ static void sweep_writer(const char *what, gr_sweep_writer writer, void *fixture
 static const char *const GR_RICH_JSON_TEXT =
     "{\"a\": null, \"b\": true, \"c\": false, \"d\": 42, \"e\": -1e20, \"f\": 0.015625, "
     "\"g\": \"quote\\\"inside\", \"h\": \"back\\\\slash\", \"i\": \"ctrl\\u0001byte\", \"j\": [], "
-    "\"k\": {}, \"l\": [1, \"two\", 3.5, [4, 5], {\"m\": 6}], \"n\": 120000.0, \"o\": 0.5}";
+    "\"k\": {}, \"l\": [1, \"two\", 3.5, [4, 5], {\"m\": 6}], \"n\": 120000.0, \"o\": 0.5, "
+    "\"p\": 1.234567e300}";
 
 BT_TEST(ga_run_oom, json_value_text_fail_arms_land_on_every_append_position) {
     bt_json_value *rich = parse_json(GR_RICH_JSON_TEXT);
