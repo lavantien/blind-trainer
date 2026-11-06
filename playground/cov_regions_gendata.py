@@ -24,34 +24,50 @@ def main():
         print(f"cov-regions: export failed: {proc.stderr[-600:]}", file=sys.stderr)
         return 1
     data = json.loads(proc.stdout)["data"][0]
-    for entry in sorted(data["files"], key=lambda f: f["filename"]):
-        rel = entry["filename"].replace("\\", "/").split("tools/gendata/")[-1]
-        dark = []
-        for func in entry["functions"]:
-            for region in func["regions"]:
-                count = region[4]
-                if count != 0:
-                    continue
-                start_line, start_col, end_line, end_col = region[0], region[1], region[2], region[3]
-                kind = region[7] if len(region) > 7 else 0
-                if kind != 0:
-                    continue
-                same_span_covered = any(
-                    r[0] == start_line and r[1] == start_col and r[2] == end_line and r[3] == end_col
-                    and r[4] != 0 for r in func["regions"])
-                tag = "line0" if start_line == 0 else ("folded-dup" if same_span_covered else "source")
-                dark.append((func["name"], start_line, start_col, end_line, end_col, tag,
-                             func["count"]))
-        if not dark:
+    gendata_funcs = []
+    covered_lines_by_fn = {}
+    for func in data["functions"]:
+        filename = func["filenames"][0].replace("\\", "/")
+        if "tools/gendata/" not in filename:
             continue
-        print(f"== {rel}")
-        seen = set()
-        for name, sl, sc, el, ec, tag, fcount in dark:
-            key = (name, sl, sc, el, ec)
-            if key in seen:
+        rel = filename.split("tools/gendata/")[-1]
+        gendata_funcs.append((rel, func))
+        lines = covered_lines_by_fn.setdefault((rel, func["name"]), set())
+        for region in func["regions"]:
+            if region[4] != 0:
+                lines.update(range(region[0], region[2] + 1))
+    by_file = {}
+    for rel, func in gendata_funcs:
+        regions = func["regions"]
+        covered_spans = {(r[0], r[1], r[2], r[3]) for r in regions if r[4] != 0}
+        outlined = ".c:" in func["name"]
+        dark = []
+        for region in regions:
+            if region[4] != 0:
                 continue
-            seen.add(key)
-            print(f"  {tag:11} fn={name} [{sl}:{sc}-{el}:{ec}] fn_count={fcount}")
+            kind = region[7] if len(region) > 7 else 0
+            if kind != 0:
+                continue
+            span = (region[0], region[1], region[2], region[3])
+            if span in covered_spans:
+                tag = "folded-dup"
+            elif outlined and any(
+                region[0] in lines
+                for (other_rel, other_name), lines in covered_lines_by_fn.items()
+                if other_rel == rel and other_name != func["name"]):
+                tag = "inlined-dup"
+            elif region[0] == 0:
+                tag = "line0"
+            else:
+                tag = "source"
+            dark.append((region[0], region[1], region[2], region[3], tag))
+        if dark:
+            by_file.setdefault(rel, []).append((func["name"], func["count"], dark))
+    for rel in sorted(by_file):
+        print(f"== {rel}")
+        for name, count, dark in by_file[rel]:
+            spans = ", ".join(f"[{sl}:{sc}-{el}:{ec}] {tag}" for sl, sc, el, ec, tag in dark)
+            print(f"  fn={name} fn_count={count}: {spans}")
     return 0
 
 
