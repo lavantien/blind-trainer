@@ -29,6 +29,7 @@ typedef struct {
 extern const int BT_NET_BANDS[BT_NET_BAND_COUNT][BT_NET_BAND_SLOTS];
 
 int bt_net_face_of(unsigned char sticker);
+int bt_net_face_of_letter(unsigned char letter);
 bt_theme_color bt_net_ink_for(bt_theme_color color);
 bt_theme_color bt_net_letter_color(size_t face);
 void bt_net_grid_of(unsigned char sticker, bt_net_cell *out);

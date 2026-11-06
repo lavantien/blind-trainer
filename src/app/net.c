@@ -55,32 +55,20 @@ int bt_net_sticker_at_grid(size_t grid) {
     return grid_to_sticker[grid];
 }
 
+static const signed char BT_NET_LETTER_FACES[256] = {
+    ['B'] = 5, ['D'] = 6, ['F'] = 3, ['L'] = 2, ['R'] = 4, ['U'] = 1,
+};
+
+int bt_net_face_of_letter(unsigned char letter) {
+    BT_TRACE_ENTER("app.net_face_of_letter");
+    int face = BT_NET_LETTER_FACES[letter] - 1;
+    BT_TRACE_EXIT("app.net_face_of_letter");
+    return face;
+}
+
 int bt_net_face_of(unsigned char sticker) {
     BT_TRACE_ENTER("app.net_face_of");
-    const char *name = bt_scheme_name_of(sticker);
-    int face = -1;
-    switch (name[0]) {
-    case 'U':
-        face = 0;
-        break;
-    case 'L':
-        face = 1;
-        break;
-    case 'F':
-        face = 2;
-        break;
-    case 'R':
-        face = 3;
-        break;
-    case 'B':
-        face = 4;
-        break;
-    case 'D':
-        face = 5;
-        break;
-    default:
-        break;
-    }
+    int face = bt_net_face_of_letter((unsigned char)bt_scheme_name_of(sticker)[0]);
     BT_TRACE_EXIT("app.net_face_of");
     return face;
 }

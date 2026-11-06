@@ -140,6 +140,36 @@ BT_TEST(net, face_of_follows_sticker_name) {
     BT_CHECK_EQ(bt_net_face_of(44), 5);
 }
 
+BT_TEST(net, letter_lookup_maps_the_full_alphabet) {
+    BT_CHECK_EQ(bt_net_face_of_letter('U'), 0);
+    BT_CHECK_EQ(bt_net_face_of_letter('L'), 1);
+    BT_CHECK_EQ(bt_net_face_of_letter('F'), 2);
+    BT_CHECK_EQ(bt_net_face_of_letter('R'), 3);
+    BT_CHECK_EQ(bt_net_face_of_letter('B'), 4);
+    BT_CHECK_EQ(bt_net_face_of_letter('D'), 5);
+    int other_letters = 0;
+    for (int letter = 'A'; letter <= 'Z'; letter++) {
+        int is_face_letter = letter == 'U' || letter == 'L' || letter == 'F';
+        is_face_letter = is_face_letter || letter == 'R' || letter == 'B' || letter == 'D';
+        if (!is_face_letter) {
+            BT_CHECK_EQ(bt_net_face_of_letter((unsigned char)letter), -1);
+            other_letters++;
+        }
+    }
+    BT_CHECK_EQ(other_letters, 20);
+    BT_CHECK_EQ(bt_net_face_of_letter('a'), -1);
+    BT_CHECK_EQ(bt_net_face_of_letter('u'), -1);
+    BT_CHECK_EQ(bt_net_face_of_letter('5'), -1);
+    BT_CHECK_EQ(bt_net_face_of_letter(' '), -1);
+    BT_CHECK_EQ(bt_net_face_of_letter(0), -1);
+    BT_CHECK_EQ(bt_net_face_of_letter(255), -1);
+    for (int sticker = 0; sticker < 48; sticker++) {
+        const char *name = bt_scheme_name_of((unsigned char)sticker);
+        BT_CHECK_EQ(bt_net_face_of_letter((unsigned char)name[0]),
+                    bt_net_face_of((unsigned char)sticker));
+    }
+}
+
 BT_TEST(net, letter_ink_contrasts_face_luminance) {
     bt_theme_color dark = srgb(0.08F, 0.08F, 0.08F);
     bt_theme_color light = srgb(0.96F, 0.96F, 0.96F);
