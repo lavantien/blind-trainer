@@ -50,3 +50,31 @@ Mission 1: alg coverage 100 via corner N-I fix. Mission 2: tools/gendata region 
 - 09:3x batch 2 committed as 4f9a6a9 (fix(gendata): manifest parse double frees and counts garbage, strbuf zero-cap hang): model.c 2 defect fixes, strbuf.c zero-cap guard, model and lib test expansions, both crash and oom probes. 13 gendata suites plus the common strbuf suite green before the commit, fmt clean, commit_lane verified the file list.
 - 09:3x batch 3 verification running: all 13 gendata suites over the audit seam, out backslash, and synth starved-limits additions, then covscope remeasure, log gendata-gen3-covscope3.log.
 - 09:4x foreign stale-copy clobber: the working tree briefly showed src/common/strbuf.c with exactly the committed zero-cap guard deleted, no other hunk. Re-applied through the file tools, file matches HEAD again, hub notified. The batch 3 covscope failed only on the known synth-suite 300s timeout under fan-out load (12 passed, 1 timed out), plain lane build was green on all 13, rerunning the measurement.
+- 09:5x batch 3 committed as 4c39150 (test(gendata): cover audit allocation failure, backslash paths, and starved synth limits): audit.c push through the fault seam plus the arm(0) drop test, the out backslash-path test, the synth starved-limits no-candidate test. 13 suites green before the commit, fmt clean.
+- 10:0x final coverage map (gendata-gen3-covscope4.log), tool-file dark regions 264 at gen3 start down to 162: audit.c 0 (was 1), out.c 0 (was 1), model.c 38 (was 110), lib.c 24 (was 52), build.c 35 (unchanged), scoring.c 18 (unchanged), synth.c 47 (unchanged), main.c 0. The audit_test.c rows in the log are the include-regex artifact counting the test file itself.
+- 10:0x remainder classification for the hub. Inline artifacts: scoring.c 18 and parts of the lib.c, synth.c, and build.c statics are tiny outlined function bodies that -O2 inlines into callers, no runtime test can execute the outlined copy, only a coverage-aware build at lower optimization or region filtering closes them. Allocation arms: synth.c and build.c and parts of model.c use plain malloc, realloc, and _strdup with no fault seam, their failure arms are unreachable until the tool sources route through bt_malloc like src/data did in 956d94c. Dead code: the note_text twist arm in synth.c and build.c lost its only producer when 51373ea dropped parity orientation notes, generated pair swaps never verify with notes, flag both for the mutants gate or removal. Deep search arms: the synth.c 180-364 cluster covers setups_by_depth, cycle_slots, and insertion recursion branches that need dedicated tiny-budget fixtures. build.c 35 splits across verdict_strings allocation arms, derivation skip arms, and the walks-outside-pair-space offender.
+
+## gen3 delivery summary
+
+- Mission 1 complete, chain landed as 7296f65 after all 6 verification steps: superset check green (817 of 818 byte-identical, the single delta the intended N-I derived row from cherry rowid 109), 13 suites green, verify-algs green under the repo hub config both scoped and literal, references re-pinned byte-identical with PROVENANCE.md stating both divergence causes, badge at 100.0 percent, pins held with no extension. The 2 PROVENANCE items flagged for hub review: the parity-notes divergence from 51373ea and the provenance rewrite itself.
+- Mission 2 delivered 3 commits: 4f9a6a9 (model and lib coverage, 3 real defect fixes: manifest counts garbage free, corpus_file double free, strbuf zero-cap infinite loop), 4c39150 (audit seam plus arm test, out backslash, synth starved limits). Tool dark regions 264 to 162, audit.c and out.c at zero. 3 defects fixed at root, all reproduced by committed probes before the fix.
+- Incidents reported to the hub: the specials parity-notes delta (provenance), the ga-run foreign breakage that briefly blocked verify-algs (cleared on its own), the stale-copy clobber of the committed strbuf guard (re-applied, file matches HEAD).
+
+## gen3 reading log
+
+- read artifacts/progress/lane-cov-gendata.md 1-29 - resume context and prior ground truth
+- read data/vendor/manifest.json full - regen result verification
+- read playground/gendata/cases_superset.py + old_manifest.json hashes - superset check upgrade
+- read tests/unit/tools/gendata_manifest_pins_test.c full - pin contract for steps 2 and 6
+- read tests/unit/tools/gendata_vendor_pins_test.c full - pin contract, N-I derivation pin
+- read tests/unit/tools/spawn_util.h 200-265 - repo root and bin path resolution under BT_CONFIG
+- read bt.py 95-180, 610-664, 1385-1575, 2160-2200 - test-unit env wiring, child_env, verify-algs target
+- read scripts/lane_build.py full - lane clone mechanics
+- read scripts/commit_lane.py full - commit interface and guards
+- read scripts/alg_coverage_badge.py full - badge computation from the manifest
+- read ref_ground/vendor/PROVENANCE.md full - re-pin rewrite
+- read playground/gendata/{verify_suites,run_tool,make_regen_config,compare_regen}.py full - predecessor tooling
+- read tools/gendata/{model.c full, lib.c full, main.c full, out.c full, audit.c full, scoring.c 10-110, synth.c 588-768, build.c 59-98 and 330-409} - dark region mapping
+- read src/common/{alloc.c full, strbuf.c full, json.c object_set and get} - fault seam semantics, zero-cap hang, mutation API
+- read tests/unit/tools/gendata_{model,lib,audit,out,build,synth}_test.c heads and fixtures - suite conventions and existing coverage
+- read artifacts/progress/gendata-gen3-*.log - run evidence for every chain and batch step
