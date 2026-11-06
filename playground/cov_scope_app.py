@@ -39,6 +39,7 @@ def write_cov_config():
     for flag in ("-fprofile-instr-generate", "-fcoverage-mapping"):
         if flag not in flags:
             flags.append(flag)
+    clone["build"]["test_timeout_secs"] = 900
     base = LANE_DIR / "covbuild"
     for key in ("bin", "bin_cov", "obj", "obj_cov", "gen", "test_tmp", "env"):
         clone["build"]["dirs"][key] = f"{base / key}".replace("\\", "/")
