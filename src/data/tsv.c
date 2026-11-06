@@ -75,6 +75,10 @@ void bt_tsv_error_string(const bt_tsv_error *err, char *out, size_t out_len) {
     case BT_TSV_ERR_EMPTY_FIELD:
         snprintf(out, out_len, "line %zu: %s column is empty", err->line, err->column);
         break;
+    case BT_TSV_ERR_LONG_LINE:
+        snprintf(out, out_len, "line %zu: exceeds the %d character limit", err->line,
+                 BT_TSV_LINE_MAX);
+        break;
     }
     BT_TRACE_EXIT("tsv.error_string");
 }
@@ -179,8 +183,10 @@ int bt_tsv_parse_sheet(const char *text, bt_tsv_rows *out, bt_tsv_error *err) {
         if (len > 0 && line[len - 1] == '\r') {
             len -= 1;
         }
-        char buffer[8192];
+        char buffer[BT_TSV_LINE_MAX];
         if (len >= sizeof buffer) {
+            err->kind = BT_TSV_ERR_LONG_LINE;
+            err->line = index + 1;
             bt_tsv_rows_free(out);
             BT_TRACE_FAIL("tsv.parse_sheet", "line %zu exceeds the buffer", index + 1);
             return -1;

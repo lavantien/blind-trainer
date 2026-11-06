@@ -1,6 +1,7 @@
 #include "common.h"
 #include "data/tsv.h"
 
+#include <stdio.h>
 #include <string.h>
 
 BT_TEST(tsv_parse, all_twelve_sheets_parse_with_expected_row_counts) {
@@ -35,6 +36,34 @@ BT_TEST(tsv_parse, rowids_are_physical_line_numbers_starting_at_two) {
     BT_CHECK(empty.count == 0);
     bt_tsv_rows_free(&empty);
     free(empty_text);
+}
+
+BT_TEST(tsv_parse, an_overlong_line_reports_a_set_error_kind) {
+    char text[BT_TSV_LINE_MAX + 256];
+    snprintf(text, sizeof text, "%s\nUF\t",
+             "Position\tAlg\tCommutator\tReconstruction Link\tYoutube Link");
+    size_t used = strlen(text);
+    while (used < BT_TSV_LINE_MAX + 64) {
+        text[used++] = 'R';
+    }
+    text[used++] = '\t';
+    text[used++] = 'x';
+    text[used++] = '\t';
+    text[used++] = 'y';
+    text[used++] = '\t';
+    text[used++] = 'z';
+    text[used++] = '\n';
+    text[used] = '\0';
+    bt_tsv_rows rows;
+    bt_tsv_error err;
+    memset(&err, 0xAA, sizeof err);
+    BT_CHECK(bt_tsv_parse_sheet(text, &rows, &err) != 0);
+    BT_CHECK(err.kind == BT_TSV_ERR_LONG_LINE);
+    BT_CHECK(err.line == 2);
+    char message[128];
+    bt_tsv_error_string(&err, message, sizeof message);
+    BT_CHECK(strstr(message, "exceeds") != NULL);
+    bt_tsv_rows_free(&rows);
 }
 
 BT_TEST(tsv_parse, cherry_edge_first_row_columns_extract_verbatim) {

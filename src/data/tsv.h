@@ -5,6 +5,7 @@
 
 #define BT_TSV_COLUMNS 5
 #define BT_TSV_COLUMN_MAX 24
+#define BT_TSV_LINE_MAX 8192
 
 typedef struct {
     char *position;
@@ -18,6 +19,7 @@ typedef enum {
     BT_TSV_ERR_BAD_HEADER,
     BT_TSV_ERR_COLUMN_COUNT,
     BT_TSV_ERR_EMPTY_FIELD,
+    BT_TSV_ERR_LONG_LINE,
 } bt_tsv_error_kind;
 
 typedef struct {
