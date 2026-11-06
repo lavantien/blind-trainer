@@ -12,7 +12,7 @@ BT_TEST(fuzz_notation, plainloop_replay_and_generation) {
 }
 
 static void notation_death_formatted_init(void) {
-    bt_alloc_fail_arm(0);
+    bt_alloc_fail_arm(1);
     const uint8_t input[] = {'R'};
     (void)bt_fuzz_notation_once(input, sizeof input);
 }

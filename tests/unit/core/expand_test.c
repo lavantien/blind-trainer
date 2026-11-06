@@ -1,10 +1,12 @@
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/strbuf.h"
 #include "core/alg.h"
 #include "core/cube.h"
 #include "core/expand.h"
+#include "death_test.h"
 
 static void fmt_of(const char *text, bt_strbuf *out) {
     bt_alg alg;
@@ -583,4 +585,65 @@ BT_TEST(expand, the_plus_form_appends_after_a_conjugate) {
     bt_cube got = state_of_text("R2 U':[S,R2] + U");
     bt_cube want = repeated_ref("R2 U' S R2 S' R2 U R2 U", 1);
     BT_CHECK(bt_cube_eq(&got, &want));
+}
+
+BT_TEST(expand, a_paren_group_can_serve_as_a_conjugate_core) {
+    bt_strbuf sb;
+    bt_strbuf_init(&sb, 64);
+    fmt_of("U:(F2 B')", &sb);
+    BT_CHECK_EQ(sb.data, "U F2 B' U'");
+    bt_strbuf_free(&sb);
+    bt_cube got = state_of_text("U:(F2 B')");
+    bt_cube want = repeated_ref("U F2 B' U'", 1);
+    BT_CHECK(bt_cube_eq(&got, &want));
+}
+
+BT_TEST(expand, a_deep_multi_move_setup_before_a_colon_fails_on_depth) {
+    bt_alg out;
+    bt_alg_init(&out);
+    BT_CHECK(!bt_expand("((((U U:R))))", &out));
+    bt_alg_free(&out);
+}
+
+BT_TEST(expand, a_word_past_the_scratch_cap_fails_closed) {
+    char text[72];
+    memset(text, 'R', sizeof text - 1);
+    text[sizeof text - 1] = '\0';
+    bt_alg out;
+    bt_alg_init(&out);
+    BT_CHECK(!bt_expand(text, &out));
+    bt_alg_free(&out);
+}
+
+BT_TEST(expand, injected_allocation_failures_fail_the_expansion_closed) {
+    static const struct {
+        const char *text;
+        size_t arms;
+    } cases[] = {
+        {"R", 3},
+        {"(U U U U U U U U U U U U U U)2", 8},
+        {"U:U:U:U:U", 11},
+        {"U U U U:[[R,U],S]", 13},
+    };
+    for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
+        for (size_t arm = 0; arm < cases[i].arms; arm++) {
+            bt_alg out;
+            bt_alg_init(&out);
+            bt_alloc_fail_arm(arm);
+            BT_CHECK(!bt_expand(cases[i].text, &out));
+            bt_alloc_fail_disarm();
+            bt_alg_free(&out);
+        }
+    }
+}
+
+static void expand_death_cancel_oom(void) {
+    bt_alg out;
+    bt_alg_init(&out);
+    bt_alloc_fail_arm(3);
+    (void)bt_expand("R", &out);
+}
+
+BT_TEST(expand, cancel_aborts_when_a_push_cannot_allocate) {
+    bt_death_expect_abort("expand.cancel_oom", "allocation failed", expand_death_cancel_oom);
 }

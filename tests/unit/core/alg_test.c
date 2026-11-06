@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/strbuf.h"
 #include "core/alg.h"
@@ -254,4 +255,44 @@ BT_TEST(alg, format_aborts_on_out_of_domain_moves) {
                           alg_death_format_slice_three);
     bt_death_expect_abort("alg.format_rejects_axis_three", "axis 3 out of range",
                           alg_death_format_axis_three);
+}
+
+BT_TEST(alg, push_and_parse_report_injected_allocation_failures) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    bt_alloc_fail_arm(0);
+    BT_CHECK(!bt_alg_push(&alg, (bt_move){BT_MOVE_FACE, 0, 0, 0, 1}));
+    bt_alloc_fail_disarm();
+    bt_alg_free(&alg);
+    bt_alg_init(&alg);
+    char err[64];
+    bt_alloc_fail_arm(0);
+    BT_CHECK(!bt_alg_parse("R U", &alg, err, sizeof err));
+    bt_alloc_fail_disarm();
+    bt_alg_free(&alg);
+}
+
+BT_TEST(alg, parse_keeps_a_huge_token_whole_inside_a_roomy_error_buffer) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    char err[128];
+    char long_token[72];
+    memset(long_token, 'R', sizeof long_token - 1);
+    long_token[sizeof long_token - 1] = '\0';
+    BT_CHECK(!bt_alg_parse(long_token, &alg, err, sizeof err));
+    BT_CHECK_EQ(strlen(err), (size_t)71);
+    bt_alg_free(&alg);
+}
+
+static void alg_death_inverse_oom(void) {
+    bt_alg alg;
+    bt_alg_init(&alg);
+    (void)bt_alg_push(&alg, (bt_move){BT_MOVE_FACE, 0, 0, 0, 1});
+    bt_alloc_fail_arm(0);
+    bt_alg inverse = bt_alg_inverse(&alg);
+    bt_alg_free(&inverse);
+}
+
+BT_TEST(alg, inverse_aborts_when_a_push_cannot_allocate) {
+    bt_death_expect_abort("alg.inverse_oom", "allocation failed", alg_death_inverse_oom);
 }

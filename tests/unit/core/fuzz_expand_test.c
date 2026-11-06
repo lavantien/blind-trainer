@@ -12,13 +12,13 @@ BT_TEST(fuzz_expand, plainloop_replay_and_generation) {
 }
 
 static void expand_death_formatted_init(void) {
-    bt_alloc_fail_arm(0);
+    bt_alloc_fail_arm(8);
     const uint8_t input[] = {'R'};
     (void)bt_fuzz_expand_once(input, sizeof input);
 }
 
 static void expand_death_cancelled_init(void) {
-    bt_alloc_fail_arm(1);
+    bt_alloc_fail_arm(14);
     const uint8_t input[] = {'R'};
     (void)bt_fuzz_expand_once(input, sizeof input);
 }
