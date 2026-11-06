@@ -814,6 +814,7 @@ void bt_test_mutate_obj_root_prefers_the_env_record_and_scans_as_fallback(void);
 void bt_test_mutate_spawn_refuses_a_missing_exe_and_an_overlong_command(void);
 void bt_test_mutate_engine_baseline_fails_when_link_objects_overflow_the_argv_cap(void);
 void bt_test_mutate_line_continuations_join_pp_lines_and_strings(void);
+void bt_test_mutate_allocation_arms_fail_closed(void);
 void bt_test_mutate_scratch_root_passes_through_and_falls_back_to_temp(void);
 void bt_test_mutate_orphan_marker_pid_short_circuits_the_creation_clock(void);
 void bt_test_mutate_orphan_without_marker_uses_the_first_file_creation(void);
@@ -973,6 +974,7 @@ int bt_mutate_selftest(void) {
             "mutate.line_continuations_join_pp_lines_and_strings",
             bt_test_mutate_line_continuations_join_pp_lines_and_strings,
         },
+        {"mutate.allocation_arms_fail_closed", bt_test_mutate_allocation_arms_fail_closed},
         {
             "mutate.scratch_root_passes_through_and_falls_back_to_temp",
             bt_test_mutate_scratch_root_passes_through_and_falls_back_to_temp,

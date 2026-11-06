@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/json.h"
 
@@ -388,6 +389,21 @@ static const char FX_OUTCOME_NO_SUMMARY[] =
     "\"Mutant\":{\"name\":\"n\",\"package\":\"p\",\"file\":\"src/a.rs\",\"function\":{"
     "\"function_name\":\"f\"},\"span\":{\"start\":{\"line\":3,\"column\":5},\"end\":{\"line\""
     ":3,\"column\":6}},\"replacement\":\"y\",\"genre\":\"FnValue\"}}}]}";
+
+BT_TEST(gate, allocation_arms_fail_closed) {
+    char summary[BT_GATE_SUMMARY_MAX];
+    bt_alloc_fail_arm(0);
+    int rc = bt_gate_run(FX_CAUGHT_ONLY, FX_COMMENTED_ALLOWLIST, summary, sizeof summary);
+    bt_alloc_fail_disarm();
+    BT_CHECK(rc != BT_GATE_OK);
+    char *merged = NULL;
+    unsigned long long total = 0;
+    const char *inputs[2] = {FX_OTHER_VERSION, FX_MERGE_FAILED_BASELINE};
+    bt_alloc_fail_arm(0);
+    rc = bt_gate_merge(inputs, 2, &merged, &total);
+    bt_alloc_fail_disarm();
+    BT_CHECK(rc != BT_GATE_OK);
+}
 
 BT_TEST(gate, malformed_mutant_fields_fail_with_named_errors) {
     char summary[BT_GATE_SUMMARY_MAX];
@@ -912,6 +928,7 @@ int bt_mutants_gate_selftest(void) {
             bt_test_gate_failed_baseline_fails_even_with_every_mutant_caught,
         },
         {"gate.invalid_json_is_usage_error", bt_test_gate_invalid_json_is_usage_error},
+        {"gate.allocation_arms_fail_closed", bt_test_gate_allocation_arms_fail_closed},
         {
             "gate.malformed_mutant_fields_fail_with_named_errors",
             bt_test_gate_malformed_mutant_fields_fail_with_named_errors,

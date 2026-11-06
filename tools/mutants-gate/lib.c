@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/strbuf.h"
@@ -62,7 +63,7 @@ static void set_error(const char *fmt, ...) {
 
 static char *copy_text(const char *text) {
     size_t len = strlen(text);
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         return NULL;
     }
@@ -163,7 +164,7 @@ static bt_gate_entry *entries_upsert(bt_gate_entries *entries, const bt_gate_key
     }
     if (entries->count == entries->cap) {
         size_t want = entries->cap == 0 ? 8 : entries->cap * 2;
-        bt_gate_entry *grown = realloc(entries->items, want * sizeof(bt_gate_entry));
+        bt_gate_entry *grown = bt_realloc(entries->items, want * sizeof(bt_gate_entry));
         if (grown == NULL) {
             return NULL;
         }
@@ -650,7 +651,7 @@ int bt_gate_merge(const char *const *inputs, size_t input_count, char **json_out
         BT_TRACE_EXIT("mutants-gate.merge");
         return BT_GATE_USAGE;
     }
-    bt_json_value **roots = calloc(input_count, sizeof(bt_json_value *));
+    bt_json_value **roots = bt_calloc(input_count, sizeof(bt_json_value *));
     int rc = BT_GATE_OK;
     if (roots == NULL) {
         set_error("out of memory");

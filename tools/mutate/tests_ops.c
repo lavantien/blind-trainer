@@ -3,12 +3,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 
 enum {
     FX_RETURN_COL = 12,
     EXPONENT_FLOAT_MUTANTS = 12,
 };
+
+BT_TEST(mutate, allocation_arms_fail_closed) {
+    char *text = NULL;
+    size_t len = 0;
+    bt_alloc_fail_arm(0);
+    BT_CHECK(bt_mut_read_file("config/config.json", &text, &len) != 0);
+    bt_alloc_fail_disarm();
+    bt_mut_tokens tokens;
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_mut_tokenize("int a;\n", 7, &tokens), -1);
+    bt_alloc_fail_disarm();
+    bt_mut_paths paths = {0};
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_mut_paths_push(&paths, "x"), -1);
+    bt_alloc_fail_disarm();
+    bt_mut_mutant_list list;
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_mut_enumerate("t.c", "int a = 1;\n", 12, &list), -1);
+    bt_alloc_fail_disarm();
+}
 
 static long find_token(const bt_mut_tokens *tokens, const char *text) {
     for (size_t i = 0; i < tokens->count; i++) {

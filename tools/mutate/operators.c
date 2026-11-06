@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/sha256.h"
 
@@ -24,7 +25,7 @@ const char *bt_mut_op_name(bt_mut_op op) {
 }
 
 static char *text_dup(const char *text, size_t len) {
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         return NULL;
     }
@@ -64,7 +65,7 @@ static int list_push(bt_mut_mutant_list *list, const bt_mut_mutant *mutant) {
     }
     if (list->count == list->cap) {
         size_t want = list->cap == 0 ? 16 : list->cap * 2;
-        bt_mut_mutant *grown = realloc(list->items, want * sizeof(bt_mut_mutant));
+        bt_mut_mutant *grown = bt_realloc(list->items, want * sizeof(bt_mut_mutant));
         if (grown == NULL) {
             return -1;
         }
@@ -596,7 +597,7 @@ int bt_mut_apply(const char *text, size_t len, const bt_mut_mutant *mutant, char
         inserted += strlen(mutant->edits[i].text);
     }
     size_t new_len = len - removed + inserted;
-    char *result = malloc(new_len + 1);
+    char *result = bt_malloc(new_len + 1);
     if (result == NULL) {
         BT_TRACE_FAIL("mutate.apply", "oom");
         BT_TRACE_EXIT("mutate.apply");

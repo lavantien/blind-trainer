@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 static const char *const KEYWORDS[] = {
@@ -51,7 +52,7 @@ static int push_token(bt_mut_tokens *tokens, bt_mut_token token) {
     BT_TRACE_ENTER("mutate.push_token");
     if (tokens->count == tokens->cap) {
         size_t want = tokens->cap == 0 ? 64 : tokens->cap * 2;
-        bt_mut_token *grown = realloc(tokens->items, want * sizeof(bt_mut_token));
+        bt_mut_token *grown = bt_realloc(tokens->items, want * sizeof(bt_mut_token));
         if (grown == NULL) {
             BT_TRACE_FAIL("mutate.push_token", "oom at %zu", tokens->count);
             BT_TRACE_EXIT("mutate.push_token");
@@ -242,7 +243,7 @@ int bt_mut_tokenize(const char *text, size_t len, bt_mut_tokens *out) {
     out->items = NULL;
     out->count = 0;
     out->cap = 0;
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         BT_TRACE_FAIL("mutate.tokenize", "oom");
         BT_TRACE_EXIT("mutate.tokenize");

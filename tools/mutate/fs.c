@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 #ifdef _WIN32
@@ -37,7 +38,7 @@ int bt_mut_read_file(const char *path, char **out, size_t *out_len) {
         BT_TRACE_EXIT("mutate.read_file");
         return -1;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL) {
         fclose(file);
         BT_TRACE_FAIL("mutate.read_file", "oom for %s", path);
@@ -82,7 +83,7 @@ int bt_mut_paths_push(bt_mut_paths *paths, const char *text) {
     BT_TRACE_ENTER("mutate.paths_push");
     if (paths->count == paths->cap) {
         size_t want = paths->cap == 0 ? 16 : paths->cap * 2;
-        char **grown = realloc(paths->items, want * sizeof(char *));
+        char **grown = bt_realloc(paths->items, want * sizeof(char *));
         if (grown == NULL) {
             BT_TRACE_FAIL("mutate.paths_push", "oom");
             BT_TRACE_EXIT("mutate.paths_push");
@@ -92,7 +93,7 @@ int bt_mut_paths_push(bt_mut_paths *paths, const char *text) {
         paths->cap = want;
     }
     size_t len = strlen(text);
-    char *copy = malloc(len + 1);
+    char *copy = bt_malloc(len + 1);
     if (copy == NULL) {
         BT_TRACE_FAIL("mutate.paths_push", "oom");
         BT_TRACE_EXIT("mutate.paths_push");
@@ -120,7 +121,7 @@ void bt_mut_paths_free(bt_mut_paths *paths) {
 
 static wchar_t *to_wide(const char *path) {
     size_t len = strlen(path);
-    wchar_t *wide = malloc((len + 1) * sizeof(wchar_t));
+    wchar_t *wide = bt_malloc((len + 1) * sizeof(wchar_t));
     if (wide == NULL) {
         return NULL;
     }
