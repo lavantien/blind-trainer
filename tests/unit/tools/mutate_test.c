@@ -722,8 +722,9 @@ BT_TEST(mutate_driver, list_with_a_missing_config_still_lists) {
     bt_test_repo_root(root);
     char missing[BT_PATH_MAX];
     snprintf(missing, BT_PATH_MAX, "%s/build/test-tmp/mutate-driver/absent-hub.json", root);
-    const char *argv[] = {"list", "--config", missing, "tests/unit/tools/fixtures/fx_target.c",
-                          NULL};
+    const char *argv[] = {
+        "list", "--config", missing, "tests/unit/tools/fixtures/fx_target.c", NULL,
+    };
     char out[16384];
     char err[4096];
     int code = -1;

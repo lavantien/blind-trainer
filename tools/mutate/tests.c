@@ -864,8 +864,10 @@ int bt_mutate_selftest(void) {
             bt_test_mutate_engine_records_timeout_for_a_frozen_loop,
         },
         {"mutate.engine_rejects_parallel_workers", bt_test_mutate_engine_rejects_parallel_workers},
-        {"mutate.engine_run_stops_after_the_limit",
-         bt_test_mutate_engine_run_stops_after_the_limit},
+        {
+            "mutate.engine_run_stops_after_the_limit",
+            bt_test_mutate_engine_run_stops_after_the_limit,
+        },
         {
             "mutate.engine_run_refuses_a_malformed_ledger",
             bt_test_mutate_engine_run_refuses_a_malformed_ledger,
@@ -890,8 +892,10 @@ int bt_mutate_selftest(void) {
             "mutate.target_from_repo_names_the_missing_suite_and_unknown_area",
             bt_test_mutate_target_from_repo_names_the_missing_suite_and_unknown_area,
         },
-        {"mutate.area_map_rejects_malformed_src_deps",
-         bt_test_mutate_area_map_rejects_malformed_src_deps},
+        {
+            "mutate.area_map_rejects_malformed_src_deps",
+            bt_test_mutate_area_map_rejects_malformed_src_deps,
+        },
         {
             "mutate.prepare_scratch_refuses_unwritable_layouts",
             bt_test_mutate_prepare_scratch_refuses_unwritable_layouts,
@@ -948,8 +952,10 @@ int bt_mutate_selftest(void) {
         {"mutate.mutant_ids_are_deterministic", bt_test_mutate_mutant_ids_are_deterministic},
         {"mutate.negation_guard_mutants", bt_test_mutate_negation_guard_mutants},
         {"mutate.numeric_variants_and_suffixes", bt_test_mutate_numeric_variants_and_suffixes},
-        {"mutate.exponent_literals_are_float_tweaks",
-         bt_test_mutate_exponent_literals_are_float_tweaks},
+        {
+            "mutate.exponent_literals_are_float_tweaks",
+            bt_test_mutate_exponent_literals_are_float_tweaks,
+        },
         {
             "mutate.orphan_scratch_is_judged_by_creation_time",
             bt_test_mutate_orphan_scratch_is_judged_by_creation_time,

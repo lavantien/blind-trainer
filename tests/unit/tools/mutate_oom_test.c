@@ -10,8 +10,11 @@
 #include <string.h>
 
 #define FX_REL "tests/unit/tools/fixtures/fx_target.c"
-#define OOM_ROWS 24
-#define OOM_ARM_LIMIT 4096
+
+enum {
+    OOM_ROWS = 24,
+    OOM_ARM_LIMIT = 4096,
+};
 
 static void oom_fixture(const char *slot, char ledger[BT_MUT_PATH_MAX],
                         char out_path[BT_MUT_PATH_MAX]) {
