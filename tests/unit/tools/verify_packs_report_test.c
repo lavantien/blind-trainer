@@ -266,7 +266,9 @@ BT_TEST(verify_packs_report, audit_sections_collapse_closed_when_their_growth_st
                 load_offender = true;
             }
         }
-        hit = audit.section_count == 16 && !load_offender;
+        if (audit.section_count == 16U && !load_offender) {
+            hit = true;
+        }
         verify_pack_audit_free(&audit);
     }
     BT_CHECK(hit);
