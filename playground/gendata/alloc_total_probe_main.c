@@ -10,7 +10,10 @@
 #include "scheme/pairs.h"
 #include "scheme/scheme.h"
 
-enum { PROBE_BUDGET_CAP = 1U << 22U };
+enum {
+    PROBE_BUDGET_CAP = 1U << 22U,
+    PROBE_NODE_BUDGET = 100000000,
+};
 
 static const char *SCORING_TEXT = "{\"synth\": {\"scoring\": {"
                                   "\"preferred\": [\"U\", \"D\", \"R\"],"
@@ -50,24 +53,6 @@ static void load_scoring(void) {
     bt_json_free(config);
 }
 
-static bool run_armed(bt_orbit orbit, uint8_t t1, uint8_t t2, size_t max_setup, size_t max_insert,
-                      size_t ok_count, size_t *failures) {
-    bt_gd_synth_limits lim = {
-        .max_setup = max_setup,
-        .max_insert = max_insert,
-        .node_budget = 100000000,
-    };
-    bt_gd_synth_hit hit;
-    bt_alloc_fail_arm(ok_count);
-    bool ok = bt_gd_synth_case(orbit, t1, t2, &lim, &probe_cfg, &hit);
-    *failures = bt_alloc_fail_count();
-    bt_alloc_fail_disarm();
-    if (ok) {
-        bt_gd_synth_hit_free(&hit);
-    }
-    return ok;
-}
-
 static void pair_ids(const probe_pair *pair, uint8_t *t1, uint8_t *t2) {
     bt_case cases[BT_PAIRS_MAX];
     size_t count = bt_scheme_enumerate_cases(pair->orbit, cases);
@@ -84,6 +69,55 @@ static void pair_ids(const probe_pair *pair, uint8_t *t1, uint8_t *t2) {
     exit(2);
 }
 
+static bool run_armed(bt_orbit orbit, uint8_t t1, uint8_t t2, size_t max_setup, size_t max_insert,
+                      size_t node_budget, size_t ok_count, size_t *failures) {
+    bt_gd_synth_limits lim = {
+        .max_setup = max_setup,
+        .max_insert = max_insert,
+        .node_budget = node_budget,
+    };
+    bt_gd_synth_hit hit;
+    bt_alloc_fail_arm(ok_count);
+    bool ok = bt_gd_synth_case(orbit, t1, t2, &lim, &probe_cfg, &hit);
+    *failures = bt_alloc_fail_count();
+    bt_alloc_fail_disarm();
+    if (ok) {
+        bt_gd_synth_hit_free(&hit);
+    }
+    return ok;
+}
+
+static size_t probe_cell_total(bt_orbit orbit, uint8_t t1, uint8_t t2, size_t max_setup,
+                               size_t max_insert, size_t node_budget, double *ms) {
+    size_t failures = 0;
+    double start = (double)clock() / CLOCKS_PER_SEC;
+    bool ok =
+        run_armed(orbit, t1, t2, max_setup, max_insert, node_budget, PROBE_BUDGET_CAP, &failures);
+    *ms = ((double)clock() / CLOCKS_PER_SEC - start) * 1000.0;
+    if (!ok) {
+        return 0;
+    }
+    size_t hi = 1;
+    while (hi < PROBE_BUDGET_CAP) {
+        run_armed(orbit, t1, t2, max_setup, max_insert, node_budget, hi, &failures);
+        if (failures == 0) {
+            break;
+        }
+        hi *= 2;
+    }
+    size_t lo = 1;
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2;
+        run_armed(orbit, t1, t2, max_setup, max_insert, node_budget, mid, &failures);
+        if (failures == 0) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    return lo;
+}
+
 int main(void) {
     load_scoring();
     static const probe_pair pairs[] = {
@@ -94,46 +128,46 @@ int main(void) {
     };
     static const size_t setups[] = {0, 1};
     static const size_t inserts[] = {0, 1, 2, 3, 4};
-    printf("%-10s %6s %6s %4s %12s %8s\n", "pair", "setup", "insert", "ok", "allocs", "ms");
+    printf("%-10s %6s %6s %12s %8s\n", "pair", "setup", "insert", "allocs", "ms");
     for (size_t p = 0; p < sizeof pairs / sizeof pairs[0]; p++) {
         uint8_t t1 = 0;
         uint8_t t2 = 0;
         pair_ids(&pairs[p], &t1, &t2);
         for (size_t s = 0; s < sizeof setups / sizeof setups[0]; s++) {
             for (size_t i = 0; i < sizeof inserts / sizeof inserts[0]; i++) {
-                size_t failures = 0;
-                double start = (double)clock() / CLOCKS_PER_SEC;
-                bool ok = run_armed(pairs[p].orbit, t1, t2, setups[s], inserts[i], PROBE_BUDGET_CAP,
-                                    &failures);
-                double elapsed = ((double)clock() / CLOCKS_PER_SEC - start) * 1000.0;
-                if (!ok) {
-                    printf("%-10s %6zu %6zu %4s %12s %8.0f\n", pairs[p].name, setups[s], inserts[i],
-                           "no", "-", elapsed);
-                    fflush(stdout);
-                    continue;
+                double ms = 0;
+                size_t total = probe_cell_total(pairs[p].orbit, t1, t2, setups[s], inserts[i],
+                                                PROBE_NODE_BUDGET, &ms);
+                if (total > 0) {
+                    printf("%-10s %6zu %6zu %12zu %8.0f\n", pairs[p].name, setups[s], inserts[i],
+                           total, ms);
+                } else {
+                    printf("%-10s %6zu %6zu %12s %8.0f\n", pairs[p].name, setups[s], inserts[i],
+                           "-", ms);
                 }
-                size_t hi = 1;
-                while (hi < PROBE_BUDGET_CAP) {
-                    run_armed(pairs[p].orbit, t1, t2, setups[s], inserts[i], hi, &failures);
-                    if (failures == 0) {
-                        break;
-                    }
-                    hi *= 2;
-                }
-                size_t lo = 1;
-                while (lo < hi) {
-                    size_t mid = lo + (hi - lo) / 2;
-                    run_armed(pairs[p].orbit, t1, t2, setups[s], inserts[i], mid, &failures);
-                    if (failures == 0) {
-                        hi = mid;
-                    } else {
-                        lo = mid + 1;
-                    }
-                }
-                printf("%-10s %6zu %6zu %4s %12zu %8.0f\n", pairs[p].name, setups[s], inserts[i],
-                       "yes", lo, elapsed);
                 fflush(stdout);
             }
+        }
+    }
+    printf("%-10s %6s %6s %12s %8s\n", "pair", "setup", "budget", "allocs", "ms");
+    static const size_t budgets[] = {5000, 20000, 100000, 1000000};
+    static const size_t sweep_setups[] = {0, 1, 1, 1};
+    for (size_t p = 0; p < sizeof pairs / sizeof pairs[0]; p++) {
+        uint8_t t1 = 0;
+        uint8_t t2 = 0;
+        pair_ids(&pairs[p], &t1, &t2);
+        for (size_t b = 0; b < sizeof budgets / sizeof budgets[0]; b++) {
+            double ms = 0;
+            size_t total =
+                probe_cell_total(pairs[p].orbit, t1, t2, sweep_setups[p], 3, budgets[b], &ms);
+            if (total > 0) {
+                printf("%-10s %6zu %6zu %12zu %8.0f\n", pairs[p].name, sweep_setups[p], budgets[b],
+                       total, ms);
+            } else {
+                printf("%-10s %6zu %6zu %12s %8.0f\n", pairs[p].name, sweep_setups[p], budgets[b],
+                       "no", ms);
+            }
+            fflush(stdout);
         }
     }
     return 0;

@@ -357,3 +357,21 @@ BT_TEST(gendata_lib, synth_params_hash_rejects_a_non_finite_number) {
     BT_CHECK_EQ(strcmp(err, "synth section serialization failed"), 0);
     bt_json_free(config);
 }
+
+enum { GD_LIB_SERDE_PAD_MAX = 40 };
+
+BT_TEST(gendata_lib, serde_allocation_failure_lands_each_append_on_a_buffer_growth) {
+    static const char *forms[] = {
+        "1200.0", "-12.5", "0.00125", "5e-7", "-1.25e20", "3.25", "1e15", "\"xy\"",
+    };
+    for (size_t f = 0; f < sizeof forms / sizeof forms[0]; f++) {
+        for (size_t pad = 0; pad <= GD_LIB_SERDE_PAD_MAX; pad++) {
+            char key[64];
+            memset(key, 'a', pad);
+            key[pad] = '\0';
+            char text[160];
+            snprintf(text, sizeof text, "{\"synth\": {\"%s\": %s}}", key, forms[f]);
+            sweep_serde_allocation(text);
+        }
+    }
+}

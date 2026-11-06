@@ -18,6 +18,7 @@
 
 enum {
     GD_ALLOC_PRETTY_SWEEP_MAX = 96,
+    GD_ALLOC_PRETTY_PAD_MAX = 40,
     GD_ALLOC_SYNTH_HEAD_WINDOW = 500,
     GD_ALLOC_SYNTH_TAIL_WINDOW = 200,
     GD_ALLOC_SYNTH_WALK_CAP = 4096,
@@ -147,6 +148,24 @@ BT_TEST(gendata_alloc, pretty_print_survives_allocation_failure_at_every_growth_
     }
 }
 
+static bt_json_value *pair_document(size_t pad) {
+    char key[64];
+    memset(key, 'a', pad);
+    key[pad] = '\0';
+    bt_json_value *root = bt_json_new_object();
+    bt_json_object_set(root, key, bt_json_new_string("v"));
+    bt_json_object_set(root, "tail", bt_json_new_integer(1));
+    return root;
+}
+
+BT_TEST(gendata_alloc, pretty_object_separators_fail_at_every_growth_point) {
+    for (size_t pad = 0; pad <= GD_ALLOC_PRETTY_PAD_MAX; pad++) {
+        bt_json_value *document = pair_document(pad);
+        sweep_pretty(document);
+        bt_json_free(document);
+    }
+}
+
 static bool synth_case_armed(bt_orbit orbit, uint8_t t1, uint8_t t2, bt_gd_synth_limits *lim,
                              size_t ok_count, size_t *failures) {
     bt_gd_scoring_cfg cfg;
@@ -195,6 +214,11 @@ BT_TEST(gendata_alloc, synth_case_at_flat_limits_walks_the_hit_path_allocations)
         synth_case_total(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim);
     BT_CHECK(total > 500);
     for (size_t k = 0; k <= GD_ALLOC_SYNTH_HEAD_WINDOW && k < total; k++) {
+        synth_case_armed(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim, k,
+                         &failures);
+    }
+    for (size_t k = total > GD_ALLOC_SYNTH_TAIL_WINDOW ? total - GD_ALLOC_SYNTH_TAIL_WINDOW : 0;
+         k < total; k++) {
         synth_case_armed(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim, k,
                          &failures);
     }
