@@ -426,10 +426,12 @@ int bt_gr_load_run_inputs(bt_gr_run_inputs *inputs, bt_gr_offenders *offenders) 
     bt_ga_freqs_free(&syllable_freqs);
     bt_ga_inventory_free(entries);
     if (failed) {
-        free(lengths);
-        free(feats);
-        free(cooc);
-        free(adj);
+        if (inputs->env.lengths == NULL) {
+            free(lengths);
+            free(feats);
+            free(cooc);
+            free(adj);
+        }
         bt_gr_run_inputs_free(inputs);
         return -1;
     }
