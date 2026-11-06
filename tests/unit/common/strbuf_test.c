@@ -28,6 +28,15 @@ BT_TEST(strbuf, append_and_appendf_report_injected_allocation_failures) {
     bt_strbuf_free(&sb);
 }
 
+BT_TEST(strbuf, a_failed_init_append_reports_failure_instead_of_spinning) {
+    bt_strbuf sb;
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_strbuf_init(&sb, 64), -1);
+    BT_CHECK_EQ(bt_strbuf_append_str(&sb, "x"), -1);
+    bt_alloc_fail_disarm();
+    bt_strbuf_free(&sb);
+}
+
 BT_TEST(strbuf, join_reports_separator_and_part_allocation_failures) {
     char wide[32];
     memset(wide, 'w', 31);
