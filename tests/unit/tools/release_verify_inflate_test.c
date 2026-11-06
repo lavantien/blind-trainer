@@ -23,7 +23,14 @@ enum {
     INF_BAD_LENGTH_SYMBOL = 286,
     INF_BAD_DIST_SYMBOL = 30,
     INF_LEN_SYMBOL_NEAR = 257,
+    INF_LEN_SYMBOL_WIDE = 265,
+    INF_DIST_SYMBOL_WIDE = 4,
+    INF_LIT_WIDE = 200,
+    INF_WIDE_LIT_COUNT = 6,
+    INF_TAIL_LIT_COUNT = 5,
     INF_CL_MIN_CODES = 4,
+    INF_CL_WIDE_COUNT = 10,
+    INF_HCLEN_WIDE = 6,
     INF_COPY_EXTRA_BITS = 2,
     INF_ZERO_EXTRA_BITS = 3,
     INF_RUN_EXTRA_BITS = 7,
@@ -210,6 +217,67 @@ BT_TEST(release_verify, inflate_raw_grows_the_sink_past_the_first_reserve) {
     free(out);
     free(buf);
     free(half);
+}
+
+BT_TEST(release_verify, inflate_raw_rejects_a_cut_at_each_take_site) {
+    unsigned char buf[16];
+    unsigned char cl[19];
+    char err[BT_RV_ERR_MAX];
+    memset(cl, 0, sizeof cl);
+    cl[0] = 1;
+    for (size_t cut = 1; cut <= 3; cut++) {
+        rv_bitwriter writer = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+        dynamic_header(&writer, 0, 0, 0, cl);
+        flush_tail(&writer);
+        BT_CHECK(inflate_raw_case(buf, cut, err) != 0);
+        BT_CHECK(strstr(err, "input exhausted") != NULL);
+    }
+    memset(cl, 0, sizeof cl);
+    cl[0] = 1;
+    cl[4] = 1;
+    rv_bitwriter copy = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+    dynamic_header(&copy, 0, 0, 11, cl);
+    rv_bits_put(&copy, 0, 1);
+    rv_bits_put(&copy, 1, 1);
+    flush_tail(&copy);
+    BT_CHECK(inflate_raw_case(buf, copy.len, err) != 0);
+    BT_CHECK(strstr(err, "input exhausted") != NULL);
+    for (size_t site = 1; site <= 2; site++) {
+        memset(cl, 0, sizeof cl);
+        cl[site] = 1;
+        rv_bitwriter writer = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+        dynamic_header(&writer, 0, 0, INF_HCLEN_WIDE, cl);
+        rv_bits_put(&writer, 0, 1);
+        flush_tail(&writer);
+        BT_CHECK(inflate_raw_case(buf, writer.len, err) != 0);
+        BT_CHECK(strstr(err, "input exhausted") != NULL);
+    }
+    rv_bitwriter wide = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+    block_start(&wide, INF_TYPE_FINAL, INF_TYPE_FIXED);
+    for (int at = 0; at < INF_WIDE_LIT_COUNT; at++) {
+        rv_fixed_lit(&wide, INF_LIT_WIDE);
+    }
+    rv_fixed_lit(&wide, INF_LEN_SYMBOL_WIDE);
+    flush_tail(&wide);
+    BT_CHECK(inflate_raw_case(buf, wide.len, err) != 0);
+    BT_CHECK(strstr(err, "input exhausted") != NULL);
+    rv_bitwriter dist = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+    block_start(&dist, INF_TYPE_FINAL, INF_TYPE_FIXED);
+    rv_fixed_lit(&dist, INF_LIT_WIDE);
+    rv_fixed_lit(&dist, INF_LEN_SYMBOL_NEAR);
+    rv_bits_put(&dist, INF_DIST_SYMBOL_WIDE, INF_DIST_BITS);
+    flush_tail(&dist);
+    BT_CHECK(inflate_raw_case(buf, dist.len, err) != 0);
+    BT_CHECK(strstr(err, "input exhausted") != NULL);
+    rv_bitwriter tail = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+    block_start(&tail, 0, INF_TYPE_FIXED);
+    for (int at = 0; at < INF_TAIL_LIT_COUNT; at++) {
+        rv_fixed_lit(&tail, INF_LIT_WIDE);
+    }
+    rv_fixed_lit(&tail, INF_END);
+    flush_tail(&tail);
+    BT_CHECK(inflate_raw_case(buf, tail.len, err) != 0);
+    BT_CHECK(strstr(err, "input exhausted") != NULL);
 }
 
 BT_TEST(release_verify, inflate_dynamic_rejects_an_oversubscribed_code_length_alphabet) {

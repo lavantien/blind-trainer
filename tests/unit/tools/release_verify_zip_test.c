@@ -573,6 +573,10 @@ BT_TEST(release_verify, archive_open_names_a_missing_end_record) {
     char err[BT_RV_ERR_MAX];
     BT_CHECK(craft_check(zip, dir, &seen, err) != 0);
     BT_CHECK(strstr(err, "end record missing") != NULL);
+    rv_util_join(zip, dir, "tiny.zip");
+    rv_util_write(zip, "not a zip");
+    BT_CHECK(craft_check(zip, dir, &seen, err) != 0);
+    BT_CHECK(strstr(err, "end record missing") != NULL);
 }
 
 BT_TEST(release_verify, archive_open_rejects_a_central_directory_out_of_range) {

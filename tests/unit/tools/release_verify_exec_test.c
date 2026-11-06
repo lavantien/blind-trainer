@@ -69,6 +69,76 @@ BT_TEST(release_verify, scrub_env_removes_only_bt_prefixed_vars) {
     bt_rv_str_list_free(scrubbed, count);
 }
 
+BT_TEST(release_verify, scrub_env_treats_a_bare_entry_as_a_bt_key) {
+    const char *vars[] = {"BT_BARE", "PLAIN=yes", NULL};
+    char **scrubbed = NULL;
+    size_t count = bt_rv_scrub_env(vars, &scrubbed);
+    BT_CHECK_EQ(count, 1U);
+    BT_CHECK(env_contains(scrubbed, count, "PLAIN=yes"));
+    bt_rv_str_list_free(scrubbed, count);
+    bt_rv_str_list_free(NULL, 0);
+}
+
+BT_TEST(release_verify, env_get_names_a_missing_key_and_extras_overwrite) {
+    const char *args[] = {"a", NULL};
+    const char *vars[] = {"PATH=p", NULL};
+    bt_rv_env_pair extras[] = {
+        {.key = "APPDATA", .value = "first"},
+        {.key = "APPDATA", .value = "second"},
+    };
+    bt_rv_child_spec spec;
+    bt_rv_stage_spec("prog", args, NULL, vars, extras, 2, &spec);
+    BT_CHECK_EQ(spec.cwd, "");
+    BT_CHECK_EQ(bt_rv_env_get(&spec, "APPDATA"), "second");
+    BT_CHECK(bt_rv_env_get(&spec, "MISSING") == NULL);
+    bt_rv_child_spec_free(&spec);
+}
+
+BT_TEST(release_verify, run_child_round_trips_tricky_arguments) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("exec-quote", dir);
+    char bat[BT_PATH_MAX];
+    rv_util_join(bat, dir, "echo.bat");
+    rv_util_write(bat, "@echo off\r\necho [%1]\r\n");
+    const char *args[] = {"two words", "", "pre\\\\\"post", "trailing\\\\", NULL};
+    bt_rv_child_spec spec;
+    bt_rv_stage_spec(bat, args, dir, NULL, NULL, 0, &spec);
+    bt_rv_run_result result;
+    BT_CHECK_EQ(bt_rv_run_child(&spec, 30000, &result), 0);
+    BT_CHECK_EQ(result.outcome.kind, BT_RV_OUTCOME_EXIT);
+    BT_CHECK_EQ(result.outcome.exit_code, 0);
+    trim_ascii(result.stdout_text);
+    BT_CHECK(strstr(result.stdout_text, "two words") != NULL);
+    bt_rv_run_result_free(&result);
+    bt_rv_child_spec_free(&spec);
+}
+
+BT_TEST(release_verify, run_child_reports_each_unbuildable_command_line) {
+    static char wide[6][1500];
+    static char huge[2100];
+    static char slashes[1100];
+    memset(huge, 'x', sizeof huge - 1);
+    memset(slashes, '\\', sizeof slashes - 1);
+    const char *wide_args[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    for (int at = 0; at < 6; at++) {
+        memset(wide[at], 'x', sizeof wide[at] - 1);
+        wide_args[at] = wide[at];
+    }
+    const char *huge_args[] = {huge, NULL};
+    const char *slash_args[] = {slashes, NULL};
+    const char *const *cases[] = {wide_args, huge_args, slash_args};
+    for (size_t at = 0; at < sizeof cases / sizeof cases[0]; at++) {
+        bt_rv_child_spec spec;
+        bt_rv_stage_spec("prog", cases[at], NULL, NULL, NULL, 0, &spec);
+        bt_rv_run_result result;
+        BT_CHECK_EQ(bt_rv_run_child(&spec, 30000, &result), 0);
+        BT_CHECK_EQ(result.outcome.kind, BT_RV_OUTCOME_SPAWN);
+        BT_CHECK(strstr(result.outcome.detail, "command line too long") != NULL);
+        bt_rv_run_result_free(&result);
+        bt_rv_child_spec_free(&spec);
+    }
+}
+
 static void pwsh_dir(const char *tag, char out[BT_PATH_MAX]) {
     rv_util_scratch(tag, out);
 }
