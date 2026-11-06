@@ -371,3 +371,15 @@ BT_TEST(db_errors, open_at_accepts_a_bare_filename_in_the_working_directory) {
     bt_db_close(&db);
     BT_CHECK(_chdir(previous) == 0);
 }
+
+BT_TEST(db_errors, open_at_creates_parents_behind_a_trailing_separator) {
+    const char *dir = db_err_dir("trailing-sep");
+    char db_path[BT_TU_PATH_MAX];
+    snprintf(db_path, sizeof db_path, "%s/nest//custom.db", dir);
+    bt_db db;
+    bt_db_error err;
+    BT_CHECK(bt_db_open_at(db_path, &db, &err) == 0);
+    struct stat info;
+    BT_CHECK(stat(db_path, &info) == 0);
+    bt_db_close(&db);
+}
