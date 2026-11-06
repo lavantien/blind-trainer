@@ -10,12 +10,12 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef __LLVM_PROFILE_GENERATE
-#include <profile/InstrProf.h>
+#ifdef __LLVM_INSTR_PROFILE_GENERATE
+int __llvm_profile_write_file(void);
 #endif
 
 static void bt_harness_sigabrt(int sig) {
-#ifdef __LLVM_PROFILE_GENERATE
+#ifdef __LLVM_INSTR_PROFILE_GENERATE
     __llvm_profile_write_file();
 #endif
     signal(sig, SIG_DFL);

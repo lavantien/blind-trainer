@@ -21,12 +21,8 @@ BT_TEST(bt_harness, run_reports_green_suite) {
     BT_CHECK_EQ(bt_harness_run("bt_harness_inner", entries, 1), 0);
 }
 
-#ifdef __LLVM_PROFILE_GENERATE
-#include <profile/InstrProf.h>
-#endif
-
 static bool coverage_instrumented(void) {
-#ifdef __LLVM_PROFILE_GENERATE
+#ifdef __LLVM_INSTR_PROFILE_GENERATE
     return true;
 #else
     return false;
