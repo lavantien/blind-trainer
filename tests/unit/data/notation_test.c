@@ -25,4 +25,10 @@ BT_TEST(notation, strip_rotations_removes_regrip_labels_only) {
     BT_CHECK_EQ(out, "L F' L'");
     BT_CHECK(bt_notation_strip_rotations("y2 y'", out, sizeof out) == 0);
     BT_CHECK_EQ(out, "");
+    char long_token[80];
+    for (int i = 0; i < 70; i++) {
+        long_token[i] = 'R';
+    }
+    long_token[70] = '\0';
+    BT_CHECK(bt_notation_strip_rotations(long_token, out, sizeof out) != 0);
 }
