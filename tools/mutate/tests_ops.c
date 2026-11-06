@@ -29,6 +29,9 @@ BT_TEST(mutate, allocation_arms_fail_closed) {
     bt_alloc_fail_arm(0);
     BT_CHECK_EQ(bt_mut_enumerate("t.c", "int a = 1;\n", 12, &list), -1);
     bt_alloc_fail_disarm();
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(bt_mut_mkdirs("build/test-tmp/alloc-arm-dirs"), -1);
+    bt_alloc_fail_disarm();
 }
 
 static long find_token(const bt_mut_tokens *tokens, const char *text) {
