@@ -99,9 +99,11 @@ BT_TEST(ga_run_inputs, cross_check_names_each_rejected_vendor_shape) {
     } rows[] = {
         {"{}", "cases.json missing cases array"},
         {"{\"cases\": {}}", "cases.json missing cases array"},
-        {"{\"cases\": [{\"orbit\": \"edge\", \"t1\": 0, \"t2\": 0, \"t1_letter\": \"a\", "
-         "\"t2_letter\": \"b\"}]}",
-         "cases.json has 1 rows, scheme enumerates"},
+        {
+            "{\"cases\": [{\"orbit\": \"edge\", \"t1\": 0, \"t2\": 0, \"t1_letter\": \"a\", "
+            "\"t2_letter\": \"b\"}]}",
+            "cases.json has 1 rows, scheme enumerates",
+        },
     };
     char vendor[BT_PATH_MAX];
     scratch_dir("xcheck", vendor);
@@ -323,8 +325,12 @@ BT_TEST(ga_run_inputs, load_reports_each_broken_input_stage) {
              "\"build/test-tmp/ga-run-inputs\", \"data_ga\": \"%s\"}",
              wordlist_only_dir, half_ga_dir);
     const load_case rows[] = {
-        {"no-ref-doc", "{\"data_vendor\": \"data/vendor\", \"data_ga\": \"data/ga\"}", NULL,
-         "config section missing: paths.ref_doc"},
+        {
+            "no-ref-doc",
+            "{\"data_vendor\": \"data/vendor\", \"data_ga\": \"data/ga\"}",
+            NULL,
+            "config section missing: paths.ref_doc",
+        },
         {"bad-ref-doc", bad_ref_doc_paths, NULL, "syllables-7184-abc.txt"},
         {"no-freq-json", empty_paths, NULL, "freq.json"},
         {"small-pool", half_paths, small_pool_ga, "smaller than"},

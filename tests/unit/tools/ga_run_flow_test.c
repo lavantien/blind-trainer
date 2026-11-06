@@ -170,8 +170,7 @@ BT_TEST(ga_run_flow, run_all_writes_the_three_artifacts_from_a_tiny_config) {
     BT_CHECK(syllables_text != NULL);
     if (syllables_text != NULL) {
         if (bt_json_parse(syllables_text, syllables_len, &syllables, &error) != 0) {
-            bt_harness_fail(__FILE__, __LINE__, "syllables.json does not parse: %s",
-                            error.message);
+            bt_harness_fail(__FILE__, __LINE__, "syllables.json does not parse: %s", error.message);
         }
         free(syllables_text);
     }
@@ -202,8 +201,7 @@ BT_TEST(ga_run_flow, run_all_reports_a_missing_config) {
     BT_CHECK_EQ(result.first, "load config failed");
 }
 
-static void run_missing_key_case(const char *case_name, const char *drop_key,
-                                 const char *want) {
+static void run_missing_key_case(const char *case_name, const char *drop_key, const char *want) {
     char data_ga[BT_PATH_MAX];
     scratch_dir(case_name, data_ga);
     char paths[BT_PATH_MAX * 2 + 128];
