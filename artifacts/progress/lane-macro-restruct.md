@@ -15,3 +15,5 @@ Rules inherited from the wave:
 - Do not change any test's semantics: same messages, same evaluation order, same pass and fail behavior. The suite count and every suite verdict must be identical before and after.
 
 Current state: launched 2026-11-06 23:05 local, nothing landed yet.
+
+- 23:33 gen2 relaunched after the fifth window halt. Toolset probe passed (playground/toolset_probe_macro2.md). Census: BT_CHECK 7585 use sites over 249 files, BT_CHECK_F64_NEAR 93 over 14 files, BT_CHECK_F64_BITS 0 uses, MUT_CHECK 24 all in tools/mutate/tests.c, BT_CHECK_EQ and BT_ABORT already branchless calls. Use sites stay byte-identical, the edit is confined to bt_harness.h, bt_harness.c, tools/mutate/tests.c, plus one new failure-arm test in tests/unit/common/bt_harness_test.c (which already drives failing checks through a nested bt_harness_run).
