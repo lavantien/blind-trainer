@@ -13,7 +13,8 @@ LANE = REPO / "artifacts" / "lane" / "lane-cov-ga"
 COV = LANE / "cov-build"
 SUITES = [["ga"], ["tools", "--only", "ga_run_lib"], ["tools", "--only", "ga_run_out"],
           ["tools", "--only", "ga_run_flow"], ["tools", "--only", "ga_run_inputs"],
-          ["tools", "--only", "memofreq"]]
+          ["tools", "--only", "ga_run_oom"], ["tools", "--only", "ga_run_io"],
+          ["tools", "--only", "memofreq"], ["tools", "--only", "memofreq_oom"]]
 OWNED = (re.compile(r"src[\\/]ga[\\/]"), re.compile(r"tools[\\/]ga-run[\\/]"),
          re.compile(r"tools[\\/]memofreq[\\/]"))
 COVERAGE_FLAGS = ["-fprofile-instr-generate", "-fcoverage-mapping"]
