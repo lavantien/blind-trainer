@@ -142,6 +142,9 @@ class ToolLinkFilterTests(unittest.TestCase):
             target = self.root / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("int t;\n", encoding="utf-8")
+        raylib_lib = self.root / "build" / "vendor" / "raylib.lib"
+        raylib_lib.parent.mkdir(parents=True, exist_ok=True)
+        raylib_lib.write_bytes(b"stub")
         self.stub = self.root / "clang_stub.py"
         self.stub.write_text(
             "import sys\n"
