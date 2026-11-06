@@ -36,7 +36,7 @@ static void craft_version_db(const char *path, const char *sql, int user_version
     sqlite3_close(conn);
 }
 
-BT_TEST(db_failures, a0_migration_sql_fails_closed_when_the_workspace_read_starves) {
+BT_TEST(db_failures, a1_migration_sql_falls_back_to_the_embedded_text_when_the_file_read_starves) {
     const char *child_root = getenv("BT_DB_EMBEDDED_CHILD_ROOT");
     if (child_root != NULL && child_root[0] != '\0') {
         BT_CHECK(bt_db_migration_sql(2) == bt_db_embedded_migration_sql(2));
@@ -45,7 +45,7 @@ BT_TEST(db_failures, a0_migration_sql_fails_closed_when_the_workspace_read_starv
     bt_alloc_fail_arm(0);
     const char *sql = bt_db_migration_sql(2);
     bt_alloc_fail_disarm();
-    BT_CHECK(sql == NULL);
+    BT_CHECK(sql == bt_db_embedded_migration_sql(2));
     BT_CHECK((int)bt_alloc_fail_count() > 0);
 }
 
