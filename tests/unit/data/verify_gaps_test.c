@@ -130,6 +130,11 @@ BT_TEST(verify_gaps, twists_rejects_an_edge_token_in_the_corner_pair) {
     bt_verdict_string(&verdict, text, sizeof text);
     BT_CHECK(strstr(text, "token UF is in the edge orbit") != NULL);
     bt_verdict_free(&verdict);
+    bt_verify(&alg, "UFR UBR", BT_SHEET_TWISTS, &verdict);
+    BT_CHECK(!bt_verdict_ok(&verdict));
+    bt_verdict_string(&verdict, text, sizeof text);
+    BT_CHECK(strstr(text, "expected 2 names joined by ' & '") != NULL);
+    bt_verdict_free(&verdict);
     bt_alg_free(&alg);
 }
 
@@ -140,6 +145,11 @@ BT_TEST(verify_gaps, parity_rejects_an_unknown_corner_name) {
     bt_verify(&alg, "UR-UL, UFR-ZZZ", BT_SHEET_PARITY, &verdict);
     BT_CHECK(!bt_verdict_ok(&verdict));
     char text[192];
+    bt_verdict_string(&verdict, text, sizeof text);
+    BT_CHECK(strstr(text, "unknown sticker name ZZZ") != NULL);
+    bt_verdict_free(&verdict);
+    bt_verify(&alg, "ZZZ-UL, UFR-UBR", BT_SHEET_PARITY, &verdict);
+    BT_CHECK(!bt_verdict_ok(&verdict));
     bt_verdict_string(&verdict, text, sizeof text);
     BT_CHECK(strstr(text, "unknown sticker name ZZZ") != NULL);
     bt_verdict_free(&verdict);

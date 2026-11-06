@@ -384,8 +384,9 @@ BT_TEST(seedpack_errors, normalizer_sq1_dialect_shapes) {
         {"(1,0) *", "(1,0)", "equator marker"},
         {"(2,-1) / (-4,5)", "(2,-1) / (-4,5)", NULL},
         {"(U  D2) / (1,0)", "/ (1,0)", "auf prefix stripped: (U  D2)"},
+        {"(U D2 ) / (1,0)", "/ (1,0)", "auf prefix stripped: (U D2 )"},
     };
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
         bt_normalized normalized;
         bt_normalize_error err;
         BT_CHECK(bt_seedpack_normalize_alg("sq1", ok_cases[i].raw, &normalized, &err) == true);

@@ -221,6 +221,18 @@ BT_TEST(seedpack_oom, sq1_notes_and_part_growth_fail_closed) {
         }
         bt_normalized_free(&normalized);
     }
+    for (size_t ok = 0; ok < 6; ok++) {
+        bt_normalized normalized;
+        bt_normalize_error err;
+        bt_alloc_fail_arm(ok);
+        bool good = bt_seedpack_normalize_alg("sq1", "(1,0) *", &normalized, &err);
+        bt_alloc_fail_disarm();
+        if (good) {
+            BT_CHECK_EQ(normalized.alg, "(1,0)");
+            BT_CHECK((int)normalized.note_count > 0);
+        }
+        bt_normalized_free(&normalized);
+    }
     bt_normalized normalized;
     bt_normalize_error err;
     BT_CHECK(bt_seedpack_normalize_alg("sq1", "0,-6 /", &normalized, &err));

@@ -575,7 +575,7 @@ BT_TEST(repo_gaps, seeds_all_starves_on_the_reports_array) {
     bt_db db;
     open_memory(&db);
     int saw_fail = 0;
-    for (size_t ok = 0; ok < 32; ok++) {
+    for (size_t ok = 0; ok < 64; ok++) {
         bt_seed_report *reports = NULL;
         size_t count = 0;
         bt_seed_error err;
@@ -591,13 +591,16 @@ BT_TEST(repo_gaps, seeds_all_starves_on_the_reports_array) {
         }
     }
     BT_CHECK(saw_fail == 1);
+    bt_db_close(&db);
+    bt_db clean;
+    open_memory(&clean);
     bt_seed_report *reports = NULL;
     size_t count = 0;
     bt_seed_error err;
-    BT_CHECK(bt_seed_all(&db, dir, &reports, &count, &err) == 0);
+    BT_CHECK(bt_seed_all(&clean, dir, &reports, &count, &err) == 0);
     BT_CHECK(count == 1 && reports[0].inserted == 1);
     bt_seed_reports_free(reports);
-    bt_db_close(&db);
+    bt_db_close(&clean);
 }
 
 BT_TEST(repo_gaps, settings_save_rolls_back_when_the_upsert_step_fails) {
