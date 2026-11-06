@@ -24,6 +24,7 @@ def write_cov_config():
     clone = copy.deepcopy(hub)
     clone["build"]["cflags"] = [*clone["build"]["cflags"], "-fprofile-instr-generate",
                                 "-fcoverage-mapping"]
+    clone["build"]["test_timeout_secs"] = 1800
     for key in ("bin", "obj", "gen", "test_tmp"):
         clone["build"]["dirs"][key] = f"{cov_dir / key}".replace("\\", "/")
     cov_config.write_text(json.dumps(clone, indent=1) + "\n", encoding="utf-8", newline="\n")
