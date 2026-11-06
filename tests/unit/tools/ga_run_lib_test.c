@@ -177,17 +177,6 @@ BT_TEST(ga_run_lib, crate_id_matches_package) {
     BT_CHECK_EQ(bt_gr_tool_id(), "bt-ga-run");
 }
 
-BT_TEST(ga_run_lib, cross_check_passes_on_generated_vendor_data) {
-    bt_json_value *config = bt_data_load_config();
-    BT_CHECK(config != NULL);
-    bt_gr_offenders offenders = {0};
-    int rc = bt_gr_cross_check_cases(config, &offenders);
-    BT_CHECK_EQ(rc, 0);
-    BT_CHECK_EQ(offenders.count, (size_t)0);
-    bt_gr_offenders_free(&offenders);
-    bt_json_free(config);
-}
-
 static void xcheck_scratch(const char *name, char root[BT_PATH_MAX]) {
     const char *temp = getenv("TEMP");
     if (temp == NULL) {
@@ -299,6 +288,71 @@ static void scratch_write(const char *dir, const char *name, const char *bytes, 
     FILE *file = fopen(path, "wb");
     fwrite(bytes, 1, len, file);
     fclose(file);
+}
+
+static void spliced_vendor_config(char scratch_config[BT_PATH_MAX]) {
+    char scratch[BT_PATH_MAX];
+    xcheck_scratch("e2e", scratch);
+    char vendor_dir[BT_PATH_MAX];
+    snprintf(vendor_dir, sizeof vendor_dir, "%s/vendor", scratch);
+    _mkdir(vendor_dir);
+    xcheck_write_cases(vendor_dir, NULL, 0, 0);
+    char vendor[BT_PATH_MAX];
+    snprintf(vendor, sizeof vendor, "%s", vendor_dir);
+    for (char *cursor = vendor; *cursor != '\0'; cursor++) {
+        if (*cursor == 92) {
+            *cursor = '/';
+        }
+    }
+    char root[BT_PATH_MAX];
+    bt_data_workspace_root(root);
+    char config_path[BT_PATH_MAX];
+    snprintf(config_path, sizeof config_path, "%s/config/config.json", root);
+    FILE *file = fopen(config_path, "rb");
+    BT_CHECK(file != NULL);
+    char config_text[32768];
+    if (file != NULL) {
+        BT_CHECK(fseek(file, 0, SEEK_END) == 0);
+        long file_size = ftell(file);
+        BT_CHECK(fseek(file, 0, SEEK_SET) == 0);
+        BT_CHECK(file_size >= 0 && (size_t)file_size + 1 <= sizeof config_text);
+        size_t config_len = fread(config_text, 1, (size_t)file_size, file);
+        fclose(file);
+        config_text[config_len] = '\0';
+    }
+    char replacement[BT_PATH_MAX + 32];
+    snprintf(replacement, sizeof replacement, "\"data_vendor\": \"%s\"", vendor);
+    char *at = strstr(config_text, "\"data_vendor\": \"data/vendor\"");
+    BT_CHECK(at != NULL);
+    if (at != NULL) {
+        memmove(at + strlen(replacement), at + strlen("\"data_vendor\": \"data/vendor\""),
+                strlen(at + strlen("\"data_vendor\": \"data/vendor\"")) + 1);
+        memcpy(at, replacement, strlen(replacement));
+    }
+    snprintf(scratch_config, BT_PATH_MAX, "%s/config.json", scratch);
+    scratch_write(scratch, "config.json", config_text, strlen(config_text));
+}
+
+BT_TEST(ga_run_lib, cross_check_passes_on_a_scheme_matching_vendor_file) {
+    char scratch_config[BT_PATH_MAX];
+    spliced_vendor_config(scratch_config);
+    const char *original = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", original != NULL ? original : "");
+    _putenv_s("BT_CONFIG", scratch_config);
+    bt_json_value *config = bt_data_load_config();
+    BT_CHECK(config != NULL);
+    bt_gr_offenders offenders = {0};
+    int rc = bt_gr_cross_check_cases(config, &offenders);
+    BT_CHECK_EQ(rc, 0);
+    BT_CHECK_EQ(offenders.count, (size_t)0);
+    bt_gr_offenders_free(&offenders);
+    bt_json_free(config);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
 }
 
 BT_TEST(ga_run_lib, load_run_inputs_reports_freq_before_the_vendor_cross_check) {
@@ -416,6 +470,12 @@ BT_TEST(ga_run_lib, load_run_inputs_rejects_abort_shaped_upgrade_configs_as_offe
 }
 
 BT_TEST(ga_run_lib, end_to_end_small_run_produces_full_injective_assignment) {
+    char scratch_config[BT_PATH_MAX];
+    spliced_vendor_config(scratch_config);
+    const char *original = getenv("BT_CONFIG");
+    char saved[BT_PATH_MAX];
+    snprintf(saved, sizeof saved, "%s", original != NULL ? original : "");
+    _putenv_s("BT_CONFIG", scratch_config);
     bt_gr_run_inputs inputs;
     bt_gr_offenders offenders = {0};
     BT_CHECK_EQ(bt_gr_load_run_inputs(&inputs, &offenders), 0);
@@ -423,6 +483,11 @@ BT_TEST(ga_run_lib, end_to_end_small_run_produces_full_injective_assignment) {
         bt_harness_fail(__FILE__, __LINE__, "load_run_inputs: %s", offenders.items[0]);
     }
     bt_gr_offenders_free(&offenders);
+    if (saved[0] != '\0') {
+        _putenv_s("BT_CONFIG", saved);
+    } else {
+        _putenv("BT_CONFIG=");
+    }
     inputs.params.population = 30;
     inputs.params.generations = 20;
     bt_ga_run_outcome *outcome = bt_ga_run(&inputs.env, &inputs.params);

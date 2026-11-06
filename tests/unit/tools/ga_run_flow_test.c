@@ -7,6 +7,7 @@
 #include "common/strbuf.h"
 #include "data/paths.h"
 #include "ga/hash.h"
+#include "unit/tools/ga_run_fixture_util.h"
 
 #include <direct.h>
 #include <stdio.h>
@@ -117,13 +118,15 @@ static void copy_repo_freq_json(const char *data_ga) {
 BT_TEST(ga_run_flow, run_all_writes_the_three_artifacts_from_a_tiny_config) {
     char data_ga[BT_PATH_MAX];
     char artifacts[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir("success-data", data_ga);
     scratch_dir("success-artifacts", artifacts);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-flow", vendor);
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"data_ga\": \"%s\", "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"data_ga\": \"%s\", "
              "\"artifacts\": \"%s\"}",
-             data_ga, artifacts);
+             vendor, data_ga, artifacts);
     write_config(data_ga, paths);
     copy_repo_freq_json(data_ga);
     char config_path[BT_PATH_MAX];
@@ -203,12 +206,14 @@ BT_TEST(ga_run_flow, run_all_reports_a_missing_config) {
 
 static void run_missing_key_case(const char *case_name, const char *drop_key, const char *want) {
     char data_ga[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir(case_name, data_ga);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-flow", vendor);
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"artifacts\": "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"artifacts\": "
              "\"build/test-tmp/ga-run-flow\", \"data_ga\": \"%s\", \"baselines\": \"baselines\"}",
-             data_ga);
+             vendor, data_ga);
     char reduced[BT_PATH_MAX * 2 + 128];
     snprintf(reduced, sizeof reduced, "%s", paths);
     char key[96];
@@ -242,12 +247,14 @@ BT_TEST(ga_run_flow, run_all_reports_each_missing_path_key) {
 
 BT_TEST(ga_run_flow, run_all_fails_the_syllables_write_when_it_is_a_directory) {
     char data_ga[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir("syllables-dir", data_ga);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-flow", vendor);
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"data_ga\": \"%s\", "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"data_ga\": \"%s\", "
              "\"artifacts\": \"build/test-tmp/ga-run-flow\"}",
-             data_ga);
+             vendor, data_ga);
     write_config(data_ga, paths);
     copy_repo_freq_json(data_ga);
     char blocked[BT_PATH_MAX];
@@ -264,12 +271,14 @@ BT_TEST(ga_run_flow, run_all_fails_the_syllables_write_when_it_is_a_directory) {
 
 BT_TEST(ga_run_flow, run_all_fails_the_report_write_when_it_is_a_directory) {
     char data_ga[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir("report-dir", data_ga);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-flow", vendor);
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"data_ga\": \"%s\", "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"data_ga\": \"%s\", "
              "\"artifacts\": \"build/test-tmp/ga-run-flow\"}",
-             data_ga);
+             vendor, data_ga);
     write_config(data_ga, paths);
     copy_repo_freq_json(data_ga);
     char blocked[BT_PATH_MAX];
@@ -288,8 +297,10 @@ BT_TEST(ga_run_flow, run_all_fails_the_report_write_when_it_is_a_directory) {
 BT_TEST(ga_run_flow, run_all_fails_the_markdown_write_under_a_file_prefix) {
     char data_ga[BT_PATH_MAX];
     char artifacts[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir("markdown-data", data_ga);
     scratch_dir("markdown-artifacts", artifacts);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-flow", vendor);
     char blocked[BT_PATH_MAX];
     snprintf(blocked, sizeof blocked, "%s/ga", artifacts);
     FILE *file = fopen(blocked, "wb");
@@ -300,9 +311,9 @@ BT_TEST(ga_run_flow, run_all_fails_the_markdown_write_under_a_file_prefix) {
     }
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"data_ga\": \"%s\", "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"data_ga\": \"%s\", "
              "\"artifacts\": \"%s\"}",
-             data_ga, artifacts);
+             vendor, data_ga, artifacts);
     write_config(data_ga, paths);
     copy_repo_freq_json(data_ga);
     char config_path[BT_PATH_MAX];

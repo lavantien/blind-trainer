@@ -5,6 +5,7 @@
 #include "common/paths.h"
 #include "data/paths.h"
 #include "unit/ga/ga_test_util.h"
+#include "unit/tools/ga_run_fixture_util.h"
 
 #include <windows.h>
 
@@ -200,13 +201,15 @@ static void json_escape_path(const char *in, char out[BT_PATH_MAX]) {
 BT_TEST(ga_run_io, run_all_fails_closed_when_the_markdown_write_breaks) {
     char data_ga[BT_PATH_MAX];
     io_scratch_dir("pipe-write", data_ga);
+    char vendor[BT_PATH_MAX];
+    ga_run_fixture_vendor("build/test-tmp/ga-run-io", vendor);
     char pipe_json[BT_PATH_MAX];
     json_escape_path(GR_IO_PIPE_BASE, pipe_json);
     char text[BT_PATH_MAX * 2 + 2048];
     snprintf(text, sizeof text,
-             "{\"paths\": {\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", "
+             "{\"paths\": {\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", "
              "\"data_ga\": \"%s\", \"artifacts\": \"%s\"}, \"ga\": %s}",
-             data_ga, pipe_json, GR_IO_GA_CONFIG);
+             vendor, data_ga, pipe_json, GR_IO_GA_CONFIG);
     io_scratch_file(data_ga, "config.json", text);
     copy_repo_freq_json(data_ga);
     char config_path[BT_PATH_MAX];

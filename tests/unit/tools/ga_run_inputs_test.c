@@ -7,6 +7,7 @@
 #include "common/paths.h"
 #include "common/strbuf.h"
 #include "data/paths.h"
+#include "unit/tools/ga_run_fixture_util.h"
 
 #include <direct.h>
 #include <stdio.h>
@@ -460,13 +461,15 @@ static const char *const GR_EMPTY_PAIRS_FREQ_JSON =
 
 BT_TEST(ga_run_inputs, load_accepts_freq_data_with_empty_pair_tables) {
     char data_ga[BT_PATH_MAX];
+    char vendor[BT_PATH_MAX];
     scratch_dir("empty-pairs", data_ga);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-inputs", vendor);
     write_text(data_ga, "freq.json", GR_EMPTY_PAIRS_FREQ_JSON);
-    char paths[BT_PATH_MAX + 128];
+    char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"artifacts\": "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"artifacts\": "
              "\"build/test-tmp/ga-run-inputs\", \"data_ga\": \"%s\"}",
-             data_ga);
+             vendor, data_ga);
     char config_text[BT_PATH_MAX * 2 + 1024];
     snprintf(config_text, sizeof config_text, "{\"paths\": %s, \"ga\": %s}", paths, GA_TINY);
     write_text(data_ga, "config.json", config_text);

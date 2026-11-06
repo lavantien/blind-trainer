@@ -12,6 +12,7 @@
 #include "ga/hash.h"
 #include "ga/inventory.h"
 #include "scheme/pairs.h"
+#include "unit/tools/ga_run_fixture_util.h"
 
 #include <direct.h>
 #include <stdint.h>
@@ -88,14 +89,16 @@ static void make_tiny_env(const char *name, char config_path[BT_PATH_MAX]) {
     char data_ga[BT_PATH_MAX];
     char artifacts[BT_PATH_MAX];
     char artifacts_name[128];
+    char vendor[BT_PATH_MAX];
     scratch_dir(name, data_ga);
     snprintf(artifacts_name, sizeof artifacts_name, "%s-artifacts", name);
     scratch_dir(artifacts_name, artifacts);
+    ga_run_fixture_vendor("build/test-tmp/ga-run-oom", vendor);
     char paths[BT_PATH_MAX * 2 + 128];
     snprintf(paths, sizeof paths,
-             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"data/vendor\", \"data_ga\": \"%s\", "
+             "{\"ref_doc\": \"ref_doc\", \"data_vendor\": \"%s\", \"data_ga\": \"%s\", "
              "\"artifacts\": \"%s\"}",
-             data_ga, artifacts);
+             vendor, data_ga, artifacts);
     char text[8192];
     snprintf(text, sizeof text, "{\"paths\": %s, \"ga\": %s}", paths, GA_OOM);
     scratch_file(data_ga, "config.json", text, strlen(text));
