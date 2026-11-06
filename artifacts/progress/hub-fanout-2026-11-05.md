@@ -79,7 +79,7 @@ Resume plan after 09:09:17 local, first guard tick past the reset:
 
 ## halt lift and tree triage, 2026-11-06 08:23 local
 
-Local clock reads +07:00, so the provider reset 09:09:17 GMT+8 equals 08:09:17 local and passed before this pass. The halt ended on the reset time and work resumed on that basis. usage-query-guard6 was dispatched for the confirming number, its reply reconciles on arrival, and any contradiction halts the wave again.
+Local clock reads +07:00, so the provider reset 09:09:17 GMT+8 equals 08:09:17 local and passed before this pass. The halt ended on the reset time and work resumed on that basis. The confirming query landed after the relaunch: usage-query-guard6 read the fresh window at 3 percent at 09:24 GMT+8, far below the 95 percent halt trigger, so the resume stands. A late-draining report from usage-query-guard8 showing 90 percent is a stale snapshot timestamped 06:00 GMT+8, taken an hour before the halt began, and does not describe the current window. The payload carries no reset time field, so the provider-stated 09:09:17 GMT+8 stays the recorded authority. Both query agents are disposed.
 
 Uncommitted tree triage before relaunch:
 - Deleted as junk: default.profraw at the repo root plus 11 stale probe binaries and pdbs under playground.
