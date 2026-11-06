@@ -323,7 +323,7 @@ BT_TEST(repo_failures, an_unknown_review_quality_fails_the_sm2_replay_load) {
     bt_srs_load_error load_err;
     BT_CHECK(bt_repo_srs_load(&db, &cfg, &store, &load_err) != 0);
     BT_CHECK_EQ(load_err.kind, BT_SRS_LOAD_UNKNOWN_QUALITY);
-    BT_CHECK_EQ(load_err.quality, 99u);
+    BT_CHECK_EQ(load_err.quality, 99);
     char text[512];
     bt_srs_load_error_string(&load_err, text, sizeof text);
     BT_CHECK(strstr(text, "card s/c holds review quality 99") != NULL);
@@ -400,7 +400,7 @@ BT_TEST(repo_failures, reviews_without_memory_columns_replay_through_sm2) {
     BT_CHECK_EQ(card->has_memory, 1);
     BT_CHECK(bt_fsrs_memory_is_valid(card->memory));
     BT_CHECK(bt_srs_store_get(&store, "missing") == NULL);
-    BT_CHECK_EQ(bt_srs_store_len(&store), 1u);
+    BT_CHECK_EQ(bt_srs_store_len(&store), 1);
     bt_srs_store_free(&store);
     bt_db_close(&db);
 }
@@ -614,7 +614,7 @@ BT_TEST(repo_failures, a_happy_transaction_round_trips_the_store) {
     BT_CHECK(bt_repo_srs_load(&db, &cfg, &loaded, &load_err) == 0);
     const bt_card *round = bt_srs_store_get(&loaded, "s/c");
     BT_CHECK(round != NULL);
-    BT_CHECK_EQ(round->review_count, 1u);
+    BT_CHECK_EQ(round->review_count, 1);
     bt_srs_store_clone(&loaded, &store);
     BT_CHECK_EQ(bt_srs_store_eq(&loaded, &store), 1);
     bt_srs_store_free(&store);
@@ -673,7 +673,7 @@ BT_TEST(repo_failures, srs_edges_over_grades_replay_and_review) {
     BT_CHECK_EQ(bt_card_last_review_day(&card, &day), 0);
     bt_card_review(&card, BT_GRADE_GOOD, 9, &cfg);
     bt_card_review(&card, BT_GRADE_GOOD, 3, &cfg);
-    BT_CHECK_EQ(card.review_count, 2u);
+    BT_CHECK_EQ(card.review_count, 2);
     BT_CHECK_EQ(card.reviews[1].elapsed_days, 0);
     bt_card_free(&card);
 

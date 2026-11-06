@@ -113,13 +113,13 @@ BT_TEST(repo_cluster, seed_tx_inserts_then_verifies_then_fails_on_drift) {
     bt_seed_report report;
     bt_seed_error err;
     BT_CHECK(bt_seed_pack_tx(&db, "pack.tsv", &row, 1, &report, &err) == 0);
-    BT_CHECK_EQ(report.inserted, 1u);
-    BT_CHECK_EQ(report.verified, 0u);
+    BT_CHECK_EQ(report.inserted, 1);
+    BT_CHECK_EQ(report.verified, 0);
     BT_CHECK_EQ(report.file, "pack.tsv");
 
     BT_CHECK(bt_seed_pack_tx(&db, "pack.tsv", &row, 1, &report, &err) == 0);
-    BT_CHECK_EQ(report.inserted, 0u);
-    BT_CHECK_EQ(report.verified, 1u);
+    BT_CHECK_EQ(report.inserted, 0);
+    BT_CHECK_EQ(report.verified, 1);
 
     sqlite3 *conn = bt_db_conn(&db);
     BT_CHECK(sqlite3_exec(conn, "UPDATE seed_alg SET content_hash = 'tampered'", NULL, NULL,
@@ -159,8 +159,8 @@ BT_TEST(repo_cluster, seed_tx_count_zero_short_circuits) {
     bt_seed_report report;
     bt_seed_error err;
     BT_CHECK(bt_seed_pack_tx(&db, "empty.tsv", NULL, 0, &report, &err) == 0);
-    BT_CHECK_EQ(report.inserted, 0u);
-    BT_CHECK_EQ(report.verified, 0u);
+    BT_CHECK_EQ(report.inserted, 0);
+    BT_CHECK_EQ(report.verified, 0);
     BT_CHECK_EQ(report.file, "empty.tsv");
     bt_db_close(&db);
 }
@@ -213,7 +213,7 @@ BT_TEST(repo_cluster, seed_load_rows_round_trip_and_fail_under_authorizer) {
     BT_CHECK(bt_seed_pack_tx(&db, "pack.tsv", &row, 1, &report, &err) == 0);
     bt_seed_rows rows;
     BT_CHECK(bt_load_seed_rows(&db, &rows, &err) == 0);
-    BT_CHECK_EQ(rows.count, 1u);
+    BT_CHECK_EQ(rows.count, 1);
     BT_CHECK_EQ(rows.items[0].case_key, "case-a");
     BT_CHECK_EQ(rows.items[0].alg, "R U R'");
     bt_seed_rows_free(&rows);
@@ -239,7 +239,7 @@ BT_TEST(repo_cluster, cards_save_and_load_round_trip_with_a_fallback_entry) {
     bt_case_cards cards;
     bt_srs_load_error load_err;
     BT_CHECK(bt_repo_cards_load(&db, &cfg, &cards, &load_err) == 0);
-    BT_CHECK_EQ(bt_case_cards_len(&cards), 1u);
+    BT_CHECK_EQ(bt_case_cards_len(&cards), 1);
     BT_CHECK(bt_case_cards_contains(&cards, &ref) == 1);
     BT_CHECK(bt_case_cards_get(&cards, &ref) != NULL);
     bt_case_ref missing;
@@ -247,7 +247,7 @@ BT_TEST(repo_cluster, cards_save_and_load_round_trip_with_a_fallback_entry) {
     BT_CHECK(bt_case_cards_get(&cards, &missing) == NULL);
     const bt_card *fallback = bt_case_cards_entry(&cards, &missing, &card);
     BT_CHECK(fallback != NULL);
-    BT_CHECK_EQ(bt_case_cards_len(&cards), 2u);
+    BT_CHECK_EQ(bt_case_cards_len(&cards), 2);
     const bt_card *again = bt_case_cards_entry(&cards, &missing, &card);
     BT_CHECK(again == fallback);
     bt_case_cards_free(&cards);
