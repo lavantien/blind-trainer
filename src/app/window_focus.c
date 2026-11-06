@@ -253,6 +253,7 @@ enum {
     BT_FOCUS_WATCH_SAMPLE_MS = 40,
     BT_FOCUS_WATCH_TITLE_MAX = 64,
     BT_FOCUS_WATCH_CURSOR_JUMP_PX = 300,
+    BT_FOCUS_TITLE_TIMEOUT_MS = 25,
 };
 
 typedef struct {
@@ -284,8 +285,11 @@ static int foreground_is_watched_window(const bt_focus_watch *watch, HWND foregr
         return 1;
     }
     wchar_t title[BT_FOCUS_WATCH_TITLE_MAX];
-    int written = GetWindowTextW(foreground, title, BT_FOCUS_WATCH_TITLE_MAX);
-    return written > 0 && wcscmp(title, watch->title) == 0;
+    DWORD_PTR copied = 0;
+    int sent =
+        SendMessageTimeoutW(foreground, WM_GETTEXT, (WPARAM)BT_FOCUS_WATCH_TITLE_MAX, (LPARAM)title,
+                            SMTO_ABORTIFHUNG, BT_FOCUS_TITLE_TIMEOUT_MS, &copied) != 0;
+    return sent && copied > 0 && wcscmp(title, watch->title) == 0;
 }
 
 static int cursor_lands_on_watched_window(const bt_focus_watch *watch, LONG x, LONG y) {

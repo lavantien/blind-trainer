@@ -34,6 +34,22 @@ static HWND spawn_window(const wchar_t *title, int x, int y, int w, int h) {
     return window;
 }
 
+static void pump_wait(DWORD ms) {
+    ULONGLONG until = GetTickCount64() + ms;
+    MSG msg;
+    for (;;) {
+        DWORD left = until > GetTickCount64() ? (DWORD)(until - GetTickCount64()) : 0;
+        MsgWaitForMultipleObjects(0, NULL, FALSE, left, QS_ALLINPUT);
+        while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
+        }
+        if (GetTickCount64() >= until) {
+            return;
+        }
+    }
+}
+
 BT_TEST(focus, null_handles_rejected_without_effect) {
     BT_CHECK_EQ(bt_app_focus_no_activate_install(NULL), 0);
     BT_CHECK_EQ(bt_app_focus_style_no_activate(NULL), 0);
@@ -96,11 +112,11 @@ BT_TEST(focus, foreground_watch_counts_our_titled_window) {
     void *watch =
         bt_app_focus_watch_start("blind trainer focus probe target", bt_app_focus_current_pid());
     BT_CHECK(watch != NULL);
-    Sleep(120);
+    pump_wait(120);
     BT_CHECK_EQ(bt_app_focus_watch_app_foreground_count(watch), 0);
     SetForegroundWindow(window);
     int held = GetForegroundWindow() == window;
-    Sleep(160);
+    pump_wait(160);
     long seen = bt_app_focus_watch_app_foreground_count(watch);
     bt_app_focus_watch_stop(watch);
     SetForegroundWindow(GetConsoleWindow());
