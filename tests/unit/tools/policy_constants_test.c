@@ -259,8 +259,7 @@ BT_TEST(policy_constants, hex_float_exponent_signs_stay_in_the_core) {
 
 BT_TEST(policy_constants, cores_that_cannot_normalize_stay_verbatim) {
     check_cores("x = 0x__", POLICY_LANG_PY, "0x");
-    check_cores("long y = 99999999999999999999999;", POLICY_LANG_C,
-                "99999999999999999999999");
+    check_cores("long y = 99999999999999999999999;", POLICY_LANG_C, "99999999999999999999999");
 }
 
 BT_TEST(policy_constants, a_bad_type_suffix_swallows_the_literal) {
@@ -276,7 +275,8 @@ BT_TEST(policy_constants, range_dots_keep_both_numbers_visible) {
 BT_TEST(policy_constants, same_line_recurring_cores_sort_by_core) {
     const char *text = "int a = 7 * 7 + 3 * 3;";
     size_t count = 0;
-    policy_recurring *hits = policy_recurring_literals(text, strlen(text), POLICY_LANG_C, 2, &count);
+    policy_recurring *hits =
+        policy_recurring_literals(text, strlen(text), POLICY_LANG_C, 2, &count);
     BT_CHECK_EQ(count, 2);
     BT_CHECK(strcmp(hits[0].core, "3") == 0);
     BT_CHECK(strcmp(hits[1].core, "7") == 0);

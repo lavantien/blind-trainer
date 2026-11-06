@@ -92,8 +92,7 @@ static void repo_verdict_is_consistent(const char *const argv[]) {
         }
         return;
     }
-    bt_harness_fail(__FILE__, __LINE__, "verdict %d outside the contract, err '%.600s'", code,
-                    err);
+    bt_harness_fail(__FILE__, __LINE__, "verdict %d outside the contract, err '%.600s'", code, err);
 }
 
 BT_TEST(policy_driver, bare_run_over_the_repo_keeps_the_verdict_contract) {
@@ -247,8 +246,7 @@ BT_TEST(policy_driver, fixture_findings_print_and_exit_1) {
 
 BT_TEST(policy_driver, fixture_allowlist_silences_and_stale_reports) {
     char root[POLICY_UTIL_PATH_MAX];
-    build_fixture_ws(root, "driver-allow",
-                     "src/dirty.c\t7\tlegacy table\nsrc/gone.c\t9\tnone\n");
+    build_fixture_ws(root, "driver-allow", "src/dirty.c\t7\tlegacy table\nsrc/gone.c\t9\tnone\n");
     char config[POLICY_UTIL_PATH_MAX];
     policy_util_join(config, root, "config/config.json");
     const char *argv[] = {"constants", NULL};
