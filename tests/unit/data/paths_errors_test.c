@@ -152,8 +152,9 @@ BT_TEST(paths_errors, root_or_null_follows_the_config_load) {
     BT_CHECK(bt_data_packs_root_or_null(out) == NULL);
     env_restore(&guard);
     env_guard second;
-    env_set(&second, "BT_CONFIG",
-            write_config("or-null-present", "{\"paths\":{\"ref_ground\":\"rg\",\"packs\":\"pk\"}}"));
+    env_set(
+        &second, "BT_CONFIG",
+        write_config("or-null-present", "{\"paths\":{\"ref_ground\":\"rg\",\"packs\":\"pk\"}}"));
     bt_json_value *vendor = bt_data_vendor_root_or_null(out);
     BT_CHECK(vendor != NULL);
     BT_CHECK(strstr(out, "rg") != NULL);
