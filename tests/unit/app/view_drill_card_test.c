@@ -568,7 +568,8 @@ BT_TEST(view_drill_card, build_sides_survives_a_failed_alg_copy_with_empty_algs)
 
 BT_TEST(view_drill_card, a_user_solver_row_builds_a_non_vendor_side) {
     bt_corpus_row rows[1] = {
-        heap_row(BT_SOLVER_USER, BT_SHEET_EDGE, "UF-UB-UR", "R2 U' S R2 S' R2 U R2", "")};
+        heap_row(BT_SOLVER_USER, BT_SHEET_EDGE, "UF-UB-UR", "R2 U' S R2 S' R2 U R2", ""),
+    };
     bt_corpus corpus = corpus_of_rows(rows, 1);
     bt_case case_id = edge_case('A', 'B');
     bt_drill_side a;

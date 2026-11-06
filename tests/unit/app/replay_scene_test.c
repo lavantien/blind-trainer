@@ -498,8 +498,9 @@ BT_TEST(replay, corner_and_edge_pos_default_to_zero_off_their_chairs) {
 
 BT_TEST(replay, cfg_from_rejects_each_malformed_field_and_restores_defaults) {
     bt_replay_cfg defaults = replay_cfg_defaults();
-    const char *fields[6] = {"secs_per_move", "yaw_deg",  "pitch_deg",
-                             "distance",      "zoom_min", "zoom_max"};
+    const char *fields[6] = {
+        "secs_per_move", "yaw_deg", "pitch_deg", "distance", "zoom_min", "zoom_max",
+    };
     for (int at = 0; at < 6; at++) {
         char text[128];
         snprintf(text, sizeof text, "{\"app\":{\"replay\":{\"%s\":\"nope\"}}}", fields[at]);

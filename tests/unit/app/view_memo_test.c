@@ -565,7 +565,7 @@ BT_TEST(view_memo, status_draw_clamps_an_oversized_line_to_the_content_width) {
 
 static void residue_with_every_kind(bt_memo *out) {
     memset(out, 0, sizeof *out);
-    out->residue.has_parity = 1;
+    out->residue.has_parity = true;
     out->residue.parity.edge[0] = 0;
     out->residue.parity.edge[1] = 1;
     out->residue.parity.corner[0] = 2;
@@ -607,7 +607,7 @@ BT_TEST(view_memo, residue_lines_fail_closed_when_the_capacity_runs_out) {
     count = 99;
     BT_CHECK(bt_memo_residue_lines(&memo, lines, 2, &count) == 0);
     BT_CHECK_EQ(count, (size_t)2);
-    memo.residue.has_parity = 0;
+    memo.residue.has_parity = false;
     count = 99;
     BT_CHECK(bt_memo_residue_lines(&memo, lines, 0, &count) == 0);
     BT_CHECK_EQ(count, (size_t)0);

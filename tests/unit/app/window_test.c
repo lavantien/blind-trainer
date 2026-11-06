@@ -314,7 +314,12 @@ BT_TEST(window, posted_keys_and_wheel_reach_the_input_poll) {
 }
 
 BT_TEST(window, a_wheel_post_to_a_dead_window_reports_failure) {
-    BT_CHECK(!bt_app_driver_mouse_wheel((void *)(intptr_t)1, 1));
+    bt_app_config config = load_config();
+    BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
+                                       config.window.title, &config.render));
+    void *hwnd = GetWindowHandle();
+    bt_app_window_close();
+    BT_CHECK(!bt_app_driver_mouse_wheel(hwnd, 1));
 }
 
 static void fonts_fixture_config(const char *tag, const char *fonts_json, char out[BT_PATH_MAX]) {
