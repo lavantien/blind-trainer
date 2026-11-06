@@ -2,6 +2,7 @@
 #include "app/views/drill.h"
 #include "app/views/memo.h"
 #include "app/views/solve.h"
+#include "common/alloc.h"
 #include "scheme/memo.h"
 #include "scheme/pairs.h"
 
@@ -422,4 +423,116 @@ BT_TEST(usage, tour_storage_holds_more_than_the_fixed_capacity) {
     bt_usage_tour_free(&tour);
     BT_CHECK(tour.actions == NULL);
     BT_CHECK_EQ(tour.action_count, (size_t)0);
+}
+
+BT_TEST(usage, covered_seed_clamps_the_attempt_range_at_the_wraparound) {
+    bt_corpus empty;
+    bt_corpus_init(&empty);
+    uint64_t found = 99;
+    BT_CHECK(!bt_usage_covered_seed(&empty, UINT64_MAX - 1, 5, &found));
+    BT_CHECK_EQ(found, (uint64_t)99);
+    bt_corpus_free(&empty);
+}
+
+BT_TEST(usage, tour_init_creates_a_missing_dir_and_fails_under_a_file) {
+    bt_usage_tour tour;
+    const char *parent = ta_temp_dir("usage", "mkdir-ok");
+    char fresh[TA_PATH_MAX];
+    snprintf(fresh, sizeof fresh, "%s\\fresh-sub", parent);
+    BT_CHECK_EQ(bt_usage_tour_init(&tour, fresh, 5, 800), 0);
+    BT_CHECK_EQ(tour.mode, BT_USAGE_MODE_ACT);
+    bt_usage_tour_free(&tour);
+
+    const char *blocked_root = ta_temp_dir("usage", "mkdir-fail");
+    char blocker[TA_PATH_MAX];
+    snprintf(blocker, sizeof blocker, "%s\\blocker", blocked_root);
+    ta_write_file(blocker, "x");
+    char under[TA_PATH_MAX];
+    snprintf(under, sizeof under, "%s\\blocker\\under", blocked_root);
+    BT_CHECK_EQ(bt_usage_tour_init(&tour, under, 5, 800), 1);
+    BT_CHECK_EQ(tour.action_count, (size_t)0);
+    BT_CHECK_EQ(bt_usage_fatal_init(&tour, under), 1);
+}
+
+BT_TEST(usage, set_actions_fails_closed_when_the_allocation_fails) {
+    bt_usage_tour tour;
+    memset(&tour, 0, sizeof tour);
+    bt_usage_action actions[1] = {0};
+    actions[0].kind = BT_USAGE_ACT_SHOT;
+    actions[0].name = "probe";
+    bt_alloc_fail_arm(0);
+    bt_usage_tour_set_actions(&tour, actions, 1);
+    bt_alloc_fail_disarm();
+    BT_CHECK(tour.actions == NULL);
+    BT_CHECK_EQ(tour.action_count, (size_t)0);
+    BT_CHECK_EQ(tour.expected_shots, (size_t)0);
+    bt_usage_tour_set_actions(&tour, actions, 1);
+    BT_CHECK_EQ(tour.action_count, (size_t)1);
+    BT_CHECK_EQ(tour.expected_shots, (size_t)1);
+    bt_usage_tour_free(&tour);
+}
+
+BT_TEST(usage, finish_rejects_a_shot_file_that_landed_empty) {
+    bt_usage_tour tour;
+    tour_world(&tour, ta_temp_dir("usage", "finish-empty"), NULL, 0, 1);
+    strcpy(tour.shots[0], tour.dir);
+    strcat(tour.shots[0], "/menu.png");
+    ta_write_file(tour.shots[0], "");
+    tour.shot_count = 1;
+    BT_CHECK_EQ(bt_usage_finish(&tour), 1);
+    remove(tour.shots[0]);
+    bt_usage_tour_free(&tour);
+}
+
+BT_TEST(usage, every_wait_kind_names_itself_when_it_times_out) {
+    bt_app_ctx ctx;
+    world_ctx(&ctx, BT_APP_MENU);
+    bt_usage_key_request keys;
+    char request[TA_PATH_MAX];
+    int has_request = 0;
+    bt_usage_wait_kind kinds[7] = {
+        BT_USAGE_WAIT_FONTS,      BT_USAGE_WAIT_DRILL,    BT_USAGE_WAIT_MEMO, BT_USAGE_WAIT_SOLVE,
+        BT_USAGE_WAIT_CASE_DRILL, (bt_usage_wait_kind)99, BT_USAGE_WAIT_APP,
+    };
+    for (int at = 0; at < 7; at++) {
+        bt_usage_tour stuck;
+        tour_world(&stuck, ta_temp_dir("usage", "wait-names"), NULL, 0, 0);
+        stuck.mode = BT_USAGE_MODE_WAIT_UNTIL;
+        stuck.wait.kind = kinds[at];
+        stuck.wait.app = BT_APP_STATS;
+        stuck.wait.drill = BT_DRILL_RATE;
+        stuck.wait.memo = BT_MEMO_REVIEW;
+        stuck.wait.solve = BT_SOLVE_REVIEW;
+        stuck.wait.case_drill = BT_CASE_DRILL_GRADE;
+        stuck.wait.waited = 60.0F;
+        stuck.exit_code = bt_usage_step(&stuck, &ctx, 0, 0.1F, &keys, request, &has_request);
+        BT_CHECK_EQ(stuck.exit_code, 1);
+        BT_CHECK_EQ(stuck.mode, BT_USAGE_MODE_DONE);
+        bt_usage_tour_free(&stuck);
+    }
+    bt_app_ctx_free(&ctx);
+}
+
+BT_TEST(usage, a_shot_that_never_lands_stops_the_tour) {
+    bt_app_ctx ctx;
+    world_ctx(&ctx, BT_APP_MENU);
+    bt_usage_action actions[1] = {0};
+    actions[0].kind = BT_USAGE_ACT_SHOT;
+    actions[0].name = "ghost";
+    bt_usage_tour tour;
+    tour_world(&tour, ta_temp_dir("usage", "shot-stuck"), actions, 1, 1);
+    bt_usage_key_request keys;
+    char request[TA_PATH_MAX];
+    int has_request = 0;
+    int frames = 0;
+    while (tour.mode != BT_USAGE_MODE_DONE) {
+        step(&tour, &ctx, &keys, request, &has_request);
+        frames++;
+        BT_CHECK(frames < 800);
+    }
+    BT_CHECK_EQ(tour.exit_code, 1);
+    BT_CHECK_EQ(tour.index, (size_t)0);
+    BT_CHECK_EQ(tour.shot_count, (size_t)0);
+    remove(tour.shot.path);
+    bt_app_ctx_free(&ctx);
 }
