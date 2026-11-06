@@ -11,9 +11,11 @@ EXE = Path(os.environ.get("RV_EXE", REPO / "artifacts/lane/lane-cov-verify/build
 def main():
     if not EXE.is_file():
         sys.exit(f"probe: missing exe {EXE}")
+    config_override = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else None
     with tempfile.TemporaryDirectory() as tmp:
-        config = Path(tmp) / "config.json"
-        config.write_text("{}", encoding="utf-8")
+        config = config_override or Path(tmp) / "config.json"
+        if config_override is None:
+            config.write_text("{}", encoding="utf-8")
         for k in range(0, 10):
             env = os.environ.copy()
             env["BT_CONFIG"] = str(config)
