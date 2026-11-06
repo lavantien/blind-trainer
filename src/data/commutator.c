@@ -267,6 +267,13 @@ static bool parse_slot(const char *text, unsigned depth, bt_alg *out) {
         }
         for (size_t i = 0; i < count; i++) {
             bt_alg sub = unit_expansion(&units[i]);
+            if (bt_alg_len(&sub) == 0) {
+                bt_alg_free(&sub);
+                units_free(units, count);
+                bt_alg_free(out);
+                bt_alg_init(out);
+                return false;
+            }
             alg_append(out, &sub);
             bt_alg_free(&sub);
         }

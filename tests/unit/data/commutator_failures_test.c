@@ -73,6 +73,18 @@ BT_TEST(commutator_failures, deeper_nesting_than_the_limit_is_rejected) {
     bt_expanded_list_free(&units);
 }
 
+BT_TEST(commutator_failures, a_bracketed_slot_with_an_empty_expansion_is_rejected) {
+    bt_expanded_list units;
+    bt_expanded_list_init(&units);
+    BT_CHECK(!bt_decompose("[[[R,U]],F]", &units));
+    BT_CHECK_EQ((int)units.count, 0);
+    bt_expanded_list_free(&units);
+    bt_expanded_list_init(&units);
+    BT_CHECK(bt_decompose("[[R,U]+[F,D],L]", &units));
+    BT_CHECK_EQ((int)units.count, 1);
+    bt_expanded_list_free(&units);
+}
+
 BT_TEST(commutator_failures, decompose_fails_closed_under_each_allocation_failure) {
     for (size_t ok = 0; ok < 48; ok++) {
         bt_expanded_list units;
