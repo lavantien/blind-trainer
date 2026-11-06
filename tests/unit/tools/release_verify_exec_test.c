@@ -257,3 +257,26 @@ BT_TEST(release_verify, run_child_kills_the_tree_on_timeout) {
     bt_rv_run_result_free(&result);
     bt_rv_child_spec_free(&spec);
 }
+
+BT_TEST(release_verify, run_child_reports_each_quote_overflow_site) {
+    static char slash_quote[BT_PATH_MAX + 2];
+    static char closing_fit[(BT_PATH_MAX * 2) - 1];
+    memset(slash_quote, '\\', BT_PATH_MAX);
+    slash_quote[BT_PATH_MAX] = '"';
+    slash_quote[BT_PATH_MAX + 1] = '\0';
+    memset(closing_fit, 'x', sizeof closing_fit - 1);
+    closing_fit[0] = ' ';
+    const char *slash_args[] = {slash_quote, NULL};
+    const char *closing_args[] = {closing_fit, NULL};
+    const char *const *cases[] = {slash_args, closing_args};
+    for (size_t at = 0; at < sizeof cases / sizeof cases[0]; at++) {
+        bt_rv_child_spec spec;
+        bt_rv_stage_spec("prog", cases[at], NULL, NULL, NULL, 0, &spec);
+        bt_rv_run_result result;
+        BT_CHECK_EQ(bt_rv_run_child(&spec, 30000, &result), 0);
+        BT_CHECK_EQ(result.outcome.kind, BT_RV_OUTCOME_SPAWN);
+        BT_CHECK(strstr(result.outcome.detail, "command line too long") != NULL);
+        bt_rv_run_result_free(&result);
+        bt_rv_child_spec_free(&spec);
+    }
+}

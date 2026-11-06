@@ -17,7 +17,7 @@ enum {
 #define BT_RV_CMDLINE_MAX (BT_PATH_MAX * 8)
 
 static void *rv_xmalloc(size_t size) {
-    void *block = bt_malloc(size > 0 ? size : 1);
+    void *block = bt_malloc(size);
     if (block == NULL) {
         fputs("bt-release-verify: out of memory\n", stderr);
         abort();
