@@ -207,3 +207,96 @@ read tools/ga-run/out.c 46-51, 111-120, 250-257, 304-308, 448-453 - writer appen
 grep src/ga/ga.c island and interval caps - class 4 proof check on current lines
 run cov_scope_ga.report() over the existing export - delivery numbers
 run python bt.py lint ga, ga-run, memofreq - closing lint gate
+
+## 2026-11-06 19:10 relaunch as lane-cov-ga9
+
+Toolset probe passed, all 6 tools. Mission from the hub: drive the listed drivable residue to covered, per file: ga-run lib.c 37, out.c 76, memofreq lib.c 16, inventory.c 20, dist.c 5, main.c 4. Order from the predecessor's successor list: seam-armed direct writer calls first (out.c bulk), then lib.c input-dependent arms, memofreq writer arms, class 2 residual site removals, dist.c sparse ftell arm. Refreshing the lane config and re-deriving the per-region map before authoring.
+
+## 19:25 residue mechanism derived
+
+Line-level map regenerated from the existing export, matches the predecessor. Key finding: the existing budget walks init the strbuf at capacity 64, so appends that fit spare capacity never allocate and their fail halves stay dark. New mechanism: the writers take a caller-owned strbuf, so a test can init capacity 17+d, prefill 16 filler bytes disarmed, then arm the seam. Append i (relative usage u_i, length L_i) is the first growth point exactly when u_i <= d < u_i + L_i, so sweeping d from 0 to the full output length lands the first-growth point on every append in turn, and arm(0) fails exactly that append. A small k walk per d keeps the fail-closed-monotone assertion.
+
+Classification updates from reading the source, all with proofs to record:
+- out.c 49 (negative cursor skip in shortest_digits): both callers pass fabs(value), the arm is dead. New class 2.
+- out.c 80 (trailing-zero trim loop body): the precision loop breaks at the minimal round-tripping %.*g form, whose significand never ends in 0, so the trim body never runs. New class 2.
+- out.c 342 (switch default return): drivable directly by stomping a parsed value's type to an invalid enum and expecting -1, will drive.
+- lib.c 395/397 are the empty-pairs ternary false arms (the malloc-fail bodies at 399 are covered by the existing tail walk, build_env borrows the arrays and allocates nothing), drivable with a freq.json holding empty adjacent and cooccurring arrays.
+- memofreq lib.c 290 is the cases ternary false arm (orbit tables always enumerate at least 2 cases), class 2, malloc-fail body already covered by the existing consecutive walk.
+- lib.c 322/324 and 419/421 drivable with the ga site-fault hook idiom (bt_ga_alloc_install), sites ga.build_inventory.list_grow and ga.build_env.conf_table.
+- memofreq main.c 113/115 needs an exe budget inside count_frequencies: binary search the config-stage boundary on the stderr text, then walk consecutive budgets until stderr shows count_frequencies failed.
+
+Batch plan: 1 out.c capacity sweeps plus armed build_assignment and build_report direct calls plus site-fault loads plus the run_all tail band in ga_run_oom_test.c. 2 t2 row mismatch and armed cross_check read and empty-pairs load in ga_run_inputs_test.c. 3 dist.c ftell arm through bt_ga_load_freq_data on a sparse oversize file in ga_run_io_test.c. 4 memofreq writer sweeps and the exe spawn band in memofreq_oom_test.c.
+
+## 2026-11-06 20:02 relaunch as lane-cov-ga10
+
+Toolset probe passed, all 6 tools (Read, Glob, Grep with empty and hit results, Edit, Write, PowerShell). Stale probes toolset_probe_ga8.md and toolset_probe_ga9.md deleted, mine at playground/toolset_probe_ga10.md. Inherited uncommitted per the hub brief: seam edits in tools/ga-run/lib.c plus ga_run_inputs_test.c, ga_run_io_test.c, ga_run_oom_test.c, memofreq_oom_test.c. First task: audit the half-finished batch against its suites, finish it, land it. Then the ga8 closeout residue: ga-run lib.c 37, out.c 76, memofreq lib.c 16, inventory.c 20, dist.c 5, main.c 4, from 158 dark of 4206.
+
+## 20:25 inherited batch landed
+
+Remaining 3 ga_run suites green on the changed lib.c (ga_run_lib, ga_run_flow, ga_run_out). Lint: ga-run 15 clean, memofreq 14 clean, ga 34 clean, tools area 90 clean with the 1 failure in tests/unit/tools/gendata_alloc_test.c, the gendata lane's in-flight file, not mine. Commits: 69ce2a7 fix(tools) the load_run_inputs double-free guard (build_env assigns the borrowed arrays into out before any failure return, so a late failure freed them twice), 28cbe72 test(tools) the inherited sweeps, site faults, and spawn bands, c158b42 chore(playground) empty_pairs, spawn_budget, and env probes plus the ga_dead_regions.py dist.c probe extension (env_probe.c generalized from hardcoded paths to argv before committing). Scoped measurement running for the after numbers.
+
+## 20:20 inherited batch green on all 4 suites
+
+ga_run_inputs, ga_run_io, ga_run_oom (3m24s, sweeps and tail band included), memofreq_oom (26s, count-stage band included) all passed in the lane tree. Freshness verified against the stale-exe trap: test exes timestamped 20:03:36, 20:03:52, and 20:07:16, all after the last inherited source edit at 19:55, with full recompiles logged at 20:03:35 to 20:07:16. ga-run.exe (19:43:20) and memofreq.exe (19:34:49) also postdate their source edits. The 18:29 ga8 export at cov-build/export.json serves as the pre-batch baseline. Remaining before commit: ga_run_lib, ga_run_flow, ga_run_out reruns on the changed lib.c, then lint, then the batch commit and a chore(playground) probe commit.
+
+## 20:15 audit of the inherited batch
+
+All 4 batches from ga9's 19:25 plan are present: writer capacity sweeps (report, assignment, json rich and heap order, display forms, compact, memofreq freq_data_text) with fail-closed monotone asserts in ga_run_oom_test.c and memofreq_oom_test.c, armed build_assignment and build_report allocation walks, site-fault loads (ga.build_inventory.list_grow, ga.build_env.conf_table), the run_all tail band 11 to 16 below the cached full budget, cross_check t2 mismatch and armed read, empty-pairs load in ga_run_inputs_test.c, dist.c ftell arm via bt_ga_load_freq_data on a sparse oversize file in ga_run_io_test.c, and the memofreq exe count-stage binary-search band. The lib.c edit is a correct double-free fix: bt_ga_build_env assigns the borrowed arrays into out before any failure return (ga.c:33 to 38), so a late failure with the old code freed lengths twice, once directly and once through bt_gr_run_inputs_free. Site names and offender strings verified against inventory.c:837 and ga.c:69. clang-format dry-run Werror clean on all 5 files. Probes empty_pairs_probe.c and spawn_budget_probe.py are argv-clean and get committed, env_probe.c was hardcoded and is generalized to argv (compiles). Lane config refreshed, 4 suites running in the lane build tree.
+
+## 2026-11-06 21:05 relaunch as lane-cov-ga11
+
+Toolset probe passed, all 6 tools (Read, Glob, Grep, PowerShell in the first block, Write and Edit on the probe file). Stale toolset_probe_ga10.md deleted. The predecessor's after-measurement never fired: taking the numbers myself, lane config refresh plus a full scoped cov_scope_ga.py run started in the background and polled in-turn on a bounded cadence, never trusted unseen. Target from the hub brief: 158 dark of 4206 at the last completed measurement, drivable residue per file ga-run lib.c 37, out.c 76, memofreq lib.c 16, inventory.c 20, dist.c 5, main.c 4, to be re-derived against the fresh export before authoring.
+
+## 21:25 after-measurement taken, 42 dark, band defect found and fixed in batch
+
+My own scoped measurement completed 21:02 to 21:10, all 9 suite entries green, total 42 uncovered (the ga10 batch drove 158 down to 42). The predecessor's unread export from 20:18:52 was found finished on disk with the identical map, so the numbers agree twice. Residue now: out.c 15 (lines 49, 80, 113, 145, 172), inventory.c 20 (452, 696, 784 to 796), dist.c 2 (64, 65), memofreq lib.c 1 (290), memofreq main.c 4 (113, 115).
+
+Root cause found in the count-stage band: offenders_push in memofreq main.c allocates through the fail seam, so at any exhausted budget the failure text itself is destroyed and stderr is always empty. The band's boundary search keyed on "load config failed" in stderr, which can never appear, so its binary search collapsed to lo=0 and the walk budgets 0 to 15 all died inside config load, never reaching count_frequencies. Verified by hand against the instrumented exe: budgets 1 to 64 exit 1 with empty stderr, budget 128 reaches the zero-hit stage.
+
+Classification of the 42, with llvm-cov show branch evidence:
+- out.c 145, 1 region, drivable: the multi-digit scientific tail appends never failed because no fixture value has a significand longer than 1 digit in scientific form. Fixed by adding "p": 1.234567e300 to GR_RICH_JSON_TEXT in ga_run_oom_test.c.
+- memofreq main.c 113 and 115, drivable: band rewritten in memofreq_oom_test.c. The stage window is now discovered in-process by bisecting the seam budget needed for bt_data_load_config (config_stage_budget) and for bt_mf_count_frequencies (count_stage_budget), then the exe spawns walk exactly [config_budget, config_budget + count_budget), where every budget dies inside count_frequencies. The allocation sequence matches the exe because bt_ga_config_memofreq, data_ga_path, and bt_mf_data_ga_path allocate nothing (verified in source), trace allocates only its ring at init, and plain CRT allocations never touch the seam. The upper probe keeps the zero-hit text assert at config_budget + count_budget + MF_ZERO_HIT_BOUND.
+- out.c 113 and 172, 12 regions, undrivable: 6 zero-width branch-mapping regions each. Line counts prove every arc and body execute (113 evaluates 324k times with the fail body at 114 run 2 times, 172 has 122 signbit-true entries). Compiler artifacts, wave-end class.
+- out.c 49 and 80, dist.c 64 and 65, inventory.c 452, 696, 784 to 796, memofreq lib.c 290, undrivable per the recorded class 2 proofs: fabs at both callers, shortest round-trip forms carry no trailing zero, bt_json_at never NULL under the count bound, the coda enum is exhaustive, the rime alphabet is 1 and 2 byte codepoints, the rule tables never emit duplicate texts, the orbit tables always hold cases.
+
+Both suites running in the lane tree, after-measurement rerun next to confirm out.c 145 and main.c 113/115 turn green.
+
+## 21:36 delivery, drivable set closed at 37 uncovered
+
+Batch green everywhere: memofreq_oom 1 passed (21:22), ga_run_oom 1 passed (21:26), the confirmation measurement ran all 9 suite entries green 21:27 to 21:34 and confirms both targets: out.c 145 covered (out.c 15 to 14 missing, start lines now 49, 80, 113, 172), memofreq main.c 113 and 115 covered (main.c 123 of 123, the file is fully covered). Lane total 42 to 37 uncovered. Lint closing gate: ga-run 15 clean, memofreq 14 clean, ga 34 clean. fmt dry-run clean on both touched files before the commit.
+
+Commits this generation: 41b3852 test(tools) the count-stage window rewrite and the scientific sweep value, 92ad76c chore(playground) region probe and toolset probe, plus this docs commit.
+
+The drivable set is closed. The remaining 37 regions, all classified undrivable, held for the wave-end decision:
+1. Dead defensive arms with recorded proofs, 5 regions: out.c 49 (both callers pass fabs), out.c 80 (shortest round-trip forms carry no trailing zero), dist.c 64 and 65 (bt_json_at never returns NULL under the loop bound), memofreq lib.c 290 (orbit tables always enumerate at least 2 cases).
+2. Inventory rule-table arms, 20 regions: inventory.c 452 (exhaustive coda enum), 696 (the rime alphabet is 1 and 2 byte codepoints), 784 to 796 (entry_cmp secondary arms, the rule tables never emit 2 entries with the same text).
+3. Compiler branch-mapping artifacts, 12 regions: out.c 113 and 172 carry 6 zero-width regions each at the if keyword. llvm-cov show proves every arc and body executes (113 runs 324k times with the fail body at 114 run twice, 172 enters the signbit-true half 122 times), so no execution can mark these. Same class as the trace expansion artifacts recorded at 04:26.
+
+Current state for a successor: the fresh export sits at artifacts/lane/lane-cov-ga/cov-build/export.json written 21:34:49, report-only reread through cov_scope_ga.report(), full remeasure about 8 minutes with python -I playground/cov_scope_ga.py. Region-level lists come from python -I playground/ga_region_probe.py. The count-stage band now self-locates its window by in-process bisection, so allocation-count drift in config load or count_frequencies moves the window with it.
+
+## reading log
+
+read scripts/commit_lane.py 1-110 - lock, staged verify, fmt gate
+run python bt.py lint ga-run, memofreq, ga - delivery lint gate
+run clang-format dry-run Werror on both touched files - fmt gate
+run python -I playground/cov_scope_ga.py - confirmation measurement, 42 to 37
+
+## reading log
+
+read artifacts/progress/lane-cov-ga.md full - predecessor state and the pending after-measurement
+read playground/cov_scope_ga.py full - suite list, merge, report logic
+read tools/ga-run/out.c 36-93, 105-175, 245-354 - digit pipeline, render_ryu arms, sorted_value switch
+read src/ga/dist.c 12-71, 243-262 - ftell arm, json ternaries, config_memofreq
+read src/ga/inventory.c 445-464, 685-712, 778-802 - coda default, utf8 arm, entry_cmp
+read tools/memofreq/lib.c 240-302, 465-514 - draw counts, count_frequencies, writers
+read tools/memofreq/main.c full - run stages, offenders_push, spawn env arming
+read src/common/alloc.c full - seam semantics, failures counter only
+read src/common/json.c 98-127, 521-537, 744-807 - integer rule, parse cleanup
+read src/common/bt_trace.c grep malloc - ring allocates at init only
+read tests/unit/tools/memofreq_oom_test.c 218-300, 301-368, 369-485 - sweeps, scratch config, spawn helper, old band
+read tests/unit/tools/ga_run_oom_test.c 202-290, 483-602 - tail band, sweep mechanism, rich json, display forms
+read tests/unit/tools/ga_run_out_test.c 1-70 - fixture helpers
+run python -I playground/cov_scope_ga.py - fresh after-measurement, 42 dark
+run cov_scope_ga.report() over the 20:18 export - predecessor's unread numbers
+run hand-armed memofreq.exe spawns at budgets 1 to 128 - empty stderr below the count stage, zero-hit at 128
+run llvm-cov show --show-branches --show-line-counts over all 26 cov exes - branch and body evidence for 113, 145, 172
