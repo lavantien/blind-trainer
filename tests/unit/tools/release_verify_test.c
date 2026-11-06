@@ -8,10 +8,12 @@
 #include <string.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/json.h"
 #include "common/paths.h"
 #include "sqlite3.h"
+#include "unit/core/death_test.h"
 #include "unit/tools/release_verify_test_util.h"
 #include "unit/tools/spawn_util.h"
 
@@ -809,4 +811,171 @@ BT_TEST(release_verify, run_cleans_the_temp_work_root_after_a_failed_run) {
     WIN32_FIND_DATAA found;
     HANDLE scan = FindFirstFileA(pattern, &found);
     BT_CHECK(scan == INVALID_HANDLE_VALUE);
+}
+
+BT_TEST(release_verify, release_cfg_from_rejects_a_shots_value_that_is_not_a_list) {
+    const char *texts[] = {
+        "{\"release\": {\"staging_dir\": \"s\", \"exe\": \"e\", \"config_file\": \"c\", "
+        "\"fonts_dir\": \"f\", \"run_timeout_secs\": 1, \"neg_config_exit\": 1, \"usage_exit\": 2}, "
+        "\"e2e\": {\"shots\": 5}}",
+        "{\"release\": {\"staging_dir\": \"s\", \"exe\": \"e\", \"config_file\": \"c\", "
+        "\"fonts_dir\": \"f\", \"run_timeout_secs\": 1, \"neg_config_exit\": 1, \"usage_exit\": 2}, "
+        "\"e2e\": {\"shots\": {\"menu\": 1}}}",
+    };
+    for (size_t at = 0; at < sizeof texts / sizeof texts[0]; at++) {
+        bt_json_value *value = NULL;
+        bt_json_error json_err;
+        BT_CHECK_EQ(bt_json_parse(texts[at], strlen(texts[at]), &value, &json_err), 0);
+        bt_rv_release_cfg cfg;
+        char err[BT_RV_ERR_MAX];
+        BT_CHECK(bt_rv_release_cfg_from(value, &cfg, err, sizeof err) != 0);
+        BT_CHECK(strstr(err, "config e2e.shots must be a list") != NULL);
+        bt_json_free(value);
+    }
+}
+
+BT_TEST(release_verify, release_cfg_from_rejects_more_than_thirty_two_shot_names) {
+    char big[2048];
+    size_t used = (size_t)snprintf(
+        big, sizeof big, "%s",
+        "{\"release\": {\"staging_dir\": \"s\", \"exe\": \"e\", \"config_file\": \"c\", "
+        "\"fonts_dir\": \"f\", \"run_timeout_secs\": 1, \"neg_config_exit\": 1, \"usage_exit\": 2}, "
+        "\"e2e\": {\"shots\": [");
+    for (int at = 0; at < 33; at++) {
+        used += (size_t)snprintf(big + used, sizeof big - used, "\"s%d\",", at);
+    }
+    used -= 1;
+    snprintf(big + used, sizeof big - used, "]}}");
+    bt_json_value *value = NULL;
+    bt_json_error json_err;
+    BT_CHECK_EQ(bt_json_parse(big, strlen(big), &value, &json_err), 0);
+    bt_rv_release_cfg cfg;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_release_cfg_from(value, &cfg, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "config e2e.shots holds too many names") != NULL);
+    bt_json_free(value);
+}
+
+BT_TEST(release_verify, db_stage_names_the_mkdir_failure_when_the_sandbox_root_is_a_file) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("db-blocked", dir);
+    char blocker[BT_PATH_MAX];
+    rv_util_join(blocker, dir, "blocker");
+    rv_util_write(blocker, "in the way");
+    bt_rv_release_cfg cfg;
+    parse_cfg(FULL_CONFIG_JSON, &cfg);
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_db_stage(blocker, &cfg, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "mkdir") != NULL);
+}
+
+BT_TEST(release_verify, db_stage_rejects_a_db_file_without_the_sqlite_magic) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("db-magic", dir);
+    char app_dir[BT_PATH_MAX];
+    snprintf(app_dir, sizeof app_dir, "%s/appdata/%s", dir, BT_APP_DIR_NAME);
+    rv_util_mkdir_p(app_dir);
+    char db_path[BT_PATH_MAX];
+    rv_util_join(db_path, app_dir, BT_RV_DB_FILE_FALLBACK);
+    rv_util_write(db_path, "definitely not a sqlite database header");
+    bt_rv_release_cfg cfg;
+    parse_cfg(FULL_CONFIG_JSON, &cfg);
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_db_stage(dir, &cfg, err, sizeof err) != 0);
+    BT_CHECK(strstr(err, "db file is not a sqlite database") != NULL);
+}
+
+BT_TEST(release_verify, packaged_window_dims_names_every_bad_config_shape) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("dims", dir);
+    char path[BT_PATH_MAX];
+    rv_util_join(path, dir, "config.json");
+    bt_rv_release_cfg cfg;
+    parse_cfg(FULL_CONFIG_JSON, &cfg);
+    unsigned int width = 0;
+    unsigned int height = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK(bt_rv_packaged_window_dims(dir, "missing.json", &width, &height, err, sizeof err) !=
+             0);
+    BT_CHECK(strstr(err, "cannot read packaged config") != NULL);
+    const char *bodies[] = {
+        "{oops",
+        "{}",
+        "{\"app\": {}}",
+        "{\"app\": {\"window\": {\"width\": \"wide\", \"height\": 800}}}",
+        "{\"app\": {\"window\": {\"width\": -5, \"height\": 800}}}",
+        "{\"app\": {\"window\": {\"width\": 1280}}}",
+        "{\"app\": {\"window\": {\"width\": 1280, \"height\": 4294967296}}}",
+    };
+    const char *want[] = {
+        "cannot parse packaged config",
+        "packaged config app.window.width missing",
+        "packaged config app.window.width missing",
+        "packaged config app.window.width missing",
+        "packaged config app.window.width missing",
+        "packaged config app.window.height missing",
+        "packaged config app.window.height missing",
+    };
+    for (size_t at = 0; at < sizeof bodies / sizeof bodies[0]; at++) {
+        rv_util_write(path, bodies[at]);
+        BT_CHECK(bt_rv_packaged_window_dims(dir, "config.json", &width, &height, err, sizeof err) !=
+                 0);
+        BT_CHECK(strstr(err, want[at]) != NULL);
+    }
+}
+
+BT_TEST(release_verify, zip_root_from_rejects_roots_and_dot_dirs) {
+    const char *inputs[] = {"C:", "\\", "/", "x/..", "x/.", "..", "."};
+    char out[BT_PATH_MAX];
+    char err[BT_RV_ERR_MAX];
+    for (size_t at = 0; at < sizeof inputs / sizeof inputs[0]; at++) {
+        BT_CHECK(bt_rv_zip_root_from(inputs[at], out, err, sizeof err) != 0);
+        BT_CHECK(strstr(err, "has no folder name") != NULL);
+    }
+}
+
+BT_TEST(release_verify, check_shot_dir_skips_directory_entries) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("shots-dir", dir);
+    char path[BT_PATH_MAX];
+    rv_util_join(path, dir, "menu.png");
+    rv_util_write_png(path, 1280, 800);
+    rv_util_join(path, dir, "drill.png");
+    rv_util_write_png(path, 1280, 800);
+    rv_util_join(path, dir, "subdir");
+    rv_util_mkdir_p(path);
+    bt_rv_release_cfg cfg;
+    two_shot_cfg(&cfg);
+    size_t count = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK_EQ(bt_rv_check_shot_dir(dir, &cfg, 1280, 800, &count, err, sizeof err), 0);
+    BT_CHECK_EQ(count, 2U);
+}
+
+static void shot_death_run(size_t ok_count) {
+    char dir[BT_PATH_MAX];
+    rv_util_scratch("shots-oom", dir);
+    char path[BT_PATH_MAX];
+    rv_util_join(path, dir, "menu.png");
+    rv_util_write_png(path, 1280, 800);
+    bt_rv_release_cfg cfg;
+    parse_cfg(FULL_CONFIG_JSON, &cfg);
+    size_t count = 0;
+    char err[BT_RV_ERR_MAX];
+    bt_alloc_fail_arm(ok_count);
+    bt_rv_check_shot_dir(dir, &cfg, 1280, 800, &count, err, sizeof err);
+}
+
+static void shot_death_names_growth(void) {
+    shot_death_run(0);
+}
+
+static void shot_death_name_copy(void) {
+    shot_death_run(1);
+}
+
+BT_TEST(release_verify, check_shot_dir_aborts_when_its_name_arrays_starve) {
+    bt_death_expect_abort("release_verify.shot_names_growth", "out of memory",
+                          shot_death_names_growth);
+    bt_death_expect_abort("release_verify.shot_name_copy", "out of memory", shot_death_name_copy);
 }
