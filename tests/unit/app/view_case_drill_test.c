@@ -245,6 +245,16 @@ BT_TEST(view_case_drill, a_skewb_case_of_only_rotations_reports_the_stripped_alg
     BT_CHECK(strcmp(error, "alg is empty after rotation stripping") == 0);
 }
 
+BT_TEST(view_case_drill, a_state_malloc_failure_fails_the_facelet_build) {
+    bt_pz_grid grid;
+    char error[BT_CASE_DRILL_TEXT_MAX];
+    bt_alloc_fail_arm(4);
+    int ok = bt_case_drill_facelets("bigcube", 1, 4, "R U R'", &grid, error, sizeof error);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(ok, 0);
+    BT_CHECK(strcmp(error, "out of memory") == 0);
+}
+
 BT_TEST(view_case_drill, case_facelets_applies_the_inverse_alg_to_solved) {
     bt_pz_grid shown;
     char error[BT_CASE_DRILL_TEXT_MAX];
