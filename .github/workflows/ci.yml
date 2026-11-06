@@ -85,6 +85,8 @@ jobs:
             if ($LASTEXITCODE -ne 0) { exit 1 }
             git commit -m "chore(badges): refresh ci badge [skip ci]"
             if ($LASTEXITCODE -ne 0) { exit 1 }
+            git pull --rebase origin main
+            if ($LASTEXITCODE -ne 0) { exit 1 }
             git push origin HEAD:main
             if ($LASTEXITCODE -ne 0) { exit 1 }
           }
