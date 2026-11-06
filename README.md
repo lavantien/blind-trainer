@@ -252,6 +252,14 @@ python scripts/ci_badge.py
 | BT_REF_GROUND | path | ref_ground root the corpus and packs load from |
 | BT_CONFIG | path | config hub path |
 | BT_ARTIFACTS | path | artifacts root |
+| BT_VERIFY_ALLOC_FAIL_OK | count | verify exe fails every allocation past the first N, for the starvation tests |
+| BTVD_ALLOC_FAIL_OK | count | visual-diff exe, same starvation arm |
+| BT_RV_ALLOC_FAIL_OK | count | release-verify exe, same starvation arm |
+| BT_MEMOFREQ_ALLOC_FAIL_OK | count | memofreq exe, same starvation arm |
+| BT_APP_WINDOW_FAIL | flag | any non-empty value forces the app window creation to fail |
+| BT_APP_FOCUS_CURSOR_FAIL | flag | forces the cursor position read to fail |
+| BT_APP_FOCUS_CLASS_FAIL | flag | forces the foreground window class lookup to fail |
+| BT_APP_FOCUS_GIVEBACK | flag | forces the foreground giveback to fail |
 
 bt.py sets them for every suite and tool run. Runtime roots for config, vendor data and assets resolve from the workspace layout first and fall back to an exe-relative install layout when the workspace paths are missing.
 
@@ -331,11 +339,11 @@ clean-c                  remove the c build tree
 
 ### exit codes
 
-bt-app.exe in smoke mode: 0 tour complete with all shots written, 1 verification failure or boot stuck past the limit, 2 flag usage error, 3 a tour state never arrived. `python bt.py visual`: 0 clean, 2 regression on both diffs, 3 infra flake that passed the re-render, 4 infra error. visual-diff.exe: 0 match, 1 mismatch or missing baseline, 2 usage. bt-e2e.exe: 0 all shots verified, 1 shot failures, 2 harness error. policy.exe, mutants-gate.exe, release-verify.exe: 0 pass, 1 findings, 2 usage or harness error.
+bt-app.exe in smoke mode: 0 tour complete with all shots written, 1 verification failure, boot stuck past the limit, or the window closed mid tour, 2 flag usage error, 3 a tour state never arrived. `python bt.py visual`: 0 clean, 2 regression on both diffs, 3 infra flake that passed the re-render, 4 infra error. visual-diff.exe: 0 match, 1 mismatch or missing baseline, 2 usage. bt-e2e.exe: 0 all shots verified, 1 shot failures, 2 harness error. policy.exe, mutants-gate.exe, release-verify.exe: 0 pass, 1 findings, 2 usage or harness error.
 
 ## QA harness
 
-The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records go into docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request through the bt.py driver: setup, vendor, the pinned grounding fetch, fmt, lint, policy, check, build, the unit suites of every area except app, which needs a desktop, with the tools area skipping the ga-run cross-check suite that reads locally generated data, and the python suite. The mutants, e2e, visual, and verify-algs gates stay local.
+The verification chain runs through bt.py in order, committing at each green step: test, fmt, lint, policy, check, build, fuzz, mutants, mutants-gate, e2e, visual, verify-algs, each a separate invocation so a failure names its step. Every custom gate ships a selftest target that proves it detects what it claims: policy-selftest, mutants-gate-selftest, visual-selftest, verify-algs-selftest, release-verify-selftest. Surviving mutants are never ignored: mutants-gate fails unless each survivor matches a justified row in `config/allowlist.tsv`, stale rows also fail. visual always diffs fresh e2e renders against the committed baselines, baselines recaptures them from 2 byte-identical smoke captures, and the baselines carry their capture recipe in tests/visual/baselines/PROVENANCE.md. Adversarial review by 2 independent agents before any task closes, records go into docs/reviews/ from the template there. Conventional commits, zero code comments, the sloc cap. CI runs on every push to main and every pull request through the bt.py driver: setup, vendor, the pinned grounding fetch, fmt, lint, policy, check, build, a derived data step that regenerates data/ga/freq.json through memofreq, the unit suites of every area except app, which needs a desktop, and the python suite. The mutants, e2e, visual, and verify-algs gates stay local.
 
 ## Roadmap
 
@@ -343,8 +351,7 @@ The verification chain runs through bt.py in order, committing at each green ste
 2. a memguard target that reports repo process memory against the cap through scripts/memguard.py
 3. targets wiring the alg coverage badge and the diagram renders into bt.py
 4. a run target that starts the app after a build
-5. run the ga-run cross-check suite in CI once a cheap generated-data fixture exists
-6. split bt.py into modules under the 1000 source line rule, the driver sits past the cap invisible to the policy scan
+5. split bt.py into modules under the 1000 source line rule, the driver sits past the cap invisible to the policy scan
 
 ## Licensing
 
