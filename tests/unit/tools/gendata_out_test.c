@@ -76,6 +76,21 @@ BT_TEST(gendata_out, write_atomic_creates_parents_and_overwrites) {
     rm_tree(dir);
 }
 
+BT_TEST(gendata_out, write_atomic_accepts_backslash_separated_paths) {
+    char dir[BT_PATH_MAX];
+    temp_dir(dir, "bs");
+    char path[BT_PATH_MAX];
+    snprintf(path, sizeof path, "%s\\deep\\file.json", dir);
+    char err[128];
+    BT_CHECK_EQ(bt_gd_write_atomic(path, "{}", 2, err, sizeof err), 0);
+    FILE *file = fopen(path, "rb");
+    BT_CHECK(file != NULL);
+    if (file != NULL) {
+        fclose(file);
+    }
+    rm_tree(dir);
+}
+
 BT_TEST(gendata_out, write_atomic_fails_and_cleans_up_when_the_target_is_a_directory) {
     char dir[BT_PATH_MAX];
     temp_dir(dir, "dir");

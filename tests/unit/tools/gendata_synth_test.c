@@ -368,3 +368,18 @@ BT_TEST(gendata_synth, generated_entries_fill_only_uncovered_cases) {
     bt_alg_free(&alg);
     bt_gd_cases_file_free(&cases);
 }
+
+BT_TEST(gendata_synth, starved_limits_find_no_candidates_and_report_no_case) {
+    bt_gd_synth_limits lim = {.max_setup = 0, .max_insert = 1, .node_budget = 10};
+    bt_gd_scoring_cfg cfg;
+    test_scoring(&cfg);
+    uint8_t t1 = 0;
+    uint8_t t2 = 0;
+    case_of(BT_ORBIT_CORNER, 'I', 'N', &t1, &t2);
+    bt_gd_synth_hits candidates = {0};
+    BT_CHECK_EQ(bt_gd_synth_candidates(BT_ORBIT_CORNER, t1, t2, &lim, &candidates), 0);
+    BT_CHECK_EQ(candidates.count, 0U);
+    bt_gd_synth_hits_free(&candidates);
+    bt_gd_synth_hit hit;
+    BT_CHECK(!bt_gd_synth_case(BT_ORBIT_CORNER, t1, t2, &lim, &cfg, &hit));
+}

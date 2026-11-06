@@ -4,12 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "data/digest.h"
 #include "gendata/lib.h"
 
 static int push(char ***out, size_t *count, const char *text) {
-    char **grown = realloc(*out, (*count + 1) * sizeof(char *));
+    char **grown = bt_realloc(*out, (*count + 1) * sizeof(char *));
     if (grown == NULL) {
         return -1;
     }

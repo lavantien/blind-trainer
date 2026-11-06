@@ -6,10 +6,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "core/alg.h"
 #include "data/corpus.h"
 #include "data/digest.h"
+
+BT_TEST(gendata_audit, audit_drops_offenders_when_allocation_fails) {
+    bt_gd_built built = {0};
+    built.offenders = malloc(sizeof(char *));
+    built.offenders[0] = _strdup("cherry/edge.tsv/9 broken");
+    built.offender_count = 1;
+    bt_corpus corpus;
+    bt_corpus_init(&corpus);
+    char **offenders = NULL;
+    size_t count = 0;
+    bt_alloc_fail_arm(0);
+    bt_gd_audit(&built, &corpus, 0, &offenders, &count);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(count, 0U);
+    BT_CHECK(offenders == NULL);
+    bt_gd_string_list_free(offenders, count);
+    bt_gd_built_free(&built);
+    bt_corpus_free(&corpus);
+}
 
 BT_TEST(gendata_audit, audit_lists_every_shortfall_on_an_empty_build) {
     bt_corpus corpus;
