@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/paths.h"
@@ -24,12 +25,16 @@ typedef struct {
 } bt_gd_errors;
 
 static int errors_push(bt_gd_errors *errors, const char *text) {
-    char **grown = realloc(errors->items, (errors->count + 1) * sizeof(char *));
+    char **grown = bt_realloc(errors->items, (errors->count + 1) * sizeof(char *));
     if (grown == NULL) {
         return -1;
     }
     errors->items = grown;
-    errors->items[errors->count++] = _strdup(text);
+    errors->items[errors->count] = bt_gd_strdup(text);
+    if (errors->items[errors->count] == NULL) {
+        return -1;
+    }
+    errors->count++;
     return 0;
 }
 

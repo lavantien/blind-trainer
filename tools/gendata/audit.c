@@ -15,7 +15,10 @@ static int push(char ***out, size_t *count, const char *text) {
         return -1;
     }
     *out = grown;
-    (*out)[*count] = _strdup(text);
+    (*out)[*count] = bt_gd_strdup(text);
+    if ((*out)[*count] == NULL) {
+        return -1;
+    }
     *count += 1;
     return 0;
 }

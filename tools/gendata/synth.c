@@ -3,12 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 #include "core/cube.h"
 #include "core/moves.h"
 #include "data/corpus.h"
 #include "data/verify.h"
+#include "gendata/lib.h"
 #include "scheme/memo.h"
 #include "scheme/pairs.h"
 #include "scheme/scheme.h"
@@ -24,7 +26,7 @@ typedef struct {
 static int vec_push(bt_gd_move_vec *vec, bt_move mv) {
     if (vec->len == vec->cap) {
         size_t cap = vec->cap == 0 ? 8 : vec->cap * 2;
-        bt_move *items = realloc(vec->items, cap * sizeof(bt_move));
+        bt_move *items = bt_realloc(vec->items, cap * sizeof(bt_move));
         if (items == NULL) {
             return -1;
         }
@@ -42,12 +44,16 @@ static void vec_free(bt_gd_move_vec *vec) {
     vec->cap = 0;
 }
 
-static void vec_clone(const bt_gd_move_vec *src, bt_gd_move_vec *dst) {
+static bool vec_clone(const bt_gd_move_vec *src, bt_gd_move_vec *dst) {
     dst->cap = dst->len = src->len;
-    dst->items = src->len > 0 ? malloc(src->len * sizeof(bt_move)) : NULL;
+    dst->items = src->len > 0 ? bt_malloc(src->len * sizeof(bt_move)) : NULL;
     if (dst->items != NULL && src->len > 0) {
         memcpy(dst->items, src->items, src->len * sizeof(bt_move));
     }
+    if (src->len == 0) {
+        return true;
+    }
+    return dst->items != NULL;
 }
 
 static void solved_occ(uint8_t occ[54]) {
@@ -126,7 +132,7 @@ static int setups_by_depth(const bt_move *alphabet, size_t alphabet_len, size_t 
                            bt_gd_move_vec **out, size_t *out_count) {
     bt_gd_move_vec *all = NULL;
     size_t all_count = 0;
-    bt_gd_move_vec *frontier = malloc(sizeof(bt_gd_move_vec));
+    bt_gd_move_vec *frontier = bt_malloc(sizeof(bt_gd_move_vec));
     size_t frontier_count = 1;
     if (frontier == NULL) {
         return -1;
@@ -134,12 +140,16 @@ static int setups_by_depth(const bt_move *alphabet, size_t alphabet_len, size_t 
     frontier[0].items = NULL;
     frontier[0].len = 0;
     frontier[0].cap = 0;
-    all = malloc(sizeof(bt_gd_move_vec));
+    all = bt_malloc(sizeof(bt_gd_move_vec));
     if (all == NULL) {
         free(frontier);
         return -1;
     }
-    vec_clone(&frontier[0], &all[0]);
+    if (!vec_clone(&frontier[0], &all[0])) {
+        free(all);
+        free(frontier);
+        return -1;
+    }
     all_count = 1;
     for (size_t depth = 0; depth < max_setup; depth++) {
         bt_gd_move_vec *next = NULL;
@@ -149,12 +159,14 @@ static int setups_by_depth(const bt_move *alphabet, size_t alphabet_len, size_t 
                 if (!canonical_extension(&frontier[p], alphabet[a])) {
                     continue;
                 }
-                bt_gd_move_vec *grown = realloc(next, (next_count + 1) * sizeof(bt_gd_move_vec));
+                bt_gd_move_vec *grown = bt_realloc(next, (next_count + 1) * sizeof(bt_gd_move_vec));
                 if (grown == NULL) {
                     goto fail;
                 }
                 next = grown;
-                vec_clone(&frontier[p], &next[next_count]);
+                if (!vec_clone(&frontier[p], &next[next_count])) {
+                    goto fail;
+                }
                 if (vec_push(&next[next_count], alphabet[a]) != 0) {
                     vec_free(&next[next_count]);
                     goto fail;
@@ -162,13 +174,21 @@ static int setups_by_depth(const bt_move *alphabet, size_t alphabet_len, size_t 
                 next_count++;
             }
         }
-        bt_gd_move_vec *grown_all = realloc(all, (all_count + next_count) * sizeof(bt_gd_move_vec));
+        bt_gd_move_vec *grown_all =
+            bt_realloc(all, (all_count + next_count) * sizeof(bt_gd_move_vec));
         if (grown_all == NULL) {
             goto fail;
         }
         all = grown_all;
+        size_t cloned = 0;
         for (size_t n = 0; n < next_count; n++) {
-            vec_clone(&next[n], &all[all_count + n]);
+            if (!vec_clone(&next[n], &all[all_count + n])) {
+                for (size_t c = 0; c < cloned; c++) {
+                    vec_free(&all[all_count + c]);
+                }
+                goto fail;
+            }
+            cloned++;
         }
         all_count += next_count;
         for (size_t p = 0; p < frontier_count; p++) {
@@ -248,14 +268,16 @@ typedef struct {
 static int insertions_push(bt_gd_insertions *sink, const bt_gd_move_vec *stack) {
     if (sink->count == sink->cap) {
         size_t cap = sink->cap == 0 ? 8 : sink->cap * 2;
-        bt_gd_move_vec *items = realloc(sink->items, cap * sizeof(bt_gd_move_vec));
+        bt_gd_move_vec *items = bt_realloc(sink->items, cap * sizeof(bt_gd_move_vec));
         if (items == NULL) {
             return -1;
         }
         sink->items = items;
         sink->cap = cap;
     }
-    vec_clone(stack, &sink->items[sink->count]);
+    if (!vec_clone(stack, &sink->items[sink->count])) {
+        return -1;
+    }
     sink->count++;
     return 0;
 }
@@ -329,8 +351,8 @@ static int insertions_reaching(const uint8_t cube_s[54], const bt_move *alphabet
     if (rc != 0) {
         return -1;
     }
-    bt_gd_len_key *keys = malloc(sink->count * sizeof(bt_gd_len_key));
-    bt_gd_move_vec *sorted = malloc(sink->count * sizeof(bt_gd_move_vec));
+    bt_gd_len_key *keys = bt_malloc(sink->count * sizeof(bt_gd_len_key));
+    bt_gd_move_vec *sorted = bt_malloc(sink->count * sizeof(bt_gd_move_vec));
     if (keys == NULL || sorted == NULL) {
         free(keys);
         free(sorted);
@@ -350,106 +372,131 @@ static int insertions_reaching(const uint8_t cube_s[54], const bt_move *alphabet
     return 0;
 }
 
-static void invert_seq(const bt_move *seq, size_t len, bt_gd_move_vec *out) {
+static int invert_seq(const bt_move *seq, size_t len, bt_gd_move_vec *out) {
     for (size_t i = len; i > 0; i--) {
-        vec_push(out, bt_move_invert(seq[i - 1]));
+        if (vec_push(out, bt_move_invert(seq[i - 1])) != 0) {
+            return -1;
+        }
     }
+    return 0;
 }
 
-static void alg_from_vec(const bt_gd_move_vec *vec, bt_alg *out) {
+static int alg_from_vec(const bt_gd_move_vec *vec, bt_alg *out) {
     bt_alg_init(out);
     for (size_t i = 0; i < vec->len; i++) {
-        bt_alg_push(out, vec->items[i]);
+        if (!bt_alg_push(out, vec->items[i])) {
+            bt_alg_free(out);
+            return -1;
+        }
     }
+    return 0;
 }
 
-static void commutator_of(const bt_gd_move_vec *setup, const bt_alg *first, const bt_alg *second,
-                          bt_alg *out, char *text, size_t text_len) {
+static int commutator_of(const bt_gd_move_vec *setup, const bt_alg *first, const bt_alg *second,
+                         bt_alg *out, char *text, size_t text_len) {
     bt_gd_move_vec moves = {0};
-    for (size_t i = 0; i < setup->len; i++) {
-        vec_push(&moves, setup->items[i]);
+    int rc = 0;
+    for (size_t i = 0; i < setup->len && rc == 0; i++) {
+        rc = vec_push(&moves, setup->items[i]);
     }
-    for (size_t i = 0; i < first->len; i++) {
-        vec_push(&moves, first->items[i]);
+    for (size_t i = 0; i < first->len && rc == 0; i++) {
+        rc = vec_push(&moves, first->items[i]);
     }
-    for (size_t i = 0; i < second->len; i++) {
-        vec_push(&moves, second->items[i]);
+    for (size_t i = 0; i < second->len && rc == 0; i++) {
+        rc = vec_push(&moves, second->items[i]);
     }
-    bt_alg first_inv = bt_alg_inverse(first);
-    bt_alg second_inv = bt_alg_inverse(second);
-    for (size_t i = 0; i < first_inv.len; i++) {
-        vec_push(&moves, first_inv.items[i]);
+    for (size_t i = first->len; i > 0 && rc == 0; i--) {
+        rc = vec_push(&moves, bt_move_invert(first->items[i - 1]));
     }
-    for (size_t i = 0; i < second_inv.len; i++) {
-        vec_push(&moves, second_inv.items[i]);
+    for (size_t i = second->len; i > 0 && rc == 0; i--) {
+        rc = vec_push(&moves, bt_move_invert(second->items[i - 1]));
     }
-    bt_gd_move_vec setup_inv = {0};
-    invert_seq(setup->items, setup->len, &setup_inv);
-    for (size_t i = 0; i < setup_inv.len; i++) {
-        vec_push(&moves, setup_inv.items[i]);
+    for (size_t i = setup->len; i > 0 && rc == 0; i--) {
+        rc = vec_push(&moves, bt_move_invert(setup->items[i - 1]));
     }
-    alg_from_vec(&moves, out);
+    if (rc == 0) {
+        rc = alg_from_vec(&moves, out);
+    } else {
+        bt_alg_init(out);
+    }
     bt_strbuf first_text;
     bt_strbuf second_text;
     bt_strbuf_init(&first_text, 0);
     bt_strbuf_init(&second_text, 0);
     bt_alg_format(first, &first_text);
     bt_alg_format(second, &second_text);
-    if (setup->len == 0) {
-        snprintf(text, text_len, "[%s,%s]", first_text.data, second_text.data);
-    } else {
-        bt_strbuf setup_text;
-        bt_strbuf_init(&setup_text, 0);
-        bt_alg setup_alg;
-        alg_from_vec(setup, &setup_alg);
-        bt_alg_format(&setup_alg, &setup_text);
-        snprintf(text, text_len, "%s:[%s,%s]", setup_text.data, first_text.data, second_text.data);
-        bt_strbuf_free(&setup_text);
-        bt_alg_free(&setup_alg);
+    if (rc == 0) {
+        if (setup->len == 0) {
+            snprintf(text, text_len, "[%s,%s]", first_text.data != NULL ? first_text.data : "",
+                     second_text.data != NULL ? second_text.data : "");
+        } else {
+            bt_strbuf setup_text;
+            bt_strbuf_init(&setup_text, 0);
+            bt_alg setup_alg;
+            if (alg_from_vec(setup, &setup_alg) == 0) {
+                bt_alg_format(&setup_alg, &setup_text);
+                snprintf(text, text_len, "%s:[%s,%s]",
+                         setup_text.data != NULL ? setup_text.data : "",
+                         first_text.data != NULL ? first_text.data : "",
+                         second_text.data != NULL ? second_text.data : "");
+                bt_alg_free(&setup_alg);
+            } else {
+                rc = -1;
+            }
+            bt_strbuf_free(&setup_text);
+        }
     }
     bt_strbuf_free(&first_text);
     bt_strbuf_free(&second_text);
-    bt_alg_free(&first_inv);
-    bt_alg_free(&second_inv);
-    vec_free(&setup_inv);
     vec_free(&moves);
+    return rc;
 }
 
-static void probe_moves(const bt_gd_move_vec *setup, const bt_gd_move_vec *setup_inv,
-                        const bt_move *first, size_t first_len, const bt_move *first_inv,
-                        size_t first_inv_len, bt_move interchange, bool interchange_first,
-                        bt_gd_move_vec *out) {
-    for (size_t i = 0; i < setup->len; i++) {
-        vec_push(out, setup->items[i]);
+static int probe_moves(const bt_gd_move_vec *setup, const bt_gd_move_vec *setup_inv,
+                       const bt_move *first, size_t first_len, const bt_move *first_inv,
+                       size_t first_inv_len, bt_move interchange, bool interchange_first,
+                       bt_gd_move_vec *out) {
+    int rc = 0;
+    for (size_t i = 0; i < setup->len && rc == 0; i++) {
+        rc = vec_push(out, setup->items[i]);
     }
     if (interchange_first) {
-        vec_push(out, interchange);
-        for (size_t i = 0; i < first_len; i++) {
-            vec_push(out, first[i]);
+        if (rc == 0) {
+            rc = vec_push(out, interchange);
         }
-        vec_push(out, bt_move_invert(interchange));
-        for (size_t i = 0; i < first_inv_len; i++) {
-            vec_push(out, first_inv[i]);
+        for (size_t i = 0; i < first_len && rc == 0; i++) {
+            rc = vec_push(out, first[i]);
+        }
+        if (rc == 0) {
+            rc = vec_push(out, bt_move_invert(interchange));
+        }
+        for (size_t i = 0; i < first_inv_len && rc == 0; i++) {
+            rc = vec_push(out, first_inv[i]);
         }
     } else {
-        for (size_t i = 0; i < first_len; i++) {
-            vec_push(out, first[i]);
+        for (size_t i = 0; i < first_len && rc == 0; i++) {
+            rc = vec_push(out, first[i]);
         }
-        vec_push(out, interchange);
-        for (size_t i = 0; i < first_inv_len; i++) {
-            vec_push(out, first_inv[i]);
+        if (rc == 0) {
+            rc = vec_push(out, interchange);
         }
-        vec_push(out, bt_move_invert(interchange));
+        for (size_t i = 0; i < first_inv_len && rc == 0; i++) {
+            rc = vec_push(out, first_inv[i]);
+        }
+        if (rc == 0) {
+            rc = vec_push(out, bt_move_invert(interchange));
+        }
     }
-    for (size_t i = 0; i < setup_inv->len; i++) {
-        vec_push(out, setup_inv->items[i]);
+    for (size_t i = 0; i < setup_inv->len && rc == 0; i++) {
+        rc = vec_push(out, setup_inv->items[i]);
     }
+    return rc;
 }
 
 static int hits_push(bt_gd_synth_hits *hits, const bt_alg *alg, const char *commutator) {
     if (hits->count == hits->cap_alloc) {
         size_t cap = hits->cap_alloc == 0 ? 8 : hits->cap_alloc * 2;
-        bt_gd_synth_hit *items = realloc(hits->items, cap * sizeof(bt_gd_synth_hit));
+        bt_gd_synth_hit *items = bt_realloc(hits->items, cap * sizeof(bt_gd_synth_hit));
         if (items == NULL) {
             return -1;
         }
@@ -457,11 +504,19 @@ static int hits_push(bt_gd_synth_hits *hits, const bt_alg *alg, const char *comm
         hits->cap_alloc = cap;
     }
     bt_gd_synth_hit *hit = &hits->items[hits->count];
+    char *commutator_copy = bt_gd_strdup(commutator);
+    if (commutator_copy == NULL) {
+        return -1;
+    }
     bt_alg_init(&hit->alg);
     for (size_t i = 0; i < alg->len; i++) {
-        bt_alg_push(&hit->alg, alg->items[i]);
+        if (!bt_alg_push(&hit->alg, alg->items[i])) {
+            bt_alg_free(&hit->alg);
+            free(commutator_copy);
+            return -1;
+        }
     }
-    hit->commutator = _strdup(commutator);
+    hit->commutator = commutator_copy;
     hits->count++;
     return 0;
 }
@@ -524,7 +579,11 @@ static int search_with(const uint8_t target[54], uint8_t buffer, const bt_gd_syn
             continue;
         }
         bt_gd_move_vec setup_inv = {0};
-        invert_seq(setup->items, setup->len, &setup_inv);
+        if (invert_seq(setup->items, setup->len, &setup_inv) != 0) {
+            vec_free(&setup_inv);
+            rc = -1;
+            break;
+        }
         bt_gd_insertions found = {0};
         if (insertions_reaching(cube_s, insert_alphabet, insert_alphabet_len, limits->max_insert,
                                 targets, buffer, &budget, &found) != 0) {
@@ -535,43 +594,63 @@ static int search_with(const uint8_t target[54], uint8_t buffer, const bt_gd_syn
         for (size_t f = 0; f < found.count && rc == 0; f++) {
             bt_gd_move_vec variants[2] = {{0}, {0}};
             variants[0] = found.items[f];
-            invert_seq(found.items[f].items, found.items[f].len, &variants[1]);
+            if (invert_seq(found.items[f].items, found.items[f].len, &variants[1]) != 0) {
+                rc = -1;
+            }
             for (size_t v = 0; v < 2 && rc == 0; v++) {
                 bt_gd_move_vec first_inv = {0};
-                invert_seq(variants[v].items, variants[v].len, &first_inv);
+                if (invert_seq(variants[v].items, variants[v].len, &first_inv) != 0) {
+                    rc = -1;
+                }
                 for (size_t u = 0; u < usable_len && rc == 0; u++) {
                     for (int order = 0; order < 2 && rc == 0; order++) {
                         bt_gd_move_vec probe = {0};
-                        probe_moves(setup, &setup_inv, variants[v].items, variants[v].len,
-                                    first_inv.items, first_inv.len, usable[u], order == 1, &probe);
-                        uint8_t occ[54];
-                        solved_occ(occ);
-                        apply_seq_occ(occ, probe.items, probe.len);
-                        if (occ_equals(occ, target)) {
-                            bt_alg first_alg;
-                            alg_from_vec(&variants[v], &first_alg);
-                            bt_alg second_alg;
-                            bt_alg_init(&second_alg);
-                            bt_alg_push(&second_alg, usable[u]);
-                            bt_alg alg;
-                            char commutator[512];
-                            commutator_of(setup, order == 1 ? &second_alg : &first_alg,
-                                          order == 1 ? &first_alg : &second_alg, &alg, commutator,
-                                          sizeof commutator);
-                            uint32_t qtm = bt_alg_qtm(&alg);
-                            bool push = true;
-                            if (!plateau_set) {
-                                plateau_set = true;
-                                plateau_qtm = qtm;
-                            } else if (qtm > plateau_qtm) {
-                                push = false;
+                        if (probe_moves(setup, &setup_inv, variants[v].items, variants[v].len,
+                                        first_inv.items, first_inv.len, usable[u], order == 1,
+                                        &probe) != 0) {
+                            rc = -1;
+                        }
+                        if (rc == 0) {
+                            uint8_t occ[54];
+                            solved_occ(occ);
+                            apply_seq_occ(occ, probe.items, probe.len);
+                            if (occ_equals(occ, target)) {
+                                bt_alg first_alg;
+                                bt_alg second_alg;
+                                bt_alg alg;
+                                bt_alg_init(&alg);
+                                if (alg_from_vec(&variants[v], &first_alg) != 0) {
+                                    rc = -1;
+                                } else {
+                                    bt_alg_init(&second_alg);
+                                    if (!bt_alg_push(&second_alg, usable[u])) {
+                                        rc = -1;
+                                    }
+                                    char commutator[512];
+                                    if (rc == 0 &&
+                                        commutator_of(setup, order == 1 ? &second_alg : &first_alg,
+                                                      order == 1 ? &first_alg : &second_alg, &alg,
+                                                      commutator, sizeof commutator) != 0) {
+                                        rc = -1;
+                                    }
+                                    if (rc == 0) {
+                                        uint32_t qtm = bt_alg_qtm(&alg);
+                                        bool push = true;
+                                        if (!plateau_set) {
+                                            plateau_set = true;
+                                            plateau_qtm = qtm;
+                                        } else if (qtm > plateau_qtm) {
+                                            push = false;
+                                        }
+                                        if (push) {
+                                            rc = hits_push(hits, &alg, commutator);
+                                        }
+                                    }
+                                    bt_alg_free(&second_alg);
+                                    bt_alg_free(&first_alg);
+                                }
+                                bt_alg_free(&alg);
                             }
-                            if (push) {
-                                rc = hits_push(hits, &alg, commutator);
-                            }
-                            bt_alg_free(&alg);
-                            bt_alg_free(&second_alg);
-                            bt_alg_free(&first_alg);
                         }
                         vec_free(&probe);
                     }
@@ -666,28 +745,28 @@ bool bt_gd_synth_case(bt_orbit orbit, uint8_t t1, uint8_t t2, const bt_gd_synth_
     return true;
 }
 
-static void note_text(const bt_note *note, char *out, size_t out_len) {
-    if (note->kind == BT_NOTE_FLIP) {
-        snprintf(out, out_len, "flip:%s", note->piece);
-    } else {
-        snprintf(out, out_len, "twist:%s:%+d", note->piece, (int)note->twist);
-    }
-}
-
 static int vendor_alg_from_verdict(const char *solver, size_t rowid, const char *position,
                                    const bt_alg *alg, const char *alg_text,
                                    const bt_verdict *verdict, const char *commutator,
                                    bt_gd_vendor_alg *out) {
     memset(out, 0, sizeof *out);
-    out->solver = _strdup(solver);
+    out->solver = bt_gd_strdup(solver);
+    out->position = bt_gd_strdup(position);
+    out->alg = bt_gd_strdup(alg_text);
+    out->commutator = bt_gd_strdup(commutator);
+    out->recon_link = bt_gd_strdup("");
+    out->youtube_link = bt_gd_strdup("");
+    if (out->solver == NULL || out->position == NULL || out->alg == NULL ||
+        out->commutator == NULL || out->recon_link == NULL || out->youtube_link == NULL) {
+        bt_gd_vendor_alg_free(out);
+        return -1;
+    }
     out->rowid = rowid;
-    out->position = _strdup(position);
-    out->alg = _strdup(alg_text);
     out->qtm = bt_alg_qtm(alg);
     out->htm = bt_alg_htm(alg);
     out->ok = bt_verdict_ok(verdict);
     out->problem_count = verdict->problem_count;
-    out->problems = out->problem_count > 0 ? malloc(out->problem_count * sizeof(char *)) : NULL;
+    out->problems = out->problem_count > 0 ? bt_malloc(out->problem_count * sizeof(char *)) : NULL;
     if (out->problems == NULL && out->problem_count > 0) {
         bt_gd_vendor_alg_free(out);
         return -1;
@@ -695,22 +774,13 @@ static int vendor_alg_from_verdict(const char *solver, size_t rowid, const char 
     for (size_t i = 0; i < verdict->problem_count; i++) {
         char text[BT_VERIFY_DETAIL_MAX + 32];
         bt_problem_string(&verdict->problems[i], text, sizeof text);
-        out->problems[i] = _strdup(text);
+        out->problems[i] = bt_gd_strdup(text);
+        if (out->problems[i] == NULL) {
+            out->problem_count = i + 1;
+            bt_gd_vendor_alg_free(out);
+            return -1;
+        }
     }
-    out->note_count = verdict->note_count;
-    out->notes = out->note_count > 0 ? malloc(out->note_count * sizeof(char *)) : NULL;
-    if (out->notes == NULL && out->note_count > 0) {
-        bt_gd_vendor_alg_free(out);
-        return -1;
-    }
-    for (size_t i = 0; i < verdict->note_count; i++) {
-        char text[64];
-        note_text(&verdict->notes[i], text, sizeof text);
-        out->notes[i] = _strdup(text);
-    }
-    out->commutator = _strdup(commutator);
-    out->recon_link = _strdup("");
-    out->youtube_link = _strdup("");
     return 0;
 }
 
@@ -741,11 +811,17 @@ void bt_gd_synthesize(bt_gd_cases_file *cases, const bt_gd_synth_limits *limits,
         bt_strbuf alg_text;
         bt_strbuf_init(&alg_text, 0);
         bt_alg_format(&hit.alg, &alg_text);
+        if (alg_text.data == NULL) {
+            bt_strbuf_free(&alg_text);
+            bt_verdict_free(&verdict);
+            bt_gd_synth_hit_free(&hit);
+            continue;
+        }
         bt_gd_vendor_alg generated;
         if (vendor_alg_from_verdict("generated", 0, position, &hit.alg, alg_text.data, &verdict,
                                     hit.commutator, &generated) == 0) {
-            bt_gd_vendor_alg *grown =
-                realloc(entry->vendor_algs, (entry->vendor_count + 1) * sizeof(bt_gd_vendor_alg));
+            bt_gd_vendor_alg *grown = bt_realloc(entry->vendor_algs, (entry->vendor_count + 1) *
+                                                                         sizeof(bt_gd_vendor_alg));
             if (grown != NULL) {
                 entry->vendor_algs = grown;
                 entry->vendor_algs[entry->vendor_count++] = generated;

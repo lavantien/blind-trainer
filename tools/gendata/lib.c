@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/sha256.h"
 #include "common/strbuf.h"
@@ -19,6 +20,15 @@ const bt_gd_special_count BT_GD_SPECIAL_COUNTS[BT_GD_SPECIAL_COUNTS_LEN] = {
 
 const char *bt_gd_crate_id(void) {
     return "bt-gendata";
+}
+
+char *bt_gd_strdup(const char *text) {
+    size_t len = strlen(text) + 1;
+    char *copy = bt_malloc(len);
+    if (copy != NULL) {
+        memcpy(copy, text, len);
+    }
+    return copy;
 }
 
 enum {
@@ -246,7 +256,7 @@ static int serde_value(const bt_json_value *value, bt_strbuf *out) {
             return -1;
         }
         size_t count = value->as.object.count;
-        bt_gd_serde_key *slots = count > 0 ? malloc(count * sizeof *slots) : NULL;
+        bt_gd_serde_key *slots = count > 0 ? bt_malloc(count * sizeof *slots) : NULL;
         if (count > 0 && slots == NULL) {
             return -1;
         }

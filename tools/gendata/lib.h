@@ -37,6 +37,8 @@ extern const bt_gd_special_count BT_GD_SPECIAL_COUNTS[BT_GD_SPECIAL_COUNTS_LEN];
 
 const char *bt_gd_crate_id(void);
 
+char *bt_gd_strdup(const char *text);
+
 int bt_gd_synth_params_sha256(const bt_json_value *config, const char *generator, char out[65],
                               char *err, size_t err_len);
 int bt_gd_limits_from_config(const bt_json_value *config, bt_gd_synth_limits *out, char *err,
