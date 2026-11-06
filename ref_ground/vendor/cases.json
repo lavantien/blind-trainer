@@ -17908,8 +17908,23 @@
       "t2_letter": "I",
       "t1_name": "RUB",
       "t2_name": "FUL",
-      "covered": false,
-      "vendor_algs": []
+      "covered": true,
+      "vendor_algs": [
+        {
+          "solver": "cherry",
+          "rowid": 109,
+          "position": "UFR-RUB-FUL",
+          "alg": "R D' R2 D R2 U' R2 D' R2 D R2 U R",
+          "qtm": 18,
+          "htm": 13,
+          "ok": true,
+          "problems": [],
+          "notes": [],
+          "commutator": "R D' R2 D R2 U' R2 D' R2 D R2 U R",
+          "recon_link": "https://bit.ly/tommy1461",
+          "youtube_link": "14.61 Official Rubik’s Cube Blindfolded World Record (Tommy Cherry)"
+        }
+      ]
     },
     {
       "orbit": "corner",

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-15T15:17:45Z",
+  "generated_at": "2026-11-05T23:03:18Z",
   "generator": "bt-gendata",
-  "synth_params_sha256": "dead579f6d96481fa46f82680b33d19b301de595daebb0fcae7707fe4b339106",
+  "synth_params_sha256": "d7050d616b2d64269416e425ca9bc6771a877fc94441439a09f4e40755d6cb55",
   "corpus_sha256": "c80bd14c67682ff163d85ff368829faf3e2c724cda23fd6a062c1c3a54b3475d",
   "corpus_rows": 1077,
   "corpus_files": [
@@ -82,7 +82,7 @@
   "rows_other_buffer": 192,
   "cases": {
     "path": "cases.json",
-    "sha256": "fecefb09a6b6e462a6e4fdf29bbafd42e2d91d6a0cc6a87eaa69743880b5fa9b",
+    "sha256": "107df1a0061d6170c282fceed724e2358686fad9d84a0b4abb4c48cad4c4bcd9",
     "entries": 818,
     "edge": {
       "total": 440,
@@ -91,13 +91,13 @@
     },
     "corner": {
       "total": 378,
-      "covered": 377,
-      "uncovered": 1
+      "covered": 378,
+      "uncovered": 0
     }
   },
   "specials": {
     "path": "specials.json",
-    "sha256": "627d2bdeac98061ebdf56252677b07ecc5a68832565021196ef5e62a644348df",
+    "sha256": "a238c29d381b9ed4fa94342c74a458f40d91b8b8d21bd3aa122f2a584553f2c0",
     "entries": 89,
     "counts": [
       {

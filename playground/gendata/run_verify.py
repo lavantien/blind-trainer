@@ -1,0 +1,81 @@
+import os
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+root = Path(__file__).resolve().parents[2]
+clang = Path("C:/Program Files/LLVM/bin/clang.exe")
+flags = [
+    "-target",
+    "x86_64-pc-windows-msvc",
+    "-std=c23",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-ffp-contract=off",
+    "-g0",
+    "-D_CRT_SECURE_NO_WARNINGS",
+    "-O2",
+    "-DNDEBUG",
+]
+linker = ["-fuse-ld=lld-link", "-Xlinker", "/SUBSYSTEM:CONSOLE", "-Xlinker", "/OPT:REF",
+          "-Xlinker", "/OPT:ICF", "-Xlinker", "/DEBUG:NONE", "-Xlinker", "/brepro"]
+obj_dirs = sorted(d for d in (root / "build/obj").iterdir() if d.is_dir())
+if len(obj_dirs) != 1:
+    sys.stderr.write(
+        "ambiguous build/obj roots, refusing to guess: "
+        + ", ".join(d.name for d in obj_dirs)
+        + "\n"
+    )
+    raise SystemExit(2)
+obj_root = obj_dirs[0]
+
+tool_sources = sorted((root / "tools/verify").glob("*.c"))
+out_dir = root / "build/test-tmp/gdverify"
+obj_dir = out_dir / "verify-tool"
+obj_dir.mkdir(parents=True, exist_ok=True)
+
+
+def compile_one(source):
+    obj = obj_dir / (source.stem + ".obj")
+    argv = [str(clang), *flags, "-I", str(root / "src"), "-I", str(root / "tools"), "-I",
+            str(root / "tests"), "-isystem", str(root / "vendor/sqlite"), "-c", str(source), "-o",
+            str(obj)]
+    proc = subprocess.run(argv, cwd=root, capture_output=True, text=True)
+    return source.name, obj, proc
+
+
+print(f"[stage] compile {len(tool_sources)} verify sources")
+with ThreadPoolExecutor(max_workers=8) as pool:
+    builds = list(pool.map(compile_one, tool_sources))
+for name, _, proc in builds:
+    if proc.returncode != 0:
+        sys.stderr.write(f"[compile-fail] {name}\n{proc.stdout}{proc.stderr}")
+        raise SystemExit(2)
+print("[stage] compile done")
+
+closure = []
+for area in ("common", "core", "scheme", "data", "puzzles"):
+    closure.extend(sorted((obj_root / "src" / area).rglob("*.obj")))
+sqlite = sorted((obj_root / "vendor").rglob("sqlite3.obj"))
+
+exe = out_dir / "verify.exe"
+print(f"[stage] link {exe.name} against {len(closure) + len(sqlite)} closure objects")
+argv = [str(clang), *flags, *linker, *[str(obj) for _, obj, _ in builds], *map(str, closure),
+        *map(str, sqlite), "-o", str(exe)]
+proc = subprocess.run(argv, cwd=root, capture_output=True, text=True)
+if proc.returncode != 0:
+    sys.stderr.write(proc.stdout + proc.stderr)
+    raise SystemExit(2)
+
+env = dict(os.environ)
+env["BT_CONFIG"] = str(root / "config/config.json")
+env["BT_REF_GROUND"] = str(root / "ref_ground")
+env["BT_ARTIFACTS"] = str(root / "artifacts")
+print(f"[stage] run {exe} with BT_CONFIG {env['BT_CONFIG']}")
+run = subprocess.run([str(exe)], cwd=root, capture_output=True, text=True, env=env)
+print("[stage] run done")
+sys.stdout.write(run.stdout)
+sys.stderr.write(run.stderr)
+print(f"[{run.returncode}] verify")
