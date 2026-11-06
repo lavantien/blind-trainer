@@ -60,6 +60,7 @@ typedef struct {
     size_t problem_count;
     bt_note *notes;
     size_t note_count;
+    bool allocation_failed;
 } bt_verdict;
 
 int bt_verify_chirality(const uint8_t triple[3]);

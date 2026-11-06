@@ -39,6 +39,7 @@ void bt_verdict_init(bt_verdict *verdict) {
     verdict->problem_count = 0;
     verdict->notes = NULL;
     verdict->note_count = 0;
+    verdict->allocation_failed = false;
 }
 
 void bt_verdict_free(bt_verdict *verdict) {
@@ -51,7 +52,7 @@ void bt_verdict_free(bt_verdict *verdict) {
 }
 
 bool bt_verdict_ok(const bt_verdict *verdict) {
-    return verdict->problem_count == 0;
+    return verdict->problem_count == 0 && !verdict->allocation_failed;
 }
 
 static void problem_string(const bt_problem *problem, char *out, size_t out_len) {
@@ -96,6 +97,11 @@ void bt_verdict_string(const bt_verdict *verdict, char *out, size_t out_len) {
     BT_TRACE_ENTER("verify.verdict_string");
     if (bt_verdict_ok(verdict)) {
         snprintf(out, out_len, "ok");
+        BT_TRACE_EXIT("verify.verdict_string");
+        return;
+    }
+    if (verdict->problem_count == 0) {
+        snprintf(out, out_len, "out of memory while verifying");
         BT_TRACE_EXIT("verify.verdict_string");
         return;
     }
@@ -176,6 +182,7 @@ bool bt_verdict_contains_note(const bt_verdict *verdict, bt_note_kind kind, cons
 static int problems_push(bt_verdict *verdict, const bt_problem *problem) {
     bt_problem *grown = bt_realloc(verdict->problems, (verdict->problem_count + 1) * sizeof *grown);
     if (grown == NULL) {
+        verdict->allocation_failed = true;
         return -1;
     }
     verdict->problems = grown;
@@ -187,6 +194,7 @@ static int problems_push(bt_verdict *verdict, const bt_problem *problem) {
 static int notes_push(bt_verdict *verdict, const bt_note *note) {
     bt_note *grown = bt_realloc(verdict->notes, (verdict->note_count + 1) * sizeof *grown);
     if (grown == NULL) {
+        verdict->allocation_failed = true;
         return -1;
     }
     verdict->notes = grown;
