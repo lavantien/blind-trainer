@@ -17,6 +17,8 @@
 #include "verify/ev_skewb.h"
 #include "verify/ev_sq1.h"
 
+enum { VERIFY_VEC_INIT_CAP = 16 };
+
 const verify_pack_pin VERIFY_PACK_EXPECTED_ROWS[] = {
     {"twoby2_cll.tsv", "2x2", "cll", "cll", 42},
     {"skewb_sarah.tsv", "skewb", "sarah_intermediate", "sarah", 15},
@@ -108,7 +110,7 @@ void verify_section_free(verify_section_result *section) {
 
 void verify_section_push_row(verify_section_result *section, const verify_row_outcome *row) {
     if (section->count == section->cap) {
-        size_t cap = section->cap == 0 ? 16 : section->cap * 2;
+        size_t cap = section->cap == 0 ? VERIFY_VEC_INIT_CAP : section->cap * 2;
         verify_row_outcome *rows = bt_realloc(section->rows, cap * sizeof *rows);
         if (rows == NULL) {
             BT_TRACE_FAIL("packs.section_push_row", "oom at %zu", section->count);
@@ -147,7 +149,7 @@ int verify_strlist_reserve(verify_strlist *list, size_t want) {
     if (list->cap >= want) {
         return 0;
     }
-    size_t cap = list->cap == 0 ? 16 : list->cap;
+    size_t cap = list->cap == 0 ? VERIFY_VEC_INIT_CAP : list->cap;
     while (cap < want) {
         cap *= 2;
     }
@@ -163,7 +165,7 @@ int verify_strlist_reserve(verify_strlist *list, size_t want) {
 
 void verify_strlist_push(verify_strlist *list, const char *text) {
     if (list->count == list->cap) {
-        size_t cap = list->cap == 0 ? 16 : list->cap * 2;
+        size_t cap = list->cap == 0 ? VERIFY_VEC_INIT_CAP : list->cap * 2;
         char (*items)[VERIFY_OFFENDER_MAX] = bt_realloc(list->items, cap * sizeof *items);
         if (items == NULL) {
             BT_TRACE_FAIL("packs.strlist_push", "oom at %zu", list->count);
