@@ -113,6 +113,16 @@ BT_TEST(release_verify, run_child_round_trips_tricky_arguments) {
     bt_rv_child_spec_free(&spec);
 }
 
+BT_TEST(release_verify, command_line_doubles_trailing_backslashes_only_inside_quotes) {
+    const char *args[] = {"plain\\", "two words\\", "quoted\\\\", NULL};
+    bt_rv_child_spec spec;
+    bt_rv_stage_spec("prog", args, NULL, NULL, NULL, 0, &spec);
+    wchar_t line[256];
+    BT_CHECK_EQ(bt_rv_build_command_line(&spec, line, 256), 0);
+    BT_CHECK_EQ(wcscmp(line, L"prog plain\\ \"two words\\\\\" quoted\\\\"), 0);
+    bt_rv_child_spec_free(&spec);
+}
+
 BT_TEST(release_verify, run_child_reports_each_unbuildable_command_line) {
     static char wide[6][1500];
     static char huge[2100];

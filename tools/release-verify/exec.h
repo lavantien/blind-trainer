@@ -2,6 +2,7 @@
 #define BT_RV_EXEC_H
 
 #include <stddef.h>
+#include <wchar.h>
 
 #include "common/paths.h"
 
@@ -48,6 +49,7 @@ void bt_rv_child_spec_free(bt_rv_child_spec *spec);
 void bt_rv_stage_spec(const char *program, const char *const args[], const char *cwd,
                       const char *const vars[], const bt_rv_env_pair *extras, size_t extra_count,
                       bt_rv_child_spec *out);
+int bt_rv_build_command_line(const bt_rv_child_spec *spec, wchar_t *out, size_t cap);
 int bt_rv_run_child(const bt_rv_child_spec *spec, unsigned long long deadline_ms,
                     bt_rv_run_result *out);
 void bt_rv_run_result_free(bt_rv_run_result *result);

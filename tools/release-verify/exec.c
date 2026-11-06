@@ -160,7 +160,8 @@ static int rv_quote_wide(const wchar_t *arg, wchar_t *out, size_t cap) {
             i++;
         }
         if (arg[i] == L'\0') {
-            for (size_t b = 0; b < backslashes * 2; b++) {
+            size_t emit_end = needs ? backslashes * 2 : backslashes;
+            for (size_t b = 0; b < emit_end; b++) {
                 if (used + 1 >= cap) {
                     return -1;
                 }
@@ -198,7 +199,7 @@ static wchar_t *rv_wide(const char *text) {
     return wide;
 }
 
-static int rv_build_command_line(const bt_rv_child_spec *spec, wchar_t *out, size_t cap) {
+int bt_rv_build_command_line(const bt_rv_child_spec *spec, wchar_t *out, size_t cap) {
     size_t used = 0;
     out[0] = L'\0';
     for (size_t at = 0; at <= spec->arg_count; at++) {
@@ -327,7 +328,7 @@ int bt_rv_run_child(const bt_rv_child_spec *spec, unsigned long long deadline_ms
     HANDLE err_write = NULL;
     HANDLE process = NULL;
     HANDLE thread = NULL;
-    if (rv_build_command_line(spec, command, sizeof command / sizeof *command) != 0) {
+    if (bt_rv_build_command_line(spec, command, sizeof command / sizeof *command) != 0) {
         snprintf(out->outcome.detail, sizeof out->outcome.detail,
                  "cannot spawn %s: command line too long", spec->program);
         out->outcome.kind = BT_RV_OUTCOME_SPAWN;
