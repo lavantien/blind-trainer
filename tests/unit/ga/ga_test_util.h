@@ -36,6 +36,30 @@ static inline void bt_ga_scratch(const char *name, char out[BT_PATH_MAX]) {
     _mkdir(out);
 }
 
+static const long long BT_GA_OVERSIZE_BYTES = 2147483649LL;
+
+static inline void bt_ga_make_oversize(const char *path) {
+    DeleteFileA(path);
+    HANDLE file =
+        CreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) {
+        BT_ABORT("cannot create %s, error %lu", path, GetLastError());
+    }
+    DWORD returned = 0;
+    if (!DeviceIoControl(file, FSCTL_SET_SPARSE, NULL, 0, NULL, 0, &returned, NULL)) {
+        CloseHandle(file);
+        BT_ABORT("cannot mark %s sparse, error %lu", path, GetLastError());
+    }
+    LARGE_INTEGER end = {0};
+    end.QuadPart = BT_GA_OVERSIZE_BYTES;
+    if (!SetFilePointerEx(file, end, NULL, FILE_BEGIN) || !SetEndOfFile(file)) {
+        CloseHandle(file);
+        BT_ABORT("cannot extend %s to %lld bytes, error %lu", path, BT_GA_OVERSIZE_BYTES,
+                 GetLastError());
+    }
+    CloseHandle(file);
+}
+
 static inline void bt_ga_scratch_remove(const char *name) {
     char dir[BT_PATH_MAX];
     bt_ga_scratch(name, dir);

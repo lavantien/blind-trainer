@@ -343,3 +343,18 @@ BT_TEST(inventory_more, inventory_growth_reports_its_allocation_sites) {
     }
     free_words(words, word_count);
 }
+
+BT_TEST(inventory_more, wordlist_read_fails_closed_when_size_overflows_ftell) {
+    char dir[BT_PATH_MAX];
+    bt_ga_scratch("more-wordlist-oversize", dir);
+    char path[BT_PATH_MAX];
+    snprintf(path, BT_PATH_MAX, "%s/words-oversize.txt", dir);
+    bt_ga_make_oversize(path);
+    if (GetFileAttributesA(path) == INVALID_FILE_ATTRIBUTES) {
+        BT_ABORT("fixture %s missing after creation", path);
+    }
+    bt_ga_strset set;
+    char err[BT_GA_ERR_MAX];
+    BT_CHECK(!bt_ga_load_wordlist(path, &set, err));
+    BT_CHECK(strncmp(err, "read ", 5) == 0);
+}
