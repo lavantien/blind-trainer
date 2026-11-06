@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 static const bt_solver VENDOR_ORDER[BT_SOLVER_VENDOR_COUNT] = {
@@ -85,7 +86,7 @@ static verify_report_row_outcome clone_row(const verify_report_row_outcome *row)
     copy.simcheck_position =
         row->simcheck_position == NULL ? NULL : verify_xstrdup(row->simcheck_position);
     if (row->problem_count > 0) {
-        copy.problems = malloc(row->problem_count * sizeof *copy.problems);
+        copy.problems = bt_malloc(row->problem_count * sizeof *copy.problems);
         for (size_t at = 0; at < row->problem_count; at++) {
             snprintf(copy.problems[at], VERIFY_REPORT_PROBLEM_LEN, "%s", row->problems[at]);
         }
@@ -93,7 +94,7 @@ static verify_report_row_outcome clone_row(const verify_report_row_outcome *row)
         copy.problems = NULL;
     }
     if (row->note_count > 0) {
-        copy.notes = malloc(row->note_count * sizeof *copy.notes);
+        copy.notes = bt_malloc(row->note_count * sizeof *copy.notes);
         for (size_t at = 0; at < row->note_count; at++) {
             snprintf(copy.notes[at], VERIFY_REPORT_NOTE_LEN, "%s", row->notes[at]);
         }
@@ -139,8 +140,8 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
             slot += 1;
         }
     }
-    out->rows = malloc((corpus->count + 1) * sizeof *out->rows);
-    out->failures = malloc((corpus->count + 1) * sizeof *out->failures);
+    out->rows = bt_malloc((corpus->count + 1) * sizeof *out->rows);
+    out->failures = bt_malloc((corpus->count + 1) * sizeof *out->failures);
     if (out->rows == NULL || out->failures == NULL) {
         BT_TRACE_FAIL("report.build_report", "oom over %zu rows", corpus->count);
         exit(1);
@@ -174,7 +175,7 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
         }
         outcome.verify_ok = bt_verdict_ok(&verdict);
         if (verdict.problem_count > 0) {
-            outcome.problems = malloc((verdict.problem_count + 1) * sizeof *outcome.problems);
+            outcome.problems = bt_malloc((verdict.problem_count + 1) * sizeof *outcome.problems);
         }
         size_t problem_count = 0;
         for (size_t problem_at = 0; problem_at < verdict.problem_count; problem_at++) {
@@ -184,7 +185,7 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
         }
         if (record == NULL) {
             if (outcome.problems == NULL) {
-                outcome.problems = malloc(2 * sizeof *outcome.problems);
+                outcome.problems = bt_malloc(2 * sizeof *outcome.problems);
             }
             snprintf(outcome.problems[problem_count], VERIFY_REPORT_PROBLEM_LEN, "%s",
                      "missing simcheck record");
@@ -192,7 +193,7 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
         }
         outcome.problem_count = problem_count;
         if (verdict.note_count > 0) {
-            outcome.notes = malloc(verdict.note_count * sizeof *outcome.notes);
+            outcome.notes = bt_malloc(verdict.note_count * sizeof *outcome.notes);
             for (size_t note_at = 0; note_at < verdict.note_count; note_at++) {
                 verify_note_text(&verdict.notes[note_at], outcome.notes[note_at],
                                  VERIFY_REPORT_NOTE_LEN);

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "common/paths.h"
@@ -109,15 +110,16 @@ static int write_report_file(const char *path, const char *data, size_t len, cha
 static int run(verify_strlist *offenders) {
     BT_TRACE_ENTER("verify.main.run");
     char err[VERIFY_MAIN_ERR_MAX];
+    verify_sim_map sim;
+    verify_sim_map_init(&sim);
+    verify_strlist_init(offenders);
+    verify_strlist_reserve(offenders, 32);
     bt_json_value *config = bt_data_load_config();
     bt_corpus corpus = {0};
     verify_report report;
     memset(&report, 0, sizeof report);
     verify_pack_audit pack_audit;
     memset(&pack_audit, 0, sizeof pack_audit);
-    verify_sim_map sim;
-    verify_sim_map_init(&sim);
-    verify_strlist_init(offenders);
     if (config == NULL) {
         char path[BT_PATH_MAX];
         bt_data_config_path(path);
@@ -193,10 +195,7 @@ static int run(verify_strlist *offenders) {
         goto fail;
     }
     bt_json_value *json = NULL;
-    if (verify_report_to_json(&report, &json) != 0) {
-        verify_strlist_push(offenders, "serialize report.json failed");
-        goto fail;
-    }
+    verify_report_to_json(&report, &json);
     bt_strbuf json_text;
     bt_strbuf_init(&json_text, 4096);
     int serialize_failed = bt_json_serialize(json, &json_text);
@@ -247,7 +246,19 @@ fail:
     return 1;
 }
 
+static void arm_alloc_seam_from_env(void) {
+    const char *raw = getenv("BT_VERIFY_ALLOC_FAIL_OK");
+    if (raw != NULL && raw[0] != '\0') {
+        char *end = NULL;
+        unsigned long long count = strtoull(raw, &end, 10);
+        if (end != raw) {
+            bt_alloc_fail_arm((size_t)count);
+        }
+    }
+}
+
 int main(void) {
+    arm_alloc_seam_from_env();
     verify_strlist offenders;
     if (run(&offenders) != 0) {
         for (size_t at = 0; at < offenders.count; at++) {

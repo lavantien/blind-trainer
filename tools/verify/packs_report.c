@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "data/seedpack/rulings.h"
 
@@ -143,7 +144,8 @@ void verify_audit_packs(const char *packs_root, verify_pack_audit *out) {
         verify_rows(entry, &rows, &section);
         if (out->section_count == out->section_cap) {
             size_t cap = out->section_cap == 0 ? 16 : out->section_cap * 2;
-            verify_pack_section_summary *sections = realloc(out->sections, cap * sizeof *sections);
+            verify_pack_section_summary *sections =
+                bt_realloc(out->sections, cap * sizeof *sections);
             if (sections == NULL) {
                 BT_TRACE_FAIL("packs_report.audit_packs", "sections oom");
                 bt_seed_rows_free(&rows);

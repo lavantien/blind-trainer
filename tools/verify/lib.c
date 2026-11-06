@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/paths.h"
 #include "common/strbuf.h"
@@ -59,7 +60,7 @@ void verify_sim_map_insert(verify_sim_map *map, bt_solver solver, bt_sheet_class
     }
     if (map->count == map->cap) {
         size_t cap = map->cap == 0 ? 64 : map->cap * 2;
-        verify_sim_entry *items = realloc(map->items, cap * sizeof *items);
+        verify_sim_entry *items = bt_realloc(map->items, cap * sizeof *items);
         if (items == NULL) {
             BT_TRACE_FAIL("verify.sim_map_insert", "oom at %zu", map->count);
             BT_TRACE_EXIT("verify.sim_map_insert");
@@ -238,7 +239,7 @@ const char *verify_crate_id(void) {
 
 char *verify_xstrdup(const char *text) {
     size_t len = strlen(text) + 1;
-    char *copy = malloc(len);
+    char *copy = bt_malloc(len);
     if (copy != NULL) {
         memcpy(copy, text, len);
     }

@@ -8,12 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/config.h"
 #include "raylib.h"
 
 static void *xalloc(size_t size) {
-    void *block = malloc(size);
+    void *block = bt_malloc(size);
     if (block == NULL) {
         BT_TRACE_FAIL("visual_diff.alloc", "out of memory at %zu", size);
         fputs("bt-visual-diff: out of memory\n", stderr);
@@ -306,7 +307,7 @@ btvd_pair_report btvd_compare_pair(const char *name, const char *shot, const cha
 void btvd_strvec_push(btvd_strvec *vec, char *item) {
     if (vec->count == vec->cap) {
         vec->cap = vec->cap == 0 ? 16 : vec->cap * 2;
-        char **grown = realloc(vec->items, vec->cap * sizeof *grown);
+        char **grown = bt_realloc(vec->items, vec->cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("visual_diff.strvec", "growth failed at %zu", vec->cap);
             fputs("bt-visual-diff: out of memory\n", stderr);
@@ -418,7 +419,7 @@ int btvd_pair_names(const char *shot_dir, const char *base_dir, btvd_strvec *nam
 void btvd_report_vec_push(btvd_report_vec *vec, btvd_pair_report report) {
     if (vec->count == vec->cap) {
         vec->cap = vec->cap == 0 ? 16 : vec->cap * 2;
-        btvd_pair_report *grown = realloc(vec->items, vec->cap * sizeof *grown);
+        btvd_pair_report *grown = bt_realloc(vec->items, vec->cap * sizeof *grown);
         if (grown == NULL) {
             BT_TRACE_FAIL("visual_diff.report_vec", "growth failed at %zu", vec->cap);
             fputs("bt-visual-diff: out of memory\n", stderr);

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/strbuf.h"
@@ -203,7 +204,7 @@ static void tally_bump(const verify_sq1_case *case_, verify_sq1_tally_row **rows
         }
         if (*row_count == *row_cap) {
             size_t cap = *row_cap == 0 ? 16 : *row_cap * 2;
-            verify_sq1_tally_row *grown = realloc(*rows, cap * sizeof *grown);
+            verify_sq1_tally_row *grown = bt_realloc(*rows, cap * sizeof *grown);
             if (grown == NULL) {
                 BT_TRACE_FAIL("ev_sq1.tally_bump", "oom at %zu", *row_count);
                 return;
@@ -236,7 +237,7 @@ void verify_sq1_resolve_family_keys(const verify_sq1_case *const *cases, size_t 
     for (size_t at = 0; at < count; at++) {
         tally_bump(cases[at], &rows, &row_count, &row_cap);
     }
-    bool *judged = calloc(row_count, sizeof *judged);
+    bool *judged = bt_calloc(row_count, sizeof *judged);
     for (size_t row_at = 0; row_at < row_count; row_at++) {
         if (judged[row_at]) {
             continue;
@@ -269,7 +270,7 @@ void verify_sq1_resolve_family_keys(const verify_sq1_case *const *cases, size_t 
             if (out->ambiguous_count == ambiguous_cap) {
                 size_t cap = ambiguous_cap == 0 ? 8 : ambiguous_cap * 2;
                 char (*ambiguous)[VERIFY_SQ1_NAME_MAX] =
-                    realloc(out->ambiguous, cap * sizeof *ambiguous);
+                    bt_realloc(out->ambiguous, cap * sizeof *ambiguous);
                 if (ambiguous == NULL) {
                     BT_TRACE_FAIL("ev_sq1.resolve_family_keys", "ambiguous oom");
                     break;
@@ -283,7 +284,7 @@ void verify_sq1_resolve_family_keys(const verify_sq1_case *const *cases, size_t 
         }
         if (out->key_count == key_cap) {
             size_t cap = key_cap == 0 ? 8 : key_cap * 2;
-            verify_sq1_family_key *keys = realloc(out->keys, cap * sizeof *keys);
+            verify_sq1_family_key *keys = bt_realloc(out->keys, cap * sizeof *keys);
             if (keys == NULL) {
                 BT_TRACE_FAIL("ev_sq1.resolve_family_keys", "keys oom");
                 break;
@@ -627,9 +628,9 @@ static void verify_stage(const bt_seed_rows *rows, verify_sq1_stage stage,
 void verify_sq1_verify_cubeshape(const bt_seed_rows *rows, verify_section_result *out) {
     BT_TRACE_ENTER("ev_sq1.verify_cubeshape");
     verify_section_init(out);
-    verify_sq1_case *cases = malloc(rows->count * sizeof *cases);
-    const verify_sq1_case **observed = malloc(rows->count * sizeof *observed);
-    verify_row_outcome *outcomes = malloc(rows->count * sizeof *outcomes);
+    verify_sq1_case *cases = bt_malloc(rows->count * sizeof *cases);
+    const verify_sq1_case **observed = bt_malloc(rows->count * sizeof *observed);
+    verify_row_outcome *outcomes = bt_malloc(rows->count * sizeof *outcomes);
     if (cases == NULL || observed == NULL || outcomes == NULL) {
         BT_TRACE_FAIL("ev_sq1.verify_cubeshape", "oom over %zu rows", rows->count);
         exit(1);

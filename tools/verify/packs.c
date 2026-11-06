@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "verify/ev_bigcube.h"
 #include "verify/ev_bld.h"
@@ -108,7 +109,7 @@ void verify_section_free(verify_section_result *section) {
 void verify_section_push_row(verify_section_result *section, const verify_row_outcome *row) {
     if (section->count == section->cap) {
         size_t cap = section->cap == 0 ? 16 : section->cap * 2;
-        verify_row_outcome *rows = realloc(section->rows, cap * sizeof *rows);
+        verify_row_outcome *rows = bt_realloc(section->rows, cap * sizeof *rows);
         if (rows == NULL) {
             BT_TRACE_FAIL("packs.section_push_row", "oom at %zu", section->count);
             return;
@@ -142,10 +143,28 @@ void verify_strlist_free(verify_strlist *list) {
     list->cap = 0;
 }
 
+int verify_strlist_reserve(verify_strlist *list, size_t want) {
+    if (list->cap >= want) {
+        return 0;
+    }
+    size_t cap = list->cap == 0 ? 16 : list->cap;
+    while (cap < want) {
+        cap *= 2;
+    }
+    char (*items)[VERIFY_OFFENDER_MAX] = bt_realloc(list->items, cap * sizeof *items);
+    if (items == NULL) {
+        BT_TRACE_FAIL("packs.strlist_reserve", "oom at %zu", want);
+        return -1;
+    }
+    list->items = items;
+    list->cap = cap;
+    return 0;
+}
+
 void verify_strlist_push(verify_strlist *list, const char *text) {
     if (list->count == list->cap) {
         size_t cap = list->cap == 0 ? 16 : list->cap * 2;
-        char (*items)[VERIFY_OFFENDER_MAX] = realloc(list->items, cap * sizeof *items);
+        char (*items)[VERIFY_OFFENDER_MAX] = bt_realloc(list->items, cap * sizeof *items);
         if (items == NULL) {
             BT_TRACE_FAIL("packs.strlist_push", "oom at %zu", list->count);
             return;

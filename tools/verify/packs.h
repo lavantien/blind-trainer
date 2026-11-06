@@ -70,6 +70,7 @@ typedef struct {
 
 void verify_strlist_init(verify_strlist *list);
 void verify_strlist_free(verify_strlist *list);
+int verify_strlist_reserve(verify_strlist *list, size_t want);
 void verify_strlist_push(verify_strlist *list, const char *text);
 void verify_strlist_pushf(verify_strlist *list, const char *fmt, ...);
 

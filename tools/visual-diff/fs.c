@@ -16,11 +16,12 @@
 #include <unistd.h>
 #endif
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 static char *fs_strdup(const char *text) {
     size_t len = strlen(text) + 1;
-    char *copy = malloc(len);
+    char *copy = bt_malloc(len);
     if (copy != NULL) {
         memcpy(copy, text, len);
     }
@@ -312,7 +313,7 @@ unsigned char *btvd_fs_read_bytes(const char *path, size_t *len_out, char *err, 
         BT_TRACE_EXIT("visual_diff.fs_read_bytes");
         return NULL;
     }
-    unsigned char *bytes = malloc((size_t)size + 1);
+    unsigned char *bytes = bt_malloc((size_t)size + 1);
     if (bytes == NULL) {
         fclose(file);
         snprintf(err, err_len, "%s: out of memory", path);
