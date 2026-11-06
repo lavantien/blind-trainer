@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 typedef enum {
@@ -40,7 +41,7 @@ typedef struct {
 static bool tok_push(expand_tokens *tokens, expand_tok tok) {
     if (tokens->len == tokens->cap) {
         size_t cap = tokens->cap == 0 ? 16 : tokens->cap * 2U;
-        expand_tok *items = realloc(tokens->items, cap * sizeof *items);
+        expand_tok *items = bt_realloc(tokens->items, cap * sizeof *items);
         if (items == NULL) {
             return false;
         }

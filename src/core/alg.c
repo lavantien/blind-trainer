@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/space.h"
 #include "core/cube.h"
@@ -24,7 +25,7 @@ void bt_alg_free(bt_alg *alg) {
 bool bt_alg_push(bt_alg *alg, bt_move mv) {
     if (alg->len == alg->cap) {
         size_t cap = alg->cap == 0 ? 16 : alg->cap * 2U;
-        bt_move *items = realloc(alg->items, cap * sizeof *items);
+        bt_move *items = bt_realloc(alg->items, cap * sizeof *items);
         if (items == NULL) {
             return false;
         }
