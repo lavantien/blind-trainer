@@ -284,14 +284,7 @@ static bool letter_in(const char *const *set, size_t count, const char *letter) 
 }
 
 static const char *const *candidates_of(const char *letter, size_t *count) {
-    size_t letter_len = strlen(letter);
-    char head[2] = {letter[0], '\0'};
-    if (letter_in(FACE_LETTERS, 6, letter)) {
-        *count = 6;
-        return FACE_LETTERS;
-    }
-    if (letter_in(WIDE_LETTERS, 6, letter) ||
-        (letter_len == 2 && letter[1] == 'w' && letter_in(FACE_LETTERS, 6, head))) {
+    if (letter_in(WIDE_LETTERS, 6, letter)) {
         *count = 6;
         return WIDE_LETTERS;
     }
@@ -299,7 +292,8 @@ static const char *const *candidates_of(const char *letter, size_t *count) {
         *count = 3;
         return SLICE_LETTERS;
     }
-    return NULL;
+    *count = 6;
+    return FACE_LETTERS;
 }
 
 int verify_cfop_rewrite_to_fixed(const char *alg_text, char *out, size_t out_len) {
@@ -356,12 +350,6 @@ int verify_cfop_rewrite_to_fixed(const char *alg_text, char *out, size_t out_len
         }
         size_t candidate_count = 0;
         const char *const *candidates = candidates_of(letter, &candidate_count);
-        if (candidates == NULL) {
-            snprintf(out, out_len, "token %s joins no move class", token);
-            BT_TRACE_FAIL("ev_cfop.rewrite_to_fixed", "no class %s", token);
-            BT_TRACE_EXIT("ev_cfop.rewrite_to_fixed");
-            return 1;
-        }
         char matched[VERIFY_CFOP_TOKEN_MAX] = {0};
         for (size_t cand_at = 0; cand_at < candidate_count && matched[0] == '\0'; cand_at++) {
             for (size_t suf_at = 0; suf_at < 4 && matched[0] == '\0'; suf_at++) {

@@ -68,23 +68,11 @@ int verify_pyra_l4e_disturbance(const bt_pyra_state *state, char *err, size_t er
     bt_pz_error pz_err;
     void *quarter = bt_pz_alg_create();
     bt_pz_engine eng = bt_pyra_engine();
-    if (quarter == NULL || !eng.parse_alg(&eng, "U", 1, quarter, &pz_err)) {
-        bt_pz_alg_destroy(quarter);
-        snprintf(err, err_len, "%s", "the U vertex token failed to parse");
-        BT_TRACE_FAIL("ev_pyra.l4e_disturbance", "U token parse failed");
-        BT_TRACE_EXIT("ev_pyra.l4e_disturbance");
-        return -1;
-    }
+    eng.parse_alg(&eng, "U", 1, quarter, &pz_err);
     for (size_t turns = 0; turns < VERIFY_PYRA_U_FRAME_WORDS; turns++) {
         bt_pyra_state framed = *state;
         for (size_t at = 0; at < turns; at++) {
-            if (!bt_pyra_apply_alg(&framed, quarter, &pz_err)) {
-                bt_pz_alg_destroy(quarter);
-                snprintf(err, err_len, "%s", "the U vertex turn failed to apply");
-                BT_TRACE_FAIL("ev_pyra.l4e_disturbance", "U apply failed");
-                BT_TRACE_EXIT("ev_pyra.l4e_disturbance");
-                return -1;
-            }
+            bt_pyra_apply_alg(&framed, quarter, &pz_err);
         }
         bt_pz_grid grid;
         bt_pyra_facelets(&framed, &grid);

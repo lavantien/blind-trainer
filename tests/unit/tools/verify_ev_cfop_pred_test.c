@@ -41,6 +41,14 @@ BT_TEST(verify_ev_cfop_pred, rewrite_carries_a_rotation_frame) {
     BT_CHECK(verify_cfop_rewrite_to_fixed("x A", out, sizeof out) != 0);
 }
 
+BT_TEST(verify_ev_cfop_pred, rewrite_keeps_slice_and_wide_tokens_canonical) {
+    char out[512];
+    BT_CHECK_EQ(verify_cfop_rewrite_to_fixed("M E S", out, sizeof out), 0);
+    BT_CHECK_EQ(strcmp(out, "M E S"), 0);
+    BT_CHECK_EQ(verify_cfop_rewrite_to_fixed("u2'", out, sizeof out), 0);
+    BT_CHECK_EQ(strcmp(out, "u2"), 0);
+}
+
 BT_TEST(verify_ev_cfop_pred, stage_of_rejects_unknown_names) {
     verify_cfop_stage stage;
     char err[VERIFY_ERR_MAX];

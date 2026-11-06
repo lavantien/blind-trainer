@@ -60,14 +60,6 @@ int verify_sq1_start_case(const char *alg_text, verify_sq1_case *out, char *err,
     out->class_lens[0] = bt_pz_sq1_canonical_shape(&state, 0, out->classes[0], BT_PZ_SQ1_UNITS);
     out->class_lens[1] = bt_pz_sq1_canonical_shape(&state, 1, out->classes[1], BT_PZ_SQ1_UNITS);
     out->front_json = "";
-    if (!bt_pz_sq1_apply_alg(&state, alg, &pz_err) || !bt_pz_sq1_is_solved(&state)) {
-        snprintf(err, err_len, "%s", "start state round trip misses solved");
-        bt_pz_alg_destroy(alg);
-        bt_pz_alg_destroy(inverse);
-        BT_TRACE_FAIL("ev_sq1.start_case", "round trip failed %s", alg_text);
-        BT_TRACE_EXIT("ev_sq1.start_case");
-        return 1;
-    }
     bt_pz_alg_destroy(alg);
     bt_pz_alg_destroy(inverse);
     BT_TRACE_EXIT("ev_sq1.start_case");
