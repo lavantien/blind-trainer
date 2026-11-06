@@ -22,10 +22,12 @@ BT_TEST(guard, swap_twist_block_rejects_both_stickers_of_one_piece) {
 }
 
 BT_TEST(guard, residue_eq_separates_equal_counts_with_different_content) {
-    bt_residue left = {0};
+    bt_residue left;
+    memset(&left, 0, sizeof left);
     left.flip_count = 1;
     left.flips[0] = 5;
-    bt_residue right = {0};
+    bt_residue right;
+    memset(&right, 0, sizeof right);
     right.flip_count = 1;
     right.flips[0] = 7;
     BT_CHECK(!bt_scheme_residue_eq(&left, &right));
