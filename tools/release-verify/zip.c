@@ -6,6 +6,7 @@
 #include <string.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "release-verify/inflate.h"
 
@@ -38,7 +39,7 @@ typedef struct {
 } rv_archive;
 
 static void *rv_xmalloc(size_t size) {
-    void *block = malloc(size > 0 ? size : 1);
+    void *block = bt_malloc(size > 0 ? size : 1);
     if (block == NULL) {
         fputs("bt-release-verify: out of memory\n", stderr);
         abort();
@@ -171,7 +172,7 @@ static int rv_set_has(const bt_rv_file_set *set, const char *name) {
 }
 
 static void rv_pairs_push(rv_set_pair **pairs, size_t *count, const char *name, const char *path) {
-    rv_set_pair *grown = realloc(*pairs, (*count + 1) * sizeof *grown);
+    rv_set_pair *grown = bt_realloc(*pairs, (*count + 1) * sizeof *grown);
     if (grown == NULL) {
         fputs("bt-release-verify: out of memory\n", stderr);
         abort();

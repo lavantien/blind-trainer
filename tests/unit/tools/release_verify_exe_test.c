@@ -62,6 +62,23 @@ BT_TEST(release_verify_exe, no_arguments_exit_2_with_usage) {
     BT_CHECK(strstr(err, "usage: bt-release-verify") != NULL);
 }
 
+BT_TEST(release_verify_exe, alloc_starved_argv_exits_usage) {
+    char out[2048];
+    char err[2048];
+    const char *argv[] = {"staging", "app.zip", NULL};
+    char exe[BT_PATH_MAX];
+    exe_path(exe);
+    const char *settings[2] = {"1", "2"};
+    for (size_t at = 0; at < 2; at++) {
+        SetEnvironmentVariableA("BT_RV_ALLOC_FAIL_OK", settings[at]);
+        int code = -1;
+        int rc = bt_spawn_capture(exe, argv, NULL, 60000, &code, out, sizeof out, err, sizeof err);
+        SetEnvironmentVariableA("BT_RV_ALLOC_FAIL_OK", NULL);
+        BT_CHECK_EQ(rc, 0);
+        BT_CHECK_EQ(code, 2);
+    }
+}
+
 BT_TEST(release_verify_exe, unknown_flag_exit_2) {
     char out[2048];
     char err[2048];

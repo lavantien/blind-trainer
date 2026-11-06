@@ -776,7 +776,7 @@ static int rv_read_config(const char *path, bt_json_value **out, char *err, size
         snprintf(err, err_cap, "cannot read config %s: too large", path);
         return -1;
     }
-    char *text = malloc((size_t)size + 1);
+    char *text = bt_malloc((size_t)size + 1);
     if (text == NULL || ((size_t)size > 0 && fread(text, 1, (size_t)size, file) != (size_t)size)) {
         free(text);
         fclose(file);

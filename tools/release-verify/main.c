@@ -4,6 +4,7 @@
 #include <wchar.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/json.h"
 #include "common/paths.h"
@@ -47,7 +48,7 @@ static void trace_from_config(void) {
 
 static char *rv_wide_to_utf8(const wchar_t *wide) {
     int need = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
-    char *text = malloc((size_t)need);
+    char *text = bt_malloc((size_t)need);
     if (text == NULL) {
         return NULL;
     }
@@ -55,10 +56,22 @@ static char *rv_wide_to_utf8(const wchar_t *wide) {
     return text;
 }
 
+static void arm_from_env(void) {
+    const char *raw = getenv("BT_RV_ALLOC_FAIL_OK");
+    if (raw == NULL || raw[0] == '\0') {
+        return;
+    }
+    long count = strtol(raw, NULL, 10);
+    if (count > 0) {
+        bt_alloc_fail_arm((size_t)count);
+    }
+}
+
 int wmain(int argc, wchar_t **argv) {
     trace_from_config();
     BT_TRACE_ENTER("rv.main");
-    char **argv_utf8 = calloc((size_t)argc, sizeof *argv_utf8);
+    arm_from_env();
+    char **argv_utf8 = bt_calloc((size_t)argc, sizeof *argv_utf8);
     if (argv_utf8 == NULL) {
         bt_trace_dump();
         bt_trace_shutdown();

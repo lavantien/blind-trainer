@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 
 enum {
@@ -137,7 +138,7 @@ static int rv_sink_reserve(rv_sink *sink, size_t extra) {
     while (sink->len + extra > cap) {
         cap *= 2;
     }
-    unsigned char *grown = realloc(sink->data, cap);
+    unsigned char *grown = bt_realloc(sink->data, cap);
     if (grown == NULL) {
         rv_fail(sink->err, sink->err_cap, &sink->failed, "inflate: out of memory");
         return -1;

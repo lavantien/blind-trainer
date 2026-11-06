@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "release-verify/inflate.h"
 #include "release-verify/zip.h"
@@ -109,12 +110,19 @@ static int rv_png_decode(const char *path, unsigned int *width, unsigned int *he
         return -1;
     }
     size_t cap = (size_t)1 << 20U;
-    unsigned char *bytes = malloc(cap);
+    unsigned char *bytes = bt_malloc(cap);
+    if (bytes == NULL) {
+        fclose(file);
+        snprintf(err, err_cap, "out of memory");
+        BT_TRACE_FAIL("rv.png_decode", "%s", err);
+        BT_TRACE_EXIT("rv.png_decode");
+        return -1;
+    }
     size_t len = 0;
     for (;;) {
         if (len == cap) {
             cap *= 2;
-            unsigned char *grown = realloc(bytes, cap);
+            unsigned char *grown = bt_realloc(bytes, cap);
             if (grown == NULL) {
                 free(bytes);
                 fclose(file);
@@ -186,7 +194,7 @@ static int rv_png_decode(const char *path, unsigned int *width, unsigned int *he
             }
             have_header = 1;
         } else if (memcmp(type, "IDAT", 4) == 0) {
-            unsigned char *grown = realloc(idat, idat_len + chunk_len);
+            unsigned char *grown = bt_realloc(idat, idat_len + chunk_len);
             if (grown == NULL) {
                 snprintf(err, err_cap, "out of memory");
                 failed = 1;

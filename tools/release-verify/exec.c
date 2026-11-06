@@ -5,6 +5,7 @@
 #include <string.h>
 #include <windows.h>
 
+#include "common/alloc.h"
 #include "common/bt_trace.h"
 #include "common/strbuf.h"
 
@@ -16,7 +17,7 @@ enum {
 #define BT_RV_CMDLINE_MAX (BT_PATH_MAX * 8)
 
 static void *rv_xmalloc(size_t size) {
-    void *block = malloc(size > 0 ? size : 1);
+    void *block = bt_malloc(size > 0 ? size : 1);
     if (block == NULL) {
         fputs("bt-release-verify: out of memory\n", stderr);
         abort();
@@ -90,7 +91,7 @@ static void rv_env_set(char ***env, size_t *count, const char *key, const char *
             return;
         }
     }
-    char **grown = realloc(*env, (*count + 2) * sizeof *grown);
+    char **grown = bt_realloc(*env, (*count + 2) * sizeof *grown);
     if (grown == NULL) {
         fputs("bt-release-verify: out of memory\n", stderr);
         abort();
