@@ -25,6 +25,7 @@ Lanes over a shared checkout, no worktrees: app (src/app, tests/unit/app), data 
 - The 500M gendata probe proved corner N-I solvable inside the shape limits, so the hub-budget failure was search-order starvation, fixed by the mirrored-inverse derivation 010cf3b. Regen covered 818 of 818, the superset check found exactly the 1 derived gain and zero regressions.
 - Third real defect of the wave: bt_strbuf_reserve hung forever on a zero-cap strbuf after a failed init, because cap doubling never leaves 0. gendata3 applied the minimal guard in src/common/strbuf.c (flagged, outside its set) and core4 reviews plus pins it with a direct red-green suite test.
 - Shared-checkout incident: the strbuf guard briefly vanished from the working tree with no other change. Probable cause is core4's red run for the pin (proving the hang needs the broken state), arbitration pending its answer. Rule going forward: a red state for a shared file exists only inside a lane-local build copy, never in the shared tree, and strbuf.c is frozen for everyone but core4 until its pin commit.
+- data5 delivered 616 to 284 dark across 12 commits with a seventh real defect: verify reported zero problems and claimed ok when problem recording ran out of memory, now fail-closed through bt_verdict.allocation_failed. It ended without its two routed CI items, the hub fixed the paths_errors fmt wrap itself (5a5ec70, trivial edit) and data6 owns the repo_errors split plus the residuals.
 
 ## current state, 2026-11-06 09:0x local
 
