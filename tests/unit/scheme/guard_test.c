@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "common/bt_harness.h"
+#include "core/analysis.h"
 #include "scheme/classifier.h"
 #include "scheme/memo.h"
 #include "scheme/scheme.h"
@@ -63,6 +64,19 @@ BT_TEST(guard, occ_is_legal_rejects_a_band_crossed_permutation) {
     BT_CHECK(!bt_scheme_occ_is_legal(occ));
 }
 
+BT_TEST(guard, piece_perm_rejects_a_cross_band_head_slot) {
+    uint8_t occ[54];
+    identity_occ(occ);
+    uint8_t corner_head = BT_SCHEME_CORNER_SUCC[0][0];
+    uint8_t edge_pair[2];
+    bt_edge_stickers(0, edge_pair);
+    occ[corner_head] = edge_pair[0];
+    occ[edge_pair[0]] = corner_head;
+    uint8_t out[12];
+    BT_CHECK(!bt_scheme_piece_perm(occ, BT_ORBIT_EDGE, out));
+    BT_CHECK(!bt_scheme_piece_perm(occ, BT_ORBIT_CORNER, out));
+}
+
 static void guard_death_trace_non_permutation(void) {
     uint8_t occ[54];
     identity_occ(occ);
@@ -73,6 +87,21 @@ static void guard_death_trace_non_permutation(void) {
 
 static void guard_death_same_piece_center_id(void) {
     (void)bt_scheme_same_piece(48, 0);
+}
+
+static void guard_death_twist_head_missing(void) {
+    uint8_t occ[54];
+    identity_occ(occ);
+    const uint8_t *cyc = BT_SCHEME_CORNER_SUCC[0];
+    uint8_t stickers[3];
+    bt_corner_stickers(1, stickers);
+    uint8_t head = bt_head_sticker((bt_piece){BT_PIECE_CORNER, 1});
+    occ[cyc[0]] = stickers[0] == head ? stickers[1] : stickers[0];
+    bt_corner_stickers(2, stickers);
+    occ[cyc[1]] = stickers[0];
+    bt_corner_stickers(3, stickers);
+    occ[cyc[2]] = stickers[0];
+    (void)bt_scheme_twist_sum(occ);
 }
 
 static void guard_death_head_sticker_short_name(void) {
@@ -87,4 +116,6 @@ BT_TEST(guard, contract_aborts_run_through_the_death_path) {
     bt_death_expect_code("guard.head_sticker_aborts_on_a_short_name",
                          "piece name must have 2 or 3 faces", 134,
                          guard_death_head_sticker_short_name);
+    bt_death_expect_code("guard.twist_state_aborts_when_the_head_sticker_is_missing", "twist head",
+                         134, guard_death_twist_head_missing);
 }
