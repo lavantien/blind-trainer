@@ -43,6 +43,8 @@ enum {
     INF_GROWTH_TOTAL = 80000,
     INF_GROWTH_CAP = 1U << 16U,
     INF_BUF = 131072,
+    INF_HCLEN_FULL = 14,
+    INF_ZERO_BUF = 96,
 };
 
 static int inflate_raw_case(const unsigned char *data, size_t len, char *err) {
@@ -395,6 +397,38 @@ BT_TEST(release_verify, inflate_dynamic_round_trips_literals_and_repeats) {
     rv_bits_put(&writer, 0, 2);
     rv_bits_put(&writer, 0, 3);
     rv_bits_put(&writer, 4, 3);
+    flush_tail(&writer);
+    unsigned char *out = NULL;
+    size_t out_len = 0;
+    char err[BT_RV_ERR_MAX];
+    BT_CHECK_EQ(bt_rv_inflate_raw(buf, writer.len, &out, &out_len, err, sizeof err), 0);
+    BT_CHECK_EQ(out_len, 1U);
+    BT_CHECK(out_len == 1U && out[0] == INF_LIT_A);
+    free(out);
+}
+
+BT_TEST(release_verify, inflate_dynamic_round_trips_a_zero_run_code_length) {
+    unsigned char buf[INF_ZERO_BUF];
+    unsigned char cl[19];
+    memset(cl, 0, sizeof cl);
+    cl[1] = 1;
+    cl[3] = 2;
+    cl[17] = 2;
+    rv_bitwriter writer = {.data = buf, .len = 0, .cap = sizeof buf, .bits = 0, .cnt = 0};
+    dynamic_header(&writer, 0, 0, INF_HCLEN_FULL, cl);
+    rv_bits_put(&writer, 0, 1);
+    rv_bits_put_lsb(&writer, 0, INF_ZERO_EXTRA_BITS);
+    for (int at = 0; at < INF_LIT_A - INF_ZERO_BASE; at++) {
+        rv_bits_put(&writer, 2, 2);
+    }
+    rv_bits_put(&writer, 3, 2);
+    for (int at = 0; at < INF_END - INF_LIT_A - 1; at++) {
+        rv_bits_put(&writer, 2, 2);
+    }
+    rv_bits_put(&writer, 3, 2);
+    rv_bits_put(&writer, 2, 2);
+    rv_bits_put(&writer, 0, 1);
+    rv_bits_put(&writer, 1, 1);
     flush_tail(&writer);
     unsigned char *out = NULL;
     size_t out_len = 0;
