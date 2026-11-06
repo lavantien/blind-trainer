@@ -1,6 +1,7 @@
 #include "policy_test_util.h"
 #include "unit/tools/spawn_util.h"
 
+#include <errno.h>
 #include <string.h>
 
 #include "policy/lib.h"
@@ -26,6 +27,9 @@ static void copy_exe(const char *dest) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "policy.exe");
     FILE *in = fopen(exe, "rb");
+    if (in == NULL) {
+        bt_harness_fail(__FILE__, __LINE__, "cannot open %s: errno %d", exe, errno);
+    }
     BT_CHECK(in != NULL);
     FILE *out = fopen(dest, "wb");
     BT_CHECK(out != NULL);
@@ -57,6 +61,9 @@ static void spawn_repo(const char *const argv[], int want_code, const char *want
     char root[BT_PATH_MAX];
     bt_test_repo_root(root);
     int rc = bt_spawn_capture(exe, argv, root, 120000, &code, out, sizeof out, err, sizeof err);
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "spawn rc %d diag '%s'", rc, bt_spawn_diag());
+    }
     BT_CHECK_EQ(rc, 0);
     if (code != want_code) {
         bt_harness_fail(__FILE__, __LINE__, "code %d want %d out '%.600s' err '%.600s'", code,
@@ -79,6 +86,9 @@ static void repo_verdict_is_consistent(const char *const argv[]) {
     char root[BT_PATH_MAX];
     bt_test_repo_root(root);
     int rc = bt_spawn_capture(exe, argv, root, 120000, &code, out, sizeof out, err, sizeof err);
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "spawn rc %d diag '%s'", rc, bt_spawn_diag());
+    }
     BT_CHECK_EQ(rc, 0);
     if (code == 0) {
         if (strstr(out, "bt-policy: ") != NULL) {
@@ -129,6 +139,9 @@ static void selftest_spawn(const char *workdir, int want_code, const char *want_
     char root[BT_PATH_MAX];
     bt_test_repo_root(root);
     int rc = bt_spawn_capture(exe, argv, root, 30000, &code, out, sizeof out, err, sizeof err);
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "spawn rc %d diag '%s'", rc, bt_spawn_diag());
+    }
     BT_CHECK_EQ(rc, 0);
     BT_CHECK_EQ(code, want_code);
     if (want_err != NULL) {
@@ -217,6 +230,9 @@ static void spawn_fixture(const char *root, const char *config, const char *cons
         BT_CHECK_EQ(_putenv_s("BT_CONFIG", saved), 0);
     } else {
         BT_CHECK_EQ(_putenv_s("BT_CONFIG", ""), 0);
+    }
+    if (rc != 0) {
+        bt_harness_fail(__FILE__, __LINE__, "spawn rc %d diag '%s'", rc, bt_spawn_diag());
     }
     BT_CHECK_EQ(rc, 0);
     if (code != want_code) {

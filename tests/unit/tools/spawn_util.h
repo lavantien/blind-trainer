@@ -106,29 +106,25 @@ static inline const char *bt_spawn_diag(void) {
     return g_bt_spawn_diag;
 }
 
-static inline int bt_spawn_capture(const char *exe, const char *const argv[], const char *cwd,
-                                   unsigned timeout_ms, int *exit_code, char *out, size_t out_cap,
-                                   char *err, size_t err_cap) {
-    *exit_code = -1;
-    out[0] = '\0';
-    err[0] = '\0';
-    char exe_native[BT_PATH_MAX];
-    snprintf(exe_native, sizeof exe_native, "%s", exe);
-    bt_spawn_backslashes(exe_native);
-    char command[BT_PATH_MAX * 4];
-    if (bt_spawn_command(exe_native, argv, command, sizeof command) != 0) {
-        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "command too long: %s", exe_native);
-        return -1;
+enum {
+    BT_SPAWN_ATTEMPTS = 3,
+    BT_SPAWN_RETRY_SLEEP_MS = 2000,
+};
+
+static inline void bt_spawn_resolve_absolute(const char *native, char out[BT_PATH_MAX]) {
+    if (native[0] == '\0' || (strpbrk(native, "\\/") == NULL && strchr(native, ':') == NULL)) {
+        snprintf(out, BT_PATH_MAX, "%s", native);
+        return;
     }
-    wchar_t wide_cmd[BT_PATH_MAX * 4];
-    wchar_t wide_cwd[BT_PATH_MAX] = L"";
-    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide_cmd, BT_PATH_MAX * 4);
-    if (cwd != NULL) {
-        char cwd_native[BT_PATH_MAX];
-        snprintf(cwd_native, sizeof cwd_native, "%s", cwd);
-        bt_spawn_backslashes(cwd_native);
-        MultiByteToWideChar(CP_UTF8, 0, cwd_native, -1, wide_cwd, BT_PATH_MAX);
+    DWORD len = GetFullPathNameA(native, BT_PATH_MAX, out, NULL);
+    if (len == 0 || len >= BT_PATH_MAX) {
+        snprintf(out, BT_PATH_MAX, "%s", native);
     }
+}
+
+static inline int bt_spawn_child(wchar_t wide_cmd[BT_PATH_MAX * 4], const wchar_t *wide_cwd,
+                                 unsigned timeout_ms, int *exit_code, char *out, size_t out_cap,
+                                 char *err, size_t err_cap) {
     SECURITY_ATTRIBUTES inheritable = {
         .nLength = sizeof inheritable,
         .lpSecurityDescriptor = NULL,
@@ -138,9 +134,16 @@ static inline int bt_spawn_capture(const char *exe, const char *const argv[], co
     HANDLE out_write = NULL;
     HANDLE err_read = NULL;
     HANDLE err_write = NULL;
-    if (!CreatePipe(&out_read, &out_write, &inheritable, 0) ||
-        !CreatePipe(&err_read, &err_write, &inheritable, 0)) {
-        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "pipe failed: %lu", GetLastError());
+    if (!CreatePipe(&out_read, &out_write, &inheritable, 0)) {
+        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "stdout pipe failed: %lu",
+                 GetLastError());
+        return -1;
+    }
+    if (!CreatePipe(&err_read, &err_write, &inheritable, 0)) {
+        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "stderr pipe failed: %lu",
+                 GetLastError());
+        CloseHandle(out_read);
+        CloseHandle(out_write);
         return -1;
     }
     SetHandleInformation(out_read, HANDLE_FLAG_INHERIT, 0);
@@ -152,10 +155,9 @@ static inline int bt_spawn_capture(const char *exe, const char *const argv[], co
         .hStdError = err_write,
     };
     PROCESS_INFORMATION info = {0};
-    if (!CreateProcessW(NULL, wide_cmd, NULL, NULL, TRUE, 0, NULL, cwd != NULL ? wide_cwd : NULL,
-                        &startup, &info)) {
-        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "CreateProcessW %s failed: %lu",
-                 exe_native, GetLastError());
+    if (!CreateProcessW(NULL, wide_cmd, NULL, NULL, TRUE, 0, NULL, wide_cwd, &startup, &info)) {
+        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "CreateProcessW failed: %lu",
+                 GetLastError());
         CloseHandle(out_read);
         CloseHandle(out_write);
         CloseHandle(err_read);
@@ -215,6 +217,45 @@ static inline int bt_spawn_capture(const char *exe, const char *const argv[], co
     CloseHandle(info.hProcess);
     CloseHandle(info.hThread);
     return 0;
+}
+
+static inline int bt_spawn_capture(const char *exe, const char *const argv[], const char *cwd,
+                                   unsigned timeout_ms, int *exit_code, char *out, size_t out_cap,
+                                   char *err, size_t err_cap) {
+    *exit_code = -1;
+    out[0] = '\0';
+    err[0] = '\0';
+    char exe_native[BT_PATH_MAX];
+    snprintf(exe_native, sizeof exe_native, "%s", exe);
+    bt_spawn_backslashes(exe_native);
+    char exe_absolute[BT_PATH_MAX];
+    bt_spawn_resolve_absolute(exe_native, exe_absolute);
+    char command[BT_PATH_MAX * 4];
+    if (bt_spawn_command(exe_absolute, argv, command, sizeof command) != 0) {
+        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "command too long: %s", exe_absolute);
+        return -1;
+    }
+    wchar_t wide_cmd[BT_PATH_MAX * 4];
+    wchar_t wide_cwd[BT_PATH_MAX] = L"";
+    MultiByteToWideChar(CP_UTF8, 0, command, -1, wide_cmd, BT_PATH_MAX * 4);
+    if (cwd != NULL) {
+        char cwd_native[BT_PATH_MAX];
+        snprintf(cwd_native, sizeof cwd_native, "%s", cwd);
+        bt_spawn_backslashes(cwd_native);
+        MultiByteToWideChar(CP_UTF8, 0, cwd_native, -1, wide_cwd, BT_PATH_MAX);
+    }
+    for (int attempt = 1;; attempt++) {
+        int rc = bt_spawn_child(wide_cmd, cwd != NULL ? wide_cwd : NULL, timeout_ms, exit_code, out,
+                                out_cap, err, err_cap);
+        if (rc != -1 || attempt >= BT_SPAWN_ATTEMPTS) {
+            return rc;
+        }
+        char last_diag[256];
+        snprintf(last_diag, sizeof last_diag, "%s", g_bt_spawn_diag);
+        Sleep(BT_SPAWN_RETRY_SLEEP_MS);
+        snprintf(g_bt_spawn_diag, sizeof g_bt_spawn_diag, "%s, retry %d of %d", last_diag, attempt,
+                 BT_SPAWN_ATTEMPTS - 1);
+    }
 }
 
 static inline void bt_test_repo_root(char out[BT_PATH_MAX]) {
