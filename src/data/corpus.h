@@ -32,6 +32,7 @@ typedef enum {
     BT_CORPUS_ERR_READ,
     BT_CORPUS_ERR_PARSE,
     BT_CORPUS_ERR_ALG,
+    BT_CORPUS_ERR_OOM,
 } bt_corpus_error_kind;
 
 typedef struct {

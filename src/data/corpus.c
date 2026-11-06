@@ -65,6 +65,9 @@ void bt_corpus_error_string(const bt_corpus_error *err, char *out, size_t out_le
     case BT_CORPUS_ERR_ALG:
         snprintf(out, out_len, "alg in %s rowid %zu: %s", err->path, err->rowid, err->alg_error);
         break;
+    case BT_CORPUS_ERR_OOM:
+        snprintf(out, out_len, "out of memory loading %s", err->path);
+        break;
     }
     BT_TRACE_EXIT("corpus.error_string");
 }
@@ -151,6 +154,8 @@ int bt_corpus_load(const char *root, bt_corpus *out, bt_corpus_error *err) {
             char *text = bt_malloc((size_t)size + 1);
             if (text == NULL) {
                 fclose(file);
+                err->kind = BT_CORPUS_ERR_OOM;
+                snprintf(err->path, sizeof err->path, "%s", path);
                 bt_corpus_free(out);
                 BT_TRACE_FAIL("corpus.load", "alloc failed for %s", path);
                 return -1;
@@ -200,6 +205,8 @@ int bt_corpus_load(const char *root, bt_corpus *out, bt_corpus_error *err) {
                     bt_alg_free(&row.alg);
                     free(text);
                     bt_tsv_rows_free(&parsed);
+                    err->kind = BT_CORPUS_ERR_OOM;
+                    snprintf(err->path, sizeof err->path, "%s", path);
                     bt_corpus_free(out);
                     BT_TRACE_FAIL("corpus.load", "alloc failed in %s", path);
                     return -1;
@@ -213,6 +220,8 @@ int bt_corpus_load(const char *root, bt_corpus *out, bt_corpus_error *err) {
                     bt_alg_free(&row.alg);
                     free(text);
                     bt_tsv_rows_free(&parsed);
+                    err->kind = BT_CORPUS_ERR_OOM;
+                    snprintf(err->path, sizeof err->path, "%s", path);
                     bt_corpus_free(out);
                     BT_TRACE_FAIL("corpus.load", "row push failed in %s", path);
                     return -1;

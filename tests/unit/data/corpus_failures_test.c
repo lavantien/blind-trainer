@@ -79,6 +79,9 @@ BT_TEST(corpus_failures, error_strings_render_each_kind) {
     snprintf(err.alg_error, sizeof err.alg_error, "%s", "unknown token: Q");
     bt_corpus_error_string(&err, text, sizeof text);
     BT_CHECK_EQ(text, "alg in ref/cherry/edge.tsv rowid 3: unknown token: Q");
+    err.kind = BT_CORPUS_ERR_OOM;
+    bt_corpus_error_string(&err, text, sizeof text);
+    BT_CHECK_EQ(text, "out of memory loading ref/cherry/edge.tsv");
     bt_overlay_error overlay;
     memset(&overlay, 0, sizeof overlay);
     overlay.kind = BT_OVERLAY_ERR_UNKNOWN_SHEET;
@@ -99,6 +102,40 @@ BT_TEST(corpus_failures, load_reports_the_first_missing_sheet) {
     BT_CHECK(bt_corpus_load(root, &corpus, &err) != 0);
     BT_CHECK(err.kind == BT_CORPUS_ERR_READ);
     BT_CHECK(strstr(err.path, "cherry/edge.tsv") != NULL);
+    bt_corpus_free(&corpus);
+    tu_remove_tree(root);
+}
+
+BT_TEST(corpus_failures, load_sets_the_error_kind_when_an_allocation_starves) {
+    const char *root = corpus_fail_dir("oom-starve");
+    write_full_root(root);
+    int saw_corpus_oom = 0;
+    for (size_t ok = 0; ok < 24; ok++) {
+        bt_corpus corpus;
+        bt_corpus_error err;
+        memset(&err, 0xAA, sizeof err);
+        bt_alloc_fail_arm(ok);
+        int rc = bt_corpus_load(root, &corpus, &err);
+        bt_alloc_fail_disarm();
+        if (rc == 0) {
+            bt_corpus_free(&corpus);
+            continue;
+        }
+        BT_CHECK(err.kind == BT_CORPUS_ERR_READ || err.kind == BT_CORPUS_ERR_PARSE ||
+                 err.kind == BT_CORPUS_ERR_ALG || err.kind == BT_CORPUS_ERR_OOM);
+        char text[256];
+        bt_corpus_error_string(&err, text, sizeof text);
+        BT_CHECK(text[0] != '\0');
+        if (err.kind == BT_CORPUS_ERR_OOM) {
+            saw_corpus_oom = 1;
+            BT_CHECK(strstr(err.path, ".tsv") != NULL);
+        }
+    }
+    BT_CHECK(saw_corpus_oom == 1);
+    bt_corpus corpus;
+    bt_corpus_error err;
+    BT_CHECK(bt_corpus_load(root, &corpus, &err) == 0);
+    BT_CHECK(bt_corpus_total_rows(&corpus) == 13);
     bt_corpus_free(&corpus);
     tu_remove_tree(root);
 }
