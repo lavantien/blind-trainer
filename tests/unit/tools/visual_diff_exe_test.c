@@ -103,6 +103,37 @@ BT_TEST(visual_diff_exe, no_arguments_print_usage_and_exit_2) {
     BT_CHECK(strstr(err, "usage: bt-visual-diff") != NULL);
 }
 
+static int spawn_diff_alloc(const char *const argv[], const char *alloc_k, char *out,
+                            size_t out_cap, char *err, size_t err_cap) {
+    char exe[BT_PATH_MAX];
+    bt_test_bin_path(exe, "visual-diff.exe");
+    char saved[16];
+    DWORD had = GetEnvironmentVariableA("BTVD_ALLOC_FAIL_OK", saved, sizeof saved);
+    SetEnvironmentVariableA("BTVD_ALLOC_FAIL_OK", alloc_k);
+    int code = -1;
+    int rc = bt_spawn_capture(exe, argv, NULL, 120000, &code, out, out_cap, err, err_cap);
+    SetEnvironmentVariableA("BTVD_ALLOC_FAIL_OK", had > 0 && had < sizeof saved ? saved : NULL);
+    BT_CHECK_EQ(rc, 0);
+    return code;
+}
+
+BT_TEST(visual_diff_exe, argv_conversion_starves_at_each_alloc_and_exits_two) {
+    char shots[BT_PATH_MAX];
+    char bases[BT_PATH_MAX];
+    repo_baseline_pair(shots, bases, "menu.png", "menu.png");
+    char out[2048];
+    char err[2048];
+    const char *argv[] = {shots, bases, NULL};
+    const char *ks[] = {"0", "1", "2"};
+    for (size_t at = 0; at < 3; at++) {
+        int code = spawn_diff_alloc(argv, ks[at], out, sizeof out, err, sizeof err);
+        BT_CHECK_EQ(code, 2);
+        BT_CHECK(strstr(err, "out of memory") != NULL);
+    }
+    rm_scratch(shots);
+    rm_scratch(bases);
+}
+
 BT_TEST(visual_diff_exe, selftest_passes_over_its_own_fixtures) {
     char workdir[BT_PATH_MAX];
     scratch_dir("selftest", workdir);

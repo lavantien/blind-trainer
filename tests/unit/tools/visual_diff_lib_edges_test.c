@@ -2,7 +2,9 @@
 
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/strbuf.h"
+#include "unit/tools/visual_death_test.h"
 
 static btvd_verdict verdict_of(btvd_verdict_kind kind) {
     btvd_verdict verdict;
@@ -70,8 +72,9 @@ BT_TEST(visual_diff_edges, decode_rejects_a_chunk_that_overruns_the_file) {
     vd_util_scratch("dec-trunc", dir);
     char path[VD_UTIL_PATH_MAX];
     vd_util_join(path, dir, "overrun.png");
-    unsigned char bytes[16] = {0x89, 'P',  'N',  'G',  '\r', '\n', 0x1a, '\n',
-                               0x7f, 0xff, 0xff, 0xff, 'I',  'H',  'D',  'R'};
+    unsigned char bytes[16] = {
+        0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n', 0x7f, 0xff, 0xff, 0xff, 'I', 'H', 'D', 'R',
+    };
     vd_util_write_bytes(path, bytes, sizeof bytes);
     btvd_image image;
     char err[BTVD_ERR_MAX];
@@ -180,6 +183,45 @@ BT_TEST(visual_diff_edges, report_vec_grows_past_sixteen) {
     }
     BT_CHECK_EQ(vec.count, 17U);
     btvd_report_vec_free(&vec);
+}
+
+static void edges_death_strvec_growth(void) {
+    bt_alloc_fail_arm(0);
+    btvd_strvec vec;
+    memset(&vec, 0, sizeof vec);
+    btvd_strvec_push(&vec, (char *)"name");
+}
+
+static void edges_death_report_vec_growth(void) {
+    bt_alloc_fail_arm(0);
+    btvd_report_vec vec;
+    memset(&vec, 0, sizeof vec);
+    btvd_pair_report report;
+    memset(&report, 0, sizeof report);
+    btvd_report_vec_push(&vec, report);
+}
+
+BT_TEST(visual_diff_edges, vector_growth_exits_with_usage_when_it_starves) {
+    vd_death_expect_code("visual_diff_edges.strvec_growth", "out of memory", 2,
+                         edges_death_strvec_growth);
+    vd_death_expect_code("visual_diff_edges.report_vec_growth", "out of memory", 2,
+                         edges_death_report_vec_growth);
+}
+
+BT_TEST(visual_diff_edges, read_bytes_fails_closed_when_its_buffer_starves) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("oomread", dir);
+    char path[VD_UTIL_PATH_MAX];
+    vd_util_join(path, dir, "bytes.bin");
+    vd_util_write(path, "payload");
+    char err[BTVD_ERR_MAX];
+    size_t len = 99;
+    bt_alloc_fail_arm(0);
+    unsigned char *bytes = btvd_fs_read_bytes(path, &len, err, sizeof err);
+    bt_alloc_fail_disarm();
+    BT_CHECK(bytes == NULL);
+    BT_CHECK(strstr(err, "out of memory") != NULL);
+    vd_util_rm_rf(dir);
 }
 
 BT_TEST(visual_diff_edges, png_names_filters_extensions_case_insensitively) {

@@ -1,6 +1,8 @@
 #include "visual_diff_lib_test_util.h"
 
+#include "common/alloc.h"
 #include "common/strbuf.h"
+#include "unit/tools/visual_death_test.h"
 
 static bt_json_value *parse_config(const char *text) {
     bt_json_value *config = NULL;
@@ -70,6 +72,24 @@ BT_TEST(visual_diff_lib, read_config_rejects_missing_file_and_bad_json) {
     vd_util_write(bad, "{not json");
     BT_CHECK(btvd_read_config(bad, err, sizeof err) == NULL);
     BT_CHECK(strncmp(err, "cannot parse config", 19) == 0);
+    vd_util_rm_rf(dir);
+}
+
+static char g_read_config_path[VD_UTIL_PATH_MAX];
+
+static void lib_death_read_config_xalloc(void) {
+    bt_alloc_fail_arm(0);
+    char err[BTVD_ERR_MAX];
+    (void)btvd_read_config(g_read_config_path, err, sizeof err);
+}
+
+BT_TEST(visual_diff_lib, read_config_exits_with_usage_when_its_buffer_starves) {
+    char dir[VD_UTIL_PATH_MAX];
+    vd_util_scratch("oomcfg", dir);
+    vd_util_join(g_read_config_path, dir, "config.json");
+    vd_util_write(g_read_config_path, "{\"visual\": {\"tolerance\": 8}}");
+    vd_death_expect_code("visual_diff_lib.read_config_xalloc", "out of memory", 2,
+                         lib_death_read_config_xalloc);
     vd_util_rm_rf(dir);
 }
 

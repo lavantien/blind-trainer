@@ -116,20 +116,26 @@ static void replace_in_file(const char *path, const char *needle, const char *re
     }
 }
 
-static int spawn_verify(const char *ref_ground_value, const char *artifacts_value,
-                        const char *config_value, char *out, size_t out_cap, char *err,
-                        size_t err_cap) {
+static int spawn_verify_seam(const char *ref_ground_value, const char *artifacts_value,
+                             const char *config_value, const char *alloc_k, char *out,
+                             size_t out_cap, char *err, size_t err_cap) {
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "verify.exe");
     char saved_rg[BT_PATH_MAX];
     char saved_artifacts[BT_PATH_MAX];
     char saved_config[BT_PATH_MAX];
+    char saved_alloc[32];
     DWORD had_rg = GetEnvironmentVariableA("BT_REF_GROUND", saved_rg, BT_PATH_MAX);
     DWORD had_artifacts = GetEnvironmentVariableA("BT_ARTIFACTS", saved_artifacts, BT_PATH_MAX);
     DWORD had_config = GetEnvironmentVariableA("BT_CONFIG", saved_config, BT_PATH_MAX);
+    DWORD had_alloc =
+        GetEnvironmentVariableA("BT_VERIFY_ALLOC_FAIL_OK", saved_alloc, sizeof saved_alloc);
     SetEnvironmentVariableA("BT_REF_GROUND", ref_ground_value);
     SetEnvironmentVariableA("BT_ARTIFACTS", artifacts_value);
     SetEnvironmentVariableA("BT_CONFIG", config_value);
+    if (alloc_k != NULL) {
+        SetEnvironmentVariableA("BT_VERIFY_ALLOC_FAIL_OK", alloc_k);
+    }
     const char *argv[] = {NULL};
     int code = -1;
     int rc = bt_spawn_capture(exe, argv, NULL, 180000, &code, out, out_cap, err, err_cap);
@@ -138,8 +144,17 @@ static int spawn_verify(const char *ref_ground_value, const char *artifacts_valu
         "BT_ARTIFACTS", had_artifacts > 0 && had_artifacts < BT_PATH_MAX ? saved_artifacts : NULL);
     SetEnvironmentVariableA("BT_CONFIG",
                             had_config > 0 && had_config < BT_PATH_MAX ? saved_config : NULL);
+    SetEnvironmentVariableA("BT_VERIFY_ALLOC_FAIL_OK",
+                            had_alloc > 0 && had_alloc < sizeof saved_alloc ? saved_alloc : NULL);
     BT_CHECK_EQ(rc, 0);
     return code;
+}
+
+static int spawn_verify(const char *ref_ground_value, const char *artifacts_value,
+                        const char *config_value, char *out, size_t out_cap, char *err,
+                        size_t err_cap) {
+    return spawn_verify_seam(ref_ground_value, artifacts_value, config_value, NULL, out, out_cap,
+                             err, err_cap);
 }
 
 BT_TEST(verify_exe, reports_an_unreadable_config) {
@@ -414,4 +429,119 @@ BT_TEST(verify_exe, reports_a_truncated_backslash_artifacts_root) {
     int code = spawn_verify(NULL, artifacts, NULL, out, sizeof out, err, sizeof err);
     BT_CHECK_EQ(code, 1);
     BT_CHECK(strstr(err, "write \\/127.0.0.1/no-such-share/a/a") != NULL);
+}
+
+static void truncate_to_header(const char *path) {
+    FILE *file = fopen(path, "rb");
+    BT_CHECK(file != NULL);
+    if (file == NULL) {
+        return;
+    }
+    char header[1024];
+    if (fgets(header, sizeof header, file) == NULL) {
+        header[0] = '\0';
+    }
+    fclose(file);
+    FILE *sink = fopen(path, "wb");
+    BT_CHECK(sink != NULL);
+    if (sink != NULL) {
+        fputs(header, sink);
+        fclose(sink);
+    }
+}
+
+static void seam_clone(const char *tag, char out[BT_PATH_MAX]) {
+    clone_ref_ground(tag, out);
+    const char *sheets[] = {
+        "cherry/edge.tsv",   "cherry/corner.tsv", "cherry/flips.tsv",  "cherry/twists.tsv",
+        "cherry/parity.tsv", "cherry/ltct.tsv",   "eggins/edge.tsv",   "eggins/corner.tsv",
+        "eggins/flips.tsv",  "eggins/twists.tsv", "eggins/parity.tsv", "eggins/ltct.tsv",
+        "simcheck.tsv",
+    };
+    for (size_t at = 0; at < sizeof sheets / sizeof sheets[0]; at++) {
+        char path[BT_PATH_MAX];
+        snprintf(path, sizeof path, "%s/%s", out, sheets[at]);
+        truncate_to_header(path);
+    }
+}
+
+static void seam_config(const char *base, const char *ref_ground, const char *artifacts,
+                        char out[BT_PATH_MAX]) {
+    snprintf(out, BT_PATH_MAX, "%s/minimal.json", base);
+    char body[BT_PATH_MAX * 4];
+    snprintf(body, sizeof body,
+             "{\"paths\": {\"ref_ground\": \"%s\", \"packs\": \"%s/packs\", "
+             "\"artifacts\": \"%s\"}}",
+             ref_ground, ref_ground, artifacts);
+    overwrite_file(out, body);
+}
+
+static void to_forward_slashes(char *text) {
+    for (char *cursor = text; *cursor != '\0'; cursor++) {
+        if (*cursor == '\\') {
+            *cursor = '/';
+        }
+    }
+}
+
+static void seam_fixture(const char *tag, char root[BT_PATH_MAX], char artifacts[BT_PATH_MAX],
+                         char config[BT_PATH_MAX]) {
+    seam_clone(tag, root);
+    char art_tag[64];
+    snprintf(art_tag, sizeof art_tag, "%sart", tag);
+    scratch_root(art_tag, artifacts);
+    char ref_fwd[BT_PATH_MAX];
+    snprintf(ref_fwd, sizeof ref_fwd, "%s", root);
+    to_forward_slashes(ref_fwd);
+    char art_fwd[BT_PATH_MAX];
+    snprintf(art_fwd, sizeof art_fwd, "%s", artifacts);
+    to_forward_slashes(art_fwd);
+    seam_config(root, ref_fwd, art_fwd, config);
+}
+
+BT_TEST(verify_exe, digest_reports_out_of_memory_through_the_armed_seam) {
+    char root[BT_PATH_MAX];
+    char artifacts[BT_PATH_MAX];
+    char config[BT_PATH_MAX];
+    seam_fixture("seamdig", root, artifacts, config);
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify_seam(NULL, NULL, config, "48", out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "out of memory") != NULL);
+    rm_scratch_root(root);
+    rm_scratch_root(artifacts);
+}
+
+BT_TEST(verify_exe, second_config_load_reports_unreadable_through_the_armed_seam) {
+    char root[BT_PATH_MAX];
+    char artifacts[BT_PATH_MAX];
+    char config[BT_PATH_MAX];
+    seam_fixture("seamload", root, artifacts, config);
+    char out[2048];
+    char err[8192];
+    int code = spawn_verify_seam(NULL, NULL, config, "72", out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "config unreadable") != NULL);
+    rm_scratch_root(root);
+    rm_scratch_root(artifacts);
+}
+
+BT_TEST(verify_exe, report_serialization_fails_through_the_armed_seam_on_the_full_corpus) {
+    char base[BT_PATH_MAX];
+    scratch_root("seamser", base);
+    char source[BT_PATH_MAX];
+    repo_ref_ground(source);
+    to_forward_slashes(source);
+    char art_fwd[BT_PATH_MAX];
+    snprintf(art_fwd, sizeof art_fwd, "%s/artifacts", base);
+    to_forward_slashes(art_fwd);
+    char config[BT_PATH_MAX];
+    seam_config(base, source, art_fwd, config);
+    char out[2048];
+    char err[4096];
+    int code = spawn_verify_seam(NULL, art_fwd, config, "131072", out, sizeof out, err, sizeof err);
+    BT_CHECK_EQ(code, 1);
+    BT_CHECK(strstr(err, "serialize report.json failed") != NULL);
+    rm_scratch_root(base);
 }

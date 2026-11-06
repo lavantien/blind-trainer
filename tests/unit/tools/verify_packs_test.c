@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "common/alloc.h"
 #include "data/seedpack/registry.h"
 #include "verify/packs.h"
 
@@ -183,4 +184,24 @@ BT_TEST(verify_packs, rows_for_an_unimplemented_section_still_report_one_outcome
     BT_CHECK(strstr(section.rows[0].tier1_err, "is not implemented") != NULL);
     BT_CHECK(section.rows[0].tier2.kind == VERIFY_TIER2_SKIPPED);
     verify_section_free(&section);
+}
+
+BT_TEST(verify_packs, section_and_strlist_pushes_fail_closed_when_growth_starves) {
+    verify_section_result section;
+    verify_section_init(&section);
+    verify_row_outcome row;
+    memset(&row, 0, sizeof row);
+    bt_alloc_fail_arm(0);
+    verify_section_push_row(&section, &row);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(section.count, 0U);
+    BT_CHECK_EQ((int)bt_alloc_fail_count() > 0, 1);
+    verify_section_free(&section);
+    verify_strlist list;
+    verify_strlist_init(&list);
+    bt_alloc_fail_arm(0);
+    verify_strlist_push(&list, "offender");
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(list.count, 0U);
+    verify_strlist_free(&list);
 }

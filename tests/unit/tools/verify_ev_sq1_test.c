@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include "common/alloc.h"
+#include "unit/core/death_test.h"
 #include "verify/ev_sq1.h"
 
 static void case_of(const char *alg, verify_sq1_case *out) {
@@ -61,6 +63,19 @@ BT_TEST(verify_ev_sq1, empty_algs_fail_start_case) {
     char err[VERIFY_ERR_MAX];
     BT_CHECK_EQ(verify_sq1_start_case("", &case_, err, sizeof err), 1);
     BT_CHECK_EQ(err, "alg is empty");
+}
+
+static void sq1_death_cubeshape_malloc(void) {
+    bt_alloc_fail_arm(0);
+    bt_seed_rows rows;
+    rows.items = NULL;
+    rows.count = 0;
+    verify_section_result section;
+    verify_sq1_verify_cubeshape(&rows, &section);
+}
+
+BT_TEST(verify_ev_sq1, cubeshape_exits_when_its_case_arrays_starve) {
+    bt_death_expect_code("verify_ev_sq1.cubeshape_malloc", "", 1, sq1_death_cubeshape_malloc);
 }
 
 BT_TEST(verify_ev_sq1, the_start_state_round_trip_holds_for_a_pack_alg) {

@@ -2,7 +2,9 @@
 
 #include <string.h>
 
+#include "common/alloc.h"
 #include "data/digest.h"
+#include "unit/core/death_test.h"
 #include "verify/lib.h"
 #include "verify/report.h"
 
@@ -35,6 +37,32 @@ BT_TEST(verify_report, note_text_renders_flip_and_twist_with_signs) {
     bt_note zero = {BT_NOTE_TWIST, "UBL", 0};
     verify_note_text(&zero, out, sizeof out);
     BT_CHECK_EQ(out, "twist:UBL:+0");
+}
+
+BT_TEST(verify_report, sim_map_insert_fails_closed_when_growth_starves) {
+    verify_sim_map map;
+    verify_sim_map_init(&map);
+    bt_alloc_fail_arm(0);
+    verify_sim_map_insert(&map, BT_SOLVER_CHERRY, BT_SHEET_EDGE, 7, "UF-UB", 12);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(map.count, 0U);
+    BT_CHECK_EQ((int)bt_alloc_fail_count() > 0, 1);
+    verify_sim_map_free(&map);
+}
+
+static void report_death_rows_malloc(void) {
+    bt_alloc_fail_arm(0);
+    bt_corpus corpus = {0};
+    verify_sim_map sim;
+    verify_sim_map_init(&sim);
+    bt_corpus_digest digest;
+    memset(&digest, 0, sizeof digest);
+    verify_report report;
+    verify_build_report(&corpus, &sim, "t", digest.sha256, &report);
+}
+
+BT_TEST(verify_report, build_report_exits_when_its_row_arrays_starve) {
+    bt_death_expect_code("verify_report.rows_malloc", "", 1, report_death_rows_malloc);
 }
 
 static void reasons_case(verify_report_row_outcome *row, bt_strbuf *out) {
