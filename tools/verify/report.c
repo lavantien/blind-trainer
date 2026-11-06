@@ -211,13 +211,6 @@ void verify_build_report(const bt_corpus *corpus, const verify_sim_map *sim,
                 break;
             }
         }
-        if (summary == NULL) {
-            BT_TRACE_FAIL("report.build_report", "summary slot missing for %s/%s", outcome.solver,
-                          outcome.sheet);
-            bt_verdict_free(&verdict);
-            verify_report_row_free(&outcome);
-            continue;
-        }
         summary->rows += 1;
         if (outcome.pass) {
             summary->passed += 1;

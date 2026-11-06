@@ -238,6 +238,12 @@ void verify_sq1_resolve_family_keys(const verify_sq1_case *const *cases, size_t 
         tally_bump(cases[at], &rows, &row_count, &row_cap);
     }
     bool *judged = bt_calloc(row_count, sizeof *judged);
+    if (judged == NULL && row_count > 0) {
+        BT_TRACE_FAIL("ev_sq1.resolve_family_keys", "judged oom");
+        free(rows);
+        BT_TRACE_EXIT("ev_sq1.resolve_family_keys");
+        return;
+    }
     for (size_t row_at = 0; row_at < row_count; row_at++) {
         if (judged[row_at]) {
             continue;

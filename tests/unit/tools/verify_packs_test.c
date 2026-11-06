@@ -5,6 +5,7 @@
 #include "common/alloc.h"
 #include "data/seedpack/registry.h"
 #include "verify/packs.h"
+#include "verify/packs_report.h"
 
 static size_t mini_registry(const char *rows, bt_pack_entry **out_entries) {
     bt_seed_error err;
@@ -204,4 +205,32 @@ BT_TEST(verify_packs, section_and_strlist_pushes_fail_closed_when_growth_starves
     bt_alloc_fail_disarm();
     BT_CHECK_EQ(list.count, 0U);
     verify_strlist_free(&list);
+}
+
+BT_TEST(verify_packs, strlist_reserve_grows_doubles_and_fails_closed) {
+    verify_strlist list;
+    verify_strlist_init(&list);
+    BT_CHECK_EQ(verify_strlist_reserve(&list, 4), 0);
+    BT_CHECK_EQ(list.cap, 16U);
+    BT_CHECK_EQ(verify_strlist_reserve(&list, 8), 0);
+    BT_CHECK_EQ(verify_strlist_reserve(&list, 17), 0);
+    BT_CHECK_EQ(list.cap, 32U);
+    verify_strlist_free(&list);
+    verify_strlist_init(&list);
+    bt_alloc_fail_arm(0);
+    BT_CHECK_EQ(verify_strlist_reserve(&list, 1), -1);
+    bt_alloc_fail_disarm();
+    verify_strlist_free(&list);
+}
+
+BT_TEST(verify_packs, row_offender_joins_tier1_and_tier2_failures) {
+    verify_row_outcome row = {0};
+    snprintf(row.case_key, sizeof row.case_key, "%s", "probe.1");
+    row.tier1_ok = false;
+    snprintf(row.tier1_err, sizeof row.tier1_err, "%s", "parse boom");
+    row.tier2 = verify_tier2_fail("audit boom");
+    char offender[VERIFY_OFFENDER_MAX];
+    BT_CHECK_EQ(verify_row_offender("probe", "probe", "probe", &row, offender, sizeof offender), 1);
+    BT_CHECK(strstr(offender, "probe/probe/probe/probe.1: tier1: parse boom; tier2: audit boom") !=
+             NULL);
 }

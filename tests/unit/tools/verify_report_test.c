@@ -479,3 +479,44 @@ BT_TEST(verify_report, render_markdown_prints_none_when_nothing_failed) {
     bt_strbuf_free(&md);
     verify_report_free(&report);
 }
+
+BT_TEST(verify_report, reasons_pad_after_a_trailing_semicolon) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 5, "UF-UB-UF", &row);
+    static char problems[2][VERIFY_REPORT_PROBLEM_LEN] = {"first;", "second"};
+    row.problems = (char (*)[VERIFY_REPORT_PROBLEM_LEN])problems;
+    row.problem_count = 2;
+    bt_strbuf reasons;
+    reasons_case(&row, &reasons);
+    BT_CHECK(strstr(reasons.data, "first; second") != NULL);
+    bt_strbuf_free(&reasons);
+    row.problems = NULL;
+    verify_report_row_free(&row);
+}
+
+BT_TEST(verify_report, to_json_renders_null_simchecks_problems_and_failures) {
+    verify_report_row_outcome row;
+    outcome_row("cherry", "edge", 7, "UF-UB-UR", &row);
+    static char problems[1][VERIFY_REPORT_PROBLEM_LEN] = {"qtm disagrees"};
+    row.problems = (char (*)[VERIFY_REPORT_PROBLEM_LEN])problems;
+    row.problem_count = 1;
+    verify_report report = {0};
+    snprintf(report.generated_at, sizeof report.generated_at, "%s", "2026-11-06T00:00:00Z");
+    snprintf(report.generator, sizeof report.generator, "%s", "verify");
+    report.rows = &row;
+    report.row_count = 1;
+    report.failures = &row;
+    report.failure_count = 1;
+    bt_json_value *value = NULL;
+    BT_CHECK_EQ(verify_report_to_json(&report, &value), 0);
+    bt_strbuf text;
+    bt_strbuf_init(&text, 0);
+    bt_json_serialize(value, &text);
+    BT_CHECK(strstr(text.data, "null") != NULL);
+    BT_CHECK(strstr(text.data, "qtm disagrees") != NULL);
+    BT_CHECK(strstr(text.data, "failures") != NULL);
+    bt_strbuf_free(&text);
+    bt_json_free(value);
+    row.problems = NULL;
+    verify_report_row_free(&row);
+}

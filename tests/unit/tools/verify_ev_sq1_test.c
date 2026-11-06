@@ -142,6 +142,127 @@ BT_TEST(verify_ev_sq1, stage_predicates_partition_post_cubeshape_states) {
     BT_CHECK(placed);
 }
 
+static void case_with_front(const char *alg, const char *front_json, verify_sq1_case *out) {
+    char start_err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_sq1_start_case(alg, out, start_err, sizeof start_err), 0);
+    out->front_json = front_json;
+}
+
+BT_TEST(verify_ev_sq1, a_u_slice_state_passes_cp_but_not_eo) {
+    verify_sq1_case case_;
+    case_with_front("(0,1)", "{\"case\":\"square / square\"}", &case_);
+    verify_tier2 cp = verify_sq1_stage_outcome(VERIFY_SQ1_STAGE_CP, &case_);
+    BT_CHECK_EQ(cp.kind, VERIFY_TIER2_PASS);
+    verify_tier2 eo = verify_sq1_stage_outcome(VERIFY_SQ1_STAGE_EO, &case_);
+    BT_CHECK_EQ(eo.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(eo.fail, "edges already oriented");
+}
+
+BT_TEST(verify_ev_sq1, family_resolution_skips_cases_with_broken_front_json) {
+    verify_sq1_case broken;
+    case_with_front("(1,0) / (-1,0)", "{bad", &broken);
+    const verify_sq1_case *cases[1] = {&broken};
+    verify_sq1_family_index index;
+    verify_sq1_resolve_family_keys(cases, 1, &index);
+    BT_CHECK_EQ(index.key_count, 0U);
+    BT_CHECK_EQ(index.ambiguous_count, 0U);
+    verify_sq1_family_index_free(&index);
+}
+
+BT_TEST(verify_ev_sq1, family_resolution_prefers_the_heavier_later_shape) {
+    verify_sq1_case light;
+    case_with_front("/", "{\"case\":\"shared / left\"}", &light);
+    verify_sq1_case heavy_a;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"shared / left\"}", &heavy_a);
+    verify_sq1_case heavy_b;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"shared / left\"}", &heavy_b);
+    const verify_sq1_case *cases[3] = {&light, &heavy_a, &heavy_b};
+    verify_sq1_family_index index;
+    verify_sq1_resolve_family_keys(cases, 3, &index);
+    BT_CHECK_EQ(index.key_count, 1U);
+    BT_CHECK_EQ(index.ambiguous_count, 0U);
+    BT_CHECK_EQ(index.keys[0].key_len, BT_PZ_SQ1_PIECES_PER_LAYER);
+    verify_sq1_family_index_free(&index);
+}
+
+enum {
+    SQ1_SEAM_AMBIGUOUS_AT = 31,
+    SQ1_SEAM_FULL_AT = 32,
+    SQ1_SEAM_KEYS_AT = 66,
+    SQ1_SEAM_NINE_FULL_AT = 67,
+    SQ1_SEAM_SWEEP = 40,
+};
+
+BT_TEST(verify_ev_sq1, family_resolution_degrades_under_alloc_starvation) {
+    verify_sq1_case winner_a;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"square / square\"}", &winner_a);
+    verify_sq1_case winner_b;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"square / square\"}", &winner_b);
+    verify_sq1_case tie_a;
+    case_with_front("/", "{\"case\":\"kite / pawn\"}", &tie_a);
+    verify_sq1_case tie_b;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"kite / pawn2\"}", &tie_b);
+    const verify_sq1_case *cases[4] = {&winner_a, &winner_b, &tie_a, &tie_b};
+    verify_sq1_family_index baseline;
+    verify_sq1_resolve_family_keys(cases, 4, &baseline);
+    BT_CHECK_EQ(baseline.key_count, 3U);
+    BT_CHECK_EQ(baseline.ambiguous_count, 1U);
+    verify_sq1_family_index_free(&baseline);
+    for (size_t k = 0; k <= SQ1_SEAM_SWEEP; k++) {
+        verify_sq1_family_index index;
+        bt_alloc_fail_arm(k);
+        verify_sq1_resolve_family_keys(cases, 4, &index);
+        bt_alloc_fail_disarm();
+        BT_CHECK(index.key_count <= 4U);
+        BT_CHECK(index.ambiguous_count <= 4U);
+        verify_sq1_family_index_free(&index);
+    }
+}
+
+BT_TEST(verify_ev_sq1, family_resolution_names_each_late_oom_arm) {
+    verify_sq1_case winner_a;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"square / square\"}", &winner_a);
+    verify_sq1_case winner_b;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"square / square\"}", &winner_b);
+    verify_sq1_case tie_a;
+    case_with_front("/", "{\"case\":\"kite / pawn\"}", &tie_a);
+    verify_sq1_case tie_b;
+    case_with_front("(1,0) / (-1,0)", "{\"case\":\"kite / pawn2\"}", &tie_b);
+    const verify_sq1_case *cases[4] = {&winner_a, &winner_b, &tie_a, &tie_b};
+    verify_sq1_family_index index;
+    bt_alloc_fail_arm(SQ1_SEAM_AMBIGUOUS_AT);
+    verify_sq1_resolve_family_keys(cases, 4, &index);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(index.key_count, 1U);
+    BT_CHECK_EQ(index.ambiguous_count, 0U);
+    verify_sq1_family_index_free(&index);
+    bt_alloc_fail_arm(SQ1_SEAM_FULL_AT);
+    verify_sq1_resolve_family_keys(cases, 4, &index);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(index.key_count, 3U);
+    BT_CHECK_EQ(index.ambiguous_count, 1U);
+    verify_sq1_family_index_free(&index);
+    static verify_sq1_case nine[9];
+    static char fronts[9][40];
+    static const verify_sq1_case *nine_ptrs[9];
+    for (size_t at = 0; at < 9; at++) {
+        case_with_front("(1,0) / (-1,0)", NULL, &nine[at]);
+        snprintf(fronts[at], sizeof fronts[at], "{\"case\":\"n%zu / n%zu\"}", at, at);
+        nine[at].front_json = fronts[at];
+        nine_ptrs[at] = &nine[at];
+    }
+    bt_alloc_fail_arm(SQ1_SEAM_KEYS_AT);
+    verify_sq1_resolve_family_keys(nine_ptrs, 9, &index);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(index.key_count, 8U);
+    verify_sq1_family_index_free(&index);
+    bt_alloc_fail_arm(SQ1_SEAM_NINE_FULL_AT);
+    verify_sq1_resolve_family_keys(nine_ptrs, 9, &index);
+    bt_alloc_fail_disarm();
+    BT_CHECK_EQ(index.key_count, 9U);
+    verify_sq1_family_index_free(&index);
+}
+
 BT_TEST(verify_ev_sq1, stage_outcome_reports_the_strongest_failure_reason) {
     verify_sq1_case case_;
     case_of("/", &case_);
