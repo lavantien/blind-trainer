@@ -28,6 +28,8 @@ enum {
     GD_ALLOC_FAST_EDGE_T2 = 30,
     GD_ALLOC_DEEP_EDGE_T1 = 24,
     GD_ALLOC_DEEP_EDGE_T2 = 25,
+    GD_ALLOC_STARVED_NODE_BUDGET = 1000,
+    GD_ALLOC_STARVED_TOTAL_FLOOR = 3000,
 };
 
 static void test_scoring(bt_gd_scoring_cfg *cfg) {
@@ -233,6 +235,24 @@ BT_TEST(gendata_alloc, synth_case_zero_insert_limits_walk_every_setup_allocation
     size_t total =
         synth_case_total(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim);
     BT_CHECK(total > 48);
+    BT_CHECK(total < GD_ALLOC_SYNTH_WALK_CAP);
+    for (size_t k = 0; k <= total; k++) {
+        synth_case_armed(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim, k,
+                         &failures);
+    }
+    BT_CHECK_EQ(failures, 0U);
+}
+
+BT_TEST(gendata_alloc, synth_case_starved_budget_walks_the_hit_path_dense) {
+    bt_gd_synth_limits lim = {
+        .max_setup = 0,
+        .max_insert = 3,
+        .node_budget = GD_ALLOC_STARVED_NODE_BUDGET,
+    };
+    size_t failures = 0;
+    size_t total =
+        synth_case_total(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim);
+    BT_CHECK(total > GD_ALLOC_STARVED_TOTAL_FLOOR);
     BT_CHECK(total < GD_ALLOC_SYNTH_WALK_CAP);
     for (size_t k = 0; k <= total; k++) {
         synth_case_armed(BT_ORBIT_EDGE, GD_ALLOC_FAST_EDGE_T1, GD_ALLOC_FAST_EDGE_T2, &lim, k,

@@ -150,22 +150,32 @@ int main(void) {
         }
     }
     printf("%-10s %6s %6s %12s %8s\n", "pair", "setup", "budget", "allocs", "ms");
-    static const size_t budgets[] = {5000, 20000, 100000, 1000000};
-    static const size_t sweep_setups[] = {0, 1, 1, 1};
-    for (size_t p = 0; p < sizeof pairs / sizeof pairs[0]; p++) {
+    static const size_t fg_budgets[] = {500, 1000, 2000, 4000};
+    static const size_t ab_budgets[] = {25000, 40000, 60000, 80000};
+    static const struct {
+        size_t pair;
+        size_t max_setup;
+        const size_t *budgets;
+        size_t budget_count;
+    } sweep[] = {
+        {1, 0, fg_budgets, sizeof fg_budgets / sizeof fg_budgets[0]},
+        {2, 1, ab_budgets, sizeof ab_budgets / sizeof ab_budgets[0]},
+    };
+    for (size_t c = 0; c < sizeof sweep / sizeof sweep[0]; c++) {
         uint8_t t1 = 0;
         uint8_t t2 = 0;
-        pair_ids(&pairs[p], &t1, &t2);
-        for (size_t b = 0; b < sizeof budgets / sizeof budgets[0]; b++) {
+        pair_ids(&pairs[sweep[c].pair], &t1, &t2);
+        for (size_t b = 0; b < sweep[c].budget_count; b++) {
+            size_t budget = sweep[c].budgets[b];
             double ms = 0;
-            size_t total =
-                probe_cell_total(pairs[p].orbit, t1, t2, sweep_setups[p], 3, budgets[b], &ms);
+            size_t total = probe_cell_total(pairs[sweep[c].pair].orbit, t1, t2, sweep[c].max_setup,
+                                            3, budget, &ms);
             if (total > 0) {
-                printf("%-10s %6zu %6zu %12zu %8.0f\n", pairs[p].name, sweep_setups[p], budgets[b],
-                       total, ms);
+                printf("%-10s %6zu %6zu %12zu %8.0f\n", pairs[sweep[c].pair].name,
+                       sweep[c].max_setup, budget, total, ms);
             } else {
-                printf("%-10s %6zu %6zu %12s %8.0f\n", pairs[p].name, sweep_setups[p], budgets[b],
-                       "no", ms);
+                printf("%-10s %6zu %6zu %12s %8.0f\n", pairs[sweep[c].pair].name,
+                       sweep[c].max_setup, budget, "-", ms);
             }
             fflush(stdout);
         }
