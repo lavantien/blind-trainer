@@ -88,4 +88,69 @@ BT_TEST(verify_ev_mega, tag_of_reads_the_case_field) {
     BT_CHECK_EQ(tag, "EP5");
     BT_CHECK(verify_mega_tag_of("{\"case\":3}", tag, sizeof tag) != 0);
     BT_CHECK(verify_mega_tag_of("{}", tag, sizeof tag) != 0);
+    BT_CHECK(verify_mega_tag_of("{bad", tag, sizeof tag) != 0);
+    BT_CHECK(tag[0] != '\0');
+}
+
+BT_TEST(verify_ev_mega, empty_algs_fail_case_state) {
+    bt_mega_state state;
+    char err[VERIFY_ERR_MAX];
+    BT_CHECK_EQ(verify_mega_case_state("", &state, err, sizeof err), 1);
+    BT_CHECK_EQ(err, "alg is empty");
+}
+
+BT_TEST(verify_ev_mega, oriented_or_placed_start_states_fail_their_stage) {
+    char err[VERIFY_ERR_MAX];
+    bt_mega_state oriented;
+    BT_CHECK_EQ(verify_mega_case_state("U", &oriented, err, sizeof err), 0);
+    verify_tier2 co = verify_mega_stage_outcome(VERIFY_MEGA_STAGE_CO, &oriented);
+    BT_CHECK_EQ(co.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(co.fail, "corners already oriented");
+    bt_mega_state solved;
+    bt_mega_solved_state(&solved);
+    verify_tier2 cp = verify_mega_stage_outcome(VERIFY_MEGA_STAGE_CP, &solved);
+    BT_CHECK_EQ(cp.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(cp.fail, "corners already placed");
+    verify_tier2 ep = verify_mega_stage_outcome(VERIFY_MEGA_STAGE_EP, &solved);
+    BT_CHECK_EQ(ep.kind, VERIFY_TIER2_FAIL);
+    BT_CHECK_EQ(ep.fail, "start state is already solved");
+}
+
+BT_TEST(verify_ev_mega, a_displaced_center_never_finds_a_home_frame) {
+    bt_mega_state state;
+    bt_mega_solved_state(&state);
+    state.colors[BT_MEGA_U * BT_MEGA_PER_FACE + BT_MEGA_CENTER] = BT_MEGA_F;
+    verify_tier2 cp = verify_mega_stage_outcome(VERIFY_MEGA_STAGE_CP, &state);
+    BT_CHECK_EQ(cp.kind, VERIFY_TIER2_PASS);
+}
+
+static bt_seed_rows mega_rows_holder;
+
+static void mega_one_row(const char *alg, const char *front_json) {
+    static bt_seed_row row;
+    memset(&row, 0, sizeof row);
+    snprintf(row.case_key, sizeof row.case_key, "%s", "4lll.1");
+    row.alg = (char *)alg;
+    row.front_json = (char *)front_json;
+    row.source_url = (char *)"https://example.test";
+    row.source_at = (char *)"2026-10-10";
+    mega_rows_holder.items = &row;
+    mega_rows_holder.count = 1;
+}
+
+BT_TEST(verify_ev_mega, verify_4lll_skips_rows_that_fail_their_gates) {
+    verify_section_result section;
+    mega_one_row("", "{\"case\":\"EP5\"}");
+    verify_mega_verify_4lll(&mega_rows_holder, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(!section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier1_err, "alg is empty");
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
+    mega_one_row("R", "{bad");
+    verify_mega_verify_4lll(&mega_rows_holder, &section);
+    BT_CHECK_EQ(section.count, 1);
+    BT_CHECK(section.rows[0].tier1_ok);
+    BT_CHECK_EQ(section.rows[0].tier2.kind, VERIFY_TIER2_SKIPPED);
+    verify_section_free(&section);
 }

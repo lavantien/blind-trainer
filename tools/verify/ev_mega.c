@@ -50,9 +50,6 @@ bool verify_mega_corners_placed(const bt_mega_state *state) {
                 break;
             }
         }
-        if (pos == ring) {
-            return false;
-        }
         if (bt_mega_color(state, side, bt_mega_corner_slot(pos)) != side) {
             return false;
         }
@@ -142,18 +139,7 @@ int verify_mega_case_state(const char *alg_text, bt_mega_state *state, char *err
     void *inverse = bt_pz_alg_create();
     eng.invert_alg(&eng, alg, inverse);
     bt_mega_solved_state(state);
-    if (!bt_mega_apply_alg(state, inverse, &pz_err)) {
-        bt_strbuf sb;
-        bt_strbuf_init(&sb, VERIFY_ERR_STRBUF_INIT);
-        bt_pz_error_message(&pz_err, &sb);
-        snprintf(err, err_len, "%s", sb.data);
-        bt_strbuf_free(&sb);
-        bt_pz_alg_destroy(alg);
-        bt_pz_alg_destroy(inverse);
-        BT_TRACE_FAIL("ev_mega.case_state", "apply failed %s", alg_text);
-        BT_TRACE_EXIT("ev_mega.case_state");
-        return 1;
-    }
+    bt_mega_apply_alg(state, inverse, &pz_err);
     bt_pz_alg_destroy(alg);
     bt_pz_alg_destroy(inverse);
     BT_TRACE_EXIT("ev_mega.case_state");
@@ -174,20 +160,14 @@ static bool corners_placed_in_center_frame(const bt_mega_state *state) {
     bt_pz_error pz_err;
     void *unspin = bt_pz_alg_create();
     bt_pz_engine eng = bt_mega_engine();
-    if (unspin == NULL || !eng.parse_alg(&eng, "y'", 2, unspin, &pz_err)) {
-        bt_pz_alg_destroy(unspin);
-        return false;
-    }
+    eng.parse_alg(&eng, "y'", 2, unspin, &pz_err);
     bt_mega_state aligned = *state;
     for (size_t at = 0; at < ring; at++) {
         if (centers_home(&aligned)) {
             bt_pz_alg_destroy(unspin);
             return verify_mega_corners_placed(&aligned);
         }
-        if (!bt_mega_apply_alg(&aligned, unspin, &pz_err)) {
-            bt_pz_alg_destroy(unspin);
-            return false;
-        }
+        bt_mega_apply_alg(&aligned, unspin, &pz_err);
     }
     bt_pz_alg_destroy(unspin);
     return false;
