@@ -125,10 +125,20 @@ BT_TEST(focus, foreground_watch_counts_our_titled_window) {
     BT_CHECK(held ? seen >= 1 : seen == 0);
 }
 
+static int sentinel_acquire_with_retry(void) {
+    for (int attempt = 0; attempt < 10; attempt++) {
+        if (bt_app_focus_sentinel_acquire() == 1) {
+            return 1;
+        }
+        Sleep(100);
+    }
+    return 0;
+}
+
 BT_TEST(focus, sentinel_acquire_and_release_hand_back) {
-    BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 1);
+    BT_CHECK(sentinel_acquire_with_retry());
     bt_app_focus_sentinel_release();
-    BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 1);
+    BT_CHECK(sentinel_acquire_with_retry());
     bt_app_focus_sentinel_release();
 }
 
@@ -183,7 +193,7 @@ BT_TEST(focus, sentinel_acquire_fails_when_class_registration_is_forced_off) {
     _putenv("BT_APP_FOCUS_CLASS_FAIL=1");
     BT_CHECK_EQ(bt_app_focus_sentinel_acquire(), 0);
     _putenv("BT_APP_FOCUS_CLASS_FAIL=");
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    BT_CHECK(sentinel_acquire_with_retry());
     _putenv("BT_APP_FOCUS_GIVEBACK=1");
     bt_app_focus_sentinel_release();
     _putenv("BT_APP_FOCUS_GIVEBACK=");

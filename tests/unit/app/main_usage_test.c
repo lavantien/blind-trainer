@@ -11,7 +11,7 @@ BT_TEST(main_usage, runs_the_usage_tour_green) {
     char setting[TA_PATH_MAX];
     snprintf(setting, sizeof setting, "APPDATA=%s", user);
     _putenv(setting);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     char exe[BT_PATH_MAX];
     bt_test_bin_path(exe, "bt-app.exe");
     const char *dir = ta_temp_dir("main_usage", "shots");

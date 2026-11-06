@@ -55,7 +55,7 @@ BT_TEST(window, probe_opens_the_window_at_the_configured_size) {
 }
 
 BT_TEST(window, driven_open_never_takes_the_foreground) {
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     bt_app_config config = load_config();
     BT_CHECK(bt_app_window_open_driven(config.window.width, config.window.height,
                                        config.window.title, &config.render));

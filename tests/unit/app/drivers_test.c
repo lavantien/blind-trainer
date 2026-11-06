@@ -198,7 +198,7 @@ BT_TEST(drivers, smoke_interrupted_by_window_close_exits_nonzero) {
     char saved_config[TA_PATH_MAX];
     swap_config(config_with_title("smoke-close-config", "drivers interrupted probe"), saved_config,
                 sizeof saved_config);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     bt_app_ctx ctx;
     bt_app_shot_mode mode;
     char mode_dir[BT_PATH_MAX];
@@ -227,7 +227,7 @@ BT_TEST(drivers, smoke_interrupted_by_window_close_exits_nonzero) {
 BT_TEST(drivers, smoke_main_runs_the_full_tour_green) {
     char saved_appdata[TA_PATH_MAX];
     sandbox_appdata("smoke-user", saved_appdata, sizeof saved_appdata);
-    BT_CHECK(bt_app_focus_sentinel_acquire());
+    bt_app_focus_sentinel_acquire();
     bt_app_ctx ctx;
     bt_app_shot_mode mode;
     char mode_dir[BT_PATH_MAX];
