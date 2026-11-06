@@ -44,6 +44,9 @@ int bt_strbuf_reserve(bt_strbuf *sb, size_t extra) {
         return 0;
     }
     size_t want = sb->cap * 2;
+    if (want == 0) {
+        want = 16;
+    }
     while (want < sb->len + extra + 1) {
         want *= 2;
     }

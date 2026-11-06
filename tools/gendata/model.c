@@ -679,6 +679,7 @@ static int corpus_file_from_json(const bt_json_value *object, bt_gd_corpus_file_
         free(out->solver);
         free(out->sheet);
         free(out->sha256);
+        memset(out, 0, sizeof *out);
         return -1;
     }
     return 0;
@@ -852,6 +853,7 @@ int bt_gd_manifest_from_json(const bt_json_value *value, bt_gd_manifest *out, ch
     }
     for (size_t i = 0; i < out->specials.count_count; i++) {
         const bt_json_value *count = bt_json_at(counts, i);
+        out->specials.counts[i] = (bt_gd_class_count){0};
         if (count == NULL ||
             get_string(count, "solver", &out->specials.counts[i].solver, err, err_len) != 0 ||
             get_string(count, "class", &out->specials.counts[i].class_name, err, err_len) != 0 ||

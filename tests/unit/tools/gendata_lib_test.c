@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common/alloc.h"
 #include "common/bt_harness.h"
 #include "common/json.h"
+#include "common/strbuf.h"
 #include "data/digest.h"
 #include "data/paths.h"
 
@@ -203,4 +205,82 @@ BT_TEST(gendata_lib, data_vendor_path_rejects_missing_and_malformed_fields) {
     BT_CHECK(bt_gd_data_vendor_path(config, out, err, sizeof err) != 0);
     BT_CHECK_EQ(strcmp(err, "config section missing: paths.data_vendor"), 0);
     bt_json_free(config);
+    err[0] = '\0';
+    BT_CHECK(bt_gd_data_vendor_path(NULL, out, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config section missing: paths.data_vendor"), 0);
+    char absent[65];
+    err[0] = '\0';
+    BT_CHECK(bt_gd_synth_params_sha256(NULL, BT_GD_SYNTH_ALGORITHM, absent, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config section missing: synth"), 0);
+    bt_gd_synth_limits lim;
+    err[0] = '\0';
+    BT_CHECK(bt_gd_limits_from_config(NULL, &lim, err, sizeof err) != 0);
+    BT_CHECK_EQ(strcmp(err, "config section missing: synth"), 0);
+}
+
+static void expect_hash(const char *config_text, const char *canonical) {
+    bt_json_error jerr;
+    bt_json_value *config = NULL;
+    BT_CHECK_EQ(bt_json_parse(config_text, strlen(config_text), &config, &jerr), 0);
+    bt_strbuf recipe;
+    bt_strbuf_init(&recipe, 0);
+    bt_strbuf_append_str(&recipe, canonical);
+    bt_strbuf_append(&recipe, "\0", 1);
+    bt_strbuf_append_str(&recipe, BT_GD_SYNTH_ALGORITHM);
+    char want[65];
+    bt_digest_sha256_hex(recipe.data, recipe.len, want);
+    char hash[65];
+    char err[96];
+    err[0] = '\0';
+    BT_CHECK_EQ(bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err), 0);
+    BT_CHECK_EQ(strcmp(hash, want), 0);
+    bt_strbuf_free(&recipe);
+    bt_json_free(config);
+}
+
+BT_TEST(gendata_lib, serde_escapes_every_special_character) {
+    expect_hash("{\"synth\": {\"k\": \"a\\\"b\\\\c\\bd\\fe\\nf\\rg\\th\\u0001i\"}}",
+                "{\"k\":\"a\\\"b\\\\c\\bd\\fe\\nf\\rg\\th\\u0001i\"}");
+}
+
+BT_TEST(gendata_lib, serde_covers_the_float_digit_forms) {
+    expect_hash("{\"synth\": {\"z\": 0.0, \"n\": -2.5}}", "{\"n\":-2.5,\"z\":0.0}");
+    expect_hash("{\"synth\": {\"t\": 1.50}}", "{\"t\":1.5}");
+    expect_hash("{\"synth\": {\"k\": 1200.0}}", "{\"k\":1200.0}");
+    expect_hash("{\"synth\": {\"m\": 0.001}}", "{\"m\":0.001}");
+    expect_hash("{\"synth\": {\"s\": 5e-7}}", "{\"s\":5e-07}");
+    expect_hash("{\"synth\": {\"d\": 1.5e-9}}", "{\"d\":1.5e-09}");
+    expect_hash("{\"synth\": {\"h\": 1e16}}", "{\"h\":1e+16}");
+    expect_hash("{\"synth\": {\"w\": 123.456}}", "{\"w\":123.456}");
+}
+
+BT_TEST(gendata_lib, serde_renders_scalars_and_nested_containers) {
+    expect_hash("{\"synth\": {}}", "{}");
+    expect_hash("{\"synth\": {\"e\": {}, \"a\": [[], [1], null, true, false, \"s\"]}}",
+                "{\"a\":[[],[1],null,true,false,\"s\"],\"e\":{}}");
+    expect_hash("{\"synth\": {\"ab\": 1, \"a\": 2}}", "{\"a\":2,\"ab\":1}");
+}
+
+BT_TEST(gendata_lib, synth_params_hash_fails_when_the_serializer_runs_out_of_memory) {
+    const char *text = "{\"synth\": {\"deep\": {\"list\": [1, 2, \"x\"], \"name\": \"guarded\"}}}";
+    bt_json_error jerr;
+    size_t armed = 0;
+    for (;;) {
+        bt_json_value *config = NULL;
+        BT_CHECK_EQ(bt_json_parse(text, strlen(text), &config, &jerr), 0);
+        char hash[65];
+        char err[96];
+        err[0] = '\0';
+        bt_alloc_fail_arm(armed);
+        int rc = bt_gd_synth_params_sha256(config, BT_GD_SYNTH_ALGORITHM, hash, err, sizeof err);
+        bt_alloc_fail_disarm();
+        if (rc == 0) {
+            break;
+        }
+        BT_CHECK_EQ(strcmp(err, "synth section serialization failed"), 0);
+        bt_json_free(config);
+        armed += 1;
+        BT_CHECK(armed < 64);
+    }
+    BT_CHECK(armed > 0);
 }
